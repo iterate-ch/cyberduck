@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -34,11 +35,16 @@ import org.nuxeo.onedrive.client.OneDriveItem;
 
 import java.io.IOException;
 
-public class OneDriveTouchFeature implements Touch<Void> {
+public class GraphTouchFeature implements Touch<Void> {
 
-    private final OneDriveSession session;
+    private final GraphSession session;
 
-    public OneDriveTouchFeature(final OneDriveSession session) {
+    public GraphTouchFeature(final GraphSession session) {
+        this.session = session;
+    }
+
+    @Deprecated
+    public GraphTouchFeature(final OneDriveSession session) {
         this.session = session;
     }
 

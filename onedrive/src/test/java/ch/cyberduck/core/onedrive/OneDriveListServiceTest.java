@@ -13,7 +13,7 @@ import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFileIdProvider;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveTouchFeature;
+import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -56,7 +56,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
     @Test
     public void testListDriveChildren() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new OneDriveTouchFeature(session).touch(file, new TransferStatus());
+        new GraphTouchFeature(session).touch(file, new TransferStatus());
         assertNotNull(new OneDriveAttributesFinderFeature(session).find(file));
         final OneDriveListService listService = new OneDriveListService(session, new OneDriveFileIdProvider(session));
         final Path drive = new OneDriveHomeFinderFeature(session).find();

@@ -135,7 +135,7 @@ public class OneDriveSession extends GraphSession {
             return (T) new OneDriveDeleteFeature(this);
         }
         if(type == Touch.class) {
-            return (T) new OneDriveTouchFeature(this);
+            return (T) new GraphTouchFeature(this);
         }
         if(type == Move.class) {
             return (T) new OneDriveMoveFeature(this);

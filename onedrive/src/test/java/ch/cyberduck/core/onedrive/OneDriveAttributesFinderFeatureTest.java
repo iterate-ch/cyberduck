@@ -25,7 +25,7 @@ import ch.cyberduck.core.onedrive.features.OneDriveAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveTouchFeature;
+import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -49,7 +49,7 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new OneDriveTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        new GraphTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());

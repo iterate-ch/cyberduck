@@ -73,7 +73,7 @@ public class OneDriveBufferWriteFeature implements MultipartWrite<Void> {
                     // through StreamCopier when writing to buffer
                     final TransferStatus range = new TransferStatus(status).length(buffer.length()).append(false);
                     if(0L == buffer.length()) {
-                        new OneDriveTouchFeature(session).touch(file, new TransferStatus());
+                        new GraphTouchFeature(session).touch(file, new TransferStatus());
                     }
                     else {
                         final HttpResponseOutputStream<Void> out = new GraphWriteFeature(session).write(file,

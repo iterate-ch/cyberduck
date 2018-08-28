@@ -28,7 +28,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveReadFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveTouchFeature;
+import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,7 +61,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
     public void testReadInterrupt() throws Exception {
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new OneDriveTouchFeature(session).touch(test, new TransferStatus());
+        new GraphTouchFeature(session).touch(test, new TransferStatus());
         // Unknown length in status
         final TransferStatus status = new TransferStatus();
         // Read a single byte
@@ -82,7 +82,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
     public void testReadRange() throws Exception {
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new OneDriveTouchFeature(session).touch(test, new TransferStatus());
+        new GraphTouchFeature(session).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1000);
@@ -115,7 +115,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
     public void testReadInvalidRange() throws Exception {
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new OneDriveTouchFeature(session).touch(test, new TransferStatus());
+        new GraphTouchFeature(session).touch(test, new TransferStatus());
         final OneDriveReadFeature read = new OneDriveReadFeature(session);
         final InputStream in = read.read(test, new TransferStatus().skip(1).append(true), new DisabledConnectionCallback());
         assertNull(in);
@@ -125,7 +125,7 @@ public class OneDriveReadFeatureTest extends AbstractOneDriveTest {
     public void testReadRangeUnknownLength() throws Exception {
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path test = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new OneDriveTouchFeature(session).touch(test, new TransferStatus());
+        new GraphTouchFeature(session).touch(test, new TransferStatus());
 
         final Local local = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final byte[] content = RandomUtils.nextBytes(1000);

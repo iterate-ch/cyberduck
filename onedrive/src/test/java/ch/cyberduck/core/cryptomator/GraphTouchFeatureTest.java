@@ -50,7 +50,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class OneDriveTouchFeatureTest extends AbstractOneDriveTest {
+public class GraphTouchFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testTouchLongFilenameEncrypted() throws Exception {

@@ -27,7 +27,7 @@ import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveSearchFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveTouchFeature;
+import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.ui.browser.SearchFilter;
@@ -51,7 +51,7 @@ public class OneDriveSearchFeatureTest extends AbstractOneDriveTest {
         final String name = new AlphanumericRandomStringService().random();
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path directory = new OneDriveDirectoryFeature(session).mkdir(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        final Path file = new OneDriveTouchFeature(session).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new GraphTouchFeature(session).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final OneDriveSearchFeature feature = new OneDriveSearchFeature(session);
         assertTrue(feature.search(drive, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
         assertFalse(feature.search(drive, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).contains(file));
@@ -66,7 +66,7 @@ public class OneDriveSearchFeatureTest extends AbstractOneDriveTest {
         }
         final Path subdir = new OneDriveDirectoryFeature(session).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
-        final Path filesubdir = new OneDriveTouchFeature(session).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path filesubdir = new GraphTouchFeature(session).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             final AttributedList<Path> result = feature.search(directory, new SearchFilter(filesubdir.getName()), new DisabledListProgressListener());
             assertNotNull(result.find(new SimplePathPredicate(filesubdir)));
