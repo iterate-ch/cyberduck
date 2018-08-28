@@ -23,9 +23,31 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Search;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.onedrive.features.GraphBufferWriteFeature;
+import ch.cyberduck.core.onedrive.features.GraphCopyFeature;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFindFeature;
+import ch.cyberduck.core.onedrive.features.GraphMoveFeature;
+import ch.cyberduck.core.onedrive.features.GraphReadFeature;
+import ch.cyberduck.core.onedrive.features.GraphSearchFeature;
+import ch.cyberduck.core.onedrive.features.GraphTimestampFeature;
+import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
+import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -154,7 +176,41 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Directory.class) {
+            return (T) new GraphDirectoryFeature(this);
+        }
+        if(type == Read.class) {
+            return (T) new GraphReadFeature(this);
+        }
+        if(type == Write.class) {
+            return (T) new GraphWriteFeature(this);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new GraphBufferWriteFeature(this);
+        }
+        if(type == Delete.class) {
+            return (T) new GraphDeleteFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new GraphTouchFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new GraphMoveFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new GraphCopyFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new GraphFindFeature(this);
+        }
+        if(type == Search.class) {
+            return (T) new GraphSearchFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new GraphTimestampFeature(this);
+        }
         return super._getFeature(type);
     }
 }

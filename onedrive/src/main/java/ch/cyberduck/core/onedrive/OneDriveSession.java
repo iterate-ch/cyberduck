@@ -100,33 +100,6 @@ public class OneDriveSession extends GraphSession {
         if(type == IdProvider.class) {
             return (T) fileIdProvider;
         }
-        if(type == Directory.class) {
-            return (T) new GraphDirectoryFeature(this);
-        }
-        if(type == Read.class) {
-            return (T) new GraphReadFeature(this);
-        }
-        if(type == Write.class) {
-            return (T) new GraphWriteFeature(this);
-        }
-        if(type == MultipartWrite.class) {
-            return (T) new GraphBufferWriteFeature(this);
-        }
-        if(type == Delete.class) {
-            return (T) new GraphDeleteFeature(this);
-        }
-        if(type == Touch.class) {
-            return (T) new GraphTouchFeature(this);
-        }
-        if(type == Move.class) {
-            return (T) new GraphMoveFeature(this);
-        }
-        if(type == Copy.class) {
-            return (T) new GraphCopyFeature(this);
-        }
-        if(type == Find.class) {
-            return (T) new GraphFindFeature(this);
-        }
         if(type == AttributesFinder.class) {
             return (T) new GraphAttributesFinderFeature(this);
         }
@@ -141,12 +114,6 @@ public class OneDriveSession extends GraphSession {
         }
         if(type == Quota.class) {
             return (T) new OneDriveQuotaFeature(this);
-        }
-        if(type == Search.class) {
-            return (T) new GraphSearchFeature(this);
-        }
-        if(type == Timestamp.class) {
-            return (T) new GraphTimestampFeature(this);
         }
         return super._getFeature(type);
     }
