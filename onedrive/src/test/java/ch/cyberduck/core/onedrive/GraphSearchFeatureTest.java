@@ -26,7 +26,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveSearchFeature;
+import ch.cyberduck.core.onedrive.features.GraphSearchFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -43,7 +43,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class OneDriveSearchFeatureTest extends AbstractOneDriveTest {
+public class GraphSearchFeatureTest extends AbstractOneDriveTest {
 
     @Test
     @Ignore
@@ -52,7 +52,7 @@ public class OneDriveSearchFeatureTest extends AbstractOneDriveTest {
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path directory = new GraphDirectoryFeature(session).mkdir(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path file = new GraphTouchFeature(session).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        final OneDriveSearchFeature feature = new OneDriveSearchFeature(session);
+        final GraphSearchFeature feature = new GraphSearchFeature(session);
         assertTrue(feature.search(drive, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
         assertFalse(feature.search(drive, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).contains(file));
         assertTrue(feature.search(drive, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));

@@ -22,6 +22,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
+import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,13 +34,19 @@ import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import java.util.EnumSet;
 import java.util.Iterator;
 
-public class OneDriveSearchFeature implements Search {
-    private static final Logger log = Logger.getLogger(OneDriveSearchFeature.class);
+public class GraphSearchFeature implements Search {
+    private static final Logger log = Logger.getLogger(GraphSearchFeature.class);
 
-    private final OneDriveSession session;
+    private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;
 
-    public OneDriveSearchFeature(final OneDriveSession session) {
+    public GraphSearchFeature(final GraphSession session) {
+        this.session = session;
+        this.attributes = new GraphAttributesFinderFeature(session);
+    }
+
+    @Deprecated
+    public GraphSearchFeature(final OneDriveSession session) {
         this.session = session;
         this.attributes = new GraphAttributesFinderFeature(session);
     }
