@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -35,15 +36,21 @@ import org.nuxeo.onedrive.client.OneDrivePatchOperation;
 import java.io.IOException;
 import java.util.Collections;
 
-public class OneDriveMoveFeature implements Move {
+public class GraphMoveFeature implements Move {
 
-    private final OneDriveSession session;
+    private final GraphSession session;
     private Delete delete;
 
     private final PathContainerService containerService
         = new PathContainerService();
 
-    public OneDriveMoveFeature(OneDriveSession session) {
+    public GraphMoveFeature(final GraphSession session) {
+        this.session = session;
+        this.delete = new GraphDeleteFeature(session);
+    }
+
+    @Deprecated
+    public GraphMoveFeature(OneDriveSession session) {
         this.session = session;
         this.delete = new GraphDeleteFeature(session);
     }

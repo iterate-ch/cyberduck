@@ -34,7 +34,7 @@ import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveMoveFeature;
+import ch.cyberduck.core.onedrive.features.GraphMoveFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
@@ -53,7 +53,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
+public class GraphMoveFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testMove() throws Exception {
@@ -69,7 +69,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
             new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(
             new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
-        final CryptoMoveFeature move = new CryptoMoveFeature(session, new OneDriveMoveFeature(session), new GraphDeleteFeature(session), cryptomator);
+        final CryptoMoveFeature move = new CryptoMoveFeature(session, new GraphMoveFeature(session), new GraphDeleteFeature(session), cryptomator);
         // rename file
         final Path fileRenamed = move.move(file, new Path(folder, "f1", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(file.attributes().getVersionId(), fileRenamed.attributes().getVersionId());
