@@ -19,6 +19,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
@@ -31,10 +32,15 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneOffset;
 
-public class OneDriveTimestampFeature extends DefaultTimestampFeature {
-    private final OneDriveSession session;
+public class GraphTimestampFeature extends DefaultTimestampFeature {
+    private final GraphSession session;
 
-    public OneDriveTimestampFeature(OneDriveSession session) {
+    public GraphTimestampFeature(final GraphSession session) {
+        this.session = session;
+    }
+
+    @Deprecated
+    public GraphTimestampFeature(OneDriveSession session) {
         this.session = session;
     }
 

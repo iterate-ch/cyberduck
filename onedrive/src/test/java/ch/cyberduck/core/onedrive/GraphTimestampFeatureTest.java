@@ -23,7 +23,7 @@ import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveTimestampFeature;
+import ch.cyberduck.core.onedrive.features.GraphTimestampFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -39,7 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
+public class GraphTimestampFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testSetTimestamp() throws Exception {
@@ -49,7 +49,7 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         assertNotNull(new GraphAttributesFinderFeature(session).find(file));
 
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
-        new OneDriveTimestampFeature(session).setTimestamp(file, modified);
+        new GraphTimestampFeature(session).setTimestamp(file, modified);
         assertEquals(modified, new GraphAttributesFinderFeature(session).find(file).getModificationDate());
 
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -63,7 +63,7 @@ public class OneDriveTimestampFeatureTest extends AbstractOneDriveTest {
         assertNotNull(new GraphAttributesFinderFeature(session).find(test));
 
         final long modified = Instant.now().minusSeconds(5 * 24 * 60 * 60).getEpochSecond() * 1000;
-        new OneDriveTimestampFeature(session).setTimestamp(test, modified);
+        new GraphTimestampFeature(session).setTimestamp(test, modified);
         assertEquals(modified, new GraphAttributesFinderFeature(session).find(test).getModificationDate());
 
         new GraphDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

@@ -165,7 +165,7 @@ public class OneDriveSession extends GraphSession {
             return (T) new GraphSearchFeature(this);
         }
         if(type == Timestamp.class) {
-            return (T) new OneDriveTimestampFeature(this);
+            return (T) new GraphTimestampFeature(this);
         }
         return super._getFeature(type);
     }
