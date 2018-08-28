@@ -30,6 +30,7 @@ import ch.cyberduck.core.io.BufferOutputStream;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.FileBuffer;
+import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -40,18 +41,30 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public class OneDriveBufferWriteFeature implements MultipartWrite<Void> {
-    private static final Logger log = Logger.getLogger(OneDriveBufferWriteFeature.class);
+public class GraphBufferWriteFeature implements MultipartWrite<Void> {
+    private static final Logger log = Logger.getLogger(GraphBufferWriteFeature.class);
 
-    private final OneDriveSession session;
+    private final GraphSession session;
     private final Find finder;
     private final AttributesFinder attributes;
 
-    public OneDriveBufferWriteFeature(final OneDriveSession session) {
+    public GraphBufferWriteFeature(final GraphSession session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public OneDriveBufferWriteFeature(final OneDriveSession session, final Find finder, final AttributesFinder attributes) {
+    public GraphBufferWriteFeature(final GraphSession session, final Find finder, final AttributesFinder attributes) {
+        this.session = session;
+        this.finder = finder;
+        this.attributes = attributes;
+    }
+
+    @Deprecated
+    public GraphBufferWriteFeature(final OneDriveSession session) {
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    }
+
+    @Deprecated
+    public GraphBufferWriteFeature(final OneDriveSession session, final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.finder = finder;
         this.attributes = attributes;

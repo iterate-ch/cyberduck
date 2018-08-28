@@ -129,7 +129,7 @@ public class OneDriveSession extends GraphSession {
             return (T) new GraphWriteFeature(this);
         }
         if(type == MultipartWrite.class) {
-            return (T) new OneDriveBufferWriteFeature(this);
+            return (T) new GraphBufferWriteFeature(this);
         }
         if(type == Delete.class) {
             return (T) new OneDriveDeleteFeature(this);
