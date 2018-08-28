@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
@@ -51,7 +52,13 @@ public abstract class AbstractDriveListService implements ListService {
             final PathAttributes attributes = new PathAttributes();
             attributes.setVersionId(metadata.getId());
             attributes.setSize(metadata.getTotal());
-            children.add(new Path(directory, metadata.getName(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
+
+            String name = metadata.getName();
+            if (StringUtils.isBlank(metadata.getName())) {
+                name = metadata.getId();
+            }
+
+            children.add(new Path(directory, name, EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
             listener.chunk(directory, children);
         }
     }
