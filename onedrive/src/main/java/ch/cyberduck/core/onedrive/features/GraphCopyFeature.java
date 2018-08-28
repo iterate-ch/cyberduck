@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -37,15 +38,20 @@ import org.nuxeo.onedrive.client.OneDriveItem;
 import java.io.IOException;
 import java.util.Collections;
 
-public class OneDriveCopyFeature implements Copy {
-    private static final Logger logger = Logger.getLogger(OneDriveCopyFeature.class);
+public class GraphCopyFeature implements Copy {
+    private static final Logger logger = Logger.getLogger(GraphCopyFeature.class);
 
-    private final OneDriveSession session;
+    private final GraphSession session;
 
     private final PathContainerService containerService
         = new PathContainerService();
 
-    public OneDriveCopyFeature(OneDriveSession session) {
+    public GraphCopyFeature(final GraphSession session) {
+        this.session = session;
+    }
+
+    @Deprecated
+    public GraphCopyFeature(OneDriveSession session) {
         this.session = session;
     }
 

@@ -28,7 +28,7 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveCopyFeature;
+import ch.cyberduck.core.onedrive.features.GraphCopyFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDeleteFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveFileIdProvider;
@@ -48,13 +48,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class OneDriveCopyFeatureTest extends AbstractOneDriveTest {
+public class GraphCopyFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testCopy() throws Exception {
         final Directory directory = new OneDriveDirectoryFeature(session);
         final Touch touch = new GraphTouchFeature(session);
-        final Copy copy = new OneDriveCopyFeature(session);
+        final Copy copy = new GraphCopyFeature(session);
         final Delete delete = new OneDriveDeleteFeature(session);
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderFeature(session).find();
@@ -83,7 +83,7 @@ public class OneDriveCopyFeatureTest extends AbstractOneDriveTest {
         new GraphTouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session).touch(copy, new TransferStatus());
-        new OneDriveCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        new GraphCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new OneDriveListService(session, new OneDriveFileIdProvider(session)).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
