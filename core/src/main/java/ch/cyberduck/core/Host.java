@@ -214,7 +214,7 @@ public class Host implements Serializable, Comparable<Host> {
         this.uuid = other.uuid;
         this.nickname = other.nickname;
         this.defaultpath = other.defaultpath;
-        this.workdir = new Path(other.workdir);
+        this.workdir = other.workdir;
         this.encoding = other.encoding;
         this.connectMode = other.connectMode;
         this.transfer = other.transfer;
