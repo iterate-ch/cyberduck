@@ -50,7 +50,7 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     /**
      * Direction
      */
-    private TransferAction action = TransferAction.mirror;
+    private final TransferAction action;
 
     public SynchronizationPathFilter(final ComparePathFilter comparison,
                                      final TransferPathFilter downloadFilter,
