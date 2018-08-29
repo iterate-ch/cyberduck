@@ -106,7 +106,15 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                 final Comparison compare = timestamp.compare(attributes, local.attributes());
                 switch(compare) {
                     case unknown:
-                        return size.compare(attributes, local.attributes());
+                        switch(size.compare(attributes, local.attributes())) {
+                            case local:
+                            case notequal:
+                                return Comparison.local;
+                            case remote:
+                                return Comparison.remote;
+                            default:
+                                return Comparison.equal;
+                        }
                     default:
                         return compare;
                 }
