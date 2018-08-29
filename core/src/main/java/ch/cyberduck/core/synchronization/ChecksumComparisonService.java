@@ -30,11 +30,11 @@ public class ChecksumComparisonService implements ComparisonService {
     public Comparison compare(final Attributes remote, final Attributes local) {
         if(Checksum.NONE == remote.getChecksum()) {
             log.warn(String.format("No remote checksum available for comparison %s", remote));
-            return Comparison.notequal;
+            return Comparison.unknown;
         }
         if(Checksum.NONE == local.getChecksum()) {
             log.warn(String.format("No local checksum available for comparison %s", local));
-            return Comparison.notequal;
+            return Comparison.unknown;
         }
         if(remote.getChecksum().equals(local.getChecksum())) {
             return Comparison.equal;

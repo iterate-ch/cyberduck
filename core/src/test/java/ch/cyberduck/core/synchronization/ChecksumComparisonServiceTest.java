@@ -44,7 +44,7 @@ public class ChecksumComparisonServiceTest {
     @Test
     public void testDirectory() throws Exception {
         ComparisonService s = new ChecksumComparisonService();
-        assertEquals(Comparison.notequal, s.compare(new PathAttributes(),
+        assertEquals(Comparison.unknown, s.compare(new PathAttributes(),
                 new LocalAttributes("/t")));
     }
 }

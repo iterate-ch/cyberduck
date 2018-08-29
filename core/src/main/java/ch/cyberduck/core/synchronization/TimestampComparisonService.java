@@ -42,11 +42,11 @@ public class TimestampComparisonService implements ComparisonService {
         }
         if(-1 == remote.getModificationDate()) {
             log.warn(String.format("No remote modification date available for comparison for %s", remote));
-            return Comparison.local;
+            return Comparison.unknown;
         }
         if(-1 == local.getModificationDate()) {
             log.warn(String.format("No local modification date available for comparison for %s", local));
-            return Comparison.remote;
+            return Comparison.unknown;
         }
         if(calendarService.asDate(local.getModificationDate(), Instant.SECOND).before(
                 calendarService.asDate(remote.getModificationDate(), Instant.SECOND))) {
