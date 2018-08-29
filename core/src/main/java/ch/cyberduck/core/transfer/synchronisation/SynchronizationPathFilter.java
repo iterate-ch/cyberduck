@@ -71,60 +71,56 @@ public class SynchronizationPathFilter implements TransferPathFilter {
 
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress)
-            throws BackgroundException {
-        final Comparison compare = comparison.compare(file, local);
-        if(compare.equals(Comparison.remote)) {
-            return downloadFilter.prepare(file, local, parent, progress);
-        }
-        if(compare.equals(Comparison.local)) {
-            return uploadFilter.prepare(file, local, parent, progress);
+        throws BackgroundException {
+        switch(comparison.compare(file, local)) {
+            case remote:
+                return downloadFilter.prepare(file, local, parent, progress);
+            case local:
+                return uploadFilter.prepare(file, local, parent, progress);
         }
         // Equal comparison. Read attributes from server
         return uploadFilter.prepare(file, local, parent, progress).exists(true);
     }
 
     @Override
-    public boolean accept(final Path file, final Local local, final TransferStatus parent)
-            throws BackgroundException {
-        final Comparison compare = comparison.compare(file, local);
-        if(compare.equals(Comparison.equal)) {
-            return file.isDirectory();
-        }
-        if(compare.equals(Comparison.remote)) {
-            if(action.equals(TransferAction.upload)) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Skip file %s with comparison result %s because action is %s",
-                            file, compare, action));
+    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+        switch(comparison.compare(file, local)) {
+            case equal:
+                return file.isDirectory();
+            case remote:
+                if(action.equals(TransferAction.upload)) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Skip file %s with comparison result %s because action is %s",
+                            file, Comparison.remote, action));
+                    }
+                    return false;
                 }
-                return false;
-            }
-            // Include for mirror and download. Ask the download delegate for inclusion
-            return downloadFilter.accept(file, local, parent);
-        }
-        if(compare.equals(Comparison.local)) {
-            if(action.equals(TransferAction.download)) {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Skip file %s with comparison result %s because action is %s",
-                            file, compare, action));
+                // Include for mirror and download. Ask the download delegate for inclusion
+                return downloadFilter.accept(file, local, parent);
+            case local:
+                if(action.equals(TransferAction.download)) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Skip file %s with comparison result %s because action is %s",
+                            file, Comparison.local, action));
+                    }
+                    return false;
                 }
-                return false;
-            }
-            // Include for mirror and download. Ask the upload delegate for inclusion
-            return uploadFilter.accept(file, local, parent);
+                // Include for mirror and download. Ask the upload delegate for inclusion
+                return uploadFilter.accept(file, local, parent);
         }
-        log.warn(String.format("Invalid comparison %s", compare));
         // Not equal
         return false;
     }
 
     @Override
     public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
-        final Comparison compare = comparison.compare(file, local);
-        if(compare.equals(Comparison.remote)) {
-            downloadFilter.apply(file, local, status, listener);
-        }
-        else if(compare.equals(Comparison.local)) {
-            uploadFilter.apply(file, local, status, listener);
+        switch(comparison.compare(file, local)) {
+            case remote:
+                downloadFilter.apply(file, local, status, listener);
+                break;
+            case local:
+                uploadFilter.apply(file, local, status, listener);
+                break;
         }
         // Ignore equal compare result
     }
@@ -132,12 +128,12 @@ public class SynchronizationPathFilter implements TransferPathFilter {
     @Override
     public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status,
                          final ProgressListener listener) throws BackgroundException {
-        final Comparison compare = comparison.compare(file, local);
-        if(compare.equals(Comparison.remote)) {
-            downloadFilter.complete(file, local, options, status, listener);
-        }
-        else if(compare.equals(Comparison.local)) {
-            uploadFilter.complete(file, local, options, status, listener);
+        switch(comparison.compare(file, local)) {
+            case remote:
+                downloadFilter.complete(file, local, options, status, listener);
+                break;
+            case local:
+                uploadFilter.complete(file, local, options, status, listener);
         }
     }
 }
