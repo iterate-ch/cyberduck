@@ -26,7 +26,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -226,7 +225,7 @@ public class Host implements Serializable, Comparable<Host> {
         this.timestamp = other.timestamp;
         this.volume = other.volume;
         this.readonly = other.readonly;
-        this.custom = new HashMap<>(other.custom);
+        this.custom = other.custom;
     }
 
     @Override
