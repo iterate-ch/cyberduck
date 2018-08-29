@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -209,11 +210,11 @@ public class Host implements Serializable, Comparable<Host> {
         this.region = other.region;
         this.port = other.port;
         this.hostname = other.hostname;
-        this.credentials = other.credentials;
+        this.credentials = new Credentials(other.credentials);
         this.uuid = other.uuid;
         this.nickname = other.nickname;
         this.defaultpath = other.defaultpath;
-        this.workdir = other.workdir;
+        this.workdir = new Path(other.workdir);
         this.encoding = other.encoding;
         this.connectMode = other.connectMode;
         this.transfer = other.transfer;
@@ -225,7 +226,7 @@ public class Host implements Serializable, Comparable<Host> {
         this.timestamp = other.timestamp;
         this.volume = other.volume;
         this.readonly = other.readonly;
-        this.custom = other.custom;
+        this.custom = new HashMap<>(other.custom);
     }
 
     @Override
