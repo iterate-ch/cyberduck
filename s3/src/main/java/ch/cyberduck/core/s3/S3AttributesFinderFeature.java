@@ -116,7 +116,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected PathAttributes toAttributes(final StorageObject object) {
+    public PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(object.getContentLength());
         final Date lastmodified = object.getLastModifiedDate();
