@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.exception.SSLNegotiateException;
+import ch.cyberduck.core.exception.UnsupportedException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
@@ -52,6 +53,9 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
         if(failure instanceof ConnectionCanceledException) {
             return Type.cancel;
         }
+        if(failure instanceof UnsupportedException) {
+            return Type.unsupported;
+        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof ConnectionTimeoutException) {
                 return Type.network;
@@ -78,9 +82,9 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
                 return Type.network;
             }
             if(cause instanceof SocketException
-                    || cause instanceof TimeoutException // Used in Promise#retrieve
-                    || cause instanceof SocketTimeoutException
-                    || cause instanceof UnknownHostException) {
+                || cause instanceof TimeoutException // Used in Promise#retrieve
+                || cause instanceof SocketTimeoutException
+                || cause instanceof UnknownHostException) {
                 return Type.network;
             }
         }

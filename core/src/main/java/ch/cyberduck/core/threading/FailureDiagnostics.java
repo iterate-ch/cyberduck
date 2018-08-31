@@ -36,7 +36,11 @@ public interface FailureDiagnostics<T> {
         /**
          * Canceled by user
          */
-        cancel
+        cancel,
+        /**
+         * Protocol cannot handle operation
+         */
+        unsupported
     }
 
     Type determine(T failure);
