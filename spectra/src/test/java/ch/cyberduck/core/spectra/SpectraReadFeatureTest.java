@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.CRC32ChecksumCompute;
@@ -127,7 +126,7 @@ public class SpectraReadFeatureTest {
         assertFalse(new SpectraReadFeature(session).offset(null));
     }
 
-    @Test(expected = ConflictException.class)
+    @Test
     public void testSPECTRA66() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override
