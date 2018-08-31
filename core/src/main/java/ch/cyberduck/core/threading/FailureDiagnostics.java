@@ -21,8 +21,22 @@ package ch.cyberduck.core.threading;
 public interface FailureDiagnostics<T> {
 
     enum Type {
+        /**
+         * Connectivity
+         */
         network,
-        application
+        /**
+         * Server error
+         */
+        application,
+        /**
+         * Login failure
+         */
+        login,
+        /**
+         * Canceled by user
+         */
+        cancel
     }
 
     Type determine(T failure);
