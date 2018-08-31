@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public final class Keychain extends HostPasswordStore implements PasswordStore, CertificateStore {
+public final class Keychain extends DefaultHostPasswordStore implements PasswordStore, CertificateStore {
     private static final Logger log = Logger.getLogger(Keychain.class);
 
     static {
