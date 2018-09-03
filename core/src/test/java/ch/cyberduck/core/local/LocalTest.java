@@ -56,7 +56,7 @@ public class LocalTest {
     public void testAttributes() throws Exception {
         final TestLocal l = new TestLocal("/p/1");
         assertNotNull(l.attributes());
-        assertSame(l.attributes(), l.attributes());
+        assertEquals(l.attributes(), l.attributes());
     }
 
     @Test

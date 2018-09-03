@@ -40,15 +40,11 @@ import java.util.TimeZone;
 public class ComparisonServiceFilter implements ComparePathFilter {
 
     private Find finder;
-
     private AttributesFinder attribute;
 
     private final ComparisonService checksum;
-
     private final ComparisonService size;
-
     private final ComparisonService timestamp;
-
     private final ProgressListener progress;
 
     public ComparisonServiceFilter(final Session<?> session, final TimeZone tz, final ProgressListener listener) {
@@ -85,36 +81,42 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                     return Comparison.equal;
                 }
                 final PathAttributes attributes = attribute.find(file);
-                {
-                    // MD5/ETag Checksum is supported
-                    if(Checksum.NONE != attributes.getChecksum()) {
-                        progress.message(MessageFormat.format(
-                                LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
-                        local.attributes().setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
-                                .compute(local.getInputStream(), new TransferStatus()));
-                        final Comparison comparison = checksum.compare(attributes, local.attributes());
-                        if(!Comparison.notequal.equals(comparison)) {
-                            // Decision is available
-                            return comparison;
-                        }
-                    }
-                }
                 // We must always compare the size because the download filter will have already created a temporary 0 byte file
-                {
-                    final Comparison comparison = size.compare(attributes, local.attributes());
-                    if(!Comparison.notequal.equals(comparison)) {
-                        // Decision is available. Equal local or remote.
-                        return comparison;
-                    }
-                    // Continue to decide with timestamp when both files exist and are not zero bytes
+                switch(size.compare(attributes, local.attributes())) {
+                    case equal:
+                        return Comparison.equal;
+                    case remote:
+                        return Comparison.remote;
+                    case local:
+                        return Comparison.local;
                 }
-                // Default comparison is using timestamp of file.
-                {
-                    final Comparison comparison = timestamp.compare(attributes, local.attributes());
-                    if(!Comparison.notequal.equals(comparison)) {
-                        // Decision is available
-                        return comparison;
+                if(Checksum.NONE != attributes.getChecksum()) {
+                    // MD5/ETag Checksum is supported
+                    progress.message(MessageFormat.format(LocaleFactory.localizedString("Compute MD5 hash of {0}", "Status"), file.getName()));
+                    local.attributes().setChecksum(ChecksumComputeFactory.get(attributes.getChecksum().algorithm)
+                        .compute(local.getInputStream(), new TransferStatus()));
+                    switch(checksum.compare(attributes, local.attributes())) {
+                        case equal:
+                            // Decision is available
+                            return Comparison.equal;
                     }
+                }
+                // Continue to decide with timestamp when both files exist and are not zero bytes
+                // Default comparison is using timestamp of file.
+                final Comparison compare = timestamp.compare(attributes, local.attributes());
+                switch(compare) {
+                    case unknown:
+                        switch(size.compare(attributes, local.attributes())) {
+                            case local:
+                            case notequal:
+                                return Comparison.local;
+                            case remote:
+                                return Comparison.remote;
+                            default:
+                                return Comparison.equal;
+                        }
+                    default:
+                        return compare;
                 }
             }
             else {
@@ -127,7 +129,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                 // Only the remote file exists
                 return Comparison.remote;
             }
+            return Comparison.equal;
         }
-        return Comparison.equal;
     }
 }

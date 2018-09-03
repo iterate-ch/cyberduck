@@ -70,14 +70,11 @@ namespace Ch.Cyberduck.Core.Local
             {
                 return true;
             }
-
             bool directory = Directory.Exists(path);
             if (directory)
             {
                 return true;
             }
-
-            Log.warn(path + " is a non-existing file");
             return false;
         }
 

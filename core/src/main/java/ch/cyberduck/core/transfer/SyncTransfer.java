@@ -172,12 +172,13 @@ public class SyncTransfer extends Transfer {
         final Map<TransferItem, TransferStatus> downloads = new HashMap<>();
         final Map<TransferItem, TransferStatus> uploads = new HashMap<>();
         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-            final Comparison compare = comparison.compare(entry.getKey().remote, entry.getKey().local);
-            if(compare.equals(Comparison.remote)) {
-                downloads.put(entry.getKey(), entry.getValue());
-            }
-            else if(compare.equals(Comparison.local)) {
-                uploads.put(entry.getKey(), entry.getValue());
+            switch(comparison.compare(entry.getKey().remote, entry.getKey().local)) {
+                case remote:
+                    downloads.put(entry.getKey(), entry.getValue());
+                    break;
+                case local:
+                    uploads.put(entry.getKey(), entry.getValue());
+                    break;
             }
         }
         download.pre(source, destination, downloads, callback);
@@ -224,12 +225,13 @@ public class SyncTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
-        final Comparison compare = comparison.compare(file, local);
-        if(compare.equals(Comparison.remote)) {
-            download.transfer(source, destination, file, local, options, status, connectionCallback, passwordCallback, progressListener, streamListener);
-        }
-        else if(compare.equals(Comparison.local)) {
-            upload.transfer(source, destination, file, local, options, status, connectionCallback, passwordCallback, progressListener, streamListener);
+        switch(comparison.compare(file, local)) {
+            case remote:
+                download.transfer(source, destination, file, local, options, status, connectionCallback, passwordCallback, progressListener, streamListener);
+                break;
+            case local:
+                upload.transfer(source, destination, file, local, options, status, connectionCallback, passwordCallback, progressListener, streamListener);
+                break;
         }
         return file;
     }

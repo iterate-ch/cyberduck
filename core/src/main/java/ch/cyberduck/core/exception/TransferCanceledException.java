@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.exception;
 
 /*
  * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
@@ -15,12 +15,19 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-public interface HostPasswordStore extends PasswordStore {
-    String findLoginPassword(Host bookmark);
+public class TransferCanceledException extends ConnectionCanceledException {
+    public TransferCanceledException() {
+    }
 
-    String findLoginToken(Host bookmark);
+    public TransferCanceledException(final String detail) {
+        super(detail);
+    }
 
-    String findPrivateKeyPassphrase(Host bookmark);
+    public TransferCanceledException(final Throwable cause) {
+        super(cause);
+    }
 
-    void save(Host bookmark);
+    public TransferCanceledException(final String detail, final Throwable cause) {
+        super(detail, cause);
+    }
 }

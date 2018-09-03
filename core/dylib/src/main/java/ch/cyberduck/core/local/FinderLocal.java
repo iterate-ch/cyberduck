@@ -55,9 +55,6 @@ public class FinderLocal extends Local {
      */
     private String bookmark;
 
-    private final FinderLocalAttributes attributes
-        = new FinderLocalAttributes(this);
-
     public FinderLocal(final Local parent, final String name) {
         this(parent, name, FilesystemBookmarkResolverFactory.get());
     }
@@ -238,6 +235,6 @@ public class FinderLocal extends Local {
 
     @Override
     public FinderLocalAttributes attributes() {
-        return attributes;
+        return new FinderLocalAttributes(this);
     }
 }

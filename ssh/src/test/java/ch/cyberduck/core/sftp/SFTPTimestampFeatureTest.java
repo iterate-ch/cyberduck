@@ -35,6 +35,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -44,7 +45,7 @@ public class SFTPTimestampFeatureTest {
     @Test
     public void testSetTimestamp() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
@@ -56,7 +57,7 @@ public class SFTPTimestampFeatureTest {
         new SFTPTouchFeature(session).touch(test, new TransferStatus());
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals((float) modified, (float) new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0);
+        assertEquals(TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(modified)), new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -64,7 +65,7 @@ public class SFTPTimestampFeatureTest {
     @Test
     public void testSetTimestampDirectory() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host);
         assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
@@ -76,7 +77,7 @@ public class SFTPTimestampFeatureTest {
         new SFTPDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final long modified = System.currentTimeMillis();
         new SFTPTimestampFeature(session).setTimestamp(test, modified);
-        assertEquals((float) modified, (float) new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0);
+        assertEquals(TimeUnit.SECONDS.toMillis(TimeUnit.MILLISECONDS.toSeconds(modified)), new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getModificationDate(), 0);
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

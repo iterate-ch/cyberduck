@@ -204,6 +204,30 @@ public class Host implements Serializable, Comparable<Host> {
         this.credentials = credentials;
     }
 
+    public Host(final Host other) {
+        this.protocol = other.protocol;
+        this.region = other.region;
+        this.port = other.port;
+        this.hostname = other.hostname;
+        this.credentials = new Credentials(other.credentials);
+        this.uuid = other.uuid;
+        this.nickname = other.nickname;
+        this.defaultpath = other.defaultpath;
+        this.workdir = other.workdir;
+        this.encoding = other.encoding;
+        this.connectMode = other.connectMode;
+        this.transfer = other.transfer;
+        this.downloadFolder = other.downloadFolder;
+        this.uploadFolder = other.uploadFolder;
+        this.timezone = other.timezone;
+        this.comment = other.comment;
+        this.webURL = other.webURL;
+        this.timestamp = other.timestamp;
+        this.volume = other.volume;
+        this.readonly = other.readonly;
+        this.custom = other.custom;
+    }
+
     @Override
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(protocol.getIdentifier(), "Protocol");
