@@ -60,7 +60,7 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         final AttributesFinder attributesFinder = new OneDriveAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
+        file.attributes().setModificationDate(touch.touch(file, new TransferStatus().withMime("x-application/cyberduck")).attributes().getModificationDate());
         final PathAttributes attributes = attributesFinder.find(file);
         assertNotNull(attributes);
         Path rename = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
