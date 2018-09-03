@@ -54,11 +54,7 @@ public class OneDriveItemListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<>();
-        final OneDriveItem local = session.toItem(directory);
-        if(!(local instanceof OneDriveFolder)) {
-            throw new NotfoundException(directory.getAbsolute());
-        }
-        final OneDriveFolder folder = (OneDriveFolder) local;
+        final OneDriveFolder folder = session.toFolder(directory);
         try {
             final Iterator<OneDriveItem.Metadata> iterator = folder.iterator(PreferencesFactory.get().getInteger("onedrive.listing.chunksize"));
             while(iterator.hasNext()) {

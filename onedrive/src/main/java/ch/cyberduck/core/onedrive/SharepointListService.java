@@ -48,7 +48,10 @@ public class SharepointListService implements ListService {
             else if(SharepointSession.GROUPS_NAME.equals(directory)) {
                 return new SharepointGroupListService(session).list(directory, listener);
             }
-            return new SharepointItemListService().list(directory, listener);
+            else if (SharepointSession.GROUPS_NAME.equals(directory.getParent())) {
+                return new SharepointGroupDrivesListService(session).list(directory, listener);
+            }
+            return new OneDriveItemListService(session).list(directory, listener);
         }
     }
 
