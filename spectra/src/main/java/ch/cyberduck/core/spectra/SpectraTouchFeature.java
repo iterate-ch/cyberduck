@@ -19,18 +19,27 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.s3.S3AttributesFinderFeature;
+import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.StorageObject;
 
 import java.util.Collections;
 
 public class SpectraTouchFeature implements Touch {
 
     private final SpectraSession session;
+    private final S3WriteFeature writer;
 
     public SpectraTouchFeature(final SpectraSession session) {
         this.session = session;
+        this.writer = new SpectraWriteFeature(session);
     }
 
     @Override
@@ -38,7 +47,11 @@ public class SpectraTouchFeature implements Touch {
         final SpectraBulkService bulk = new SpectraBulkService(session);
         final TransferStatus status = new TransferStatus();
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(file), status.length(0L)), new DisabledConnectionCallback());
-        return file;
+        final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
+        new DefaultStreamCloser().close(out);
+        final S3Object metadata = (S3Object) out.getStatus();
+        return new Path(file.getParent(), file.getName(), file.getType(),
+            new S3AttributesFinderFeature(session).toAttributes(metadata));
     }
 
 
