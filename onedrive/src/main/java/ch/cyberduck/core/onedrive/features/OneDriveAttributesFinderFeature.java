@@ -88,8 +88,18 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
             log.warn(String.format("Cannot set link. Web URL returned %s", metadata.getWebUrl()), e);
         }
         if(null != metadata.getFileSystemInfo()) {
-            attributes.setModificationDate(metadata.getFileSystemInfo().getLastModifiedDateTime().toInstant().toEpochMilli());
-            attributes.setCreationDate(metadata.getFileSystemInfo().getCreatedDateTime().toInstant().toEpochMilli());
+            if(-1L == metadata.getFileSystemInfo().getLastModifiedDateTime().toInstant().toEpochMilli()) {
+                attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
+            }
+            else {
+                attributes.setModificationDate(metadata.getFileSystemInfo().getLastModifiedDateTime().toInstant().toEpochMilli());
+            }
+            if(-1 == metadata.getFileSystemInfo().getCreatedDateTime().toInstant().toEpochMilli()) {
+                attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
+            }
+            else {
+                attributes.setCreationDate(metadata.getFileSystemInfo().getCreatedDateTime().toInstant().toEpochMilli());
+            }
         }
         else {
             attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
