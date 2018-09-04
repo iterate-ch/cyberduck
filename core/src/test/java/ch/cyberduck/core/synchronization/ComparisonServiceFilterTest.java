@@ -1,5 +1,6 @@
 package ch.cyberduck.core.synchronization;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
@@ -62,10 +63,11 @@ public class ComparisonServiceFilterTest {
         };
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
         }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find).withAttributes(attributes);
-        assertEquals(Comparison.equal, s.compare(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal("t") {
+        final String path = new AlphanumericRandomStringService().random();
+        assertEquals(Comparison.equal, s.compare(new Path(path, EnumSet.of(Path.Type.file)), new NullLocal(path) {
             @Override
             public LocalAttributes attributes() {
-                return new LocalAttributes("/t") {
+                return new LocalAttributes(path) {
                     @Override
                     public Checksum getChecksum() {
                         return new Checksum(HashAlgorithm.md5, "a");
