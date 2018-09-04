@@ -83,8 +83,6 @@ public class ComparisonServiceFilter implements ComparePathFilter {
                 final PathAttributes attributes = attribute.find(file);
                 // We must always compare the size because the download filter will have already created a temporary 0 byte file
                 switch(size.compare(attributes, local.attributes())) {
-                    case equal:
-                        return Comparison.equal;
                     case remote:
                         return Comparison.remote;
                     case local:
