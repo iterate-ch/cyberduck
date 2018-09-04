@@ -73,13 +73,12 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
         if(metadata instanceof OneDriveRemoteItem.Metadata) {
             final OneDriveRemoteItem.Metadata remoteMetadata = (OneDriveRemoteItem.Metadata) metadata;
             final OneDriveItem.Metadata originMetadata = remoteMetadata.getRemoteItem();
-
-            attributes.setVersionId(String.join("/",
+            attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER),
                 metadata.getParentReference().getDriveId(), metadata.getId(),
                 originMetadata.getParentReference().getDriveId(), originMetadata.getId()));
         }
         else {
-            attributes.setVersionId(String.join("/", metadata.getParentReference().getDriveId(), metadata.getId()));
+            attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER), metadata.getParentReference().getDriveId(), metadata.getId()));
         }
         try {
             attributes.setLink(new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http));
