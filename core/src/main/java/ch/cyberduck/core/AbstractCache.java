@@ -90,7 +90,9 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
     public AttributedList<T> get(final T reference) {
         AttributedList<T> children = impl.get(reference);
         if(null == children) {
-            log.warn(String.format("No cache for %s", reference));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("No cache for %s", reference));
+            }
             return AttributedList.emptyList();
         }
         return children;
@@ -102,8 +104,8 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      * @return Previous cached version
      */
     public AttributedList<T> put(final T reference, final AttributedList<T> children) {
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Caching %s", reference));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Caching %s", reference));
         }
         return impl.put(reference, children);
     }
@@ -133,7 +135,9 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
             this.get(reference).attributes().setInvalid(true);
         }
         else {
-            log.warn(String.format("No cache for %s", reference));
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("No cache for %s", reference));
+            }
         }
     }
 
@@ -142,7 +146,7 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      */
     public void clear() {
         if(log.isInfoEnabled()) {
-            log.info(String.format("Clearing cache %s", this.toString()));
+            log.info(String.format("Clear cache %s", this));
         }
         impl.clear();
     }
