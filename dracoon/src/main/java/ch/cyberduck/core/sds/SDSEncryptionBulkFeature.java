@@ -52,16 +52,14 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 case download:
                     break;
                 default:
-                    if(session.userAccount().isEncryptionEnabled()) {
-                        for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                            if(nodeid.isEncrypted(entry.getKey().remote)) {
-                                final TransferStatus status = entry.getValue();
-                                final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
-                                final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
-                                final ByteArrayOutputStream out = new ByteArrayOutputStream();
-                                writer.writeValue(out, fileKey);
-                                status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
-                            }
+                    for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+                        if(nodeid.isEncrypted(entry.getKey().remote)) {
+                            final TransferStatus status = entry.getValue();
+                            final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
+                            final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+                            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+                            writer.writeValue(out, fileKey);
+                            status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
                         }
                     }
             }

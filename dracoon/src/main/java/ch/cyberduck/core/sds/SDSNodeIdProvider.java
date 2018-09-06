@@ -100,6 +100,9 @@ public class SDSNodeIdProvider implements IdProvider {
         if(file.isRoot()) {
             return false;
         }
+        if(!session.userAccount().isEncryptionEnabled()) {
+            return false;
+        }
         // Get top level share
         final Path container = new PathContainerService().getContainer(file);
         if(cache.isCached(container.getParent())) {
