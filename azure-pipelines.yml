@@ -1,19 +1,45 @@
-# Maven
-# Build your Java projects and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/vsts/pipelines/languages/java
+jobs:
+- job: Linux
+  pool:
+      vmImage: 'ubuntu-16.04'
+  steps:
+  - task: Maven@3
+    inputs:
+        mavenPomFile: 'pom.xml'
+        mavenOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.10'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: false
+        testResultsFiles: '**/TEST-*.xml'
+        goals: 'verify -DskipITs'
 
-pool:
-  vmImage: 'Ubuntu 16.04'
+- job: macOS
+  pool:
+      vmImage: 'xcode9-macos10.13'
+  steps:
+  - task: Maven@3
+    inputs:
+        mavenPomFile: 'pom.xml'
+        mavenOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.10'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: false
+        testResultsFiles: '**/TEST-*.xml'
+        goals: 'verify -DskipITs'
 
-steps:
-- task: Maven@3
-  inputs:
-    mavenPomFile: 'pom.xml'
-    mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.10'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: false
-    testResultsFiles: '**/TEST-*.xml'
-    goals: 'verify -DskipITs'
+- job: Windows
+  pool:
+      vmImage: 'vs2017-win2016'
+  steps:
+  - task: Maven@3
+    inputs:
+        mavenPomFile: 'pom.xml'
+        mavenOptions: '-Xmx3072m'
+        javaHomeOption: 'JDKVersion'
+        jdkVersionOption: '1.10'
+        jdkArchitectureOption: 'x64'
+        publishJUnitResults: false
+        testResultsFiles: '**/TEST-*.xml'
+        goals: 'verify -DskipITs'
