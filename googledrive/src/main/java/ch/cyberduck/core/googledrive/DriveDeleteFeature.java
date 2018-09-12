@@ -25,6 +25,8 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import java.io.IOException;
 import java.util.List;
 
+import com.google.api.services.drive.model.File;
+
 public class DriveDeleteFeature implements Delete {
 
     private final DriveSession session;
@@ -47,8 +49,16 @@ public class DriveDeleteFeature implements Delete {
                     session.getClient().teamdrives().delete(fileid.getFileid(file, new DisabledListProgressListener())).execute();
                 }
                 else {
-                    session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
-                        .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                    if(PreferencesFactory.get().getBoolean("googledrive.delete.trash")) {
+                        final File properties = new File();
+                        properties.setTrashed(true);
+                        session.getClient().files().update(fileid.getFileid(file, new DisabledListProgressListener()), properties)
+                            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                    }
+                    else {
+                        session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
+                            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
+                    }
                 }
             }
             catch(IOException e) {

@@ -34,6 +34,7 @@ import com.google.api.client.googleapis.batch.BatchRequest;
 import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.http.HttpHeaders;
+import com.google.api.services.drive.model.File;
 
 public class DriveBatchDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(DriveBatchDeleteFeature.class);
@@ -54,12 +55,21 @@ public class DriveBatchDeleteFeature implements Delete {
             try {
                 if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(file.getParent())) {
                     session.getClient().teamdrives().delete(fileid.getFileid(file, new DisabledListProgressListener()))
-                        .queue(batch, new DeleteBatchCallback(file, failures, callback));
+                        .queue(batch, new DeleteBatchCallback<Void>(file, failures, callback));
                 }
                 else {
-                    session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
-                        .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
-                        .queue(batch, new DeleteBatchCallback(file, failures, callback));
+                    if(PreferencesFactory.get().getBoolean("googledrive.delete.trash")) {
+                        final File properties = new File();
+                        properties.setTrashed(true);
+                        session.getClient().files().update(fileid.getFileid(file, new DisabledListProgressListener()), properties)
+                            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                            .queue(batch, new DeleteBatchCallback<File>(file, failures, callback));
+                    }
+                    else {
+                        session.getClient().files().delete(fileid.getFileid(file, new DisabledListProgressListener()))
+                            .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
+                            .queue(batch, new DeleteBatchCallback<Void>(file, failures, callback));
+                    }
                 }
             }
             catch(IOException e) {
@@ -89,7 +99,7 @@ public class DriveBatchDeleteFeature implements Delete {
         return false;
     }
 
-    private static class DeleteBatchCallback extends JsonBatchCallback<Void> {
+    private static class DeleteBatchCallback<V> extends JsonBatchCallback<V> {
         private final Path file;
         private final List<BackgroundException> failures;
         private final Callback callback;
@@ -108,7 +118,7 @@ public class DriveBatchDeleteFeature implements Delete {
         }
 
         @Override
-        public void onSuccess(final Void aVoid, final HttpHeaders responseHeaders) throws IOException {
+        public void onSuccess(final V aVoid, final HttpHeaders responseHeaders) throws IOException {
             callback.delete(file);
         }
     }
