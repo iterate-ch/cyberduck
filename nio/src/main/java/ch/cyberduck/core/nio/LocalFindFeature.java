@@ -30,6 +30,7 @@ public class LocalFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
+        // https://rules.sonarsource.com/java/tag/performance/RSPEC-3725
         return session.toPath(file).toFile().exists();
     }
 
