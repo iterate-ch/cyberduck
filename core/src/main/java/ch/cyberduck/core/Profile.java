@@ -240,7 +240,7 @@ public class Profile implements Protocol, Serializable {
             return null;
         }
         final byte[] favicon = Base64.decodeBase64(icon);
-        final Local file = TemporaryFileServiceFactory.get().create(String.format("%s.ico", new AlphanumericRandomStringService().random()));
+        final Local file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
         try {
             new DefaultLocalTouchFeature().touch(file);
             final OutputStream out = file.getOutputStream(false);
