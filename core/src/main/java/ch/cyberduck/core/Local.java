@@ -293,10 +293,23 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     /**
+     * Does not follow symlinks. Can be expensive if called many times due to symlink check.
+     * @see <a href="https://rules.sonarsource.com/java/tag/performance/RSPEC-3725"/>
+     *
      * @return True if the path exists on the file system.
      */
     public boolean exists() {
-        return Files.exists(Paths.get(path), LinkOption.NOFOLLOW_LINKS);
+        return this.exists(LinkOption.NOFOLLOW_LINKS);
+    }
+
+    /**
+     * @return True if the path exists on the file system.
+     */
+    public boolean exists(LinkOption... options) {
+        if(options.length == 0) {
+            return Paths.get(path).toFile().exists();
+        }
+        return Files.exists(Paths.get(path), options);
     }
 
     public void rename(final Local renamed) throws AccessDeniedException {
