@@ -18,6 +18,8 @@ package ch.cyberduck.core.date;
  * feedback@cyberduck.ch
  */
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -189,11 +191,14 @@ public final class ISO8601DateParser {
     /**
      * Parse the given string in ISO 8601 format and build a Date object.
      *
-     * @param iso the date in ISO 8601 format
+     * @param input the date in ISO 8601 format
      * @return a Date instance
      * @throws InvalidDateException if the date is not valid
      */
-    public Date parse(final String iso) throws InvalidDateException {
-        return this.getCalendar(iso).getTime();
+    public Date parse(final String input) throws InvalidDateException {
+        if(StringUtils.isBlank(input)) {
+            throw new InvalidDateException();
+        }
+        return this.getCalendar(input).getTime();
     }
 }

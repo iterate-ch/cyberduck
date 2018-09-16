@@ -20,8 +20,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 
-import java.nio.file.Files;
-
 public class LocalFindFeature implements Find {
 
     private final LocalSession session;
@@ -32,7 +30,8 @@ public class LocalFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
-        return Files.exists(session.toPath(file));
+        // https://rules.sonarsource.com/java/tag/performance/RSPEC-3725
+        return session.toPath(file).toFile().exists();
     }
 
     @Override

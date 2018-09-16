@@ -18,8 +18,7 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocalAttributes;
-import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.date.CalendarService;
 import ch.cyberduck.core.date.Instant;
 
@@ -37,17 +36,17 @@ public class TimestampComparisonService implements ComparisonService {
     }
 
     @Override
-    public Comparison compare(final PathAttributes remote, final LocalAttributes local) {
+    public Comparison compare(final Attributes remote, final Attributes local) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Compare timestamp for %s with %s", remote, local));
         }
         if(-1 == remote.getModificationDate()) {
             log.warn(String.format("No remote modification date available for comparison for %s", remote));
-            return Comparison.local;
+            return Comparison.unknown;
         }
         if(-1 == local.getModificationDate()) {
             log.warn(String.format("No local modification date available for comparison for %s", local));
-            return Comparison.remote;
+            return Comparison.unknown;
         }
         if(calendarService.asDate(local.getModificationDate(), Instant.SECOND).before(
                 calendarService.asDate(remote.getModificationDate(), Instant.SECOND))) {

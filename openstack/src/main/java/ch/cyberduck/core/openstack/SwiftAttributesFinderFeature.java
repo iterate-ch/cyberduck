@@ -23,6 +23,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.date.ISO8601DateParser;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -48,10 +49,13 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
     private final SwiftSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
-    private final RFC1123DateFormatter dateParser
-            = new RFC1123DateFormatter();
+    private final RFC1123DateFormatter rfc1123DateFormatter
+        = new RFC1123DateFormatter();
+
+    private final ISO8601DateParser iso8601DateParser
+        = new ISO8601DateParser();
 
     private final SwiftRegionService regionService;
 
@@ -73,14 +77,14 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
         try {
             if(containerService.isContainer(file)) {
                 final ContainerInfo info = session.getClient().getContainerInfo(region,
-                        containerService.getContainer(file).getName());
+                    containerService.getContainer(file).getName());
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(info.getTotalSize());
                 attributes.setRegion(info.getRegion().getRegionId());
                 return attributes;
             }
             final ObjectMetadata metadata = session.getClient().getObjectMetaData(region,
-                    containerService.getContainer(file).getName(), containerService.getKey(file));
+                containerService.getContainer(file).getName(), containerService.getKey(file));
             if(file.isDirectory()) {
                 if(!StringUtils.equals("application/directory", metadata.getMimeType())) {
                     throw new NotfoundException(String.format("Path %s is file", file.getAbsolute()));
@@ -112,10 +116,16 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
         final String lastModified = object.getLastModified();
         if(lastModified != null) {
             try {
-                attributes.setModificationDate(dateParser.parse(lastModified).getTime());
+                attributes.setModificationDate(iso8601DateParser.parse(lastModified).getTime());
             }
             catch(InvalidDateException e) {
                 log.warn(String.format("%s is not ISO 8601 format %s", lastModified, e.getMessage()));
+                try {
+                    attributes.setModificationDate(rfc1123DateFormatter.parse(lastModified).getTime());
+                }
+                catch(InvalidDateException f) {
+                    log.warn(String.format("%s is not RFC 1123 format %s", lastModified, f.getMessage()));
+                }
             }
         }
         return attributes;
@@ -124,11 +134,12 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
     protected PathAttributes toAttributes(final ObjectMetadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(Long.valueOf(metadata.getContentLength()));
+        final String lastModified = metadata.getLastModified();
         try {
-            attributes.setModificationDate(dateParser.parse(metadata.getLastModified()).getTime());
+            attributes.setModificationDate(rfc1123DateFormatter.parse(lastModified).getTime());
         }
         catch(InvalidDateException e) {
-            log.warn(String.format("%s is not RFC 1123 format %s", metadata.getLastModified(), e.getMessage()));
+            log.warn(String.format("%s is not RFC 1123 format %s", lastModified, e.getMessage()));
         }
         if(StringUtils.isNotBlank(metadata.getETag())) {
             final String etag = StringUtils.removePattern(metadata.getETag(), "\"");

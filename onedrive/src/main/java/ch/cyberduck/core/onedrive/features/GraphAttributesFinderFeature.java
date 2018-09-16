@@ -73,13 +73,12 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         if(metadata instanceof OneDriveRemoteItem.Metadata) {
             final OneDriveRemoteItem.Metadata remoteMetadata = (OneDriveRemoteItem.Metadata) metadata;
             final OneDriveItem.Metadata originMetadata = remoteMetadata.getRemoteItem();
-
-            attributes.setVersionId(String.join("/",
+            attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER),
                 metadata.getParentReference().getDriveId(), metadata.getId(),
                 originMetadata.getParentReference().getDriveId(), originMetadata.getId()));
         }
         else {
-            attributes.setVersionId(String.join("/", metadata.getParentReference().getDriveId(), metadata.getId()));
+            attributes.setVersionId(String.join(String.valueOf(Path.DELIMITER), metadata.getParentReference().getDriveId(), metadata.getId()));
         }
         try {
             attributes.setLink(new DescriptiveUrl(new URI(metadata.getWebUrl()), DescriptiveUrl.Type.http));
@@ -88,8 +87,18 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
             log.warn(String.format("Cannot set link. Web URL returned %s", metadata.getWebUrl()), e);
         }
         if(null != metadata.getFileSystemInfo()) {
-            attributes.setModificationDate(metadata.getFileSystemInfo().getLastModifiedDateTime().toInstant().toEpochMilli());
-            attributes.setCreationDate(metadata.getFileSystemInfo().getCreatedDateTime().toInstant().toEpochMilli());
+            if(-1L == metadata.getFileSystemInfo().getLastModifiedDateTime().toInstant().toEpochMilli()) {
+                attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());
+            }
+            else {
+                attributes.setModificationDate(metadata.getFileSystemInfo().getLastModifiedDateTime().toInstant().toEpochMilli());
+            }
+            if(-1 == metadata.getFileSystemInfo().getCreatedDateTime().toInstant().toEpochMilli()) {
+                attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
+            }
+            else {
+                attributes.setCreationDate(metadata.getFileSystemInfo().getCreatedDateTime().toInstant().toEpochMilli());
+            }
         }
         else {
             attributes.setModificationDate(metadata.getLastModifiedDateTime().toInstant().toEpochMilli());

@@ -46,15 +46,13 @@ public class GraphTimestampFeature extends DefaultTimestampFeature {
 
     @Override
     public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
-        final OneDrivePatchOperation patch = new OneDrivePatchOperation();
+        final OneDrivePatchOperation patchOperation = new OneDrivePatchOperation();
         final FileSystemInfoFacet info = new FileSystemInfoFacet();
         info.setLastModifiedDateTime(Instant.ofEpochMilli(modified).atOffset(ZoneOffset.UTC));
-        patch.facet("fileSystemInfo", info);
-
+        patchOperation.facet("fileSystemInfo", info);
         final OneDriveItem item = session.toItem(file);
-
         try {
-            item.patch(patch);
+            item.patch(patchOperation);
         }
         catch(OneDriveAPIException e) {
             throw new GraphExceptionMappingService().map("Failure to write attributes of {0}", e, file);

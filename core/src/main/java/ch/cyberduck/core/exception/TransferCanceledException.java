@@ -1,7 +1,7 @@
-package ch.cyberduck.core.local;
+package ch.cyberduck.core.exception;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,14 +15,19 @@ package ch.cyberduck.core.local;
  * GNU General Public License for more details.
  */
 
-import org.junit.Test;
+public class TransferCanceledException extends ConnectionCanceledException {
+    public TransferCanceledException() {
+    }
 
-import static org.junit.Assert.assertFalse;
+    public TransferCanceledException(final String detail) {
+        super(detail);
+    }
 
-public class DesktopBrowserLauncherTest {
+    public TransferCanceledException(final Throwable cause) {
+        super(cause);
+    }
 
-    @Test
-    public void open() throws Exception {
-        assertFalse(new DesktopBrowserLauncher().open("https://cyberduck.io"));
+    public TransferCanceledException(final String detail, final Throwable cause) {
+        super(detail, cause);
     }
 }

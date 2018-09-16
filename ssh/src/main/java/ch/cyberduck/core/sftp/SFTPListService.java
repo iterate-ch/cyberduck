@@ -61,7 +61,7 @@ public class SFTPListService implements ListService {
                     return true;
                 }
             })) {
-                final PathAttributes attributes = this.attributes.toAttributes(f.getAttributes());
+                final PathAttributes attr = attributes.toAttributes(f.getAttributes());
                 final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
                 if(f.getAttributes().getType().equals(FileMode.Type.DIRECTORY)) {
                     type.add(Path.Type.directory);
@@ -72,7 +72,7 @@ public class SFTPListService implements ListService {
                 if(f.getAttributes().getType().equals(FileMode.Type.SYMLINK)) {
                     type.add(Path.Type.symboliclink);
                 }
-                final Path file = new Path(directory, f.getName(), type, attributes);
+                final Path file = new Path(directory, f.getName(), type, attr);
                 if(this.post(file)) {
                     children.add(file);
                     listener.chunk(directory, children);
@@ -103,7 +103,7 @@ public class SFTPListService implements ListService {
                 }
                 else {
                     target = new Path(String.format("%s/%s", file.getParent().getAbsolute(), link),
-                            EnumSet.of(Path.Type.file));
+                        EnumSet.of(Path.Type.file));
                 }
                 try {
                     if(session.sftp().stat(target.getAbsolute()).getType().equals(FileMode.Type.DIRECTORY)) {

@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
-public class UnsecureHostPasswordStore extends HostPasswordStore {
+public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
     private static final Logger log = Logger.getLogger(UnsecureHostPasswordStore.class);
 
     private final Local file = LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "credentials");

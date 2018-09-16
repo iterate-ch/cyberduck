@@ -66,10 +66,10 @@ public class SwiftContainerListService implements RootListService {
             final AttributedList<Path> containers = new AttributedList<Path>();
             final int limit = preferences.getInteger("openstack.list.container.limit");
             final Client client = session.getClient();
-            for(final Region region : client.getRegions()) {
-                if(this.region.getIdentifier() != null) {
-                    if(!StringUtils.equals(region.getRegionId(), this.region.getIdentifier())) {
-                        log.warn(String.format("Skip region %s", region));
+            for(final Region r : client.getRegions()) {
+                if(region.getIdentifier() != null) {
+                    if(!StringUtils.equals(r.getRegionId(), region.getIdentifier())) {
+                        log.warn(String.format("Skip region %s", r));
                         continue;
                     }
                 }
@@ -77,7 +77,7 @@ public class SwiftContainerListService implements RootListService {
                 List<Container> chunk;
                 String marker = null;
                 do {
-                    chunk = client.listContainers(region, limit, marker);
+                    chunk = client.listContainers(r, limit, marker);
                     for(final Container f : chunk) {
                         final PathAttributes attributes = new PathAttributes();
                         attributes.setRegion(f.getRegion().getRegionId());

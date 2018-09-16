@@ -17,7 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-public class DisabledPasswordStore extends HostPasswordStore {
+public class DisabledPasswordStore extends DefaultHostPasswordStore {
 
     @Override
     public String getPassword(final String serviceName, final String accountName) {

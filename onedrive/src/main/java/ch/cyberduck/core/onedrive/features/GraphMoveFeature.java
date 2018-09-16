@@ -32,8 +32,11 @@ import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePatchOperation;
+import org.nuxeo.onedrive.client.facets.FileSystemInfoFacet;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Collections;
 
 public class GraphMoveFeature implements Move {
@@ -68,6 +71,10 @@ public class GraphMoveFeature implements Move {
             final OneDriveFolder moveTarget = session.toFolder(renamed.getParent());
             patchOperation.move(moveTarget);
         }
+        // Keep curent timestamp set
+        final FileSystemInfoFacet info = new FileSystemInfoFacet();
+        info.setLastModifiedDateTime(Instant.ofEpochMilli(file.attributes().getModificationDate()).atOffset(ZoneOffset.UTC));
+        patchOperation.facet("fileSystemInfo", info);
         final OneDriveItem item = session.toItem(file);
         try {
             item.patch(patchOperation);

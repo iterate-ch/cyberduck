@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 
 namespace Ch.Cyberduck.Core
 {
-    public class CredentialManagerPasswordStore : HostPasswordStore
+    public class CredentialManagerPasswordStore : DefaultHostPasswordStore
     {
         private static Logger logger = Logger.getLogger(typeof(CredentialManagerPasswordStore).FullName);
 

@@ -60,7 +60,7 @@ public class SyncTransferTest {
         }));
         final AtomicBoolean prompt = new AtomicBoolean();
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        assertEquals(null, t.action(session, null, false, false, new DisabledTransferPrompt() {
+        assertNull(t.action(session, null, false, false, new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 prompt.set(true);

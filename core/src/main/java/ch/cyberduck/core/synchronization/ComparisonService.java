@@ -18,10 +18,9 @@ package ch.cyberduck.core.synchronization;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocalAttributes;
-import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Attributes;
 
 public interface ComparisonService {
 
-    Comparison compare(PathAttributes file, LocalAttributes local);
+    Comparison compare(Attributes file, Attributes local);
 }

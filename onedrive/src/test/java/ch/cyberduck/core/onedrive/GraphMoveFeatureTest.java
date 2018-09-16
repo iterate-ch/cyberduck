@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -59,12 +60,13 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotNull(attributesFinder.find(file));
+        file.attributes().setModificationDate(touch.touch(file, new TransferStatus().withMime("x-application/cyberduck")).attributes().getModificationDate());
+        final PathAttributes attributes = attributesFinder.find(file);
+        assertNotNull(attributes);
         Path rename = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(file, rename));
         move.move(file, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertNotNull(attributesFinder.find(rename));
+        assertEquals(attributes, attributesFinder.find(rename));
         delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
