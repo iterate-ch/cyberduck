@@ -141,7 +141,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @see Local#exists()
      */
     public boolean isDirectory() {
-        return Files.isDirectory(Paths.get(path));
+        return Paths.get(path).toFile().isDirectory();
     }
 
     /**
@@ -150,7 +150,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
      * @see Local#exists()
      */
     public boolean isFile() {
-        return Files.isRegularFile(Paths.get(path));
+        return Paths.get(path).toFile().isFile();
     }
 
     /**
@@ -294,9 +294,9 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     /**
      * Does not follow symlinks. Can be expensive if called many times due to symlink check.
-     * @see <a href="https://rules.sonarsource.com/java/tag/performance/RSPEC-3725"/>
      *
      * @return True if the path exists on the file system.
+     * @see <a href="https://rules.sonarsource.com/java/tag/performance/RSPEC-3725"/>
      */
     public boolean exists() {
         return this.exists(LinkOption.NOFOLLOW_LINKS);
