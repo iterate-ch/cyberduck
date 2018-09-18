@@ -82,7 +82,7 @@ public class DownloadController extends AlertController {
         switch(returncode) {
             case DEFAULT_OPTION:
                 final Host host = HostParser.parse(urlField.stringValue());
-                final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath(), true),
+                final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath()),
                         EnumSet.of(detector.detect(host.getDefaultPath())));
                 host.setDefaultPath(file.getParent().getAbsolute());
                 final Transfer transfer = new DownloadTransfer(host, file,
