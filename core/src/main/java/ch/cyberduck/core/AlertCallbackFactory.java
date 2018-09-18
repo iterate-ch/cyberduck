@@ -29,13 +29,15 @@ public class AlertCallbackFactory extends Factory<AlertCallback> {
 
     private static final AlertCallbackFactory factory = new AlertCallbackFactory();
 
+    private final Constructor<AlertCallback> constructor
+        = ConstructorUtils.getMatchingAccessibleConstructor(clazz, Controller.class);
+
     protected AlertCallbackFactory() {
         super("factory.alertcallback.class");
     }
 
     public AlertCallback create(final Controller controller) {
         try {
-            final Constructor<AlertCallback> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, controller.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", controller.getClass()));
                 // Call default constructor for disabled implementations

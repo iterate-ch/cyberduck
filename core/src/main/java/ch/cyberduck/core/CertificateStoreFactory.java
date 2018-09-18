@@ -28,13 +28,15 @@ public class CertificateStoreFactory extends Factory<CertificateStore> {
 
     private static final CertificateStoreFactory factory = new CertificateStoreFactory();
 
+    private final Constructor<CertificateStore> constructor
+        = ConstructorUtils.getMatchingAccessibleConstructor(clazz, Controller.class);
+
     protected CertificateStoreFactory() {
         super("factory.certificatestore.class");
     }
 
     public CertificateStore create(final Controller c) {
         try {
-            final Constructor<CertificateStore> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                 // Call default constructor for disabled implementations
