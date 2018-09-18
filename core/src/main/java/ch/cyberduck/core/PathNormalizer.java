@@ -35,11 +35,10 @@ public final class PathNormalizer {
     }
 
     public static String name(final String path) {
-        final String normalized = normalize(path, true);
-        if(String.valueOf(Path.DELIMITER).equals(normalized)) {
+        if(String.valueOf(Path.DELIMITER).equals(path)) {
             return path;
         }
-        return FilenameUtils.getName(normalized);
+        return FilenameUtils.getName(path);
     }
 
     public static String parent(final String absolute, final char delimiter) {
