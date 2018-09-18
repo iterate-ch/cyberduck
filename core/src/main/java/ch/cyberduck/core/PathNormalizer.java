@@ -27,6 +27,9 @@ import java.util.List;
 
 public final class PathNormalizer {
 
+    private static final boolean enabled = PreferencesFactory.get().getBoolean("path.normalize");
+    private static final boolean nfc = PreferencesFactory.get().getBoolean("path.normalize.unicode");
+
     private PathNormalizer() {
         //
     }
@@ -75,7 +78,7 @@ public final class PathNormalizer {
             return String.valueOf(Path.DELIMITER);
         }
         String normalized = path;
-        if(PreferencesFactory.get().getBoolean("path.normalize")) {
+        if(enabled) {
             if(absolute) {
                 while(!normalized.startsWith(String.valueOf(Path.DELIMITER))) {
                     normalized = Path.DELIMITER + normalized;
@@ -136,7 +139,7 @@ public final class PathNormalizer {
                 normalized = normalized.substring(0, normalized.length() - 1);
             }
         }
-        if(PreferencesFactory.get().getBoolean("path.normalize.unicode")) {
+        if(nfc) {
             return new NFCNormalizer().normalize(normalized).toString();
         }
         // Return the normalized path that we have completed
