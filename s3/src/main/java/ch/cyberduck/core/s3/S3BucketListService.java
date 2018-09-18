@@ -25,6 +25,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
@@ -67,9 +68,9 @@ public class S3BucketListService implements RootListService {
                 // Listing all buckets not supported for thirdparty buckets
                 if(StringUtils.isEmpty(this.getContainer(session.getHost()))) {
                     if(StringUtils.isNotBlank(session.getHost().getDefaultPath())) {
-                        if(containerService.isContainer(new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory)))) {
+                        if(containerService.isContainer(new Path(PathNormalizer.normalize(session.getHost().getDefaultPath()), EnumSet.of(Path.Type.directory)))) {
                             final Path bucket = containerService.getContainer(
-                                    new Path(session.getHost().getDefaultPath(), EnumSet.of(Path.Type.directory))
+                                new Path(PathNormalizer.normalize(session.getHost().getDefaultPath()), EnumSet.of(Path.Type.directory))
                             );
                             log.info(String.format("Using default %s path to determine bucket name %s",
                                     session.getHost().getDefaultPath(), bucket));
@@ -79,13 +80,13 @@ public class S3BucketListService implements RootListService {
                         }
                     }
                     log.warn(String.format("No bucket name given in hostname %s", session.getHost().getHostname()));
-                    final Path bucket = new Path(session.getHost().getHostname(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    final Path bucket = new Path(PathNormalizer.normalize(session.getHost().getHostname()), EnumSet.of(Path.Type.volume, Path.Type.directory));
                     final AttributedList<Path> buckets = new AttributedList<>(Collections.singletonList(bucket));
                     listener.chunk(directory, buckets);
                     return buckets;
                 }
                 else {
-                    final Path bucket = new Path(this.getContainer(session.getHost()), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    final Path bucket = new Path(PathNormalizer.normalize(this.getContainer(session.getHost())), EnumSet.of(Path.Type.volume, Path.Type.directory));
                     final AttributedList<Path> buckets = new AttributedList<>(Collections.singletonList(bucket));
                     listener.chunk(directory, buckets);
                     return buckets;
@@ -95,7 +96,7 @@ public class S3BucketListService implements RootListService {
                 // If bucket is specified in hostname, try to connect to this particular bucket only.
                 final String bucketname = this.getContainer(session.getHost());
                 if(StringUtils.isNotEmpty(bucketname)) {
-                    final Path bucket = new Path(bucketname, EnumSet.of(Path.Type.volume, Path.Type.directory));
+                    final Path bucket = new Path(PathNormalizer.normalize(bucketname), EnumSet.of(Path.Type.volume, Path.Type.directory));
                     final AttributedList<Path> buckets = new AttributedList<>(Collections.singletonList(bucket));
                     listener.chunk(directory, buckets);
                     return buckets;
@@ -104,7 +105,7 @@ public class S3BucketListService implements RootListService {
                     final AttributedList<Path> buckets = new AttributedList<Path>();
                     // List all buckets owned
                     for(StorageBucket b : session.getClient().listAllBuckets()) {
-                        final Path bucket = new Path(b.getName(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                        final Path bucket = new Path(PathNormalizer.normalize(b.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory));
                         if(b.getOwner() != null) {
                             // Null if the owner is not available
                             bucket.attributes().setOwner(b.getOwner().getId());

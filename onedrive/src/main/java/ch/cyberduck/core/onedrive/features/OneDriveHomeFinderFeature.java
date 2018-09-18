@@ -17,6 +17,7 @@ package ch.cyberduck.core.onedrive.features;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
 import ch.cyberduck.core.onedrive.OneDriveSession;
@@ -43,7 +44,7 @@ public class OneDriveHomeFinderFeature extends DefaultHomeFinderService {
         if(home == DEFAULT_HOME) {
             try {
                 final OneDriveDrive.Metadata metadata = OneDriveDrive.getDefaultDrive(session.getClient()).getMetadata();
-                final Path drive = new Path(metadata.getId(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+                final Path drive = new Path(PathNormalizer.normalize(metadata.getId()), EnumSet.of(Path.Type.volume, Path.Type.directory));
                 drive.attributes().setVersionId(metadata.getId());
                 switch(metadata.getDriveType()) {
                     case personal:

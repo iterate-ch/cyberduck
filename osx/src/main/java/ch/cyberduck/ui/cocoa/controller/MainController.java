@@ -797,7 +797,7 @@ public class MainController extends BundleController implements NSApplication.De
                             else {
                                 // No mounted browser
                                 if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
-                                    upload(bookmark, files, new Path(bookmark.getDefaultPath(), EnumSet.of(Path.Type.directory)));
+                                    upload(bookmark, files, new Path(PathNormalizer.normalize(bookmark.getDefaultPath()), EnumSet.of(Path.Type.directory)));
                                 }
                                 else {
                                     upload(bookmark, files, destination);
@@ -1288,7 +1288,7 @@ public class MainController extends BundleController implements NSApplication.De
         else {
             final Host h = HostParser.parse(url);
             if(Path.Type.file == detector.detect(h.getDefaultPath())) {
-                final Path file = new Path(h.getDefaultPath(), EnumSet.of(Path.Type.file));
+                final Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.file));
                 TransferControllerFactory.get().start(new DownloadTransfer(h, file,
                     LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
             }

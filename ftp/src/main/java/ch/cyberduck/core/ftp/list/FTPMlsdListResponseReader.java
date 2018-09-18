@@ -88,10 +88,10 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
                     if(type.length == 2) {
                         final String target = type[1];
                         if(target.startsWith(String.valueOf(Path.DELIMITER))) {
-                            parsed.setSymlinkTarget(new Path(target, EnumSet.of(Path.Type.file)));
+                            parsed.setSymlinkTarget(new Path(PathNormalizer.normalize(target), EnumSet.of(Path.Type.file)));
                         }
                         else {
-                            parsed.setSymlinkTarget(new Path(String.format("%s/%s", directory.getAbsolute(), target), EnumSet.of(Path.Type.file)));
+                            parsed.setSymlinkTarget(new Path(PathNormalizer.normalize(String.format("%s/%s", directory.getAbsolute(), target)), EnumSet.of(Path.Type.file)));
                         }
                     }
                     else {

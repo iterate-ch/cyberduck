@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -129,7 +130,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
         }
         catch(S3ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot delete {0}", e,
-                    new Path(new Path(upload.getBucketName(), EnumSet.of(Path.Type.directory)),
+                new Path(new Path(PathNormalizer.normalize(upload.getBucketName()), EnumSet.of(Path.Type.directory)),
                             upload.getObjectKey(), EnumSet.of(Path.Type.file)));
         }
     }

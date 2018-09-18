@@ -2,7 +2,10 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class PathNormalizerTest {
 
@@ -30,7 +33,7 @@ public class PathNormalizerTest {
     public void testParent() throws Exception {
         assertEquals("/", PathNormalizer.parent("/p", '/'));
         assertEquals("/p", PathNormalizer.parent("/p/n", '/'));
-        assertEquals(null, PathNormalizer.parent("/", '/'));
+        assertNull(PathNormalizer.parent("/", '/'));
     }
 
     @Test
@@ -46,5 +49,75 @@ public class PathNormalizerTest {
     public void testDot() throws Exception {
         assertEquals("/p", PathNormalizer.normalize("/p/."));
         assertEquals("/", PathNormalizer.normalize("/."));
+    }
+
+    @Test
+    public void testPathNormalize() throws Exception {
+        {
+            final Path path = new Path(PathNormalizer.normalize(
+                "/path/to/remove/.."), EnumSet.of(Path.Type.directory));
+            assertEquals("/path/to", path.getAbsolute());
+        }
+        {
+            final Path path = new Path(PathNormalizer.normalize(
+                "/path/to/remove/.././"), EnumSet.of(Path.Type.directory));
+            assertEquals("/path/to", path.getAbsolute());
+        }
+        {
+            final Path path = new Path(PathNormalizer.normalize(
+                "/path/remove/../to/remove/.././"), EnumSet.of(Path.Type.directory));
+            assertEquals("/path/to", path.getAbsolute());
+        }
+        {
+            final Path path = new Path(PathNormalizer.normalize(
+                "/path/to/remove/remove/../../"), EnumSet.of(Path.Type.directory));
+            assertEquals("/path/to", path.getAbsolute());
+        }
+        {
+            final Path path = new Path(PathNormalizer.normalize(
+                "/path/././././to"), EnumSet.of(Path.Type.directory));
+            assertEquals("/path/to", path.getAbsolute());
+        }
+        {
+            final Path path = new Path(PathNormalizer.normalize(
+                "./.path/to"), EnumSet.of(Path.Type.directory));
+            assertEquals("/.path/to", path.getAbsolute());
+        }
+        {
+            final Path path = new Path(PathNormalizer.normalize(
+                ".path/to"), EnumSet.of(Path.Type.directory));
+            assertEquals("/.path/to", path.getAbsolute());
+        }
+        {
+            final Path path = new Path(PathNormalizer.normalize(
+                "/path/.to"), EnumSet.of(Path.Type.directory));
+            assertEquals("/path/.to", path.getAbsolute());
+        }
+        {
+            final Path path = new Path(PathNormalizer.normalize(
+                "/path//to"), EnumSet.of(Path.Type.directory));
+            assertEquals("/path/to", path.getAbsolute());
+        }
+        {
+            final Path path = new Path(PathNormalizer.normalize(
+                "/path///to////"), EnumSet.of(Path.Type.directory));
+            assertEquals("/path/to", path.getAbsolute());
+        }
+    }
+
+    @Test
+    public void testPathName() throws Exception {
+        {
+            Path path = new Path(PathNormalizer.normalize(
+                "/path/to/file/"), EnumSet.of(Path.Type.directory));
+            assertEquals("file", path.getName());
+            assertEquals("/path/to/file", path.getAbsolute());
+        }
+        {
+            Path path = new Path(PathNormalizer.normalize(
+                "/path/to/file"), EnumSet.of(Path.Type.directory));
+            assertEquals("file", path.getName());
+            assertEquals("/path/to/file", path.getAbsolute());
+        }
     }
 }
