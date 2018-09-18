@@ -91,7 +91,7 @@ public final class PathNormalizer {
                     break;
                 }
                 normalized = normalized.substring(0, index) +
-                        normalized.substring(index + 2);
+                    normalized.substring(index + 2);
             }
             // Resolve occurrences of "/../" in the normalized path
             while(true) {
@@ -104,7 +104,7 @@ public final class PathNormalizer {
                     return String.valueOf(Path.DELIMITER);
                 }
                 normalized = normalized.substring(0, normalized.lastIndexOf(Path.DELIMITER, index - 1)) +
-                        normalized.substring(index + 3);
+                    normalized.substring(index + 3);
             }
             StringBuilder n = new StringBuilder();
             if(normalized.startsWith("//")) {
@@ -121,7 +121,8 @@ public final class PathNormalizer {
                 n.append(Path.DELIMITER);
             }
             // Remove duplicated Path.DELIMITERs
-            final String[] segments = normalized.split(String.valueOf(Path.DELIMITER));
+
+            final String[] segments = StringUtils.split(normalized, String.valueOf(Path.DELIMITER));
             for(String segment : segments) {
                 if(segment.equals(StringUtils.EMPTY)) {
                     continue;
