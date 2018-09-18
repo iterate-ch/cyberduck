@@ -49,7 +49,7 @@ public class UploadTransferItemFinder implements TransferItemFinder {
                 // Append local name to remote target
                 return new TransferItem(new Path(remote, local.getName(), EnumSet.of(Path.Type.directory)), local);
             }
-            return new TransferItem(new Path(remote.getAbsolute(), EnumSet.of(Path.Type.directory)), local);
+            return new TransferItem(new Path(remote.getParent(), remote.getName(), EnumSet.of(Path.Type.directory)), local);
         }
         // Local path resolves to file
         if(remote.isDirectory()) {
