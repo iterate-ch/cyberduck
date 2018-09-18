@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.commons.cli.CommandLine;
@@ -50,6 +51,6 @@ public class CommandLinePathParser {
         if(StringUtils.isBlank(host.getDefaultPath())) {
             return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(detector.detect(host.getDefaultPath())));
         }
-        return new Path(host.getDefaultPath(), EnumSet.of(detector.detect(host.getDefaultPath())));
+        return new Path(PathNormalizer.normalize(host.getDefaultPath()), EnumSet.of(detector.detect(host.getDefaultPath())));
     }
 }

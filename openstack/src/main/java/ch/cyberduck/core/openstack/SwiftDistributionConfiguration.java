@@ -138,7 +138,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 if(metadata.getMetaData().containsKey("X-Container-Meta-Web-Index")) {
                     distribution.setIndexDocument(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
                 }
-                distribution.setContainers(Collections.singletonList(new Path(".CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory))));
+                distribution.setContainers(Collections.singletonList(new Path("/.CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory))));
                 return distribution;
             }
             catch(NotFoundException e) {

@@ -16,6 +16,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 
@@ -38,9 +39,8 @@ public class SFTPHomeDirectoryService extends DefaultHomeFinderService {
             try {
                 // "." as referring to the current directory
                 final String directory = session.sftp().canonicalize(".");
-                return new Path(directory,
-                        directory.equals(String.valueOf(Path.DELIMITER)) ?
-                                EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+                return new Path(PathNormalizer.normalize(directory), directory.equals(String.valueOf(Path.DELIMITER)) ?
+                    EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
             }
             catch(IOException e) {
                 throw new SFTPExceptionMappingService().map(e);
