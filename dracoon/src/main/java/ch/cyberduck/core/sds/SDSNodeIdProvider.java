@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
@@ -79,7 +80,7 @@ public class SDSNodeIdProvider implements IdProvider {
             // Top-level nodes only
             final NodeList nodes = new NodesApi(session.getClient()).getFsNodes(0,
                 Long.parseLong(this.getFileid(file.getParent(), new DisabledListProgressListener())),
-                null, String.format("type:eq:%s|name:cn:%s", type, file.getName()),
+                null, String.format("type:eq:%s|name:cn:%s", type, URIEncoder.encode(file.getName())),
                 null, null, null, StringUtils.EMPTY, null);
             for(Node node : nodes.getItems()) {
                 if(node.getName().equals(file.getName())) {
