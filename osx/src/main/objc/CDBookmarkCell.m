@@ -48,7 +48,7 @@
 	static NSDictionary *HIGHLIGHTED_SMALL_BOLD_FONT_ATTRIBUTES = nil;
 	if(nil == HIGHLIGHTED_SMALL_BOLD_FONT_ATTRIBUTES) {
 		HIGHLIGHTED_SMALL_BOLD_FONT_ATTRIBUTES = [[NSDictionary alloc] initWithObjects:
-												  [NSArray arrayWithObjects:[NSFont boldSystemFontOfSize:[NSFont smallSystemFontSize]], [NSColor whiteColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
+												  [NSArray arrayWithObjects:[NSFont boldSystemFontOfSize:[NSFont smallSystemFontSize]], [NSColor selectedControlTextColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
 																			 forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSForegroundColorAttributeName, NSParagraphStyleAttributeName, nil] //keys
 												  ];
 	}
@@ -56,15 +56,15 @@
 	static NSDictionary *LARGE_BOLD_FONT_ATTRIBUTES = nil;
 	if(nil == LARGE_BOLD_FONT_ATTRIBUTES) {
 		LARGE_BOLD_FONT_ATTRIBUTES = [[NSDictionary alloc] initWithObjects:
-									  [NSArray arrayWithObjects:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
-																 forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSParagraphStyleAttributeName, nil] //keys
+									  [NSArray arrayWithObjects:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]], [NSColor controlTextColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
+																 forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSForegroundColorAttributeName, NSParagraphStyleAttributeName, nil] //keys
 									  ];
 	}
 	
 	static NSDictionary *HIGHLIGHTED_LARGE_BOLD_FONT_ATTRIBUTES = nil;
 	if(nil == HIGHLIGHTED_LARGE_BOLD_FONT_ATTRIBUTES) {
 		HIGHLIGHTED_LARGE_BOLD_FONT_ATTRIBUTES = [[NSDictionary alloc] initWithObjects:
-												  [NSArray arrayWithObjects:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]], [NSColor whiteColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
+												  [NSArray arrayWithObjects:[NSFont boldSystemFontOfSize:[NSFont systemFontSize]], [NSColor selectedControlTextColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
 																			 forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSForegroundColorAttributeName, NSParagraphStyleAttributeName, nil] //keys
 												  ];
 	}
@@ -72,7 +72,7 @@
 	static NSDictionary *SMALL_FONT_ATTRIBUTES = nil;
 	if(nil == SMALL_FONT_ATTRIBUTES) {
 		SMALL_FONT_ATTRIBUTES = [[NSDictionary alloc] initWithObjects:
-								 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], [NSColor darkGrayColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
+								 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], [NSColor systemGrayColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
 															forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSForegroundColorAttributeName, NSParagraphStyleAttributeName, nil] //keys
 								 ];
 	}
@@ -80,22 +80,22 @@
 	static NSDictionary *HIGHLIGHTED_SMALL_FONT_ATTRIBUTES = nil;
 	if(nil == HIGHLIGHTED_SMALL_FONT_ATTRIBUTES) {
 		HIGHLIGHTED_SMALL_FONT_ATTRIBUTES = [[NSDictionary alloc] initWithObjects:
-											 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], [NSColor whiteColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
+											 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], [NSColor selectedControlTextColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
 																		forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSForegroundColorAttributeName, NSParagraphStyleAttributeName, nil] //keys
 											 ];
 	}
 	static NSDictionary *COMMENT_FONT_ATTRIBUTES = nil;
 	if(nil == COMMENT_FONT_ATTRIBUTES) {
 		COMMENT_FONT_ATTRIBUTES = [[NSDictionary alloc] initWithObjects:
-								 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
-															forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSParagraphStyleAttributeName, nil] //keys
+								 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], [NSColor controlTextColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
+															forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSForegroundColorAttributeName, NSParagraphStyleAttributeName, nil] //keys
 								 ];
 	}
 
 	static NSDictionary *HIGHLIGHTED_COMMENT_FONT_ATTRIBUTES = nil;
 	if(nil == HIGHLIGHTED_COMMENT_FONT_ATTRIBUTES) {
 		HIGHLIGHTED_COMMENT_FONT_ATTRIBUTES = [[NSDictionary alloc] initWithObjects:
-											 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], [NSColor whiteColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
+											 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], [NSColor selectedControlTextColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
 																		forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSForegroundColorAttributeName, NSParagraphStyleAttributeName, nil] //keys
 											 ];
 	}
