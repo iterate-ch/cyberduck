@@ -38,6 +38,9 @@ public final class PathNormalizer {
         if(String.valueOf(Path.DELIMITER).equals(path)) {
             return path;
         }
+        if(StringUtils.endsWith(path, String.valueOf(Path.DELIMITER))) {
+            return FilenameUtils.getName(normalize(path));
+        }
         return FilenameUtils.getName(path);
     }
 
