@@ -104,7 +104,7 @@ public class S3ObjectListService implements ListService {
                     // Copy bucket location
                     attributes.setRegion(bucket.attributes().getRegion());
                     if(null == delimiter) {
-                        file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), types, attributes);
+                        file = new Path(String.format("%s%s", bucket.getAbsolute(), key), types, attributes);
                     }
                     else {
                         file = new Path(directory, PathNormalizer.name(key), types, attributes);
@@ -124,7 +124,7 @@ public class S3ObjectListService implements ListService {
                     final Path file;
                     final PathAttributes attributes = new PathAttributes();
                     if(null == delimiter) {
-                        file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                        file = new Path(String.format("%s%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                     }
                     else {
                         file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
