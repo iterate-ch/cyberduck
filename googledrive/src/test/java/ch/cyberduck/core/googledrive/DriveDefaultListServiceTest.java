@@ -94,6 +94,5 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         new DriveDirectoryFeature(session, provider).mkdir(folder, null, new TransferStatus());
         assertEquals(2, new DriveDefaultListService(session, provider).list(parent, new DisabledListProgressListener()).size());
         new DriveDeleteFeature(session, provider).delete(Arrays.asList(parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DefaultFindFeature(session).find(parent));
     }
 }
