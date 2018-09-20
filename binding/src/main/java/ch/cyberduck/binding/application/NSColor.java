@@ -23,7 +23,9 @@ import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSCopying;
 import ch.cyberduck.binding.foundation.NSObject;
 
+import org.rococoa.Foundation;
 import org.rococoa.ObjCClass;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 
 /// <i>native declaration : :35</i>
@@ -32,6 +34,13 @@ public abstract class NSColor extends NSObject implements NSCopying {
 
     public static NSColor whiteColor() {
         return CLASS.whiteColor();
+    }
+
+    public static NSColor systemGrayColor() {
+        if(Rococoa.cast(CLASS, NSObject.class).respondsToSelector(Foundation.selector("systemGrayColor:"))) {
+            return CLASS.systemGrayColor();
+        }
+        return NSColor.darkGrayColor();
     }
 
     public static NSColor darkGrayColor() {
@@ -767,6 +776,24 @@ public abstract class NSColor extends NSObject implements NSCopying {
          * <i>from NSQuartzCoreAdditions native declaration : :268</i>
          */
 //        NSColor colorWithCIColor(CIColor color);
+
+        NSColor systemBlueColor();
+
+        NSColor systemBrownColor();
+
+        NSColor systemGrayColor();
+
+        NSColor systemGreenColor();
+
+        NSColor systemOrangeColor();
+
+        NSColor systemPinkColor();
+
+        NSColor systemPurpleColor();
+
+        NSColor systemRedColor();
+
+        NSColor systemYellowColor();
     }
 
     /**
