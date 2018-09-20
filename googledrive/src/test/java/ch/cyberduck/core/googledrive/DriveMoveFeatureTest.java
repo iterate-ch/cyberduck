@@ -63,8 +63,10 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final Path target = new DriveMoveFeature(session, fileid).move(temp, test, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
-        assertEquals(1, files.size());
-        assertFalse(find.find(temp));
+        // Replaced file is trashed
+        assertEquals(2, files.size());
+        assertTrue(files.get(test).attributes().isDuplicate());
+        assertFalse(files.get(target).attributes().isDuplicate());
         assertTrue(find.find(target));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
