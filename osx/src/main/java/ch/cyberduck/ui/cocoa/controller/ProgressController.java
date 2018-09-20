@@ -68,7 +68,7 @@ public class ProgressController extends BundleController implements TransferList
     private static final NSDictionary HIGHLIGHTED_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(
                     NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-                    NSColor.selectedControlTextColor(),
+                NSColor.alternateSelectedControlTextColor(),
                     BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
             NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName,
