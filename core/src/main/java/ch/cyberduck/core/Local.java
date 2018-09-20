@@ -22,7 +22,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.TildeExpander;
 import ch.cyberduck.core.local.WorkdirPrefixer;
@@ -36,12 +35,11 @@ import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileAlreadyExistsException;
@@ -49,12 +47,16 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 public class Local extends AbstractPath implements Referenceable, Serializable {
     private static final Logger log = Logger.getLogger(Local.class);
@@ -407,18 +409,29 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public InputStream getInputStream() throws AccessDeniedException {
         try {
-            return new LocalRepeatableFileInputStream(new File(path));
+            final FileChannel channel = FileChannel.open(Paths.get(path), StandardOpenOption.READ);
+            return Channels.newInputStream(channel);
         }
-        catch(FileNotFoundException e) {
+        catch(IOException e) {
             throw new LocalAccessDeniedException(e.getMessage(), e);
         }
     }
 
     public OutputStream getOutputStream(final boolean append) throws AccessDeniedException {
         try {
-            return new FileOutputStream(new File(path), append);
+            final Set<OpenOption> options = new HashSet<>();
+            options.add(StandardOpenOption.WRITE);
+            options.add(StandardOpenOption.CREATE);
+            if(append) {
+                options.add(StandardOpenOption.APPEND);
+            }
+            else {
+                options.add(StandardOpenOption.TRUNCATE_EXISTING);
+            }
+            final FileChannel channel = FileChannel.open(Paths.get(path), options);
+            return Channels.newOutputStream(channel);
         }
-        catch(FileNotFoundException e) {
+        catch(IOException e) {
             throw new LocalAccessDeniedException(e.getMessage(), e);
         }
     }
