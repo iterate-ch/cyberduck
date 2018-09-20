@@ -1300,7 +1300,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setDownloadSkipRegexField(NSTextView t) {
         this.downloadSkipRegexField = t;
-        this.downloadSkipRegexField.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
+        this.downloadSkipRegexField.setFont(NSFont.monospacedDigitSystemFontOfSize(9.0f));
         this.downloadSkipRegexField.setString(preferences.getProperty("queue.download.skip.regex"));
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("downloadSkipRegexFieldDidChange:"),
@@ -1365,7 +1365,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setUploadSkipRegexField(NSTextView b) {
         this.uploadSkipRegexField = b;
-        this.uploadSkipRegexField.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
+        this.uploadSkipRegexField.setFont(NSFont.monospacedDigitSystemFontOfSize(9.0f));
         this.uploadSkipRegexField.setString(preferences.getProperty("queue.upload.skip.regex"));
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("uploadSkipRegexFieldDidChange:"),
