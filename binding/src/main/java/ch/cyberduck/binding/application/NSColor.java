@@ -79,7 +79,7 @@ public abstract class NSColor extends NSObject implements NSCopying {
      * <i>native declaration : :89</i>
      */
     public static NSColor controlHighlightColor() {
-        return CLASS.controlShadowColor();
+        return CLASS.controlHighlightColor();
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class NSColor extends NSObject implements NSCopying {
      * <i>native declaration : :90</i>
      */
     public static NSColor controlLightHighlightColor() {
-        return CLASS.controlShadowColor();
+        return CLASS.controlLightHighlightColor();
     }
 
     /**
@@ -133,7 +133,7 @@ public abstract class NSColor extends NSObject implements NSCopying {
      * <i>native declaration : :95</i>
      */
     public static NSColor selectedControlTextColor() {
-        return CLASS.controlShadowColor();
+        return CLASS.selectedControlTextColor();
     }
 
     /**
