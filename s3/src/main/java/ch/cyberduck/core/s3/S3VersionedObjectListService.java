@@ -147,7 +147,7 @@ public class S3VersionedObjectListService implements ListService {
                             }
                         }
                     }
-                    final Path file = new Path(String.format("%s%s%s", bucket.getAbsolute(), String.valueOf(Path.DELIMITER), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                    final Path file = new Path(String.format("%s%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                     children.add(file);
                 }
                 priorLastKey = chunk.getNextKeyMarker();
