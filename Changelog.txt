@@ -1,7 +1,7 @@
 Cyberduck
 https://cyberduck.io/
 
-6.7.2
+6.8.0
 - [Feature] Support dark mode (macOS Mojave) (#10348)
 - [Bugfix] Display scaling is broken for some input components (Windows) (#10443)
 - [Bugfix] Missing session token when making the AssumeRoleRequest to obtain the cross account credentials from STS (S3) (#10432)
