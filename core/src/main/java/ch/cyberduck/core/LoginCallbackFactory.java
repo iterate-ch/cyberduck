@@ -30,8 +30,7 @@ public class LoginCallbackFactory extends Factory<LoginCallback> {
 
     private static final LoginCallbackFactory factory = new LoginCallbackFactory();
 
-    private final Constructor<LoginCallback> constructor
-        = ConstructorUtils.getMatchingAccessibleConstructor(clazz, Controller.class);
+    private Constructor<LoginCallback> constructor;
 
     protected LoginCallbackFactory() {
         super("factory.logincallback.class");
@@ -39,6 +38,9 @@ public class LoginCallbackFactory extends Factory<LoginCallback> {
 
     public LoginCallback create(final Controller controller) {
         try {
+            if(null == constructor) {
+                constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, controller.getClass());
+            }
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", controller.getClass()));
                 // Call default constructor for disabled implementations

@@ -30,8 +30,7 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
 
     private static final HostKeyCallbackFactory factory = new HostKeyCallbackFactory();
 
-    private final Constructor<HostKeyCallback> constructor
-        = ConstructorUtils.getMatchingAccessibleConstructor(clazz, Controller.class);
+    private Constructor<HostKeyCallback> constructor;
 
     protected HostKeyCallbackFactory() {
         super("factory.hostkeycallback.class");
@@ -40,6 +39,9 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
     public HostKeyCallback create(final Controller c, final Protocol protocol) {
         if(Scheme.sftp.equals(protocol.getScheme())) {
             try {
+                if(null == constructor) {
+                    constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
+                }
                 if(null == constructor) {
                     log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
                     // Call default constructor for disabled implementations
