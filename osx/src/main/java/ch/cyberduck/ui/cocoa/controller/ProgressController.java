@@ -242,9 +242,9 @@ public class ProgressController extends BundleController implements TransferList
 
     public void setHighlighted(final boolean h) {
         highlighted = h;
-        statusField.setTextColor(h ? NSColor.selectedControlTextColor() : NSColor.systemGrayColor());
-        progressField.setTextColor(h ? NSColor.selectedControlTextColor() : NSColor.systemGrayColor());
-        messageField.setTextColor(h ? NSColor.selectedControlTextColor() : NSColor.systemGrayColor());
+        statusField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.systemGrayColor());
+        progressField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.systemGrayColor());
+        messageField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.systemGrayColor());
         this.setMenuHighlighted(h);
     }
 
