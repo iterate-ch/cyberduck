@@ -1059,7 +1059,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (IsMounted() && SelectedPaths.Count == 1)
             {
                 return Session.getFeature(typeof(Versioning)) != null &&
-                    Session.getFeature(typeof(Versioning)).isRevertable(SelectedPath);
+                    ((Versioning) Session.getFeature(typeof(Versioning))).isRevertable(SelectedPath);
             }
             return false;
         }
