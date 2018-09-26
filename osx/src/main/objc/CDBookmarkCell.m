@@ -40,8 +40,8 @@
 	static NSDictionary *SMALL_BOLD_FONT_ATTRIBUTES = nil;
 	if(nil == SMALL_BOLD_FONT_ATTRIBUTES) {
 		SMALL_BOLD_FONT_ATTRIBUTES = [[NSDictionary alloc] initWithObjects:
-									  [NSArray arrayWithObjects:[NSFont boldSystemFontOfSize:[NSFont smallSystemFontSize]], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
-																 forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSParagraphStyleAttributeName, nil] //keys
+									  [NSArray arrayWithObjects:[NSFont boldSystemFontOfSize:[NSFont smallSystemFontSize]], [NSColor controlTextColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
+																 forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSForegroundColorAttributeName, NSParagraphStyleAttributeName, nil] //keys
 									  ];
 	}
 	
