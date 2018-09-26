@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>6.7.3-SNAPSHOT</version>
+    <version>6.8.1-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -91,7 +91,7 @@
             <dependency>
                 <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
-                <version>0.9.17</version>
+                <version>0.9.18</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>

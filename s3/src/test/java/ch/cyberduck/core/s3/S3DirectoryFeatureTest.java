@@ -113,6 +113,8 @@ public class S3DirectoryFeatureTest {
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(b.get());
         assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new S3ObjectListService(session).list(container, new DisabledListProgressListener()).contains(test));
+        assertTrue(new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener()).contains(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

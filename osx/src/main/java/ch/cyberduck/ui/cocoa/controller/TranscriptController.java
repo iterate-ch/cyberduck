@@ -36,7 +36,7 @@ public abstract class TranscriptController extends BundleController implements T
     public static final NSDictionary FIXED_WITH_FONT_RESPONSE_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(
                     NSFont.userFixedPitchFontOfSize(9.0f),
-                    NSColor.darkGrayColor()),
+                    NSColor.systemGrayColor()),
             NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName,
                     NSAttributedString.ForegroundColorAttributeName

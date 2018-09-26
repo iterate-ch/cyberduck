@@ -482,9 +482,6 @@ public class PathAttributes extends Attributes implements Serializable {
         if(checksum != null ? !checksum.equals(that.checksum) : that.checksum != null) {
             return false;
         }
-        if(etag != null ? !etag.equals(that.etag) : that.etag != null) {
-            return false;
-        }
         if(permission != null ? !permission.equals(that.permission) : that.permission != null) {
             return false;
         }
@@ -506,7 +503,6 @@ public class PathAttributes extends Attributes implements Serializable {
         result = 31 * result + (int) (modified ^ (modified >>> 32));
         result = 31 * result + (permission != null ? permission.hashCode() : 0);
         result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
-        result = 31 * result + (etag != null ? etag.hashCode() : 0);
         result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
         result = 31 * result + (region != null ? region.hashCode() : 0);

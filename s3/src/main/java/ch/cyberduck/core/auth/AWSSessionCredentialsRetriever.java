@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.dav.DAVReadFeature;
@@ -66,7 +67,7 @@ public class AWSSessionCredentialsRetriever {
 
     public Credentials get() throws BackgroundException {
         final Host address = new HostParser(factory).get(url);
-        final Path access = new Path(address.getDefaultPath(), EnumSet.of(Path.Type.file));
+        final Path access = new Path(PathNormalizer.normalize(address.getDefaultPath()), EnumSet.of(Path.Type.file));
         address.setDefaultPath(String.valueOf(Path.DELIMITER));
         final DAVSession connection = new DAVSession(address, trust, key);
         connection.withListener(transcript).open(new DisabledHostKeyCallback(), new DisabledLoginCallback());

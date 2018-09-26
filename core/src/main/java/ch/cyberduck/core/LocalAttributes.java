@@ -32,6 +32,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Objects;
 
 public class LocalAttributes extends Attributes {
     private static final Logger log = Logger.getLogger(LocalAttributes.class);
@@ -171,6 +172,24 @@ public class LocalAttributes extends Attributes {
         public boolean isExecutable() {
             return Files.isExecutable(Paths.get(path));
         }
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final LocalAttributes that = (LocalAttributes) o;
+        return Objects.equals(path, that.path) &&
+            Objects.equals(checksum, that.checksum);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path, checksum);
     }
 
     @Override

@@ -34,6 +34,7 @@ import ch.cyberduck.core.SleepPreventerFactory;
 import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.threading.TransferBackgroundActionState;
@@ -194,7 +195,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Transfer %s canceled by user", this));
                 }
-                throw new ConnectionCanceledException();
+                throw new TransferCanceledException();
             }
             // Reset the cached size of the transfer and progress value
             transfer.reset();
@@ -241,14 +242,14 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             log.debug(String.format("Find transfer status of %s for transfer %s", file, this));
         }
         if(this.isCanceled()) {
-            throw new ConnectionCanceledException();
+            throw new TransferCanceledException();
         }
         if(prompt.isSelected(new TransferItem(file, local))) {
             return this.submit(new RetryTransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     if(parent.isCanceled()) {
-                        throw new ConnectionCanceledException();
+                        throw new TransferCanceledException();
                     }
                     Session<?> source = null;
                     Session<?> destination = null;
@@ -359,7 +360,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
      */
     public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
         if(this.isCanceled()) {
-            throw new ConnectionCanceledException();
+            throw new TransferCanceledException();
         }
         // Only transfer if accepted by filter and stored in table with transfer status
         if(table.containsKey(item)) {
@@ -371,7 +372,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         if(status.isCanceled()) {
-                            throw new ConnectionCanceledException();
+                            throw new TransferCanceledException();
                         }
                         // Transfer
                         Session<?> source = null;
@@ -455,7 +456,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     if(status.isCanceled()) {
-                        throw new ConnectionCanceledException();
+                        throw new TransferCanceledException();
                     }
                     if(status.isSegmented()) {
                         // Await completion of all segments

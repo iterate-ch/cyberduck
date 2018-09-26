@@ -27,16 +27,21 @@ import java.util.List;
 
 public final class PathNormalizer {
 
+    private static final boolean enabled = PreferencesFactory.get().getBoolean("path.normalize");
+    private static final boolean nfc = PreferencesFactory.get().getBoolean("path.normalize.unicode");
+
     private PathNormalizer() {
         //
     }
 
     public static String name(final String path) {
-        final String normalized = normalize(path, true);
-        if(String.valueOf(Path.DELIMITER).equals(normalized)) {
+        if(String.valueOf(Path.DELIMITER).equals(path)) {
             return path;
         }
-        return FilenameUtils.getName(normalized);
+        if(StringUtils.endsWith(path, String.valueOf(Path.DELIMITER))) {
+            return FilenameUtils.getName(normalize(path));
+        }
+        return FilenameUtils.getName(path);
     }
 
     public static String parent(final String absolute, final char delimiter) {
@@ -75,7 +80,7 @@ public final class PathNormalizer {
             return String.valueOf(Path.DELIMITER);
         }
         String normalized = path;
-        if(PreferencesFactory.get().getBoolean("path.normalize")) {
+        if(enabled) {
             if(absolute) {
                 while(!normalized.startsWith(String.valueOf(Path.DELIMITER))) {
                     normalized = Path.DELIMITER + normalized;
@@ -91,7 +96,7 @@ public final class PathNormalizer {
                     break;
                 }
                 normalized = normalized.substring(0, index) +
-                        normalized.substring(index + 2);
+                    normalized.substring(index + 2);
             }
             // Resolve occurrences of "/../" in the normalized path
             while(true) {
@@ -104,7 +109,7 @@ public final class PathNormalizer {
                     return String.valueOf(Path.DELIMITER);
                 }
                 normalized = normalized.substring(0, normalized.lastIndexOf(Path.DELIMITER, index - 1)) +
-                        normalized.substring(index + 3);
+                    normalized.substring(index + 3);
             }
             StringBuilder n = new StringBuilder();
             if(normalized.startsWith("//")) {
@@ -121,7 +126,8 @@ public final class PathNormalizer {
                 n.append(Path.DELIMITER);
             }
             // Remove duplicated Path.DELIMITERs
-            final String[] segments = normalized.split(String.valueOf(Path.DELIMITER));
+
+            final String[] segments = StringUtils.split(normalized, String.valueOf(Path.DELIMITER));
             for(String segment : segments) {
                 if(segment.equals(StringUtils.EMPTY)) {
                     continue;
@@ -135,7 +141,7 @@ public final class PathNormalizer {
                 normalized = normalized.substring(0, normalized.length() - 1);
             }
         }
-        if(PreferencesFactory.get().getBoolean("path.normalize.unicode")) {
+        if(nfc) {
             return new NFCNormalizer().normalize(normalized).toString();
         }
         // Return the normalized path that we have completed

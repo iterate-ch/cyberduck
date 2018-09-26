@@ -17,9 +17,10 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
+import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFinder;
@@ -56,7 +57,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
-    @Test(expected = NotfoundException.class)
+    @Test(expected = InteroperabilityException.class)
     public void testLoginNotfound() throws Exception {
         final Host host = new Host(new SDSProtocol(), "heroes.dracoon.team", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
@@ -96,7 +97,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
-    @Test(expected = LoginFailureException.class)
+    @Test(expected = ConnectionTimeoutException.class)
     public void testLoginRadius() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(

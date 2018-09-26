@@ -58,7 +58,7 @@ public class CachingComparisonServiceFilter implements ComparePathFilter {
         if(cache.containsKey(item)) {
             return cache.get(item);
         }
-        return Comparison.notequal;
+        return Comparison.unknown;
     }
 
     public void reset() {

@@ -47,12 +47,14 @@ public class Profile implements Protocol, Serializable {
      * The actual protocol implementation registered
      */
     private final Protocol parent;
-    private final Local image;
+    private final Local disk;
+    private final Local icon;
 
     public Profile(final Protocol parent, final Deserializer<String> dict) {
         this.parent = parent;
         this.dict = dict;
-        this.image = this.write(this.value("Disk"));
+        this.disk = this.write(this.value("Disk"));
+        this.icon = this.write(this.value("Icon"));
     }
 
     @Override
@@ -208,20 +210,20 @@ public class Profile implements Protocol, Serializable {
 
     @Override
     public String disk() {
-        if(null == image) {
+        if(null == disk) {
             return parent.disk();
         }
         // Temporary file
-        return image.getAbsolute();
+        return disk.getAbsolute();
     }
 
     @Override
     public String icon() {
-        if(null == image) {
+        if(null == icon) {
             return parent.icon();
         }
         // Temporary file
-        return image.getAbsolute();
+        return icon.getAbsolute();
     }
 
     @Override
@@ -240,7 +242,7 @@ public class Profile implements Protocol, Serializable {
             return null;
         }
         final byte[] favicon = Base64.decodeBase64(icon);
-        final Local file = TemporaryFileServiceFactory.get().create(String.format("%s.ico", new AlphanumericRandomStringService().random()));
+        final Local file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
         try {
             new DefaultLocalTouchFeature().touch(file);
             final OutputStream out = file.getOutputStream(false);
@@ -539,7 +541,7 @@ public class Profile implements Protocol, Serializable {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Profile{");
         sb.append("parent=").append(parent);
-        sb.append(", image=").append(image);
+        sb.append(", image=").append(disk);
         sb.append('}');
         return sb.toString();
     }

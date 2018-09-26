@@ -19,10 +19,13 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.exception.SSLNegotiateException;
+import ch.cyberduck.core.exception.UnsupportedException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
@@ -43,6 +46,15 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
     public Type determine(final BackgroundException failure) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Determine cause for failure %s", failure));
+        }
+        if(failure instanceof LoginFailureException) {
+            return Type.login;
+        }
+        if(failure instanceof ConnectionCanceledException) {
+            return Type.cancel;
+        }
+        if(failure instanceof UnsupportedException) {
+            return Type.unsupported;
         }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof ConnectionTimeoutException) {
@@ -70,9 +82,9 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
                 return Type.network;
             }
             if(cause instanceof SocketException
-                    || cause instanceof TimeoutException // Used in Promise#retrieve
-                    || cause instanceof SocketTimeoutException
-                    || cause instanceof UnknownHostException) {
+                || cause instanceof TimeoutException // Used in Promise#retrieve
+                || cause instanceof SocketTimeoutException
+                || cause instanceof UnknownHostException) {
                 return Type.network;
             }
         }

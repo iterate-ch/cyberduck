@@ -21,8 +21,7 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystemException;
 import java.nio.file.NoSuchFileException;
 
 public class LocalExceptionMappingService extends AbstractExceptionMappingService<IOException> {
@@ -31,14 +30,11 @@ public class LocalExceptionMappingService extends AbstractExceptionMappingServic
     public BackgroundException map(final IOException e) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, e.getMessage());
-        if(e instanceof AccessDeniedException) {
-            return new LocalAccessDeniedException(buffer.toString(), e);
-        }
-        if(e instanceof FileAlreadyExistsException) {
-            return new LocalAccessDeniedException(buffer.toString(), e);
-        }
         if(e instanceof NoSuchFileException) {
             return new NotfoundException(buffer.toString(), e);
+        }
+        if(e instanceof FileSystemException) {
+            return new LocalAccessDeniedException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }

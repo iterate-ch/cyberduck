@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordCallback;
@@ -90,7 +91,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback, passwordCallback, notification);
         this.source = source;
         this.destination = destination;
-        this.pool = ThreadPoolFactory.get("transfer",
+        this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
             transfer.getSource().getTransferType() == Host.TransferType.newconnection ?
                 1 : PreferencesFactory.get().getInteger("queue.connections.limit"), priority);
         this.completion = new ExecutorCompletionService<TransferStatus>(pool.executor());

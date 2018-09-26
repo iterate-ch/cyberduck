@@ -38,6 +38,7 @@ public class SFTPTimestampFeature extends DefaultTimestampFeature implements Tim
     public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
         try {
             // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
+            // All times are represented as seconds from Jan 1, 1970 in UTC.
             final FileAttributes attrs = new FileAttributes.Builder().withAtimeMtime(
                     System.currentTimeMillis() / 1000, modified / 1000
             ).build();

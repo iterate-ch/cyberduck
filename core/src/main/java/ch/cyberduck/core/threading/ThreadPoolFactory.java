@@ -35,27 +35,22 @@ public class ThreadPoolFactory extends Factory<ThreadPool> {
     }
 
     /**
-     * @param size    Maximum pool size
+     * @param size     Maximum pool size
      * @param priority Thread priority
-     * @param handler Uncaught thread exception handler
+     * @param handler  Uncaught thread exception handler
      */
     protected ThreadPool create(final String prefix, final Integer size, final ThreadPool.Priority priority, final Thread.UncaughtExceptionHandler handler) {
-        final String clazz = PreferencesFactory.get().getProperty("factory.threadpool.class");
-        if(null == clazz) {
-            throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
-        }
         try {
-            final Class<ThreadPool> name = (Class<ThreadPool>) Class.forName(clazz);
-            final Constructor<ThreadPool> constructor = ConstructorUtils.getMatchingAccessibleConstructor(name,
+            final Constructor<ThreadPool> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz,
                 prefix.getClass(), size.getClass(), priority.getClass(), handler.getClass());
             if(null == constructor) {
                 log.warn(String.format("No matching constructor for parameter %s", handler.getClass()));
                 // Call default constructor for disabled implementations
-                return name.newInstance();
+                return clazz.newInstance();
             }
             return constructor.newInstance(prefix, size, priority, handler);
         }
-        catch(InstantiationException | InvocationTargetException | ClassNotFoundException | IllegalAccessException e) {
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }

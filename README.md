@@ -33,7 +33,11 @@ Run `mvn verify -DskipTests` to build without running any tests.
 You will run into errors by MSBuild/Wix that are unrelated to how Cyberduck is built. You may safely ignore them.
 
 ## Debugging
-
+### macOS
+Edit ``setup/app/Info.plist`` if you want to debug `Cyberduck.app` or ``setup/pkg/Info.plist`` if you want to
+ debug`duck` respectively. Add `-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005` to allow to 
+ connect to the running application in your IDE by attaching to the remote JVM.
+ 
 ### Windows
 
 Due to Visual Studio not being able to handle Java projects it is required to follow these steps for debugging:

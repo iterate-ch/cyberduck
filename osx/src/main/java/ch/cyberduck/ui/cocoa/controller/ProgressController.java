@@ -68,7 +68,7 @@ public class ProgressController extends BundleController implements TransferList
     private static final NSDictionary HIGHLIGHTED_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(
                     NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-                    NSColor.whiteColor(),
+                NSColor.alternateSelectedControlTextColor(),
                     BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
             NSArray.arrayWithObjects(
                     NSAttributedString.FontAttributeName,
@@ -242,9 +242,9 @@ public class ProgressController extends BundleController implements TransferList
 
     public void setHighlighted(final boolean h) {
         highlighted = h;
-        statusField.setTextColor(h ? NSColor.whiteColor() : NSColor.textColor());
-        progressField.setTextColor(h ? NSColor.whiteColor() : NSColor.darkGrayColor());
-        messageField.setTextColor(h ? NSColor.whiteColor() : NSColor.darkGrayColor());
+        statusField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.systemGrayColor());
+        progressField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.systemGrayColor());
+        messageField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.systemGrayColor());
         this.setMenuHighlighted(h);
     }
 
@@ -293,7 +293,7 @@ public class ProgressController extends BundleController implements TransferList
         this.progressField = f;
         this.progressField.setEditable(false);
         this.progressField.setSelectable(false);
-        this.progressField.setTextColor(NSColor.darkGrayColor());
+        this.progressField.setTextColor(NSColor.systemGrayColor());
         this.progressField.setFont(NSFont.monospacedDigitSystemFontOfSize(NSFont.smallSystemFontSize()));
     }
 
@@ -301,14 +301,14 @@ public class ProgressController extends BundleController implements TransferList
         this.statusField = f;
         this.statusField.setEditable(false);
         this.statusField.setSelectable(false);
-        this.statusField.setTextColor(NSColor.darkGrayColor());
+        this.statusField.setTextColor(NSColor.systemGrayColor());
     }
 
     public void setMessageField(final NSTextField f) {
         this.messageField = f;
         this.messageField.setEditable(false);
         this.messageField.setSelectable(false);
-        this.messageField.setTextColor(NSColor.darkGrayColor());
+        this.messageField.setTextColor(NSColor.systemGrayColor());
     }
 
     public void setProgressBar(final NSProgressIndicator p) {

@@ -35,7 +35,7 @@ public class B2HomeFinderService extends DefaultHomeFinderService {
     public Path find() throws BackgroundException {
         final Path home = super.find();
         if(containerService.isContainer(home)) {
-            return new Path(home.getAbsolute(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+            return new Path(home.getParent(), home.getName(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         }
         return home;
     }
@@ -44,7 +44,7 @@ public class B2HomeFinderService extends DefaultHomeFinderService {
     public Path find(final Path root, final String path) {
         final Path home = super.find(root, path);
         if(containerService.isContainer(home)) {
-            return new Path(home.getAbsolute(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+            return new Path(home.getParent(), home.getName(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         }
         return home;
     }

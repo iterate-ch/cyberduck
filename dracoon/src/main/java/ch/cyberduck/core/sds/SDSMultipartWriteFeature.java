@@ -192,7 +192,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                                 if(log.isInfoEnabled()) {
                                     log.info(String.format("Cancel failed upload %s for %s", uploadId, file));
                                 }
-                                new NodesApi(session.getClient()).cancelFileUpload(StringUtils.EMPTY, uploadId);
+                                new NodesApi(session.getClient()).cancelFileUpload(uploadId, StringUtils.EMPTY);
                             }
                             catch(ApiException f) {
                                 throw new SDSExceptionMappingService().map(f);

@@ -34,5 +34,6 @@ public enum Comparison {
     /**
      * Files differ in size, checksum or timestamp
      */
-    notequal
+    notequal,
+    unknown
 }
