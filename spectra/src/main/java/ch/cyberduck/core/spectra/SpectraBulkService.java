@@ -126,7 +126,9 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         }
                         break;
                 }
-                objects.get(container).add(new Ds3Object(containerService.getKey(file), status.getLength()));
+                final Ds3Object o = new Ds3Object(containerService.getKey(file), status.getLength());
+                o.setVersionId(file.attributes().getVersionId());
+                objects.get(container).add(o);
             }
             if(file.isDirectory()) {
                 switch(type) {
