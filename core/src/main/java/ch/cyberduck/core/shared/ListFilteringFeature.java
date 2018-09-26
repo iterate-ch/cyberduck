@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -49,6 +50,12 @@ public abstract class ListFilteringFeature {
         else {
             list = cache.get(file.getParent());
         }
+        // Search with specific version and region
+        final Path path = list.find(new DefaultPathPredicate(file));
+        if(path != null) {
+            return path;
+        }
+        // Try to match path only as the version might have changed in the meantime
         return list.find(session.getCase() == Session.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file));
     }
 
