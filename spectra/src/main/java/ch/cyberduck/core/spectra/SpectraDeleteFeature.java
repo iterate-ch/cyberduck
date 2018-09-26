@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.spectralogic.ds3client.Ds3Client;
-import com.spectralogic.ds3client.commands.DeleteBucketRequest;
+import com.spectralogic.ds3client.commands.spectrads3.DeleteBucketSpectraS3Request;
 import com.spectralogic.ds3client.commands.spectrads3.DeleteFolderRecursivelySpectraS3Request;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
@@ -54,8 +54,8 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
                 final Path file = iter.next();
                 if(containerService.isContainer(file)) {
                     final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
-                    // TODO recursive?
-                    client.deleteBucket(new DeleteBucketRequest(file.getName()));
+                    client.deleteBucketSpectraS3(
+                        new DeleteBucketSpectraS3Request(containerService.getContainer(file).getName()).withForce(true));
                     iter.remove();
                 }
                 else if(file.isDirectory()) {
