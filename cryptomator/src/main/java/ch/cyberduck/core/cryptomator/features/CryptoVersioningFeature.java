@@ -61,6 +61,11 @@ public class CryptoVersioningFeature implements Versioning {
     }
 
     @Override
+    public boolean isRevertable(final Path file) {
+        return delegate.isRevertable(file);
+    }
+
+    @Override
     public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
         return delegate.getToken(mfaSerial, callback);
     }

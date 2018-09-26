@@ -40,12 +40,16 @@ import com.spectralogic.ds3client.commands.spectrads3.GetBucketSpectraS3Response
 import com.spectralogic.ds3client.commands.spectrads3.GetDataPolicySpectraS3Request;
 import com.spectralogic.ds3client.commands.spectrads3.GetDataPolicySpectraS3Response;
 import com.spectralogic.ds3client.commands.spectrads3.ModifyDataPolicySpectraS3Request;
+import com.spectralogic.ds3client.commands.spectrads3.UndeleteObjectSpectraS3Request;
 import com.spectralogic.ds3client.models.VersioningLevel;
 import com.spectralogic.ds3client.networking.FailedRequestException;
 
 public class SpectraVersioningFeature implements Versioning {
 
     private static final Logger log = Logger.getLogger(SpectraVersioningFeature.class);
+
+    public static final String KEY_REVERTABLE
+        = "revertable";
 
     private final SpectraSession session;
 
@@ -124,8 +128,20 @@ public class SpectraVersioningFeature implements Versioning {
     }
 
     @Override
+    public boolean isRevertable(final Path file) {
+        return file.attributes().getCustom().containsKey(KEY_REVERTABLE);
+    }
+
+    @Override
     public void revert(final Path file) throws BackgroundException {
-        //TODO
+        final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+        final Path container = containerService.getContainer(file);
+        try {
+            client.undeleteObjectSpectraS3(new UndeleteObjectSpectraS3Request(container.getName(), containerService.getKey(file)));
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Cannot revert file", e, file);
+        }
     }
 
     @Override
