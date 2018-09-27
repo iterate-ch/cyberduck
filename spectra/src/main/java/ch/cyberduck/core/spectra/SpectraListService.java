@@ -20,7 +20,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.s3.S3ListService;
-import ch.cyberduck.ui.comparator.TimestampComparator;
 
 import java.util.HashMap;
 
@@ -32,19 +31,32 @@ public class SpectraListService extends S3ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> objects = super.list(directory, listener).filter(new TimestampComparator(false));
-        // As only the latest version is revertable mark this version with a custom attribute
-        String last = null;
-        for(Path p : objects) {
-            if(p.attributes().isDuplicate()) {
-                if(!p.getName().equals(last)) {
-                    final HashMap<String, String> custom = new HashMap<>(p.attributes().getCustom());
-                    custom.put(SpectraVersioningFeature.KEY_REVERTABLE, Boolean.TRUE.toString());
-                    p.attributes().setCustom(custom);
+        return super.list(directory, new ListProgressListener() {
+            @Override
+            public void chunk(final Path folder, final AttributedList<Path> list) {
+                // As only the latest version is revertable mark this version with a custom attribute
+                String last = null;
+                for(Path p : list) {
+                    if(p.attributes().isDuplicate()) {
+                        if(!p.getName().equals(last)) {
+                            final HashMap<String, String> custom = new HashMap<>(p.attributes().getCustom());
+                            custom.put(SpectraVersioningFeature.KEY_REVERTABLE, Boolean.TRUE.toString());
+                            p.attributes().setCustom(custom);
+                        }
+                    }
+                    last = p.getName();
                 }
             }
-            last = p.getName();
-        }
-        return objects;
+
+            @Override
+            public ListProgressListener reset() {
+                return listener.reset();
+            }
+
+            @Override
+            public void message(final String message) {
+                listener.message(message);
+            }
+        });
     }
 }
