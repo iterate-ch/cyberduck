@@ -103,7 +103,7 @@ public class SpectraVersioningFeature implements Versioning {
         try {
             final VersioningConfiguration current = this.getConfiguration(container);
             if(configuration.isEnabled()) {
-                if(!current.isEnabled()) {
+                if(current.isEnabled()) {
                     log.debug(String.format("Versioning already enabled for bucket %s", container));
                 }
                 else {
