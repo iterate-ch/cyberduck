@@ -49,6 +49,10 @@ public class S3ListService implements ListService {
             AttributedList<Path> objects;
             try {
                 objects = new S3VersionedObjectListService(session).list(directory, listener);
+                if(objects.isEmpty()) {
+                    log.warn("Empty listing with versions subresource in the GET request");
+                    objects = new S3ObjectListService(session).list(directory, listener);
+                }
             }
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Ignore failure listing versioned objects. %s", e.getDetail()));
