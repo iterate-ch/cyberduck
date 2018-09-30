@@ -28,7 +28,6 @@ import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AttributedList;
@@ -622,7 +621,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             for(Path p : pasteboard) {
                 downloads.add(new TransferItem(p, LocalFactory.get(destination, p.getName())));
                 // Add to returned path names
-                promisedDragNames.addObject(NSString.stringWithString(p.getName()));
+                promisedDragNames.addObject(p.getName());
             }
             if(downloads.size() == 1) {
                 if(downloads.iterator().next().remote.isFile()) {
