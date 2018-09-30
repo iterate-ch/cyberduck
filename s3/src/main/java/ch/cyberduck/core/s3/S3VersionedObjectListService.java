@@ -37,10 +37,8 @@ import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import org.jets3t.service.model.S3Version;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -77,9 +75,8 @@ public class S3VersionedObjectListService implements ListService {
                     priorLastKey, priorLastVersionId, true);
                 // Amazon S3 returns object versions in the order in which they were
                 // stored, with the most recently stored returned first.
-                final List<BaseVersionOrDeleteMarker> items = Arrays.asList(chunk.getItems());
                 long i = 0L;
-                for(BaseVersionOrDeleteMarker marker : items) {
+                for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {
                     final String key = PathNormalizer.normalize(marker.getKey());
                     if(String.valueOf(Path.DELIMITER).equals(key)) {
                         log.warn(String.format("Skipping prefix %s", key));
