@@ -365,17 +365,17 @@ public class InfoController extends ToolbarWindowController {
             case distribution:
                 if(session.getFeature(DistributionConfiguration.class) != null) {
                     // Give icon and label of the given session
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().icon(), 32));
                 }
                 else {
                     // CloudFront is the default for custom distributions
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(new S3Protocol().disk(), 32));
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(new S3Protocol().icon(), 32));
                 }
                 break;
             case s3:
                 // Set icon of cloud service provider
                 item.setLabel(session.getHost().getProtocol().getName());
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().disk(), 32));
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(session.getHost().getProtocol().icon(), 32));
                 break;
             case metadata:
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed("pencil.tiff", 32));
