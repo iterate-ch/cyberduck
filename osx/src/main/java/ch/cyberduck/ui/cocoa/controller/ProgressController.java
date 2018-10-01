@@ -75,9 +75,9 @@ public class ProgressController extends BundleController implements TransferList
                     NSAttributedString.ForegroundColorAttributeName,
                     NSAttributedString.ParagraphStyleAttributeName)
     );
-    private static final NSImage RED_ICON = IconCacheFactory.<NSImage>get().iconNamed("statusRed.tiff");
-    private static final NSImage GREEN_ICON = IconCacheFactory.<NSImage>get().iconNamed("statusGreen.tiff");
-    private static final NSImage YELLOW_ICON = IconCacheFactory.<NSImage>get().iconNamed("statusYellow.tiff");
+    private static final NSImage RED_ICON = IconCacheFactory.<NSImage>get().iconNamed("NSStatusUnavailable");
+    private static final NSImage GREEN_ICON = IconCacheFactory.<NSImage>get().iconNamed("NSStatusAvailable");
+    private static final NSImage YELLOW_ICON = IconCacheFactory.<NSImage>get().iconNamed("NSStatusPartiallyAvailable");
 
     private final NSNotificationCenter notificationCenter = NSNotificationCenter.defaultCenter();
 
