@@ -264,7 +264,9 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                         final NSMenuItem m = bandwidthMenu.addItemWithTitle_action_keyEquivalent(SizeFormatterFactory.get().format(Integer.parseInt(bytes)) + "/s",
                                 bandwidth.action(), StringUtils.EMPTY);
                         // Mark as throttled
-                        m.setImage(IconCacheFactory.<NSImage>get().iconNamed("turtle.tiff", 16));
+                        final NSImage image = IconCacheFactory.<NSImage>get().iconNamed("turtle.tiff", 16);
+                        image.setTemplate(true);
+                        m.setImage(image);
                         m.setRepresentedObject(bytes);
                     }
                     toolbarMenu.setSubmenu(bandwidthMenu);
