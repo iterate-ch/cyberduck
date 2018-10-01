@@ -16,9 +16,11 @@ package ch.cyberduck.core.spectra;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.s3.S3ListService;
 
 import java.util.HashMap;
@@ -31,31 +33,27 @@ public class SpectraListService extends S3ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return super.list(directory, new ListProgressListener() {
-            @Override
-            public void chunk(final Path folder, final AttributedList<Path> list) {
-                // As only the latest version is revertable mark this version with a custom attribute
-                String last = null;
-                for(Path p : list) {
-                    if(p.attributes().isDuplicate()) {
-                        if(!p.getName().equals(last)) {
-                            final HashMap<String, String> custom = new HashMap<>(p.attributes().getCustom());
-                            custom.put(SpectraVersioningFeature.KEY_REVERTABLE, Boolean.TRUE.toString());
-                            p.attributes().setCustom(custom);
-                        }
-                    }
-                    last = p.getName();
-                }
-            }
-
-            @Override
-            public ListProgressListener reset() {
-                return listener.reset();
-            }
-
+        return super.list(directory, new IndexedListProgressListener() {
             @Override
             public void message(final String message) {
                 listener.message(message);
+            }
+
+            @Override
+            public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
+                super.chunk(folder, list);
+                listener.chunk(folder, list);
+            }
+
+            @Override
+            public void visit(final AttributedList<Path> list, final int index, final Path p) throws ConnectionCanceledException {
+                if(p.isFile()) {
+                    if(p.attributes().getRevision() == 1) {
+                        final HashMap<String, String> custom = new HashMap<>(p.attributes().getCustom());
+                        custom.put(SpectraVersioningFeature.KEY_REVERTABLE, Boolean.TRUE.toString());
+                        p.attributes().setCustom(custom);
+                    }
+                }
             }
         });
     }
