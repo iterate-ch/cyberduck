@@ -52,7 +52,7 @@ public class S3ListService implements ListService {
             return new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(directory, listener);
         }
         else {
-            final AttributedList<Path> objects;
+            AttributedList<Path> objects;
             final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
                 containerService.getContainer(directory)
             ) : VersioningConfiguration.empty();
