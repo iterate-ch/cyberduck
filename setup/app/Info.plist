@@ -430,5 +430,7 @@
         <true/>
         <key>NSHumanReadableCopyright</key>
        	<string>${COPYRIGHT}</string>
+        <key>NSAppleEventsUsageDescription</key>
+        <string>Allow to execute script in Terminal</string>
     </dict>
 </plist>
