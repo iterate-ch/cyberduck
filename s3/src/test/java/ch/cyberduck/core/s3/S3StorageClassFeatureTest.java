@@ -45,7 +45,7 @@ public class S3StorageClassFeatureTest {
 
     @Test
     public void testGetClasses() throws Exception {
-        assertEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, "STANDARD_IA", S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER),
+        assertEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER),
                 new S3StorageClassFeature(new S3Session(new Host(new S3Protocol()))).getClasses());
     }
 
@@ -77,8 +77,8 @@ public class S3StorageClassFeatureTest {
         final Path test = new S3TouchFeature(session).touch(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3StorageClassFeature feature = new S3StorageClassFeature(session);
         assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
-        feature.setClass(test, "STANDARD_IA");
-        assertEquals("STANDARD_IA", feature.getClass(test));
+        feature.setClass(test, S3Object.STORAGE_CLASS_INFREQUENT_ACCESS);
+        assertEquals(S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, feature.getClass(test));
         feature.setClass(test, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, feature.getClass(test));
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, new S3AttributesFinderFeature(session).find(test).getStorageClass());
@@ -100,8 +100,8 @@ public class S3StorageClassFeatureTest {
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final S3StorageClassFeature feature = new S3StorageClassFeature(session);
         assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
-        feature.setClass(test, "STANDARD_IA");
-        assertEquals("STANDARD_IA", feature.getClass(test));
+        feature.setClass(test, S3Object.STORAGE_CLASS_INFREQUENT_ACCESS);
+        assertEquals(S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, feature.getClass(test));
         feature.setClass(test, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         assertEquals(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, feature.getClass(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
