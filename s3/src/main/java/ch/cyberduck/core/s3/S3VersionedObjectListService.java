@@ -63,7 +63,8 @@ public class S3VersionedObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final String prefix = this.createPrefix(directory);
         final Path bucket = containerService.getContainer(directory);
-        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(bucket) : null;
+        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(bucket) :
+            VersioningConfiguration.empty();
         final AttributedList<Path> children = new AttributedList<Path>();
         try {
             String priorLastKey = null;
@@ -86,7 +87,7 @@ public class S3VersionedObjectListService implements ListService {
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    if(versioning != null && versioning.isEnabled()) {
+                    if(versioning.isEnabled()) {
                         attributes.setVersionId(marker.getVersionId());
                     }
                     attributes.setRevision(++i);
@@ -121,7 +122,7 @@ public class S3VersionedObjectListService implements ListService {
                     }
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setRegion(bucket.attributes().getRegion());
-                    if(versioning != null && versioning.isEnabled()) {
+                    if(versioning.isEnabled()) {
                         final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
                             bucket.getName(), common, String.valueOf(Path.DELIMITER), 1,
                             null, null, false);
