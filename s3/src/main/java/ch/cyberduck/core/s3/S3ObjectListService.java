@@ -100,14 +100,14 @@ public class S3ObjectListService implements ListService {
                     final EnumSet<AbstractPath.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
                             ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     final Path file;
-                    final PathAttributes attributes = this.attributes.toAttributes(object);
+                    final PathAttributes attr = attributes.toAttributes(object);
                     // Copy bucket location
-                    attributes.setRegion(bucket.attributes().getRegion());
+                    attr.setRegion(bucket.attributes().getRegion());
                     if(null == delimiter) {
-                        file = new Path(String.format("%s%s", bucket.getAbsolute(), key), types, attributes);
+                        file = new Path(String.format("%s%s", bucket.getAbsolute(), key), types, attr);
                     }
                     else {
-                        file = new Path(directory, PathNormalizer.name(key), types, attributes);
+                        file = new Path(directory, PathNormalizer.name(key), types, attr);
                     }
                     children.add(file);
                 }
