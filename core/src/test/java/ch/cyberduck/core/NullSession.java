@@ -51,7 +51,10 @@ public class NullSession extends Session<Void> implements ListService {
 
             @Override
             public Path find(final Predicate<Path> predicate) {
-                return ((SimplePathPredicate) predicate).file;
+                if(predicate instanceof SimplePathPredicate) {
+                    return ((SimplePathPredicate) predicate).file;
+                }
+                return null;
             }
 
             @Override

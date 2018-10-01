@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.vault.VaultRegistry;
+import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import java.util.Map;
 
@@ -53,6 +54,16 @@ public class VaultRegistryVersioningFeature implements Versioning {
     @Override
     public void setConfiguration(final Path container, final PasswordCallback prompt, final VersioningConfiguration configuration) throws BackgroundException {
         registry.find(session, container).getFeature(session, Versioning.class, proxy).setConfiguration(container, prompt, configuration);
+    }
+
+    @Override
+    public boolean isRevertable(final Path file) {
+        try {
+            return registry.find(session, file).getFeature(session, Versioning.class, proxy).isRevertable(file);
+        }
+        catch(VaultUnlockCancelException e) {
+            return false;
+        }
     }
 
     @Override

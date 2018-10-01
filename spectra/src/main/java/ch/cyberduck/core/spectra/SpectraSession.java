@@ -16,6 +16,7 @@ package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.DisabledUrlProvider;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.features.*;
@@ -44,6 +45,9 @@ public class SpectraSession extends S3Session {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == ListService.class) {
+            return (T) new SpectraListService(this);
+        }
         if(type == Bulk.class) {
             return (T) new SpectraBulkService(this);
         }
@@ -62,8 +66,7 @@ public class SpectraSession extends S3Session {
             return null;
         }
         if(type == Versioning.class) {
-            // Disable operation not supported
-            return null;
+            return (T) new SpectraVersioningFeature(this);
         }
         if(type == Redundancy.class) {
             return null;
