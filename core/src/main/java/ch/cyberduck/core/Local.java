@@ -40,9 +40,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.DirectoryStream;
-import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.LinkOption;
@@ -319,7 +318,9 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             try {
                 Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
             }
-            catch(AtomicMoveNotSupportedException | FileAlreadyExistsException e) {
+            // Catch generic exception due to a bug in IKVM moving files containing special characters
+            // in conjunction with the atomic move option
+            catch(FileSystemException e) {
                 // Copying file to different disk is not possible with atomic move.
                 // Moving directory to an already existing target will throw exists exception with atomic move flag.
                 Files.move(Paths.get(path), Paths.get(renamed.getAbsolute()), StandardCopyOption.REPLACE_EXISTING);
