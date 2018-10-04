@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator.features;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -47,9 +48,24 @@ public class CryptoUploadFeature<Reply> implements Upload<Reply> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
         try {
-            return proxy.append(vault.encrypt(session, file), length, cache);
+            return proxy.append(vault.encrypt(session, file), length, cache, new ListProgressListener() {
+                @Override
+                public void message(final String message) {
+                    listener.message(message);
+                }
+
+                @Override
+                public void chunk(final Path folder, final AttributedList<Path> list) {
+                    cache.put(folder, list);
+                }
+
+                @Override
+                public ListProgressListener reset() {
+                    return this;
+                }
+            });
         }
         catch(NotfoundException e) {
             return Write.notfound;

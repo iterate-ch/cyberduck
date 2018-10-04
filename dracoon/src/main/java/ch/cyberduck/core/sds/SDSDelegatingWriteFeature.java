@@ -17,6 +17,7 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
@@ -52,11 +53,11 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
-            return new CryptoWriteFeature(session, proxy).append(file, length, cache);
+            return new CryptoWriteFeature(session, proxy).append(file, length, cache, listener);
         }
-        return proxy.append(file, length, cache);
+        return proxy.append(file, length, cache, listener);
     }
 
     @Override

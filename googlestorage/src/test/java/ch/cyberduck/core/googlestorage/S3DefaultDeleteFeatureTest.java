@@ -15,6 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -44,8 +45,8 @@ public class S3DefaultDeleteFeatureTest extends AbstractGoogleStorageTest {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("US");
         new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(container, null, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(container));
+        assertTrue(new S3FindFeature(session).find(container, new DisabledListProgressListener()));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session).find(container));
+        assertFalse(new S3FindFeature(session).find(container, new DisabledListProgressListener()));
     }
 }

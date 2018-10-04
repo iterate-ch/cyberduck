@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -65,11 +66,11 @@ public class MoveWorkerTest extends AbstractDropboxTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new DropboxTouchFeature(session), new DropboxWriteFeature(session), cryptomator).touch(source, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
-        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
+        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(target, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -84,13 +85,13 @@ public class MoveWorkerTest extends AbstractDropboxTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new DropboxTouchFeature(session), new DropboxWriteFeature(session), cryptomator).touch(source, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
         new CryptoDirectoryFeature<>(session, new DropboxDirectoryFeature(session), new DropboxWriteFeature(session), cryptomator).mkdir(targetFolder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder, new DisabledListProgressListener()));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
-        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
+        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(target, targetFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -105,13 +106,13 @@ public class MoveWorkerTest extends AbstractDropboxTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<>(session, new DropboxTouchFeature(session), new DropboxWriteFeature(session), cryptomator).touch(source, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
         new CryptoDirectoryFeature<>(session, new DropboxDirectoryFeature(session), new DropboxWriteFeature(session), cryptomator).mkdir(targetFolder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder, new DisabledListProgressListener()));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
-        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
+        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(target, targetFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -125,21 +126,21 @@ public class MoveWorkerTest extends AbstractDropboxTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoDirectoryFeature<>(session, new DropboxDirectoryFeature(session), new DropboxWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder, new DisabledListProgressListener()));
         new CryptoTouchFeature<>(session, new DropboxTouchFeature(session), new DropboxWriteFeature(session), cryptomator).touch(file, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file, new DisabledListProgressListener()));
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         new MoveWorker(Collections.singletonMap(file, fileRenamed), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener()).run(session);
-        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamed));
+        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamed, new DisabledListProgressListener()));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new MoveWorker(Collections.singletonMap(folder, folderRenamed), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener()).run(session);
-        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folderRenamed));
+        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folderRenamed, new DisabledListProgressListener()));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -149,7 +150,7 @@ public class MoveWorkerTest extends AbstractDropboxTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(clearFile, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(clearFile));
+        assertTrue(new DefaultFindFeature(session).find(clearFile, new DisabledListProgressListener()));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -157,12 +158,12 @@ public class MoveWorkerTest extends AbstractDropboxTest {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         new CryptoDirectoryFeature<>(session, new DropboxDirectoryFeature(session), new DropboxWriteFeature(session), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder, new DisabledListProgressListener()));
         // move file into vault
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFile, encryptedFile), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
-        assertFalse(new DefaultFindFeature(session).find(clearFile));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
+        assertFalse(new DefaultFindFeature(session).find(clearFile, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFile, encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         registry.clear();
     }
@@ -175,8 +176,8 @@ public class MoveWorkerTest extends AbstractDropboxTest {
         final Path clearFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxDirectoryFeature(session).mkdir(clearFolder, null, new TransferStatus());
         new DropboxTouchFeature(session).touch(clearFile, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(clearFolder));
-        assertTrue(new DefaultFindFeature(session).find(clearFile));
+        assertTrue(new DefaultFindFeature(session).find(clearFolder, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(clearFile, new DisabledListProgressListener()));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
@@ -186,10 +187,10 @@ public class MoveWorkerTest extends AbstractDropboxTest {
         final Path encryptedFile = new Path(encryptedFolder, clearFile.getName(), EnumSet.of(Path.Type.file));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFolder, encryptedFolder), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
-        assertFalse(new DefaultFindFeature(session).find(clearFolder));
-        assertFalse(new DefaultFindFeature(session).find(clearFile));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
+        assertFalse(new DefaultFindFeature(session).find(clearFolder, new DisabledListProgressListener()));
+        assertFalse(new DefaultFindFeature(session).find(clearFile, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFile, encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         registry.clear();
     }
@@ -207,15 +208,15 @@ public class MoveWorkerTest extends AbstractDropboxTest {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         new CryptoDirectoryFeature<>(session, new DropboxDirectoryFeature(session), new DropboxWriteFeature(session), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder, new DisabledListProgressListener()));
         new CryptoTouchFeature<>(session, new DropboxTouchFeature(session), new DropboxWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
         // move file outside vault
         final Path fileRenamed = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFile, fileRenamed), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
-        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
-        assertTrue(new DefaultFindFeature(session).find(fileRenamed));
+        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(fileRenamed, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new DropboxDeleteFeature(session).delete(Arrays.asList(fileRenamed, clearFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         registry.clear();
@@ -232,18 +233,18 @@ public class MoveWorkerTest extends AbstractDropboxTest {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         new CryptoDirectoryFeature<>(session, new DropboxDirectoryFeature(session), new DropboxWriteFeature(session), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder, new DisabledListProgressListener()));
         new CryptoTouchFeature<>(session, new DropboxTouchFeature(session), new DropboxWriteFeature(session), cryptomator).touch(encryptedFile, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
         // move directory outside vault
         final Path directoryRenamed = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
-        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
-        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
-        assertTrue(new DefaultFindFeature(session).find(directoryRenamed));
+        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder, new DisabledListProgressListener()));
+        assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(directoryRenamed, new DisabledListProgressListener()));
         final Path fileRenamed = new Path(directoryRenamed, encryptedFile.getName(), EnumSet.of(Path.Type.file));
-        assertTrue(new DefaultFindFeature(session).find(fileRenamed));
+        assertTrue(new DefaultFindFeature(session).find(fileRenamed, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Collections.singletonList(vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new DropboxDeleteFeature(session).delete(Arrays.asList(fileRenamed, directoryRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         registry.clear();

@@ -19,6 +19,7 @@ import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -55,7 +56,7 @@ public class DefaultAttributesFinderFeatureTest {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        new DefaultAttributesFinderFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        new DefaultAttributesFinderFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
     }
 
     @Test
@@ -72,14 +73,14 @@ public class DefaultAttributesFinderFeatureTest {
         final String name = UUID.randomUUID().toString();
         final Path file = new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
-        final Attributes attributes = f.find(file);
+        final Attributes attributes = f.find(file, new DisabledListProgressListener());
         assertEquals(0L, attributes.getSize());
         // Test cache
-        assertEquals(0L, f.find(file).getSize());
+        assertEquals(0L, f.find(file, new DisabledListProgressListener()).getSize());
         assertTrue(cache.containsKey(file.getParent()));
         // Test wrong type
         try {
-            f.find(new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.directory)));
+            f.find(new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
             fail();
         }
         catch(NotfoundException e) {
@@ -97,7 +98,7 @@ public class DefaultAttributesFinderFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session);
         final Path file = new Path("/robots.txt", EnumSet.of(Path.Type.file));
-        final Attributes attributes = f.find(file);
+        final Attributes attributes = f.find(file, new DisabledListProgressListener());
         assertNotNull(attributes);
         session.close();
     }

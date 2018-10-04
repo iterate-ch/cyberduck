@@ -21,6 +21,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -63,8 +64,8 @@ public class IRODSCopyFeatureTest {
         new IRODSTouchFeature(session).touch(test, new TransferStatus());
         final Path copy = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new IRODSCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new IRODSFindFeature(session).find(test));
-        assertTrue(new IRODSFindFeature(session).find(copy));
+        assertTrue(new IRODSFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new IRODSFindFeature(session).find(copy, new DisabledListProgressListener()));
         new IRODSDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

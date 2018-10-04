@@ -17,6 +17,7 @@ package ch.cyberduck.core.nio;
 
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -48,17 +49,17 @@ public class LocalAttributesFinderFeatureTest {
             final java.nio.file.Path local = session.toPath(file);
             final PosixFileAttributes posixAttributes = Files.readAttributes(local, PosixFileAttributes.class);
             final LocalAttributesFinderFeature finder = new LocalAttributesFinderFeature(session);
-            assertEquals(PosixFilePermissions.toString(posixAttributes.permissions()), finder.find(file).getPermission().getSymbol());
+            assertEquals(PosixFilePermissions.toString(posixAttributes.permissions()), finder.find(file, new DisabledListProgressListener()).getPermission().getSymbol());
             Files.setPosixFilePermissions(local, PosixFilePermissions.fromString("rw-------"));
-            assertEquals("rw-------", finder.find(file).getPermission().getSymbol());
+            assertEquals("rw-------", finder.find(file, new DisabledListProgressListener()).getPermission().getSymbol());
             Files.setPosixFilePermissions(local, PosixFilePermissions.fromString("rwxrwxrwx"));
-            assertEquals("rwxrwxrwx", finder.find(file).getPermission().getSymbol());
+            assertEquals("rwxrwxrwx", finder.find(file, new DisabledListProgressListener()).getPermission().getSymbol());
             Files.setPosixFilePermissions(local, PosixFilePermissions.fromString("rw-rw----"));
-            assertEquals("rw-rw----", finder.find(file).getPermission().getSymbol());
-            assertEquals(posixAttributes.size(), finder.find(file).getSize());
-            assertEquals(posixAttributes.lastModifiedTime().toMillis(), finder.find(file).getModificationDate());
-            assertEquals(posixAttributes.creationTime().toMillis(), finder.find(file).getCreationDate());
-            assertEquals(posixAttributes.lastAccessTime().toMillis(), finder.find(file).getAccessedDate());
+            assertEquals("rw-rw----", finder.find(file, new DisabledListProgressListener()).getPermission().getSymbol());
+            assertEquals(posixAttributes.size(), finder.find(file, new DisabledListProgressListener()).getSize());
+            assertEquals(posixAttributes.lastModifiedTime().toMillis(), finder.find(file, new DisabledListProgressListener()).getModificationDate());
+            assertEquals(posixAttributes.creationTime().toMillis(), finder.find(file, new DisabledListProgressListener()).getCreationDate());
+            assertEquals(posixAttributes.lastAccessTime().toMillis(), finder.find(file, new DisabledListProgressListener()).getAccessedDate());
             new LocalDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }

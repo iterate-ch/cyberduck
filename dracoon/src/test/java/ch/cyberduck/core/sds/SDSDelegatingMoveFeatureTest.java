@@ -69,11 +69,11 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertEquals(new SDSAttributesFinderFeature(session, nodeid).find(test).getVersionId(),
+        assertEquals(new SDSAttributesFinderFeature(session, nodeid).find(test, new DisabledListProgressListener()).getVersionId(),
             new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()).attributes().getVersionId());
         test.attributes().setVersionId(null);
-        assertFalse(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         assertEquals(0, session.getMetrics().get(Copy.class));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -89,8 +89,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         assertEquals(0, session.getMetrics().get(Copy.class));
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -108,9 +108,9 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         new SDSTouchFeature(session, nodeid).touch(test2, new TransferStatus());
         final Path target = new Path(room2, "A (2)", EnumSet.of(Path.Type.file));
         new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test1, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new SDSFindFeature(nodeid).find(test1));
-        assertTrue(new SDSFindFeature(nodeid).find(test2));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(test1, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(test2, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         assertEquals(0, session.getMetrics().get(Copy.class));
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -119,10 +119,10 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveFromEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
+        room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1, new DisabledListProgressListener()));
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        room2.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room2));
+        room2.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room2, new DisabledListProgressListener()));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -146,8 +146,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
             }
         });
         assertEquals(1, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new SDSReadFeature(session, nodeid).read(target, new TransferStatus().length(content.length), new ConnectionCallback() {
             @Override
@@ -170,10 +170,10 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveToEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
+        room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1, new DisabledListProgressListener()));
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        room2.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room2));
+        room2.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room2, new DisabledListProgressListener()));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -185,8 +185,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path target = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus().length(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(1, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(target, new TransferStatus().length(content.length), new ConnectionCallback() {
             @Override
@@ -209,9 +209,9 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveBetweenEncryptedDataRooms() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
+        room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1, new DisabledListProgressListener()));
         final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        room2.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room2));
+        room2.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room2, new DisabledListProgressListener()));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -225,8 +225,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus().length(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(target, new TransferStatus().length(content.length), new ConnectionCallback() {
             @Override
@@ -255,8 +255,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(new Path(room, foldername, EnumSet.of(Path.Type.directory))));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(new Path(room, foldername, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -271,8 +271,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         assertFalse(move.isSupported(test, target));
         move.move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -288,8 +288,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         assertFalse(move.isSupported(test, target));
         move.move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -306,8 +306,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         move.move(subroom, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
         subroom.attributes().setVersionId(null);
-        assertFalse(new SDSFindFeature(nodeid).find(subroom));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(subroom, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -319,8 +319,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path target = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(new Path(directoryname, EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(new Path(directoryname, EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -343,9 +343,9 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
             new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
         assertEquals(0, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(new SDSFindFeature(nodeid).find(renamed));
-        assertTrue(new SDSFindFeature(nodeid).find(new Path(renamed, folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.directory))));
+        assertFalse(new SDSFindFeature(nodeid).find(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(renamed, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(new Path(renamed, folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.directory)), new DisabledListProgressListener()));
         assertTrue(renamed.getType().contains(Path.Type.vault));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -360,8 +360,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(target, new TransferStatus());
         new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new SDSFindFeature(nodeid).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(new Path(room, filename, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -375,8 +375,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(target, new TransferStatus());
         new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new SDSFindFeature(nodeid).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertFalse(new SDSFindFeature(nodeid).find(new Path(room, filename, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

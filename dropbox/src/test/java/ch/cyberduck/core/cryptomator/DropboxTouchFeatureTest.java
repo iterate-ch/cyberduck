@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -62,8 +63,8 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
         final Path test = new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DropboxUploadFeature(new DropboxWriteFeature(session)),
             new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(test));
-        assertEquals(test.attributes(), new CryptoAttributesFeature(session, new DropboxAttributesFinderFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
+        assertEquals(test.attributes(), new CryptoAttributesFeature(session, new DropboxAttributesFinderFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -77,8 +78,8 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
         final Path test = new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DropboxUploadFeature(new DropboxWriteFeature(session)),
             new DropboxAttributesFinderFeature(session)), new DropboxWriteFeature(session), cryptomator).touch(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        assertEquals(test.attributes(), new CryptoAttributesFeature(session, new DropboxAttributesFinderFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
+        assertEquals(test.attributes(), new CryptoAttributesFeature(session, new DropboxAttributesFinderFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DropboxDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

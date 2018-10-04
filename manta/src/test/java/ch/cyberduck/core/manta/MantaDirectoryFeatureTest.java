@@ -17,6 +17,7 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -40,7 +41,7 @@ public class MantaDirectoryFeatureTest extends AbstractMantaTest {
     @Test
     public void testMkdir() throws Exception {
         final Path target = new MantaDirectoryFeature(session).mkdir(randomDirectory(), null, null);
-        final PathAttributes found = new MantaAttributesFinderFeature(session).find(target);
+        final PathAttributes found = new MantaAttributesFinderFeature(session).find(target, new DisabledListProgressListener());
         assertNotEquals(Permission.EMPTY, found.getPermission());
         new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -55,7 +56,7 @@ public class MantaDirectoryFeatureTest extends AbstractMantaTest {
                     String.format("%s %s", randomStringService.random(), randomStringService.random()),
                     EnumSet.of(Path.Type.directory)
                 ), null, null);
-        final Attributes found = new MantaAttributesFinderFeature(session).find(target);
+        final Attributes found = new MantaAttributesFinderFeature(session).find(target, new DisabledListProgressListener());
         assertNull(found.getOwner());
         assertNotEquals(Permission.EMPTY, found.getPermission());
         new MantaDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());

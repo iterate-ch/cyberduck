@@ -20,6 +20,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -101,11 +102,11 @@ public class CopyWorkerTest {
         final TransferStatus status = new TransferStatus();
         new CryptoBulkFeature<>(session, new DisabledBulkFeature(), new SwiftDeleteFeature(session), cryptomator).pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(source), status), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), new CryptoWriteFeature<>(session, new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).write(source, status.length(content.length), new DisabledConnectionCallback()));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(source));
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(target));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(target, new DisabledListProgressListener()));
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new SwiftReadFeature(session, new SwiftRegionService(session)), cryptomator).read(target, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
@@ -132,13 +133,13 @@ public class CopyWorkerTest {
         session.withRegistry(registry);
         new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
             new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(source, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).mkdir(targetFolder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder, new DisabledListProgressListener()));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target, new DisabledListProgressListener()));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         session.close();
     }
@@ -162,13 +163,13 @@ public class CopyWorkerTest {
         session.withRegistry(registry);
         new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
             new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(source, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).mkdir(targetFolder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(targetFolder, new DisabledListProgressListener()));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target, new DisabledListProgressListener()));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         session.close();
     }
@@ -190,22 +191,22 @@ public class CopyWorkerTest {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).mkdir(folder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder, new DisabledListProgressListener()));
         new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
             new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(file, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file, new DisabledListProgressListener()));
         // copy file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         new CopyWorker(Collections.singletonMap(file, fileRenamed), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback()).run(session);
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(file));
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(fileRenamed));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(file, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(fileRenamed, new DisabledListProgressListener()));
         // copy folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new CopyWorker(Collections.singletonMap(folder, folderRenamed), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback()).run(session);
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(folder));
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(folderRenamed));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(folder, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(folderRenamed, new DisabledListProgressListener()));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder, new DisabledListProgressListener()));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         session.close();
         registry.clear();
@@ -225,7 +226,7 @@ public class CopyWorkerTest {
         final SwiftWriteFeature write = new SwiftWriteFeature(session, new SwiftRegionService(session));
         final byte[] content = RandomUtils.nextBytes(40500);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), write.write(cleartextFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()));
-        assertTrue(new SwiftFindFeature(session).find(cleartextFile));
+        assertTrue(new SwiftFindFeature(session).find(cleartextFile, new DisabledListProgressListener()));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
@@ -233,12 +234,12 @@ public class CopyWorkerTest {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder, new DisabledListProgressListener()));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(cleartextFile, encryptedFile), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new SwiftFindFeature(session).find(cleartextFile));
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(encryptedFile));
+        assertTrue(new SwiftFindFeature(session).find(cleartextFile, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new SwiftReadFeature(session, new SwiftRegionService(session)), cryptomator).read(encryptedFile, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
@@ -261,8 +262,8 @@ public class CopyWorkerTest {
         final Path cleartextFile = new Path(cleartextFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SwiftDirectoryFeature(session).mkdir(cleartextFolder, null, new TransferStatus());
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(cleartextFile, new TransferStatus());
-        assertTrue(new SwiftFindFeature(session).find(cleartextFolder));
-        assertTrue(new SwiftFindFeature(session).find(cleartextFile));
+        assertTrue(new SwiftFindFeature(session).find(cleartextFolder, new DisabledListProgressListener()));
+        assertTrue(new SwiftFindFeature(session).find(cleartextFile, new DisabledListProgressListener()));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
@@ -272,10 +273,10 @@ public class CopyWorkerTest {
         final Path encryptedFile = new Path(encryptedFolder, cleartextFile.getName(), EnumSet.of(Path.Type.file));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(cleartextFolder, encryptedFolder), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
-        assertTrue(new SwiftFindFeature(session).find(cleartextFolder));
-        assertTrue(new SwiftFindFeature(session).find(cleartextFile));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
+        assertTrue(new SwiftFindFeature(session).find(cleartextFolder, new DisabledListProgressListener()));
+        assertTrue(new SwiftFindFeature(session).find(cleartextFile, new DisabledListProgressListener()));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(vault), new DisabledProgressListener()).run(session);
         session.close();
         registry.clear();
@@ -300,16 +301,16 @@ public class CopyWorkerTest {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder, new DisabledListProgressListener()));
         new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
             new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(encryptedFile, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
         // move file outside vault
         final Path cleartextFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(encryptedFile, cleartextFile), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(encryptedFile));
-        assertTrue(new SwiftFindFeature(session).find(cleartextFile));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
+        assertTrue(new SwiftFindFeature(session).find(cleartextFile, new DisabledListProgressListener()));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), new DisabledProgressListener()).run(session);
         session.close();
         registry.clear();
@@ -332,19 +333,19 @@ public class CopyWorkerTest {
         final DefaultVaultRegistry registry = new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator);
         session.withRegistry(registry);
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder, new DisabledListProgressListener()));
         new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new DefaultUploadFeature<StorageObject>(new SwiftWriteFeature(session, new SwiftRegionService(session))),
             new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, new SwiftRegionService(session)), cryptomator).touch(encryptedFile, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
         // copy directory outside vault
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(encryptedFolder, cleartextFolder), new TestSessionPool(session, registry), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(encryptedFolder));
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(encryptedFile));
-        assertTrue(new SwiftFindFeature(session).find(cleartextFolder));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(encryptedFolder, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(encryptedFile, new DisabledListProgressListener()));
+        assertTrue(new SwiftFindFeature(session).find(cleartextFolder, new DisabledListProgressListener()));
         final Path fileRenamed = new Path(cleartextFolder, encryptedFile.getName(), EnumSet.of(Path.Type.file));
-        assertTrue(new SwiftFindFeature(session).find(fileRenamed));
+        assertTrue(new SwiftFindFeature(session).find(fileRenamed, new DisabledListProgressListener()));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(cleartextFolder, vault), new DisabledProgressListener()).run(session);
         session.close();
         registry.clear();

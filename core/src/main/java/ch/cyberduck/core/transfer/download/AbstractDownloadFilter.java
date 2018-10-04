@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -141,7 +142,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             // A server will resolve the symbolic link when the file is requested.
             final Path target = file.getSymlinkTarget();
             // Read remote attributes of symlink target
-            attributes = attribute.find(target);
+            attributes = attribute.find(target, new DisabledListProgressListener());
             if(!symlinkResolver.resolve(file)) {
                 if(file.isFile()) {
                     // Content length
@@ -152,7 +153,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         }
         else {
             // Read remote attributes
-            attributes = attribute.find(file);
+            attributes = attribute.find(file, new DisabledListProgressListener());
             if(file.isFile()) {
                 // Content length
                 status.setLength(attributes.getSize());

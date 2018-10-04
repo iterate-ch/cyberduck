@@ -20,6 +20,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -78,20 +79,20 @@ public class SwiftMoveFeatureTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoDirectoryFeature<StorageObject>(session, new SwiftDirectoryFeature(session, regionService), new SwiftWriteFeature(session, regionService), cryptomator).mkdir(folder, null, new TransferStatus());
         new CryptoTouchFeature<StorageObject>(session, new SwiftTouchFeature(session, regionService), new SwiftWriteFeature(session, regionService), cryptomator).touch(file, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file, new DisabledListProgressListener()));
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new SwiftMoveFeature(session, regionService), new SwiftDeleteFeature(session), cryptomator);
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(file));
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(fileRenamed));
+        assertFalse(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(file, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(fileRenamed, new DisabledListProgressListener()));
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(folder));
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(folderRenamed));
+        assertFalse(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(folder, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(folderRenamed, new DisabledListProgressListener()));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new SwiftDeleteFeature(session), cryptomator).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

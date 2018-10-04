@@ -66,9 +66,9 @@ public class DAVWriteFeatureTest {
         final HttpUploadFeature upload = new DAVUploadFeature(new DAVWriteFeature(session));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledConnectionCallback());
-        assertTrue(session.getFeature(Find.class).find(test));
+        assertTrue(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
         assertEquals(content.length, new DAVListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        assertEquals(content.length, new DAVWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new DAVWriteFeature(session).append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new DAVReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);
@@ -108,8 +108,8 @@ public class DAVWriteFeatureTest {
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertTrue(new DAVFindFeature(session).find(test));
-        assertEquals(1024L, new DefaultAttributesFinderFeature(session).find(test).getSize());
+        assertTrue(new DAVFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertEquals(1024L, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
         {
             // Remaining chunked transfer with offset
             final TransferStatus status = new TransferStatus();
@@ -148,8 +148,8 @@ public class DAVWriteFeatureTest {
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertTrue(new DAVFindFeature(session).find(test));
-        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
+        assertTrue(new DAVFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
         {
             // Write beginning of file up to the last chunk
             final TransferStatus status = new TransferStatus();
@@ -163,8 +163,8 @@ public class DAVWriteFeatureTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new DAVReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(content, out.toByteArray());
-        assertTrue(new DAVFindFeature(session).find(test));
-        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
+        assertTrue(new DAVFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
         final byte[] buffer = new byte[content.length];
         final InputStream in = new DAVReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
@@ -288,10 +288,10 @@ public class DAVWriteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         assertFalse(feature.append(
-                new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
+            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty(), new DisabledListProgressListener()).append);
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
-        assertTrue(feature.append(test, 0L, PathCache.empty()).append);
+        assertTrue(feature.append(test, 0L, PathCache.empty(), new DisabledListProgressListener()).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -325,8 +325,8 @@ public class DAVWriteFeatureTest {
         out.close();
         assertEquals(content.length, status.getOffset());
         assertTrue(status.isComplete());
-        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
-        assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
         assertTrue(redirected.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(
                 new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file))

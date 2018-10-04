@@ -17,6 +17,7 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -77,11 +78,11 @@ public class SpectraTouchFeatureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new SpectraTouchFeature(session).touch(test, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
         final Map<String, String> metadata = new S3MetadataFeature(session, null).getMetadata(test);
         assertFalse(metadata.isEmpty());
         new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session).find(test));
+        assertFalse(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
         session.close();
     }
 }

@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
@@ -49,7 +50,7 @@ public class B2FindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 final List<B2BucketResponse> buckets = session.getClient().listBuckets();

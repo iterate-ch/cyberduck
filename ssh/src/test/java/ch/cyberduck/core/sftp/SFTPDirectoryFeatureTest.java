@@ -20,6 +20,7 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -53,7 +54,7 @@ public class SFTPDirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new SFTPDirectoryFeature(session).mkdir(test, null, new TransferStatus());
-        assertTrue(new SFTPFindFeature(session).find(test));
+        assertTrue(new SFTPFindFeature(session).find(test, new DisabledListProgressListener()));
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

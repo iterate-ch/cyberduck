@@ -48,8 +48,8 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final Path target = new DriveMoveFeature(session, fileid).move(test, new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(test.attributes().getVersionId(), target.attributes().getVersionId());
         final Find find = new DefaultFindFeature(session);
-        assertFalse(find.find(test));
-        assertTrue(find.find(target));
+        assertFalse(find.find(test, new DisabledListProgressListener()));
+        assertTrue(find.find(target, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(target, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -67,7 +67,7 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         assertEquals(2, files.size());
         assertTrue(files.get(test).attributes().isDuplicate());
         assertFalse(files.get(target).attributes().isDuplicate());
-        assertTrue(find.find(target));
+        assertTrue(find.find(target, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -81,8 +81,8 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
         final Path targetFile = new Path(targetDirectory, sourceFile.getName(), EnumSet.of(Path.Type.file));
         new DriveMoveFeature(session, fileid).move(sourceDirectory, targetDirectory, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
-        assertFalse(find.find(sourceDirectory));
-        assertTrue(find.find(targetDirectory));
+        assertFalse(find.find(sourceDirectory, new DisabledListProgressListener()));
+        assertTrue(find.find(targetDirectory, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(targetFile, targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

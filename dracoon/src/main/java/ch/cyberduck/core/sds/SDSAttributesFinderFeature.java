@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -51,7 +52,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             final Node node = new NodesApi(session.getClient()).getFsNode(
                 Long.parseLong(nodeid.withCache(cache).getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);

@@ -19,15 +19,13 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
-
-import java.util.function.Predicate;
 
 public abstract class ListFilteringFeature {
 
@@ -40,11 +38,11 @@ public abstract class ListFilteringFeature {
         this.session = session;
     }
 
-    protected Path search(final Path file) throws BackgroundException {
+    protected Path search(final Path file, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> list;
         if(!cache.isCached(file.getParent())) {
             // Do not decrypt filenames to match with input
-            list = session._getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
+            list = session._getFeature(ListService.class).list(file.getParent(), listener);
         }
         else {
             list = cache.get(file.getParent());
@@ -61,24 +59,5 @@ public abstract class ListFilteringFeature {
     public ListFilteringFeature withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
-    }
-
-    private final class PredicateChain<T> implements Predicate<T> {
-        private final Predicate<T> predicates[];
-
-        @SafeVarargs
-        private PredicateChain(final Predicate<T>... predicates) {
-            this.predicates = predicates;
-        }
-
-        @Override
-        public boolean test(final T t) {
-            for(Predicate<T> p : predicates) {
-                if(!p.test(t)) {
-                    return false;
-                }
-            }
-            return true;
-        }
     }
 }

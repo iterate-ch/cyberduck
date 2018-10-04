@@ -16,6 +16,7 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,8 +27,9 @@ public interface AttributesFinder {
      * Find file attributes
      *
      * @param file File
+     * @param listener
      */
-    PathAttributes find(Path file) throws BackgroundException;
+    PathAttributes find(Path file, final ListProgressListener listener) throws BackgroundException;
 
     /**
      * Decorate with cache

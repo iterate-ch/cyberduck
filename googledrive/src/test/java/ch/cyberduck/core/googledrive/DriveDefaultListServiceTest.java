@@ -71,8 +71,8 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveTouchFeature(session, fileid).touch(file, new TransferStatus());
         new DriveDirectoryFeature(session, fileid).mkdir(folder, null, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(file));
-        assertTrue(new DefaultFindFeature(session).find(folder));
+        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -85,7 +85,7 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         final DriveFileidProvider provider = new DriveFileidProvider(session).withCache(cache);
         new DriveDirectoryFeature(session, provider).mkdir(parent, null, new TransferStatus());
         new DriveDirectoryFeature(session, provider).mkdir(folder, null, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(folder));
+        assertTrue(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
         assertEquals(1, new DriveDefaultListService(session, provider).list(parent, new DisabledListProgressListener()).size());
         final String fileid = provider.getFileid(folder, new DisabledListProgressListener());
         final File body = new File();

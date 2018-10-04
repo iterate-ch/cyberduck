@@ -21,6 +21,7 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
@@ -121,21 +122,21 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes first
         if(parent.isExists()) {
-            if(find.find(file)) {
+            if(find.find(file, new DisabledListProgressListener())) {
                 status.setExists(true);
                 // Read remote attributes
-                final PathAttributes attributes = attribute.find(file);
+                final PathAttributes attributes = attribute.find(file, new DisabledListProgressListener());
                 status.setRemote(attributes);
             }
             else {
                 // Look if there is directory or file that clashes with this upload
                 if(file.getType().contains(Path.Type.file)) {
-                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory)))) {
+                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener())) {
                         throw new AccessDeniedException(String.format("Cannot replace folder %s with file %s", file.getAbsolute(), local.getName()));
                     }
                 }
                 if(file.getType().contains(Path.Type.directory)) {
-                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.file)))) {
+                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener())) {
                         throw new AccessDeniedException(String.format("Cannot replace file %s with folder %s", file.getAbsolute(), local.getName()));
                     }
                 }

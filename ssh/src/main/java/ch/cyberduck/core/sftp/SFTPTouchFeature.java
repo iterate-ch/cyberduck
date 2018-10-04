@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -57,7 +58,7 @@ public class SFTPTouchFeature implements Touch<Void> {
                 throw new SFTPExceptionMappingService().map("Cannot create file {0}", e, file);
             }
         }
-        return new Path(file.getParent(), file.getName(), file.getType(), new SFTPAttributesFinderFeature(session).find(file));
+        return new Path(file.getParent(), file.getName(), file.getType(), new SFTPAttributesFinderFeature(session).find(file, new DisabledListProgressListener()));
     }
 
     @Override

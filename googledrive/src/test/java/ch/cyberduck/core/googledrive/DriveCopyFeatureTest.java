@@ -47,8 +47,8 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         final Path copy = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
-        assertTrue(find.find(test));
-        assertTrue(find.find(copy));
+        assertTrue(find.find(test, new DisabledListProgressListener()));
+        assertTrue(find.find(copy, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -64,8 +64,8 @@ public class DriveCopyFeatureTest extends AbstractDriveTest {
         new DriveCopyFeature(session, fileid).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new DriveListService(session, fileid).list(folder, new DisabledListProgressListener());
-        assertTrue(find.find(test));
-        assertTrue(find.find(copy));
+        assertTrue(find.find(test, new DisabledListProgressListener()));
+        assertTrue(find.find(copy, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

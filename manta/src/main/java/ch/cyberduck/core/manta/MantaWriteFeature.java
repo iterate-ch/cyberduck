@@ -17,6 +17,8 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -69,9 +71,9 @@ public class MantaWriteFeature implements Write<Void> {
      * Manta does not support raw append operations.
      */
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
+    public Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
+        if(finder.withCache(cache).find(file, new DisabledListProgressListener())) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(file, new DisabledListProgressListener());
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;

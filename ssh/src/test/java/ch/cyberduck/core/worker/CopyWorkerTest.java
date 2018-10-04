@@ -20,6 +20,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -64,11 +65,11 @@ public class CopyWorkerTest {
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(source, new TransferStatus());
-        assertTrue(new SFTPFindFeature(session).find(source));
+        assertTrue(new SFTPFindFeature(session).find(source, new DisabledListProgressListener()));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new SFTPFindFeature(session).find(source));
-        assertTrue(new SFTPFindFeature(session).find(target));
+        assertTrue(new SFTPFindFeature(session).find(source, new DisabledListProgressListener()));
+        assertTrue(new SFTPFindFeature(session).find(target, new DisabledListProgressListener()));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
         session.close();
     }
@@ -84,16 +85,16 @@ public class CopyWorkerTest {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(sourceFile, new TransferStatus());
-        assertTrue(new SFTPFindFeature(session).find(sourceFile));
+        assertTrue(new SFTPFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPDirectoryFeature(session).mkdir(targetFolder, null, new TransferStatus());
-        assertTrue(new SFTPFindFeature(session).find(targetFolder));
+        assertTrue(new SFTPFindFeature(session).find(targetFolder, new DisabledListProgressListener()));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new SFTPFindFeature(session).find(sourceFile));
-        assertTrue(new SFTPFindFeature(session).find(targetFile));
+        assertTrue(new SFTPFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
+        assertTrue(new SFTPFindFeature(session).find(targetFile, new DisabledListProgressListener()));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
         session.close();
     }
@@ -109,16 +110,16 @@ public class CopyWorkerTest {
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path folder = new SFTPDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path sourceFile = new SFTPTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new SFTPFindFeature(session).find(folder));
-        assertTrue(new SFTPFindFeature(session).find(sourceFile));
+        assertTrue(new SFTPFindFeature(session).find(folder, new DisabledListProgressListener()));
+        assertTrue(new SFTPFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new SFTPFindFeature(session).find(targetFolder));
-        assertTrue(new SFTPFindFeature(session).find(targetFile));
-        assertTrue(new SFTPFindFeature(session).find(folder));
-        assertTrue(new SFTPFindFeature(session).find(sourceFile));
+        assertTrue(new SFTPFindFeature(session).find(targetFolder, new DisabledListProgressListener()));
+        assertTrue(new SFTPFindFeature(session).find(targetFile, new DisabledListProgressListener()));
+        assertTrue(new SFTPFindFeature(session).find(folder, new DisabledListProgressListener()));
+        assertTrue(new SFTPFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFile), new DisabledProgressListener()).run(session);
         session.close();
     }

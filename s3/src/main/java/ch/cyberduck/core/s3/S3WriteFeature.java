@@ -19,6 +19,8 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -59,10 +61,10 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
     private static final Logger log = Logger.getLogger(S3WriteFeature.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3Session session;
     private final S3MultipartService multipartService;
@@ -95,7 +97,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                 try {
                     final RequestEntityRestStorageService client = session.getClient();
                     client.putObjectWithRequestEntityImpl(
-                            containerService.getContainer(file).getName(), object, entity, status.getParameters());
+                        containerService.getContainer(file).getName(), object, entity, status.getParameters());
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Saved object %s with checksum %s", file, object.getETag()));
                     }
@@ -155,7 +157,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
      * @return No Content-Range support
      */
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+    public Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
         if(length >= preferences.getLong("s3.upload.multipart.threshold")) {
             if(preferences.getBoolean("s3.upload.multipart")) {
                 try {
@@ -173,9 +175,9 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                 }
             }
         }
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+        if(finder.withCache(cache).find(file, new DisabledListProgressListener())) {
+            final PathAttributes attr = attributes.withCache(cache).find(file, new DisabledListProgressListener());
+            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
         }
         return Write.notfound;
     }

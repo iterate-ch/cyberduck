@@ -19,7 +19,9 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -111,8 +113,8 @@ public class IRODSUploadFeature implements Upload<Checksum> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(new DefaultFindFeature(session).withCache(cache).find(file)) {
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
+        if(new DefaultFindFeature(session).withCache(cache).find(file, new DisabledListProgressListener())) {
             return Write.override;
         }
         return Write.notfound;

@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -92,8 +93,8 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);
         assertEquals((long) content.length, writeStatus.getOffset(), 0L);
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(test).getSize());
+        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test, new DisabledListProgressListener()));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(test, new DisabledListProgressListener()).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);
         final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session, fileid), cryptomator).read(test, readStatus, new DisabledConnectionCallback());
@@ -127,8 +128,8 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);
         assertEquals((long) content.length, writeStatus.getOffset(), 0L);
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(test).getSize());
+        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test, new DisabledListProgressListener()));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(test, new DisabledListProgressListener()).getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);
         final InputStream in = new CryptoReadFeature(session, new B2ReadFeature(session, fileid), cryptomator).read(test, readStatus, new DisabledConnectionCallback());

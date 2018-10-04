@@ -248,9 +248,9 @@ public class UDTProxyConfiguratorTest {
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledConnectionCallback());
 
-        assertTrue(tunneled.getFeature(Find.class).find(test));
+        assertTrue(tunneled.getFeature(Find.class).find(test, new DisabledListProgressListener()));
         assertEquals(status.getLength(), new S3ListService(tunneled).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        assertTrue(new S3WriteFeature(tunneled).append(test, status.getLength(), PathCache.empty()).override);
+        assertTrue(new S3WriteFeature(tunneled).append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).override);
         {
             final byte[] buffer = new byte[random.getBytes().length];
             IOUtils.readFully(new S3ReadFeature(tunneled).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);

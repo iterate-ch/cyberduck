@@ -17,6 +17,7 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -47,7 +48,7 @@ public class DAVDirectoryFeature implements Directory<String> {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e, folder);
         }
-        return new Path(folder.getParent(), folder.getName(), folder.getType(), new DAVAttributesFinderFeature(session).find(folder));
+        return new Path(folder.getParent(), folder.getName(), folder.getType(), new DAVAttributesFinderFeature(session).find(folder, new DisabledListProgressListener()));
     }
 
     @Override

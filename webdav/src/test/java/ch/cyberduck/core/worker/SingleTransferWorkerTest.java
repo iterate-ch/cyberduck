@@ -19,6 +19,7 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -130,7 +131,7 @@ public class SingleTransferWorkerTest {
         }.run(session, session));
         local.delete();
         assertEquals(62768L, counter.getSent(), 0L);
-        assertEquals(62768L, new DAVAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(62768L, new DAVAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
         assertTrue(failed.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

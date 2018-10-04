@@ -18,6 +18,7 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -48,7 +49,7 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }

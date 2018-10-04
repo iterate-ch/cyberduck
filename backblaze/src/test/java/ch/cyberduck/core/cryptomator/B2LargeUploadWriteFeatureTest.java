@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -80,7 +81,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         final TransferStatus progress = new TransferStatus();
         new StreamCopier(new TransferStatus(), progress).transfer(in, out);
         assertEquals(content.length, progress.getOffset());
-        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(test, new DisabledListProgressListener()));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, new B2ReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);

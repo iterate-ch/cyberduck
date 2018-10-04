@@ -18,6 +18,7 @@ package ch.cyberduck.core.spectra;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -61,7 +62,7 @@ public class SpectraDeleteFeatureTest {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("US");
         new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(container, null, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(container));
+        assertTrue(new S3FindFeature(session).find(container, new DisabledListProgressListener()));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

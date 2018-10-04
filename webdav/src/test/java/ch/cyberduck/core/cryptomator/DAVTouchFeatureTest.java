@@ -19,6 +19,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -74,8 +75,8 @@ public class DAVTouchFeatureTest {
         final Path test = new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)),
             new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(
             new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test));
-        assertEquals(test.attributes(), new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
+        assertEquals(test.attributes(), new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -97,7 +98,7 @@ public class DAVTouchFeatureTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         new CryptoTouchFeature<String>(session, new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)),
             new DAVAttributesFinderFeature(session)), new DAVWriteFeature(session), cryptomator).touch(test, new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
         new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
