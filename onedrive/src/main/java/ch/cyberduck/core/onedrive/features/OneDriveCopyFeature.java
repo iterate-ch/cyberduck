@@ -19,7 +19,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -94,10 +93,5 @@ public class OneDriveCopyFeature implements Copy {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public Copy withTarget(final Session<?> session) {
-        return this;
     }
 }

@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -87,10 +86,5 @@ public class SDSCopyFeature implements Copy {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public Copy withTarget(final Session<?> session) {
-        return this;
     }
 }

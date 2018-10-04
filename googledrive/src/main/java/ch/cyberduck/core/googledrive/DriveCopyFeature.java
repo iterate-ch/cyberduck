@@ -19,7 +19,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -66,10 +65,5 @@ public class DriveCopyFeature implements Copy {
             return false;
         }
         return !source.getType().contains(Path.Type.placeholder);
-    }
-
-    @Override
-    public Copy withTarget(final Session<?> session) {
-        return this;
     }
 }
