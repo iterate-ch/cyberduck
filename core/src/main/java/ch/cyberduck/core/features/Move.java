@@ -23,15 +23,14 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public interface Move {
 
     /**
-     * @param source             Source file or folder
-     * @param target             Target file or folder
-     * @param status             True if the target file exists
-     * @param callback           Progress
-     * @param connectionCallback Prompt
+     * @param source   Source file or folder
+     * @param target   Target file or folder
+     * @param status   True if the target file exists
+     * @param delete   Progress
+     * @param callback Prompt
      * @return Target file
      */
-    Path move(Path source, Path target, TransferStatus status, Delete.Callback callback,
-              ConnectionCallback connectionCallback) throws BackgroundException;
+    Path move(Path source, Path target, TransferStatus status, Delete.Callback delete, ConnectionCallback callback) throws BackgroundException;
 
     /**
      * @param source Source file or folder
