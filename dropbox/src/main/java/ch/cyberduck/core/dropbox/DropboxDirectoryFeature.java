@@ -22,8 +22,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.CreateFolderResult;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
-import com.dropbox.core.v2.files.FolderMetadata;
 
 public class DropboxDirectoryFeature implements Directory<String> {
 
@@ -36,9 +36,9 @@ public class DropboxDirectoryFeature implements Directory<String> {
     @Override
     public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            final FolderMetadata metadata = new DbxUserFilesRequests(session.getClient()).createFolder(folder.getAbsolute());
+            final CreateFolderResult result = new DbxUserFilesRequests(session.getClient()).createFolderV2(folder.getAbsolute(), false);
             return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                new DropboxAttributesFinderFeature(session).toAttributes(metadata));
+                new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);
