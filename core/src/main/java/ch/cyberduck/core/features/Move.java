@@ -21,7 +21,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Move {
-
     /**
      * @param source   Source file or folder
      * @param target   Target file or folder
@@ -37,14 +36,14 @@ public interface Move {
      * @param target Target file or folder
      * @return True if the implementation can move directories recursively
      */
-    boolean isRecursive(final Path source, final Path target);
+    boolean isRecursive(Path source, Path target);
 
     /**
      * @param source Source file or folder
      * @param target Target file or folder
      * @return False if not supported for given files
      */
-    boolean isSupported(Path source, final Path target);
+    boolean isSupported(Path source, Path target);
 
     /**
      * @param delete Delete feature if move operation requires delete after copy
