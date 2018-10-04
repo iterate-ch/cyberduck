@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
@@ -79,7 +78,7 @@ public class SDSNodeIdProvider implements IdProvider {
             }
             // Top-level nodes only
             final NodeList nodes = new NodesApi(session.getClient()).getFsNodes(0,
-                Long.parseLong(this.getFileid(file.getParent(), new DisabledListProgressListener())),
+                Long.parseLong(this.getFileid(file.getParent(), listener)),
                 null, String.format("type:eq:%s|name:cn:%s", type, URIEncoder.encode(file.getName())),
                 null, null, null, StringUtils.EMPTY, null);
             for(Node node : nodes.getItems()) {
