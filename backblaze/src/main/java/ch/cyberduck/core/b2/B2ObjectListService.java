@@ -18,6 +18,7 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -76,7 +77,7 @@ public class B2ObjectListService implements ListService {
             else {
                 marker = new Marker(String.format("%s%s", containerService.getKey(directory), Path.DELIMITER), null);
             }
-            final String containerId = fileid.getFileid(containerService.getContainer(directory), listener);
+            final String containerId = fileid.getFileid(containerService.getContainer(directory), new DisabledListProgressListener());
             // Seen placeholders
             final Map<String, Long> revisions = new HashMap<>();
             do {
