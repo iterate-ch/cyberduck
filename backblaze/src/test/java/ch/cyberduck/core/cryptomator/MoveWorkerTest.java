@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2DeleteFeature;
 import ch.cyberduck.core.b2.B2DirectoryFeature;
@@ -70,7 +69,7 @@ public class MoveWorkerTest extends AbstractB2Test {
         new CryptoDirectoryFeature<>(session, new B2DirectoryFeature(session, fileid), new B2WriteFeature(session, fileid), cryptomator).mkdir(encryptedFolder, null, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
         // move file into vault
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFile, encryptedFile), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFile, encryptedFile), cache, new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
         assertFalse(new DefaultFindFeature(session).find(clearFile));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
@@ -96,7 +95,7 @@ public class MoveWorkerTest extends AbstractB2Test {
         // move directory into vault
         final Path encryptedFolder = new Path(vault, clearFolder.getName(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, clearFile.getName(), EnumSet.of(Path.Type.file));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFolder, encryptedFolder), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(clearFolder, encryptedFolder), cache, new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
@@ -125,7 +124,7 @@ public class MoveWorkerTest extends AbstractB2Test {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         // move file outside vault
         final Path fileRenamed = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFile, fileRenamed), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFile, fileRenamed), cache, new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         assertTrue(new DefaultFindFeature(session).find(fileRenamed));
@@ -151,7 +150,7 @@ public class MoveWorkerTest extends AbstractB2Test {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
         // move directory outside vault
         final Path directoryRenamed = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encryptedFolder, directoryRenamed), cache, new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFolder));
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(encryptedFile));
