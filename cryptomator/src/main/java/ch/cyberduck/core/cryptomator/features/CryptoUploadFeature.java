@@ -15,6 +15,7 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.ListProgressListener;
