@@ -154,4 +154,58 @@ public interface SessionPool {
             }
         }
     }
+
+    final class SingleSessionPool implements SessionPool {
+        private final Session<?> session;
+
+        public SingleSessionPool(final Session<?> session) {
+            this.session = session;
+        }
+
+        public SingleSessionPool(final Session<?> session, final VaultRegistry registry) {
+            this.session = session;
+        }
+
+        @Override
+        public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
+            return session;
+        }
+
+        @Override
+        public void release(final Session<?> session, final BackgroundException failure) {
+        }
+
+        @Override
+        public void evict() {
+        }
+
+        @Override
+        public Host getHost() {
+            return session.getHost();
+        }
+
+        @Override
+        public PathCache getCache() {
+            return PathCache.empty();
+        }
+
+        @Override
+        public VaultRegistry getVault() {
+            return VaultRegistry.DISABLED;
+        }
+
+        @Override
+        public Session.State getState() {
+            return Session.State.open;
+        }
+
+        @Override
+        public <T> T getFeature(final Class<T> type) {
+            return session.getFeature(type);
+        }
+
+        @Override
+        public void shutdown() {
+        }
+    }
 }

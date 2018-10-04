@@ -27,7 +27,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVFindFeature;
@@ -35,13 +34,10 @@ import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.dav.DAVWriteFeature;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
-import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -71,7 +67,7 @@ public class CopyWorkerTest {
         new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session)),
             new DAVAttributesFinderFeature(session)).touch(source, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(source, new DisabledListProgressListener()));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new DAVFindFeature(session).find(source, new DisabledListProgressListener()));
         assertTrue(new DAVFindFeature(session).find(target, new DisabledListProgressListener()));
@@ -98,7 +94,7 @@ public class CopyWorkerTest {
         new DAVDirectoryFeature(session).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new DAVFindFeature(session).find(targetFolder, new DisabledListProgressListener()));
         // copy file into vault
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new DAVFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
         assertTrue(new DAVFindFeature(session).find(targetFile, new DisabledListProgressListener()));
@@ -123,7 +119,7 @@ public class CopyWorkerTest {
         assertTrue(new DAVFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new DAVFindFeature(session).find(targetFolder, new DisabledListProgressListener()));
         assertTrue(new DAVFindFeature(session).find(targetFile, new DisabledListProgressListener()));
@@ -131,55 +127,5 @@ public class CopyWorkerTest {
         assertTrue(new DAVFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFile), new DisabledProgressListener()).run(session);
         session.close();
-    }
-
-    private static class TestSessionPool implements SessionPool {
-        private final Session<?> session;
-
-        public TestSessionPool(final Session<?> session) {
-            this.session = session;
-        }
-
-        @Override
-        public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
-            return session;
-        }
-
-        @Override
-        public void release(final Session<?> session, final BackgroundException failure) {
-        }
-
-        @Override
-        public void evict() {
-        }
-
-        @Override
-        public Host getHost() {
-            return session.getHost();
-        }
-
-        @Override
-        public PathCache getCache() {
-            return PathCache.empty();
-        }
-
-        @Override
-        public VaultRegistry getVault() {
-            return VaultRegistry.DISABLED;
-        }
-
-        @Override
-        public Session.State getState() {
-            return Session.State.open;
-        }
-
-        @Override
-        public <T> T getFeature(final Class<T> type) {
-            return session.getFeature(type);
-        }
-
-        @Override
-        public void shutdown() {
-        }
     }
 }

@@ -50,8 +50,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
     private final Cache<Path> cache;
     private final ConnectionCallback callback;
 
-    public CopyWorker(final Map<Path, Path> files, final SessionPool target, final Cache<Path> cache, final ProgressListener listener,
-                      final ConnectionCallback callback) {
+    public CopyWorker(final Map<Path, Path> files, final SessionPool target, final Cache<Path> cache, final ProgressListener listener, final ConnectionCallback callback) {
         this.files = files;
         this.target = target;
         this.listener = listener;

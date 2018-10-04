@@ -17,6 +17,7 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -50,4 +51,12 @@ public interface Move {
      * @return This
      */
     Move withDelete(Delete delete);
+
+    /**
+     * @param session Target session for stateful protocols when move can only be made with copy/delete
+     * @return This
+     */
+    default Move withTarget(Session<?> session) {
+        return this;
+    }
 }

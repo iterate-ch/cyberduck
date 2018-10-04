@@ -20,20 +20,15 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
 import ch.cyberduck.core.sds.SDSFindFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSTouchFeature;
-import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -56,7 +51,7 @@ public class CopyWorkerTest extends AbstractSDSTest {
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(source, new TransferStatus());
         assertTrue(new SDSFindFeature(nodeid).find(source, new DisabledListProgressListener()));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new SDSFindFeature(nodeid).find(source, new DisabledListProgressListener()));
         assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
@@ -76,7 +71,7 @@ public class CopyWorkerTest extends AbstractSDSTest {
         new SDSDirectoryFeature(session, nodeid).mkdir(targetFolder, null, new TransferStatus());
         assertTrue(new SDSFindFeature(nodeid).find(targetFolder, new DisabledListProgressListener()));
         // copy file into vault
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new SDSFindFeature(nodeid).find(sourceFile, new DisabledListProgressListener()));
         assertTrue(new SDSFindFeature(nodeid).find(targetFile, new DisabledListProgressListener()));
@@ -93,7 +88,7 @@ public class CopyWorkerTest extends AbstractSDSTest {
         assertTrue(new SDSFindFeature(nodeid).find(folder, new DisabledListProgressListener()));
         assertTrue(new SDSFindFeature(nodeid).find(sourceFile, new DisabledListProgressListener()));
         final Path targetFolder = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new TestSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
+        final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
         assertTrue(new SDSFindFeature(nodeid).find(targetFolder, new DisabledListProgressListener()));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
@@ -101,55 +96,5 @@ public class CopyWorkerTest extends AbstractSDSTest {
         assertTrue(new SDSFindFeature(nodeid).find(folder, new DisabledListProgressListener()));
         assertTrue(new SDSFindFeature(nodeid).find(sourceFile, new DisabledListProgressListener()));
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), new DisabledProgressListener()).run(session);
-    }
-
-    private static class TestSessionPool implements SessionPool {
-        private final Session<?> session;
-
-        public TestSessionPool(final Session<?> session) {
-            this.session = session;
-        }
-
-        @Override
-        public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
-            return session;
-        }
-
-        @Override
-        public void release(final Session<?> session, final BackgroundException failure) {
-        }
-
-        @Override
-        public void evict() {
-        }
-
-        @Override
-        public Host getHost() {
-            return session.getHost();
-        }
-
-        @Override
-        public PathCache getCache() {
-            return PathCache.empty();
-        }
-
-        @Override
-        public VaultRegistry getVault() {
-            return VaultRegistry.DISABLED;
-        }
-
-        @Override
-        public Session.State getState() {
-            return Session.State.open;
-        }
-
-        @Override
-        public <T> T getFeature(final Class<T> type) {
-            return session.getFeature(type);
-        }
-
-        @Override
-        public void shutdown() {
-        }
     }
 }

@@ -35,11 +35,13 @@ public class VaultRegistryMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(VaultRegistryMoveFeature.class);
 
     private final Session<?> session;
+    private Session<?> destination;
     private final Move proxy;
     private final DefaultVaultRegistry registry;
 
     public VaultRegistryMoveFeature(final Session<?> session, final Move proxy, final DefaultVaultRegistry registry) {
         this.session = session;
+        this.destination = session;
         this.proxy = proxy;
         this.registry = registry;
     }
@@ -56,7 +58,7 @@ public class VaultRegistryMoveFeature implements Move {
         }
         else {
             // Moving files from or into vault requires to pass through encryption features using copy operation
-            final Path copy = session.getFeature(Copy.class).copy(source, target, status, callback);
+            final Path copy = session.getFeature(Copy.class).withTarget(destination).copy(source, target, status, callback);
             // Delete source file after copy is complete
             session.getFeature(Delete.class).delete(Collections.singletonList(source), callback, delete);
             return copy;
@@ -93,6 +95,12 @@ public class VaultRegistryMoveFeature implements Move {
     @Override
     public Move withDelete(final Delete delete) {
         proxy.withDelete(delete);
+        return this;
+    }
+
+    @Override
+    public Move withTarget(final Session<?> session) {
+        this.destination = session.withRegistry(registry);
         return this;
     }
 

@@ -34,6 +34,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.EncryptRoomRequest;
 import ch.cyberduck.core.sds.triplecrypt.CryptoReadFeature;
@@ -339,8 +340,8 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(encrypted, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.directory)), null, new TransferStatus());
         final Path renamed = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encrypted, renamed), PathCache.empty(),
-            new DisabledLoginCallback(), new DisabledProgressListener());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(encrypted, renamed), new SessionPool.SingleSessionPool(session), PathCache.empty(),
+            new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
         assertEquals(0, session.getMetrics().get(Copy.class));
         assertFalse(new SDSFindFeature(nodeid).find(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));

@@ -17,6 +17,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.s3.S3AccessControlListFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
@@ -64,7 +65,7 @@ public class MoveWorkerTest {
             )
         ));
         assertTrue(new S3FindFeature(session).find(source, new DisabledListProgressListener()));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
         assertFalse(new S3FindFeature(session).find(source, new DisabledListProgressListener()));
         assertTrue(new S3FindFeature(session).find(target, new DisabledListProgressListener()));
@@ -118,8 +119,8 @@ public class MoveWorkerTest {
         for(Path source : versioned) {
             files.put(source, new Path(targetDirectory, source.getName(), source.getType(), source.attributes()));
         }
-        final Map<Path, Path> result = new MoveWorker(files, PathCache.empty(), new DisabledLoginCallback(),
-            new DisabledProgressListener()).run(session);
+        final Map<Path, Path> result = new MoveWorker(files, new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()
+        ).run(session);
         assertEquals(3, result.size());
         for(Map.Entry<Path, Path> entry : result.entrySet()) {
             assertFalse(new S3FindFeature(session).find(entry.getKey(), new DisabledListProgressListener()));
