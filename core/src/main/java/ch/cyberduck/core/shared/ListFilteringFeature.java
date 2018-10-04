@@ -45,7 +45,6 @@ public abstract class ListFilteringFeature {
         if(!cache.isCached(file.getParent())) {
             // Do not decrypt filenames to match with input
             list = session._getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
-            cache.put(file.getParent(), list);
         }
         else {
             list = cache.get(file.getParent());
