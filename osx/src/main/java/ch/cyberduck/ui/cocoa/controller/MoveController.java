@@ -20,10 +20,8 @@ import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.HostKeyCallbackFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -70,7 +68,7 @@ public class MoveController extends ProxyController {
         final DefaultMainAction action = new DefaultMainAction() {
             @Override
             public void run() {
-                final MoveWorker move = new MoveWorker(selected, cache, PasswordStoreFactory.get(), LoginCallbackFactory.get(parent), HostKeyCallbackFactory.get(parent, parent.getSession().getHost().getProtocol()), parent, parent) {
+                final MoveWorker move = new MoveWorker(selected, cache, LoginCallbackFactory.get(parent), parent) {
                     @Override
                     public void cleanup(final Map<Path, Path> result) {
                         final List<Path> changed = new ArrayList<>();

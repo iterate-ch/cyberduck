@@ -64,7 +64,7 @@ public class MoveWorkerTest {
             )
         ));
         assertTrue(new S3FindFeature(session).find(source));
-        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), PathCache.empty(), PasswordStoreFactory.get(), new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledProgressListener(), new DisabledTranscriptListener());
+        final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), PathCache.empty(), new DisabledLoginCallback(), new DisabledProgressListener());
         worker.run(session);
         assertFalse(new S3FindFeature(session).find(source));
         assertTrue(new S3FindFeature(session).find(target));
@@ -118,8 +118,8 @@ public class MoveWorkerTest {
         for(Path source : versioned) {
             files.put(source, new Path(targetDirectory, source.getName(), source.getType(), source.attributes()));
         }
-        final Map<Path, Path> result = new MoveWorker(files, PathCache.empty(), new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledProgressListener(), new DisabledTranscriptListener()).run(session);
+        final Map<Path, Path> result = new MoveWorker(files, PathCache.empty(), new DisabledLoginCallback(),
+            new DisabledProgressListener()).run(session);
         assertEquals(3, result.size());
         for(Map.Entry<Path, Path> entry : result.entrySet()) {
             assertFalse(new S3FindFeature(session).find(entry.getKey()));

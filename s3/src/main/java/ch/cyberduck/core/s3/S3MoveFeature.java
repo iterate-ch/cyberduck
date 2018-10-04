@@ -91,7 +91,7 @@ public class S3MoveFeature implements Move {
             catch(NotfoundException e) {
                 if(source.getType().contains(Path.Type.placeholder)) {
                     // No placeholder object to copy, create a new one at the target
-                    copy = session.getFeature(Directory.class).mkdir(renamed, renamed.attributes().getRegion(), new TransferStatus());
+                    copy = session.getFeature(Directory.class).mkdir(renamed, source.attributes().getRegion(), new TransferStatus());
                 }
                 else {
                     throw e;

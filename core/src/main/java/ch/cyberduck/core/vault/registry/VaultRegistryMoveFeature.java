@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Vault;
@@ -27,6 +28,8 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
 import org.apache.log4j.Logger;
+
+import java.util.Collections;
 
 public class VaultRegistryMoveFeature implements Move {
     private static final Logger log = Logger.getLogger(VaultRegistryMoveFeature.class);
@@ -42,13 +45,22 @@ public class VaultRegistryMoveFeature implements Move {
     }
 
     @Override
-    public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+    public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         final Vault vault = registry.find(session, source);
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Move %s to %s inside vault %s", source, target, vault));
+        if(vault.equals(registry.find(session, target, false))) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Move %s to %s inside vault %s", source, target, vault));
+            }
+            // Move files inside vault
+            return vault.getFeature(session, Move.class, proxy).move(source, target, status, delete, callback);
         }
-        // Move files inside vault
-        return vault.getFeature(session, Move.class, proxy).move(source, target, status, callback, connectionCallback);
+        else {
+            // Moving files from or into vault requires to pass through encryption features using copy operation
+            final Path copy = session.getFeature(Copy.class).copy(source, target, status, callback);
+            // Delete source file after copy is complete
+            session.getFeature(Delete.class).delete(Collections.singletonList(source), callback, delete);
+            return copy;
+        }
     }
 
     @Override
@@ -57,10 +69,7 @@ public class VaultRegistryMoveFeature implements Move {
             if(registry.find(session, source, false).equals(registry.find(session, target, false))) {
                 return registry.find(session, source, false).getFeature(session, Move.class, proxy).isRecursive(source, target);
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Move files from or into vault requires to pass through encryption features using copy operation");
-            }
-            return false;
+            return session.getFeature(Copy.class).isRecursive(source, target);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.isRecursive(source, target);
@@ -74,10 +83,7 @@ public class VaultRegistryMoveFeature implements Move {
             if(registry.find(session, source, false).equals(registry.find(session, target, false))) {
                 return registry.find(session, source, false).getFeature(session, Move.class, proxy).isSupported(source, target);
             }
-            if(log.isDebugEnabled()) {
-                log.debug("Move files from or into vault requires to pass through encryption features using copy operation");
-            }
-            return false;
+            return session.getFeature(Copy.class).isSupported(source, target);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.isSupported(source, target);
