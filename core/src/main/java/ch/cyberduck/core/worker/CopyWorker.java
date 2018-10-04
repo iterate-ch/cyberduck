@@ -73,18 +73,18 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
         });
         try {
             final Copy copy = session.getFeature(Copy.class).withTarget(destination);
+            final ListService list = session.getFeature(ListService.class);
             final Map<Path, Path> result = new HashMap<>();
             for(Map.Entry<Path, Path> entry : files.entrySet()) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
-                final ListService list = session.getFeature(ListService.class);
                 final Map<Path, Path> recursive = this.compile(copy, list, entry.getKey(), entry.getValue());
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                     if(r.getKey().isDirectory() && !copy.isRecursive(r.getKey(), r.getValue())) {
                         // Create directory unless copy implementation is recursive
                         final Directory directory = session.getFeature(Directory.class);
-                        result.put(r.getKey(), directory.mkdir(r.getValue(), null, new TransferStatus()));
+                        result.put(r.getKey(), directory.mkdir(r.getValue(), r.getKey().attributes().getRegion(), new TransferStatus()));
                     }
                     else {
                         final TransferStatus status = new TransferStatus()
