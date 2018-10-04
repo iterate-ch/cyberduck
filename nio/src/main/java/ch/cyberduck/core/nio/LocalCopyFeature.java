@@ -18,7 +18,6 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -56,10 +55,5 @@ public class LocalCopyFeature implements Copy {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         return true;
-    }
-
-    @Override
-    public Copy withTarget(final Session<?> session) {
-        return this;
     }
 }
