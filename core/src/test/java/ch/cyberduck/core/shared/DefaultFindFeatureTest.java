@@ -5,7 +5,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestProtocol;
 
 import org.junit.Test;
@@ -32,22 +31,6 @@ public class DefaultFindFeatureTest {
         assertEquals(1, count.get());
         assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertEquals(2, count.get());
-    }
-
-    @Test
-    public void testFindCached() throws Exception {
-        final AtomicInteger count = new AtomicInteger();
-        final DefaultFindFeature feature = new DefaultFindFeature(new NullSession(new Host(new TestProtocol())) {
-            @Override
-            public AttributedList<Path> list(Path file, ListProgressListener listener) {
-                count.incrementAndGet();
-                return AttributedList.emptyList();
-            }
-        }).withCache(new PathCache(2));
-        assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
-        assertEquals(1, count.get());
-        assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
-        assertEquals(1, count.get());
     }
 
     @Test
