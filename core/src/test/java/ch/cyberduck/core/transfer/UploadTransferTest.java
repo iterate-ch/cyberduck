@@ -132,10 +132,11 @@ public class UploadTransferTest {
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                if(file.equals(root.getParent())) {
+            public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws ConnectionCanceledException {
+                if(folder.equals(root.getParent())) {
                     c.incrementAndGet();
                 }
+                listener.chunk(folder, AttributedList.emptyList());
                 return AttributedList.emptyList();
             }
         };
