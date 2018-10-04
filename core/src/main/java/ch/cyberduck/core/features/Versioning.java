@@ -36,5 +36,5 @@ public interface Versioning {
 
     boolean isRevertable(Path file);
 
-    Credentials getToken(final String mfaSerial, PasswordCallback callback) throws ConnectionCanceledException;
+    Credentials getToken(String mfaSerial, PasswordCallback callback) throws ConnectionCanceledException;
 }
