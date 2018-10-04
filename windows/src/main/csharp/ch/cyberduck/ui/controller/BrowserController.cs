@@ -3356,7 +3356,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     : base(files,
                         controller.Session is StatefulSessionPool
                             ? SessionPoolFactory.create(controller, cache, controller.Session.getHost())
-                            : controller.Session, cache, LoginCallbackFactory.get(controller), controller)
+                            : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
 {
                     _controller = controller;
                     _files = files;
