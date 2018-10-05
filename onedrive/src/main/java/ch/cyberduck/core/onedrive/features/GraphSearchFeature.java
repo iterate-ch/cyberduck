@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -41,12 +40,6 @@ public class GraphSearchFeature implements Search {
     private final GraphAttributesFinderFeature attributes;
 
     public GraphSearchFeature(final GraphSession session) {
-        this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session);
-    }
-
-    @Deprecated
-    public GraphSearchFeature(final OneDriveSession session) {
         this.session = session;
         this.attributes = new GraphAttributesFinderFeature(session);
     }

@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.onedrive.OneDriveUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
@@ -45,11 +44,6 @@ public class GraphReadFeature implements Read {
     private final GraphSession session;
 
     public GraphReadFeature(final GraphSession session) {
-        this.session = session;
-    }
-
-    @Deprecated
-    public GraphReadFeature(final OneDriveSession session) {
         this.session = session;
     }
 

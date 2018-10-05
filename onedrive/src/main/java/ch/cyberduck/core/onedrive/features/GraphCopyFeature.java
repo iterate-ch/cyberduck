@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
@@ -47,11 +46,6 @@ public class GraphCopyFeature implements Copy {
         = new PathContainerService();
 
     public GraphCopyFeature(final GraphSession session) {
-        this.session = session;
-    }
-
-    @Deprecated
-    public GraphCopyFeature(OneDriveSession session) {
         this.session = session;
     }
 

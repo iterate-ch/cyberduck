@@ -26,8 +26,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveListService;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,11 +35,6 @@ public class GraphFileIdProvider implements IdProvider {
     private Cache<Path> cache = PathCache.empty();
 
     public GraphFileIdProvider(final GraphSession session) {
-        this.session = session;
-    }
-
-    @Deprecated
-    public GraphFileIdProvider(final OneDriveSession session) {
         this.session = session;
     }
 

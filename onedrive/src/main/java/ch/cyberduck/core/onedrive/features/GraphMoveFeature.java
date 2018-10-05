@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.StringUtils;
@@ -48,12 +47,6 @@ public class GraphMoveFeature implements Move {
         = new PathContainerService();
 
     public GraphMoveFeature(final GraphSession session) {
-        this.session = session;
-        this.delete = new GraphDeleteFeature(session);
-    }
-
-    @Deprecated
-    public GraphMoveFeature(OneDriveSession session) {
         this.session = session;
         this.delete = new GraphDeleteFeature(session);
     }

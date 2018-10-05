@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -42,11 +41,6 @@ public class GraphDeleteFeature implements Delete {
     private final GraphSession session;
 
     public GraphDeleteFeature(GraphSession session) {
-        this.session = session;
-    }
-
-    @Deprecated
-    public GraphDeleteFeature(OneDriveSession session) {
         this.session = session;
     }
 

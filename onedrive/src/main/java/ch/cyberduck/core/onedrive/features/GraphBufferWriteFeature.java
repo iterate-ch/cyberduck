@@ -31,7 +31,6 @@ import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.FileBuffer;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -53,18 +52,6 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
     }
 
     public GraphBufferWriteFeature(final GraphSession session, final Find finder, final AttributesFinder attributes) {
-        this.session = session;
-        this.finder = finder;
-        this.attributes = attributes;
-    }
-
-    @Deprecated
-    public GraphBufferWriteFeature(final OneDriveSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
-    }
-
-    @Deprecated
-    public GraphBufferWriteFeature(final OneDriveSession session, final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.finder = finder;
         this.attributes = attributes;

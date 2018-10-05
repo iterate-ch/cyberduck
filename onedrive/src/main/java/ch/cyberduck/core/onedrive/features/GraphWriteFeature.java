@@ -32,7 +32,6 @@ import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -66,18 +65,6 @@ public class GraphWriteFeature implements Write<Void> {
     }
 
     public GraphWriteFeature(final GraphSession session, final Find finder, final AttributesFinder attributes) {
-        this.session = session;
-        this.finder = finder;
-        this.attributes = attributes;
-    }
-
-    @Deprecated
-    public GraphWriteFeature(final OneDriveSession session) {
-        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
-    }
-
-    @Deprecated
-    public GraphWriteFeature(final OneDriveSession session, final Find finder, final AttributesFinder attributes) {
         this.session = session;
         this.finder = finder;
         this.attributes = attributes;

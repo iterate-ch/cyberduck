@@ -24,7 +24,6 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,11 +39,6 @@ public class GraphTouchFeature implements Touch<Void> {
     private final GraphSession session;
 
     public GraphTouchFeature(final GraphSession session) {
-        this.session = session;
-    }
-
-    @Deprecated
-    public GraphTouchFeature(final OneDriveSession session) {
         this.session = session;
     }
 

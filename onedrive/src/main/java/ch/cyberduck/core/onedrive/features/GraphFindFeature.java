@@ -22,18 +22,12 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 
 public class GraphFindFeature implements Find {
 
     private final GraphSession session;
 
     public GraphFindFeature(final GraphSession session) {
-        this.session = session;
-    }
-
-    @Deprecated
-    public GraphFindFeature(final OneDriveSession session) {
         this.session = session;
     }
 

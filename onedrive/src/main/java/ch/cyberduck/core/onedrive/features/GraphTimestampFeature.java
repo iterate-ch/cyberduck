@@ -20,7 +20,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
-import ch.cyberduck.core.onedrive.OneDriveSession;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -36,11 +35,6 @@ public class GraphTimestampFeature extends DefaultTimestampFeature {
     private final GraphSession session;
 
     public GraphTimestampFeature(final GraphSession session) {
-        this.session = session;
-    }
-
-    @Deprecated
-    public GraphTimestampFeature(OneDriveSession session) {
         this.session = session;
     }
 
