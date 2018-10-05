@@ -57,7 +57,7 @@ public class OneDriveSession extends GraphSession {
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", currentPath.getAbsolute()));
         }
-        final String[] idParts = versionId.split("/");
+        final String[] idParts = versionId.split(String.valueOf(Path.DELIMITER));
         if(idParts.length == 1) {
             return new OneDriveDrive(getClient(), idParts[0]).getRoot();
         }
