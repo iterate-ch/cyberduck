@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -37,8 +36,8 @@ import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import java.util.EnumSet;
 import java.util.Iterator;
 
-public class OneDriveItemListService implements ListService {
-    private static final Logger log = Logger.getLogger(OneDriveItemListService.class);
+public class GraphItemListService implements ListService {
+    private static final Logger log = Logger.getLogger(GraphItemListService.class);
 
     private final PathContainerService containerService
         = new PathContainerService();
@@ -46,7 +45,7 @@ public class OneDriveItemListService implements ListService {
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;
 
-    public OneDriveItemListService(final GraphSession session) {
+    public GraphItemListService(final GraphSession session) {
         this.session = session;
         this.attributes = new GraphAttributesFinderFeature(session);
     }

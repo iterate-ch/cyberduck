@@ -22,7 +22,6 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
-import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 
 public class OneDriveListService implements ListService {
 
@@ -40,7 +39,7 @@ public class OneDriveListService implements ListService {
             return new GraphDrivesListService(session).list(directory, listener);
         }
         else {
-            return new OneDriveItemListService(session).list(directory, listener);
+            return new GraphItemListService(session).list(directory, listener);
         }
     }
 
