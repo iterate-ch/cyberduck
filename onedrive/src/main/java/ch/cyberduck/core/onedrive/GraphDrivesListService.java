@@ -39,14 +39,11 @@ public class GraphDrivesListService extends AbstractDriveListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> children = new AttributedList<>();
         // In most cases, OneDrive and OneDrive for Business users will only have a single
         // drive available, the default drive. When using OneDrive API with a SharePoint team site,
         // this API returns the collection of document libraries created in the site.
         final OneDriveDrivesIterator iter = new OneDriveDrivesIterator(session.getClient());
-        this.iterate(iter, directory, children, listener);
-
-        return children;
+        return this.iterate(iter, directory, listener);
     }
 
     @Override

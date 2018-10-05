@@ -37,13 +37,9 @@ public class SharepointGroupDrivesListService extends AbstractDriveListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> children = new AttributedList<>();
-
         final GroupItem group = new GroupItem(session.getClient(), directory.attributes().getVersionId());
         final GroupDrivesIterator iterator = new GroupDrivesIterator(session.getClient(), group);
-        this.iterate(iterator, directory, children, listener);
-
-        return children;
+        return this.iterate(iterator, directory, listener);
     }
 
     @Override

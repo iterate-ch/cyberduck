@@ -34,7 +34,8 @@ import java.util.Iterator;
 public abstract class AbstractDriveListService implements ListService {
     private static final Logger log = Logger.getLogger(AbstractDriveListService.class);
 
-    protected final void iterate(final Iterator<OneDriveDrive.Metadata> iterator, final Path directory, final AttributedList<Path> children, final ListProgressListener listener) throws BackgroundException {
+    protected final AttributedList<Path> iterate(final Iterator<OneDriveDrive.Metadata> iterator, final Path directory, final ListProgressListener listener) throws BackgroundException {
+        final AttributedList<Path> children = new AttributedList<>();
         while(iterator.hasNext()) {
             final OneDriveDrive.Metadata metadata;
             try {
@@ -44,19 +45,17 @@ public abstract class AbstractDriveListService implements ListService {
                 log.warn(e.getMessage());
                 continue;
             }
-
             final PathAttributes attributes = new PathAttributes();
             attributes.setVersionId(metadata.getId());
             attributes.setSize(metadata.getTotal());
-
             String name = metadata.getName();
             if(StringUtils.isBlank(metadata.getName())) {
                 name = metadata.getId();
             }
-
             children.add(new Path(directory, name, EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
             listener.chunk(directory, children);
         }
+        return children;
     }
 
     @Override
