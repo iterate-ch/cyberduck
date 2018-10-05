@@ -21,7 +21,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -38,9 +37,6 @@ import java.util.Iterator;
 
 public class GraphItemListService implements ListService {
     private static final Logger log = Logger.getLogger(GraphItemListService.class);
-
-    private final PathContainerService containerService
-        = new PathContainerService();
 
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;

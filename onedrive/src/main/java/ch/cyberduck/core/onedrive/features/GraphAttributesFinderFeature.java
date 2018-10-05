@@ -20,11 +20,10 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphSession;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
@@ -39,9 +38,6 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(GraphAttributesFinderFeature.class);
 
     private final GraphSession session;
-
-    private final PathContainerService containerService
-        = new PathContainerService();
 
     public GraphAttributesFinderFeature(final GraphSession session) {
         this.session = session;
