@@ -112,10 +112,6 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         return (OneDriveFolder) item;
     }
 
-    protected IdProvider fileIdProvider() {
-        return fileIdProvider;
-    }
-
     @Override
     protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
         authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol()) {
