@@ -45,7 +45,7 @@ public class S3StorageClassFeatureTest {
 
     @Test
     public void testGetClasses() throws Exception {
-        assertEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER),
+        assertEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, "ONEZONE_IA", S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER),
                 new S3StorageClassFeature(new S3Session(new Host(new S3Protocol()))).getClasses());
     }
 
