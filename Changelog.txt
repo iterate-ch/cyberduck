@@ -1,6 +1,14 @@
 Cyberduck
 https://cyberduck.io/
 
+6.8.1
+- [Bugfix] Interoperability with OpenStack Swift (S3 middleware) (#10471)
+- [Bugfix] Failure opening Terminal.app (#10475)
+- [Bugfix] Crash when dragging multiple files (macOS) (#10479)
+- [Bugfix] Add One Zone-Infrequent Access storage class (S3) (#10481)
+- [Bugfix] Improvements to dark mode (macOS) (#10486)
+- [Bugfix] Smart card insert prompt displayed when opening connection (Windows) (#8595)
+
 6.8.0
 - [Feature] Support dark mode (macOS Mojave) (#10348)
 - [Bugfix] Display scaling is broken for some input components (Windows) (#10443)
