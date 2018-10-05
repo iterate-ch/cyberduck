@@ -41,7 +41,7 @@ public class SharepointGroupDrivesListService extends AbstractDriveListService {
 
         final GroupItem group = new GroupItem(session.getClient(), directory.attributes().getVersionId());
         final GroupDrivesIterator iterator = new GroupDrivesIterator(session.getClient(), group);
-        run(iterator, directory, children, listener);
+        this.iterate(iterator, directory, children, listener);
 
         return children;
     }

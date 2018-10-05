@@ -44,7 +44,7 @@ public class GraphDrivesListService extends AbstractDriveListService {
         // drive available, the default drive. When using OneDrive API with a SharePoint team site,
         // this API returns the collection of document libraries created in the site.
         final OneDriveDrivesIterator iter = new OneDriveDrivesIterator(session.getClient());
-        run (iter, directory, children, listener);
+        this.iterate(iter, directory, children, listener);
 
         return children;
     }

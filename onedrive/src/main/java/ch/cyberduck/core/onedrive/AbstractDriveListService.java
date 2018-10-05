@@ -27,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveRuntimeException;
-import org.nuxeo.onedrive.client.resources.GroupItem;
 
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -35,10 +34,7 @@ import java.util.Iterator;
 public abstract class AbstractDriveListService implements ListService {
     private static final Logger log = Logger.getLogger(AbstractDriveListService.class);
 
-    public AbstractDriveListService() {
-    }
-
-    protected final void run(final Iterator<OneDriveDrive.Metadata> iterator, final Path directory, final AttributedList<Path> children, final ListProgressListener listener) throws BackgroundException {
+    protected final void iterate(final Iterator<OneDriveDrive.Metadata> iterator, final Path directory, final AttributedList<Path> children, final ListProgressListener listener) throws BackgroundException {
         while(iterator.hasNext()) {
             final OneDriveDrive.Metadata metadata;
             try {
@@ -54,7 +50,7 @@ public abstract class AbstractDriveListService implements ListService {
             attributes.setSize(metadata.getTotal());
 
             String name = metadata.getName();
-            if (StringUtils.isBlank(metadata.getName())) {
+            if(StringUtils.isBlank(metadata.getName())) {
                 name = metadata.getId();
             }
 
