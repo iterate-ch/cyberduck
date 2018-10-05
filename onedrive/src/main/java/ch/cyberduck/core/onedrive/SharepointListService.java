@@ -20,10 +20,20 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
 
+import java.util.EnumSet;
+
 public class SharepointListService implements ListService {
+
+    private static final String DEFAULT_ID = "DEFAULT_NAME";
+    private static final String GROUPS_ID = "GROUPS_NAME";
+
+    public static final Path DEFAULT_NAME = new Path("/Default", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DEFAULT_ID));
+    public static final Path GROUPS_NAME = new Path("/Groups", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
+
     private final SharepointSession session;
     private final IdProvider idProvider;
 
@@ -36,19 +46,19 @@ public class SharepointListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
             final AttributedList<Path> list = new AttributedList<>();
-            list.add(SharepointSession.DEFAULT_NAME);
-            list.add(SharepointSession.GROUPS_NAME);
+            list.add(DEFAULT_NAME);
+            list.add(GROUPS_NAME);
             listener.chunk(directory, list);
             return list;
         }
         else {
-            if(SharepointSession.DEFAULT_NAME.equals(directory)) {
+            if(DEFAULT_NAME.equals(directory)) {
                 return new GraphDrivesListService(session).list(directory, listener);
             }
-            else if(SharepointSession.GROUPS_NAME.equals(directory)) {
+            else if(GROUPS_NAME.equals(directory)) {
                 return new SharepointGroupListService(session).list(directory, listener);
             }
-            else if (SharepointSession.GROUPS_NAME.equals(directory.getParent())) {
+            else if(GROUPS_NAME.equals(directory.getParent())) {
                 return new SharepointGroupDrivesListService(session).list(directory, listener);
             }
             return new GraphItemListService(session).list(directory, listener);

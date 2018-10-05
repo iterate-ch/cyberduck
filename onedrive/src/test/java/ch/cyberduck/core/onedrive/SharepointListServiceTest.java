@@ -45,14 +45,14 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
 
     @Test
     public void testListDefault() throws Exception {
-        final AttributedList<Path> list = createListService().list(SharepointSession.DEFAULT_NAME, new DisabledListProgressListener());
+        final AttributedList<Path> list = createListService().list(SharepointListService.DEFAULT_NAME, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertEquals(2, list.size());
     }
 
     @Test
     public void testListGroups() throws Exception {
-        final AttributedList<Path> list = createListService().list(SharepointSession.GROUPS_NAME, new DisabledListProgressListener());
+        final AttributedList<Path> list = createListService().list(SharepointListService.GROUPS_NAME, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertEquals(2, list.size());
     }
@@ -61,7 +61,7 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
     public void testListGroup() throws Exception {
         final AttributedList<Path> list = createListService()
             .list(new Path(
-                SharepointSession.GROUPS_NAME, "bbe48dd5-3952-4940-9989-919042b8924c",
+                SharepointListService.GROUPS_NAME, "bbe48dd5-3952-4940-9989-919042b8924c",
                 EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("bbe48dd5-3952-4940-9989-919042b8924c")), new DisabledListProgressListener());
     }
 }
