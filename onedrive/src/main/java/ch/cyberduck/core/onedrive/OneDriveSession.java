@@ -19,30 +19,26 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.*;
-import ch.cyberduck.core.onedrive.features.*;
+import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
+import ch.cyberduck.core.onedrive.features.OneDriveQuotaFeature;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePackageItem;
-import org.nuxeo.onedrive.client.OneDriveRemoteItem;
 
 public class OneDriveSession extends GraphSession {
-    private final Logger logger = Logger.getLogger(OneDriveSession.class);
-
-    private final PathContainerService containerService
-        = new PathContainerService();
 
     public OneDriveSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -108,61 +104,5 @@ public class OneDriveSession extends GraphSession {
             return (T) new OneDriveQuotaFeature(this);
         }
         return super._getFeature(type);
-    }
-
-    private class OneDriveItemWrapper {
-        private boolean resolveLastItem;
-        private OneDriveItem item;
-        private OneDriveItem.Metadata itemMetadata;
-
-        public OneDriveItem getItem() {
-            return item;
-        }
-
-        public OneDriveItem.Metadata getItemMetadata() {
-            return itemMetadata;
-        }
-
-        public boolean isDefined() {
-            return null != item;
-        }
-
-        public boolean shouldResolveLastItem() {
-            return resolveLastItem;
-        }
-
-        public OneDriveItemWrapper(boolean resolveLastItem) {
-            this.resolveLastItem = resolveLastItem;
-        }
-
-        public void setItem(OneDriveItem item, OneDriveItem.Metadata itemMetadata) {
-            this.item = item;
-            this.itemMetadata = itemMetadata;
-        }
-
-        public void resolveItem() {
-            if(item instanceof OneDriveRemoteItem) {
-                itemMetadata = ((OneDriveRemoteItem.Metadata) itemMetadata).getRemoteItem();
-                item = itemMetadata.getResource();
-            }
-        }
-    }
-
-    private class SearchResult {
-        private final boolean foundChild;
-        private final OneDriveItem.Metadata child;
-
-        public boolean isFoundChild() {
-            return foundChild;
-        }
-
-        public OneDriveItem.Metadata getChild() {
-            return child;
-        }
-
-        public SearchResult(boolean foundChild, OneDriveItem.Metadata child) {
-            this.foundChild = foundChild;
-            this.child = child;
-        }
     }
 }
