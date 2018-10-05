@@ -21,9 +21,12 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.Versioning;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.model.MultipartUpload;
@@ -34,6 +37,9 @@ public class S3ListService implements ListService {
     private static final Logger log = Logger.getLogger(S3ListService.class);
 
     private final S3Session session;
+
+    private final PathContainerService containerService
+        = new S3PathContainerService();
 
     public S3ListService(final S3Session session) {
         this.session = session;
@@ -47,11 +53,19 @@ public class S3ListService implements ListService {
         }
         else {
             AttributedList<Path> objects;
-            try {
-                objects = new S3VersionedObjectListService(session).list(directory, listener);
+            final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                containerService.getContainer(directory)
+            ) : VersioningConfiguration.empty();
+            if(versioning.isEnabled()) {
+                try {
+                    objects = new S3VersionedObjectListService(session).list(directory, listener);
+                }
+                catch(AccessDeniedException | InteroperabilityException e) {
+                    log.warn(String.format("Ignore failure listing versioned objects. %s", e.getDetail()));
+                    objects = new S3ObjectListService(session).list(directory, listener);
+                }
             }
-            catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure listing versioned objects. %s", e.getDetail()));
+            else {
                 objects = new S3ObjectListService(session).list(directory, listener);
             }
             try {

@@ -24,6 +24,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.RootListService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
@@ -68,7 +69,7 @@ public class AzureContainerListService implements RootListService {
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setETag(container.getProperties().getEtag());
                     attributes.setModificationDate(container.getProperties().getLastModified().getTime());
-                    containers.add(new Path(String.format("/%s", container.getName()),
+                    containers.add(new Path(PathNormalizer.normalize(container.getName()),
                             EnumSet.of(Path.Type.volume, Path.Type.directory), attributes));
                 }
                 listener.chunk(directory, containers);

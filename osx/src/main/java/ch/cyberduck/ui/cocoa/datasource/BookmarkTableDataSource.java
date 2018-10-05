@@ -422,7 +422,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                             }
                             // Upload to the remote host this bookmark points to
                             uploads.add(new TransferItem(
-                                    new Path(new Path(PathNormalizer.normalize(h.getDefaultPath(), true), EnumSet.of(Path.Type.directory)),
+                                new Path(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.directory)),
                                             local.getName(), EnumSet.of(Path.Type.file)),
                                     local
                             ));

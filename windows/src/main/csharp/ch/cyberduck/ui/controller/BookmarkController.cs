@@ -608,7 +608,7 @@ namespace Ch.Cyberduck.Ui.Controller
             List<string> keys = new List<string> {LocaleFactory.localizedString("None")};
             if(_options.certificate())
             {
-                foreach (String certificate in Utils.ConvertFromJavaList<String>(new KeychainX509KeyManager(_host).list()))
+                foreach (String certificate in SystemCertificateStore.ListAliases())
                 {
                     keys.Add(certificate);
                 }

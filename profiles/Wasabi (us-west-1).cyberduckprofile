@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+  ~ Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
   ~ https://cyberduck.io/
   ~
   ~ This program is free software; you can redistribute it and/or modify
@@ -22,9 +22,11 @@
         <key>Vendor</key>
         <string>wasabisys</string>
         <key>Description</key>
-        <string>Wasabi Storage (S3)</string>
+        <string>Wasabi Storage (us-west-1)</string>
         <key>Default Hostname</key>
-        <string>s3.wasabisys.com</string>
+        <string>s3.us-west-1.wasabisys.com</string>
+        <key>Hostname Configurable</key>
+        <false/>
         <key>Default Port</key>
         <string>443</string>
         <key>Username Placeholder</key>
@@ -33,5 +35,9 @@
         <string>Secret Key</string>
         <key>Authorization</key>
         <string>AWS4HMACSHA256</string>
+        <key>Regions</key>
+        <array>
+            <string>us-west-1</string>
+        </array>
     </dict>
 </plist>

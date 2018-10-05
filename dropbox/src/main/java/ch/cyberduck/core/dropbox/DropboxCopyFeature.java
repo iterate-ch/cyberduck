@@ -43,7 +43,7 @@ public class DropboxCopyFeature implements Copy {
                 new DropboxDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
             }
             // If the source path is a folder all its contents will be copied.
-            new DbxUserFilesRequests(session.getClient()).copy(source.getAbsolute(), target.getAbsolute());
+            new DbxUserFilesRequests(session.getClient()).copyV2(source.getAbsolute(), target.getAbsolute());
             return target;
         }
         catch(DbxException e) {

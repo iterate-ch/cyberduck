@@ -115,12 +115,11 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     }
 
     private void setPath(final String absolute) {
-        if(absolute.equals(String.valueOf(Path.DELIMITER))) {
-            this._setPath(null, PathNormalizer.name(absolute));
+        if(String.valueOf(Path.DELIMITER).equals(absolute)) {
+            this._setPath(null, absolute);
         }
         else {
-            final Path parent = new Path(PathNormalizer.parent(PathNormalizer.normalize(absolute, true), Path.DELIMITER),
-                EnumSet.of(Type.directory));
+            final Path parent = new Path(PathNormalizer.parent(absolute, Path.DELIMITER), EnumSet.of(Type.directory));
             parent.attributes().setRegion(attributes.getRegion());
             if(parent.isRoot()) {
                 parent.setType(EnumSet.of(Type.volume, Type.directory));

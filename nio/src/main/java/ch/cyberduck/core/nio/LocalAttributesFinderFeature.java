@@ -58,7 +58,7 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
         final PathAttributes attributes = new PathAttributes();
         final Class<? extends BasicFileAttributes> provider = isPosix ? PosixFileAttributes.class : DosFileAttributes.class;
         final BasicFileAttributes a = Files.readAttributes(file, provider, LinkOption.NOFOLLOW_LINKS);
-        if(Files.isRegularFile(file)) {
+        if(a.isRegularFile()) {
             attributes.setSize(a.size());
         }
         attributes.setModificationDate(a.lastModifiedTime().toMillis());

@@ -1,5 +1,6 @@
 package ch.cyberduck.core.local;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -180,6 +181,24 @@ public class LocalTest {
         assertTrue(n.exists());
         assertTrue(l.exists());
         n.delete();
+    }
+
+    @Test
+    public void testOpenInputStream() throws Exception {
+        Local l = new TestLocal(String.format("%s/%s", System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random()));
+        new DefaultLocalTouchFeature().touch(l);
+        assertNotNull(l.getInputStream());
+        l.delete();
+    }
+
+    @Test
+    public void testOpenOutputStream() throws Exception {
+        Local l = new TestLocal(String.format("%s/%s", System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random()));
+        assertNotNull(l.getOutputStream(false));
+        new DefaultLocalTouchFeature().touch(l);
+        assertNotNull(l.getOutputStream(false));
+        assertNotNull(l.getOutputStream(true));
+        l.delete();
     }
 
     @Test

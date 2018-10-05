@@ -85,6 +85,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -539,22 +540,22 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 // The array elements can consist of file extensions and HFS types encoded
                 // with the NSHFSFileTypes method fileTypeForHFSTypeCode. If promising a directory
                 // of files, only include the top directory in the array.
-                final NSMutableArray fileTypes = NSMutableArray.array();
+                final Set<String> fileTypes = new LinkedHashSet<>();
                 final PathPasteboard pasteboard = controller.getPasteboard();
                 for(final Path f : selected) {
                     if(f.isFile()) {
                         if(StringUtils.isNotBlank(f.getExtension())) {
-                            fileTypes.addObject(NSString.stringWithString(f.getExtension()));
+                            fileTypes.add(f.getExtension());
                         }
                         else {
-                            fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeRegular));
+                            fileTypes.add(NSFileManager.NSFileTypeRegular);
                         }
                     }
                     else if(f.isDirectory()) {
-                        fileTypes.addObject(NSString.stringWithString("'fldr'")); //NSFileTypeForHFSTypeCode('fldr')
+                        fileTypes.add("'fldr'"); //NSFileTypeForHFSTypeCode('fldr')
                     }
                     else {
-                        fileTypes.addObject(NSString.stringWithString(NSFileManager.NSFileTypeUnknown));
+                        fileTypes.add(NSFileManager.NSFileTypeUnknown);
                     }
                     // Writing data for private use when the item gets dragged to the transfer queue.
                     pasteboard.add(f);
@@ -563,7 +564,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(event != null) {
                     NSPoint dragPosition = view.convertPoint_fromView(event.locationInWindow(), null);
                     NSRect imageRect = new NSRect(new NSPoint(dragPosition.x.doubleValue() - 16, dragPosition.y.doubleValue() - 16), new NSSize(32, 32));
-                    view.dragPromisedFilesOfTypes(fileTypes, imageRect, this.id(), true, event);
+                    view.dragPromisedFilesOfTypes(NSMutableArray.arrayWithObject(fileTypes.iterator().next()), imageRect, this.id(), true, event);
                     // @see http://www.cocoabuilder.com/archive/message/cocoa/2003/5/15/81424
                     return true;
                 }

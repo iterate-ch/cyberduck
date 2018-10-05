@@ -272,7 +272,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
             if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
                 return controller.getSession().getFeature(Versioning.class) != null &&
-                    controller.getSelectedPath().attributes().isDuplicate();
+                    controller.getSession().getFeature(Versioning.class).isRevertable(controller.getSelectedPath());
             }
             return false;
         }

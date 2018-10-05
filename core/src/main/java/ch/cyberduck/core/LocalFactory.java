@@ -29,6 +29,9 @@ public final class LocalFactory extends Factory<Local> {
 
     private static final LocalFactory factory = new LocalFactory();
 
+    private final Constructor<Local> constructor
+        = ConstructorUtils.getMatchingAccessibleConstructor(clazz, String.class);
+
     protected LocalFactory() {
         super("factory.local.class");
     }
@@ -40,7 +43,6 @@ public final class LocalFactory extends Factory<Local> {
 
     protected Local create(final String path) {
         try {
-            final Constructor<Local> constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, path.getClass());
             return constructor.newInstance(path);
         }
         catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {

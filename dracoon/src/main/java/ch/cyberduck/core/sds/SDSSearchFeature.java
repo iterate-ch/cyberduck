@@ -66,7 +66,7 @@ public class SDSSearchFeature implements Search {
                         type = EnumSet.of(Path.Type.file);
                         break;
                 }
-                result.add(new Path(new Path(node.getParentPath(), EnumSet.of(Path.Type.directory)), node.getName(), type, attributes));
+                result.add(new Path(String.format("%s%s", node.getParentPath(), node.getName()), type, attributes));
             }
             return result;
         }

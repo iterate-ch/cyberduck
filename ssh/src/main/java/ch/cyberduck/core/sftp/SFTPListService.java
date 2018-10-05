@@ -23,6 +23,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -99,11 +100,10 @@ public class SFTPListService implements ListService {
             try {
                 final String link = session.sftp().readLink(file.getAbsolute());
                 if(link.startsWith(String.valueOf(Path.DELIMITER))) {
-                    target = new Path(link, EnumSet.of(Path.Type.file));
+                    target = new Path(PathNormalizer.normalize(link), EnumSet.of(Path.Type.file));
                 }
                 else {
-                    target = new Path(String.format("%s/%s", file.getParent().getAbsolute(), link),
-                        EnumSet.of(Path.Type.file));
+                    target = new Path(PathNormalizer.normalize(String.format("%s/%s", file.getParent().getAbsolute(), link)), EnumSet.of(Path.Type.file));
                 }
                 try {
                     if(session.sftp().stat(target.getAbsolute()).getType().equals(FileMode.Type.DIRECTORY)) {

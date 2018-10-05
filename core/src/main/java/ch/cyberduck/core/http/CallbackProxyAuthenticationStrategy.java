@@ -145,7 +145,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                     MessageFormat.format(LocaleFactory.localizedString(
                         "Login {0} with username and password", "Credentials"), authhost.getHostName()),
                     new LoginOptions()
-                        .icon(bookmark.getProtocol().disk())
+                        .icon(bookmark.getProtocol().icon())
                         .usernamePlaceholder(LocaleFactory.localizedString("Username", "Credentials"))
                         .passwordPlaceholder(LocaleFactory.localizedString("Password", "Credentials"))
                         .user(true).password(true)

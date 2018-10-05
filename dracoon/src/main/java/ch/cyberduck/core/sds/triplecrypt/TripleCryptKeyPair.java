@@ -54,7 +54,7 @@ public class TripleCryptKeyPair {
                 new LoginOptions(bookmark.getProtocol())
                     .user(false).password(true)
                     .anonymous(false)
-                    .icon(bookmark.getProtocol().disk())
+                    .icon(bookmark.getProtocol().icon())
             );
             if(credentials.getPassword() == null) {
                 throw new LoginCanceledException();

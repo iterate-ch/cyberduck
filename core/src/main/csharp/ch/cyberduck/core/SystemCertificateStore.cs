@@ -17,6 +17,7 @@
 // 
 
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
@@ -191,6 +192,25 @@ namespace Ch.Cyberduck.Core
                 }
             }
             return true;
+        }
+
+        public static IList<string> ListAliases()
+        {
+            X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+            IList<string> certs = new List<string>();
+            try
+            {
+                store.Open(OpenFlags.ReadOnly);
+                foreach (X509Certificate2 certificate in store.Certificates)
+                {
+                    certs.Add(certificate.GetNameInfo(X509NameType.SimpleName, false));
+                }
+            }
+            finally
+            {
+                store.Close();
+            }
+            return certs;
         }
 
         public static X509Certificate2 ConvertCertificate(X509Certificate certificate)

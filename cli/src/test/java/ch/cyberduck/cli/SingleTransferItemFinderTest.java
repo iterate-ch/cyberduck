@@ -75,7 +75,7 @@ public class SingleTransferItemFinderTest {
         final String temp = System.getProperty("java.io.tmpdir");
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "ftps://test.cyberduck.ch/remote/", String.format("%s/f", temp)});
 
-        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote/", EnumSet.of(Path.Type.directory)));
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote", EnumSet.of(Path.Type.directory)));
         assertFalse(found.isEmpty());
         assertEquals(new TransferItem(new Path("/remote/f", EnumSet.of(Path.Type.file)), LocalFactory.get(String.format("%s/f", temp))),
             found.iterator().next());
@@ -86,7 +86,7 @@ public class SingleTransferItemFinderTest {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--upload", "ftps://test.cyberduck.ch/remote/", System.getProperty("java.io.tmpdir")});
 
-        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote/", EnumSet.of(Path.Type.directory)));
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.upload, new Path("/remote", EnumSet.of(Path.Type.directory)));
         assertFalse(found.isEmpty());
         final Iterator<TransferItem> iter = found.iterator();
         final Local temp = LocalFactory.get(System.getProperty("java.io.tmpdir"));
@@ -126,7 +126,7 @@ public class SingleTransferItemFinderTest {
         final String temp = System.getProperty("java.io.tmpdir");
         final CommandLine input = parser.parse(TerminalOptionsBuilder.options(), new String[]{"--download", "ftps://test.cyberduck.ch/remote/", temp});
 
-        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/remote/", EnumSet.of(Path.Type.directory)));
+        final Set<TransferItem> found = new SingleTransferItemFinder().find(input, TerminalAction.download, new Path("/remote", EnumSet.of(Path.Type.directory)));
         assertFalse(found.isEmpty());
         final Iterator<TransferItem> iter = found.iterator();
         assertEquals(new TransferItem(new Path("/remote", EnumSet.of(Path.Type.directory)), LocalFactory.get(String.format("%s/remote", temp))),

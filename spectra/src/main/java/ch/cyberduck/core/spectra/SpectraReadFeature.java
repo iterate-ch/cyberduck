@@ -36,7 +36,7 @@ import java.util.List;
 public class SpectraReadFeature implements Read {
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final SpectraSession session;
 
@@ -59,19 +59,19 @@ public class SpectraReadFeature implements Read {
         try {
             for(TransferStatus chunk : chunks) {
                 final InputStream in = session.getClient().getObjectImpl(
-                        false,
-                        containerService.getContainer(file).getName(),
-                        containerService.getKey(file),
-                        null, // ifModifiedSince
-                        null, // ifUnmodifiedSince
-                        null, // ifMatch
-                        null, // ifNoneMatch
-                        null,
-                        null,
-                        null,
-                        new HashMap<String, Object>(),
-                        chunk.getParameters())
-                        .getDataInputStream();
+                    false,
+                    containerService.getContainer(file).getName(),
+                    containerService.getKey(file),
+                    null, // ifModifiedSince
+                    null, // ifUnmodifiedSince
+                    null, // ifMatch
+                    null, // ifNoneMatch
+                    null,
+                    null,
+                    file.attributes().getVersionId(),
+                    new HashMap<String, Object>(),
+                    chunk.getParameters())
+                    .getDataInputStream();
                 streams.add(in);
             }
             // Concatenate streams

@@ -1300,7 +1300,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setDownloadSkipRegexField(NSTextView t) {
         this.downloadSkipRegexField = t;
-        this.downloadSkipRegexField.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
+        this.downloadSkipRegexField.setFont(NSFont.monospacedDigitSystemFontOfSize(9.0f));
         this.downloadSkipRegexField.setString(preferences.getProperty("queue.download.skip.regex"));
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("downloadSkipRegexFieldDidChange:"),
@@ -1365,7 +1365,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setUploadSkipRegexField(NSTextView b) {
         this.uploadSkipRegexField = b;
-        this.uploadSkipRegexField.setFont(NSFont.userFixedPitchFontOfSize(9.0f));
+        this.uploadSkipRegexField.setFont(NSFont.monospacedDigitSystemFontOfSize(9.0f));
         this.uploadSkipRegexField.setString(preferences.getProperty("queue.upload.skip.regex"));
         notificationCenter.addObserver(this.id(),
                 Foundation.selector("uploadSkipRegexFieldDidChange:"),
@@ -1963,8 +1963,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopup.removeAllItems();
         this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3"));
         this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_STANDARD);
-        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString("STANDARD_IA", "S3"));
-        this.defaultStorageClassPopup.lastItem().setRepresentedObject("STANDARD_IA");
+        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, "S3"));
+        this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_INFREQUENT_ACCESS);
+        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString("ONEZONE_IA", "S3"));
+        this.defaultStorageClassPopup.lastItem().setRepresentedObject("ONEZONE_IA");
         this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"));
         this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         this.defaultStorageClassPopup.setTarget(this.id());

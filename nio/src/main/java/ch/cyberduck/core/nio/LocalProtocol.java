@@ -93,7 +93,7 @@ public class LocalProtocol extends AbstractProtocol {
 
     @Override
     public String getDefaultHostname() {
-        return LOCAL_HOSTNAME;
+        return InetAddress.getLoopbackAddress().getHostName();
     }
 
     @Override

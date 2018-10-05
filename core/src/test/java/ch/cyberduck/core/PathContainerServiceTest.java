@@ -30,7 +30,7 @@ public class PathContainerServiceTest {
         final PathContainerService s = new PathContainerService();
         assertFalse(s.isContainer(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertTrue(s.isContainer(new Path("/t", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(s.isContainer(new Path("/t/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertTrue(s.isContainer(new Path(PathNormalizer.normalize("/t/"), EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertFalse(s.isContainer(new Path("/t/a", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 

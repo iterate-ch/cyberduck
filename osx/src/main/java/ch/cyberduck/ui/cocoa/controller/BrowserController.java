@@ -1812,6 +1812,7 @@ public class BrowserController extends WindowController
         this.editBookmarkButton.setEnabled(false);
         this.editBookmarkButton.setTarget(this.id());
         this.editBookmarkButton.setAction(Foundation.selector("editBookmarkButtonClicked:"));
+        this.editBookmarkButton.image().setTemplate(true);
     }
 
     @Action
@@ -1837,6 +1838,7 @@ public class BrowserController extends WindowController
         this.addBookmarkButton = addBookmarkButton;
         this.addBookmarkButton.setTarget(this.id());
         this.addBookmarkButton.setAction(Foundation.selector("addBookmarkButtonClicked:"));
+        this.addBookmarkButton.image().setTemplate(true);
     }
 
     @Action
@@ -1876,6 +1878,7 @@ public class BrowserController extends WindowController
         this.deleteBookmarkButton.setEnabled(false);
         this.deleteBookmarkButton.setTarget(this.id());
         this.deleteBookmarkButton.setAction(Foundation.selector("deleteBookmarkButtonClicked:"));
+        this.deleteBookmarkButton.image().setTemplate(true);
     }
 
     @Action

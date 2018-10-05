@@ -1,6 +1,13 @@
 Cyberduck
 https://cyberduck.io/
 
+6.8.0
+- [Feature] Support dark mode (macOS Mojave) (#10348)
+- [Bugfix] Display scaling is broken for some input components (Windows) (#10443)
+- [Bugfix] Missing session token when making the AssumeRoleRequest to obtain the cross account credentials from STS (S3) (#10432)
+- [Bugfix] Interoperability with AWS Snowball (S3) (#10458)
+- [Bugfix] No modification date displayed (Rackspace Cloudfiles) (#10446)
+
 6.7.1
 - [Bugfix] Failure uploading to OneDrive Deutschland (OneDrive)
 - [Bugfix] Updated localizations
