@@ -54,7 +54,7 @@ public class DriveFileidProvider implements IdProvider {
         }
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+            final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
                 if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
                     return found.attributes().getVersionId();
