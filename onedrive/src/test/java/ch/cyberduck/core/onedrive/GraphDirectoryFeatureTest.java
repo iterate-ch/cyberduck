@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
-import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -53,7 +52,7 @@ public class GraphDirectoryFeatureTest extends AbstractOneDriveTest {
         final String name = String.format("%s %s", randomStringService.random(), randomStringService.random());
         final Path target = new GraphDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), name, EnumSet.of(Path.Type.directory)), null, null);
         assertEquals(name, target.getName());
-        final AttributedList<Path> list = new OneDriveListService(session, new GraphFileIdProvider(session)).list(new OneDriveHomeFinderFeature(session).find(), new DisabledListProgressListener());
+        final AttributedList<Path> list = new OneDriveListService(session).list(new OneDriveHomeFinderFeature(session).find(), new DisabledListProgressListener());
         assertTrue(list.contains(target));
         assertNotNull(new GraphAttributesFinderFeature(session).find(target, new DisabledListProgressListener()).getETag());
         new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());

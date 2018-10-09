@@ -20,32 +20,31 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.IdProvider;
 
 public class OneDriveListService implements ListService {
 
     private final OneDriveSession session;
-    private final IdProvider fileIdProvider;
+    private Cache<Path> cache = PathCache.empty();
 
-    public OneDriveListService(final OneDriveSession session, final IdProvider fileIdProvider) {
+    public OneDriveListService(final OneDriveSession session) {
         this.session = session;
-        this.fileIdProvider = fileIdProvider;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new GraphDrivesListService(session).list(directory, listener);
+            return new GraphDrivesListService(session).withCache(cache).list(directory, listener);
         }
         else {
-            return new GraphItemListService(session).list(directory, listener);
+            return new GraphItemListService(session).withCache(cache).list(directory, listener);
         }
     }
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
-        fileIdProvider.withCache(cache);
+        this.cache = cache;
         return this;
     }
 }
