@@ -41,7 +41,7 @@ public class SharepointSession extends GraphSession {
 
     @Override
     public OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
-        final String versionId = this.getFeature(IdProvider.class).getFileid(currentPath, new DisabledListProgressListener());
+        final String versionId = fileIdProvider.getFileid(currentPath, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", currentPath.getAbsolute()));
         }

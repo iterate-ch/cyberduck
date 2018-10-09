@@ -76,7 +76,7 @@ import java.util.Set;
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     private OAuth2RequestInterceptor authorizationService;
 
-    private final GraphFileIdProvider fileIdProvider = new GraphFileIdProvider(this);
+    protected final GraphFileIdProvider fileIdProvider = new GraphFileIdProvider(this);
 
     protected GraphSession(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key) {
         super(host, trust, key);

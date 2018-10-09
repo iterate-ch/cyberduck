@@ -23,7 +23,6 @@ import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
@@ -50,7 +49,7 @@ public class OneDriveSession extends GraphSession {
      */
     @Override
     public OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
-        final String versionId = this.getFeature(IdProvider.class).getFileid(currentPath, new DisabledListProgressListener());
+        final String versionId = fileIdProvider.getFileid(currentPath, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", currentPath.getAbsolute()));
         }
@@ -90,7 +89,7 @@ public class OneDriveSession extends GraphSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new OneDriveListService(this, this.getFeature(IdProvider.class));
+            return (T) new OneDriveListService(this);
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();
