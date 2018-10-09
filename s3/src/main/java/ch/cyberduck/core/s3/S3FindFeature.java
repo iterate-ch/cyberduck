@@ -27,10 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 
-import org.apache.log4j.Logger;
-
 public class S3FindFeature implements Find {
-    private static final Logger log = Logger.getLogger(S3AttributesFinderFeature.class);
 
     private final S3Session session;
 
