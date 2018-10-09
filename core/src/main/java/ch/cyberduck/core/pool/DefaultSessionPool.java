@@ -51,7 +51,7 @@ public class DefaultSessionPool implements SessionPool {
     private static final int POOL_WARNING_THRESHOLD = 5;
 
     private final FailureDiagnostics<BackgroundException> diagnostics
-            = new DefaultFailureDiagnostics();
+        = new DefaultFailureDiagnostics();
 
     private final ConnectionService connect;
     private final TranscriptListener transcript;
@@ -72,7 +72,7 @@ public class DefaultSessionPool implements SessionPool {
         this.cache = cache;
         this.bookmark = bookmark;
         this.transcript = transcript;
-        final GenericObjectPoolConfig configuration = new GenericObjectPoolConfig();
+        final GenericObjectPoolConfig<Session> configuration = new GenericObjectPoolConfig<Session>();
         configuration.setJmxEnabled(false);
         configuration.setEvictionPolicyClassName(CustomPoolEvictionPolicy.class.getName());
         configuration.setBlockWhenExhausted(true);

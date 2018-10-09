@@ -37,6 +37,11 @@ public class FTPProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isStateful() {
+        return true;
+    }
+
+    @Override
     public String getDescription() {
         return LocaleFactory.localizedString("FTP (File Transfer Protocol)");
     }

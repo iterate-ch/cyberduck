@@ -3354,7 +3354,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerMoveWorker(BrowserController controller, Map files, PathCache cache)
                     : base(files,
-                        controller.Session is StatefulSessionPool
+                        controller.Session.getHost().getProtocol().isStateful()
                             ? SessionPoolFactory.create(controller, cache, controller.Session.getHost())
                             : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
 {
@@ -3387,7 +3387,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerCopyWorker(BrowserController controller, Map files, PathCache cache)
                     : base(files,
-                        controller.Session is StatefulSessionPool
+                        controller.Session.getHost().getProtocol().isStateful()
                             ? SessionPoolFactory.create(controller, cache, controller.Session.getHost())
                             : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
                 {

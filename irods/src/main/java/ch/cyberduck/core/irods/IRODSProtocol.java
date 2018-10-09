@@ -36,6 +36,11 @@ public final class IRODSProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isStateful() {
+        return true;
+    }
+
+    @Override
     public Scheme getScheme() {
         return Scheme.irods;
     }

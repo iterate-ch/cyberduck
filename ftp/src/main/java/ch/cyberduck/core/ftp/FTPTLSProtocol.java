@@ -41,6 +41,11 @@ public class FTPTLSProtocol extends AbstractProtocol {
     }
 
     @Override
+    public boolean isStateful() {
+        return true;
+    }
+
+    @Override
     public String getName() {
         return "FTP-SSL";
     }
