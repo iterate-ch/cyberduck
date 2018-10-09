@@ -74,6 +74,7 @@ public class GraphItemListService implements ListService {
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
+        attributes.withCache(cache);
         return this;
     }
 
