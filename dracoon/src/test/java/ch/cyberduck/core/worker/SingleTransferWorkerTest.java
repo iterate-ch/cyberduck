@@ -17,6 +17,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -87,8 +88,8 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
         final String versionId = out.getStatus().id;
-        assertEquals(versionId, new SDSAttributesFinderFeature(session, fileid).find(test).getVersionId());
-        assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test).getVersionId());
+        assertEquals(versionId, new SDSAttributesFinderFeature(session, fileid).find(test, new DisabledListProgressListener()).getVersionId());
+        assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getVersionId());
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
@@ -102,7 +103,7 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         byte[] compare = new byte[content.length];
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
         test.attributes().setVersionId(versionId);
-        assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test).getVersionId());
+        assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getVersionId());
         new SDSDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile.delete();
         session.close();

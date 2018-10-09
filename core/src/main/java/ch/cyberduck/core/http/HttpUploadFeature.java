@@ -19,6 +19,7 @@ package ch.cyberduck.core.http;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -56,8 +57,8 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        return writer.append(file, length, cache);
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
+        return writer.append(file, length, cache, listener);
     }
 
     @Override

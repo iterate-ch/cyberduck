@@ -60,15 +60,9 @@ public class ResumeFilterTest {
                 if(type == Find.class) {
                     return (T) new Find() {
                         @Override
-                        public boolean find(final Path file) throws BackgroundException {
+                        public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                             return true;
                         }
-
-                        @Override
-                        public Find withCache(Cache<Path> cache) {
-                            return this;
-                        }
-
                     };
                 }
                 return super._getFeature(type);
@@ -170,7 +164,7 @@ public class ResumeFilterTest {
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
-            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+            public Write.Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
                 return new Write.Append(length);
             }
         });
@@ -205,7 +199,7 @@ public class ResumeFilterTest {
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
-            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+            public Write.Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
                 return new Write.Append(length - 1);
             }
         });
@@ -245,7 +239,7 @@ public class ResumeFilterTest {
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
-            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+            public Write.Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
                 return new Write.Append(length + 1);
             }
         });

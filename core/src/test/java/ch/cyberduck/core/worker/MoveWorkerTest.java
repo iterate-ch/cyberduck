@@ -17,21 +17,22 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
@@ -40,6 +41,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
@@ -52,6 +54,43 @@ public class MoveWorkerTest {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
+                if(type == Delete.class) {
+                    return (T) new Delete() {
+                        @Override
+                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+                            //
+                        }
+
+                        @Override
+                        public boolean isSupported(final Path file) {
+                            return true;
+                        }
+
+                        @Override
+                        public boolean isRecursive() {
+                            return false;
+                        }
+                    };
+                }
+                if(type == Directory.class) {
+                    return (T) new Directory<Void>() {
+
+                        @Override
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                            return folder;
+                        }
+
+                        @Override
+                        public boolean isSupported(final Path workdir, final String name) {
+                            return true;
+                        }
+
+                        @Override
+                        public Directory<Void> withWriter(final Write<Void> writer) {
+                            return this;
+                        }
+                    };
+                }
                 if(type == Move.class) {
                     return (T) new Move() {
                         private final AtomicInteger count = new AtomicInteger();
@@ -125,7 +164,7 @@ public class MoveWorkerTest {
         };
         final MoveWorker worker = new MoveWorker(
                 Collections.singletonMap(new Path("/t", EnumSet.of(Path.Type.directory)), new Path("/t2", EnumSet.of(Path.Type.directory))),
-            PathCache.empty(), PasswordStoreFactory.get(), new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledProgressListener(), new DisabledTranscriptListener());
+            new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         final Collection<Path> targets = worker.run(session).values();
         assertEquals(4, targets.size());
         assertTrue(targets.contains(new Path("/t2", EnumSet.of(Path.Type.directory))));

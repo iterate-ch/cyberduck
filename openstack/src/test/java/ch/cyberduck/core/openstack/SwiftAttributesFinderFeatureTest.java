@@ -3,6 +3,7 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -40,7 +41,7 @@ public class SwiftAttributesFinderFeatureTest {
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
-        f.find(test);
+        f.find(test, new DisabledListProgressListener());
     }
 
     @Test
@@ -57,14 +58,14 @@ public class SwiftAttributesFinderFeatureTest {
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
-        final PathAttributes attributes = f.find(test);
+        final PathAttributes attributes = f.find(test, new DisabledListProgressListener());
         assertEquals(0L, attributes.getSize());
         assertEquals(EnumSet.of(Path.Type.file), test.getType());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
         assertNotEquals(-1L, attributes.getModificationDate());
         // Test wrong type
         try {
-            f.find(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder)));
+            f.find(new Path(container, name, EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new DisabledListProgressListener());
             fail();
         }
         catch(NotfoundException e) {
@@ -84,7 +85,7 @@ public class SwiftAttributesFinderFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(container);
+        final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(container, new DisabledListProgressListener());
         assertEquals(EnumSet.of(Path.Type.volume, Path.Type.directory), container.getType());
         session.close();
     }
@@ -102,10 +103,10 @@ public class SwiftAttributesFinderFeatureTest {
         final String name = UUID.randomUUID().toString();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(file, null, new TransferStatus());
-        final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(file);
+        final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(file, new DisabledListProgressListener());
         // Test wrong type
         try {
-            new SwiftAttributesFinderFeature(session).find(new Path(container, name, EnumSet.of(Path.Type.file)));
+            new SwiftAttributesFinderFeature(session).find(new Path(container, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
             fail();
         }
         catch(NotfoundException e) {

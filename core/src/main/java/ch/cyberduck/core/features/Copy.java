@@ -49,5 +49,7 @@ public interface Copy {
      * @param session Target session for stateful protocols
      * @return This
      */
-    Copy withTarget(Session<?> session);
+    default Copy withTarget(Session<?> session) {
+        return this;
+    }
 }

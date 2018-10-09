@@ -1,7 +1,6 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
@@ -34,13 +33,8 @@ public class SkipFilterTest {
                 if(type == Find.class) {
                     return (T) new Find() {
                         @Override
-                        public boolean find(Path file) throws BackgroundException {
+                        public boolean find(Path file, final ListProgressListener listener) throws BackgroundException {
                             return true;
-                        }
-
-                        @Override
-                        public Find withCache(Cache<Path> cache) {
-                            return this;
                         }
                     };
                 }
@@ -65,13 +59,8 @@ public class SkipFilterTest {
         });
         f.withAttributes(new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return file.attributes();
-            }
-
-            @Override
-            public AttributesFinder withCache(final Cache<Path> cache) {
-                return this;
             }
         });
         assertTrue(f.accept(new Path("a", EnumSet.of(Path.Type.directory)), new NullLocal("a") {
@@ -92,13 +81,8 @@ public class SkipFilterTest {
         });
         f.withAttributes(new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return file.attributes();
-            }
-
-            @Override
-            public AttributesFinder withCache(final Cache<Path> cache) {
-                return this;
             }
         });
         assertFalse(f.accept(new Path("a", EnumSet.of(Path.Type.file)), new NullLocal("a") {

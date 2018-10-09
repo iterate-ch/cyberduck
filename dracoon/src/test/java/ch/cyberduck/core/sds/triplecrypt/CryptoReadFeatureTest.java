@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds.triplecrypt;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
@@ -74,8 +75,8 @@ public class CryptoReadFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final VersionId version = out.getStatus();
         assertNotNull(version);
-        assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
+        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test, new DisabledListProgressListener()).getSize());
         final byte[] compare = new byte[content.length - 1000];
         final InputStream stream = new CryptoReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(test, new TransferStatus(), new ConnectionCallback() {
             @Override

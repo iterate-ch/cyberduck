@@ -29,7 +29,6 @@ import ch.cyberduck.binding.foundation.NSIndexSet;
 import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSMutableDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -82,7 +81,7 @@ public class BookmarkTableDataSource extends ListDataSource {
     private final ScheduledThreadPool timerPool = new ScheduledThreadPool();
 
     private final HostPasteboard pasteboard
-            = HostPasteboard.getPasteboard();
+        = HostPasteboard.getPasteboard();
 
     public BookmarkTableDataSource(final BrowserController controller) {
         this.controller = controller;
@@ -250,7 +249,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         final Host host = this.getSource().get(row.intValue());
         if(identifier.equals(BookmarkColumn.icon.name())) {
             return IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(),
-                    PreferencesFactory.get().getInteger("bookmark.icon.size"));
+                PreferencesFactory.get().getInteger("bookmark.icon.size"));
         }
         if(identifier.equals(BookmarkColumn.bookmark.name())) {
             final NSMutableDictionary dict = NSMutableDictionary.dictionary();
@@ -423,8 +422,8 @@ public class BookmarkTableDataSource extends ListDataSource {
                             // Upload to the remote host this bookmark points to
                             uploads.add(new TransferItem(
                                 new Path(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.directory)),
-                                            local.getName(), EnumSet.of(Path.Type.file)),
-                                    local
+                                    local.getName(), EnumSet.of(Path.Type.file)),
+                                local
                             ));
                         }
                     }
@@ -578,7 +577,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         if(null != dropDestination) {
             for(Host bookmark : pasteboard) {
                 final Local file = LocalFactory.get(dropDestination.path(),
-                        String.format("%s.duck", StringUtils.replace(BookmarkNameProvider.toString(bookmark), "/", ":")));
+                    String.format("%s.duck", StringUtils.replace(BookmarkNameProvider.toString(bookmark), "/", ":")));
                 try {
                     HostWriterFactory.get().write(bookmark, file);
                 }
@@ -586,7 +585,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                     log.warn(e.getMessage());
                 }
                 // Adding the filename that is promised to be created at the dropDestination
-                promisedDragNames.addObject(NSString.stringWithString(file.getName()));
+                promisedDragNames.addObject(file.getName());
             }
             pasteboard.clear();
         }

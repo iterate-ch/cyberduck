@@ -118,15 +118,15 @@ public class SingleTransferWorkerTest {
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
         }.run(session, session));
-        assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(dir1));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(file1).getSize());
+        assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(dir1, new DisabledListProgressListener()));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(file1, new DisabledListProgressListener()).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        assertEquals(content.length, new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(file2).getSize());
+        assertEquals(content.length, new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(file2, new DisabledListProgressListener()).getSize());
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new CryptoReadFeature(session, new DAVReadFeature(session), cryptomator).read(file1, new TransferStatus().length(content.length), new DisabledConnectionCallback());

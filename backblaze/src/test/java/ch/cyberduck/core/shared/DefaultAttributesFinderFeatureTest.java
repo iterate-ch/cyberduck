@@ -47,7 +47,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractB2Test {
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
         // Find without version id set in attributes
-        assertNotNull(new DefaultAttributesFinderFeature(session).find(file).getVersionId());
+        assertNotNull(new DefaultAttributesFinderFeature(session).find(file, new DisabledListProgressListener()).getVersionId());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -58,7 +58,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractB2Test {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
             new B2FileidProvider(session).withCache(cache).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
-        assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
+        assertNotNull(new DefaultAttributesFinderFeature(session).find(file, new DisabledListProgressListener()));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
     }
 }

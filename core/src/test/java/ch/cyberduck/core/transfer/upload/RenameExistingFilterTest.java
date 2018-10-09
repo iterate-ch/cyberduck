@@ -109,31 +109,19 @@ public class RenameExistingFilterTest {
         final AtomicInteger moved = new AtomicInteger();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path f) throws BackgroundException {
+            public boolean find(final Path f, final ListProgressListener listener) throws BackgroundException {
                 if(f.equals(file)) {
                     found.set(true);
                     return true;
                 }
                 return false;
             }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
-            }
-
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return new PathAttributes();
             }
-
-            @Override
-            public AttributesFinder withCache(Cache<Path> cache) {
-                return this;
-            }
-
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
@@ -183,7 +171,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
                             fail();
                             return new Append(1L);
                         }
@@ -209,7 +197,7 @@ public class RenameExistingFilterTest {
         };
         final UploadFilterOptions options = new UploadFilterOptions().withTemporary(true);
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), session,
-                options);
+            options);
         f.withFinder(find).withAttributes(attributes);
         assertTrue(options.temporary);
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
@@ -232,28 +220,18 @@ public class RenameExistingFilterTest {
         final AtomicBoolean moved = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path f) throws BackgroundException {
+            public boolean find(final Path f, final ListProgressListener listener) throws BackgroundException {
                 if(f.equals(file)) {
                     found.set(true);
                     return true;
                 }
                 return false;
             }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
-            }
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return new PathAttributes();
-            }
-
-            @Override
-            public AttributesFinder withCache(Cache<Path> cache) {
-                return this;
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
@@ -296,7 +274,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
                             fail();
                             return new Append(0L);
                         }
@@ -321,7 +299,7 @@ public class RenameExistingFilterTest {
             }
         };
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions().withTemporary(true));
+            new UploadFilterOptions().withTemporary(true));
         f.withFinder(find).withAttributes(attributes);
         final TransferStatus status = f.prepare(file, new NullLocal("/t") {
             @Override

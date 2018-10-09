@@ -15,6 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -39,8 +40,8 @@ public class GoogleStorageBucketCreateServiceTest extends AbstractGoogleStorageT
     public void testCreate() throws Exception {
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageBucketCreateService(session).create(bucket, "US");
-        assertTrue(session.getFeature(Find.class).find(bucket));
+        assertTrue(session.getFeature(Find.class).find(bucket, new DisabledListProgressListener()));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(session.getFeature(Find.class).find(bucket));
+        assertFalse(session.getFeature(Find.class).find(bucket, new DisabledListProgressListener()));
     }
 }

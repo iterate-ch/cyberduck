@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
@@ -56,7 +55,7 @@ public class ListWorkerTest extends AbstractDriveTest {
         final DriveFileidProvider fileidProvider = new DriveFileidProvider(session).withCache(cache);
         new DriveDirectoryFeature(session, fileidProvider).mkdir(parent, null, new TransferStatus());
         new DriveDirectoryFeature(session, fileidProvider).mkdir(folder, null, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(folder));
+        assertTrue(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
         {
             // trash folder and recreate it
             final String fileid = fileidProvider.getFileid(folder, new DisabledListProgressListener());

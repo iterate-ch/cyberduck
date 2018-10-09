@@ -15,30 +15,20 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 
 public class MantaFindFeature implements Find {
 
     private final MantaSession session;
-    private Cache<Path> cache;
 
     public MantaFindFeature(final MantaSession session) {
         this.session = session;
-        this.cache = PathCache.empty();
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) {
         return session.getClient().existsAndIsAccessible(file.getAbsolute());
-    }
-
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
-        return this;
     }
 }

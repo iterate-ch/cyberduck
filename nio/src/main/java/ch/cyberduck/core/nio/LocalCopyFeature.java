@@ -16,8 +16,8 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -40,7 +40,7 @@ public class LocalCopyFeature implements Copy {
             Files.copy(session.toPath(source), session.toPath(target), StandardCopyOption.REPLACE_EXISTING);
             // Copy attributes from original file
             return new Path(target.getParent(), target.getName(), target.getType(),
-                    new LocalAttributesFinderFeature(session).find(target));
+                new LocalAttributesFinderFeature(session).find(target, new DisabledListProgressListener()));
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Cannot copy {0}", e, source);
@@ -55,10 +55,5 @@ public class LocalCopyFeature implements Copy {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         return true;
-    }
-
-    @Override
-    public Copy withTarget(final Session<?> session) {
-        return this;
     }
 }

@@ -67,8 +67,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(test, copy));
         new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(copy));
+        assertTrue(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(copy, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -82,8 +82,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertFalse(feature.isSupported(test, copy));
         new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(copy));
+        assertTrue(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(copy, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -105,7 +105,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new SDSListService(session, nodeid).list(targetFolder, new DisabledListProgressListener());
-        assertTrue(find.find(copy));
+        assertTrue(find.find(copy, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -124,7 +124,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new SDSListService(session, nodeid).list(folder, new DisabledListProgressListener());
-        assertTrue(find.find(copy));
+        assertTrue(find.find(copy, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -141,9 +141,9 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(directory, target));
         final Path copy = new SDSDelegatingCopyFeature(session, nodeid, feature).copy(directory, target, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new SDSFindFeature(nodeid).find(file));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
-        assertTrue(new SDSFindFeature(nodeid).find(copy));
+        assertTrue(new SDSFindFeature(nodeid).find(file, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(copy, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -159,8 +159,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(source, target));
         new SDSDelegatingCopyFeature(session, nodeid, feature).copy(source, target, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new SDSFindFeature(nodeid).find(source));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertTrue(new SDSFindFeature(nodeid).find(source, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -195,8 +195,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
             }
         });
         assertFalse(feature.isSupported(test, target));
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(copy));
+        assertTrue(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(copy, new DisabledListProgressListener()));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new SDSReadFeature(session, nodeid).read(target, new TransferStatus().length(content.length), new ConnectionCallback() {
             @Override
@@ -234,8 +234,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, target, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertFalse(feature.isSupported(test, target));
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertTrue(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(target, new TransferStatus().length(content.length), new ConnectionCallback() {
             @Override
@@ -284,8 +284,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
             }
         });
         assertFalse(feature.isSupported(test, target));
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertTrue(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(target, new TransferStatus().length(content.length), new ConnectionCallback() {
             @Override
@@ -324,8 +324,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(test, target));
         new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, target, new TransferStatus().length(content.length), new DisabledConnectionCallback());
-        assertTrue(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
+        assertTrue(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(target, new DisabledListProgressListener()));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, nodeid, new SDSReadFeature(session, nodeid)).read(target, new TransferStatus().length(content.length), new ConnectionCallback() {
             @Override

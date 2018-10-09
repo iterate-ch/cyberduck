@@ -85,10 +85,10 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
         assertEquals(content.length, new CryptoListService(session, new OneDriveListService(session, new GraphFileIdProvider(session)), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getSize());
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new GraphWriteFeature(session), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new GraphWriteFeature(session), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new GraphWriteFeature(session), cryptomator).append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new GraphWriteFeature(session), cryptomator).append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new GraphReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);

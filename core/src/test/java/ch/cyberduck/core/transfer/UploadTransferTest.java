@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
@@ -131,10 +132,11 @@ public class UploadTransferTest {
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
-                if(file.equals(root.getParent())) {
+            public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws ConnectionCanceledException {
+                if(folder.equals(root.getParent())) {
                     c.incrementAndGet();
                 }
+                listener.chunk(folder, AttributedList.emptyList());
                 return AttributedList.emptyList();
             }
         };
@@ -197,8 +199,9 @@ public class UploadTransferTest {
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
+            public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws ConnectionCanceledException {
                 c.incrementAndGet();
+                listener.chunk(folder, AttributedList.emptyList());
                 return AttributedList.emptyList();
             }
         };
@@ -322,13 +325,8 @@ public class UploadTransferTest {
                 if(type.equals(Find.class)) {
                     return (T) new Find() {
                         @Override
-                        public boolean find(final Path f) {
+                        public boolean find(final Path f, final ListProgressListener listener) {
                             return true;
-                        }
-
-                        @Override
-                        public Find withCache(Cache<Path> cache) {
-                            return this;
                         }
                     };
                 }
@@ -361,15 +359,9 @@ public class UploadTransferTest {
                 if(type.equals(AttributesFinder.class)) {
                     return (T) new AttributesFinder() {
                         @Override
-                        public PathAttributes find(final Path file) {
+                        public PathAttributes find(final Path file, final ListProgressListener listener) {
                             return new PathAttributes();
                         }
-
-                        @Override
-                        public AttributesFinder withCache(Cache<Path> cache) {
-                            return this;
-                        }
-
                     };
                 }
                 if(type.equals(Write.class)) {
@@ -381,7 +373,7 @@ public class UploadTransferTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache cache) {
+                        public Append append(final Path file, final Long length, final Cache cache, final ListProgressListener listener) {
                             fail();
                             return new Write.Append(0L);
                         }

@@ -18,7 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -47,7 +47,7 @@ public class AzureFindFeature implements Find {
     }
 
     @Override
-    public boolean find(Path file) throws BackgroundException {
+    public boolean find(Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return true;
         }
@@ -75,10 +75,5 @@ public class AzureFindFeature implements Find {
         catch(NotfoundException e) {
             return false;
         }
-    }
-
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        return this;
     }
 }

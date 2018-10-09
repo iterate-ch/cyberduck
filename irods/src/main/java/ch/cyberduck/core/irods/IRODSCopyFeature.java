@@ -19,7 +19,6 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -45,24 +44,24 @@ public class IRODSCopyFeature implements Copy {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
-                    .getDataTransferOperations(fs.getIRODSAccount());
+                .getDataTransferOperations(fs.getIRODSAccount());
             transfer.copy(fs.getIRODSFileFactory().instanceIRODSFile(source.getAbsolute()),
-                    fs.getIRODSFileFactory().instanceIRODSFile(target.getAbsolute()), new TransferStatusCallbackListener() {
-                        @Override
-                        public FileStatusCallbackResponse statusCallback(final TransferStatus transferStatus) throws JargonException {
-                            return FileStatusCallbackResponse.CONTINUE;
-                        }
+                fs.getIRODSFileFactory().instanceIRODSFile(target.getAbsolute()), new TransferStatusCallbackListener() {
+                    @Override
+                    public FileStatusCallbackResponse statusCallback(final TransferStatus transferStatus) throws JargonException {
+                        return FileStatusCallbackResponse.CONTINUE;
+                    }
 
-                        @Override
-                        public void overallStatusCallback(final TransferStatus transferStatus) throws JargonException {
-                            //
-                        }
+                    @Override
+                    public void overallStatusCallback(final TransferStatus transferStatus) throws JargonException {
+                        //
+                    }
 
-                        @Override
-                        public CallbackResponse transferAsksWhetherToForceOperation(final String irodsAbsolutePath, final boolean isCollection) {
-                            return CallbackResponse.YES_THIS_FILE;
-                        }
-                    }, DefaultTransferControlBlock.instance(StringUtils.EMPTY, PreferencesFactory.get().getInteger("connection.retry")));
+                    @Override
+                    public CallbackResponse transferAsksWhetherToForceOperation(final String irodsAbsolutePath, final boolean isCollection) {
+                        return CallbackResponse.YES_THIS_FILE;
+                    }
+                }, DefaultTransferControlBlock.instance(StringUtils.EMPTY, PreferencesFactory.get().getInteger("connection.retry")));
             return target;
         }
         catch(JargonException e) {
@@ -78,10 +77,5 @@ public class IRODSCopyFeature implements Copy {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         return true;
-    }
-
-    @Override
-    public Copy withTarget(final Session<?> session) {
-        return this;
     }
 }

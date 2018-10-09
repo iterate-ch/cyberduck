@@ -62,8 +62,8 @@ public class DAVCopyFeatureTest {
             new DAVAttributesFinderFeature(session)).touch(test, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new DAVFindFeature(session).find(test));
-        assertTrue(new DAVFindFeature(session).find(copy));
+        assertTrue(new DAVFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(copy, new DisabledListProgressListener()));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
@@ -87,8 +87,8 @@ public class DAVCopyFeatureTest {
         new DAVCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new DAVListService(session).list(folder, new DisabledListProgressListener());
-        assertTrue(find.find(test));
-        assertTrue(find.find(copy));
+        assertTrue(find.find(test, new DisabledListProgressListener()));
+        assertTrue(find.find(copy, new DisabledListProgressListener()));
         new DAVDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -108,9 +108,9 @@ public class DAVCopyFeatureTest {
         new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session)).touch(file, new TransferStatus());
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new DAVFindFeature(session).find(file));
-        assertTrue(new DAVFindFeature(session).find(copy));
-        assertTrue(new DAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
+        assertTrue(new DAVFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(copy, new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
         new DAVDeleteFeature(session).delete(Arrays.asList(copy, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

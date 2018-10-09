@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -63,7 +64,7 @@ public class SFTPUnixPermissionFeature extends DefaultUnixPermissionFeature impl
 
     @Override
     public Permission getUnixPermission(final Path file) throws BackgroundException {
-        return new SFTPAttributesFinderFeature(session).find(file).getPermission();
+        return new SFTPAttributesFinderFeature(session).find(file, new DisabledListProgressListener()).getPermission();
     }
 
     @Override

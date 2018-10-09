@@ -18,7 +18,7 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -57,7 +57,7 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
@@ -93,10 +93,5 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);
         }
-    }
-
-    @Override
-    public AttributesFinder withCache(Cache<Path> cache) {
-        return this;
     }
 }

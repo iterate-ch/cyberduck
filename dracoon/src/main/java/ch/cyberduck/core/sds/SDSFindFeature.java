@@ -17,8 +17,8 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
@@ -27,16 +27,14 @@ public class SDSFindFeature implements Find {
 
     private final SDSNodeIdProvider nodeid;
 
-    private Cache<Path> cache = PathCache.empty();
-
     public SDSFindFeature(final SDSNodeIdProvider nodeid) {
         this.nodeid = nodeid;
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            nodeid.withCache(cache).getFileid(file, new DisabledListProgressListener());
+            nodeid.getFileid(file, new DisabledListProgressListener());
             return true;
         }
         catch(NotfoundException e) {
@@ -46,7 +44,7 @@ public class SDSFindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
+        nodeid.withCache(cache);
         return this;
     }
 }

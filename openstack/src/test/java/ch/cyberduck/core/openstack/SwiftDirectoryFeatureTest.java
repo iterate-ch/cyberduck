@@ -21,6 +21,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -54,10 +55,10 @@ public class SwiftDirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
         final Path container = feature.mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), "ORD", new TransferStatus());
-        assertTrue(new SwiftFindFeature(session).find(container));
-        assertEquals(container.attributes(), new SwiftAttributesFinderFeature(session).find(container));
+        assertTrue(new SwiftFindFeature(session).find(container, new DisabledListProgressListener()));
+        assertEquals(container.attributes(), new SwiftAttributesFinderFeature(session).find(container, new DisabledListProgressListener()));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new SwiftFindFeature(session).find(container));
+        assertFalse(new SwiftFindFeature(session).find(container, new DisabledListProgressListener()));
         session.close();
     }
 
@@ -88,11 +89,11 @@ public class SwiftDirectoryFeatureTest {
         final Path placeholder = feature.mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         Thread.sleep(1000L);
         assertTrue(put.get());
-        assertTrue(new SwiftFindFeature(session).find(placeholder));
-        assertTrue(new DefaultFindFeature(session).find(placeholder));
-        assertEquals(placeholder.attributes().getChecksum(), new SwiftAttributesFinderFeature(session).find(placeholder).getChecksum());
+        assertTrue(new SwiftFindFeature(session).find(placeholder, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(placeholder, new DisabledListProgressListener()));
+        assertEquals(placeholder.attributes().getChecksum(), new SwiftAttributesFinderFeature(session).find(placeholder, new DisabledListProgressListener()).getChecksum());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new SwiftFindFeature(session).find(placeholder));
+        assertFalse(new SwiftFindFeature(session).find(placeholder, new DisabledListProgressListener()));
         session.close();
     }
 }

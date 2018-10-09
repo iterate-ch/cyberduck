@@ -19,6 +19,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
@@ -55,7 +56,7 @@ public class AzureTouchFeature implements Touch<Void> {
             status.setChecksum(writer.checksum(file).compute(new NullInputStream(0L), status));
         }
         new DefaultStreamCloser().close(writer.write(file, status, new DisabledConnectionCallback()));
-        return new Path(file.getParent(), file.getName(), file.getType(), new AzureAttributesFinderFeature(session, context).find(file));
+        return new Path(file.getParent(), file.getName(), file.getType(), new AzureAttributesFinderFeature(session, context).find(file, new DisabledListProgressListener()));
     }
 
     @Override

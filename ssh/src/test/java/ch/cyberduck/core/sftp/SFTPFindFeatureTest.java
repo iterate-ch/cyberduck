@@ -4,6 +4,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -33,7 +34,7 @@ public class SFTPFindFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertFalse(new SFTPFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        assertFalse(new SFTPFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
         session.close();
     }
 
@@ -45,7 +46,7 @@ public class SFTPFindFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(new SFTPFindFeature(session).find(new SFTPHomeDirectoryService(session).find()));
+        assertTrue(new SFTPFindFeature(session).find(new SFTPHomeDirectoryService(session).find(), new DisabledListProgressListener()));
         session.close();
     }
 
@@ -59,13 +60,13 @@ public class SFTPFindFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path file = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(file, new TransferStatus());
-        assertTrue(new SFTPFindFeature(session).find(file));
+        assertTrue(new SFTPFindFeature(session).find(file, new DisabledListProgressListener()));
         new SFTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
     @Test
     public void testFindRoot() throws Exception {
-        assertTrue(new SFTPFindFeature(new SFTPSession(new Host(new SFTPProtocol()))).find(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(new SFTPFindFeature(new SFTPSession(new Host(new SFTPProtocol()))).find(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
     }
 }

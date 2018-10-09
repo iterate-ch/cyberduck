@@ -17,6 +17,7 @@ package ch.cyberduck.core.vault.registry;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -47,8 +48,8 @@ public class VaultRegistryUploadFeature<Output> implements Upload<Output> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        return registry.find(session, file).getFeature(session, Upload.class, proxy).append(file, length, cache);
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
+        return registry.find(session, file).getFeature(session, Upload.class, proxy).append(file, length, cache, listener);
     }
 
     @Override

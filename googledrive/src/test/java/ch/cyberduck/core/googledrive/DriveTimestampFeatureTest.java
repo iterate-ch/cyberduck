@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -43,7 +44,7 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
         new DriveMetadataFeature(session, fileid).setMetadata(test, Collections.singletonMap("test", "t"));
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session, fileid).setTimestamp(test, modified);
-        assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
+        assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getModificationDate());
         assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session, fileid).getMetadata(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -56,7 +57,7 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
         new DriveDirectoryFeature(session, fileid).mkdir(test, null, new TransferStatus());
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session, fileid).setTimestamp(test, modified);
-        assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
+        assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getModificationDate());
         new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

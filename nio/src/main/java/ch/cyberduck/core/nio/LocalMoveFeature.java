@@ -16,8 +16,8 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -26,7 +26,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Collections;
 
 public class LocalMoveFeature implements Move {
 
@@ -44,7 +43,7 @@ public class LocalMoveFeature implements Move {
             Files.move(session.toPath(file), session.toPath(renamed), StandardCopyOption.REPLACE_EXISTING);
             // Copy attributes from original file
             return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-                    new LocalAttributesFinderFeature(session).find(renamed));
+                new LocalAttributesFinderFeature(session).find(renamed, new DisabledListProgressListener()));
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Cannot rename {0}", e, file);

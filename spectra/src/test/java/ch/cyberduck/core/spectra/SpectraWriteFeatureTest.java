@@ -15,14 +15,15 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -87,7 +88,7 @@ public class SpectraWriteFeatureTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
         // Overwrite
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.exists(true)), new DisabledConnectionCallback());
         {
@@ -95,7 +96,7 @@ public class SpectraWriteFeatureTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
         new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -143,28 +144,18 @@ public class SpectraWriteFeatureTest {
             new DefaultX509KeyManager());
         final SpectraWriteFeature feature = new SpectraWriteFeature(session, new Find() {
             @Override
-            public boolean find(final Path file) {
+            public boolean find(final Path file, final ListProgressListener listener) {
                 return true;
-            }
-
-            @Override
-            public Find withCache(final Cache<Path> cache) {
-                return this;
             }
         }, new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) {
+            public PathAttributes find(final Path file, final ListProgressListener listener) {
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(3L);
                 return attributes;
             }
-
-            @Override
-            public AttributesFinder withCache(final Cache<Path> cache) {
-                return this;
-            }
         });
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty());
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty(), new DisabledListProgressListener());
         assertFalse(append.append);
         assertTrue(append.override);
         assertEquals(3L, append.size, 0L);
@@ -197,7 +188,7 @@ public class SpectraWriteFeatureTest {
             assertNotNull(out);
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content1), out);
             out.close();
-            assertEquals(content1.length, new S3AttributesFinderFeature(session).find(test).getSize());
+            assertEquals(content1.length, new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
             bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
             final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);
@@ -213,7 +204,7 @@ public class SpectraWriteFeatureTest {
             final OutputStream out = new SpectraWriteFeature(session).write(test, status.exists(true), new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content2), out);
             out.close();
-            assertEquals(content2.length, new S3AttributesFinderFeature(session).find(test).getSize());
+            assertEquals(content2.length, new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
             bulk.pre(Transfer.Type.download, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
             final InputStream in = new SpectraReadFeature(session).read(test, status, new DisabledConnectionCallback());
             assertNotNull(in);

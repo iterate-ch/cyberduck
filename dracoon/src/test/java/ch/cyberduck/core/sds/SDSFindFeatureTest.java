@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
@@ -34,18 +35,18 @@ public class SDSFindFeatureTest extends AbstractSDSTest {
     @Test
     public void testFind() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        assertTrue(new SDSFindFeature(nodeid).find(new DefaultHomeFinderService(session).find()));
+        assertTrue(new SDSFindFeature(nodeid).find(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()));
         assertFalse(new SDSFindFeature(nodeid).find(
-            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
-        ));
+            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)),
+            new DisabledListProgressListener()));
         assertFalse(new SDSFindFeature(nodeid).find(
-            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
-        ));
+            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
+            new DisabledListProgressListener()));
     }
 
     @Test
     public void testFindRoot() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        assertTrue(new SDSFindFeature(nodeid).find(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(new SDSFindFeature(nodeid).find(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
     }
 }

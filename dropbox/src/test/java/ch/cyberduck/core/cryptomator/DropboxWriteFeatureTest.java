@@ -86,10 +86,10 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new DropboxFindFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
         assertEquals(content.length, new CryptoListService(session, new DropboxListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new DropboxWriteFeature(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), 150000000L), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
-        assertEquals(content.length, new CryptoWriteFeature<>(session, new DropboxWriteFeature(session, new DropboxFindFeature(session), new DropboxAttributesFinderFeature(session), 150000000L), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new DropboxWriteFeature(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session), 150000000L), cryptomator).append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
+        assertEquals(content.length, new CryptoWriteFeature<>(session, new DropboxWriteFeature(session, new DropboxFindFeature(session), new DropboxAttributesFinderFeature(session), 150000000L), cryptomator).append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new DropboxReadFeature(session), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);

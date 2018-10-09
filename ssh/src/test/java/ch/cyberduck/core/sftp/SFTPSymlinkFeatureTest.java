@@ -38,12 +38,12 @@ public class SFTPSymlinkFeatureTest {
         new SFTPTouchFeature(session).touch(target, new TransferStatus());
         final Path link = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         new SFTPSymlinkFeature(session).symlink(link, target.getName());
-        assertTrue(new SFTPFindFeature(session).find(link));
+        assertTrue(new SFTPFindFeature(session).find(link, new DisabledListProgressListener()));
         assertEquals(EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink),
             new SFTPListService(session).list(workdir.find(), new DisabledListProgressListener()).get(link).getType());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new SFTPFindFeature(session).find(link));
-        assertTrue(new SFTPFindFeature(session).find(target));
+        assertFalse(new SFTPFindFeature(session).find(link, new DisabledListProgressListener()));
+        assertTrue(new SFTPFindFeature(session).find(target, new DisabledListProgressListener()));
         new SFTPDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

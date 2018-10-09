@@ -16,6 +16,8 @@ package ch.cyberduck.core.cryptomator.features;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -40,8 +42,8 @@ public class CryptoAttributesFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
-        final PathAttributes attributes = new PathAttributes(delegate.withCache(new CryptoPathCache(cache)).find(vault.encrypt(session, file)));
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+        final PathAttributes attributes = new PathAttributes(delegate.withCache(new CryptoPathCache(cache)).find(vault.encrypt(session, file), new DisabledListProgressListener()));
         if(file.isFile()) {
             attributes.setSize(vault.toCleartextSize(attributes.getSize()));
         }

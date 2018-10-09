@@ -60,14 +60,6 @@ public class GraphFileIdProvider implements IdProvider {
         return found.attributes().getVersionId();
     }
 
-    private static String findVersionId(final AttributedList<Path> list, final Path file) {
-        final Path found = list.find(new SimplePathPredicate(file));
-        if(null == found) {
-            return null;
-        }
-        return found.attributes().getVersionId();
-    }
-
     @Override
     public IdProvider withCache(final Cache<Path> cache) {
         this.cache = cache;

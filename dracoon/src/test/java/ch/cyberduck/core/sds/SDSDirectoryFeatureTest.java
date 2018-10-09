@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
@@ -43,9 +44,9 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
-        assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DefaultFindFeature(session).find(test));
+        assertFalse(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
     }
 
     @Test
@@ -55,8 +56,8 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
                 new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         assertNotNull(room.attributes().getVersionId());
-        assertTrue(new DefaultFindFeature(session).find(room));
+        assertTrue(new DefaultFindFeature(session).find(room, new DisabledListProgressListener()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DefaultFindFeature(session).find(room));
+        assertFalse(new DefaultFindFeature(session).find(room, new DisabledListProgressListener()));
     }
 }

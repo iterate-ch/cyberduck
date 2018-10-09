@@ -40,7 +40,7 @@ public class B2AttributesFinderFeatureTest extends AbstractB2Test {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
             new B2FileidProvider(session).withCache(cache).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
-        assertNotNull(new B2AttributesFinderFeature(session, new B2FileidProvider(session)).find(file));
+        assertNotNull(new B2AttributesFinderFeature(session, new B2FileidProvider(session)).find(file, new DisabledListProgressListener()));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
     }
 }

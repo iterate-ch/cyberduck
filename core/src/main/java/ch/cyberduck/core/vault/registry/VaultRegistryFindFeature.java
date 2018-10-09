@@ -16,6 +16,8 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -56,13 +58,13 @@ public class VaultRegistryFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         final Vault vault = registry.find(session, file);
         if(vault.equals(Vault.DISABLED)) {
             if(autodetect) {
                 final Path directory = file.getParent();
                 final Path key = new Path(directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file));
-                if(proxy.withCache(cache).find(key)) {
+                if(proxy.withCache(cache).find(key, new DisabledListProgressListener())) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Found master key %s", key));
                     }
@@ -72,7 +74,7 @@ public class VaultRegistryFindFeature implements Find {
                         }
                         return lookup.load(directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER).getFeature(session, Find.class, proxy)
                             .withCache(cache)
-                            .find(file);
+                            .find(file, new DisabledListProgressListener());
                     }
                     catch(VaultUnlockCancelException e) {
                         // Continue
@@ -82,7 +84,7 @@ public class VaultRegistryFindFeature implements Find {
         }
         return vault.getFeature(session, Find.class, proxy)
             .withCache(cache)
-            .find(file);
+            .find(file, new DisabledListProgressListener());
     }
 
     @Override

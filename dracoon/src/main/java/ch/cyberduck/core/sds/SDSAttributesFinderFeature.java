@@ -18,9 +18,9 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -43,18 +43,16 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
 
-    private Cache<Path> cache = PathCache.empty();
-
     public SDSAttributesFinderFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
         this.nodeid = nodeid;
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
             final Node node = new NodesApi(session.getClient()).getFsNode(
-                Long.parseLong(nodeid.withCache(cache).getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
+                Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
             return this.toAttributes(node);
         }
         catch(ApiException e) {
@@ -128,7 +126,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public AttributesFinder withCache(final Cache<Path> cache) {
-        this.cache = cache;
+        nodeid.withCache(cache);
         return this;
     }
 }

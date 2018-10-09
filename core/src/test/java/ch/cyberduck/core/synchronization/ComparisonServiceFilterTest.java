@@ -1,9 +1,9 @@
 package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
@@ -34,7 +34,7 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean attr = new AtomicBoolean();
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 attr.set(true);
                 return new PathAttributes() {
                     @Override
@@ -43,22 +43,12 @@ public class ComparisonServiceFilterTest {
                     }
                 };
             }
-
-            @Override
-            public AttributesFinder withCache(Cache<Path> cache) {
-                return this;
-            }
         };
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 found.set(true);
                 return true;
-            }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
             }
         };
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
@@ -89,14 +79,9 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean found = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 found.set(true);
                 return true;
-            }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
             }
         };
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
@@ -115,14 +100,9 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean found = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 found.set(true);
                 return false;
-            }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
             }
         };
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
@@ -141,14 +121,9 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean found = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 found.set(true);
                 return true;
-            }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
             }
         };
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
@@ -168,19 +143,14 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean attr = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 found.set(true);
                 return true;
-            }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
             }
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 attr.set(true);
                 return new PathAttributes() {
                     @Override
@@ -203,11 +173,6 @@ public class ComparisonServiceFilterTest {
                         return c.getTimeInMillis();
                     }
                 };
-            }
-
-            @Override
-            public AttributesFinder withCache(Cache<Path> cache) {
-                return this;
             }
         };
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {

@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -61,7 +62,7 @@ public class S3MetadataFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
-            return new S3AttributesFinderFeature(session).find(file).getMetadata();
+            return new S3AttributesFinderFeature(session).find(file, new DisabledListProgressListener()).getMetadata();
         }
         return Collections.emptyMap();
     }

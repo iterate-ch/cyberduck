@@ -1,8 +1,8 @@
 package ch.cyberduck.core.transfer.copy;
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -43,13 +43,8 @@ public class OverwriteFilterTest {
         files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return true;
-            }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
             }
         };
         AbstractCopyFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())) {

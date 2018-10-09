@@ -207,15 +207,9 @@ public class SingleTransferWorkerTest {
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 return super.filter(source, destination, action, listener).withAttributes(new AttributesFinder() {
                     @Override
-                    public PathAttributes find(final Path file) throws BackgroundException {
+                    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                         return file.attributes();
                     }
-
-                    @Override
-                    public AttributesFinder withCache(final Cache<Path> cache) {
-                        return this;
-                    }
-
                 });
             }
         };

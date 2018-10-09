@@ -17,6 +17,7 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -54,7 +55,7 @@ public class SFTPDirectoryFeature implements Directory<Void> {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
-        return new Path(folder.getParent(), folder.getName(), folder.getType(), new SFTPAttributesFinderFeature(session).find(folder));
+        return new Path(folder.getParent(), folder.getName(), folder.getType(), new SFTPAttributesFinderFeature(session).find(folder, new DisabledListProgressListener()));
     }
 
     @Override

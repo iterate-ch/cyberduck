@@ -15,6 +15,7 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -36,7 +37,7 @@ public class MantaFindFeatureTest extends AbstractMantaTest {
         assertFalse(f.find(new Path(
             new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountPrivateRoot(),
             UUID.randomUUID().toString(),
-            EnumSet.of(Path.Type.file))));
+            EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
     }
 
     @Test
@@ -45,7 +46,7 @@ public class MantaFindFeatureTest extends AbstractMantaTest {
         assertTrue(f.find(new Path(
             new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountRoot(),
             MantaAccountHomeInfo.HOME_PATH_PRIVATE,
-            EnumSet.of(Path.Type.directory))));
+            EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
     }
 
     @Test
@@ -54,6 +55,6 @@ public class MantaFindFeatureTest extends AbstractMantaTest {
         assertTrue(f.find(new Path(
             new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountRoot(),
             MantaAccountHomeInfo.HOME_PATH_PUBLIC,
-            EnumSet.of(Path.Type.directory))));
+            EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
     }
 }

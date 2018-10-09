@@ -18,9 +18,9 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
@@ -43,20 +43,18 @@ public class B2AttributesFinderFeature implements AttributesFinder {
     private final B2Session session;
     private final B2FileidProvider fileid;
 
-    private Cache<Path> cache = PathCache.empty();
-
     public B2AttributesFinderFeature(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
         this.fileid = fileid;
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
         try {
-            final B2FileResponse info = session.getClient().getFileInfo(fileid.withCache(cache).getFileid(file, new DisabledListProgressListener()));
+            final B2FileResponse info = session.getClient().getFileInfo(fileid.getFileid(file, new DisabledListProgressListener()));
             return this.toAttributes(info);
         }
         catch(B2ApiException e) {
@@ -93,7 +91,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
 
     @Override
     public AttributesFinder withCache(final Cache<Path> cache) {
-        this.cache = cache;
+        fileid.withCache(cache);
         return this;
     }
 }

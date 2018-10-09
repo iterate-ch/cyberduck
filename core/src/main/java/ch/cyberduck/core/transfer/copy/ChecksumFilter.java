@@ -17,6 +17,8 @@ package ch.cyberduck.core.transfer.copy;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -54,8 +56,13 @@ public class ChecksumFilter extends AbstractCopyFilter {
         final Path target = files.get(source);
         if(source.isFile()) {
             if(parent.isExists()) {
-                final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).withCache(sourceCache).find(source);
-                final Write.Append append = upload.append(target, attributes.getSize(), destinationCache);
+                final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).withCache(sourceCache).find(source, new DisabledListProgressListener());
+                final Write.Append append = upload.append(target, attributes.getSize(), destinationCache, new DisabledListProgressListener() {
+                    @Override
+                    public void chunk(final Path folder, final AttributedList<Path> list) {
+                        destinationCache.put(folder, list);
+                    }
+                });
                 // Compare source with target attributes
                 if(append.size == attributes.getSize()) {
                     if(Checksum.NONE != append.checksum) {

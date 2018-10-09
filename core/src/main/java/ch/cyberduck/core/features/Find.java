@@ -16,6 +16,7 @@ package ch.cyberduck.core.features;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
@@ -24,12 +25,14 @@ public interface Find {
     /**
      * Check for file existence. The default implementation does a directory listing of the parent folder.
      */
-    boolean find(Path file) throws BackgroundException;
+    boolean find(Path file, final ListProgressListener listener) throws BackgroundException;
 
     /**
      * Decorate with cache
      *
      * @param cache Path cache
      */
-    Find withCache(Cache<Path> cache);
+    default Find withCache(Cache<Path> cache) {
+        return this;
+    }
 }
