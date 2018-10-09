@@ -56,6 +56,10 @@ public interface Protocol extends Comparable<Protocol> {
         manta
     }
 
+    default boolean isStateful() {
+        return false;
+    }
+
     /**
      * @return True if anonymous login is possible.
      */
