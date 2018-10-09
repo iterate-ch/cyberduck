@@ -19,7 +19,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
@@ -56,7 +55,7 @@ public class B2FileidProvider implements IdProvider {
         }
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+            final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
                 if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
                     return found.attributes().getVersionId();
@@ -74,7 +73,7 @@ public class B2FileidProvider implements IdProvider {
         }
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+            final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
                 if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
                     return found.attributes().getVersionId();

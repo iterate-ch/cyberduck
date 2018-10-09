@@ -19,7 +19,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
@@ -62,7 +61,7 @@ public class SDSNodeIdProvider implements IdProvider {
         }
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(file));
+            final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
                 if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
                     return found.attributes().getVersionId();
@@ -108,7 +107,7 @@ public class SDSNodeIdProvider implements IdProvider {
         final Path container = new PathContainerService().getContainer(file);
         if(cache.isCached(container.getParent())) {
             final AttributedList<Path> list = cache.get(container.getParent());
-            final Path found = list.filter(new NullFilter<>()).find(new SimplePathPredicate(container));
+            final Path found = list.find(new SimplePathPredicate(container));
             if(null != found) {
                 if(found.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
                     return true;
