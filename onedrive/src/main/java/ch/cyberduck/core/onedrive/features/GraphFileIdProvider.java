@@ -44,19 +44,20 @@ public class GraphFileIdProvider implements IdProvider {
             return file.attributes().getVersionId();
         }
         if(cache.isCached(file.getParent())) {
-            final AttributedList<Path> cached = cache.get(file.getParent());
-            final String cachedVersionId = findVersionId(cached, file);
-            if(StringUtils.isNotBlank(cachedVersionId)) {
-                return cachedVersionId;
+            final AttributedList<Path> list = cache.get(file.getParent());
+            final Path found = list.find(new SimplePathPredicate(file));
+            if(null != found) {
+                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
+                    return found.attributes().getVersionId();
+                }
             }
         }
         final AttributedList<Path> list = session._getFeature(ListService.class).list(file.getParent(), listener);
-        cache.put(file.getParent(), list); // overwrite cache because file does not have versionId (it may have been created recently)
-        final String versionId = findVersionId(list, file);
-        if(StringUtils.isBlank(versionId)) {
+        final Path found = list.find(new SimplePathPredicate(file));
+        if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return versionId;
+        return found.attributes().getVersionId();
     }
 
     private static String findVersionId(final AttributedList<Path> list, final Path file) {
