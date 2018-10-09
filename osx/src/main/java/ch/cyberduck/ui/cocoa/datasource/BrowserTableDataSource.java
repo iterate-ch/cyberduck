@@ -171,7 +171,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     public void render(final NSTableView view, final List<Path> folders) {
         attributed.clear();
         for(Path folder : folders) {
-            filtered.containsKey(folder);
+            filtered.remove(folder);
         }
     }
 
