@@ -3,6 +3,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -32,13 +33,13 @@ public class DAVFindFeatureTest {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(new DAVFindFeature(session).find(new DefaultHomeFinderService(session).find()));
+        assertTrue(new DAVFindFeature(session).find(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()));
         assertFalse(new DAVFindFeature(session).find(
-            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory))
-        ));
+            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)),
+            new DisabledListProgressListener()));
         assertFalse(new DAVFindFeature(session).find(
-            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
-        ));
+            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)),
+            new DisabledListProgressListener()));
         session.close();
     }
 
@@ -51,16 +52,16 @@ public class DAVFindFeatureTest {
         final DAVSession session = new DAVSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(new DAVFindFeature(session).find(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(new DAVFindFeature(session).find(new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertFalse(new DAVFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertTrue(new DAVFindFeature(session).find(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file))));
-        assertFalse(new DAVFindFeature(session).find(new Path("/trunk/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        assertTrue(new DAVFindFeature(session).find(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(new Path("/trunk", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
+        assertFalse(new DAVFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertFalse(new DAVFindFeature(session).find(new Path("/trunk/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
         session.close();
     }
 
     @Test
     public void testFindRoot() throws Exception {
-        assertTrue(new DAVFindFeature(new DAVSession(new Host(new DAVProtocol(), "h"))).find(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(new DAVFindFeature(new DAVSession(new Host(new DAVProtocol(), "h"))).find(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
     }
 }

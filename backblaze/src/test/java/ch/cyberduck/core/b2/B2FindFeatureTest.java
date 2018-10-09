@@ -43,8 +43,8 @@ public class B2FindFeatureTest extends AbstractB2Test {
         final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
-        assertTrue(new B2FindFeature(session, fileid).find(file));
-        assertFalse(new B2FindFeature(session, fileid).find(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        assertTrue(new B2FindFeature(session, fileid).find(file, new DisabledListProgressListener()));
+        assertFalse(new B2FindFeature(session, fileid).find(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -55,7 +55,7 @@ public class B2FindFeatureTest extends AbstractB2Test {
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
             new B2FileidProvider(session).withCache(cache).getFileid(bucket, new DisabledListProgressListener()),
                 file.getName(), null, Collections.emptyMap());
-        assertTrue(new B2FindFeature(session, new B2FileidProvider(session).withCache(cache)).find(file));
+        assertTrue(new B2FindFeature(session, new B2FileidProvider(session).withCache(cache)).find(file, new DisabledListProgressListener()));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
     }
 }

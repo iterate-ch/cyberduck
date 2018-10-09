@@ -19,6 +19,7 @@ package ch.cyberduck.core.synchronization;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -75,12 +76,12 @@ public class ComparisonServiceFilter implements ComparePathFilter {
     @Override
     public Comparison compare(final Path file, final Local local) throws BackgroundException {
         if(local.exists()) {
-            if(finder.find(file)) {
+            if(finder.find(file, new DisabledListProgressListener())) {
                 if(file.isDirectory()) {
                     // Do not compare directories
                     return Comparison.equal;
                 }
-                final PathAttributes attributes = attribute.find(file);
+                final PathAttributes attributes = attribute.find(file, new DisabledListProgressListener());
                 // We must always compare the size because the download filter will have already created a temporary 0 byte file
                 switch(size.compare(attributes, local.attributes())) {
                     case remote:
@@ -123,7 +124,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
             }
         }
         else {
-            if(finder.find(file)) {
+            if(finder.find(file, new DisabledListProgressListener())) {
                 // Only the remote file exists
                 return Comparison.remote;
             }

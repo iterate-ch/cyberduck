@@ -16,11 +16,9 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
@@ -30,6 +28,7 @@ import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
 import ch.cyberduck.core.googledrive.DriveFileidProvider;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
 import ch.cyberduck.core.googledrive.DriveTouchFeature;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -53,22 +52,22 @@ public class MoveWorkerTest extends AbstractDriveTest {
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(
                 new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(folder));
+        assertTrue(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
         final Path file = new DriveTouchFeature(session, fileid).touch(
                 new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(file));
+        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
-        new MoveWorker(Collections.singletonMap(file, fileRenamed), PathCache.empty(), PasswordStoreFactory.get(), new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledProgressListener(), new DisabledTranscriptListener()).run(session);
-        assertFalse(new DefaultFindFeature(session).find(file));
-        assertTrue(new DefaultFindFeature(session).find(fileRenamed));
+        new MoveWorker(Collections.singletonMap(file, fileRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
+        assertFalse(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(fileRenamed, new DisabledListProgressListener()));
         // rename folder
         final Path folderRenamed = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new MoveWorker(Collections.singletonMap(folder, folderRenamed), PathCache.empty(), PasswordStoreFactory.get(), new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledProgressListener(), new DisabledTranscriptListener()).run(session);
-        assertFalse(new DefaultFindFeature(session).find(folder));
-        assertTrue(new DefaultFindFeature(session).find(folderRenamed));
+        new MoveWorker(Collections.singletonMap(folder, folderRenamed), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
+        assertFalse(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folderRenamed, new DisabledListProgressListener()));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
-        assertTrue(new DefaultFindFeature(session).find(fileRenamedInRenamedFolder));
+        assertTrue(new DefaultFindFeature(session).find(fileRenamedInRenamedFolder, new DisabledListProgressListener()));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -36,21 +37,22 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        new OneDriveAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        new OneDriveAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
     }
 
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new OneDriveTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(file);
+        final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(file, new DisabledListProgressListener());
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());
@@ -65,7 +67,7 @@ public class OneDriveAttributesFinderFeatureTest extends AbstractOneDriveTest {
     public void testFindDirectory() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new OneDriveDirectoryFeature(session).mkdir(file, null, new TransferStatus());
-        final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(file);
+        final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(file, new DisabledListProgressListener());
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());

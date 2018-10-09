@@ -17,39 +17,46 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Move {
-
     /**
-     * @param source             Source file or folder
-     * @param target             Target file or folder
-     * @param status             True if the target file exists
-     * @param callback           Progress
-     * @param connectionCallback Prompt
+     * @param source   Source file or folder
+     * @param target   Target file or folder
+     * @param status   True if the target file exists
+     * @param delete   Progress
+     * @param callback Prompt
      * @return Target file
      */
-    Path move(Path source, Path target, TransferStatus status, Delete.Callback callback,
-              ConnectionCallback connectionCallback) throws BackgroundException;
+    Path move(Path source, Path target, TransferStatus status, Delete.Callback delete, ConnectionCallback callback) throws BackgroundException;
 
     /**
      * @param source Source file or folder
      * @param target Target file or folder
      * @return True if the implementation can move directories recursively
      */
-    boolean isRecursive(final Path source, final Path target);
+    boolean isRecursive(Path source, Path target);
 
     /**
      * @param source Source file or folder
      * @param target Target file or folder
      * @return False if not supported for given files
      */
-    boolean isSupported(Path source, final Path target);
+    boolean isSupported(Path source, Path target);
 
     /**
      * @param delete Delete feature if move operation requires delete after copy
      * @return This
      */
     Move withDelete(Delete delete);
+
+    /**
+     * @param session Target session for stateful protocols when move can only be made with copy/delete
+     * @return This
+     */
+    default Move withTarget(Session<?> session) {
+        return this;
+    }
 }

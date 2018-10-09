@@ -16,6 +16,8 @@ package ch.cyberduck.core.vault.registry;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -39,10 +41,10 @@ public class VaultRegistryAttributesFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file) throws BackgroundException {
+    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
         return registry.find(session, file).getFeature(session, AttributesFinder.class, proxy)
                 .withCache(cache)
-                .find(file);
+            .find(file, new DisabledListProgressListener());
     }
 
     @Override

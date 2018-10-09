@@ -18,6 +18,8 @@ package ch.cyberduck.core.cryptomator.features;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
@@ -87,9 +89,9 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(vault.encrypt(session, file))) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(vault.encrypt(session, file));
+    public Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
+        if(finder.withCache(cache).find(vault.encrypt(session, file), new DisabledListProgressListener())) {
+            final PathAttributes attributes = this.attributes.withCache(cache).find(vault.encrypt(session, file), new DisabledListProgressListener());
             return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
         }
         return Write.notfound;

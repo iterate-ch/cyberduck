@@ -34,7 +34,7 @@ public class SkipFilterTest {
                 if(type == Find.class) {
                     return (T) new Find() {
                         @Override
-                        public boolean find(Path file) throws BackgroundException {
+                        public boolean find(Path file, final ListProgressListener listener) throws BackgroundException {
                             return true;
                         }
 
@@ -65,7 +65,7 @@ public class SkipFilterTest {
         });
         f.withAttributes(new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return file.attributes();
             }
 
@@ -92,7 +92,7 @@ public class SkipFilterTest {
         });
         f.withAttributes(new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return file.attributes();
             }
 

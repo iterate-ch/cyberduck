@@ -83,7 +83,7 @@ public class DriveMoveFeature implements Move {
                 .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                 .execute();
             return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-                new DriveAttributesFinderFeature(session, fileid).find(renamed));
+                new DriveAttributesFinderFeature(session, fileid).find(renamed, new DisabledListProgressListener()));
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Cannot rename {0}", e, file);

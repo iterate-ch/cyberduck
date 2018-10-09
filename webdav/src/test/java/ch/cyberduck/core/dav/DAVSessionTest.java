@@ -178,9 +178,9 @@ public class DAVSessionTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
-        assertTrue(session.getFeature(Find.class).find(test));
+        assertTrue(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(session.getFeature(Find.class).find(test));
+        assertFalse(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
         session.close();
     }
 

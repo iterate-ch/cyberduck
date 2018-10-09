@@ -17,6 +17,7 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -66,9 +67,9 @@ public class DefaultCopyFeatureTest extends AbstractSDSTest {
         new StreamCopier(new TransferStatus(), new TransferStatus()).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
         new DefaultCopyFeature(session).copy(source, target, new TransferStatus().length(content.length), new DisabledConnectionCallback());
-        assertTrue(new DefaultFindFeature(session).find(source));
-        assertTrue(new DefaultFindFeature(session).find(target));
-        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target).getSize());
+        assertTrue(new DefaultFindFeature(session).find(source, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(target, new DisabledListProgressListener()));
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target, new DisabledListProgressListener()).getSize());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

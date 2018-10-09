@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds.triplecrypt;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -70,8 +71,8 @@ public class CryptoWriteFeature implements Write<VersionId> {
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        return proxy.append(file, length, cache);
+    public Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
+        return proxy.append(file, length, cache, listener);
     }
 
     @Override

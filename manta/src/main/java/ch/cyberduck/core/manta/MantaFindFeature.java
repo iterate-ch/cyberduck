@@ -16,6 +16,7 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -32,7 +33,7 @@ public class MantaFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file) throws BackgroundException {
+    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         return session.getClient().existsAndIsAccessible(file.getAbsolute());
     }
 

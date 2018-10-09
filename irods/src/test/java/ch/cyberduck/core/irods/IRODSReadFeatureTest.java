@@ -21,6 +21,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -73,7 +74,7 @@ public class IRODSReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertFalse(session.getFeature(Find.class).find(test));
+        assertFalse(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
 
         final byte[] content = RandomUtils.nextBytes(2048);
         final TransferStatus status = new TransferStatus();
@@ -84,14 +85,14 @@ public class IRODSReadFeatureTest {
 
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(session.getFeature(Find.class).find(test));
+        assertTrue(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
 
         final InputStream in = new IRODSReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         in.close();
 
         session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(session.getFeature(Find.class).find(test));
+        assertFalse(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
         session.close();
     }
 
@@ -109,7 +110,7 @@ public class IRODSReadFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertFalse(session.getFeature(Find.class).find(test));
+        assertFalse(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
 
         new IRODSReadFeature(session).read(test, new TransferStatus(), new DisabledConnectionCallback());
     }

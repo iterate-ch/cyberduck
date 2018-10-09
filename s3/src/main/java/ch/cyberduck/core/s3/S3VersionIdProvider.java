@@ -16,6 +16,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -39,7 +40,7 @@ public class S3VersionIdProvider implements IdProvider {
         if(file.isRoot()) {
             return null;
         }
-        return new S3AttributesFinderFeature(session).find(file).getVersionId();
+        return new S3AttributesFinderFeature(session).find(file, new DisabledListProgressListener()).getVersionId();
     }
 
     @Override

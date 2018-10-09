@@ -17,6 +17,7 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
@@ -68,8 +69,8 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final VersionId version = out.getStatus();
         assertNotNull(version);
-        assertTrue(new DefaultFindFeature(session).find(test));
-        assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
+        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test, new DisabledListProgressListener()).getSize());
         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
         final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
             @Override

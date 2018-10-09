@@ -28,14 +28,14 @@ import ch.cyberduck.core.vault.VaultUnlockCancelException;
 public class VaultRegistryCopyFeature implements Copy {
 
     private final Session<?> session;
+    private Session<?> destination;
     private final Copy proxy;
     private final DefaultVaultRegistry registry;
 
-    private Session<?> target;
 
     public VaultRegistryCopyFeature(final Session<?> session, final Copy proxy, final DefaultVaultRegistry registry) {
         this.session = session;
-        this.target = session;
+        this.destination = session;
         this.proxy = proxy;
         this.registry = registry;
     }
@@ -43,14 +43,14 @@ public class VaultRegistryCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(registry.find(session, source).equals(Vault.DISABLED)) {
-            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status, callback);
+            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(destination).copy(source, copy, status, callback);
         }
         else if(registry.find(session, copy).equals(Vault.DISABLED)) {
-            return registry.find(session, source).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status, callback);
+            return registry.find(session, source).getFeature(session, Copy.class, proxy).withTarget(destination).copy(source, copy, status, callback);
         }
         else {
             // Move files inside vault. May use server side copy.
-            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).copy(source, copy, status, callback);
+            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(destination).copy(source, copy, status, callback);
         }
     }
 
@@ -58,12 +58,12 @@ public class VaultRegistryCopyFeature implements Copy {
     public boolean isRecursive(final Path source, final Path copy) {
         try {
             if(registry.find(session, source, false).equals(Vault.DISABLED)) {
-                return registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(target).isRecursive(source, copy);
+                return registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(destination).isRecursive(source, copy);
             }
             else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
-                return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(target).isRecursive(source, copy);
+                return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(destination).isRecursive(source, copy);
             }
-            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).isRecursive(source, copy);
+            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(destination).isRecursive(source, copy);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.isRecursive(source, copy);
@@ -74,12 +74,12 @@ public class VaultRegistryCopyFeature implements Copy {
     public boolean isSupported(final Path source, final Path copy) {
         try {
             if(registry.find(session, source, false).equals(Vault.DISABLED)) {
-                return registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(target).isSupported(source, copy);
+                return registry.find(session, copy, false).getFeature(session, Copy.class, proxy).withTarget(destination).isSupported(source, copy);
             }
             else if(registry.find(session, copy, false).equals(Vault.DISABLED)) {
-                return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(target).isSupported(source, copy);
+                return registry.find(session, source, false).getFeature(session, Copy.class, proxy).withTarget(destination).isSupported(source, copy);
             }
-            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(target).isSupported(source, copy);
+            return registry.find(session, copy).getFeature(session, Copy.class, proxy).withTarget(destination).isSupported(source, copy);
         }
         catch(VaultUnlockCancelException e) {
             return proxy.isSupported(source, copy);
@@ -88,7 +88,7 @@ public class VaultRegistryCopyFeature implements Copy {
 
     @Override
     public Copy withTarget(final Session<?> session) {
-        this.target = session.withRegistry(registry);
+        this.destination = session.withRegistry(registry);
         return this;
     }
 

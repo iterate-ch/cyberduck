@@ -22,6 +22,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -67,15 +68,15 @@ public class IRODSMoveFeatureTest {
         new IRODSDirectoryFeature(session).mkdir(source, null, new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
         new IRODSTouchFeature(session).touch(new Path(source, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(session.getFeature(Find.class).find(new Path(source, filename, EnumSet.of(Path.Type.file))));
+        assertTrue(session.getFeature(Find.class).find(new Path(source, filename, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
         new IRODSDirectoryFeature(session).mkdir(destination, null, new TransferStatus());
         new IRODSMoveFeature(session).move(source, destination, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(session.getFeature(Find.class).find(source));
-        assertFalse(session.getFeature(Find.class).find(new Path(source, filename, EnumSet.of(Path.Type.file))));
-        assertTrue(session.getFeature(Find.class).find(destination));
-        assertTrue(session.getFeature(Find.class).find(new Path(destination, filename, EnumSet.of(Path.Type.file))));
+        assertFalse(session.getFeature(Find.class).find(source, new DisabledListProgressListener()));
+        assertFalse(session.getFeature(Find.class).find(new Path(source, filename, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertTrue(session.getFeature(Find.class).find(destination, new DisabledListProgressListener()));
+        assertTrue(session.getFeature(Find.class).find(new Path(destination, filename, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
         session.getFeature(Delete.class).delete(Collections.singletonList(destination), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(session.getFeature(Find.class).find(destination));
+        assertFalse(session.getFeature(Find.class).find(destination, new DisabledListProgressListener()));
         session.close();
     }
 
@@ -97,10 +98,10 @@ public class IRODSMoveFeatureTest {
         new IRODSTouchFeature(session).touch(source, new TransferStatus());
         new IRODSTouchFeature(session).touch(destination, new TransferStatus());
         new IRODSMoveFeature(session).move(source, destination, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(session.getFeature(Find.class).find(source));
-        assertTrue(session.getFeature(Find.class).find(destination));
+        assertFalse(session.getFeature(Find.class).find(source, new DisabledListProgressListener()));
+        assertTrue(session.getFeature(Find.class).find(destination, new DisabledListProgressListener()));
         session.getFeature(Delete.class).delete(Collections.singletonList(destination), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(session.getFeature(Find.class).find(destination));
+        assertFalse(session.getFeature(Find.class).find(destination, new DisabledListProgressListener()));
         session.close();
     }
 
@@ -119,8 +120,8 @@ public class IRODSMoveFeatureTest {
 
         final Path source = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path destination = new Path(new IRODSHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        assertFalse(session.getFeature(Find.class).find(source));
-        assertFalse(session.getFeature(Find.class).find(destination));
+        assertFalse(session.getFeature(Find.class).find(source, new DisabledListProgressListener()));
+        assertFalse(session.getFeature(Find.class).find(destination, new DisabledListProgressListener()));
 
         new IRODSMoveFeature(session).move(source, destination, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }

@@ -60,10 +60,10 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             out.close();
             assertNotNull(out.getStatus().id);
             test.attributes().withVersionId(out.getStatus());
-            assertTrue(new DefaultFindFeature(session).find(test));
+            assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
             final PathAttributes attributes = new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
             assertEquals(content.length, attributes.getSize());
-            final Write.Append append = new DriveWriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty());
+            final Write.Append append = new DriveWriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener());
             assertTrue(append.override);
             assertEquals(content.length, append.size, 0L);
             final byte[] buffer = new byte[content.length];

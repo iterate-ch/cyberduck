@@ -95,9 +95,9 @@ public class SFTPReadFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
         Assert.assertEquals(content.length, new CryptoListService(session, new SFTPListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        Assert.assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
+        Assert.assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(30000);
         final TransferStatus read = new TransferStatus();
         read.setOffset(40000);

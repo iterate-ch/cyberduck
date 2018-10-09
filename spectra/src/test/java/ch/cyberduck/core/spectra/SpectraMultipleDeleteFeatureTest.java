@@ -18,6 +18,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -72,9 +73,9 @@ public class SpectraMultipleDeleteFeatureTest {
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.write(content, out);
         out.close();
-        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session).find(test));
+        assertFalse(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
         session.close();
     }
 
@@ -95,10 +96,10 @@ public class SpectraMultipleDeleteFeatureTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
                 new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(test));
-        assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session).find(test));
+        assertFalse(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
         session.close();
     }
 

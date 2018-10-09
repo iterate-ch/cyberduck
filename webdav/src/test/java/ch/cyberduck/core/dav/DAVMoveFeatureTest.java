@@ -21,6 +21,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -60,8 +61,8 @@ public class DAVMoveFeatureTest {
         assertEquals(0L, test.attributes().getSize());
         final Path target = new DAVMoveFeature(session).move(test,
             new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(session.getFeature(Find.class).find(test));
-        assertTrue(session.getFeature(Find.class).find(target));
+        assertFalse(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
+        assertTrue(session.getFeature(Find.class).find(target, new DisabledListProgressListener()));
         assertEquals(test.attributes(), target.attributes());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -80,8 +81,8 @@ public class DAVMoveFeatureTest {
         new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(session.getFeature(Find.class).find(test));
-        assertTrue(session.getFeature(Find.class).find(target));
+        assertFalse(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
+        assertTrue(session.getFeature(Find.class).find(target, new DisabledListProgressListener()));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -99,8 +100,8 @@ public class DAVMoveFeatureTest {
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(target, new TransferStatus());
         new DAVMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(session.getFeature(Find.class).find(test));
-        assertTrue(session.getFeature(Find.class).find(target));
+        assertFalse(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
+        assertTrue(session.getFeature(Find.class).find(target, new DisabledListProgressListener()));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

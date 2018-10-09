@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
@@ -39,7 +40,7 @@ public class RenameFilterTest {
         final AtomicBoolean moved = new AtomicBoolean();
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return new PathAttributes();
             }
 
@@ -50,7 +51,7 @@ public class RenameFilterTest {
         };
         final Find find = new Find() {
             @Override
-            public boolean find(final Path f) throws BackgroundException {
+            public boolean find(final Path f, final ListProgressListener listener) throws BackgroundException {
                 if(f.equals(directory)) {
                     found.set(true);
                     return true;

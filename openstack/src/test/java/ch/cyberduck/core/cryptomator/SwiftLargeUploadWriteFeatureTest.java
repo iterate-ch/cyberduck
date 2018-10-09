@@ -20,6 +20,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -96,7 +97,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         final TransferStatus progress = new TransferStatus();
         new StreamCopier(new TransferStatus(), progress).transfer(in, out);
         assertEquals(content.length, progress.getOffset());
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new CryptoReadFeature(session, new SwiftReadFeature(session, regionService), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);

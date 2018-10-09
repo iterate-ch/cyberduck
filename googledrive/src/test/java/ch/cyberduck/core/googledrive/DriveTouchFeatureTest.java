@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -40,7 +41,7 @@ public class DriveTouchFeatureTest extends AbstractDriveTest {
         final Path test = new DriveTouchFeature(session, fileid).touch(
             new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("x-application/cyberduck"));
         assertNotNull(test.attributes().getVersionId());
-        assertEquals(test.attributes().getVersionId(), new DriveAttributesFinderFeature(session, fileid).find(test).getVersionId());
+        assertEquals(test.attributes().getVersionId(), new DriveAttributesFinderFeature(session, fileid).find(test, new DisabledListProgressListener()).getVersionId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

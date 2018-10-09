@@ -101,7 +101,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), writeStatus, null);
         assertEquals((long) content.length, writeStatus.getOffset(), 0L);
         assertTrue(writeStatus.isComplete());
-        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
         assertEquals(content.length, new CryptoListService(session, new SwiftListService(session, regionService), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final TransferStatus readStatus = new TransferStatus().length(content.length);

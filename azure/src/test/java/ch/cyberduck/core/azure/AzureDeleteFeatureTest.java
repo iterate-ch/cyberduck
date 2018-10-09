@@ -3,6 +3,7 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -64,9 +65,9 @@ public class AzureDeleteFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new AzureDirectoryFeature(session, null).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertTrue(new AzureFindFeature(session, null).find(test));
+        assertTrue(new AzureFindFeature(session, null).find(test, new DisabledListProgressListener()));
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new AzureFindFeature(session, null).find(test));
+        assertFalse(new AzureFindFeature(session, null).find(test, new DisabledListProgressListener()));
     }
 
     @Test
@@ -81,8 +82,8 @@ public class AzureDeleteFeatureTest {
         new AzureDirectoryFeature(session, null).mkdir(container, null, new TransferStatus());
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
-        assertTrue(new AzureFindFeature(session, null).find(test));
+        assertTrue(new AzureFindFeature(session, null).find(test, new DisabledListProgressListener()));
         new AzureDeleteFeature(session, null).delete(Arrays.asList(container, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new AzureFindFeature(session, null).find(test));
+        assertFalse(new AzureFindFeature(session, null).find(test, new DisabledListProgressListener()));
     }
 }

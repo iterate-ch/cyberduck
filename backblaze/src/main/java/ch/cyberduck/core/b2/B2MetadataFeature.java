@@ -15,6 +15,7 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -45,7 +46,7 @@ public class B2MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        return new B2AttributesFinderFeature(session, fileid).find(file).getMetadata();
+        return new B2AttributesFinderFeature(session, fileid).find(file, new DisabledListProgressListener()).getMetadata();
     }
 
     @Override

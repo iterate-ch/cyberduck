@@ -98,9 +98,9 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         out.close();
         assertNotNull(out.getStatus());
         assertNotNull(out.getStatus().id);
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test).getSize());
-        assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
+        assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test, new DisabledListProgressListener()).getSize());
+        assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         final InputStream in = new CryptoReadFeature(session, new DriveReadFeature(session, fileid), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
@@ -131,7 +131,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session, fileid), cryptomator).find(test));
+        assertTrue(new CryptoFindFeature(session, new DriveFindFeature(session, fileid), cryptomator).find(test, new DisabledListProgressListener()));
         final Path found = new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test));
         final String versionId = found.attributes().getVersionId();
         assertNotNull(versionId);
@@ -141,19 +141,19 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
         cache.put(vault, list);
         assertEquals(content.length, cache.get(vault).get(0).attributes().getSize());
         assertEquals(content.length, found.attributes().getSize());
-        assertEquals(content.length, writer.append(test, status.getLength(), cache).size, 0L);
+        assertEquals(content.length, writer.append(test, status.getLength(), cache, new DisabledListProgressListener()).size, 0L);
         {
-            final PathAttributes attributes = new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session, fileid), cryptomator).find(test);
+            final PathAttributes attributes = new CryptoAttributesFeature(session, new DriveAttributesFinderFeature(session, fileid), cryptomator).find(test, new DisabledListProgressListener());
             assertEquals(content.length, attributes.getSize());
             assertEquals(versionId, found.attributes().getVersionId());
         }
         {
-            final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
+            final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test, new DisabledListProgressListener());
             assertEquals(content.length, attributes.getSize());
             assertEquals(versionId, found.attributes().getVersionId());
         }
         {
-            final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).withCache(cache).find(test);
+            final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).withCache(cache).find(test, new DisabledListProgressListener());
             assertEquals(content.length, attributes.getSize());
             assertEquals(versionId, found.attributes().getVersionId());
         }

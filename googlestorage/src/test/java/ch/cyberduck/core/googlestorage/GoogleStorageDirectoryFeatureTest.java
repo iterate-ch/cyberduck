@@ -15,6 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -43,7 +44,7 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     public void testMakeBucket() throws Exception {
         final Path test = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new GoogleStorageDirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(test, null, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -52,8 +53,8 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
         final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageDirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(new Path(bucket,
                 UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(test));
-        assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

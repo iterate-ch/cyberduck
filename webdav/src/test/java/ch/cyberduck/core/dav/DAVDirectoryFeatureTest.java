@@ -20,6 +20,7 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -54,9 +55,9 @@ public class DAVDirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
-        assertTrue(session.getFeature(Find.class).find(test));
+        assertTrue(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(session.getFeature(Find.class).find(test));
+        assertFalse(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
         session.close();
     }
 }

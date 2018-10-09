@@ -3353,10 +3353,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly Map _files;
 
                 public InnerMoveWorker(BrowserController controller, Map files, PathCache cache)
-                    : base(files, cache, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller),
-                        HostKeyCallbackFactory.get(controller, controller.Session.getHost().getProtocol()), controller,
-                        controller)
-                {
+                    : base(files,
+                        controller.Session is StatefulSessionPool
+                            ? SessionPoolFactory.create(controller, cache, controller.Session.getHost())
+                            : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
+{
                     _controller = controller;
                     _files = files;
                 }

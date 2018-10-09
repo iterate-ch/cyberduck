@@ -57,9 +57,9 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertTrue(new DropboxFindFeature(session).find(test));
+        assertTrue(new DropboxFindFeature(session).find(test, new DisabledListProgressListener()));
         assertEquals(content.length, new DropboxListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
         {
             final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
@@ -89,9 +89,9 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
-        assertTrue(new DropboxFindFeature(session).find(test));
+        assertTrue(new DropboxFindFeature(session).find(test, new DisabledListProgressListener()));
         assertEquals(content.length, new DropboxListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty()).size, 0L);
+        assertEquals(content.length, write.append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
         {
             final InputStream in = new DropboxReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

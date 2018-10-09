@@ -19,6 +19,7 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -57,7 +58,7 @@ public class DefaultTouchFeature<T> implements Touch<T> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Received reply %s for creating file %s", reply, file));
             }
-            return new Path(file.getParent(), file.getName(), file.getType(), attributes.find(file));
+            return new Path(file.getParent(), file.getName(), file.getType(), attributes.find(file, new DisabledListProgressListener()));
         }
         finally {
             temp.delete();
