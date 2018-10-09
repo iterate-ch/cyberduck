@@ -25,7 +25,6 @@ import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -73,7 +72,7 @@ public class CopyController extends ProxyController {
             public void run() {
                 final SessionPool pool = parent.getSession();
                 parent.background(new WorkerBackgroundAction<Map<Path, Path>>(parent, parent.getSession(),
-                        new CopyWorker(selected, pool instanceof StatefulSessionPool ? SessionPoolFactory.create(parent, cache, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
+                    new CopyWorker(selected, pool.getHost().getProtocol().isStateful() ? SessionPoolFactory.create(parent, cache, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
                             @Override
                             public void cleanup(final Map<Path, Path> result) {
                                 final List<Path> changed = new ArrayList<>();

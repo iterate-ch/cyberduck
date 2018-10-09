@@ -25,7 +25,6 @@ import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -41,7 +40,7 @@ import java.util.Map;
 public class MoveController extends ProxyController {
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final BrowserController parent;
     private final Cache<Path> cache;
@@ -72,7 +71,7 @@ public class MoveController extends ProxyController {
             @Override
             public void run() {
                 final SessionPool pool = parent.getSession();
-                final MoveWorker move = new MoveWorker(selected, pool instanceof StatefulSessionPool ? SessionPoolFactory.create(parent, cache, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
+                final MoveWorker move = new MoveWorker(selected, pool.getHost().getProtocol().isStateful() ? SessionPoolFactory.create(parent, cache, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
                     @Override
                     public void cleanup(final Map<Path, Path> result) {
                         final List<Path> changed = new ArrayList<>();
@@ -97,7 +96,7 @@ public class MoveController extends ProxyController {
     private void rename(final Map<Path, Path> selected, final DefaultMainAction action) {
         if(preferences.getBoolean("browser.move.confirm")) {
             StringBuilder alertText = new StringBuilder(
-                    LocaleFactory.localizedString("Do you want to move the selected files?", "Duplicate"));
+                LocaleFactory.localizedString("Do you want to move the selected files?", "Duplicate"));
             int i = 0;
             boolean rename = false;
             Iterator<Map.Entry<Path, Path>> iter;
@@ -113,11 +112,11 @@ public class MoveController extends ProxyController {
                 alertText.append(String.format("\n%s …)", Character.toString('\u2022')));
             }
             final NSAlert alert = NSAlert.alert(
-                    rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), //title
-                    alertText.toString(),
-                    rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), // default button
-                    LocaleFactory.localizedString("Cancel"), //alternative button
-                    null //other button
+                rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), //title
+                alertText.toString(),
+                rename ? LocaleFactory.localizedString("Rename", "Transfer") : LocaleFactory.localizedString("Move", "Transfer"), // default button
+                LocaleFactory.localizedString("Cancel"), //alternative button
+                null //other button
             );
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't ask again", "Configuration"));
