@@ -15,11 +15,9 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.pool.StatelessSessionPool;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -75,37 +73,15 @@ public class SessionPoolFactory {
                                      final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
                                      final VaultRegistry registry,
                                      final Usage... usage) {
-        switch(bookmark.getProtocol().getType()) {
-            case file:
-            case sftp:
-            case onedrive:
-            case s3:
-            case googlestorage:
-            case dropbox:
-            case googledrive:
-            case swift:
-            case dav:
-            case azure:
-            case b2:
-            case dracoon:
-                // Stateless protocol
-                return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
-            case ftp:
-            case irods:
-                // Stateful
-                if(Arrays.asList(usage).contains(Usage.browser)) {
-                    return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
-                }
-                // Break through to default pool
-            default:
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Create new pooled connection pool for %s", bookmark));
-                }
-                return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, registry, cache, transcript, bookmark)
-                    .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
-                    .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
-                    .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
+        if(bookmark.getProtocol().isStateful()) {
+            // Stateful
+            if(Arrays.asList(usage).contains(Usage.browser)) {
+                return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
+            }
+            // Break through to default pool
         }
+        // Stateless protocol
+        return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
     }
 
     /**
