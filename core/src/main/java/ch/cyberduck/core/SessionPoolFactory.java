@@ -15,9 +15,11 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.pool.StatefulSessionPool;
 import ch.cyberduck.core.pool.StatelessSessionPool;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -79,6 +81,13 @@ public class SessionPoolFactory {
                 return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
             }
             // Break through to default pool
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Create new pooled connection pool for %s", bookmark));
+            }
+            return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, registry, cache, transcript, bookmark)
+                .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
+                .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
+                .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
         }
         // Stateless protocol
         return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
