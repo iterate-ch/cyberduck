@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -42,10 +41,5 @@ public class OneDriveFindFeature implements Find {
         catch(NotfoundException | InteroperabilityException e) {
             return false;
         }
-    }
-
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        return this;
     }
 }

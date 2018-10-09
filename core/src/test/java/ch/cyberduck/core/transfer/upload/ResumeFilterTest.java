@@ -63,12 +63,6 @@ public class ResumeFilterTest {
                         public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                             return true;
                         }
-
-                        @Override
-                        public Find withCache(Cache<Path> cache) {
-                            return this;
-                        }
-
                     };
                 }
                 return super._getFeature(type);

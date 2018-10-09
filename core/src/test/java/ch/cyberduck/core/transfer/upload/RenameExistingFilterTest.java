@@ -116,24 +116,12 @@ public class RenameExistingFilterTest {
                 }
                 return false;
             }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
-            }
-
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return new PathAttributes();
             }
-
-            @Override
-            public AttributesFinder withCache(Cache<Path> cache) {
-                return this;
-            }
-
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
             @Override
@@ -209,7 +197,7 @@ public class RenameExistingFilterTest {
         };
         final UploadFilterOptions options = new UploadFilterOptions().withTemporary(true);
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), session,
-                options);
+            options);
         f.withFinder(find).withAttributes(attributes);
         assertTrue(options.temporary);
         final TransferStatus status = f.prepare(file, new NullLocal("t"), new TransferStatus().exists(true), new DisabledProgressListener());
@@ -239,21 +227,11 @@ public class RenameExistingFilterTest {
                 }
                 return false;
             }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
-            }
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return new PathAttributes();
-            }
-
-            @Override
-            public AttributesFinder withCache(Cache<Path> cache) {
-                return this;
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
@@ -321,7 +299,7 @@ public class RenameExistingFilterTest {
             }
         };
         final RenameExistingFilter f = new RenameExistingFilter(new DisabledUploadSymlinkResolver(), session,
-                new UploadFilterOptions().withTemporary(true));
+            new UploadFilterOptions().withTemporary(true));
         f.withFinder(find).withAttributes(attributes);
         final TransferStatus status = f.prepare(file, new NullLocal("/t") {
             @Override

@@ -1,7 +1,6 @@
 package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -159,20 +158,10 @@ public class SwiftWriteFeatureTest {
                 find.set(true);
                 return true;
             }
-
-            @Override
-            public Find withCache(final Cache<Path> cache) {
-                return this;
-            }
         }, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return new PathAttributes();
-            }
-
-            @Override
-            public AttributesFinder withCache(final Cache<Path> cache) {
-                return this;
             }
         }
         ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, PathCache.empty(), new DisabledListProgressListener());
@@ -205,11 +194,6 @@ public class SwiftWriteFeatureTest {
             public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 find.set(true);
                 return false;
-            }
-
-            @Override
-            public Find withCache(final Cache<Path> cache) {
-                return this;
             }
         }
         ).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 1024L, PathCache.empty(), new DisabledListProgressListener());

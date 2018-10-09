@@ -26,15 +26,17 @@ public interface AttributesFinder {
     /**
      * Find file attributes
      *
-     * @param file File
-     * @param listener
+     * @param file     File
+     * @param listener List progress
      */
-    PathAttributes find(Path file, final ListProgressListener listener) throws BackgroundException;
+    PathAttributes find(Path file, ListProgressListener listener) throws BackgroundException;
 
     /**
      * Decorate with cache
      *
      * @param cache Path cache
      */
-    AttributesFinder withCache(Cache<Path> cache);
+    default AttributesFinder withCache(Cache<Path> cache) {
+        return this;
+    }
 }

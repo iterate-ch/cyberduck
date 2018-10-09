@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -68,11 +67,6 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             return attributes;
         }
         return this.toAttributes(this.details(file));
-    }
-
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        return this;
     }
 
     protected StorageObject details(final Path file) throws BackgroundException {

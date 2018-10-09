@@ -18,7 +18,6 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -155,10 +154,5 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
             }
         }
         return attributes;
-    }
-
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        return this;
     }
 }

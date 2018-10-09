@@ -328,11 +328,6 @@ public class UploadTransferTest {
                         public boolean find(final Path f, final ListProgressListener listener) {
                             return true;
                         }
-
-                        @Override
-                        public Find withCache(Cache<Path> cache) {
-                            return this;
-                        }
                     };
                 }
                 if(type.equals(Move.class)) {
@@ -367,12 +362,6 @@ public class UploadTransferTest {
                         public PathAttributes find(final Path file, final ListProgressListener listener) {
                             return new PathAttributes();
                         }
-
-                        @Override
-                        public AttributesFinder withCache(Cache<Path> cache) {
-                            return this;
-                        }
-
                     };
                 }
                 if(type.equals(Write.class)) {

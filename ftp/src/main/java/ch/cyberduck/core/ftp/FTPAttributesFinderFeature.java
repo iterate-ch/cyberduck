@@ -19,7 +19,6 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -66,10 +65,5 @@ public class FTPAttributesFinderFeature implements AttributesFinder {
         catch(IOException e) {
             throw new FTPExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
-    }
-
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        return this;
     }
 }

@@ -15,13 +15,11 @@ package ch.cyberduck.core.onedrive.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.onedrive.OneDriveExceptionMappingService;
@@ -40,9 +38,6 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(OneDriveAttributesFinderFeature.class);
 
     private final OneDriveSession session;
-
-    private final PathContainerService containerService
-        = new PathContainerService();
 
     public OneDriveAttributesFinderFeature(final OneDriveSession session) {
         this.session = session;
@@ -106,10 +101,5 @@ public class OneDriveAttributesFinderFeature implements AttributesFinder {
             attributes.setCreationDate(metadata.getCreatedDateTime().toInstant().toEpochMilli());
         }
         return attributes;
-    }
-
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        return this;
     }
 }

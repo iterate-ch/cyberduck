@@ -1,7 +1,6 @@
 package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -44,22 +43,12 @@ public class ComparisonServiceFilterTest {
                     }
                 };
             }
-
-            @Override
-            public AttributesFinder withCache(Cache<Path> cache) {
-                return this;
-            }
         };
         final Find find = new Find() {
             @Override
             public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 found.set(true);
                 return true;
-            }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
             }
         };
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
@@ -94,11 +83,6 @@ public class ComparisonServiceFilterTest {
                 found.set(true);
                 return true;
             }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
-            }
         };
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
         }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find);
@@ -119,11 +103,6 @@ public class ComparisonServiceFilterTest {
             public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 found.set(true);
                 return false;
-            }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
             }
         };
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
@@ -146,11 +125,6 @@ public class ComparisonServiceFilterTest {
                 found.set(true);
                 return true;
             }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
-            }
         };
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {
         }, TimeZone.getDefault(), new DisabledProgressListener()).withFinder(find);
@@ -172,11 +146,6 @@ public class ComparisonServiceFilterTest {
             public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 found.set(true);
                 return true;
-            }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
             }
         };
         final AttributesFinder attributes = new AttributesFinder() {
@@ -204,11 +173,6 @@ public class ComparisonServiceFilterTest {
                         return c.getTimeInMillis();
                     }
                 };
-            }
-
-            @Override
-            public AttributesFinder withCache(Cache<Path> cache) {
-                return this;
             }
         };
         ComparisonServiceFilter s = new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())) {

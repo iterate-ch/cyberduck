@@ -1,6 +1,5 @@
 package ch.cyberduck.core.s3;
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -45,20 +44,10 @@ public class S3WriteFeatureTest {
             public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return true;
             }
-
-            @Override
-            public Find withCache(final Cache<Path> cache) {
-                return this;
-            }
         }, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return new PathAttributes();
-            }
-
-            @Override
-            public AttributesFinder withCache(final Cache<Path> cache) {
-                return this;
             }
         });
         final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty(), new DisabledListProgressListener());
@@ -73,22 +62,12 @@ public class S3WriteFeatureTest {
             public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return true;
             }
-
-            @Override
-            public Find withCache(final Cache<Path> cache) {
-                return this;
-            }
         }, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(3L);
                 return attributes;
-            }
-
-            @Override
-            public AttributesFinder withCache(final Cache<Path> cache) {
-                return this;
             }
         });
         final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty(), new DisabledListProgressListener());

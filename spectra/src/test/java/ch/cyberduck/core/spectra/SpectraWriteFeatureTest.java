@@ -14,7 +14,20 @@
 
 package ch.cyberduck.core.spectra;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -134,22 +147,12 @@ public class SpectraWriteFeatureTest {
             public boolean find(final Path file, final ListProgressListener listener) {
                 return true;
             }
-
-            @Override
-            public Find withCache(final Cache<Path> cache) {
-                return this;
-            }
         }, new AttributesFinder() {
             @Override
             public PathAttributes find(final Path file, final ListProgressListener listener) {
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(3L);
                 return attributes;
-            }
-
-            @Override
-            public AttributesFinder withCache(final Cache<Path> cache) {
-                return this;
             }
         });
         final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty(), new DisabledListProgressListener());

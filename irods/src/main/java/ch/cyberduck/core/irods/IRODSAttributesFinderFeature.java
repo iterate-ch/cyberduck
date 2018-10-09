@@ -15,7 +15,6 @@ package ch.cyberduck.core.irods;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -60,10 +59,5 @@ public class IRODSAttributesFinderFeature implements AttributesFinder {
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
-    }
-
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        return this;
     }
 }

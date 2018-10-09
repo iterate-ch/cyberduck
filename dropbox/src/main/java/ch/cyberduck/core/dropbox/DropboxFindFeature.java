@@ -15,7 +15,6 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
@@ -43,10 +42,5 @@ public class DropboxFindFeature implements Find {
         catch(NotfoundException e) {
             return false;
         }
-    }
-
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        return this;
     }
 }

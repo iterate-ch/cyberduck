@@ -18,7 +18,6 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -94,10 +93,5 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
         catch(URISyntaxException e) {
             throw new NotfoundException(e.getMessage(), e);
         }
-    }
-
-    @Override
-    public AttributesFinder withCache(Cache<Path> cache) {
-        return this;
     }
 }

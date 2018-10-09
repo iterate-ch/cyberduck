@@ -15,7 +15,6 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -33,10 +32,5 @@ public class LocalFindFeature implements Find {
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         // https://rules.sonarsource.com/java/tag/performance/RSPEC-3725
         return session.toPath(file).toFile().exists();
-    }
-
-    @Override
-    public Find withCache(final Cache<Path> cache) {
-        return this;
     }
 }

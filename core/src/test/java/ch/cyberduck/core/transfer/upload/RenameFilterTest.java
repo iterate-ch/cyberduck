@@ -1,6 +1,5 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
@@ -43,11 +42,6 @@ public class RenameFilterTest {
             public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                 return new PathAttributes();
             }
-
-            @Override
-            public AttributesFinder withCache(Cache<Path> cache) {
-                return this;
-            }
         };
         final Find find = new Find() {
             @Override
@@ -57,11 +51,6 @@ public class RenameFilterTest {
                     return true;
                 }
                 return false;
-            }
-
-            @Override
-            public Find withCache(Cache<Path> cache) {
-                return this;
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol()));

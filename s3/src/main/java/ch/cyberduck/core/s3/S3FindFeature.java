@@ -21,7 +21,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -29,13 +28,10 @@ import ch.cyberduck.core.features.Find;
 
 public class S3FindFeature implements Find {
 
-    private final S3Session session;
-
-    private Cache<Path> cache;
+    private final S3AttributesFinderFeature attributes;
 
     public S3FindFeature(final S3Session session) {
-        this.session = session;
-        this.cache = PathCache.empty();
+        this.attributes = new S3AttributesFinderFeature(session);
     }
 
     @Override
@@ -44,7 +40,7 @@ public class S3FindFeature implements Find {
             return true;
         }
         try {
-            new S3AttributesFinderFeature(session).withCache(cache).find(file, new DisabledListProgressListener());
+            attributes.find(file, new DisabledListProgressListener());
             return true;
         }
         catch(NotfoundException e) {
@@ -58,7 +54,7 @@ public class S3FindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
+        attributes.withCache(cache);
         return this;
     }
 }

@@ -210,12 +210,6 @@ public class SingleTransferWorkerTest {
                     public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
                         return file.attributes();
                     }
-
-                    @Override
-                    public AttributesFinder withCache(final Cache<Path> cache) {
-                        return this;
-                    }
-
                 });
             }
         };

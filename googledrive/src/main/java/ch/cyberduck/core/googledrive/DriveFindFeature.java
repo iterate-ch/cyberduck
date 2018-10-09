@@ -19,7 +19,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
@@ -28,8 +27,6 @@ public class DriveFindFeature implements Find {
 
     private final DriveFileidProvider fileid;
 
-    private Cache<Path> cache = PathCache.empty();
-
     public DriveFindFeature(final DriveSession session, final DriveFileidProvider fileid) {
         this.fileid = fileid;
     }
@@ -37,7 +34,7 @@ public class DriveFindFeature implements Find {
     @Override
     public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            fileid.withCache(cache).getFileid(file, new DisabledListProgressListener());
+            fileid.getFileid(file, new DisabledListProgressListener());
             return true;
         }
         catch(NotfoundException e) {
@@ -47,7 +44,7 @@ public class DriveFindFeature implements Find {
 
     @Override
     public Find withCache(final Cache<Path> cache) {
-        this.cache = cache;
+        fileid.withCache(cache);
         return this;
     }
 }

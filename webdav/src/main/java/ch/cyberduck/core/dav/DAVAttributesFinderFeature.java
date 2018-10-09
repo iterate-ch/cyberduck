@@ -17,7 +17,6 @@ package ch.cyberduck.core.dav;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -195,10 +194,5 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
             attributes.setDisplayname(resource.getDisplayName());
         }
         return attributes;
-    }
-
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        return this;
     }
 }

@@ -15,7 +15,6 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -47,11 +46,6 @@ public class LocalAttributesFinderFeature implements AttributesFinder {
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
-    }
-
-    @Override
-    public AttributesFinder withCache(final Cache<Path> cache) {
-        return this;
     }
 
     protected PathAttributes convert(final java.nio.file.Path file) throws IOException {

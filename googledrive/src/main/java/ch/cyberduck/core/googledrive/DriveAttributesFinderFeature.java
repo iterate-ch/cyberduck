@@ -98,6 +98,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public AttributesFinder withCache(final Cache<Path> cache) {
+        fileid.withCache(cache);
         return this;
     }
 }
