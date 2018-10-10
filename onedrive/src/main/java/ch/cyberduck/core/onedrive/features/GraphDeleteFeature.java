@@ -35,9 +35,6 @@ import java.util.List;
 public class GraphDeleteFeature implements Delete {
     private static final Logger logger = Logger.getLogger(GraphDeleteFeature.class);
 
-    private final PathContainerService containerService
-        = new PathContainerService();
-
     private final GraphSession session;
 
     public GraphDeleteFeature(GraphSession session) {
@@ -47,7 +44,7 @@ public class GraphDeleteFeature implements Delete {
     @Override
     public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
-            if(containerService.isContainer(file)) {
+            if(!session.isAccessible(file, false)) {
                 continue;
             }
             callback.delete(file);
@@ -70,7 +67,7 @@ public class GraphDeleteFeature implements Delete {
 
     @Override
     public boolean isSupported(final Path file) {
-        return !containerService.isContainer(file);
+        return session.isAccessible(file, false);
     }
 
     @Override

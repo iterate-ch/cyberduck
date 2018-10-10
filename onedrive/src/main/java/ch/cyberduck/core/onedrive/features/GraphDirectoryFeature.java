@@ -55,7 +55,7 @@ public class GraphDirectoryFeature implements Directory<Void> {
 
     @Override
     public boolean isSupported(final Path workdir, final String name) {
-        return !workdir.isRoot();
+        return session.isAccessible(workdir);
     }
 
     @Override

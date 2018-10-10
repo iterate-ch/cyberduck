@@ -41,9 +41,6 @@ public class GraphCopyFeature implements Copy {
 
     private final GraphSession session;
 
-    private final PathContainerService containerService
-        = new PathContainerService();
-
     public GraphCopyFeature(final GraphSession session) {
         this.session = session;
     }
@@ -83,10 +80,10 @@ public class GraphCopyFeature implements Copy {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if(containerService.isContainer(source)) {
+        if (!session.isAccessible(source, false)) {
             return false;
         }
-        if(!containerService.getContainer(source).equals(containerService.getContainer(target))) {
+        if (!session.getContainer(source).equals(session.getContainer(target))){
             return false;
         }
         if(source.getType().contains(Path.Type.shared)) {

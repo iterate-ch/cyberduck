@@ -62,7 +62,7 @@ public class GraphTouchFeature implements Touch<Void> {
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return !workdir.isRoot();
+        return session.isAccessible(workdir);
     }
 
     @Override
