@@ -88,10 +88,10 @@ public class OneDriveSession extends GraphSession {
 
     @Override
     public boolean isAccessible(final Path path, final boolean container) {
-        if (path.isRoot()){
+        if(path.isRoot()) {
             return false;
         }
-        if (!container && path.getParent().isRoot()){
+        if(!container && path.getParent().isRoot()) {
             return false;
         }
         return true;

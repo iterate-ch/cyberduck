@@ -18,7 +18,6 @@ package ch.cyberduck.core.onedrive.features;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -80,10 +79,10 @@ public class GraphCopyFeature implements Copy {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if (!session.isAccessible(source, false)) {
+        if(!session.isAccessible(source, false)) {
             return false;
         }
-        if (!session.getContainer(source).equals(session.getContainer(target))){
+        if(!session.getContainer(source).equals(session.getContainer(target))) {
             return false;
         }
         if(source.getType().contains(Path.Type.shared)) {

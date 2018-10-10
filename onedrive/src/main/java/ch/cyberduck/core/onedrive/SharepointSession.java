@@ -119,17 +119,16 @@ public class SharepointSession extends GraphSession {
         }
         Path previous = path;
         Path parent = path.getParent();
-        while (!parent.isRoot()) {
-            if (parent.getParent() == SharepointListService.DEFAULT_NAME) {
+        while(!parent.isRoot()) {
+            if(parent.getParent() == SharepointListService.DEFAULT_NAME) {
                 return parent;
             }
-            else if (parent.getParent() == SharepointListService.GROUPS_NAME) {
+            else if(parent.getParent() == SharepointListService.GROUPS_NAME) {
                 return previous;
             }
             previous = parent;
             parent = parent.getParent();
         }
-
         return path;
     }
 

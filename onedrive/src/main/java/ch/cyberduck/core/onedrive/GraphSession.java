@@ -88,9 +88,10 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     public abstract OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException;
 
-    public final boolean isAccessible(final Path path) {
-        return isAccessible(path, true);
+    public boolean isAccessible(final Path path) {
+        return this.isAccessible(path, true);
     }
+
     public abstract boolean isAccessible(Path path, boolean container);
 
     public abstract Path getContainer(Path path);

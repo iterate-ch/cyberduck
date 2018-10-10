@@ -19,7 +19,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -87,10 +86,10 @@ public class GraphMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if (!session.isAccessible(source, false)) {
+        if(!session.isAccessible(source, false)) {
             return false;
         }
-        if (!session.getContainer(source).equals(session.getContainer(target))){
+        if(!session.getContainer(source).equals(session.getContainer(target))) {
             return false;
         }
         if(source.getType().contains(Path.Type.shared)) {
