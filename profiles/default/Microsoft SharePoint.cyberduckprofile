@@ -20,7 +20,9 @@
         <key>Protocol</key>
         <string>sharepoint</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>iterate GmbH</string>
+        <key>Bundled</key>
+        <true/>
         <key>Description</key>
         <string>Microsoft SharePoint</string>
         <key>Scheme</key>
