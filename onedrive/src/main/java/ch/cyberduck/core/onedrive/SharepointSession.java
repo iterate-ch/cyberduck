@@ -78,6 +78,62 @@ public class SharepointSession extends GraphSession {
     }
 
     @Override
+    public boolean isAccessible(final Path path, final boolean container) {
+        if(path.isRoot()) {
+            return false;
+        }
+        if(path.isChild(SharepointListService.DEFAULT_NAME)) {
+            // handles /Default_Name
+            if(path == SharepointListService.DEFAULT_NAME) {
+                return false;
+            }
+            // handles /Default_Name/Drive-ID
+            if(!container && path.getParent() == SharepointListService.DEFAULT_NAME) {
+                return false;
+            }
+        }
+        else if(path.isChild(SharepointListService.GROUPS_NAME)) {
+            // Handles /Groups_Name and /Groups_Name/Group
+            if(path == SharepointListService.GROUPS_NAME || path.getParent() == SharepointListService.GROUPS_NAME) {
+                return false;
+            }
+            // handles /Groups_Name/Group/Drive-ID
+            if(!container && path.getParent().getParent() == SharepointListService.GROUPS_NAME) {
+                return false;
+            }
+        }
+        else {
+            // Path is neither in /Default nor in /Groups
+            // This should never happen.
+
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public Path getContainer(final Path path) {
+        if(path.isRoot()) {
+            return path;
+        }
+        Path previous = path;
+        Path parent = path.getParent();
+        while (!parent.isRoot()) {
+            if (parent.getParent() == SharepointListService.DEFAULT_NAME) {
+                return parent;
+            }
+            else if (parent.getParent() == SharepointListService.GROUPS_NAME) {
+                return previous;
+            }
+            previous = parent;
+            parent = parent.getParent();
+        }
+
+        return path;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {

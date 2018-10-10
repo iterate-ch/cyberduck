@@ -19,6 +19,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -83,6 +84,22 @@ public class OneDriveSession extends GraphSession {
             }
         }
         throw new NotfoundException(currentPath.getAbsolute());
+    }
+
+    @Override
+    public boolean isAccessible(final Path path, final boolean container) {
+        if (path.isRoot()){
+            return false;
+        }
+        if (!container && path.getParent().isRoot()){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Path getContainer(final Path path) {
+        return new PathContainerService().getContainer(path);
     }
 
     @Override
