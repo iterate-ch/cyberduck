@@ -65,7 +65,7 @@ public abstract class BundleController extends ProxyController {
         NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
     );
 
-    public static final NSDictionary LABEL_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+    public static final NSDictionary TRUNCATE_TAIL_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
         NSArray.arrayWithObject(PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
         NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
     );
