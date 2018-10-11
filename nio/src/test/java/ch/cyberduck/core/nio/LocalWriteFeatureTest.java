@@ -60,11 +60,11 @@ public class LocalWriteFeatureTest {
             final Path workdir = new LocalHomeFinderFeature(session).find();
             final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
             new LocalTouchFeature(session).touch(target, new TransferStatus());
-            assertTrue(new LocalFindFeature(session).find(target, new DisabledListProgressListener()));
+            assertTrue(new LocalFindFeature(session).find(target));
             final String name = UUID.randomUUID().toString();
             final Path symlink = new Path(workdir, name, EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
             new LocalSymlinkFeature(session).symlink(symlink, target.getName());
-            assertTrue(new LocalFindFeature(session).find(symlink, new DisabledListProgressListener()));
+            assertTrue(new LocalFindFeature(session).find(symlink));
             final TransferStatus status = new TransferStatus();
             final int length = 1048576;
             final byte[] content = RandomUtils.nextBytes(length);
@@ -110,9 +110,9 @@ public class LocalWriteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertFalse(new LocalWriteFeature(session).append(test, 0L, PathCache.empty(), new DisabledListProgressListener()).append);
+        assertFalse(new LocalWriteFeature(session).append(test, 0L, PathCache.empty()).append);
         new LocalTouchFeature(session).touch(test, new TransferStatus());
-        assertTrue(new LocalWriteFeature(session).append(test, 0L, PathCache.empty(), new DisabledListProgressListener()).append);
+        assertTrue(new LocalWriteFeature(session).append(test, 0L, PathCache.empty()).append);
         new LocalDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -135,8 +135,8 @@ public class LocalWriteFeatureTest {
             out.flush();
             out.close();
         }
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertEquals(1024L, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(1024L, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Remaining chunked transfer with offset
             final TransferStatus status = new TransferStatus().exists(true);
@@ -174,7 +174,7 @@ public class LocalWriteFeatureTest {
             out.flush();
             out.close();
         }
-        assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Write beginning of file up to the last chunk
             final TransferStatus status = new TransferStatus().exists(true);
@@ -186,12 +186,12 @@ public class LocalWriteFeatureTest {
             out.flush();
             out.close();
         }
-        assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test).getSize());
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new LocalReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(content, out.toByteArray());
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         new LocalDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -212,8 +212,8 @@ public class LocalWriteFeatureTest {
         final ByteArrayOutputStream b = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new LocalReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), b);
         assertArrayEquals(content, b.toByteArray());
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         new LocalDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

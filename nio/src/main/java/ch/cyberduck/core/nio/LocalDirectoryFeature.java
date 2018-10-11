@@ -15,7 +15,6 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -42,7 +41,7 @@ public class LocalDirectoryFeature implements Directory<Void> {
             throw new LocalExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
         return new Path(folder.getParent(), folder.getName(), folder.getType(),
-            new LocalAttributesFinderFeature(session).find(folder, new DisabledListProgressListener()));
+            new LocalAttributesFinderFeature(session).find(folder));
     }
 
     @Override

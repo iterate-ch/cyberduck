@@ -58,22 +58,24 @@ import java.util.List;
 public class ProgressController extends BundleController implements TransferListener, ProgressListener {
 
     private static final NSDictionary NORMAL_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(
-                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
-            NSArray.arrayWithObjects(
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName)
+        NSArray.arrayWithObjects(
+            NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
+            NSColor.controlTextColor(),
+            BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+        NSArray.arrayWithObjects(
+            NSAttributedString.FontAttributeName,
+            NSAttributedString.ForegroundColorAttributeName,
+            NSAttributedString.ParagraphStyleAttributeName)
     );
     private static final NSDictionary HIGHLIGHTED_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(
-                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
-                NSColor.alternateSelectedControlTextColor(),
-                    BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
-            NSArray.arrayWithObjects(
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName)
+        NSArray.arrayWithObjects(
+            NSFont.systemFontOfSize(NSFont.smallSystemFontSize()),
+            NSColor.alternateSelectedControlTextColor(),
+            BundleController.PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL),
+        NSArray.arrayWithObjects(
+            NSAttributedString.FontAttributeName,
+            NSAttributedString.ForegroundColorAttributeName,
+            NSAttributedString.ParagraphStyleAttributeName)
     );
     private static final NSImage RED_ICON = IconCacheFactory.<NSImage>get().iconNamed("NSStatusUnavailable");
     private static final NSImage GREEN_ICON = IconCacheFactory.<NSImage>get().iconNamed("NSStatusAvailable");
@@ -125,11 +127,11 @@ public class ProgressController extends BundleController implements TransferList
     @Override
     public void awakeFromNib() {
         this.setProgress(MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
-                sizeFormatter.format(transfer.getTransferred()),
-                sizeFormatter.format(transfer.getSize())));
+            sizeFormatter.format(transfer.getTransferred()),
+            sizeFormatter.format(transfer.getSize())));
         this.setMessage(StringUtils.EMPTY);
         this.setStatus(LocaleFactory.localizedString(transfer.isComplete() ?
-                String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"));
+            String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"));
         super.awakeFromNib();
     }
 
@@ -173,10 +175,10 @@ public class ProgressController extends BundleController implements TransferList
                 progressBar.setHidden(true);
                 setMessage(StringUtils.EMPTY);
                 setProgress(MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
-                        sizeFormatter.format(transfer.getTransferred()),
-                        sizeFormatter.format(transfer.getSize())));
+                    sizeFormatter.format(transfer.getTransferred()),
+                    sizeFormatter.format(transfer.getSize())));
                 setStatus(LocaleFactory.localizedString(LocaleFactory.localizedString(transfer.isComplete() ?
-                        String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"), "Status"));
+                    String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) : "Transfer incomplete", "Status"), "Status"));
                 statusIconView.setImage(transfer.isComplete() ? GREEN_ICON : RED_ICON);
             }
         });
@@ -207,7 +209,7 @@ public class ProgressController extends BundleController implements TransferList
             @Override
             public void run() {
                 progressField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                        message, TRUNCATE_MIDDLE_ATTRIBUTES));
+                    message, TRUNCATE_MIDDLE_ATTRIBUTES));
             }
         });
     }
@@ -228,12 +230,12 @@ public class ProgressController extends BundleController implements TransferList
             text = message;
         }
         messageField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                text, TRUNCATE_MIDDLE_ATTRIBUTES));
+            text, TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void setStatus(final String status) {
         statusField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(status,
-                TRUNCATE_MIDDLE_ATTRIBUTES));
+            TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     public boolean isHighlighted() {
@@ -242,17 +244,17 @@ public class ProgressController extends BundleController implements TransferList
 
     public void setHighlighted(final boolean h) {
         highlighted = h;
-        statusField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.systemGrayColor());
-        progressField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.systemGrayColor());
-        messageField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.systemGrayColor());
+        statusField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.controlTextColor());
+        progressField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.controlTextColor());
+        messageField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.controlTextColor());
         this.setMenuHighlighted(h);
     }
 
     private void setMenuHighlighted(boolean highlighted) {
         for(int i = 0; i < filesPopup.numberOfItems().intValue(); i++) {
             filesPopup.itemAtIndex(new NSInteger(i)).setAttributedTitle(
-                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(i)).title(),
-                            highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : NORMAL_FONT_ATTRIBUTES)
+                NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(i)).title(),
+                    highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : NORMAL_FONT_ATTRIBUTES)
             );
         }
     }
@@ -265,17 +267,17 @@ public class ProgressController extends BundleController implements TransferList
         for(int i = 0; i < items.size(); i++) {
             final TransferItem entry = items.get(i);
             this.filesPopup.addItemWithTitle(i == 0 && items.size() > 1 ?
-                    String.format("%s (%d more)", entry.remote.getName(), items.size() - 1) : entry.remote.getName());
+                String.format("%s (%d more)", entry.remote.getName(), items.size() - 1) : entry.remote.getName());
         }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer);
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
         notificationCenter.addObserver(this.id(),
-                Foundation.selector("filesPopupWillShow:"),
-                NSPopUpButton.PopUpButtonWillPopUpNotification,
+            Foundation.selector("filesPopupWillShow:"),
+            NSPopUpButton.PopUpButtonWillPopUpNotification,
             this.filesPopup.id());
         notificationCenter.addObserver(this.id(),
-                Foundation.selector("filesPopupWillHide:"),
-                "NSMenuDidEndTrackingNotification",
+            Foundation.selector("filesPopupWillHide:"),
+            "NSMenuDidEndTrackingNotification",
             this.filesPopup.menu().id());
     }
 
@@ -293,7 +295,7 @@ public class ProgressController extends BundleController implements TransferList
         this.progressField = f;
         this.progressField.setEditable(false);
         this.progressField.setSelectable(false);
-        this.progressField.setTextColor(NSColor.systemGrayColor());
+        this.progressField.setTextColor(NSColor.controlTextColor());
         this.progressField.setFont(NSFont.monospacedDigitSystemFontOfSize(NSFont.smallSystemFontSize()));
     }
 
@@ -301,14 +303,14 @@ public class ProgressController extends BundleController implements TransferList
         this.statusField = f;
         this.statusField.setEditable(false);
         this.statusField.setSelectable(false);
-        this.statusField.setTextColor(NSColor.systemGrayColor());
+        this.statusField.setTextColor(NSColor.controlTextColor());
     }
 
     public void setMessageField(final NSTextField f) {
         this.messageField = f;
         this.messageField.setEditable(false);
         this.messageField.setSelectable(false);
-        this.messageField.setTextColor(NSColor.systemGrayColor());
+        this.messageField.setTextColor(NSColor.controlTextColor());
     }
 
     public void setProgressBar(final NSProgressIndicator p) {

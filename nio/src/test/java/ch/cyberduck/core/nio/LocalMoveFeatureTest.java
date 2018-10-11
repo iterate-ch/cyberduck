@@ -18,7 +18,6 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -48,8 +47,8 @@ public class LocalMoveFeatureTest {
         new LocalTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new LocalFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertTrue(new LocalFindFeature(session).find(target, new DisabledListProgressListener()));
+        assertFalse(new LocalFindFeature(session).find(test));
+        assertTrue(new LocalFindFeature(session).find(target));
         new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -64,8 +63,8 @@ public class LocalMoveFeatureTest {
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(target, new TransferStatus());
         new LocalMoveFeature(session).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new LocalFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertTrue(new LocalFindFeature(session).find(target, new DisabledListProgressListener()));
+        assertFalse(new LocalFindFeature(session).find(test));
+        assertTrue(new LocalFindFeature(session).find(target));
         new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

@@ -20,7 +20,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -67,7 +66,7 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
                 session.getClient().createContainer(regionService.lookup(
                     new SwiftLocationFeature.SwiftRegion(region)), folder.getName());
                 return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                    new SwiftAttributesFinderFeature(session, regionService).find(folder, new DisabledListProgressListener()));
+                    new SwiftAttributesFinderFeature(session, regionService).find(folder));
             }
             else {
                 status.setMime("application/directory");

@@ -20,7 +20,6 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -65,11 +64,11 @@ public class IRODSDeleteFeatureTest {
         new IRODSDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         final Path file = new Path(folder, "f", EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(file, new TransferStatus());
-        assertTrue(new IRODSFindFeature(session).find(folder, new DisabledListProgressListener()));
-        assertTrue(new IRODSFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new IRODSFindFeature(session).find(folder));
+        assertTrue(new IRODSFindFeature(session).find(file));
         new IRODSDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new IRODSFindFeature(session).find(folder, new DisabledListProgressListener()));
-        assertFalse(new IRODSFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertFalse(new IRODSFindFeature(session).find(folder));
+        assertFalse(new IRODSFindFeature(session).find(file));
         session.close();
     }
 
@@ -85,7 +84,7 @@ public class IRODSDeleteFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        assertFalse(new IRODSFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertFalse(new IRODSFindFeature(session).find(test));
         new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

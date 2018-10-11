@@ -60,8 +60,8 @@ public class SwiftCopyFeatureTest {
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new SwiftFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertTrue(new SwiftFindFeature(session).find(copy, new DisabledListProgressListener()));
+        assertTrue(new SwiftFindFeature(session).find(test));
+        assertTrue(new SwiftFindFeature(session).find(copy));
         new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -85,8 +85,8 @@ public class SwiftCopyFeatureTest {
         new SwiftCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new SwiftObjectListService(session).list(folder, new DisabledListProgressListener());
-        assertTrue(find.find(test, new DisabledListProgressListener()));
-        assertTrue(find.find(copy, new DisabledListProgressListener()));
+        assertTrue(find.find(test));
+        assertTrue(find.find(copy));
         new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

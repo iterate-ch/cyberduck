@@ -17,9 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -69,12 +67,7 @@ public class ResumeFilter extends AbstractUploadFilter {
         if(super.accept(file, local, parent)) {
             if(local.isFile()) {
                 if(parent.isExists()) {
-                    final Write.Append append = upload.append(file, local.attributes().getSize(), cache, new DisabledListProgressListener() {
-                        @Override
-                        public void chunk(final Path folder, final AttributedList<Path> list) {
-                            cache.put(folder, list);
-                        }
-                    });
+                    final Write.Append append = upload.append(file, local.attributes().getSize(), cache);
                     if(append.size == local.attributes().getSize()) {
                         if(Checksum.NONE != append.checksum) {
                             final ChecksumCompute compute = ChecksumComputeFactory.get(append.checksum.algorithm);
@@ -106,12 +99,7 @@ public class ResumeFilter extends AbstractUploadFilter {
         final TransferStatus status = super.prepare(file, local, parent, progress);
         if(file.isFile()) {
             if(parent.isExists()) {
-                final Write.Append append = upload.append(file, status.getLength(), cache, new DisabledListProgressListener() {
-                    @Override
-                    public void chunk(final Path folder, final AttributedList<Path> list) {
-                        cache.put(folder, list);
-                    }
-                });
+                final Write.Append append = upload.append(file, status.getLength(), cache);
                 if(append.append && append.size < local.attributes().getSize()) {
                     // Append to existing file
                     status.setAppend(true);

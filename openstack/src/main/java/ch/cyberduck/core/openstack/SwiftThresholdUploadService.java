@@ -19,7 +19,6 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -67,8 +66,8 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
     }
 
     @Override
-    public Write.Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
-        return writer.append(file, length, cache, listener);
+    public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+        return writer.append(file, length, cache);
     }
 
     @Override

@@ -80,7 +80,7 @@ public class CryptoDeleteFeature implements Delete {
                 if(!proxy.isRecursive()) {
                     final Find find = session._getFeature(Find.class);
                     final Path dataRoot = new Path(f, "d", f.getType());
-                    if(find.find(dataRoot, new DisabledListProgressListener())) {
+                    if(find.find(dataRoot)) {
                         for(Path d : session._getFeature(ListService.class).list(dataRoot, new DisabledListProgressListener()).toList()) {
                             metadata.addAll(session._getFeature(ListService.class).list(d, new DisabledListProgressListener()).toList());
                             metadata.add(d);
@@ -88,7 +88,7 @@ public class CryptoDeleteFeature implements Delete {
                         metadata.add(dataRoot);
                     }
                     final Path metaRoot = new Path(f, "m", f.getType());
-                    if(find.find(metaRoot, new DisabledListProgressListener())) {
+                    if(find.find(metaRoot)) {
                         for(Path m : session._getFeature(ListService.class).list(metaRoot, new DisabledListProgressListener()).toList()) {
                             for(Path m2 : session._getFeature(ListService.class).list(m, new DisabledListProgressListener()).toList()) {
                                 metadata.addAll(session._getFeature(ListService.class).list(m2, new DisabledListProgressListener()).toList());

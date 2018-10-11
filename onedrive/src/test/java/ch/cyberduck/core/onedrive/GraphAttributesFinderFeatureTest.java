@@ -16,7 +16,6 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -45,14 +44,14 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        new GraphAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+        new GraphAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
     public void testFindFile() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file, new DisabledListProgressListener());
+        final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());
@@ -67,7 +66,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
     public void testFindDirectory() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphDirectoryFeature(session).mkdir(file, null, new TransferStatus());
-        final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file, new DisabledListProgressListener());
+        final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);
         assertNotEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());

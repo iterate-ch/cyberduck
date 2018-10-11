@@ -153,9 +153,9 @@ public class FTPSessionTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
-        assertTrue(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
+        assertTrue(session.getFeature(Find.class).find(test));
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
+        assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }
 

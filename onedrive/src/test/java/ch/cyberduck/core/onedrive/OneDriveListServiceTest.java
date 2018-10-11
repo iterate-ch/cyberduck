@@ -56,7 +56,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
     public void testListDriveChildren() throws Exception {
         final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session).touch(file, new TransferStatus());
-        assertNotNull(new GraphAttributesFinderFeature(session).find(file, new DisabledListProgressListener()));
+        assertNotNull(new GraphAttributesFinderFeature(session).find(file));
         final OneDriveListService listService = new OneDriveListService(session);
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         final AttributedList<Path> list = listService.list(drive, new DisabledListProgressListener());

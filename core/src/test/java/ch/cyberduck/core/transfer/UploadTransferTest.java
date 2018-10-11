@@ -325,7 +325,7 @@ public class UploadTransferTest {
                 if(type.equals(Find.class)) {
                     return (T) new Find() {
                         @Override
-                        public boolean find(final Path f, final ListProgressListener listener) {
+                        public boolean find(final Path f) {
                             return true;
                         }
                     };
@@ -359,7 +359,7 @@ public class UploadTransferTest {
                 if(type.equals(AttributesFinder.class)) {
                     return (T) new AttributesFinder() {
                         @Override
-                        public PathAttributes find(final Path file, final ListProgressListener listener) {
+                        public PathAttributes find(final Path file) {
                             return new PathAttributes();
                         }
                     };
@@ -373,7 +373,7 @@ public class UploadTransferTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache cache, final ListProgressListener listener) {
+                        public Append append(final Path file, final Long length, final Cache cache) {
                             fail();
                             return new Write.Append(0L);
                         }

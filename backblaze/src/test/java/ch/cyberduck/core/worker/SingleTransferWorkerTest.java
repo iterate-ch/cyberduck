@@ -19,7 +19,6 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -136,7 +135,7 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
         }.run(session, session));
         local.delete();
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
-        assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFinderFeature(session, fileid).find(test, new DisabledListProgressListener()).getSize());
+        assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFinderFeature(session, fileid).find(test).getSize());
         assertEquals(100 * 1024 * 1024 + 1, counter.getSent(), 0L);
         assertTrue(failed.get());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

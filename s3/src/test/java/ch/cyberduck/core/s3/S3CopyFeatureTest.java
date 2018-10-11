@@ -22,7 +22,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -57,9 +56,9 @@ public class S3CopyFeatureTest {
         new S3TouchFeature(session).touch(test, new TransferStatus().withMime("application/cyberduck"));
         final Path copy = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(new S3FindFeature(session).find(copy, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(copy));
         assertEquals("application/cyberduck",
             new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(copy).get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -80,10 +79,10 @@ public class S3CopyFeatureTest {
         final Path test = new S3TouchFeature(session).touch(new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), status);
         final Path copy = new S3CopyFeature(session, new S3AccessControlListFeature(session)).copy(test,
             new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         assertEquals("m", new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(copy).get("cyberduck"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertTrue(new S3FindFeature(session).find(copy, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(copy));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

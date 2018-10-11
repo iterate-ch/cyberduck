@@ -20,7 +20,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -61,14 +60,14 @@ public class CopyWorkerTest {
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(source, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(source, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(source));
         final FTPSession copySession = new FTPSession(host);
         copySession.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         copySession.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new DefaultFindFeature(session).find(source, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(target, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(source));
+        assertTrue(new DefaultFindFeature(session).find(target));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
         session.close();
     }
@@ -84,19 +83,19 @@ public class CopyWorkerTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(sourceFile, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new FTPDirectoryFeature(session).mkdir(targetFolder, null, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(targetFolder, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(targetFolder));
         // copy file into vault
         final FTPSession copySession = new FTPSession(host);
         copySession.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         copySession.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new DefaultFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(targetFile, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(sourceFile));
+        assertTrue(new DefaultFindFeature(session).find(targetFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
         session.close();
     }
@@ -114,8 +113,8 @@ public class CopyWorkerTest {
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new FTPDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         session.getFeature(Touch.class).touch(sourceFile, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder));
+        assertTrue(new DefaultFindFeature(session).find(sourceFile));
         // move directory into vault
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
@@ -124,10 +123,10 @@ public class CopyWorkerTest {
         copySession.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(copySession), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new DefaultFindFeature(session).find(targetFolder, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(targetFile, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(targetFolder));
+        assertTrue(new DefaultFindFeature(session).find(targetFile));
+        assertTrue(new DefaultFindFeature(session).find(folder));
+        assertTrue(new DefaultFindFeature(session).find(sourceFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), new DisabledProgressListener()).run(session);
         session.close();
     }

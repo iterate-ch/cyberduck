@@ -115,7 +115,16 @@ public class CryptoVault implements Vault {
         }
         // Obtain non encrypted directory writer
         final Directory directory = session._getFeature(Directory.class);
-        final Path vault = directory.mkdir(home, region, new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        final Encryption encryption = session.getFeature(Encryption.class);
+        if(encryption != null) {
+            status.setEncryption(encryption.getDefault(home));
+        }
+        final Redundancy redundancy = session.getFeature(Redundancy.class);
+        if(redundancy != null) {
+            status.setStorageClass(redundancy.getDefault());
+        }
+        final Path vault = directory.mkdir(home, region, status);
         new ContentWriter(session).write(masterkey, masterKeyFileContent.serialize());
         this.open(KeyFile.parse(masterKeyFileContent.serialize()), passphrase);
         final Path secondLevel = directoryProvider.toEncrypted(session, home.attributes().getDirectoryId(), home);

@@ -20,7 +20,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -66,11 +65,11 @@ public class CopyWorkerTest {
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session)),
             new DAVAttributesFinderFeature(session)).touch(source, new TransferStatus());
-        assertTrue(new DAVFindFeature(session).find(source, new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new DAVFindFeature(session).find(source, new DisabledListProgressListener()));
-        assertTrue(new DAVFindFeature(session).find(target, new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(source));
+        assertTrue(new DAVFindFeature(session).find(target));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
         session.close();
     }
@@ -88,16 +87,16 @@ public class CopyWorkerTest {
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session)),
             new DAVAttributesFinderFeature(session)).touch(sourceFile, new TransferStatus());
-        assertTrue(new DAVFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DAVDirectoryFeature(session).mkdir(targetFolder, null, new TransferStatus());
-        assertTrue(new DAVFindFeature(session).find(targetFolder, new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(targetFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new DAVFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
-        assertTrue(new DAVFindFeature(session).find(targetFile, new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(sourceFile));
+        assertTrue(new DAVFindFeature(session).find(targetFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
         session.close();
     }
@@ -115,16 +114,16 @@ public class CopyWorkerTest {
         final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path sourceFile = new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session)),
             new DAVAttributesFinderFeature(session)).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new DAVFindFeature(session).find(folder, new DisabledListProgressListener()));
-        assertTrue(new DAVFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(folder));
+        assertTrue(new DAVFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new DAVFindFeature(session).find(targetFolder, new DisabledListProgressListener()));
-        assertTrue(new DAVFindFeature(session).find(targetFile, new DisabledListProgressListener()));
-        assertTrue(new DAVFindFeature(session).find(folder, new DisabledListProgressListener()));
-        assertTrue(new DAVFindFeature(session).find(sourceFile, new DisabledListProgressListener()));
+        assertTrue(new DAVFindFeature(session).find(targetFolder));
+        assertTrue(new DAVFindFeature(session).find(targetFile));
+        assertTrue(new DAVFindFeature(session).find(folder));
+        assertTrue(new DAVFindFeature(session).find(sourceFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFile), new DisabledProgressListener()).run(session);
         session.close();
     }

@@ -370,7 +370,7 @@ public class BookmarkController extends SheetController implements CollectionLis
                 usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                     StringUtils.isNotBlank(bookmark.getProtocol().getUsernamePlaceholder()) ? String.format("%s:",
                         bookmark.getProtocol().getUsernamePlaceholder()) : StringUtils.EMPTY,
-                    LABEL_ATTRIBUTES
+                    TRUNCATE_TAIL_ATTRIBUTES
                 ));
             }
         });

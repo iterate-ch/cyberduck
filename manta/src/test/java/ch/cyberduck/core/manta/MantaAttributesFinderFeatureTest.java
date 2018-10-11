@@ -15,7 +15,6 @@ package ch.cyberduck.core.manta;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -37,7 +36,7 @@ public class MantaAttributesFinderFeatureTest extends AbstractMantaTest {
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         try {
-            new MantaAttributesFinderFeature(session).find(randomFile(), new DisabledListProgressListener());
+            new MantaAttributesFinderFeature(session).find(randomFile());
         }
         catch(NotfoundException e) {
             assertEquals("Not Found. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -49,7 +48,7 @@ public class MantaAttributesFinderFeatureTest extends AbstractMantaTest {
     public void testFindFile() throws Exception {
         final Path file = randomFile();
         new MantaTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        final PathAttributes attributes = new MantaAttributesFinderFeature(session).find(file, new DisabledListProgressListener());
+        final PathAttributes attributes = new MantaAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);
         assertEquals(-1L, attributes.getCreationDate());
         assertNotEquals(-1L, attributes.getModificationDate());

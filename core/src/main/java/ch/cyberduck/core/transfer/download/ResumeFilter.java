@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer.download;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -58,7 +57,7 @@ public class ResumeFilter extends AbstractDownloadFilter {
         if(local.isFile()) {
             if(local.exists()) {
                 // Read remote attributes
-                final PathAttributes attributes = attribute.find(file, new DisabledListProgressListener());
+                final PathAttributes attributes = attribute.find(file);
                 if(local.attributes().getSize() == attributes.getSize()) {
                     if(Checksum.NONE != attributes.getChecksum()) {
                         final ChecksumCompute compute = ChecksumComputeFactory.get(attributes.getChecksum().algorithm);

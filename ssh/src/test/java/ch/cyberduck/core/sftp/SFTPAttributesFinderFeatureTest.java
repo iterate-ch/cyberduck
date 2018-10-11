@@ -1,6 +1,19 @@
 package ch.cyberduck.core.sftp;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -28,7 +41,7 @@ public class SFTPAttributesFinderFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        new SFTPAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+        new SFTPAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -40,11 +53,11 @@ public class SFTPAttributesFinderFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SFTPAttributesFinderFeature f = new SFTPAttributesFinderFeature(session);
-        final PathAttributes attributes = f.find(new SFTPHomeDirectoryService(session).find(), new DisabledListProgressListener());
+        final PathAttributes attributes = f.find(new SFTPHomeDirectoryService(session).find());
         assertNotNull(attributes);
         // Test wrong type
         try {
-            f.find(new Path(new SFTPHomeDirectoryService(session).find().getAbsolute(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+            f.find(new Path(new SFTPHomeDirectoryService(session).find().getAbsolute(), EnumSet.of(Path.Type.file)));
             fail();
         }
         catch(NotfoundException e) {
@@ -65,7 +78,7 @@ public class SFTPAttributesFinderFeatureTest {
         final Path symlink = new Path(new SFTPHomeDirectoryService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPSymlinkFeature(session).symlink(symlink, file.getAbsolute());
         final SFTPAttributesFinderFeature f = new SFTPAttributesFinderFeature(session);
-        final PathAttributes attributes = f.find(symlink, new DisabledListProgressListener());
+        final PathAttributes attributes = f.find(symlink);
         assertNotNull(attributes);
         session.close();
     }
@@ -98,7 +111,7 @@ public class SFTPAttributesFinderFeatureTest {
         new SFTPTouchFeature(session).touch(file, new TransferStatus());
         new SFTPUnixPermissionFeature(session).setUnixPermission(folder, new Permission("-wx------"));
         assertEquals(new Permission("-wx------"), new SFTPUnixPermissionFeature(session).getUnixPermission(folder));
-        final Attributes attributes = new SFTPAttributesFinderFeature(session).find(file, new DisabledListProgressListener());
+        final Attributes attributes = new SFTPAttributesFinderFeature(session).find(file);
         assertEquals(0L, attributes.getSize());
         new SFTPDeleteFeature(session).delete(Arrays.asList(file, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

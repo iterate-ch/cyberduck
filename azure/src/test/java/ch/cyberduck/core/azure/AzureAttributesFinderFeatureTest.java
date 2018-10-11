@@ -3,7 +3,6 @@ package ch.cyberduck.core.azure;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -40,7 +39,7 @@ public class AzureAttributesFinderFeatureTest {
                 new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
-        f.find(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+        f.find(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -55,7 +54,7 @@ public class AzureAttributesFinderFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         final AzureAttributesFinderFeature f = new AzureAttributesFinderFeature(session, null);
-        final PathAttributes attributes = f.find(test, new DisabledListProgressListener());
+        final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotNull(attributes.getETag());
         new AzureDeleteFeature(session, null).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());

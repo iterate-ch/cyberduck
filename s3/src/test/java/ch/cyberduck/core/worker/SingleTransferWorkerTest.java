@@ -15,7 +15,20 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullFilter;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
@@ -82,8 +95,8 @@ public class SingleTransferWorkerTest {
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
         final String versionId = ((S3Object) out.getStatus()).getVersionId();
-        assertEquals(versionId, new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getVersionId());
-        assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getVersionId());
+        assertEquals(versionId, new S3AttributesFinderFeature(session).find(test).getVersionId());
+        assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test).getVersionId());
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(test, localFile)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
@@ -97,7 +110,7 @@ public class SingleTransferWorkerTest {
         byte[] compare = new byte[content.length];
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
         test.attributes().setVersionId(versionId);
-        assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getVersionId());
+        assertEquals(versionId, new DefaultAttributesFinderFeature(session).find(test).getVersionId());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile.delete();
         session.close();

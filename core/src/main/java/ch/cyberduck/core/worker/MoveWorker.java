@@ -20,7 +20,6 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
@@ -95,7 +94,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     else {
                         final TransferStatus status = new TransferStatus()
                             .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
-                            .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue(), new DisabledListProgressListener()))
+                            .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
                             .length(r.getKey().attributes().getSize());
                         result.put(r.getKey(), move.move(r.getKey(), r.getValue(), status,
                             new Delete.Callback() {

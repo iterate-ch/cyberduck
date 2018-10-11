@@ -19,7 +19,6 @@ import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -131,7 +130,7 @@ public class SingleTransferWorkerTest {
         }.run(session, session));
         local.delete();
         assertEquals(2L * 1024L * 1024L, counter.getSent(), 0L);
-        assertEquals(2L * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertEquals(2L * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertTrue(failed.get());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

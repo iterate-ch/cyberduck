@@ -62,7 +62,7 @@ public class S3SingleUploadServiceTest extends AbstractGoogleStorageTest {
         status.setLength(random.getBytes().length);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new GoogleStorageListService(session).list(container,
             new DisabledListProgressListener()).get(test).attributes();
         assertEquals(random.getBytes().length, attributes.getSize());

@@ -46,10 +46,10 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
-        assertTrue(new DropboxFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DropboxFindFeature(session).find(file));
         new DropboxCopyFeature(session).copy(file, target, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new DropboxFindFeature(session).find(file, new DisabledListProgressListener()));
-        assertTrue(new DropboxFindFeature(session).find(target, new DisabledListProgressListener()));
+        assertTrue(new DropboxFindFeature(session).find(file));
+        assertTrue(new DropboxFindFeature(session).find(target));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -64,8 +64,8 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         new DropboxCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new DropboxListService(session).list(folder, new DisabledListProgressListener());
-        assertTrue(find.find(test, new DisabledListProgressListener()));
-        assertTrue(find.find(copy, new DisabledListProgressListener()));
+        assertTrue(find.find(test));
+        assertTrue(find.find(copy));
         new DropboxDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -76,12 +76,12 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));
         new DropboxDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
-        assertTrue(new DropboxFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DropboxFindFeature(session).find(file));
         final Path copy = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DropboxCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new DropboxFindFeature(session).find(file, new DisabledListProgressListener()));
-        assertTrue(new DropboxFindFeature(session).find(copy, new DisabledListProgressListener()));
-        assertTrue(new DropboxFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertTrue(new DropboxFindFeature(session).find(file));
+        assertTrue(new DropboxFindFeature(session).find(copy));
+        assertTrue(new DropboxFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
         new DropboxDeleteFeature(session).delete(Arrays.asList(directory, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

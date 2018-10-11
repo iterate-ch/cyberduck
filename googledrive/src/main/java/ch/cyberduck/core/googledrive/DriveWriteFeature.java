@@ -18,7 +18,6 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
@@ -79,10 +78,10 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
     }
 
     @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
-        if(finder.withCache(cache).find(file, new DisabledListProgressListener())) {
-            final PathAttributes attributes = this.attributes.withCache(cache).find(file, new DisabledListProgressListener());
-            return new Append(false, true).withSize(attributes.getSize()).withChecksum(attributes.getChecksum());
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+        if(finder.withCache(cache).find(file)) {
+            final PathAttributes attr = attributes.withCache(cache).find(file);
+            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
         }
         return Write.notfound;
     }

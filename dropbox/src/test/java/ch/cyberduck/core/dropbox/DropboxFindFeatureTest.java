@@ -16,7 +16,6 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractDropboxTest;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -39,15 +38,15 @@ public class DropboxFindFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testFindNotFound() throws Exception {
-        assertFalse(new DropboxFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertFalse(new DropboxFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }
 
     @Test
     public void testFindDirectory() throws Exception {
-        assertTrue(new DropboxFindFeature(session).find(new DefaultHomeFinderService(session).find(), new DisabledListProgressListener()));
+        assertTrue(new DropboxFindFeature(session).find(new DefaultHomeFinderService(session).find()));
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DropboxDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
-        assertTrue(new DropboxFindFeature(session).find(folder, new DisabledListProgressListener()));
+        assertTrue(new DropboxFindFeature(session).find(folder));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -55,7 +54,7 @@ public class DropboxFindFeatureTest extends AbstractDropboxTest {
     public void testFindFile() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
-        assertTrue(new DropboxFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DropboxFindFeature(session).find(file));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

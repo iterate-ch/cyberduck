@@ -17,7 +17,6 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
@@ -35,7 +34,7 @@ public class IRODSFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public boolean find(final Path file) throws BackgroundException {
         if(file.isRoot()) {
             return true;
         }

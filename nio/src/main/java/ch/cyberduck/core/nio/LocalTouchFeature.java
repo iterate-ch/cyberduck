@@ -14,7 +14,6 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
@@ -47,7 +46,7 @@ public class LocalTouchFeature implements Touch {
             }
         }
         return new Path(file.getParent(), file.getName(), file.getType(),
-            new LocalAttributesFinderFeature(session).find(file, new DisabledListProgressListener()));
+            new LocalAttributesFinderFeature(session).find(file));
     }
 
     @Override

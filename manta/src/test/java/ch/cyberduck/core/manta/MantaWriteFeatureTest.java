@@ -17,7 +17,6 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -57,7 +56,7 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
         in.close();
         out.close();
         assertNull(out.getStatus());
-        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new MantaReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -82,7 +81,7 @@ public class MantaWriteFeatureTest extends AbstractMantaTest {
         final byte[] buffer = new byte[alloc];
         assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         out.close();
-        final PathAttributes found = new MantaAttributesFinderFeature(session).find(file, new DisabledListProgressListener());
+        final PathAttributes found = new MantaAttributesFinderFeature(session).find(file);
         assertEquals(found.getSize(), content.length);
         new MantaDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

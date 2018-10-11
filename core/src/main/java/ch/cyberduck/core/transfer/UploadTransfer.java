@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Filter;
@@ -192,22 +191,7 @@ public class UploadTransfer extends Transfer {
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
                 final Upload write = source.getFeature(Upload.class);
-                final Write.Append append = write.append(upload.remote, upload.local.attributes().getSize(), cache, new ListProgressListener() {
-                    @Override
-                    public void message(final String message) {
-                        listener.message(message);
-                    }
-
-                    @Override
-                    public void chunk(final Path folder, final AttributedList<Path> list) {
-                        cache.put(folder, list);
-                    }
-
-                    @Override
-                    public ListProgressListener reset() {
-                        return this;
-                    }
-                });
+                final Write.Append append = write.append(upload.remote, upload.local.attributes().getSize(), cache);
                 if(append.override || append.append) {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
@@ -301,4 +285,5 @@ public class UploadTransfer extends Transfer {
         cache.clear();
         super.stop();
     }
+
 }

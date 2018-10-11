@@ -147,7 +147,7 @@ public class SingleTransferWorkerTest {
         local.delete();
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

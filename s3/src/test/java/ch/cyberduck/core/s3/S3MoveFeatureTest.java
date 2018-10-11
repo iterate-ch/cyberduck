@@ -20,7 +20,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -52,11 +51,11 @@ public class S3MoveFeatureTest {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertNull(new S3TouchFeature(session).touch(test, new TransferStatus().withMime("text/plain")).attributes().getVersionId());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
-        assertTrue(new S3FindFeature(session).find(renamed, new DisabledListProgressListener()));
+        assertFalse(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(renamed));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(renamed);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
@@ -79,8 +78,8 @@ public class S3MoveFeatureTest {
         new S3TouchFeature(session).touch(test, new TransferStatus());
         final Path renamed = new Path(placeholder, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
-        assertTrue(new S3FindFeature(session).find(renamed, new DisabledListProgressListener()));
+        assertFalse(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -107,11 +106,11 @@ public class S3MoveFeatureTest {
         final TransferStatus status = new TransferStatus();
         status.setEncryption(S3EncryptionFeature.SSE_AES256);
         touch.touch(test, status);
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         final Path renamed = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
-        assertTrue(new S3FindFeature(session).find(renamed, new DisabledListProgressListener()));
+        assertFalse(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

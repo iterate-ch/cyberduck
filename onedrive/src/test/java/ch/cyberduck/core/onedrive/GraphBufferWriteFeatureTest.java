@@ -17,7 +17,6 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -65,7 +64,7 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
         assertEquals(content.length, status.getOffset());
         assertEquals(content.length, status.getLength());
         assertNull(out.getStatus());
-        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new GraphReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -90,7 +89,7 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
             out.flush();
             out.close();
             assertNull(out.getStatus());
-            assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+            assertTrue(new DefaultFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
             final InputStream stream = new GraphReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             IOUtils.readFully(stream, compare);
@@ -108,7 +107,7 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
             out.flush();
             out.close();
             assertNull(out.getStatus());
-            assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+            assertTrue(new DefaultFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
             final InputStream stream = new GraphReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             IOUtils.readFully(stream, compare);
@@ -133,7 +132,7 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
         out.flush();
         out.close();
         assertNull(out.getStatus());
-        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new GraphReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -157,7 +156,7 @@ public class GraphBufferWriteFeatureTest extends AbstractOneDriveTest {
         out.flush();
         out.close();
         assertNull(out.getStatus());
-        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new GraphReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);

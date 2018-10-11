@@ -17,7 +17,6 @@ package ch.cyberduck.core.onedrive.features;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -76,7 +75,7 @@ public class GraphMoveFeature implements Move {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-            new GraphAttributesFinderFeature(session).find(renamed, new DisabledListProgressListener()));
+            new GraphAttributesFinderFeature(session).find(renamed));
     }
 
     @Override

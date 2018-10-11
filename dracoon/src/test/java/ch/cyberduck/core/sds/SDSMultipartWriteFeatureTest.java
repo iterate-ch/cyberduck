@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
@@ -60,7 +59,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final VersionId version = out.getStatus();
         assertNotNull(version);
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(test));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -82,7 +81,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new NullInputStream(0L), out);
         final VersionId version = out.getStatus();
         assertNotNull(version);
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(test));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

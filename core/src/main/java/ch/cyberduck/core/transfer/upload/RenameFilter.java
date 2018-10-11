@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -60,7 +59,7 @@ public class RenameFilter extends AbstractUploadFilter {
                     status.rename(new Path(file.getParent(), proposal, file.getType()));
                 }
             }
-            while(find.find(status.getRename().remote, new DisabledListProgressListener()));
+            while(find.withCache(cache).find(status.getRename().remote));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Changed upload target from %s to %s", file, status.getRename().remote));
             }

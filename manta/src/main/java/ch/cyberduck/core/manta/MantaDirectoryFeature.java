@@ -16,7 +16,6 @@ package ch.cyberduck.core.manta;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -51,7 +50,7 @@ public class MantaDirectoryFeature implements Directory {
             throw new DefaultIOExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
         return new Path(folder.getParent(), folder.getName(), folder.getType(),
-            new MantaAttributesFinderFeature(session).find(folder, new DisabledListProgressListener()));
+            new MantaAttributesFinderFeature(session).find(folder));
     }
 
     @Override

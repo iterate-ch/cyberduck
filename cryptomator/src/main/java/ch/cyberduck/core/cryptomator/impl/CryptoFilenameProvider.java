@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator.impl;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.ContentReader;
@@ -78,16 +77,16 @@ public class CryptoFilenameProvider {
         final Path firstLevel = secondLevel.getParent();
         final Directory mkdir = session._getFeature(Directory.class);
         final Find find = session._getFeature(Find.class);
-        if(!find.find(metadataRoot, new DisabledListProgressListener())) {
+        if(!find.find(metadataRoot)) {
             mkdir.mkdir(metadataRoot, null, new TransferStatus());
         }
-        if(!find.find(firstLevel, new DisabledListProgressListener())) {
+        if(!find.find(firstLevel)) {
             mkdir.mkdir(firstLevel, null, new TransferStatus());
         }
-        if(!find.find(secondLevel, new DisabledListProgressListener())) {
+        if(!find.find(secondLevel)) {
             mkdir.mkdir(secondLevel, null, new TransferStatus());
         }
-        if(!find.find(metadataFile, new DisabledListProgressListener())) {
+        if(!find.find(metadataFile)) {
             new ContentWriter(session).write(metadataFile, longFileNameBytes);
         }
         if(log.isInfoEnabled()) {

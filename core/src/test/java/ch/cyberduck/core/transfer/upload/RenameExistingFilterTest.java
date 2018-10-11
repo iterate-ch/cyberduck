@@ -109,7 +109,7 @@ public class RenameExistingFilterTest {
         final AtomicInteger moved = new AtomicInteger();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path f, final ListProgressListener listener) throws BackgroundException {
+            public boolean find(final Path f) throws BackgroundException {
                 if(f.equals(file)) {
                     found.set(true);
                     return true;
@@ -119,7 +119,7 @@ public class RenameExistingFilterTest {
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+            public PathAttributes find(final Path file) throws BackgroundException {
                 return new PathAttributes();
             }
         };
@@ -171,7 +171,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
                             fail();
                             return new Append(1L);
                         }
@@ -220,7 +220,7 @@ public class RenameExistingFilterTest {
         final AtomicBoolean moved = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path f, final ListProgressListener listener) throws BackgroundException {
+            public boolean find(final Path f) throws BackgroundException {
                 if(f.equals(file)) {
                     found.set(true);
                     return true;
@@ -230,7 +230,7 @@ public class RenameExistingFilterTest {
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+            public PathAttributes find(final Path file) throws BackgroundException {
                 return new PathAttributes();
             }
         };
@@ -274,7 +274,7 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache<Path> cache, final ListProgressListener listener) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
                             fail();
                             return new Append(0L);
                         }

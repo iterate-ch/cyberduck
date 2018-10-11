@@ -4,7 +4,6 @@ import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -48,13 +47,13 @@ public class S3TouchFeatureTest {
         final Path test = new S3TouchFeature(session).touch(
             new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
         assertNull(test.attributes().getVersionId());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
-        assertEquals(test.attributes(), new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener()));
+        assertEquals(test.attributes(), new S3AttributesFinderFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertFalse(new S3FindFeature(session).find(test));
         session.close();
     }
 
@@ -70,26 +69,26 @@ public class S3TouchFeatureTest {
         final Path file = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final String version1 = new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId();
         final String version2 = new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId();
-        assertTrue(new S3FindFeature(session).find(file, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(file));
+        assertTrue(new DefaultFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version1)), new DisabledListProgressListener()));
+            new PathAttributes(file.attributes()).withVersionId(version1))));
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version2)), new DisabledListProgressListener()));
+            new PathAttributes(file.attributes()).withVersionId(version2))));
         assertTrue(new S3FindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version1)), new DisabledListProgressListener()));
+            new PathAttributes(file.attributes()).withVersionId(version1))));
         assertTrue(new S3FindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version2)), new DisabledListProgressListener()));
+            new PathAttributes(file.attributes()).withVersionId(version2))));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         // Versioned files are not deleted but with delete marker added
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version1)), new DisabledListProgressListener()));
+            new PathAttributes(file.attributes()).withVersionId(version1))));
         assertTrue(new DefaultFindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version2)), new DisabledListProgressListener()));
+            new PathAttributes(file.attributes()).withVersionId(version2))));
         assertTrue((new S3FindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version1)), new DisabledListProgressListener())));
+            new PathAttributes(file.attributes()).withVersionId(version1)))));
         assertTrue((new S3FindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
-            new PathAttributes(file.attributes()).withVersionId(version2)), new DisabledListProgressListener())));
+            new PathAttributes(file.attributes()).withVersionId(version2)))));
         session.close();
     }
 

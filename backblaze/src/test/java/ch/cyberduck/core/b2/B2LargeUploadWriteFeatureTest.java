@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
@@ -60,13 +59,13 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         assertEquals(content.length, IOUtils.copy(in, out));
         in.close();
         out.close();
-        assertTrue(new B2FindFeature(session, fileid).find(file, new DisabledListProgressListener()));
+        assertTrue(new B2FindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        assertEquals(1503654614004L, new B2AttributesFinderFeature(session, fileid).find(file, new DisabledListProgressListener()).getModificationDate());
+        assertEquals(1503654614004L, new B2AttributesFinderFeature(session, fileid).find(file).getModificationDate());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -84,7 +83,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         assertEquals(content.length, IOUtils.copy(in, out));
         in.close();
         out.close();
-        assertTrue(new B2FindFeature(session, fileid).find(file, new DisabledListProgressListener()));
+        assertTrue(new B2FindFeature(session, fileid).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -108,7 +107,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         in.close();
         out.close();
         assertNotNull(out.getStatus());
-        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new B2ReadFeature(session, fileid).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);

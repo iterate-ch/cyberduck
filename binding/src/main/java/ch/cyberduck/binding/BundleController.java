@@ -15,6 +15,7 @@ package ch.cyberduck.binding;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSMutableParagraphStyle;
 import ch.cyberduck.binding.application.NSParagraphStyle;
@@ -60,25 +61,27 @@ public abstract class BundleController extends ProxyController {
     }
 
     public static final NSDictionary TRUNCATE_MIDDLE_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObject(PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
-            NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
+        NSArray.arrayWithObject(PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
+        NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
     );
 
-    public static final NSDictionary LABEL_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObject(PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
-            NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
+    public static final NSDictionary TRUNCATE_TAIL_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+        NSArray.arrayWithObject(PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
+        NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
     );
 
     public static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObject(NSFont.userFixedPitchFontOfSize(9.0f)),
-            NSArray.arrayWithObject(NSAttributedString.FontAttributeName)
+        NSArray.arrayWithObject(NSFont.userFixedPitchFontOfSize(9.0f)),
+        NSArray.arrayWithObject(NSAttributedString.FontAttributeName)
     );
 
     public static final NSDictionary MENU_HELP_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
         NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()),
-                    PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
+            NSColor.controlTextColor(),
+            PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
         NSArray.arrayWithObjects(NSAttributedString.FontAttributeName,
-                    NSAttributedString.ParagraphStyleAttributeName)
+            NSAttributedString.ForegroundColorAttributeName,
+            NSAttributedString.ParagraphStyleAttributeName)
     );
 
     public void loadBundle() {

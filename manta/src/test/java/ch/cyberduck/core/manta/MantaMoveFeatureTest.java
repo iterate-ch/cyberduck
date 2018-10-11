@@ -17,7 +17,6 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -49,13 +48,13 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), "", new TransferStatus());
         final Path file = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(file, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotNull(attributesFinder.find(file, new DisabledListProgressListener()));
+        assertNotNull(attributesFinder.find(file));
         Path rename = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(file, rename));
         assertEquals(rename, move.move(file, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
-        assertFalse(new MantaFindFeature(session).find(file, new DisabledListProgressListener()));
-        assertTrue(new MantaFindFeature(session).find(rename, new DisabledListProgressListener()));
-        assertNotNull(attributesFinder.find(rename, new DisabledListProgressListener()));
+        assertFalse(new MantaFindFeature(session).find(file));
+        assertTrue(new MantaFindFeature(session).find(rename));
+        assertNotNull(attributesFinder.find(rename));
         delete.delete(Collections.singletonList(rename), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -69,16 +68,16 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), "", new TransferStatus());
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
-        assertNotNull(attributesFinder.find(targetDirectory, new DisabledListProgressListener()));
+        assertNotNull(attributesFinder.find(targetDirectory));
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotNull(attributesFinder.find(touchedFile, new DisabledListProgressListener()));
+        assertNotNull(attributesFinder.find(touchedFile));
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, rename));
         assertEquals(rename, move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
-        assertNotNull(attributesFinder.find(rename, new DisabledListProgressListener()));
-        assertFalse(new MantaFindFeature(session).find(touchedFile, new DisabledListProgressListener()));
-        assertTrue(new MantaFindFeature(session).find(rename, new DisabledListProgressListener()));
+        assertNotNull(attributesFinder.find(rename));
+        assertFalse(new MantaFindFeature(session).find(touchedFile));
+        assertTrue(new MantaFindFeature(session).find(rename));
         delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -92,16 +91,16 @@ public class MantaMoveFeatureTest extends AbstractMantaTest {
         final Path drive = new MantaDirectoryFeature(session).mkdir(randomDirectory(), "", new TransferStatus());
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
-        assertNotNull(attributesFinder.find(targetDirectory, new DisabledListProgressListener()));
+        assertNotNull(attributesFinder.find(targetDirectory));
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotNull(attributesFinder.find(touchedFile, new DisabledListProgressListener()));
+        assertNotNull(attributesFinder.find(touchedFile));
         Path rename = new Path(targetDirectory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertTrue(move.isSupported(touchedFile, rename));
         assertEquals(rename, move.move(touchedFile, rename, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback()));
-        assertNotNull(attributesFinder.find(rename, new DisabledListProgressListener()));
-        assertFalse(new MantaFindFeature(session).find(touchedFile, new DisabledListProgressListener()));
-        assertTrue(new MantaFindFeature(session).find(rename, new DisabledListProgressListener()));
+        assertNotNull(attributesFinder.find(rename));
+        assertFalse(new MantaFindFeature(session).find(touchedFile));
+        assertTrue(new MantaFindFeature(session).find(rename));
         delete.delete(Collections.singletonList(targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

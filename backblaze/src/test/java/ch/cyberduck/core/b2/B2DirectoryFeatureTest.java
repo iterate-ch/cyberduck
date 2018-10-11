@@ -83,8 +83,8 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         final Path test = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
-        assertTrue(new B2FindFeature(session, fileid).find(test, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new B2FindFeature(session, fileid).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -98,7 +98,7 @@ public class B2DirectoryFeatureTest extends AbstractB2Test {
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         final Path directory = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
         final Path test = new B2DirectoryFeature(session, fileid, new B2WriteFeature(session, fileid)).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, status);
-        assertEquals(timestamp, new B2AttributesFinderFeature(session, fileid).find(test, new DisabledListProgressListener()).getModificationDate());
+        assertEquals(timestamp, new B2AttributesFinderFeature(session, fileid).find(test).getModificationDate());
         // Timestamp for placeholder is unknown. Only set on /.bzEmpty
         assertEquals(timestamp, new B2ObjectListService(session, fileid).list(directory, new DisabledListProgressListener()).get(test).attributes().getModificationDate());
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(test, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());

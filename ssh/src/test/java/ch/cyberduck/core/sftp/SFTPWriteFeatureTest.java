@@ -60,9 +60,9 @@ public class SFTPWriteFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new SFTPFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new SFTPFindFeature(session).find(test));
         assertEquals(content.length, new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
+        assertEquals(content.length, new SFTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
             final InputStream in = new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
@@ -92,11 +92,11 @@ public class SFTPWriteFeatureTest {
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(target, new TransferStatus());
-        assertTrue(new SFTPFindFeature(session).find(target, new DisabledListProgressListener()));
+        assertTrue(new SFTPFindFeature(session).find(target));
         final String name = UUID.randomUUID().toString();
         final Path symlink = new Path(workdir, name, EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
         new SFTPSymlinkFeature(session).symlink(symlink, target.getName());
-        assertTrue(new SFTPFindFeature(session).find(symlink, new DisabledListProgressListener()));
+        assertTrue(new SFTPFindFeature(session).find(symlink));
         final TransferStatus status = new TransferStatus();
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -146,9 +146,9 @@ public class SFTPWriteFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Path test = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertEquals(false, new SFTPWriteFeature(session).append(test, 0L, PathCache.empty(), new DisabledListProgressListener()).append);
+        assertEquals(false, new SFTPWriteFeature(session).append(test, 0L, PathCache.empty()).append);
         new SFTPTouchFeature(session).touch(test, new TransferStatus());
-        assertEquals(true, new SFTPWriteFeature(session).append(test, 0L, PathCache.empty(), new DisabledListProgressListener()).append);
+        assertEquals(true, new SFTPWriteFeature(session).append(test, 0L, PathCache.empty()).append);
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -173,8 +173,8 @@ public class SFTPWriteFeatureTest {
             out.flush();
             out.close();
         }
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertEquals(1024L, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(1024L, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Remaining chunked transfer with offset
             final TransferStatus status = new TransferStatus().exists(true);
@@ -214,7 +214,7 @@ public class SFTPWriteFeatureTest {
             out.flush();
             out.close();
         }
-        assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Write beginning of file up to the last chunk
             final TransferStatus status = new TransferStatus().exists(true);
@@ -227,12 +227,12 @@ public class SFTPWriteFeatureTest {
             out.flush();
             out.close();
         }
-        assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertEquals(2048, new DefaultAttributesFinderFeature(session).find(test).getSize());
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new SFTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(content, out.toByteArray());
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

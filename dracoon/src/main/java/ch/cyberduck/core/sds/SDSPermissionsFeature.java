@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
@@ -47,7 +46,7 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
         if(Acl.EMPTY.equals(file.attributes().getAcl())) {
-            return new SDSAttributesFinderFeature(session, nodeid).find(file, new DisabledListProgressListener()).getAcl();
+            return new SDSAttributesFinderFeature(session, nodeid).find(file).getAcl();
         }
         return file.attributes().getAcl();
     }

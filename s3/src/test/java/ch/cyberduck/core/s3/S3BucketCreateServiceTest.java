@@ -21,7 +21,6 @@ import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -71,7 +70,7 @@ public class S3BucketCreateServiceTest {
         create.create(bucket, "eu-central-1");
         assertTrue(header.get());
         bucket.attributes().setRegion("eu-central-1");
-        assertTrue(new S3FindFeature(session).find(bucket, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(bucket));
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

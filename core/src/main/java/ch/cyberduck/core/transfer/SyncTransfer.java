@@ -21,7 +21,6 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
@@ -194,7 +193,7 @@ public class SyncTransfer extends Transfer {
         }
         final Set<TransferItem> children = new HashSet<TransferItem>();
         final Find finder = source.getFeature(Find.class, new DefaultFindFeature(source)).withCache(cache);
-        if(finder.find(directory, new DisabledListProgressListener())) {
+        if(finder.find(directory)) {
             children.addAll(download.list(source, destination, directory, local, listener));
         }
         if(local.exists()) {

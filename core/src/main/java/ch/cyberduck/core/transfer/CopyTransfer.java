@@ -143,7 +143,7 @@ public class CopyTransfer extends Transfer {
             for(TransferItem upload : roots) {
                 final Upload write = destination.getFeature(Upload.class);
                 final Path copy = mapping.get(upload.remote);
-                final Write.Append append = write.append(copy, upload.remote.attributes().getSize(), PathCache.empty(), new DisabledListProgressListener());
+                final Write.Append append = write.append(copy, upload.remote.attributes().getSize(), PathCache.empty());
                 if(append.override || append.append) {
                     // Found remote file
                     if(upload.remote.isDirectory()) {

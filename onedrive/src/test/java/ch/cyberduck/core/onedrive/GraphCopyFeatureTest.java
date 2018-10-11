@@ -59,17 +59,17 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         final Path drive = new OneDriveHomeFinderFeature(session).find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
-        assertNotNull(attributesFinder.find(targetDirectory, new DisabledListProgressListener()));
+        assertNotNull(attributesFinder.find(targetDirectory));
 
         Path touchedFile = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         touch.touch(touchedFile, new TransferStatus().withMime("x-application/cyberduck"));
-        assertNotNull(attributesFinder.find(touchedFile, new DisabledListProgressListener()));
+        assertNotNull(attributesFinder.find(touchedFile));
 
         Path rename = new Path(targetDirectory, touchedFile.getName(), EnumSet.of(Path.Type.file));
         assertTrue(copy.isSupported(touchedFile, rename));
         copy.copy(touchedFile, rename, new TransferStatus(), new DisabledConnectionCallback());
 
-        assertNotNull(attributesFinder.find(rename, new DisabledListProgressListener()));
+        assertNotNull(attributesFinder.find(rename));
 
         delete.delete(Arrays.asList(touchedFile, targetDirectory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -85,8 +85,8 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         new GraphCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new OneDriveListService(session).list(folder, new DisabledListProgressListener());
-        assertTrue(find.find(test, new DisabledListProgressListener()));
-        assertTrue(find.find(copy, new DisabledListProgressListener()));
+        assertTrue(find.find(test));
+        assertTrue(find.find(copy));
         new GraphDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

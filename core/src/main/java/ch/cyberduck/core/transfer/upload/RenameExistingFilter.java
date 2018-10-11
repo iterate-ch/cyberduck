@@ -18,7 +18,6 @@ package ch.cyberduck.core.transfer.upload;
  */
 
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
@@ -68,7 +67,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
                         StringUtils.isNotBlank(file.getExtension()) ? String.format(".%s", file.getExtension()) : StringUtils.EMPTY);
                 rename = new Path(file.getParent(), proposal, file.getType());
             }
-            while(find.find(rename, new DisabledListProgressListener()));
+            while(find.withCache(cache).find(rename));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Rename existing file %s to %s", file, rename));
             }

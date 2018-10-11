@@ -20,7 +20,6 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -67,7 +66,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 // Container name must be lower case.
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(folder).getName());
                 container.create(options, context);
-                return new Path(folder.getParent(), folder.getName(), folder.getType(), new AzureAttributesFinderFeature(session, context).find(folder, new DisabledListProgressListener()));
+                return new Path(folder.getParent(), folder.getName(), folder.getType(), new AzureAttributesFinderFeature(session, context).find(folder));
             }
             else {
                 if(Checksum.NONE == status.getChecksum()) {
@@ -78,7 +77,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 final Path placeholder = new Path(folder.getParent(), folder.getName(), type,
                     new PathAttributes(folder.attributes()));
                 new DefaultStreamCloser().close(writer.write(placeholder, status, new DisabledConnectionCallback()));
-                return new Path(placeholder.getParent(), placeholder.getName(), placeholder.getType(), new AzureAttributesFinderFeature(session, context).find(placeholder, new DisabledListProgressListener()));
+                return new Path(placeholder.getParent(), placeholder.getName(), placeholder.getType(), new AzureAttributesFinderFeature(session, context).find(placeholder));
             }
         }
         catch(URISyntaxException e) {

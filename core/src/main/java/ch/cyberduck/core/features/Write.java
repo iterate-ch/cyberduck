@@ -17,7 +17,6 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
@@ -37,13 +36,12 @@ public interface Write<Reply> {
     /**
      * Determine if a file exists and we can append to it.
      *
-     * @param file     File
-     * @param length   Transfer Status
-     * @param cache    Cache
-     * @param listener Listener when remote listing is required
+     * @param file   File
+     * @param length Transfer Status
+     * @param cache  Cache
      * @return True if can append to existing file
      */
-    Append append(Path file, Long length, Cache<Path> cache, final ListProgressListener listener) throws BackgroundException;
+    Append append(Path file, Long length, Cache<Path> cache) throws BackgroundException;
 
     /**
      * @return True if temporary upload filename can be used

@@ -128,7 +128,7 @@ public class ConnectionController extends BookmarkController {
             public void change(final Host bookmark) {
                 passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                     StringUtils.isNotBlank(options.getPasswordPlaceholder()) ? String.format("%s:",
-                        options.getPasswordPlaceholder()) : StringUtils.EMPTY, LABEL_ATTRIBUTES
+                        options.getPasswordPlaceholder()) : StringUtils.EMPTY, TRUNCATE_TAIL_ATTRIBUTES
                 ));
             }
         });

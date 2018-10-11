@@ -19,11 +19,11 @@ package ch.cyberduck.core.synchronization;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -48,6 +48,8 @@ public class ComparisonServiceFilter implements ComparePathFilter {
     private final ComparisonService timestamp;
     private final ProgressListener progress;
 
+    private Cache<Path> cache = PathCache.empty();
+
     public ComparisonServiceFilter(final Session<?> session, final TimeZone tz, final ProgressListener listener) {
         this.finder = session.getFeature(Find.class, new DefaultFindFeature(session));
         this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
@@ -68,20 +70,19 @@ public class ComparisonServiceFilter implements ComparePathFilter {
     }
 
     public ComparisonServiceFilter withCache(final Cache<Path> cache) {
-        finder.withCache(cache);
-        attribute.withCache(cache);
+        this.cache = cache;
         return this;
     }
 
     @Override
     public Comparison compare(final Path file, final Local local) throws BackgroundException {
         if(local.exists()) {
-            if(finder.find(file, new DisabledListProgressListener())) {
+            if(finder.withCache(cache).find(file)) {
                 if(file.isDirectory()) {
                     // Do not compare directories
                     return Comparison.equal;
                 }
-                final PathAttributes attributes = attribute.find(file, new DisabledListProgressListener());
+                final PathAttributes attributes = attribute.withCache(cache).find(file);
                 // We must always compare the size because the download filter will have already created a temporary 0 byte file
                 switch(size.compare(attributes, local.attributes())) {
                     case remote:
@@ -124,7 +125,7 @@ public class ComparisonServiceFilter implements ComparePathFilter {
             }
         }
         else {
-            if(finder.find(file, new DisabledListProgressListener())) {
+            if(finder.withCache(cache).find(file)) {
                 // Only the remote file exists
                 return Comparison.remote;
             }

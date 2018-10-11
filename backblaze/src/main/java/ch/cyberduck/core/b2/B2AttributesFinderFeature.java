@@ -18,7 +18,6 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -49,7 +48,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public PathAttributes find(final Path file) throws BackgroundException {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }

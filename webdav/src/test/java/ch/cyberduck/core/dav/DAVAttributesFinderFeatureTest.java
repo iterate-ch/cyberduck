@@ -3,7 +3,6 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -35,7 +34,7 @@ public class DAVAttributesFinderFeatureTest {
         final Path test = new Path(UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         try {
-            f.find(test, new DisabledListProgressListener());
+            f.find(test);
         }
         catch(NotfoundException e) {
             assertEquals("Unexpected response (404 Not Found). Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -53,13 +52,13 @@ public class DAVAttributesFinderFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
-        final PathAttributes attributes = f.find(test, new DisabledListProgressListener());
+        final PathAttributes attributes = f.find(test);
         assertEquals(35147, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getETag());
         // Test wrong type
         try {
-            f.find(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            f.find(new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {
