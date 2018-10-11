@@ -84,21 +84,21 @@ public class SharepointSession extends GraphSession {
         }
         if(path.isChild(SharepointListService.DEFAULT_NAME)) {
             // handles /Default_Name
-            if(path == SharepointListService.DEFAULT_NAME) {
+            if(SharepointListService.DEFAULT_NAME.equals(path)) {
                 return false;
             }
             // handles /Default_Name/Drive-ID
-            if(!container && path.getParent() == SharepointListService.DEFAULT_NAME) {
+            if(!container && SharepointListService.DEFAULT_NAME.equals(path.getParent())) {
                 return false;
             }
         }
         else if(path.isChild(SharepointListService.GROUPS_NAME)) {
             // Handles /Groups_Name and /Groups_Name/Group
-            if(path == SharepointListService.GROUPS_NAME || path.getParent() == SharepointListService.GROUPS_NAME) {
+            if(SharepointListService.GROUPS_NAME.equals(path) || SharepointListService.GROUPS_NAME.equals(path.getParent())) {
                 return false;
             }
             // handles /Groups_Name/Group/Drive-ID
-            if(!container && path.getParent().getParent() == SharepointListService.GROUPS_NAME) {
+            if(!container && SharepointListService.GROUPS_NAME.equals(path.getParent().getParent())) {
                 return false;
             }
         }
@@ -120,10 +120,10 @@ public class SharepointSession extends GraphSession {
         Path previous = path;
         Path parent = path.getParent();
         while(!parent.isRoot()) {
-            if(parent.getParent() == SharepointListService.DEFAULT_NAME) {
+            if(SharepointListService.DEFAULT_NAME.equals(parent.getParent())) {
                 return parent;
             }
-            else if(parent.getParent() == SharepointListService.GROUPS_NAME) {
+            else if(SharepointListService.GROUPS_NAME.equals(parent.getParent())) {
                 return previous;
             }
             previous = parent;
