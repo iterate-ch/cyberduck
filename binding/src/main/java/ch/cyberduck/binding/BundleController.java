@@ -61,21 +61,13 @@ public abstract class BundleController extends ProxyController {
     }
 
     public static final NSDictionary TRUNCATE_MIDDLE_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-        NSArray.arrayWithObjects(
-            NSColor.controlTextColor(),
-            PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
-        NSArray.arrayWithObjects(
-            NSAttributedString.ForegroundColorAttributeName,
-            NSAttributedString.ParagraphStyleAttributeName)
+        NSArray.arrayWithObject(PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
+        NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
     );
 
     public static final NSDictionary LABEL_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-        NSArray.arrayWithObjects(
-            NSColor.controlTextColor(),
-            PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
-        NSArray.arrayWithObjects(
-            NSAttributedString.ForegroundColorAttributeName,
-            NSAttributedString.ParagraphStyleAttributeName)
+        NSArray.arrayWithObject(PARAGRAPH_STYLE_RIGHT_ALIGNMENT_TRUNCATE_TAIL),
+        NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
     );
 
     public static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
