@@ -244,9 +244,9 @@ public class ProgressController extends BundleController implements TransferList
 
     public void setHighlighted(final boolean h) {
         highlighted = h;
-        statusField.setTextColor(h ? NSColor.whiteColor() : NSColor.systemGrayColor());
-        progressField.setTextColor(h ? NSColor.whiteColor() : NSColor.systemGrayColor());
-        messageField.setTextColor(h ? NSColor.whiteColor() : NSColor.systemGrayColor());
+        statusField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.controlTextColor());
+        progressField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.controlTextColor());
+        messageField.setTextColor(h ? NSColor.alternateSelectedControlTextColor() : NSColor.controlTextColor());
         this.setMenuHighlighted(h);
     }
 
@@ -295,7 +295,7 @@ public class ProgressController extends BundleController implements TransferList
         this.progressField = f;
         this.progressField.setEditable(false);
         this.progressField.setSelectable(false);
-        this.progressField.setTextColor(NSColor.systemGrayColor());
+        this.progressField.setTextColor(NSColor.controlTextColor());
         this.progressField.setFont(NSFont.monospacedDigitSystemFontOfSize(NSFont.smallSystemFontSize()));
     }
 
@@ -303,14 +303,14 @@ public class ProgressController extends BundleController implements TransferList
         this.statusField = f;
         this.statusField.setEditable(false);
         this.statusField.setSelectable(false);
-        this.statusField.setTextColor(NSColor.systemGrayColor());
+        this.statusField.setTextColor(NSColor.controlTextColor());
     }
 
     public void setMessageField(final NSTextField f) {
         this.messageField = f;
         this.messageField.setEditable(false);
         this.messageField.setSelectable(false);
-        this.messageField.setTextColor(NSColor.systemGrayColor());
+        this.messageField.setTextColor(NSColor.controlTextColor());
     }
 
     public void setProgressBar(final NSProgressIndicator p) {
