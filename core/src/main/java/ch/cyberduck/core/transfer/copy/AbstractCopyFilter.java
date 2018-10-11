@@ -19,7 +19,6 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -90,7 +89,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     public TransferStatus prepare(final Path source, final Local n, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes from source
-        final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).withCache(sourceCache).find(source, new DisabledListProgressListener());
+        final PathAttributes attributes = sourceSession.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(sourceSession)).withCache(sourceCache).find(source);
         if(source.isFile()) {
             // Content length
             status.setLength(attributes.getSize());
@@ -119,7 +118,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
             // Do not attempt to create a directory that already exists
             final Path target = files.get(source);
             // Look for file in target host
-            if(destinationSession.getFeature(Find.class, new DefaultFindFeature(destinationSession)).withCache(destinationCache).find(target, new DisabledListProgressListener())) {
+            if(destinationSession.getFeature(Find.class, new DefaultFindFeature(destinationSession)).withCache(destinationCache).find(target)) {
                 status.setExists(true);
             }
         }

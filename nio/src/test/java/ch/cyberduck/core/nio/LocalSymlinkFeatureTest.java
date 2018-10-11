@@ -47,12 +47,12 @@ public class LocalSymlinkFeatureTest {
             new LocalTouchFeature(session).touch(target, new TransferStatus());
             final Path link = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
             new LocalSymlinkFeature(session).symlink(link, target.getName());
-            assertTrue(new LocalFindFeature(session).find(link, new DisabledListProgressListener()));
+            assertTrue(new LocalFindFeature(session).find(link));
             assertEquals(EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink),
                 new LocalListService(session).list(workdir, new DisabledListProgressListener()).get(link).getType());
             new LocalDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            assertFalse(new LocalFindFeature(session).find(link, new DisabledListProgressListener()));
-            assertTrue(new LocalFindFeature(session).find(target, new DisabledListProgressListener()));
+            assertFalse(new LocalFindFeature(session).find(link));
+            assertTrue(new LocalFindFeature(session).find(target));
             new LocalDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
             session.close();
         }

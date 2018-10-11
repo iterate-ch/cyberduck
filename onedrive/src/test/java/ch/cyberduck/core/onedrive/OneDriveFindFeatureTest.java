@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.onedrive.features.OneDriveFindFeature;
 import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
@@ -35,12 +34,12 @@ public class OneDriveFindFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testFindFileNotFound() throws Exception {
         final OneDriveFindFeature f = new OneDriveFindFeature(session);
-        assertFalse(f.find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertFalse(f.find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }
 
     @Test
     public void testFindDriveNotFound() throws Exception {
         final OneDriveFindFeature f = new OneDriveFindFeature(session);
-        assertFalse(f.find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertFalse(f.find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }
 }

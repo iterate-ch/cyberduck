@@ -19,8 +19,6 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -47,12 +45,12 @@ public class DefaultAttributesFinderFeature extends ListFilteringFeature impleme
     }
 
     @Override
-    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public PathAttributes find(final Path file) throws BackgroundException {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
         try {
-            final Path found = this.search(file, listener);
+            final Path found = this.search(file);
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
             }
@@ -65,7 +63,7 @@ public class DefaultAttributesFinderFeature extends ListFilteringFeature impleme
             if(feature instanceof DefaultAttributesFinderFeature) {
                 throw f;
             }
-            return feature.withCache(cache).find(file, new DisabledListProgressListener());
+            return feature.withCache(cache).find(file);
         }
     }
 

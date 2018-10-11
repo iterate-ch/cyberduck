@@ -4,7 +4,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -87,8 +86,8 @@ public class SwiftLargeObjectUploadFeatureTest {
                 1 * 1024L * 1024L, 1).upload(test, local,
                 new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
                 new DisabledLoginCallback());
-        assertTrue(new SwiftFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertTrue(new SwiftFindFeature(session).find(test));
+        assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertEquals(content.length, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         final byte[] buffer = new byte[content.length];
@@ -149,8 +148,8 @@ public class SwiftLargeObjectUploadFeatureTest {
                 new DisabledLoginCallback());
         assertEquals(2 * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
-        assertTrue(new SwiftFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize(), 0L);
+        assertTrue(new SwiftFindFeature(session).find(test));
+        assertEquals(2 * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize(), 0L);
         final byte[] buffer = new byte[content.length];
         final InputStream in = new SwiftReadFeature(session, new SwiftRegionService(session)).read(test, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.readFully(in, buffer);
@@ -196,14 +195,14 @@ public class SwiftLargeObjectUploadFeatureTest {
         final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
         assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
-        assertEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getChecksum());
-        assertNotNull(new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getChecksum().hash);
+        assertEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
+        assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
 
         assertTrue(status.isComplete());
         assertFalse(status.isCanceled());
         assertEquals(content.length, status.getOffset());
 
-        assertTrue(new SwiftFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new SwiftFindFeature(session).find(test));
         final InputStream in = new SwiftReadFeature(session, regionService).read(test, new TransferStatus(), new DisabledConnectionCallback());
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);

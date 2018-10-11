@@ -1,6 +1,19 @@
 package ch.cyberduck.core.shared;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -35,7 +48,7 @@ public class DefaultAttributesFinderFeatureTest {
         final SFTPSession session = new SFTPSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        new DefaultAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+        new DefaultAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -70,16 +83,16 @@ public class DefaultAttributesFinderFeatureTest {
         final Path file = new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(file, new TransferStatus());
         new SFTPUnixPermissionFeature(session).setUnixPermission(file, new Permission("-rw-rw-rw-"));
-        final Attributes attributes = f.find(file, new DisabledListProgressListener());
+        final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         assertEquals("1106", attributes.getOwner());
         assertEquals(new Permission("-rw-rw-rw-"), attributes.getPermission());
         // Test cache
-        assertEquals(0L, f.find(file, new DisabledListProgressListener()).getSize());
+        assertEquals(0L, f.find(file).getSize());
         assertTrue(cache.containsKey(file.getParent()));
         // Test wrong type
         try {
-            f.find(new Path(workdir, file.getName(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            f.find(new Path(workdir, file.getName(), EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {

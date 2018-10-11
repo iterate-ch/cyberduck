@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -51,7 +50,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
         try {
-            f.find(test, new DisabledListProgressListener());
+            f.find(test);
         }
         finally {
             new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -65,7 +64,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
-        final PathAttributes attributes = f.find(test, new DisabledListProgressListener());
+        final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNotNull(attributes.getChecksum().algorithm);
@@ -73,7 +72,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         assertTrue(attributes.getPermission().isWritable());
         // Test wrong type
         try {
-            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {
@@ -89,7 +88,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
-        final PathAttributes attributes = f.find(test, new DisabledListProgressListener());
+        final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotEquals(-1L, attributes.getModificationDate());
         assertNull(attributes.getChecksum().algorithm);
@@ -98,7 +97,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         assertTrue(attributes.getPermission().isExecutable());
         // Test wrong type
         try {
-            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+            f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.file)));
             fail();
         }
         catch(NotfoundException e) {
@@ -115,11 +114,11 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
-        final PathAttributes previous = f.find(folder, new DisabledListProgressListener());
+        final PathAttributes previous = f.find(folder);
         assertNotEquals(-1L, previous.getRevision().longValue());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(test.getParent(), folder);
-        assertTrue(new SDSFindFeature(nodeid).find(test, new DisabledListProgressListener()));
+        assertTrue(new SDSFindFeature(nodeid).find(test));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -129,8 +128,8 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final VersionId version = out.getStatus();
         assertNotNull(version);
-        assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder, new DisabledListProgressListener()).getModificationDate());
-        assertNotEquals(previous.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(folder, new DisabledListProgressListener()).getRevision());
+        assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder).getModificationDate());
+        assertNotEquals(previous.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(folder).getRevision());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

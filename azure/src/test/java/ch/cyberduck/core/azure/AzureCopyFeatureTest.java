@@ -45,8 +45,8 @@ public class AzureCopyFeatureTest {
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new AzureCopyFeature(session, null).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new AzureFindFeature(session, null).find(test, new DisabledListProgressListener()));
-        assertTrue(new AzureFindFeature(session, null).find(copy, new DisabledListProgressListener()));
+        assertTrue(new AzureFindFeature(session, null).find(test));
+        assertTrue(new AzureFindFeature(session, null).find(copy));
         new AzureDeleteFeature(session, null).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -78,8 +78,8 @@ public class AzureCopyFeatureTest {
         new AzureTouchFeature(session, null).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new AzureCopyFeature(session, null).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new AzureFindFeature(session, null).find(test, new DisabledListProgressListener()));
-        assertTrue(new AzureFindFeature(session, null).find(copy, new DisabledListProgressListener()));
+        assertTrue(new AzureFindFeature(session, null).find(test));
+        assertTrue(new AzureFindFeature(session, null).find(copy));
         new AzureDeleteFeature(session, null).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -102,8 +102,8 @@ public class AzureCopyFeatureTest {
         new AzureCopyFeature(session, null).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new AzureObjectListService(session, null).list(folder, new DisabledListProgressListener());
-        assertTrue(find.find(test, new DisabledListProgressListener()));
-        assertTrue(find.find(copy, new DisabledListProgressListener()));
+        assertTrue(find.find(test));
+        assertTrue(find.find(copy));
         new AzureDeleteFeature(session, null).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

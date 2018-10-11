@@ -78,7 +78,7 @@ public class SFTPAttributesFinderFeatureTest {
             new SFTPAttributesFinderFeature(session)), new SFTPWriteFeature(session), cryptomator).touch(
             new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         test.attributes().setSize(0L);
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(test, new DisabledListProgressListener());
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(test);
         assertNotNull(attributes);
         assertEquals(0L, attributes.getSize());
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -102,7 +102,7 @@ public class SFTPAttributesFinderFeatureTest {
             new SFTPAttributesFinderFeature(session)), new SFTPWriteFeature(session), cryptomator).touch(
             new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         test.attributes().setSize(0L);
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test, new DisabledListProgressListener());
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(test);
         assertNotNull(attributes);
         assertEquals(0L, attributes.getSize());
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -131,7 +131,7 @@ public class SFTPAttributesFinderFeatureTest {
         final AttributedList<Path> list = new AttributedList<>();
         list.add(found);
         cache.put(vault, list);
-        final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).withCache(cache).find(test, new DisabledListProgressListener());
+        final PathAttributes attributes = new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).withCache(cache).find(test);
         assertNotNull(attributes);
         assertEquals(0L, attributes.getSize());
         assertEquals(0L, cache.get(vault).get(0).attributes().getSize());

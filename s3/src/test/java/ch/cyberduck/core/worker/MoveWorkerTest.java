@@ -64,11 +64,11 @@ public class MoveWorkerTest {
                 new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers"), new Acl.Role(Acl.Role.READ)
             )
         ));
-        assertTrue(new S3FindFeature(session).find(source, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(source));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
-        assertFalse(new S3FindFeature(session).find(source, new DisabledListProgressListener()));
-        assertTrue(new S3FindFeature(session).find(target, new DisabledListProgressListener()));
+        assertFalse(new S3FindFeature(session).find(source));
+        assertTrue(new S3FindFeature(session).find(target));
         assertEquals("application/cyberduck",
             new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(target).get("Content-Type"));
         assertTrue(new S3AccessControlListFeature(session).getPermission(target).asList().contains(
@@ -103,14 +103,14 @@ public class MoveWorkerTest {
         final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
         touch.touch(test, new TransferStatus());
         Thread.sleep(1000); // timestamp has second precision only - versions are sorted by timestamp
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         delete.delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         Thread.sleep(1000);
         test.attributes().setVersionId(null);
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         test = touch.touch(test, new TransferStatus());
         Thread.sleep(1000);
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
 
         final S3VersionedObjectListService list = new S3VersionedObjectListService(session);
         final AttributedList<Path> versioned = list.list(sourceDirectory, new DisabledListProgressListener());
@@ -123,8 +123,8 @@ public class MoveWorkerTest {
         ).run(session);
         assertEquals(3, result.size());
         for(Map.Entry<Path, Path> entry : result.entrySet()) {
-            assertFalse(new S3FindFeature(session).find(entry.getKey(), new DisabledListProgressListener()));
-            assertTrue(new S3FindFeature(session).find(entry.getValue(), new DisabledListProgressListener()));
+            assertFalse(new S3FindFeature(session).find(entry.getKey()));
+            assertTrue(new S3FindFeature(session).find(entry.getValue()));
         }
         new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(targetDirectory), new DisabledProgressListener()).run(session);
         session.close();

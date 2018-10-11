@@ -85,10 +85,10 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
         test.attributes().setVersionId(fileid.getFileid(test, new DisabledListProgressListener()));
-        assertTrue(new B2FindFeature(session, fileid).find(test, new DisabledListProgressListener()));
+        assertTrue(new B2FindFeature(session, fileid).find(test));
         final PathAttributes attributes = new B2ListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
         assertEquals(content.length, attributes.getSize());
-        final Write.Append append = new B2WriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener());
+        final Write.Append append = new B2WriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty());
         assertTrue(append.override);
         assertEquals(content.length, append.size, 0L);
         final byte[] buffer = new byte[content.length];
@@ -96,7 +96,7 @@ public class B2WriteFeatureTest extends AbstractB2Test {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        assertEquals(1503654614004L, new B2AttributesFinderFeature(session, fileid).find(test, new DisabledListProgressListener()).getModificationDate());
+        assertEquals(1503654614004L, new B2AttributesFinderFeature(session, fileid).find(test).getModificationDate());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

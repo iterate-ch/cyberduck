@@ -18,7 +18,6 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -51,7 +50,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSDSTest {
         final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
                 System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
-        new DefaultAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+        new DefaultAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -62,14 +61,14 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSDSTest {
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(file, new TransferStatus());
-        final Attributes attributes = f.find(file, new DisabledListProgressListener());
+        final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         // Test cache
-        assertEquals(0L, f.find(file, new DisabledListProgressListener()).getSize());
+        assertEquals(0L, f.find(file).getSize());
         assertTrue(cache.containsKey(file.getParent()));
         // Test wrong type
         try {
-            f.find(new Path(room, "test", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            f.find(new Path(room, "test", EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {

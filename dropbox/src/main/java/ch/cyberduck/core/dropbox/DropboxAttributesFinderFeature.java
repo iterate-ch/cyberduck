@@ -15,7 +15,6 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,7 +34,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
     }
 
     @Override
-    public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public PathAttributes find(final Path file) throws BackgroundException {
         try {
             final Metadata metadata = new DbxUserFilesRequests(session.getClient()).getMetadata(file.getAbsolute());
             return this.toAttributes(metadata);

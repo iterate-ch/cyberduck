@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -77,7 +76,7 @@ public class S3EncryptionFeature implements Encryption {
     @Override
     public Algorithm getEncryption(final Path file) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
-            return new S3AttributesFinderFeature(session).find(file, new DisabledListProgressListener()).getEncryption();
+            return new S3AttributesFinderFeature(session).find(file).getEncryption();
         }
         return Algorithm.NONE;
     }

@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
@@ -61,7 +60,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         }
         new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(Charset.forName("UTF-8")));
         final Path intermediate = encrypt.getParent();
-        if(!session._getFeature(Find.class).find(intermediate, new DisabledListProgressListener())) {
+        if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(intermediate, region, new TransferStatus());
         }
         // Write header

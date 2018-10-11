@@ -16,7 +16,6 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -40,7 +39,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, new DriveFileidProvider(session).withCache(cache));
-        f.find(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+        f.find(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -49,7 +48,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveTouchFeature(session, fileid).touch(test, new TransferStatus());
         final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, fileid);
-        final PathAttributes attributes = f.find(test, new DisabledListProgressListener());
+        final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertNotNull(attributes.getVersionId());
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -62,7 +61,7 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
         final Path file = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         new DriveDirectoryFeature(session, fileid).mkdir(file, null, new TransferStatus());
-        final PathAttributes attributes = new DriveAttributesFinderFeature(session, fileid).find(file, new DisabledListProgressListener());
+        final PathAttributes attributes = new DriveAttributesFinderFeature(session, fileid).find(file);
         assertNotNull(attributes);
         assertEquals(-1L, attributes.getSize());
         assertNotEquals(-1L, attributes.getCreationDate());

@@ -4,11 +4,9 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
@@ -41,16 +39,16 @@ public class S3WriteFeatureTest {
         final S3Session session = new S3Session(new Host(new S3Protocol()));
         final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
             @Override
-            public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
+            public boolean find(final Path file) throws BackgroundException {
                 return true;
             }
         }, new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+            public PathAttributes find(final Path file) throws BackgroundException {
                 return new PathAttributes();
             }
         });
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty(), new DisabledListProgressListener());
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty());
         assertFalse(append.append);
     }
 
@@ -59,18 +57,18 @@ public class S3WriteFeatureTest {
         final S3Session session = new S3Session(new Host(new S3Protocol()));
         final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
             @Override
-            public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
+            public boolean find(final Path file) throws BackgroundException {
                 return true;
             }
         }, new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file, final ListProgressListener listener) throws BackgroundException {
+            public PathAttributes find(final Path file) throws BackgroundException {
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(3L);
                 return attributes;
             }
         });
-        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty(), new DisabledListProgressListener());
+        final Write.Append append = feature.append(new Path("/p", EnumSet.of(Path.Type.file)), 0L, PathCache.empty());
         assertFalse(append.append);
         assertTrue(append.override);
         assertEquals(3L, append.size, 0L);
@@ -85,9 +83,9 @@ public class S3WriteFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE, PathCache.empty(), new DisabledListProgressListener()).append);
-        assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE, PathCache.empty(), new DisabledListProgressListener()));
-        assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty(), new DisabledListProgressListener()));
+        assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE, PathCache.empty()).append);
+        assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE, PathCache.empty()));
+        assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()));
         session.close();
     }
 

@@ -20,7 +20,6 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -64,10 +63,10 @@ public class IRODSFindFeatureTest {
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         session.getFeature(Directory.class).mkdir(test, null, new TransferStatus());
-        assertTrue(new IRODSFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new IRODSFindFeature(session).find(test));
 
         session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new IRODSFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertFalse(new IRODSFindFeature(session).find(test));
         session.close();
     }
 }

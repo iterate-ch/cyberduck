@@ -21,12 +21,12 @@ import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -64,18 +64,16 @@ import java.util.EnumSet;
 public abstract class AbstractUploadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractUploadFilter.class);
 
-    private final SymlinkResolver<Local> symlinkResolver;
-
-    private final Session<?> session;
-
-    private UploadFilterOptions options;
-
-    protected Find find;
-
-    protected AttributesFinder attribute;
-
     private final Preferences preferences
         = PreferencesFactory.get();
+
+    private final Session<?> session;
+    private final SymlinkResolver<Local> symlinkResolver;
+
+    protected Find find;
+    protected AttributesFinder attribute;
+    protected Cache<Path> cache = PathCache.empty();
+    protected UploadFilterOptions options;
 
     public AbstractUploadFilter(final SymlinkResolver<Local> symlinkResolver, final Session<?> session,
                                 final UploadFilterOptions options) {
@@ -88,8 +86,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     @Override
     public AbstractUploadFilter withCache(final Cache<Path> cache) {
-        find.withCache(cache);
-        attribute.withCache(cache);
+        this.cache = cache;
         return this;
     }
 
@@ -122,21 +119,21 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
         final TransferStatus status = new TransferStatus();
         // Read remote attributes first
         if(parent.isExists()) {
-            if(find.find(file, new DisabledListProgressListener())) {
+            if(find.withCache(cache).find(file)) {
                 status.setExists(true);
                 // Read remote attributes
-                final PathAttributes attributes = attribute.find(file, new DisabledListProgressListener());
+                final PathAttributes attributes = attribute.withCache(cache).find(file);
                 status.setRemote(attributes);
             }
             else {
                 // Look if there is directory or file that clashes with this upload
                 if(file.getType().contains(Path.Type.file)) {
-                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener())) {
+                    if(find.withCache(cache).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.directory)))) {
                         throw new AccessDeniedException(String.format("Cannot replace folder %s with file %s", file.getAbsolute(), local.getName()));
                     }
                 }
                 if(file.getType().contains(Path.Type.directory)) {
-                    if(find.find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener())) {
+                    if(find.withCache(cache).find(new Path(file.getAbsolute(), EnumSet.of(Path.Type.file)))) {
                         throw new AccessDeniedException(String.format("Cannot replace file %s with folder %s", file.getAbsolute(), local.getName()));
                     }
                 }

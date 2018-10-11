@@ -43,7 +43,7 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testMkdir() throws Exception {
         final Path target = new OneDriveDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
-        assertNotNull(new OneDriveAttributesFinderFeature(session).find(target, new DisabledListProgressListener()).getETag());
+        assertNotNull(new OneDriveAttributesFinderFeature(session).find(target).getETag());
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -55,7 +55,7 @@ public class OneDriveDirectoryFeatureTest extends AbstractOneDriveTest {
         assertEquals(name, target.getName());
         final AttributedList<Path> list = new OneDriveListService(session, new OneDriveFileIdProvider(session)).list(new OneDriveHomeFinderFeature(session).find(), new DisabledListProgressListener());
         assertTrue(list.contains(target));
-        assertNotNull(new OneDriveAttributesFinderFeature(session).find(target, new DisabledListProgressListener()).getETag());
+        assertNotNull(new OneDriveAttributesFinderFeature(session).find(target).getETag());
         new OneDriveDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

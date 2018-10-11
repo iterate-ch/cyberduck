@@ -5,7 +5,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -58,7 +57,7 @@ public class S3MultipartWriteFeatureTest {
         in.close();
         out.close();
         assertNotNull(out.getStatus());
-        assertTrue(new S3FindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new S3ReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -89,7 +88,7 @@ public class S3MultipartWriteFeatureTest {
         in.close();
         out.close();
         assertNotNull(out.getStatus());
-        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new S3ReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);

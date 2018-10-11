@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -43,9 +42,9 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(fileInRoom, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(fileInRoom));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInRoom), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DefaultFindFeature(session).find(fileInRoom, new DisabledListProgressListener()));
+        assertFalse(new DefaultFindFeature(session).find(fileInRoom));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -56,13 +55,13 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
                 new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room,
                 new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(file, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(file));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
+        assertFalse(new DefaultFindFeature(session).find(folder));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new DefaultFindFeature(session).find(room, new DisabledListProgressListener()));
+        assertFalse(new DefaultFindFeature(session).find(room));
     }
 }

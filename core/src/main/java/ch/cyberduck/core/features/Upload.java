@@ -17,7 +17,6 @@ package ch.cyberduck.core.features;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -30,7 +29,7 @@ public interface Upload<Reply> {
     Reply upload(Path file, Local local, BandwidthThrottle throttle, StreamListener listener,
                  TransferStatus status, ConnectionCallback callback) throws BackgroundException;
 
-    Write.Append append(Path file, Long length, Cache<Path> cache, ListProgressListener listener) throws BackgroundException;
+    Write.Append append(Path file, Long length, Cache<Path> cache) throws BackgroundException;
 
     Upload<Reply> withWriter(Write<Reply> writer);
 }

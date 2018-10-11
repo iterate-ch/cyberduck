@@ -17,7 +17,6 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
@@ -52,7 +51,7 @@ public class DefaultFindFeatureTest extends AbstractB2Test {
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
         // Find without version id set in attributes
-        new DefaultFindFeature(session).find(file, new DisabledListProgressListener());
+        new DefaultFindFeature(session).find(file);
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -63,6 +62,6 @@ public class DefaultFindFeatureTest extends AbstractB2Test {
         final StatusOutputStream<VersionId> out = new B2LargeUploadWriteFeature(session, new B2FileidProvider(session).withCache(cache)).write(file, new TransferStatus(), new DisabledConnectionCallback());
         IOUtils.copyLarge(new ByteArrayInputStream(RandomUtils.nextBytes(100)), out);
         out.close();
-        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(file));
     }
 }

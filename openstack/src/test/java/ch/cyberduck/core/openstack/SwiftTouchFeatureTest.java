@@ -4,7 +4,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -42,7 +41,7 @@ public class SwiftTouchFeatureTest {
         container.attributes().setRegion("IAD");
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
             new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(test, new DisabledListProgressListener());
+        final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(test);
         assertEquals(test.attributes().getChecksum(), attributes.getChecksum());
         assertNotEquals(-1L, attributes.getModificationDate());
         session.close();

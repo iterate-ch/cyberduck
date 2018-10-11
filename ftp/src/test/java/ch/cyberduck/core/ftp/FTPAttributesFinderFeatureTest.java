@@ -24,7 +24,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -78,7 +77,7 @@ public class FTPAttributesFinderFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPAttributesFinderFeature f = new FTPAttributesFinderFeature(session);
-        f.find(new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+        f.find(new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.file)));
         session.close();
     }
 
@@ -112,13 +111,13 @@ public class FTPAttributesFinderFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPAttributesFinderFeature f = new FTPAttributesFinderFeature(session);
         final Path file = new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.file));
-        final Attributes attributes = f.find(file, new DisabledListProgressListener());
+        final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         assertEquals("1106", attributes.getOwner());
         assertEquals(new Permission("-rw-rw-rw-"), attributes.getPermission());
         // Test wrong type
         try {
-            f.find(new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            f.find(new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.directory)));
             fail();
         }
         catch(NotfoundException e) {

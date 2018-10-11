@@ -17,7 +17,6 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
@@ -44,7 +43,7 @@ public class IRODSTouchFeature implements Touch {
                     DataObjInp.OpenFlags.WRITE_TRUNCATE, DataObjInp.DEFAULT_CREATE_MODE);
             fs.fileClose(descriptor, false);
             return new Path(file.getParent(), file.getName(), file.getType(),
-                new IRODSAttributesFinderFeature(session).find(file, new DisabledListProgressListener()));
+                new IRODSAttributesFinderFeature(session).find(file));
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot create file {0}", e, file);

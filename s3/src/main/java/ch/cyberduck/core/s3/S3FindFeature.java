@@ -18,8 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,12 +33,12 @@ public class S3FindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public boolean find(final Path file) throws BackgroundException {
         if(file.isRoot()) {
             return true;
         }
         try {
-            attributes.find(file, new DisabledListProgressListener());
+            attributes.find(file);
             return true;
         }
         catch(NotfoundException e) {

@@ -17,7 +17,6 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -43,7 +42,7 @@ public class IRODSDirectoryFeature implements Directory<Void> {
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(folder.getAbsolute());
             fs.mkdir(f, false);
             return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                new IRODSAttributesFinderFeature(session).find(folder, new DisabledListProgressListener()));
+                new IRODSAttributesFinderFeature(session).find(folder));
         }
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot create folder {0}", e, folder);

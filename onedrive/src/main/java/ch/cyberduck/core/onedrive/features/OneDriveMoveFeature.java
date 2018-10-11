@@ -17,7 +17,6 @@ package ch.cyberduck.core.onedrive.features;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -80,7 +79,7 @@ public class OneDriveMoveFeature implements Move {
             throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
         }
         return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-            new OneDriveAttributesFinderFeature(session).find(renamed, new DisabledListProgressListener()));
+            new OneDriveAttributesFinderFeature(session).find(renamed));
     }
 
     @Override

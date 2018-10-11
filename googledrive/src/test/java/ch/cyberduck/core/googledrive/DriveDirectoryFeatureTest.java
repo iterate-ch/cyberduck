@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -42,11 +41,11 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         final Path test = new DriveDirectoryFeature(session, fileid).mkdir(
             new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(),
                 new Delete.DisabledCallback());
         // Trashed
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test, new DisabledListProgressListener()).isDuplicate());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isDuplicate());
     }
 }

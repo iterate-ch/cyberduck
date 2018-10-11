@@ -205,7 +205,7 @@ public class SpectraObjectListServiceTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         // Overwrite
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.exists(true)), new DisabledConnectionCallback());
         {
@@ -213,7 +213,7 @@ public class SpectraObjectListServiceTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         final AttributedList<Path> list = new S3VersionedObjectListService(session).list(folder, new DisabledListProgressListener());
         assertEquals(2, list.size());
         new SpectraDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());

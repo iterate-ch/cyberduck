@@ -21,7 +21,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -60,8 +59,8 @@ public class FTPMoveFeatureTest {
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new FTPMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
-        assertTrue(session.getFeature(Find.class).find(target, new DisabledListProgressListener()));
+        assertFalse(session.getFeature(Find.class).find(test));
+        assertTrue(session.getFeature(Find.class).find(target));
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -80,8 +79,8 @@ public class FTPMoveFeatureTest {
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(target, new TransferStatus());
         new FTPMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
-        assertTrue(session.getFeature(Find.class).find(target, new DisabledListProgressListener()));
+        assertFalse(session.getFeature(Find.class).find(test));
+        assertTrue(session.getFeature(Find.class).find(target));
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

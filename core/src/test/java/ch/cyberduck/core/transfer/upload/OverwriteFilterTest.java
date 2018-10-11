@@ -3,7 +3,6 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
@@ -136,7 +135,7 @@ public class OverwriteFilterTest {
         final AbstractUploadFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol()))).withFinder(
             new Find() {
                 @Override
-                public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
+                public boolean find(final Path file) throws BackgroundException {
                     if(file.getType().contains(Path.Type.file)) {
                         return false;
                     }
@@ -152,7 +151,7 @@ public class OverwriteFilterTest {
         final AbstractUploadFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol()))).withFinder(
             new Find() {
                 @Override
-                public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
+                public boolean find(final Path file) throws BackgroundException {
                     if(file.getType().contains(Path.Type.file)) {
                         return true;
                     }

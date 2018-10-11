@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -72,7 +71,7 @@ public class SwiftLargeUploadWriteFeatureTest {
             final TransferStatus progress = new TransferStatus();
             new StreamCopier(new TransferStatus(), progress).transfer(in, out);
             assertEquals(content.length, progress.getOffset());
-            assertTrue(new SwiftFindFeature(session).find(file, new DisabledListProgressListener()));
+            assertTrue(new SwiftFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
             final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             IOUtils.readFully(stream, compare);
@@ -89,7 +88,7 @@ public class SwiftLargeUploadWriteFeatureTest {
             final TransferStatus progress = new TransferStatus();
             new StreamCopier(new TransferStatus(), progress).transfer(in, out);
             assertEquals(content.length, progress.getOffset());
-            assertTrue(new SwiftFindFeature(session).find(file, new DisabledListProgressListener()));
+            assertTrue(new SwiftFindFeature(session).find(file));
             final byte[] compare = new byte[content.length];
             final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             IOUtils.readFully(stream, compare);
@@ -122,7 +121,7 @@ public class SwiftLargeUploadWriteFeatureTest {
         in.close();
         out.close();
         assertNotNull(out.getStatus());
-        assertTrue(new DefaultFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new SwiftReadFeature(session, regionService).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);

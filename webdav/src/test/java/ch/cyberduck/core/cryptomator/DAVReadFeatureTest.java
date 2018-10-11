@@ -96,9 +96,9 @@ public class DAVReadFeatureTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(test));
         Assert.assertEquals(content.length, new CryptoListService(session, new DAVListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        Assert.assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
+        Assert.assertEquals(content.length, writer.append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(40000);
             final TransferStatus read = new TransferStatus();

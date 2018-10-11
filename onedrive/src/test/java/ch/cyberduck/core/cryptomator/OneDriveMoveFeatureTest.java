@@ -17,7 +17,6 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -69,21 +68,21 @@ public class OneDriveMoveFeatureTest extends AbstractOneDriveTest {
         final Path file = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new OneDriveWriteFeature(session)),
             new OneDriveAttributesFinderFeature(session)), new OneDriveWriteFeature(session), cryptomator).touch(
             new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
         final CryptoMoveFeature move = new CryptoMoveFeature(session, new OneDriveMoveFeature(session), new OneDriveDeleteFeature(session), cryptomator);
         // rename file
         final Path fileRenamed = move.move(file, new Path(folder, "f1", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(file.attributes().getVersionId(), fileRenamed.attributes().getVersionId());
-        assertFalse(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(new Path(folder, filename, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(fileRenamed, new DisabledListProgressListener()));
-        assertEquals(fileRenamed.attributes().getModificationDate(), new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(fileRenamed, new DisabledListProgressListener()).getModificationDate());
+        assertFalse(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(new Path(folder, filename, EnumSet.of(Path.Type.file))));
+        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(fileRenamed));
+        assertEquals(fileRenamed.attributes().getModificationDate(), new CryptoAttributesFeature(session, new OneDriveAttributesFinderFeature(session), cryptomator).find(fileRenamed).getModificationDate());
         // rename folder
         final Path folderRenamed = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         move.move(folder, folderRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(folder, new DisabledListProgressListener()));
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(folderRenamed, new DisabledListProgressListener()));
+        assertFalse(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(folder));
+        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
-        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder, new DisabledListProgressListener()));
+        assertTrue(new CryptoFindFeature(session, new OneDriveFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
         new CryptoDeleteFeature(session, new OneDriveDeleteFeature(session), cryptomator).delete(Arrays.asList(
                 fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

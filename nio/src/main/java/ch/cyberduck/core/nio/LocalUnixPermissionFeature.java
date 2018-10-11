@@ -15,7 +15,6 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -62,7 +61,7 @@ public class LocalUnixPermissionFeature extends DefaultUnixPermissionFeature {
 
     @Override
     public Permission getUnixPermission(final Path file) throws BackgroundException {
-        return new LocalAttributesFinderFeature(session).find(file, new DisabledListProgressListener()).getPermission();
+        return new LocalAttributesFinderFeature(session).find(file).getPermission();
     }
 
     @Override

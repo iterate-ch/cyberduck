@@ -20,7 +20,6 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -61,9 +60,9 @@ public class IRODSTouchFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(test, new TransferStatus());
-        assertTrue(new IRODSFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new IRODSFindFeature(session).find(test));
         new IRODSDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new IRODSFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertFalse(new IRODSFindFeature(session).find(test));
         session.close();
     }
 }

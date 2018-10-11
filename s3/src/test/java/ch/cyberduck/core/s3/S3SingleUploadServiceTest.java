@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -89,8 +88,8 @@ public class S3SingleUploadServiceTest {
         status.setMime("text/plain");
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
-        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener());
+        assertTrue(new S3FindFeature(session).find(test));
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
@@ -124,8 +123,8 @@ public class S3SingleUploadServiceTest {
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
-        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener());
+        assertTrue(new S3FindFeature(session).find(test));
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());
@@ -162,8 +161,8 @@ public class S3SingleUploadServiceTest {
         status.setMime("text/plain");
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
                 new DisabledStreamListener(), status, new DisabledLoginCallback());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
-        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test, new DisabledListProgressListener());
+        assertTrue(new S3FindFeature(session).find(test));
+        final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
         assertFalse(metadata.isEmpty());

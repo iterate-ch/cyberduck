@@ -54,7 +54,7 @@ public class DAVTimestampFeatureTest {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
         new DAVTimestampFeature(session).setTimestamp(file, 5000L);
-        assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file, new DisabledListProgressListener()).getModificationDate());
+        assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(5000L, new DAVListService(session).list(file.getParent(), new DisabledListProgressListener()).find(new DefaultPathPredicate(file)).attributes().getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

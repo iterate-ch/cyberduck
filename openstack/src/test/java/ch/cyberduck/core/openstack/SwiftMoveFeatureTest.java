@@ -21,7 +21,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -57,12 +56,12 @@ public class SwiftMoveFeatureTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         test.attributes().setRegion("IAD");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
-        assertTrue(new SwiftFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new SwiftFindFeature(session).find(test));
         final Path target = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         target.attributes().setRegion("IAD");
         new SwiftMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new SwiftFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertTrue(new SwiftFindFeature(session).find(target, new DisabledListProgressListener()));
+        assertFalse(new SwiftFindFeature(session).find(test));
+        assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -84,8 +83,8 @@ public class SwiftMoveFeatureTest {
         target.attributes().setRegion("IAD");
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(target, new TransferStatus());
         new SwiftMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new SwiftFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertTrue(new SwiftFindFeature(session).find(target, new DisabledListProgressListener()));
+        assertFalse(new SwiftFindFeature(session).find(test));
+        assertTrue(new SwiftFindFeature(session).find(target));
         new SwiftDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

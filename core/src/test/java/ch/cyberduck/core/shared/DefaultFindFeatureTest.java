@@ -1,7 +1,6 @@
 package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
@@ -28,9 +27,9 @@ public class DefaultFindFeatureTest {
                 return AttributedList.emptyList();
             }
         });
-        assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+        assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertEquals(1, count.get());
-        assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+        assertFalse(feature.find(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertEquals(2, count.get());
     }
 
@@ -41,7 +40,7 @@ public class DefaultFindFeatureTest {
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return new AttributedList<>(Collections.singletonList(new Path("/a/b", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
             }
-        }).find(new Path("/a/b", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+        }).find(new Path("/a/b", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
@@ -56,7 +55,7 @@ public class DefaultFindFeatureTest {
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return new AttributedList<>(Collections.singletonList(new Path("/a/B", EnumSet.of(Path.Type.file))));
             }
-        }).find(new Path("/a/b", EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        }).find(new Path("/a/b", EnumSet.of(Path.Type.file))));
         assertFalse(new DefaultFindFeature(new NullSession(new Host(new TestProtocol())) {
             @Override
             public Case getCase() {
@@ -67,7 +66,7 @@ public class DefaultFindFeatureTest {
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return new AttributedList<>(Collections.singletonList(new Path("/a/B", EnumSet.of(Path.Type.directory))));
             }
-        }).find(new Path("/a/b", EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        }).find(new Path("/a/b", EnumSet.of(Path.Type.file))));
         assertFalse(new DefaultFindFeature(new NullSession(new Host(new TestProtocol())) {
             @Override
             public Case getCase() {
@@ -78,7 +77,7 @@ public class DefaultFindFeatureTest {
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return new AttributedList<>(Collections.singletonList(new Path("/a/B", EnumSet.of(Path.Type.file))));
             }
-        }).find(new Path("/a/b", EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        }).find(new Path("/a/b", EnumSet.of(Path.Type.file))));
     }
 
     @Test
@@ -89,7 +88,7 @@ public class DefaultFindFeatureTest {
                 return new AttributedList<>(Collections.singletonList(new Path("/a", EnumSet.of(Path.Type.file))));
             }
         });
-        assertFalse(feature.find(new Path("/a", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
-        assertTrue(feature.find(new Path("/a", EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertFalse(feature.find(new Path("/a", EnumSet.of(Path.Type.directory))));
+        assertTrue(feature.find(new Path("/a", EnumSet.of(Path.Type.file))));
     }
 }

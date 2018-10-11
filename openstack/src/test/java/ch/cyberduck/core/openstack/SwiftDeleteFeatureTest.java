@@ -92,7 +92,7 @@ public class SwiftDeleteFeatureTest {
         final Path test = new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final SwiftFindFeature find = new SwiftFindFeature(session);
-        assertFalse(find.find(placeholder, new DisabledListProgressListener()));
+        assertFalse(find.find(placeholder));
         final SwiftObjectListService list = new SwiftObjectListService(session);
         // Must contain placeholder object returned
         final AttributedList<Path> children = list.list(placeholder.getParent(), new DisabledListProgressListener());
@@ -103,10 +103,10 @@ public class SwiftDeleteFeatureTest {
         assertTrue(children.contains(placeholder));
         assertFalse(children.contains(test));
         assertTrue(list.list(placeholder, new DisabledListProgressListener()).contains(test));
-        assertTrue(find.find(test, new DisabledListProgressListener()));
+        assertTrue(find.find(test));
         new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(find.find(test, new DisabledListProgressListener()));
-        assertFalse(find.find(placeholder, new DisabledListProgressListener()));
+        assertFalse(find.find(test));
+        assertFalse(find.find(placeholder));
         session.close();
     }
 
@@ -136,11 +136,11 @@ public class SwiftDeleteFeatureTest {
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(placeholder, null, new TransferStatus());
         final SwiftFindFeature find = new SwiftFindFeature(session);
-        assertTrue(find.find(placeholder, new DisabledListProgressListener()));
+        assertTrue(find.find(placeholder));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(delete.get());
         Thread.sleep(1000L);
-        assertFalse(find.find(placeholder, new DisabledListProgressListener()));
+        assertFalse(find.find(placeholder));
         session.close();
     }
 }

@@ -57,9 +57,9 @@ public class FTPWriteFeatureTest {
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        assertTrue(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
+        assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new FTPListService(session, null, TimeZone.getDefault()).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize());
-        assertEquals(content.length, new FTPWriteFeature(session).append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
+        assertEquals(content.length, new FTPWriteFeature(session).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final InputStream in = new FTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
             final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
@@ -99,8 +99,8 @@ public class FTPWriteFeatureTest {
             new StreamCopier(status, status).withOffset(0L).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertEquals(1024L, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(1024L, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Remaining chunked transfer with offset
             final TransferStatus status = new TransferStatus();
@@ -139,8 +139,8 @@ public class FTPWriteFeatureTest {
             new StreamCopier(status, status).withOffset(status.getOffset()).withLimit(status.getLength()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         {
             // Write beginning of file up to the last chunk
             final TransferStatus status = new TransferStatus();
@@ -155,8 +155,8 @@ public class FTPWriteFeatureTest {
         final ByteArrayOutputStream out = new ByteArrayOutputStream(content.length);
         IOUtils.copy(new FTPReadFeature(session).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out);
         assertArrayEquals(content, out.toByteArray());
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
-        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test, new DisabledListProgressListener()).getSize());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -182,10 +182,10 @@ public class FTPWriteFeatureTest {
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(false, new FTPWriteFeature(session).append(
-            new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty(), new DisabledListProgressListener()).append);
+            new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()).append);
         final Path f = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(f, new TransferStatus());
-        assertEquals(true, new FTPWriteFeature(session).append(f, 0L, PathCache.empty(), new DisabledListProgressListener()).append);
+        assertEquals(true, new FTPWriteFeature(session).append(f, 0L, PathCache.empty()).append);
         new FTPDeleteFeature(session).delete(Collections.singletonList(f), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

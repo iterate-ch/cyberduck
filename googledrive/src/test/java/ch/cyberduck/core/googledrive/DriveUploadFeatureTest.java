@@ -66,9 +66,9 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status, new DisabledConnectionCallback());
         test.attributes().setVersionId(fileid.getFileid(test, new DisabledListProgressListener()));
-        assertTrue(session.getFeature(Find.class).find(test, new DisabledListProgressListener()));
+        assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
-        assertEquals(content.length, new DriveWriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty(), new DisabledListProgressListener()).size, 0L);
+        assertEquals(content.length, new DriveWriteFeature(session, fileid).append(test, status.getLength(), PathCache.empty()).size, 0L);
         {
             final byte[] buffer = new byte[content.length];
             IOUtils.readFully(new DriveReadFeature(session, fileid).read(test, new TransferStatus(), new DisabledConnectionCallback()), buffer);

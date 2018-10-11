@@ -18,7 +18,6 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -58,7 +57,7 @@ public class IRODSAttributesFinderFeatureTest {
         final IRODSSession session = new IRODSSession(host);
         session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        new IRODSAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+        new IRODSAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
@@ -75,12 +74,12 @@ public class IRODSAttributesFinderFeatureTest {
 
         final Path test = new Path(new IRODSHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new IRODSTouchFeature(session).touch(test, new TransferStatus());
-        final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test, new DisabledListProgressListener());
+        final PathAttributes attributes = new IRODSAttributesFinderFeature(session).find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("iterate", attributes.getOwner());
         assertEquals("iplant", attributes.getGroup());
         new IRODSDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new IRODSFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertFalse(new IRODSFindFeature(session).find(test));
         session.close();
     }
 }

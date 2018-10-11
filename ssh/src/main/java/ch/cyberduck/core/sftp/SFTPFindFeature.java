@@ -17,8 +17,6 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -33,12 +31,12 @@ public class SFTPFindFeature implements Find {
     }
 
     @Override
-    public boolean find(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public boolean find(final Path file) throws BackgroundException {
         if(file.isRoot()) {
             return true;
         }
         try {
-            new SFTPAttributesFinderFeature(session).find(file, new DisabledListProgressListener());
+            new SFTPAttributesFinderFeature(session).find(file);
             return true;
         }
         catch(NotfoundException e) {

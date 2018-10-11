@@ -4,7 +4,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -43,7 +42,7 @@ public class SwiftFindFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        assertTrue(new SwiftFindFeature(session).find(container, new DisabledListProgressListener()));
+        assertTrue(new SwiftFindFeature(session).find(container));
         session.close();
     }
 
@@ -58,23 +57,23 @@ public class SwiftFindFeatureTest {
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        assertFalse(new SwiftFindFeature(session).find(file, new DisabledListProgressListener()));
+        assertFalse(new SwiftFindFeature(session).find(file));
         try {
-            new DefaultAttributesFinderFeature(session).find(file, new DisabledListProgressListener());
+            new DefaultAttributesFinderFeature(session).find(file);
             fail();
         }
         catch(NotfoundException e) {
             //
         }
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(file, new TransferStatus());
-        assertTrue(new SwiftFindFeature(session).find(file, new DisabledListProgressListener()));
-        assertNotNull(new DefaultAttributesFinderFeature(session).find(file, new DisabledListProgressListener()));
+        assertTrue(new SwiftFindFeature(session).find(file));
+        assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
         session.close();
     }
 
     @Test
     public void testFindRoot() throws Exception {
-        assertTrue(new SwiftFindFeature(new SwiftSession(new Host(new SwiftProtocol()))).find(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
+        assertTrue(new SwiftFindFeature(new SwiftSession(new Host(new SwiftProtocol()))).find(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
@@ -96,7 +95,7 @@ public class SwiftFindFeatureTest {
                 return Collections.emptyMap();
             }
         }).withCache(cache);
-        assertTrue(finder.find(new Path("/g/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
+        assertTrue(finder.find(new Path("/g/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
         assertTrue(b.get());
     }
 }

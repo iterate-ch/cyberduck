@@ -17,7 +17,6 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
@@ -46,7 +45,7 @@ public class SkipFilter extends AbstractUploadFilter {
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         if(parent.isExists()) {
             if(local.isFile()) {
-                if(find.find(file, new DisabledListProgressListener())) {
+                if(find.withCache(cache).find(file)) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Skip file %s", file));
                     }

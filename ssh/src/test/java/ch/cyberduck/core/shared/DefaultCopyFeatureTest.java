@@ -20,7 +20,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
@@ -82,9 +81,9 @@ public class DefaultCopyFeatureTest {
         new StreamCopier(status, status).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
         out.close();
         new DefaultCopyFeature(session).copy(source, target, new TransferStatus(), new DisabledConnectionCallback());
-        assertTrue(new DefaultFindFeature(session).find(source, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(target, new DisabledListProgressListener()));
-        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target, new DisabledListProgressListener()).getSize());
+        assertTrue(new DefaultFindFeature(session).find(source));
+        assertTrue(new DefaultFindFeature(session).find(target));
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(target).getSize());
         new SFTPDeleteFeature(session).delete(Arrays.asList(source, target), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

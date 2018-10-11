@@ -62,7 +62,7 @@ public class S3DirectoryFeatureTest {
         final S3LocationFeature.S3Region region = new S3LocationFeature.S3Region("eu-west-2");
         test.attributes().setRegion(region.getIdentifier());
         feature.mkdir(test, region.getIdentifier(), new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -82,7 +82,7 @@ public class S3DirectoryFeatureTest {
         final S3LocationFeature.S3Region region = new S3LocationFeature.S3Region("eu-west-2");
         test.attributes().setRegion(region.getIdentifier());
         feature.mkdir(test, region.getIdentifier(), new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -112,10 +112,10 @@ public class S3DirectoryFeatureTest {
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(b.get());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new S3ObjectListService(session).list(container, new DisabledListProgressListener()).contains(test));
         assertTrue(new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener()).contains(test));
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -131,7 +131,7 @@ public class S3DirectoryFeatureTest {
         final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
@@ -149,8 +149,8 @@ public class S3DirectoryFeatureTest {
         session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(test, new DisabledListProgressListener()));
-        assertTrue(new DefaultFindFeature(session).find(test, new DisabledListProgressListener()));
+        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new S3ObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();

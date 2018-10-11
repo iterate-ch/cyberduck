@@ -37,7 +37,7 @@ public class OneDriveContainerListServiceTest extends AbstractOneDriveTest {
         final AttributedList<Path> drives = new OneDriveContainerListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertFalse(drives.isEmpty());
         for(Path drive : drives) {
-            final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(drive, new DisabledListProgressListener());
+            final PathAttributes attributes = new OneDriveAttributesFinderFeature(session).find(drive);
             assertNotNull(attributes);
             assertNotEquals(-1L, attributes.getSize());
             assertNotEquals(-1L, attributes.getCreationDate());

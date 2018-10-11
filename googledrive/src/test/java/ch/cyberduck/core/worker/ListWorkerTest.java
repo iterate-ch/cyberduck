@@ -55,7 +55,7 @@ public class ListWorkerTest extends AbstractDriveTest {
         final DriveFileidProvider fileidProvider = new DriveFileidProvider(session).withCache(cache);
         new DriveDirectoryFeature(session, fileidProvider).mkdir(parent, null, new TransferStatus());
         new DriveDirectoryFeature(session, fileidProvider).mkdir(folder, null, new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(folder, new DisabledListProgressListener()));
+        assertTrue(new DefaultFindFeature(session).find(folder));
         {
             // trash folder and recreate it
             final String fileid = fileidProvider.getFileid(folder, new DisabledListProgressListener());
