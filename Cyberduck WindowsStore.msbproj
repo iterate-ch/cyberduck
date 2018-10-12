@@ -225,6 +225,9 @@
     <LayoutFile Include="$(OutputPath)profiles\Microsoft OneDrive.cyberduckprofile">
       <PackagePath>$(PackageLayout)\profiles\Microsoft OneDrive.cyberduckprofile</PackagePath>
     </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\Microsoft SharePoint.cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\Microsoft SharePoint.cyberduckprofile</PackagePath>
+    </LayoutFile>
     <LayoutFile Include="$(OutputPath)profiles\Rackspace US.cyberduckprofile">
       <PackagePath>$(PackageLayout)\profiles\Rackspace US.cyberduckprofile</PackagePath>
     </LayoutFile>
