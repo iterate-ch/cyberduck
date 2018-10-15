@@ -37,7 +37,7 @@ public abstract class NSColor extends NSObject implements NSCopying {
     }
 
     public static NSColor systemGrayColor() {
-        if(Rococoa.cast(CLASS, NSObject.class).respondsToSelector(Foundation.selector("systemGrayColor:"))) {
+        if(Rococoa.cast(CLASS, NSObject.class).respondsToSelector(Foundation.selector("systemGrayColor"))) {
             return CLASS.systemGrayColor();
         }
         return NSColor.darkGrayColor();
