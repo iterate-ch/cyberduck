@@ -86,6 +86,11 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public boolean isStateful() {
+        return parent.isStateful();
+    }
+
+    @Override
     public String getIdentifier() {
         return parent.getIdentifier();
     }
