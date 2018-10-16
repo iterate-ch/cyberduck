@@ -267,10 +267,10 @@ public class BookmarkTableDataSource extends ListDataSource {
             if(host.equals(session.getHost())) {
                 switch(session.getState()) {
                     case open:
-                        return IconCacheFactory.<NSImage>get().iconNamed("statusGreen.tiff", 16);
+                        return IconCacheFactory.<NSImage>get().iconNamed("NSStatusAvailable", 16);
                     case opening:
                     case closing:
-                        return IconCacheFactory.<NSImage>get().iconNamed("statusYellow.tiff", 16);
+                        return IconCacheFactory.<NSImage>get().iconNamed("NSStatusPartiallyAvailable", 16);
                 }
             }
             return null;
