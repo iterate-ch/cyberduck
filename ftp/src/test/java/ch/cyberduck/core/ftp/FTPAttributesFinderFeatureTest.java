@@ -35,6 +35,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -74,8 +75,8 @@ public class FTPAttributesFinderFeatureTest {
                 return super._getFeature(type);
             }
         };
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPAttributesFinderFeature f = new FTPAttributesFinderFeature(session);
         f.find(new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.file)));
         session.close();
@@ -107,8 +108,8 @@ public class FTPAttributesFinderFeatureTest {
                 return super._getFeature(type);
             }
         };
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPAttributesFinderFeature f = new FTPAttributesFinderFeature(session);
         final Path file = new Path(new FTPWorkdirService(session).find(), "test", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);

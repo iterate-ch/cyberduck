@@ -27,6 +27,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -63,8 +64,8 @@ public class S3BucketCreateServiceTest {
                 }
             }
         });
-        assertNotNull(session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3BucketCreateService create = new S3BucketCreateService(session);
         final Path bucket = new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         create.create(bucket, "eu-central-1");

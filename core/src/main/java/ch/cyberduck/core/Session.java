@@ -35,7 +35,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
@@ -148,10 +147,6 @@ public abstract class Session<C> implements TranscriptListener {
      * @param login Prompt for proxy credentials
      * @return Client
      */
-    public C open(final HostKeyCallback key, final LoginCallback login) throws BackgroundException {
-        return this.open(ProxyFactory.get().find(host), key, login);
-    }
-
     public C open(final Proxy proxy, final HostKeyCallback key, final LoginCallback login) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Connection will open to %s", host));
@@ -169,12 +164,9 @@ public abstract class Session<C> implements TranscriptListener {
 
     protected abstract C connect(Proxy proxy, HostKeyCallback key, LoginCallback prompt) throws BackgroundException;
 
-    public void login(final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        this.login(ProxyFactory.get().find(host), keychain, prompt, cancel);
-    }
-
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
+     *
      * @param keychain Password store
      * @param prompt   Prompt
      * @param cancel   Cancel callback

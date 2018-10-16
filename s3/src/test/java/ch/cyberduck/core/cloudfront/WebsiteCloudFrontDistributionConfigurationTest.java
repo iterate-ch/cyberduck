@@ -13,6 +13,7 @@ import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.identity.IdentityConfiguration;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -105,8 +106,8 @@ public class WebsiteCloudFrontDistributionConfigurationTest {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
             new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")));
         final S3Session session = new S3Session(host);
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final WebsiteCloudFrontDistributionConfiguration configuration
             = new WebsiteCloudFrontDistributionConfiguration(session, Collections.emptyMap(),
             new DisabledX509TrustManager(), new DefaultX509KeyManager());

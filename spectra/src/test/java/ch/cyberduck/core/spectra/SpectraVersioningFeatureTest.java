@@ -26,6 +26,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3HomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -58,8 +59,8 @@ public class SpectraVersioningFeatureTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
             new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(bucket, null, new TransferStatus());
         final Versioning feature = new SpectraVersioningFeature(session);
@@ -82,8 +83,8 @@ public class SpectraVersioningFeatureTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
             new DefaultX509KeyManager());
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path bucket = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(bucket, null, new TransferStatus());
         final Versioning feature = new SpectraVersioningFeature(session);

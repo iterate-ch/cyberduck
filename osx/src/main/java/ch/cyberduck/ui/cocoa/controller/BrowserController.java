@@ -2751,7 +2751,11 @@ public class BrowserController extends WindowController
      * @return true if mounted and the connection to the server is alive
      */
     public boolean isConnected() {
-        return pool.getState() == Session.State.open;
+        switch(pool.getState()) {
+            case open:
+                return !cache.isEmpty();
+        }
+        return false;
     }
 
     public boolean isIdle() {
