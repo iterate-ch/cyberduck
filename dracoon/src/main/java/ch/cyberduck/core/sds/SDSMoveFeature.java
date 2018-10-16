@@ -110,7 +110,10 @@ public class SDSMoveFeature implements Move {
             // Cannot move file or directory to root but only rename data rooms
             return false;
         }
-        return true;
+        final SDSPermissionsFeature acl = new SDSPermissionsFeature(session, nodeid);
+        return acl.containsRole(source, SDSPermissionsFeature.CHANGE_ROLE) &&
+            acl.containsRole(source, SDSPermissionsFeature.DELETE_ROLE) &&
+            acl.containsRole(target, SDSPermissionsFeature.CREATE_ROLE);
     }
 
     @Override

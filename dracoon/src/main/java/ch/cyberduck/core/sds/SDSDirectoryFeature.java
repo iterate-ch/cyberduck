@@ -77,6 +77,11 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
+    public boolean isSupported(Path workdir, String name) {
+        return new SDSPermissionsFeature(session, nodeid).containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE);
+    }
+
+    @Override
     public Directory<VersionId> withWriter(final Write<VersionId> writer) {
         return this;
     }

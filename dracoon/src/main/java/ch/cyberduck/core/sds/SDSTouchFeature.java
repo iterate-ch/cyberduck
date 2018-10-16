@@ -69,7 +69,11 @@ public class SDSTouchFeature implements Touch<VersionId> {
 
     @Override
     public boolean isSupported(final Path workdir) {
-        return !workdir.isRoot();
+        if(workdir.isRoot()) {
+            return false;
+        }
+        // for existing files the delete role is also needed but at this point we don't know if it exists or not
+        return new SDSPermissionsFeature(session, nodeid).containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE);
     }
 
     @Override
