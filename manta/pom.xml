@@ -23,7 +23,7 @@
     </parent>
     <artifactId>manta</artifactId>
     <properties>
-        <manta-client-version>3.2.3</manta-client-version>
+        <manta-client-version>3.2.5</manta-client-version>
     </properties>
     <dependencies>
         <dependency>
@@ -47,6 +47,12 @@
             <groupId>com.joyent.manta</groupId>
             <artifactId>java-manta-client-unshaded</artifactId>
             <version>${manta-client-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.squareup.jnagmp</groupId>
+                    <artifactId>bouncycastle-rsa</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
