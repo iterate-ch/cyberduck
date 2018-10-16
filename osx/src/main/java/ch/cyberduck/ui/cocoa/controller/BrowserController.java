@@ -3055,8 +3055,8 @@ public class BrowserController extends WindowController
             @Override
             public void run() {
                 // The browser has no session, we are allowed to proceed
-                final SessionPool connection = SessionPoolFactory.create(BrowserController.this, cache, bookmark, SessionPoolFactory.Usage.browser);
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, connection,
+                pool = SessionPoolFactory.create(BrowserController.this, cache, bookmark, SessionPoolFactory.Usage.browser);
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool,
                     new MountWorker(bookmark, cache, listener) {
                         @Override
                         public void cleanup(final Path workdir) {
@@ -3066,7 +3066,6 @@ public class BrowserController extends WindowController
                                 });
                             }
                             else {
-                                pool = connection;
                                 pasteboard = PathPasteboardFactory.getPasteboard(bookmark);
                                 // Update status icon
                                 bookmarkTable.setNeedsDisplay();
