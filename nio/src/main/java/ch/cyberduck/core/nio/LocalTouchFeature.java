@@ -50,11 +50,6 @@ public class LocalTouchFeature implements Touch {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
-        return true;
-    }
-
-    @Override
     public Touch withWriter(final Write writer) {
         return this;
     }

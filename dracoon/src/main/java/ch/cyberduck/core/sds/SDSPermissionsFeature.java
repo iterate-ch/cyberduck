@@ -17,15 +17,21 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
+import org.apache.log4j.Logger;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class SDSPermissionsFeature extends DefaultAclFeature {
+
+    private static final Logger log = Logger.getLogger(SDSPermissionsFeature.class);
 
     public static final Acl.Role MANAGE_ROLE = new Acl.Role("MANAGE_ROLE");
     public static final Acl.Role READ_ROLE = new Acl.Role("READ");
@@ -37,6 +43,9 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
+
+    private final PathContainerService containerService
+        = new SDSPathContainerService();
 
     public SDSPermissionsFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
@@ -77,5 +86,33 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
             DOWNLOAD_SHARE_ROLE,
             UPLOAD_SHARE_ROLE
         );
+    }
+
+    boolean containsRole(final Path file, final Acl.Role role) {
+        try {
+            final Path parent = containerService.getContainer(file.getParent());
+            if(parent.equals(file)) {
+                // Top-level data room
+                return this.containsRole(file, this.getPermission(file), role);
+            }
+            // Sub data room
+            return this.containsRole(file, this.getPermission(parent), role);
+        }
+        catch(BackgroundException e) {
+            log.warn(String.format("Unable to retrieve user account information. %s", e.getDetail()));
+            return true;
+        }
+    }
+
+    private boolean containsRole(final Path file, final Acl acl, final Acl.Role role) throws BackgroundException {
+        if(acl.isEmpty()) {
+            log.warn(String.format("Missing ACL on file %s", file));
+            return true;
+        }
+        final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+        if(null == roles) {
+            return false;
+        }
+        return roles.contains(role);
     }
 }

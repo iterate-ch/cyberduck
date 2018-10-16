@@ -87,11 +87,6 @@ public class SwiftDirectoryFeature implements Directory<StorageObject> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return true;
-    }
-
-    @Override
     public SwiftDirectoryFeature withWriter(final Write<StorageObject> writer) {
         this.writer = writer;
         return this;

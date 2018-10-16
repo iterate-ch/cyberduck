@@ -44,7 +44,9 @@ public interface Move {
      * @param target Target file or folder
      * @return False if not supported for given files
      */
-    boolean isSupported(Path source, Path target);
+    default boolean isSupported(Path source, Path target) {
+        return target.getParent().attributes().getPermission().isWritable();
+    }
 
     /**
      * @param delete Delete feature if move operation requires delete after copy

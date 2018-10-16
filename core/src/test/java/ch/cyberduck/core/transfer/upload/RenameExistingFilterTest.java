@@ -70,11 +70,6 @@ public class RenameExistingFilterTest {
                         }
 
                         @Override
-                        public boolean isSupported(final Path source, final Path target) {
-                            return true;
-                        }
-
-                        @Override
                         public Move withDelete(final Delete delete) {
                             return this;
                         }
@@ -147,11 +142,6 @@ public class RenameExistingFilterTest {
 
                         @Override
                         public boolean isRecursive(final Path source, final Path target) {
-                            return true;
-                        }
-
-                        @Override
-                        public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
 
@@ -250,11 +240,6 @@ public class RenameExistingFilterTest {
 
                         @Override
                         public boolean isRecursive(final Path source, final Path target) {
-                            return true;
-                        }
-
-                        @Override
-                        public boolean isSupported(final Path source, final Path target) {
                             return true;
                         }
 

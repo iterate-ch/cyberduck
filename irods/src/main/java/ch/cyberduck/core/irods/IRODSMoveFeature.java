@@ -19,7 +19,6 @@ package ch.cyberduck.core.irods;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -64,11 +63,6 @@ public class IRODSMoveFeature implements Move {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        return true;
-    }
-
-    @Override
-    public boolean isSupported(final Path source, final Path target) {
         return true;
     }
 

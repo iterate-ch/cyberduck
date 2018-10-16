@@ -57,11 +57,6 @@ public class CryptoChecksumComputeTest {
                         }
 
                         @Override
-                        public boolean isSupported(final Path workdir, final String name) {
-                            return true;
-                        }
-
-                        @Override
                         public Directory withWriter(final Write writer) {
                             return this;
                         }
@@ -81,12 +76,12 @@ public class CryptoChecksumComputeTest {
         final RandomNonceGenerator nonces = new RandomNonceGenerator();
         assertNotNull(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)).hash);
         assertNotEquals(compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)),
-                compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)));
+            compute.compute(new NullInputStream(1025L), new TransferStatus().withHeader(header).withNonces(nonces)));
         assertNotNull(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header).withNonces(nonces)).hash);
         final NullInputStream input = new NullInputStream(0L);
         assertEquals(compute.compute(input, new TransferStatus().withHeader(header).withNonces(nonces)),
-                compute.compute(input, new TransferStatus().withHeader(header).withNonces(nonces)));
+            compute.compute(input, new TransferStatus().withHeader(header).withNonces(nonces)));
         assertNotEquals(compute.compute(new NullInputStream(0L), new TransferStatus().withHeader(header).withNonces(nonces)),
-                sha.compute(new NullInputStream(0L), new TransferStatus()));
+            sha.compute(new NullInputStream(0L), new TransferStatus()));
     }
 }
