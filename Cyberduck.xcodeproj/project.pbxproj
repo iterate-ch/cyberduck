@@ -194,7 +194,8 @@
 		47B331941668102400C9FFA0 /* swift.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331921668102400C9FFA0 /* swift.tiff */; };
 		47B6074A0DA420880068282C /* Keychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47B6072E0DA420880068282C /* Keychain.strings */; };
 		47BCF18E13BB4EC700D26E4C /* setup/app/container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */; };
-		47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		47C9427D2175D451008871C8 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C9427C2175D451008871C8 /* AppKit.framework */; };
+		47C9427E2175D461008871C8 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C9427C2175D451008871C8 /* AppKit.framework */; };
 		47CD043812DB5F2000694306 /* File.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD041612DB5F2000694306 /* File.strings */; };
 		47CD045B12DB5F2E00694306 /* Folder.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD043912DB5F2E00694306 /* Folder.strings */; };
 		47CD047E12DB5F4500694306 /* Goto.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD045C12DB5F4500694306 /* Goto.strings */; };
@@ -227,7 +228,6 @@
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47ED775F1CEA1314009EBA0A /* transferstop.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47ED775E1CEA1314009EBA0A /* transferstop.pdf */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
-		47F85C121C0F0E8900FDA856 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 477CFC7E1AF0FAFB001E81AF /* Cocoa.framework */; };
 		47F85C191C0F101F00FDA856 /* UKCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C151C0F101F00FDA856 /* UKCrashReporter.h */; };
 		47F85C1A1C0F101F00FDA856 /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C161C0F101F00FDA856 /* UKCrashReporter.m */; };
 		47F85C1B1C0F101F00FDA856 /* UKSystemInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C171C0F101F00FDA856 /* UKSystemInfo.h */; };
@@ -1335,6 +1335,7 @@
 		47C92DB61189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = i18n/src/main/resources/sl.lproj/S3.strings; sourceTree = "<group>"; };
 		47C92DB91189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = i18n/src/main/resources/sl.lproj/Status.strings; sourceTree = "<group>"; };
 		47C92DBA1189B6CB00EDDD00 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = i18n/src/main/resources/sl.lproj/Transfer.strings; sourceTree = "<group>"; };
+		47C9427C2175D451008871C8 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		47CD041712DB5F2000694306 /* ro */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ro; path = i18n/src/main/resources/ro.lproj/File.strings; sourceTree = "<group>"; };
 		47CD041812DB5F2000694306 /* pl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = pl; path = i18n/src/main/resources/pl.lproj/File.strings; sourceTree = "<group>"; };
 		47CD041A12DB5F2000694306 /* de */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = de; path = i18n/src/main/resources/de.lproj/File.strings; sourceTree = "<group>"; };
@@ -1604,7 +1605,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47F85C121C0F0E8900FDA856 /* Cocoa.framework in Frameworks */,
+				47C9427E2175D461008871C8 /* AppKit.framework in Frameworks */,
 				4705DFDC1C037A6D002466FA /* SystemConfiguration.framework in Frameworks */,
 				4705DFDA1C037A5E002466FA /* IOKit.framework in Frameworks */,
 				4705DFD91C037A52002466FA /* ApplicationServices.framework in Frameworks */,
@@ -1620,9 +1621,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47C9427D2175D451008871C8 /* AppKit.framework in Frameworks */,
 				4754C1AB1FC0CEC60055EE41 /* QuartzCore.framework in Frameworks */,
 				4796147B1E5D858D00BF7014 /* QuickLookUI.framework in Frameworks */,
-				47C88FF117269A71001A746A /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1665,6 +1666,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				47C9427C2175D451008871C8 /* AppKit.framework */,
 				4754C1AA1FC0CEC50055EE41 /* QuartzCore.framework */,
 				4796147A1E5D858D00BF7014 /* QuickLookUI.framework */,
 				479614771E5D848A00BF7014 /* QuickLook.framework */,
@@ -2322,7 +2324,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "sed -i '.tmp' 's/${SPARKLE_KEY_PREFIX}/'${SPARKLE_KEY_PREFIX}'/g' \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nrm \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\".tmp";
+			shellScript = "sed -i '.tmp' 's/${SPARKLE_KEY_PREFIX}/'${SPARKLE_KEY_PREFIX}'/g' \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nrm \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\".tmp\n";
 			showEnvVarsInLog = 0;
 		};
 		4735940F0CE76EE50085DEAC /* Prune NIBs */ = {
@@ -2350,7 +2352,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${CONFIGURATION}\" == 'Mac App Store' ]\nthen\nrm -rf \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sparkle.framework\"\nfi";
+			shellScript = "if [ \"${CONFIGURATION}\" == 'Mac App Store' ]\nthen\nrm -rf \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sparkle.framework\"\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
