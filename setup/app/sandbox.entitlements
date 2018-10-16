@@ -29,5 +29,7 @@
                 <string>preferencepane.reveal</string>
             </array>
         </dict>
+        <key>com.apple.security.cs.disable-library-validation</key>
+        <true/>
     </dict>
 </plist>
