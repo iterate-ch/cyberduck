@@ -16,7 +16,7 @@
  *  dkocher@cyberduck.ch
  */
 
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 
 enum {
     SMALL_BOOKMARK_SIZE = 16,

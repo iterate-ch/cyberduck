@@ -17,7 +17,7 @@
  */
 
 #import <Sandbox.h>
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <Security/SecRequirement.h>
 #import <Security/SecStaticCode.h>
 #import <objc/runtime.h>

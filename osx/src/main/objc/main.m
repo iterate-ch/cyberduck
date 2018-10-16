@@ -18,7 +18,7 @@
  */
 
 #import "launcher.h"
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 
 int main(int argc, char *argv[]) {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];

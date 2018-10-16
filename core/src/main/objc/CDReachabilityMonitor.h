@@ -17,7 +17,6 @@
  *  dkocher@cyberduck.ch
  */
 
-#import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #import <CoreServices/CoreServices.h>
 #import <SystemConfiguration/SCNetworkReachability.h>

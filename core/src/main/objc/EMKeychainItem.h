@@ -23,7 +23,7 @@
  */
 
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <Carbon/Carbon.h>
 #import <Security/Security.h>
 
