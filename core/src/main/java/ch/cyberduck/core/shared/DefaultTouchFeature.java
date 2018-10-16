@@ -65,11 +65,6 @@ public class DefaultTouchFeature<T> implements Touch<T> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
-        return true;
-    }
-
-    @Override
     public DefaultTouchFeature<T> withWriter(final Write<T> writer) {
         feature.withWriter(writer);
         return this;

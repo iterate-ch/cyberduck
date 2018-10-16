@@ -61,11 +61,6 @@ public class SFTPTouchFeature implements Touch<Void> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
-        return true;
-    }
-
-    @Override
     public SFTPTouchFeature withWriter(final Write writer) {
         return this;
     }

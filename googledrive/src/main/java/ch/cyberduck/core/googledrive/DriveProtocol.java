@@ -48,7 +48,7 @@ public class DriveProtocol extends AbstractProtocol {
 
     @Override
     public boolean isHostnameConfigurable() {
-        return false;
+        return true;
     }
 
     @Override
