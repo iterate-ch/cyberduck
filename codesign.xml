@@ -81,6 +81,15 @@
             </fileset>
             <srcfile/>
         </apply>
+        <apply executable="/usr/bin/codesign" failonerror="false"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="${codesign.options} --deep --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${bundle}/${bundle.frameworks}">
+                <include name="Sparkle.framework/Versions/A/Resources/Autoupdate.app"/>
+            </fileset>
+            <srcfile/>
+        </apply>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
