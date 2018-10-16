@@ -40,7 +40,7 @@ public class IRODSTouchFeature implements Touch {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final int descriptor = fs.createFile(file.getAbsolute(),
-                    DataObjInp.OpenFlags.WRITE_TRUNCATE, DataObjInp.DEFAULT_CREATE_MODE);
+                DataObjInp.OpenFlags.WRITE_TRUNCATE, DataObjInp.DEFAULT_CREATE_MODE);
             fs.fileClose(descriptor, false);
             return new Path(file.getParent(), file.getName(), file.getType(),
                 new IRODSAttributesFinderFeature(session).find(file));
@@ -48,11 +48,6 @@ public class IRODSTouchFeature implements Touch {
         catch(JargonException e) {
             throw new IRODSExceptionMappingService().map("Cannot create file {0}", e, file);
         }
-    }
-
-    @Override
-    public boolean isSupported(final Path workdir) {
-        return true;
     }
 
     @Override

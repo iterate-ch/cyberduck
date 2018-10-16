@@ -45,11 +45,6 @@ public class LocalDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return true;
-    }
-
-    @Override
     public Directory<Void> withWriter(final Write<Void> writer) {
         return this;
     }
