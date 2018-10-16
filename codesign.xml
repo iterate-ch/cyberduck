@@ -36,7 +36,7 @@
     <!-- Designated requirement -->
     <property name="codesign.requirement.source" value="${setup}/app/codesign-requirement.txt"/>
     <property name="codesign.requirement" value="${setup}/app/codesign-requirement.bin"/>
-    <property name="codesign.options" value="--force --options hard"/>
+    <property name="codesign.options" value="--force --options runtime"/>
     <property name="codesign.arg" value=""/>
 
     <target name="codesign" depends="dotclean,compile-codesign-requirement">
@@ -69,6 +69,15 @@
             </fileset>
             <fileset dir="${bundle}/${bundle.plugins}">
                 <include name="*.jre"/>
+            </fileset>
+            <srcfile/>
+        </apply>
+        <apply executable="/usr/bin/codesign" failonerror="false"
+               type="both"
+               parallel="false" spawn="false" force="true">
+            <arg line="${codesign.options} --deep --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <fileset dir="${bundle}/${bundle.frameworks}">
+                <include name="Sparkle.framework/Versions/A/Resources/Autoupdate.app"/>
             </fileset>
             <srcfile/>
         </apply>
