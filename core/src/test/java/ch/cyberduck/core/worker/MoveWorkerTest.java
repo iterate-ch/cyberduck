@@ -81,11 +81,6 @@ public class MoveWorkerTest {
                         }
 
                         @Override
-                        public boolean isSupported(final Path workdir, final String name) {
-                            return true;
-                        }
-
-                        @Override
                         public Directory<Void> withWriter(final Write<Void> writer) {
                             return this;
                         }
@@ -140,13 +135,13 @@ public class MoveWorkerTest {
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 if(file.equals(new Path("/t", EnumSet.of(Path.Type.directory)))) {
                     return new AttributedList<Path>(Arrays.asList(
-                            new Path("/t/a", EnumSet.of(Path.Type.file)),
-                            new Path("/t/d", EnumSet.of(Path.Type.directory))
+                        new Path("/t/a", EnumSet.of(Path.Type.file)),
+                        new Path("/t/d", EnumSet.of(Path.Type.directory))
                     ));
                 }
                 if(file.equals(new Path("/t/d", EnumSet.of(Path.Type.directory)))) {
                     return new AttributedList<Path>(Arrays.asList(
-                            new Path("/t/d/b", EnumSet.of(Path.Type.file))
+                        new Path("/t/d/b", EnumSet.of(Path.Type.file))
                     ));
                 }
                 if(file.equals(new Path("/", EnumSet.of(Path.Type.directory)))) {
@@ -163,7 +158,7 @@ public class MoveWorkerTest {
             }
         };
         final MoveWorker worker = new MoveWorker(
-                Collections.singletonMap(new Path("/t", EnumSet.of(Path.Type.directory)), new Path("/t2", EnumSet.of(Path.Type.directory))),
+            Collections.singletonMap(new Path("/t", EnumSet.of(Path.Type.directory)), new Path("/t2", EnumSet.of(Path.Type.directory))),
             new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledLoginCallback());
         final Collection<Path> targets = worker.run(session).values();
         assertEquals(4, targets.size());

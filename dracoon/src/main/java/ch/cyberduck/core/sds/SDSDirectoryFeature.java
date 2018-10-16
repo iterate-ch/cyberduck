@@ -77,11 +77,6 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return true;
-    }
-
-    @Override
     public Directory<VersionId> withWriter(final Write<VersionId> writer) {
         return this;
     }
