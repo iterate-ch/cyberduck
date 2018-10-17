@@ -235,9 +235,6 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
             catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException e) {
                 throw new IOException(new CryptoExceptionMappingService().map("Upload {0} failed", e, file));
             }
-            catch(BackgroundException e) {
-                throw new IOException(e);
-            }
             finally {
                 close.set(true);
             }
