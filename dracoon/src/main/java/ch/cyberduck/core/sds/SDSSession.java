@@ -174,6 +174,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         try {
             userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null)));
+            keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map(e);
@@ -212,13 +213,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         return this.userAccount.get();
     }
 
-    public UserKeyPairContainer keyPair() throws BackgroundException {
+    public UserKeyPairContainer keyPair() {
         if(this.keyPair.get() == null) {
             try {
                 keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
             }
             catch(ApiException e) {
-                throw new SDSExceptionMappingService().map(e);
+                log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
             }
         }
         return this.keyPair.get();
