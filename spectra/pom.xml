@@ -44,7 +44,7 @@
         <dependency>
             <groupId>ch.iterate.spectralogic</groupId>
             <artifactId>ds3-sdk</artifactId>
-            <version>5.0.6</version>
+            <version>5.0.7</version>
         </dependency>
     </dependencies>
 </project>
