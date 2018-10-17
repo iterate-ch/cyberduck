@@ -77,8 +77,8 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return true;
+    public boolean isSupported(Path workdir, String name) {
+        return new SDSPermissionsFeature(session, nodeid).containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE);
     }
 
     @Override

@@ -30,6 +30,7 @@ import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -70,7 +71,7 @@ public class AWSSessionCredentialsRetriever {
         final Path access = new Path(PathNormalizer.normalize(address.getDefaultPath()), EnumSet.of(Path.Type.file));
         address.setDefaultPath(String.valueOf(Path.DELIMITER));
         final DAVSession connection = new DAVSession(address, trust, key);
-        connection.withListener(transcript).open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        connection.withListener(transcript).open(ProxyFactory.get().find(address), new DisabledHostKeyCallback(), new DisabledLoginCallback());
         final InputStream in = new DAVReadFeature(connection).read(access, new TransferStatus(), new DisabledConnectionCallback());
         try {
             final Credentials credentials = this.parse(in);

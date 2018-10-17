@@ -19,7 +19,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h> 
 
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 
 Boolean GetMetadataForFile(void* thisInterface, 
 						   CFMutableDictionaryRef attributes, 

@@ -64,11 +64,6 @@ public class CryptoBulkFeatureTest {
                         }
 
                         @Override
-                        public boolean isSupported(final Path workdir, final String name) {
-                            return true;
-                        }
-
-                        @Override
                         public Directory withWriter(final Write writer) {
                             return this;
                         }
@@ -148,11 +143,6 @@ public class CryptoBulkFeatureTest {
                         @Override
                         public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
                             return folder;
-                        }
-
-                        @Override
-                        public boolean isSupported(final Path workdir, final String name) {
-                            return true;
                         }
 
                         @Override

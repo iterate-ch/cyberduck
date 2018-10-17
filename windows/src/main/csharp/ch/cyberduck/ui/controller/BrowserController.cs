@@ -2653,7 +2653,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>true if mounted and the connection to the server is alive</returns>
         public bool IsConnected()
         {
-            return Session.getState() == ch.cyberduck.core.Session.State.open;
+            return Session.getState() == ch.cyberduck.core.Session.State.open && !_cache.isEmpty();
         }
 
         public bool isIdle()

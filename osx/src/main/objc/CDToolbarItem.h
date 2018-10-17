@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 
 @interface CDToolbarItem : NSToolbarItem {
 

@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>6.8.2-SNAPSHOT</version>
+        <version>6.8.3-SNAPSHOT</version>
     </parent>
     <artifactId>spectra</artifactId>
     <packaging>jar</packaging>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>ch.iterate.spectralogic</groupId>
             <artifactId>ds3-sdk</artifactId>
-            <version>5.0.6</version>
+            <version>5.0.7</version>
         </dependency>
     </dependencies>
 </project>

@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.8.2
+- [Bugfix] Failure transferring more than one file (FTP) (#10494)
+
 6.8.1
 - [Bugfix] Interoperability with OpenStack Swift (S3 middleware) (#10471)
 - [Bugfix] Failure opening Terminal.app (#10475)

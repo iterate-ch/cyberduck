@@ -16,7 +16,7 @@
  *  dkocher@cyberduck.ch
  */
 
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 #import <Quartz/Quartz.h>
 
 @interface CDListView : NSTableView {

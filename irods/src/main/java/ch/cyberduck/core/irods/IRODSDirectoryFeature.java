@@ -50,11 +50,6 @@ public class IRODSDirectoryFeature implements Directory<Void> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir, final String name) {
-        return true;
-    }
-
-    @Override
     public IRODSDirectoryFeature withWriter(final Write<Void> writer) {
         return this;
     }

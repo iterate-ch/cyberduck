@@ -12,7 +12,7 @@
 
 #import "UKCrashReporter.h"
 #import "UKSystemInfo.h"
-#import <Cocoa/Cocoa.h>
+#import <AppKit/AppKit.h>
 
 NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString* crashLogsFolder );
 

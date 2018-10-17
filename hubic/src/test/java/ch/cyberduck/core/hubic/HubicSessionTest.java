@@ -27,6 +27,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -48,9 +49,9 @@ public class HubicSessionTest {
             new Local("../profiles/hubiC.cyberduckprofile"));
         final HubicSession session = new HubicSession(new Host(profile,
             new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         try {
-            session.login(new DisabledPasswordStore() {
+            session.login(Proxy.DIRECT, new DisabledPasswordStore() {
                 @Override
                 public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                     return "1464730217WkCCqXpaGwQfxpUwI6wcXe6NvMCTJMg5lHrcBTRIaY4yAbRFBxvaSBparqNRsui9";
@@ -71,8 +72,8 @@ public class HubicSessionTest {
             new Local("../profiles/hubiC.cyberduckprofile"));
         final HubicSession session = new HubicSession(new Host(profile,
             new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
-        session.open(new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(new DisabledPasswordStore() {
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledPasswordStore() {
             @Override
             public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
                 if(user.equals("hubiC (u@domain) OAuth2 Access Token")) {

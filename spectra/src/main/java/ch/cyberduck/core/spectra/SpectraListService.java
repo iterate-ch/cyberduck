@@ -34,6 +34,7 @@ public class SpectraListService extends S3ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return super.list(directory, new IndexedListProgressListener() {
+
             @Override
             public void message(final String message) {
                 listener.message(message);
@@ -46,12 +47,14 @@ public class SpectraListService extends S3ListService {
             }
 
             @Override
-            public void visit(final AttributedList<Path> list, final int index, final Path p) throws ConnectionCanceledException {
+            public void visit(final AttributedList<Path> list, final int index, final Path p) {
                 if(p.isFile()) {
-                    if(p.attributes().getRevision() == 1) {
-                        final HashMap<String, String> custom = new HashMap<>(p.attributes().getCustom());
-                        custom.put(SpectraVersioningFeature.KEY_REVERTABLE, Boolean.TRUE.toString());
-                        p.attributes().setCustom(custom);
+                    if(p.attributes().isDuplicate()) {
+                        if(p.attributes().getRevision() == 1) {
+                            final HashMap<String, String> custom = new HashMap<>(p.attributes().getCustom());
+                            custom.put(SpectraVersioningFeature.KEY_REVERTABLE, Boolean.TRUE.toString());
+                            p.attributes().setCustom(custom);
+                        }
                     }
                 }
             }

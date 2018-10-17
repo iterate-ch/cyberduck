@@ -58,6 +58,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isStateful() {
+        return false;
+    }
+
+    @Override
     public Scheme[] getSchemes() {
         try {
             final Scheme identifier = Scheme.valueOf(this.getIdentifier());

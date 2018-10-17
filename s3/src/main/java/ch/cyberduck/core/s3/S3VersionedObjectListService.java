@@ -69,6 +69,8 @@ public class S3VersionedObjectListService implements ListService {
         try {
             String priorLastKey = null;
             String priorLastVersionId = null;
+            long revision = 0L;
+            String lastKey = null;
             do {
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
                     bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
@@ -76,7 +78,6 @@ public class S3VersionedObjectListService implements ListService {
                     priorLastKey, priorLastVersionId, true);
                 // Amazon S3 returns object versions in the order in which they were
                 // stored, with the most recently stored returned first.
-                long i = 0L;
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {
                     final String key = PathNormalizer.normalize(marker.getKey());
                     if(String.valueOf(Path.DELIMITER).equals(key)) {
@@ -90,7 +91,11 @@ public class S3VersionedObjectListService implements ListService {
                     if(versioning.isEnabled()) {
                         attributes.setVersionId(marker.getVersionId());
                     }
-                    attributes.setRevision(++i);
+                    if(!StringUtils.equals(lastKey, key)) {
+                        // Reset revision for next file
+                        revision = 0L;
+                    }
+                    attributes.setRevision(++revision);
                     attributes.setDuplicate((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest());
                     if(marker.isDeleteMarker()) {
                         attributes.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
@@ -109,6 +114,7 @@ public class S3VersionedObjectListService implements ListService {
                     }
                     final Path f = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
                     children.add(f);
+                    lastKey = key;
                 }
                 final String[] prefixes = chunk.getCommonPrefixes();
                 for(String common : prefixes) {

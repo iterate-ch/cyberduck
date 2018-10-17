@@ -22,11 +22,6 @@ public class NullSession extends Session<Void> implements ListService {
     }
 
     @Override
-    public Void open(final HostKeyCallback c, final LoginCallback login) throws BackgroundException {
-        return null;
-    }
-
-    @Override
     protected Void connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         return null;
     }

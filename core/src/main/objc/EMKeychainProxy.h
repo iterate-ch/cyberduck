@@ -24,7 +24,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 //Last Changed on 2/07/08. Version 0.14
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <Carbon/Carbon.h>
 #import <Security/Security.h>
 
