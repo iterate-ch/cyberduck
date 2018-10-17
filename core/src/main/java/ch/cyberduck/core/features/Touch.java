@@ -28,7 +28,7 @@ public interface Touch<Reply> {
      * @return True if creating an empty file is possible.
      */
     default boolean isSupported(Path workdir) {
-        return workdir.attributes().getPermission().isWritable();
+        return true;
     }
 
     Touch<Reply> withWriter(Write<Reply> writer);
