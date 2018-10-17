@@ -91,12 +91,12 @@ public class S3VersionedObjectListService implements ListService {
                     if(versioning.isEnabled()) {
                         attributes.setVersionId(marker.getVersionId());
                     }
-                    attributes.setRevision(++revision);
-                    attributes.setDuplicate((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest());
                     if(!StringUtils.equals(lastKey, key)) {
                         // Reset revision for next file
                         revision = 0L;
                     }
+                    attributes.setRevision(++revision);
+                    attributes.setDuplicate((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest());
                     if(marker.isDeleteMarker()) {
                         attributes.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                     }
