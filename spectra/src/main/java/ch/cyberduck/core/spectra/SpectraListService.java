@@ -19,7 +19,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.s3.S3ListService;
@@ -36,8 +35,6 @@ public class SpectraListService extends S3ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         return super.list(directory, new IndexedListProgressListener() {
 
-            Path last = null;
-
             @Override
             public void message(final String message) {
                 listener.message(message);
@@ -53,12 +50,11 @@ public class SpectraListService extends S3ListService {
             public void visit(final AttributedList<Path> list, final int index, final Path p) {
                 if(p.isFile()) {
                     if(p.attributes().isDuplicate()) {
-                        if(null != last && !new SimplePathPredicate(p).test(last)) {
+                        if(p.attributes().getRevision() == 1) {
                             final HashMap<String, String> custom = new HashMap<>(p.attributes().getCustom());
                             custom.put(SpectraVersioningFeature.KEY_REVERTABLE, Boolean.TRUE.toString());
                             p.attributes().setCustom(custom);
                         }
-                        last = p;
                     }
                 }
             }
