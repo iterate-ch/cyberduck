@@ -107,7 +107,7 @@
         <dependency>
             <groupId>com.googlecode.plist</groupId>
             <artifactId>dd-plist</artifactId>
-            <version>1.20</version>
+            <version>1.21</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
