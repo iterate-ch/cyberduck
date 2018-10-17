@@ -79,7 +79,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     protected SDSErrorResponseInterceptor retryHandler;
     protected OAuth2RequestInterceptor authorizationService;
 
-    private UserAccountWrapper userAccount;
+    private final ExpiringObjectHolder<UserAccountWrapper> userAccount
+        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPair
         = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
@@ -172,7 +173,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e).getDetail()));
         }
         try {
-            userAccount = new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null));
+            userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null)));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map(e);
@@ -200,7 +201,15 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     public UserAccountWrapper userAccount() {
-        return userAccount;
+        if(this.userAccount.get() == null) {
+            try {
+                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null)));
+            }
+            catch(ApiException e) {
+                log.warn(String.format("Failure updating user info. %s", e.getMessage()));
+            }
+        }
+        return this.userAccount.get();
     }
 
     public UserKeyPairContainer keyPair() throws BackgroundException {
