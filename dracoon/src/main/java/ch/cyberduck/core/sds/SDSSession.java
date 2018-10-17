@@ -79,8 +79,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     protected SDSErrorResponseInterceptor retryHandler;
     protected OAuth2RequestInterceptor authorizationService;
 
-    private final ExpiringObjectHolder<UserAccountWrapper> userAccount
-        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+    private UserAccountWrapper userAccount;
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPair
         = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
@@ -172,6 +171,12 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             // Precondition: Right "Config Read" required.
             log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e).getDetail()));
         }
+        try {
+            userAccount = new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null));
+        }
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map(e);
+        }
     }
 
     private String login(final LoginCallback controller, final LoginRequest request) throws BackgroundException {
@@ -194,16 +199,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
     }
 
-    public UserAccountWrapper userAccount() throws BackgroundException {
-        if(this.userAccount.get() == null) {
-            try {
-                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null)));
-            }
-            catch(ApiException e) {
-                throw new SDSExceptionMappingService().map(e);
-            }
-        }
-        return this.userAccount.get();
+    public UserAccountWrapper userAccount() {
+        return userAccount;
     }
 
     public UserKeyPairContainer keyPair() throws BackgroundException {
