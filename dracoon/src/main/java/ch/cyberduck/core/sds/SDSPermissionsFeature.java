@@ -67,12 +67,7 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        try {
-            return Collections.singletonList(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
-        }
-        catch(BackgroundException e) {
-            return Collections.emptyList();
-        }
+        return Collections.singletonList(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
     }
 
     @Override
