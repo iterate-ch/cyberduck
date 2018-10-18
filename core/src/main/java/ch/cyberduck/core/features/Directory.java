@@ -34,7 +34,7 @@ public interface Directory<Reply> {
      * @return True if creating directory will succeed
      */
     default boolean isSupported(Path workdir, String name) {
-        return true;
+        return workdir.attributes().getPermission().isWritable();
     }
 
     Directory<Reply> withWriter(Write<Reply> writer);

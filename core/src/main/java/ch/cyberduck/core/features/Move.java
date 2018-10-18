@@ -45,7 +45,7 @@ public interface Move {
      * @return False if not supported for given files
      */
     default boolean isSupported(Path source, Path target) {
-        return true;
+        return target.getParent().attributes().getPermission().isWritable();
     }
 
     /**

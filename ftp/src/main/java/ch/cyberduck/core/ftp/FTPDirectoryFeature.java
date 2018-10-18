@@ -48,6 +48,11 @@ public class FTPDirectoryFeature implements Directory<Integer> {
     }
 
     @Override
+    public boolean isSupported(final Path workdir, final String name) {
+        return true;
+    }
+
+    @Override
     public FTPDirectoryFeature withWriter(final Write writer) {
         return this;
     }
