@@ -136,9 +136,9 @@
                 <dependency>
                     <groupId>net.java.dev.jna</groupId>
                     <artifactId>jnidispatch</artifactId>
-                    <classifier>native</classifier>
+                    <classifier>x86_32</classifier>
                     <type>dll</type>
-                    <version>4.2</version>
+                    <version>5.0.0</version>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>

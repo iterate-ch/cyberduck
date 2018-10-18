@@ -39,13 +39,6 @@
             <pathelement path="${lib.ext}/ant-javafx.${sun.arch.data.model}.jar"/>
             <pathelement path="${build.bundles}"/>
         </path>
-        <copy todir="${build}">
-            <fileset dir="${lib}">
-                <!-- Include libjnidispatch.so -->
-                <include name="*.${sun.arch.data.model}.so"/>
-            </fileset>
-            <mapper type="glob" from="*.${sun.arch.data.model}.so" to="*.so"/>
-        </copy>
         <taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
                  uri="javafx:com.sun.javafx.tools.ant">
             <classpath refid="javafx.classpath"/>
