@@ -61,7 +61,8 @@ public class SDSDeleteFeature implements Delete {
     public boolean isSupported(final Path file) {
         if(containerService.isContainer(file)) {
             if(PreferencesFactory.get().getBoolean("sds.delete.dataroom.enable")) {
-                new SDSPermissionsFeature(session, nodeid).containsRole(file, SDSPermissionsFeature.MANAGE_ROLE);
+                // Need the query permission on the parent data room if file itself is subroom
+                new SDSPermissionsFeature(session, nodeid).containsRole(file.getParent(), SDSPermissionsFeature.MANAGE_ROLE);
             }
             return false;
         }

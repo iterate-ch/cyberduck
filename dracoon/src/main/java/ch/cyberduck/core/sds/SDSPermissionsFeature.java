@@ -67,12 +67,7 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        try {
-            return Collections.singletonList(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
-        }
-        catch(BackgroundException e) {
-            return Collections.emptyList();
-        }
+        return Collections.singletonList(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
     }
 
     @Override
@@ -88,15 +83,10 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
         );
     }
 
-    boolean containsRole(final Path file, final Acl.Role role) {
+    public boolean containsRole(final Path file, final Acl.Role role) {
         try {
-            final Path parent = containerService.getContainer(file.getParent());
-            if(parent.equals(file)) {
-                // Top-level data room
-                return this.containsRole(file, this.getPermission(file), role);
-            }
-            // Sub data room
-            return this.containsRole(file, this.getPermission(parent), role);
+            final Path room = containerService.getContainer(file);
+            return this.containsRole(file, this.getPermission(room), role);
         }
         catch(BackgroundException e) {
             log.warn(String.format("Unable to retrieve user account information. %s", e.getDetail()));
@@ -104,13 +94,15 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
         }
     }
 
-    private boolean containsRole(final Path file, final Acl acl, final Acl.Role role) throws BackgroundException {
+    private boolean containsRole(final Path file, final Acl acl, final Acl.Role role) {
         if(acl.isEmpty()) {
             log.warn(String.format("Missing ACL on file %s", file));
             return true;
         }
-        final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+        final Long accountId = session.userAccount().getId();
+        final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(accountId)));
         if(null == roles) {
+            log.warn(String.format("Missing roles for account %d", accountId));
             return false;
         }
         return roles.contains(role);
