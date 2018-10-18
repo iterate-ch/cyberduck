@@ -29,7 +29,7 @@ import com.sun.jna.Pointer;
 public class LibcWorkingDirectoryFinder implements WorkingDirectoryFinder {
     private static final Logger log = Logger.getLogger(LibcWorkingDirectoryFinder.class);
 
-    private static final CLibrary library = (CLibrary) Native.loadLibrary("c", CLibrary.class);
+    private static final CLibrary library = Native.load("c", CLibrary.class);
 
     @Override
     public Local find() {
