@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -46,7 +45,6 @@ import org.apache.log4j.Logger;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Set;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.CryptoException;
@@ -88,12 +86,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                     // In encrypted rooms only files can be shared
                     return false;
                 }
-                final Acl acl = containerService.getContainer(file).attributes().getAcl();
-                final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
-                if(roles != null && !roles.contains(SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE)) {
-                    return false;
-                }
-                return true;
+                return new SDSPermissionsFeature(session, nodeid).containsRole(file, SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE);
             }
             case upload: {
                 // An upload account can be created for directories and rooms only
@@ -107,12 +100,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                         }
                     }
                 }
-                final Acl acl = containerService.getContainer(file).attributes().getAcl();
-                final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
-                if(roles != null && !roles.contains(SDSPermissionsFeature.UPLOAD_SHARE_ROLE)) {
-                    return false;
-                }
-                return true;
+                return new SDSPermissionsFeature(session, nodeid).containsRole(file, SDSPermissionsFeature.UPLOAD_SHARE_ROLE);
             }
         }
         return false;
