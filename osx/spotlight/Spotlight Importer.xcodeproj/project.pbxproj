@@ -226,7 +226,7 @@
 				LIBRARY_SEARCH_PATHS = "";
 				LIBRARY_STYLE = Bundle;
 				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
+				OTHER_LDFLAGS = "-Wl,-headerpad_max_install_names";
 				OTHER_REZFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = ch.sudo.cyberduck.spotlight.importer;
 				PRODUCT_NAME = "Cyberduck Spotlight Importer";
