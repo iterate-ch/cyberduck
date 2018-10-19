@@ -20,7 +20,6 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.AlertCallbackFactory;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.pool.SessionPool;
 
 public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAction<T> {
@@ -29,22 +28,20 @@ public abstract class ControllerBackgroundAction<T> extends SessionBackgroundAct
 
     public ControllerBackgroundAction(final Controller controller,
                                       final SessionPool session) {
-        this(controller, session, controller, controller);
+        this(controller, session, controller);
+    }
+
+    public ControllerBackgroundAction(final Controller controller,
+                                      final SessionPool session,
+                                      final ProgressListener progress) {
+        this(controller, session, progress, AlertCallbackFactory.get(controller));
     }
 
     public ControllerBackgroundAction(final Controller controller,
                                       final SessionPool session,
                                       final ProgressListener progress,
-                                      final TranscriptListener transcript) {
-        this(controller, session, progress, transcript, AlertCallbackFactory.get(controller));
-    }
-
-    public ControllerBackgroundAction(final Controller controller,
-                                      final SessionPool session,
-                                      final ProgressListener progress,
-                                      final TranscriptListener transcript,
                                       final AlertCallback alert) {
-        super(session, alert, progress, transcript);
+        super(session, alert, progress);
         this.listener = controller;
     }
 

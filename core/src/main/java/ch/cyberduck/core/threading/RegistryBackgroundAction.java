@@ -36,7 +36,7 @@ public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAc
                                     final SessionPool session,
                                     final ProgressListener progress,
                                     final TranscriptListener transcript) {
-        super(controller, session, progress, transcript);
+        super(controller, session, progress);
     }
 
     public RegistryBackgroundAction(final Controller controller,
@@ -44,7 +44,7 @@ public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAc
                                     final ProgressListener progress,
                                     final TranscriptListener transcript,
                                     final AlertCallback alert) {
-        super(controller, session, progress, transcript, alert);
+        super(controller, session, progress, alert);
     }
 
     @Override

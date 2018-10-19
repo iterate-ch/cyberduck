@@ -53,8 +53,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     public SessionBackgroundAction(final SessionPool pool,
                                    final AlertCallback alert,
-                                   final ProgressListener progress,
-                                   final TranscriptListener transcript) {
+                                   final ProgressListener progress) {
         this.pool = pool;
         this.alert = alert;
         this.progressListener = progress;
@@ -146,7 +145,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public void cleanup() {
-        this.transcript.setLength(0);
+        transcript.setLength(0);
         this.message(StringUtils.EMPTY);
     }
 

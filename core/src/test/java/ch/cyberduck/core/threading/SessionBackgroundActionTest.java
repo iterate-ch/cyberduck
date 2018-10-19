@@ -46,7 +46,7 @@ public class SessionBackgroundActionTest {
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
                 new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(),
                 new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new DisabledAlertCallback() {
-        }, new DisabledProgressListener(), new DisabledTranscriptListener()) {
+        }, new DisabledProgressListener()) {
 
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
@@ -74,7 +74,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new DisabledProgressListener(), new DisabledTranscriptListener()) {
+        }, new DisabledProgressListener()) {
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
                 throw failure;
@@ -101,7 +101,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new DisabledProgressListener(), new DisabledTranscriptListener()) {
+        }, new DisabledProgressListener()) {
 
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
@@ -130,7 +130,7 @@ public class SessionBackgroundActionTest {
                 assertEquals(failure, f);
                 return false;
             }
-        }, new DisabledProgressListener(), new DisabledTranscriptListener()) {
+        }, new DisabledProgressListener()) {
             @Override
             public Void run(final Session<?> session) throws BackgroundException {
                 throw failure;
