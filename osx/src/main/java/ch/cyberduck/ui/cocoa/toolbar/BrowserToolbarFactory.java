@@ -41,8 +41,6 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
-import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
-import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
@@ -422,8 +420,6 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
 
     private final Preferences preferences
             = PreferencesFactory.get();
-
-    private final QuickLook quicklook = QuickLookFactory.get();
 
     private final BrowserController controller;
 
