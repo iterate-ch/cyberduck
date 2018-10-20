@@ -314,6 +314,9 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         // Cache sized image
         icon.setName(String.format("%d-%s", width, name));
         icon.setSize(new NSSize(width, height));
+        if(StringUtils.endsWith(name, "pdf")) {
+            icon.setTemplate(true);
+        }
         return icon;
     }
 }
