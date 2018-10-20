@@ -63,7 +63,7 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                                     return true;
                                 }
                                 catch(LoginFailureException | LoginCanceledException e) {
-                                    log.warn("Attempt to renew expired token failed");
+                                    log.warn(String.format("Attempt to renew expired token failed. %s", e.getMessage()));
                                 }
                             }
                         }
