@@ -19,4 +19,7 @@
   <files>
     <file src="tools\**" target="tools" />
   </files>
+  <dependencies>
+    <dependency id="dotnet4.7" version="4.7.2053.0" />
+  </dependencies>
 </package>
