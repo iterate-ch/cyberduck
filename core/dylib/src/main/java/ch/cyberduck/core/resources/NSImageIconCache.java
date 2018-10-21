@@ -303,6 +303,9 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     }
 
     private NSImage convert(final String name, final NSImage icon, final Integer width, final Integer height) {
+        if(StringUtils.endsWith(name, "pdf")) {
+            icon.setTemplate(true);
+        }
         if(null == width || null == height) {
             log.debug(String.format("Return default size for %s", icon.name()));
             return icon;
@@ -310,9 +313,6 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         // Cache sized image
         icon.setName(String.format("%d-%s", width, name));
         icon.setSize(new NSSize(width, height));
-        if(StringUtils.endsWith(name, "pdf")) {
-            icon.setTemplate(true);
-        }
         return icon;
     }
 }
