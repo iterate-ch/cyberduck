@@ -1948,15 +1948,11 @@ public class BrowserController extends WindowController
         this.navigationButton.setTarget(this.id());
         this.navigationButton.setAction(Foundation.selector("navigationButtonClicked:"));
         final NSSegmentedCell cell = Rococoa.cast(this.navigationButton.cell(), NSSegmentedCell.class);
-        final NSImage backward = IconCacheFactory.<NSImage>get().iconNamed("nav-backward.tiff");
-        backward.setTemplate(true);
-        this.navigationButton.setImage_forSegment(backward,
-            NavigationSegment.back.position());
+        this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-backward.tiff"), NavigationSegment.back.position());
+        this.navigationButton.imageForSegment(NavigationSegment.back.position()).setTemplate(true);
         cell.setToolTip_forSegment(LocaleFactory.localizedString("Back", "Main"), NavigationSegment.back.position());
-        final NSImage forward = IconCacheFactory.<NSImage>get().iconNamed("nav-forward.tiff");
-        forward.setTemplate(true);
-        this.navigationButton.setImage_forSegment(forward,
-            NavigationSegment.forward.position());
+        this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-forward.tiff"), NavigationSegment.forward.position());
+        this.navigationButton.imageForSegment(NavigationSegment.forward.position()).setTemplate(true);
         cell.setToolTip_forSegment(LocaleFactory.localizedString("Forward", "Main"), NavigationSegment.forward.position());
     }
 
@@ -1999,8 +1995,8 @@ public class BrowserController extends WindowController
         this.upButton = upButton;
         this.upButton.setTarget(this.id());
         this.upButton.setAction(Foundation.selector("upButtonClicked:"));
-        this.upButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-up.tiff"),
-            NavigationSegment.up.position());
+        this.upButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-up.tiff"), NavigationSegment.up.position());
+        this.upButton.imageForSegment(NavigationSegment.up.position()).setTemplate(true);
     }
 
     @Action
