@@ -1948,10 +1948,14 @@ public class BrowserController extends WindowController
         this.navigationButton.setTarget(this.id());
         this.navigationButton.setAction(Foundation.selector("navigationButtonClicked:"));
         final NSSegmentedCell cell = Rococoa.cast(this.navigationButton.cell(), NSSegmentedCell.class);
-        this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-backward.tiff"),
+        final NSImage backward = IconCacheFactory.<NSImage>get().iconNamed("nav-backward.tiff");
+        backward.setTemplate(true);
+        this.navigationButton.setImage_forSegment(backward,
             NavigationSegment.back.position());
         cell.setToolTip_forSegment(LocaleFactory.localizedString("Back", "Main"), NavigationSegment.back.position());
-        this.navigationButton.setImage_forSegment(IconCacheFactory.<NSImage>get().iconNamed("nav-forward.tiff"),
+        final NSImage forward = IconCacheFactory.<NSImage>get().iconNamed("nav-forward.tiff");
+        forward.setTemplate(true);
+        this.navigationButton.setImage_forSegment(forward,
             NavigationSegment.forward.position());
         cell.setToolTip_forSegment(LocaleFactory.localizedString("Forward", "Main"), NavigationSegment.forward.position());
     }
