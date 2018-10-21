@@ -3431,7 +3431,9 @@ public class BrowserController extends WindowController
         }
 
         public NSImage image() {
-            return IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", name()), 16);
+            final NSImage image = IconCacheFactory.<NSImage>get().iconNamed(String.format("%s.tiff", name()), 16);
+            image.setTemplate(true);
+            return image;
         }
     }
 
