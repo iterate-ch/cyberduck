@@ -33,7 +33,7 @@ import ch.cyberduck.core.cryptomator.random.RotatingNonceGenerator;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
-import ch.cyberduck.core.onedrive.OneDriveListService;
+import ch.cyberduck.core.onedrive.GraphItemListService;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
@@ -85,7 +85,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(test));
-        assertEquals(content.length, new CryptoListService(session, new OneDriveListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getSize());
+        assertEquals(content.length, new CryptoListService(session, new GraphItemListService(session), cryptomator).list(test.getParent(), new DisabledListProgressListener()).find(new SimplePathPredicate(test)).attributes().getSize());
         assertEquals(content.length, new CryptoWriteFeature<>(session, new GraphWriteFeature(session), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         assertEquals(content.length, new CryptoWriteFeature<>(session, new GraphWriteFeature(session), cryptomator).append(test, status.getLength(), PathCache.empty()).size, 0L);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);

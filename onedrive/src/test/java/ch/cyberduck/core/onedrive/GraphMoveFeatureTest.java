@@ -127,7 +127,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         new GraphTouchFeature(session).touch(temp, new TransferStatus());
         new GraphMoveFeature(session).move(temp, test, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
-        final AttributedList<Path> files = new OneDriveListService(session).list(folder, new DisabledListProgressListener());
+        final AttributedList<Path> files = new GraphItemListService(session).list(folder, new DisabledListProgressListener());
         assertEquals(1, files.size());
         assertFalse(find.find(temp));
         assertTrue(find.find(test));

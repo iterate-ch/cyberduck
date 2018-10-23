@@ -15,6 +15,7 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
@@ -34,6 +35,8 @@ import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePackageItem;
+
+import java.util.EnumSet;
 
 public class OneDriveSession extends GraphSession {
 
@@ -84,18 +87,12 @@ public class OneDriveSession extends GraphSession {
 
     @Override
     public boolean isAccessible(final Path path, final boolean container) {
-        if(path.isRoot()) {
-            return false;
-        }
-        if(!container && path.getParent().isRoot()) {
-            return false;
-        }
         return true;
     }
 
     @Override
     public Path getContainer(final Path path) {
-        return new PathContainerService().getContainer(path);
+        return new Path("/", EnumSet.of(Path.Type.placeholder));
     }
 
     @Override

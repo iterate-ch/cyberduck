@@ -44,7 +44,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
 
     @Test
     public void testListDrives() throws Exception {
-        final AttributedList<Path> list = new OneDriveListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new GraphItemListService(session).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
@@ -57,7 +57,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session).touch(file, new TransferStatus());
         assertNotNull(new GraphAttributesFinderFeature(session).find(file));
-        final OneDriveListService listService = new OneDriveListService(session);
+        final GraphItemListService listService = new GraphItemListService(session);
         final Path drive = new DefaultHomeFinderService(session).find();
         final AttributedList<Path> list = listService.list(drive, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
@@ -78,7 +78,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
     public void testWhitespacedChild() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final Path target = new GraphDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null, null);
-        final AttributedList<Path> list = new OneDriveListService(session).list(target, new DisabledListProgressListener());
+        final AttributedList<Path> list = new GraphItemListService(session).list(target, new DisabledListProgressListener());
         new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

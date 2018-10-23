@@ -84,7 +84,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         new GraphTouchFeature(session).touch(copy, new TransferStatus());
         new GraphCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
-        final AttributedList<Path> files = new OneDriveListService(session).list(folder, new DisabledListProgressListener());
+        final AttributedList<Path> files = new GraphItemListService(session).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
         new GraphDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());

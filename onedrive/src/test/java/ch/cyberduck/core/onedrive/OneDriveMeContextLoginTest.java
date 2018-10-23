@@ -80,6 +80,5 @@ public class OneDriveMeContextLoginTest {
     public void testLogin() throws Exception {
         final Path home = new DefaultHomeFinderService(session).find();
         assertTrue(home.isRoot());
-        assertNull(session.getContainer(home));
     }
 }
