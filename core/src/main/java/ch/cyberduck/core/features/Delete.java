@@ -24,7 +24,10 @@ import java.util.List;
 public interface Delete {
     void delete(List<Path> files, PasswordCallback prompt, Callback callback) throws BackgroundException;
 
-    boolean isSupported(final Path file);
+    default boolean isSupported(final Path file) {
+        return file.attributes().getPermission().isWritable();
+    }
+
     boolean isRecursive();
 
     interface Callback {

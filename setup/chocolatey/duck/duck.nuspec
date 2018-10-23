@@ -15,6 +15,9 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <iconUrl>https://cdn.cyberduck.io/img/cyberduck-icon-384.png</iconUrl>
     <releaseNotes></releaseNotes>
+    <dependencies>
+      <dependency id="dotnet4.5" version="4.5.20120822" />
+    </dependencies>
   </metadata>
   <files>
     <file src="tools\**" target="tools" />

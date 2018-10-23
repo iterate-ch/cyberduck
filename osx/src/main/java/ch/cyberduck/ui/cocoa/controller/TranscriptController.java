@@ -34,21 +34,23 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public abstract class TranscriptController extends BundleController implements TranscriptListener {
 
     public static final NSDictionary FIXED_WITH_FONT_RESPONSE_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(
-                    NSFont.userFixedPitchFontOfSize(9.0f),
-                    NSColor.systemGrayColor()),
-            NSArray.arrayWithObjects(
-                    NSAttributedString.FontAttributeName,
-                    NSAttributedString.ForegroundColorAttributeName
-            )
+        NSArray.arrayWithObjects(
+            NSFont.userFixedPitchFontOfSize(9.0f),
+            NSColor.disabledControlTextColor()),
+        NSArray.arrayWithObjects(
+            NSAttributedString.FontAttributeName,
+            NSAttributedString.ForegroundColorAttributeName
+        )
     );
     protected static final NSDictionary FIXED_WITH_FONT_REQUEST_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-            NSArray.arrayWithObjects(
-                    NSFont.userFixedPitchFontOfSize(9.0f)
-            ),
-            NSArray.arrayWithObjects(
-                    NSAttributedString.FontAttributeName
-            )
+        NSArray.arrayWithObjects(
+            NSFont.userFixedPitchFontOfSize(9.0f),
+            NSColor.controlTextColor()
+        ),
+        NSArray.arrayWithObjects(
+            NSAttributedString.FontAttributeName,
+            NSAttributedString.ForegroundColorAttributeName
+        )
     );
     @Outlet
     private NSView logView;
@@ -99,7 +101,7 @@ public abstract class TranscriptController extends BundleController implements T
 
     private void write(final NSDictionary font, final String transcript) {
         logTextView.textStorage().appendAttributedString(
-                NSAttributedString.attributedStringWithAttributes(transcript + "\n", font)
+            NSAttributedString.attributedStringWithAttributes(transcript + "\n", font)
         );
         logTextView.scrollRangeToVisible(NSRange.NSMakeRange(logTextView.textStorage().length(), new NSUInteger(0)));
     }

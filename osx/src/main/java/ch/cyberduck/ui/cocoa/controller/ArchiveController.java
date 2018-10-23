@@ -44,7 +44,7 @@ public class ArchiveController extends ProxyController {
                     @Override
                     public Boolean run(final Session<?> session) throws BackgroundException {
                         final Compress feature = session.getFeature(Compress.class);
-                        feature.archive(format, parent.workdir(), selected, this, parent);
+                        feature.archive(format, parent.workdir(), selected, parent, parent);
                         return true;
                     }
 
@@ -79,7 +79,7 @@ public class ArchiveController extends ProxyController {
                         @Override
                         public Boolean run(final Session<?> session) throws BackgroundException {
                             final Compress feature = session.getFeature(Compress.class);
-                            feature.unarchive(archive, s, this, parent);
+                            feature.unarchive(archive, s, parent, parent);
                             return true;
                         }
 

@@ -96,11 +96,6 @@ public class CryptoBulkFeatureTest {
             }
 
             @Override
-            public boolean isSupported(final Path file) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
             public boolean isRecursive() {
                 throw new UnsupportedOperationException();
             }
@@ -174,11 +169,6 @@ public class CryptoBulkFeatureTest {
         }, new Delete() {
             @Override
             public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            public boolean isSupported(final Path file) {
                 throw new UnsupportedOperationException();
             }
 

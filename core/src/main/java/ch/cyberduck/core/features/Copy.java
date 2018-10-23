@@ -43,7 +43,9 @@ public interface Copy {
      * @param target Target file or folder
      * @return False if not supported for given files
      */
-    boolean isSupported(Path source, Path target);
+    default boolean isSupported(Path source, Path target) {
+        return true;
+    }
 
     /**
      * @param session Target session for stateful protocols

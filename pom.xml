@@ -241,7 +241,7 @@
             <dependency>
                 <groupId>com.google.oauth-client</groupId>
                 <artifactId>google-oauth-client</artifactId>
-                <version>1.25.0</version>
+                <version>1.26.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.google.http-client</groupId>
@@ -262,7 +262,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.430</version>
+                <version>1.11.431</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

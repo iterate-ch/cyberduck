@@ -72,7 +72,7 @@
 	static NSDictionary *SMALL_FONT_ATTRIBUTES = nil;
 	if(nil == SMALL_FONT_ATTRIBUTES) {
 		SMALL_FONT_ATTRIBUTES = [[NSDictionary alloc] initWithObjects:
-								 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], [NSColor systemGrayColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
+								 [NSArray arrayWithObjects:[NSFont systemFontOfSize:[NSFont labelFontSize]], [NSColor controlTextColor], PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_TAIL, nil]
 															forKeys: [NSArray arrayWithObjects:NSFontAttributeName, NSForegroundColorAttributeName, NSParagraphStyleAttributeName, nil] //keys
 								 ];
 	}

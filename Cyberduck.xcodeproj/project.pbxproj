@@ -3786,7 +3786,6 @@
 					"\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks\"",
 				);
 				MACH_O_TYPE = mh_dylib;
-				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = libcore;
 			};
 			name = Release;
@@ -3826,7 +3825,6 @@
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = sh.duck;
 				PRODUCT_MODULE_NAME = duck;
 				PRODUCT_NAME = duck;
@@ -3850,6 +3848,10 @@
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = setup/app/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Sparkle,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = ch.sudo.cyberduck;
 				PRODUCT_NAME = Cyberduck;
 				WRAPPER_EXTENSION = app;
@@ -3886,10 +3888,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Sparkle,
-				);
 				SDKROOT = macosx;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
