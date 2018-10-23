@@ -46,38 +46,38 @@ public class OneDriveSession extends GraphSession {
      */
     @Override
     public OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
+        if(currentPath.isRoot()) {
+            return OneDriveDrive.getDefaultDrive(getClient()).getRoot();
+        }
+
         final String versionId = fileIdProvider.getFileid(currentPath, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", currentPath.getAbsolute()));
         }
         final String[] idParts = versionId.split(String.valueOf(Path.DELIMITER));
-        if(idParts.length == 1) {
-            return new OneDriveDrive(getClient(), idParts[0]).getRoot();
+
+        final String driveId;
+        final String itemId;
+        if(idParts.length == 2 || !resolveLastItem) {
+            driveId = idParts[0];
+            itemId = idParts[1];
+        }
+        else if(idParts.length == 4) {
+            driveId = idParts[2];
+            itemId = idParts[3];
         }
         else {
-            final String driveId;
-            final String itemId;
-            if(idParts.length == 2 || !resolveLastItem) {
-                driveId = idParts[0];
-                itemId = idParts[1];
-            }
-            else if(idParts.length == 4) {
-                driveId = idParts[2];
-                itemId = idParts[3];
-            }
-            else {
-                throw new NotfoundException(currentPath.getAbsolute());
-            }
-            final OneDriveDrive drive = new OneDriveDrive(getClient(), driveId);
-            if(currentPath.getType().contains(Path.Type.file)) {
-                return new OneDriveFile(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
-            }
-            else if(currentPath.getType().contains(Path.Type.directory)) {
-                return new OneDriveFolder(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
-            }
-            else if(currentPath.getType().contains(Path.Type.placeholder)) {
-                return new OneDrivePackageItem(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
-            }
+            throw new NotfoundException(currentPath.getAbsolute());
+        }
+        final OneDriveDrive drive = new OneDriveDrive(getClient(), driveId);
+        if(currentPath.getType().contains(Path.Type.file)) {
+            return new OneDriveFile(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
+        }
+        else if(currentPath.getType().contains(Path.Type.directory)) {
+            return new OneDriveFolder(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
+        }
+        else if(currentPath.getType().contains(Path.Type.placeholder)) {
+            return new OneDrivePackageItem(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
         }
         throw new NotfoundException(currentPath.getAbsolute());
     }
@@ -102,7 +102,7 @@ public class OneDriveSession extends GraphSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new OneDriveListService(this);
+            return (T) new GraphItemListService(this);
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();
