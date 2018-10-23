@@ -47,6 +47,7 @@ import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -509,6 +510,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     button.setFocusRingType(NSView.NSFocusRingType.NSFocusRingTypeNone.ordinal());
                     button.setNumberOfVisibleItems(bookmarks.size() > 10 ? new NSInteger(10) : new NSInteger(bookmarks.size()));
                     item.setView(button);
+                    item.setMaxSize(new NSSize(button.frame().size.width.doubleValue(), button.frame().size.height.doubleValue()));
                     return item;
                 }
                 case encoding: {
