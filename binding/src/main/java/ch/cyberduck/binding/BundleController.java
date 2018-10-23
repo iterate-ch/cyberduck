@@ -15,7 +15,6 @@ package ch.cyberduck.binding;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSMutableParagraphStyle;
 import ch.cyberduck.binding.application.NSParagraphStyle;
@@ -76,11 +75,9 @@ public abstract class BundleController extends ProxyController {
     );
 
     public static final NSDictionary MENU_HELP_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-        NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()),
-            NSColor.controlTextColor(),
+        NSArray.arrayWithObjects(NSFont.menuFontOfSize(NSFont.smallSystemFontSize()),
             PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
         NSArray.arrayWithObjects(NSAttributedString.FontAttributeName,
-            NSAttributedString.ForegroundColorAttributeName,
             NSAttributedString.ParagraphStyleAttributeName)
     );
 
