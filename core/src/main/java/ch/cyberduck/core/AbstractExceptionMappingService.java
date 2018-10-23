@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.ResolveFailedException;
@@ -50,15 +51,15 @@ public abstract class AbstractExceptionMappingService<T extends Throwable> imple
         final BackgroundException exception = this.map(failure);
         final StringBuilder m = new StringBuilder();
         final String formatted = MessageFormat.format(StringUtils.chomp(
-                LocaleFactory.localizedString(message, "Error")), file.getName());
+            LocaleFactory.localizedString(message, "Error")), file.getName());
         if(StringUtils.contains(formatted, String.format("%s ", file.getName()))
-                || StringUtils.contains(formatted, String.format(" %s", file.getName()))) {
+            || StringUtils.contains(formatted, String.format(" %s", file.getName()))) {
             this.append(m, formatted);
         }
         else {
             this.append(m, String.format("%s (%s)",
-                    MessageFormat.format(StringUtils.chomp(LocaleFactory.localizedString(message, "Error")), file.getName()),
-                    file.getAbsolute()));
+                MessageFormat.format(StringUtils.chomp(LocaleFactory.localizedString(message, "Error")), file.getName()),
+                file.getAbsolute()));
         }
         exception.setMessage(m.toString());
         exception.setFile(file);
@@ -107,6 +108,9 @@ public abstract class AbstractExceptionMappingService<T extends Throwable> imple
             }
             if(cause instanceof NoHttpResponseException) {
                 return new ConnectionRefusedException(buffer.toString(), failure);
+            }
+            if(cause instanceof InterruptedException) {
+                return new ConnectionCanceledException(buffer.toString(), failure);
             }
         }
         return new BackgroundException(title, buffer.toString(), failure);
