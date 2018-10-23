@@ -20,7 +20,7 @@ import ch.cyberduck.core.Controller;
 import java.util.concurrent.Future;
 
 public interface BackgroundExecutor {
-    <T> Future<T> execute(final Controller controller, BackgroundActionRegistry registry, BackgroundAction<T> action);
+    <T> Future<T> execute(Controller controller, BackgroundActionRegistry registry, BackgroundAction<T> action);
 
     /**
      * Close thread pool
