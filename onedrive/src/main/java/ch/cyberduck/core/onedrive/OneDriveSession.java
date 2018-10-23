@@ -15,12 +15,10 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -52,13 +50,11 @@ public class OneDriveSession extends GraphSession {
         if(currentPath.isRoot()) {
             return OneDriveDrive.getDefaultDrive(getClient()).getRoot();
         }
-
         final String versionId = fileIdProvider.getFileid(currentPath, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
             throw new NotfoundException(String.format("Version ID for %s is empty", currentPath.getAbsolute()));
         }
         final String[] idParts = versionId.split(String.valueOf(Path.DELIMITER));
-
         final String driveId;
         final String itemId;
         if(idParts.length == 2 || !resolveLastItem) {
@@ -92,7 +88,7 @@ public class OneDriveSession extends GraphSession {
 
     @Override
     public Path getContainer(final Path path) {
-        return new Path("/", EnumSet.of(Path.Type.placeholder));
+        return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
     }
 
     @Override
