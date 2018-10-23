@@ -20,6 +20,8 @@ import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.SheetController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSButton;
+import ch.cyberduck.binding.application.NSColor;
+import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSImageView;
 import ch.cyberduck.binding.application.NSLayoutManager;
@@ -27,7 +29,9 @@ import ch.cyberduck.binding.application.NSProgressIndicator;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSTextView;
 import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.core.Session;
@@ -44,6 +48,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 public class CommandController extends SheetController implements TranscriptListener, NSLayoutManager.Delegate {
+
+    private static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+        NSArray.arrayWithObjects(
+            NSFont.userFixedPitchFontOfSize(9.0f),
+            NSColor.controlTextColor()
+        ),
+        NSArray.arrayWithObjects(
+            NSAttributedString.FontAttributeName,
+            NSAttributedString.ForegroundColorAttributeName)
+    );
 
     @Outlet
     private NSTextField inputField;
@@ -98,7 +112,7 @@ public class CommandController extends SheetController implements TranscriptList
                                                                       boolean finished) {
         if(finished && this.responseField.window().isVisible()) {
             this.responseField.scrollRangeToVisible(
-                    NSRange.NSMakeRange(this.responseField.textStorage().length(), new NSUInteger(0))
+                NSRange.NSMakeRange(this.responseField.textStorage().length(), new NSUInteger(0))
             );
         }
     }
@@ -148,8 +162,8 @@ public class CommandController extends SheetController implements TranscriptList
             @Override
             public void run() {
                 responseField.textStorage().replaceCharactersInRange_withAttributedString(
-                        NSRange.NSMakeRange(responseField.textStorage().length(), new NSUInteger(0)),
-                        NSAttributedString.attributedStringWithAttributes(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
+                    NSRange.NSMakeRange(responseField.textStorage().length(), new NSUInteger(0)),
+                    NSAttributedString.attributedStringWithAttributes(message + "\n", FIXED_WITH_FONT_ATTRIBUTES));
             }
         });
     }

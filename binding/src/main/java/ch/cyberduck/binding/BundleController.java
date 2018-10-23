@@ -69,11 +69,6 @@ public abstract class BundleController extends ProxyController {
         NSArray.arrayWithObject(NSAttributedString.ParagraphStyleAttributeName)
     );
 
-    public static final NSDictionary FIXED_WITH_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-        NSArray.arrayWithObject(NSFont.userFixedPitchFontOfSize(9.0f)),
-        NSArray.arrayWithObject(NSAttributedString.FontAttributeName)
-    );
-
     public static final NSDictionary MENU_HELP_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
         NSArray.arrayWithObjects(NSFont.menuFontOfSize(NSFont.smallSystemFontSize()),
             PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE),
