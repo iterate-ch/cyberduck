@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
 import ch.cyberduck.core.features.Timestamp;
@@ -47,6 +48,7 @@ import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.GraphMoveFeature;
+import ch.cyberduck.core.onedrive.features.GraphQuotaFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphSearchFeature;
 import ch.cyberduck.core.onedrive.features.GraphTimestampFeature;
@@ -230,6 +232,9 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         }
         if(type == Timestamp.class) {
             return (T) new GraphTimestampFeature(this);
+        }
+        if (type == Quota.class) {
+            return (T) new GraphQuotaFeature(this);
         }
         return super._getFeature(type);
     }

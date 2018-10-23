@@ -23,11 +23,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.PromptUrlProvider;
-import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveQuotaFeature;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -113,12 +109,6 @@ public class OneDriveSession extends GraphSession {
         }
         if(type == PromptUrlProvider.class) {
             return (T) new OneDriveSharingLinkUrlProvider(this);
-        }
-        if(type == Home.class) {
-            return (T) new OneDriveHomeFinderFeature(this);
-        }
-        if(type == Quota.class) {
-            return (T) new OneDriveQuotaFeature(this);
         }
         return super._getFeature(type);
     }

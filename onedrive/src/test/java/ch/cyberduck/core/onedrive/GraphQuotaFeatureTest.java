@@ -17,7 +17,7 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.onedrive.features.OneDriveQuotaFeature;
+import ch.cyberduck.core.onedrive.features.GraphQuotaFeature;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -26,11 +26,11 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class OneDriveQuotaFeatureTest extends AbstractOneDriveTest {
+public class GraphQuotaFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testQuotaSimple() throws BackgroundException {
-        final Quota quota = new OneDriveQuotaFeature(session);
+        final Quota quota = new GraphQuotaFeature(session);
         Quota.Space space = quota.get();
         assertTrue(space.available > 0);
         assertTrue(space.used >= 0);
