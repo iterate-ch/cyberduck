@@ -22,6 +22,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -29,6 +30,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
+@Ignore // DrivesListService won't work.
 @Category(IntegrationTest.class)
 public class OneDriveContainerListServiceTest extends AbstractOneDriveTest {
 

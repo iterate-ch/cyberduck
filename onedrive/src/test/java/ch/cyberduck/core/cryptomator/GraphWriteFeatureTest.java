@@ -38,7 +38,7 @@ import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphFindFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -68,7 +68,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);
         status.setLength(content.length);
-        final Path home = new OneDriveHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);

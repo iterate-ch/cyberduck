@@ -37,11 +37,11 @@ import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
@@ -72,7 +72,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveSameFolderCryptomator() throws Exception {
-        final Path home = new OneDriveHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -96,7 +96,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveToDifferentFolderCryptomator() throws Exception {
-        final Path home = new OneDriveHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -118,7 +118,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveToDifferentFolderLongFilenameCryptomator() throws Exception {
-        final Path home = new OneDriveHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory));
@@ -140,7 +140,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveFolder() throws Exception {
-        final Path home = new OneDriveHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -169,7 +169,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveFileIntoVault() throws Exception {
-        final Path home = new OneDriveHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session)), new GraphAttributesFinderFeature(session)).touch(clearFile, new TransferStatus());
@@ -193,7 +193,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveDirectoryIntoVault() throws Exception {
-        final Path home = new OneDriveHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFile = new Path(clearFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -221,7 +221,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveFileOutsideVault() throws Exception {
-        final Path home = new OneDriveHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphDirectoryFeature(session).mkdir(clearFolder, null, new TransferStatus());
@@ -250,7 +250,7 @@ public class MoveWorkerTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveDirectoryOutsideVault() throws Exception {
-        final Path home = new OneDriveHomeFinderFeature(session).find();
+        final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

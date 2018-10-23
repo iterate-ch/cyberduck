@@ -12,7 +12,7 @@ import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -49,16 +49,16 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
         for(Path f : list) {
             assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), f.getParent());
         }
-        assertTrue(list.contains(new OneDriveHomeFinderFeature(session).find()));
+        // assertTrue(list.contains(new DefaultHomeFinderService(session).find())); // ignore. This won't work as Home is `/`
     }
 
     @Test
     public void testListDriveChildren() throws Exception {
-        final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session).touch(file, new TransferStatus());
         assertNotNull(new GraphAttributesFinderFeature(session).find(file));
         final OneDriveListService listService = new OneDriveListService(session);
-        final Path drive = new OneDriveHomeFinderFeature(session).find();
+        final Path drive = new DefaultHomeFinderService(session).find();
         final AttributedList<Path> list = listService.list(drive, new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         for(Path f : list) {
@@ -77,7 +77,7 @@ public class OneDriveListServiceTest extends AbstractOneDriveTest {
     @Test
     public void testWhitespacedChild() throws Exception {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
-        final Path target = new GraphDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderFeature(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null, null);
+        final Path target = new GraphDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), String.format("%s %s", randomStringService.random(), randomStringService.random()), EnumSet.of(Path.Type.directory)), null, null);
         final AttributedList<Path> list = new OneDriveListService(session).list(target, new DisabledListProgressListener());
         new GraphDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

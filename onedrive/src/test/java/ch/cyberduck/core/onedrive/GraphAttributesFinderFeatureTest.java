@@ -24,8 +24,8 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -44,12 +44,12 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        new GraphAttributesFinderFeature(session).find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
+        new GraphAttributesFinderFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
     public void testFindFile() throws Exception {
-        final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GraphTouchFeature(session).touch(file, new TransferStatus().withMime("x-application/cyberduck"));
         final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);
@@ -64,7 +64,7 @@ public class GraphAttributesFinderFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testFindDirectory() throws Exception {
-        final Path file = new Path(new OneDriveHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path file = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphDirectoryFeature(session).mkdir(file, null, new TransferStatus());
         final PathAttributes attributes = new GraphAttributesFinderFeature(session).find(file);
         assertNotNull(attributes);

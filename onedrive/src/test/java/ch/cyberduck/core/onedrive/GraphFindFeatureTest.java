@@ -17,7 +17,7 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.onedrive.features.GraphFindFeature;
-import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class GraphFindFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testFindFileNotFound() throws Exception {
         final GraphFindFeature f = new GraphFindFeature(session);
-        assertFalse(f.find(new Path(new OneDriveHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        assertFalse(f.find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
     }
 
     @Test
