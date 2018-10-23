@@ -15,6 +15,7 @@ package ch.cyberduck.core.ftp;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
@@ -23,5 +24,10 @@ public class FTPTouchFeature extends DefaultTouchFeature<Integer> {
 
     public FTPTouchFeature(final FTPSession session) {
         super(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)), new DefaultAttributesFinderFeature(session));
+    }
+
+    @Override
+    public boolean isSupported(final Path workdir) {
+        return true;
     }
 }

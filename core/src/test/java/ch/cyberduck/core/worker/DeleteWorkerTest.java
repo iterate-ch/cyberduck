@@ -43,11 +43,6 @@ public class DeleteWorkerTest {
                         }
 
                         @Override
-                        public boolean isSupported(final Path file) {
-                            return true;
-                        }
-
-                        @Override
                         public boolean isRecursive() {
                             return false;
                         }
@@ -90,11 +85,6 @@ public class DeleteWorkerTest {
                         @Override
                         public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
                             assertEquals(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink)), files.get(0));
-                        }
-
-                        @Override
-                        public boolean isSupported(final Path file) {
-                            return true;
                         }
 
                         @Override

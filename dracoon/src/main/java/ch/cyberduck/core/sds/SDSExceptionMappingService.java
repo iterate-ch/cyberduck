@@ -87,6 +87,12 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                             }
                         }
                         switch(failure.getCode()) {
+                            case HttpStatus.SC_BAD_REQUEST:
+                                switch(errorCode) {
+                                    case -10100:
+                                        // [-10100] Invalid authentication method
+                                        return new AccessDeniedException(buffer.toString(), failure);
+                                }
                             case HttpStatus.SC_NOT_FOUND:
                                 switch(errorCode) {
                                     case -70501:

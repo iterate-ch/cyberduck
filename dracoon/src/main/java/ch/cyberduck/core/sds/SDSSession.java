@@ -172,6 +172,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             // Precondition: Right "Config Read" required.
             log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e).getDetail()));
         }
+        try {
+            userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null)));
+            keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
+        }
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map(e);
+        }
     }
 
     private String login(final LoginCallback controller, final LoginRequest request) throws BackgroundException {
@@ -194,25 +201,25 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
     }
 
-    public UserAccountWrapper userAccount() throws BackgroundException {
+    public UserAccountWrapper userAccount() {
         if(this.userAccount.get() == null) {
             try {
                 userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null)));
             }
             catch(ApiException e) {
-                throw new SDSExceptionMappingService().map(e);
+                log.warn(String.format("Failure updating user info. %s", e.getMessage()));
             }
         }
         return this.userAccount.get();
     }
 
-    public UserKeyPairContainer keyPair() throws BackgroundException {
+    public UserKeyPairContainer keyPair() {
         if(this.keyPair.get() == null) {
             try {
                 keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
             }
             catch(ApiException e) {
-                throw new SDSExceptionMappingService().map(e);
+                log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
             }
         }
         return this.keyPair.get();

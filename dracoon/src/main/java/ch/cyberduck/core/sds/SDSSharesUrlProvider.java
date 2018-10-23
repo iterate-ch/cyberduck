@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -46,7 +45,6 @@ import org.apache.log4j.Logger;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Set;
 
 import com.dracoon.sdk.crypto.Crypto;
 import com.dracoon.sdk.crypto.CryptoException;
@@ -76,7 +74,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
         }
         final List<KeyValueEntry> configuration = session.configuration();
         switch(type) {
-            case download:
+            case download: {
                 for(KeyValueEntry entry : configuration) {
                     if("manageDownloadShare".equals(entry.getKey())) {
                         if("false".equalsIgnoreCase(entry.getValue())) {
@@ -88,8 +86,9 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                     // In encrypted rooms only files can be shared
                     return false;
                 }
-                return true;
-            case upload:
+                return new SDSPermissionsFeature(session, nodeid).containsRole(file, SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE);
+            }
+            case upload: {
                 // An upload account can be created for directories and rooms only
                 if(!file.isDirectory()) {
                     return false;
@@ -101,7 +100,8 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                         }
                     }
                 }
-                return true;
+                return new SDSPermissionsFeature(session, nodeid).containsRole(file, SDSPermissionsFeature.UPLOAD_SHARE_ROLE);
+            }
         }
         return false;
     }
@@ -110,10 +110,6 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     public DescriptiveUrl toDownloadUrl(final Path file, final CreateDownloadShareRequest options,
                                         final PasswordCallback callback) throws BackgroundException {
         try {
-            final Set<Acl.Role> roles = new SDSPermissionsFeature(session, nodeid).getPermission(containerService.getContainer(file)).get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
-            if(roles != null && !roles.contains(SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE)) {
-                return DescriptiveUrl.EMPTY;
-            }
             final Long fileid = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
             if(nodeid.isEncrypted(file)) {
                 // get existing file key associated with the sharing user
@@ -140,7 +136,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
             }
             else {
-                final Long expiry = share.getExpireAt().getMillis();
+                final long expiry = share.getExpireAt().getMillis();
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")) + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                     UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
                 );
@@ -164,10 +160,6 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
-            final Set<Acl.Role> roles = new SDSPermissionsFeature(session, nodeid).getPermission(containerService.getContainer(file)).get(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
-            if(roles != null && !roles.contains(SDSPermissionsFeature.UPLOAD_SHARE_ROLE)) {
-                return DescriptiveUrl.EMPTY;
-            }
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(
                 options.targetId(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()))), StringUtils.EMPTY, null);
             final String help;
@@ -175,7 +167,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"));
             }
             else {
-                final Long expiry = share.getExpireAt().getMillis();
+                final long expiry = share.getExpireAt().getMillis();
                 help = MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")) + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                     UserDateFormatterFactory.get().getShortFormat(expiry * 1000)
                 );
