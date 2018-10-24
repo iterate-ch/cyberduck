@@ -84,7 +84,15 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     }
 
     private Permission toPermission(final Node node) {
-        final Permission permission = new Permission(Permission.Action.read, Permission.Action.none, Permission.Action.none);
+        final Permission permission = new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none);
+        if(node.getIsEncrypted()) {
+            if(null != session.keyPair()) {
+                permission.setUser(permission.getUser().or(Permission.Action.read));
+            }
+        }
+        else {
+            permission.setUser(permission.getUser().or(Permission.Action.read));
+        }
         switch(node.getType()) {
             case ROOM:
             case FOLDER:
@@ -96,7 +104,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         return permission;
     }
 
-    private Acl toAcl(final Node node) throws BackgroundException {
+    private Acl toAcl(final Node node) {
         final Acl acl = new Acl();
         final Acl.User user = new Acl.CanonicalUser(String.valueOf(session.userAccount().getId()));
         if(node.getPermissions().getManage()) {
