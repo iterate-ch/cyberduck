@@ -27,6 +27,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
@@ -34,16 +35,17 @@ import org.nuxeo.onedrive.client.OneDriveItem;
 import org.nuxeo.onedrive.client.OneDrivePackageItem;
 
 public class SharepointSession extends GraphSession {
+    private static final Logger log = Logger.getLogger(SharepointSession.class);
 
     public SharepointSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
-    public OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
-        final String versionId = fileIdProvider.getFileid(currentPath, new DisabledListProgressListener());
+    public OneDriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
+        final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
-            throw new NotfoundException(String.format("Version ID for %s is empty", currentPath.getAbsolute()));
+            throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
         final String[] idParts = versionId.split(String.valueOf(Path.DELIMITER));
         if(idParts.length == 1) {
@@ -61,64 +63,62 @@ public class SharepointSession extends GraphSession {
                 itemId = idParts[3];
             }
             else {
-                throw new NotfoundException(currentPath.getAbsolute());
+                throw new NotfoundException(file.getAbsolute());
             }
             final OneDriveDrive drive = new OneDriveDrive(getClient(), driveId);
-            if(currentPath.getType().contains(Path.Type.file)) {
+            if(file.getType().contains(Path.Type.file)) {
                 return new OneDriveFile(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
             }
-            else if(currentPath.getType().contains(Path.Type.directory)) {
+            else if(file.getType().contains(Path.Type.directory)) {
                 return new OneDriveFolder(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
             }
-            else if(currentPath.getType().contains(Path.Type.placeholder)) {
+            else if(file.getType().contains(Path.Type.placeholder)) {
                 return new OneDrivePackageItem(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
             }
         }
-        throw new NotfoundException(currentPath.getAbsolute());
+        throw new NotfoundException(file.getAbsolute());
     }
 
     @Override
-    public boolean isAccessible(final Path path, final boolean container) {
-        if(path.isRoot()) {
+    public boolean isAccessible(final Path file, final boolean container) {
+        if(file.isRoot()) {
             return false;
         }
-        if(path.isChild(SharepointListService.DEFAULT_NAME)) {
+        if(file.isChild(SharepointListService.DEFAULT_NAME)) {
             // handles /Default_Name
-            if(SharepointListService.DEFAULT_NAME.equals(path)) {
+            if(SharepointListService.DEFAULT_NAME.equals(file)) {
                 return false;
             }
             // handles /Default_Name/Drive-ID
-            if(!container && SharepointListService.DEFAULT_NAME.equals(path.getParent())) {
+            if(!container && SharepointListService.DEFAULT_NAME.equals(file.getParent())) {
                 return false;
             }
         }
-        else if(path.isChild(SharepointListService.GROUPS_NAME)) {
+        else if(file.isChild(SharepointListService.GROUPS_NAME)) {
             // Handles /Groups_Name and /Groups_Name/Group
-            if(SharepointListService.GROUPS_NAME.equals(path) || SharepointListService.GROUPS_NAME.equals(path.getParent())) {
+            if(SharepointListService.GROUPS_NAME.equals(file) || SharepointListService.GROUPS_NAME.equals(file.getParent())) {
                 return false;
             }
             // handles /Groups_Name/Group/Drive-ID
-            if(!container && SharepointListService.GROUPS_NAME.equals(path.getParent().getParent())) {
+            if(!container && SharepointListService.GROUPS_NAME.equals(file.getParent().getParent())) {
                 return false;
             }
         }
         else {
-            // Path is neither in /Default nor in /Groups
+            log.warn(String.format("File %s is neither in %s nor in %s", file, SharepointListService.DEFAULT_NAME, SharepointListService.GROUPS_NAME));
             // This should never happen.
-
             return false;
         }
-
         return true;
     }
 
     @Override
-    public Path getContainer(final Path path) {
-        if(path.isRoot()) {
-            return path;
+    public Path getContainer(final Path file) {
+        if(file.isRoot()) {
+            return file;
         }
-        Path previous = path;
-        Path parent = path.getParent();
+        Path previous = file;
+        Path parent = file.getParent();
         while(!parent.isRoot()) {
             if(SharepointListService.DEFAULT_NAME.equals(parent.getParent())) {
                 return parent;
@@ -129,7 +129,7 @@ public class SharepointSession extends GraphSession {
             previous = parent;
             parent = parent.getParent();
         }
-        return path;
+        return file;
     }
 
     @Override

@@ -46,13 +46,13 @@ public class OneDriveSession extends GraphSession {
      * Resolves given path to OneDriveItem
      */
     @Override
-    public OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
-        if(currentPath.isRoot()) {
+    public OneDriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
+        if(file.isRoot()) {
             return OneDriveDrive.getDefaultDrive(getClient()).getRoot();
         }
-        final String versionId = fileIdProvider.getFileid(currentPath, new DisabledListProgressListener());
+        final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
         if(StringUtils.isEmpty(versionId)) {
-            throw new NotfoundException(String.format("Version ID for %s is empty", currentPath.getAbsolute()));
+            throw new NotfoundException(String.format("Version ID for %s is empty", file.getAbsolute()));
         }
         final String[] idParts = versionId.split(String.valueOf(Path.DELIMITER));
         final String driveId;
@@ -66,28 +66,28 @@ public class OneDriveSession extends GraphSession {
             itemId = idParts[3];
         }
         else {
-            throw new NotfoundException(currentPath.getAbsolute());
+            throw new NotfoundException(file.getAbsolute());
         }
         final OneDriveDrive drive = new OneDriveDrive(getClient(), driveId);
-        if(currentPath.getType().contains(Path.Type.file)) {
+        if(file.getType().contains(Path.Type.file)) {
             return new OneDriveFile(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
         }
-        else if(currentPath.getType().contains(Path.Type.directory)) {
+        else if(file.getType().contains(Path.Type.directory)) {
             return new OneDriveFolder(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
         }
-        else if(currentPath.getType().contains(Path.Type.placeholder)) {
+        else if(file.getType().contains(Path.Type.placeholder)) {
             return new OneDrivePackageItem(getClient(), drive, itemId, OneDriveItem.ItemIdentifierType.Id);
         }
-        throw new NotfoundException(currentPath.getAbsolute());
+        throw new NotfoundException(file.getAbsolute());
     }
 
     @Override
-    public boolean isAccessible(final Path path, final boolean container) {
+    public boolean isAccessible(final Path file, final boolean container) {
         return true;
     }
 
     @Override
-    public Path getContainer(final Path path) {
+    public Path getContainer(final Path file) {
         return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory, Path.Type.placeholder));
     }
 
