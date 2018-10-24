@@ -44,7 +44,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 owner: IntPtr.Zero,
                 allowDialogCancellation: true,
                 title: Localize("Please Donate") + " (" + uses + ")",
-                verificationText: PreferencesFactory.getBoolean("donate.reminder.supress.enable") ? Localize("Don't show again for this version") : null,
+                verificationText: PreferencesFactory.get().getBoolean("donate.reminder.supress.enable") ? Localize("Don't show again for this version") : null,
                 mainInstruction: Localize("Thank you for using Cyberduck!"),
                 content: $@"{Localize("This is free software, but it still costs money to write, support, and distribute it. If you enjoy using it, please consider a donation to the authors of this software. It will help to make Cyberduck even better!")} {Localize("As a contributor to Cyberduck, you receive a registration key that disables this prompt.")}",
                 commandLinks: new[] { Localize("Donate"), Localize("Later"), Localize("Buy in Windows Store") },
