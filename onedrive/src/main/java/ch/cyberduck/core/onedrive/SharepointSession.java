@@ -114,22 +114,7 @@ public class SharepointSession extends GraphSession {
 
     @Override
     public Path getContainer(final Path file) {
-        if(file.isRoot()) {
-            return file;
-        }
-        Path previous = file;
-        Path parent = file.getParent();
-        while(!parent.isRoot()) {
-            if(SharepointListService.DEFAULT_NAME.equals(parent.getParent())) {
-                return parent;
-            }
-            else if(SharepointListService.GROUPS_NAME.equals(parent.getParent())) {
-                return previous;
-            }
-            previous = parent;
-            parent = parent.getParent();
-        }
-        return file;
+        return new SharepointContainerService().getContainer(file);
     }
 
     @Override

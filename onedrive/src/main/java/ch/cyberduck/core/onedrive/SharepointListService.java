@@ -31,8 +31,8 @@ public class SharepointListService implements ListService {
     private static final String DEFAULT_ID = "DEFAULT_NAME";
     private static final String GROUPS_ID = "GROUPS_NAME";
 
-    public static final Path DEFAULT_NAME = new Path("/Default", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DEFAULT_ID));
-    public static final Path GROUPS_NAME = new Path("/Groups", EnumSet.of(Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
+    public static final Path DEFAULT_NAME = new Path("/Default", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DEFAULT_ID));
+    public static final Path GROUPS_NAME = new Path("/Groups", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
 
     private final SharepointSession session;
     private final IdProvider idProvider;

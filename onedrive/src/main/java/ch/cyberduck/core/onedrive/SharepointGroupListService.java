@@ -55,7 +55,7 @@ public class SharepointGroupListService implements ListService {
             }
             final PathAttributes attributes = new PathAttributes();
             attributes.setVersionId(metadata.getId());
-            children.add(new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.placeholder), attributes));
+            children.add(new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
             listener.chunk(directory, children);
         }
 
