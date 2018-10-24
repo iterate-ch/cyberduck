@@ -85,7 +85,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     private Permission toPermission(final Node node) {
         final Permission permission = new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none);
-        if(node.getIsEncrypted()) {
+        if(node.getIsEncrypted() && node.getType() == Node.TypeEnum.FILE) {
             if(null != session.keyPair()) {
                 permission.setUser(permission.getUser().or(Permission.Action.read));
             }
