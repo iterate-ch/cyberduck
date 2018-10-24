@@ -71,12 +71,12 @@ public class DefaultHomeFinderService implements Home {
         else {
             if(path.startsWith(Path.HOME)) {
                 // Relative path to the home directory
-                return new Path(root, this.normalize(StringUtils.removeStart(
-                    StringUtils.removeStart(path, Path.HOME), String.valueOf(Path.DELIMITER)), false), EnumSet.of(Path.Type.directory));
+                return new Path(String.format("%s%s%s", root.getAbsolute(), Path.DELIMITER, this.normalize(StringUtils.removeStart(
+                    StringUtils.removeStart(path, Path.HOME), String.valueOf(Path.DELIMITER)), false)), EnumSet.of(Path.Type.directory));
             }
             else {
                 // Relative path
-                return new Path(String.format("%s/%s", root.getAbsolute(), this.normalize(path, false)), EnumSet.of(Path.Type.directory));
+                return new Path(String.format("%s%s%s", root.getAbsolute(), Path.DELIMITER, this.normalize(path, false)), EnumSet.of(Path.Type.directory));
             }
         }
     }

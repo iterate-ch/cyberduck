@@ -44,6 +44,13 @@ public class DefaultHomeFinderServiceTest {
     }
 
     @Test
+    public void testHomeParent() throws Exception {
+        final Path home = new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), String.format("%s/sandbox/sub", Path.HOME));
+        assertEquals(new Path("/sandbox/sub", EnumSet.of(Path.Type.directory)), home);
+        assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)), home.getParent());
+    }
+
+    @Test
     public void testDefaultLocalPathDriveLetter() throws Exception {
         assertEquals(new Path("/C:/Users/example/Documents/vault", EnumSet.of(Path.Type.directory)),
             new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "C:/Users/example/Documents/vault"));
