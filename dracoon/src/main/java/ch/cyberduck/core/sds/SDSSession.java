@@ -177,7 +177,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
         }
         catch(ApiException e) {
-            throw new SDSExceptionMappingService().map(e);
+            log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e).getDetail()));
         }
     }
 
@@ -214,7 +214,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     public UserKeyPairContainer keyPair() {
-        if(this.keyPair.get() == null) {
+        if(keyPair.get() == null) {
             try {
                 keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
             }
