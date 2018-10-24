@@ -43,11 +43,7 @@ public class GraphDeleteFeature implements Delete {
     @Override
     public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
-            if(!session.isAccessible(file, false)) {
-                continue;
-            }
             callback.delete(file);
-
             try {
                 final OneDriveItem item = session.toItem(file);
                 item.delete();
