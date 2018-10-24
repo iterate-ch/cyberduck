@@ -34,7 +34,7 @@ import java.util.EnumSet;
 public class DefaultHomeFinderService implements Home {
 
     protected final Path DEFAULT_HOME = new Path(String.valueOf(Path.DELIMITER),
-            EnumSet.of(Path.Type.volume, Path.Type.directory));
+        EnumSet.of(Path.Type.volume, Path.Type.directory));
 
     private final Session<?> session;
 
@@ -66,23 +66,23 @@ public class DefaultHomeFinderService implements Home {
             // Mount absolute path
             final String normalized = this.normalize(path, true);
             return new Path(normalized, normalized.equals(String.valueOf(Path.DELIMITER)) ?
-                    EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
+                EnumSet.of(Path.Type.volume, Path.Type.directory) : EnumSet.of(Path.Type.directory));
         }
         else {
             if(path.startsWith(Path.HOME)) {
                 // Relative path to the home directory
                 return new Path(root, this.normalize(StringUtils.removeStart(
-                        StringUtils.removeStart(path, Path.HOME), String.valueOf(Path.DELIMITER)), false), EnumSet.of(Path.Type.directory));
+                    StringUtils.removeStart(path, Path.HOME), String.valueOf(Path.DELIMITER)), false), EnumSet.of(Path.Type.directory));
             }
             else {
                 // Relative path
-                return new Path(root, this.normalize(path, false), EnumSet.of(Path.Type.directory));
+                return new Path(String.format("%s/%s", root.getAbsolute(), this.normalize(path, false)), EnumSet.of(Path.Type.directory));
             }
         }
     }
 
     protected String normalize(final String input, final boolean absolute) {
         return PathNormalizer.normalize(StringUtils.replace(input,
-                String.valueOf("\\"), String.valueOf(Path.DELIMITER)), absolute);
+            String.valueOf("\\"), String.valueOf(Path.DELIMITER)), absolute);
     }
 }
