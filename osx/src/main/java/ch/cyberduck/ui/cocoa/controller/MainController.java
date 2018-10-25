@@ -1185,14 +1185,14 @@ public class MainController extends BundleController implements NSApplication.De
                 // Do not display if same version is installed
                 return NSApplication.NSTerminateNow;
             }
+            // Display after upgrade
             final Calendar nextreminder = Calendar.getInstance();
             nextreminder.setTimeInMillis(preferences.getLong("donate.reminder.date"));
-            // Display donationPrompt every n days
-            nextreminder.add(Calendar.DAY_OF_YEAR, preferences.getInteger("y"));
+            // Display prompt every n days
+            nextreminder.add(Calendar.DAY_OF_YEAR, preferences.getInteger("donate.reminder.interval"));
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Next reminder %s", nextreminder.getTime().toString()));
             }
-            // Display after upgrade
             if(nextreminder.getTime().after(new Date(System.currentTimeMillis()))) {
                 // Do not display if shown in the reminder interval
                 return NSApplication.NSTerminateNow;

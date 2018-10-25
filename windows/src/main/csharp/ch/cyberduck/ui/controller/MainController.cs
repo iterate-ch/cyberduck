@@ -218,7 +218,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
 
                 DateTime nextReminder = new DateTime(PreferencesFactory.get().getLong("donate.reminder.date"));
-                // Display donationPrompt every n days
+                // Display prompt every n days
                 nextReminder.AddDays(PreferencesFactory.get().getLong("donate.reminder.interval"));
                 Logger.debug("Next reminder: " + nextReminder);
                 // Display after upgrade
