@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.shared.DefaultAclFeature;
@@ -43,9 +42,6 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
-
-    private final PathContainerService containerService
-        = new SDSPathContainerService();
 
     public SDSPermissionsFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
@@ -85,26 +81,22 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
 
     public boolean containsRole(final Path file, final Acl.Role role) {
         try {
-            final Path room = containerService.getContainer(file);
-            return this.containsRole(file, this.getPermission(room), role);
+            final Acl acl = this.getPermission(file);
+            if(acl.isEmpty()) {
+                log.warn(String.format("Missing ACL on file %s", file));
+                return true;
+            }
+            final Long accountId = session.userAccount().getId();
+            final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(accountId)));
+            if(null == roles) {
+                log.warn(String.format("Missing roles for account %d", accountId));
+                return false;
+            }
+            return roles.contains(role);
         }
         catch(BackgroundException e) {
             log.warn(String.format("Unable to retrieve user account information. %s", e.getDetail()));
             return true;
         }
-    }
-
-    private boolean containsRole(final Path file, final Acl acl, final Acl.Role role) {
-        if(acl.isEmpty()) {
-            log.warn(String.format("Missing ACL on file %s", file));
-            return true;
-        }
-        final Long accountId = session.userAccount().getId();
-        final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(accountId)));
-        if(null == roles) {
-            log.warn(String.format("Missing roles for account %d", accountId));
-            return false;
-        }
-        return roles.contains(role);
     }
 }
