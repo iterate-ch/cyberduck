@@ -254,7 +254,7 @@ public abstract class Preferences implements Locales {
           Last version prompt was shown
          */
         this.setDefault("donate.reminder", String.valueOf(-1));
-        this.setDefault("donate.reminder.supress.enable", String.valueOf(false));
+        this.setDefault("donate.reminder.suppress.enable", String.valueOf(false));
         this.setDefault("donate.reminder.interval", String.valueOf(0)); // in days
         this.setDefault("donate.reminder.date", String.valueOf(new Date(0).getTime()));
 
