@@ -148,7 +148,7 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
                             cache.put(directory, new AttributedList<TransferItem>(list));
                             filter();
                         }
-                    }, controller, controller
+                    }
             ));
         }
         return this.get(directory);
@@ -162,8 +162,8 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
                                 status = accepted;
                                 controller.reload();
                             }
-                }, controller, controller
-                )
+                }
+            )
         );
     }
 
