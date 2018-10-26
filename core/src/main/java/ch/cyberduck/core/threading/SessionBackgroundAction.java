@@ -133,14 +133,15 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public boolean alert(final BackgroundException failure) {
-        if(!this.isCanceled()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Run alert callback %s for failure %s", alert, failure));
-            }
-            // Display alert if the action was not canceled intentionally
-            return alert.alert(pool.getHost(), failure, transcript);
+        // Display alert if the action was not canceled intentionally
+        if(this.isCanceled()) {
+            return false;
         }
-        return false;
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Run alert callback %s for failure %s", alert, failure));
+        }
+        // Display alert if the action was not canceled intentionally
+        return alert.alert(pool.getHost(), failure, transcript);
     }
 
     @Override
