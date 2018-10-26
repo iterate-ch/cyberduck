@@ -32,15 +32,16 @@ public interface ConnectionService {
      * @return True if new connection was opened. False if connection is reused.
      * @throws BackgroundException If opening connection fails
      */
-    boolean check(Session<?> session, Cache<Path> cache, final CancelCallback callback) throws BackgroundException;
+    boolean check(Session<?> session, Cache<Path> cache, CancelCallback callback) throws BackgroundException;
 
     /**
      * Open connection
-     *  @param session  Connection
+     *
+     * @param session  Connection
      * @param cache    Directory cache
      * @param callback Cancel
      */
-    void connect(Session<?> session, Cache<Path> cache, final CancelCallback callback) throws BackgroundException;
+    void connect(Session<?> session, Cache<Path> cache, CancelCallback callback) throws BackgroundException;
 
     /**
      * Disconnect
