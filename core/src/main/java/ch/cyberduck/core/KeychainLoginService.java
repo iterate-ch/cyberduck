@@ -107,17 +107,6 @@ public class KeychainLoginService implements LoginService {
     @Override
     public boolean authenticate(final Proxy proxy, final Session session, final Cache<Path> cache, final ProgressListener listener, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
-        if(session.alert(callback)) {
-            // Warning if credentials are sent plaintext.
-            callback.warn(bookmark, MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
-                bookmark.getProtocol().getName()),
-                MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
-                    bookmark.getProtocol().getPasswordPlaceholder()),
-                    LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
-                LocaleFactory.localizedString("Continue", "Credentials"),
-                LocaleFactory.localizedString("Disconnect", "Credentials"),
-                String.format("connection.unsecure.%s", bookmark.getHostname()));
-        }
         final Credentials credentials = bookmark.getCredentials();
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
             StringUtils.isEmpty(credentials.getUsername()) ? LocaleFactory.localizedString("Unknown") : credentials.getUsername()));

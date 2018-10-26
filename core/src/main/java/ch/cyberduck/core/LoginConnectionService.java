@@ -121,7 +121,6 @@ public class LoginConnectionService implements ConnectionService {
             this.close(session);
         }
         final Host bookmark = session.getHost();
-
         // Try to resolve the hostname first
         final HostnameConfigurator configurator = HostnameConfiguratorFactory.get(bookmark.getProtocol());
         final String hostname = configurator.getHostname(bookmark.getHostname());
@@ -140,16 +139,25 @@ public class LoginConnectionService implements ConnectionService {
         }
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Opening {0} connection to {1}", "Status"),
             bookmark.getProtocol().getName(), hostname));
-
         // The IP address could successfully be determined
         session.open(proxy, key, prompt);
-
         listener.message(MessageFormat.format(LocaleFactory.localizedString("{0} connection opened", "Status"),
             bookmark.getProtocol().getName()));
-
         // Update last accessed timestamp
         bookmark.setTimestamp(new Date());
-
+        // Warning about insecure connection prior authenticating
+        if(session.alert(prompt)) {
+            // Warning if credentials are sent plaintext.
+            prompt.warn(bookmark, MessageFormat.format(LocaleFactory.localizedString("Unsecured {0} connection", "Credentials"),
+                bookmark.getProtocol().getName()),
+                MessageFormat.format("{0} {1}.", MessageFormat.format(LocaleFactory.localizedString("{0} will be sent in plaintext.", "Credentials"),
+                    bookmark.getProtocol().getPasswordPlaceholder()),
+                    LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")),
+                LocaleFactory.localizedString("Continue", "Credentials"),
+                LocaleFactory.localizedString("Disconnect", "Credentials"),
+                String.format("connection.unsecure.%s", bookmark.getHostname()));
+        }
+        // Login
         try {
             this.authenticate(proxy, session, cache, callback);
         }
