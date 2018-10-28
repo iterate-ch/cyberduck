@@ -129,6 +129,7 @@ public class KeychainLoginService implements LoginService {
         }
         catch(LoginFailureException e) {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
+            credentials.setPassed(false);
             final LoginOptions options = new LoginOptions(bookmark.getProtocol());
             if(options.user && options.password) {
                 // Default login prompt with username and password input
