@@ -93,7 +93,7 @@ public interface SessionPool {
         private static final Host DISCONNECTED = new Host(new DisabledProtocol());
 
         @Override
-        public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
+        public Session<?> borrow(final BackgroundActionState callback) {
             return null;
         }
 
@@ -167,7 +167,7 @@ public interface SessionPool {
         }
 
         @Override
-        public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
+        public Session<?> borrow(final BackgroundActionState callback) {
             return session;
         }
 
