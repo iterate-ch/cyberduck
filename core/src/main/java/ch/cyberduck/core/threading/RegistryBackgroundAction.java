@@ -18,14 +18,14 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.pool.SessionPool;
 
 public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAction<T> {
 
     private final BackgroundActionRegistry registry
-            = BackgroundActionRegistry.global();
+        = BackgroundActionRegistry.global();
 
     public RegistryBackgroundAction(final Controller controller,
                                     final SessionPool session) {
@@ -34,17 +34,16 @@ public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAc
 
     public RegistryBackgroundAction(final Controller controller,
                                     final SessionPool session,
-                                    final ProgressListener progress,
-                                    final TranscriptListener transcript) {
+                                    final ProgressListener progress) {
         super(controller, session, progress);
     }
 
     public RegistryBackgroundAction(final Controller controller,
                                     final SessionPool session,
                                     final ProgressListener progress,
-                                    final TranscriptListener transcript,
-                                    final AlertCallback alert) {
-        super(controller, session, progress, alert);
+                                    final AlertCallback alert,
+                                    final LoginCallback login) {
+        super(controller, session, progress, alert, login);
     }
 
     @Override

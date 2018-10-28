@@ -19,12 +19,23 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.KeychainLoginService;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.LoginService;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.proxy.ProxyFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -41,27 +52,30 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * Contains the transcript of the session while this action was running
      */
     private StringBuilder transcript
-            = new StringBuilder();
+        = new StringBuilder();
 
     private static final String LINE_SEPARATOR
-            = System.getProperty("line.separator");
+        = System.getProperty("line.separator");
 
     private final AlertCallback alert;
-    private final ProgressListener progressListener;
+    private final LoginCallback login;
+    private final ProgressListener progress;
 
     protected final SessionPool pool;
 
     public SessionBackgroundAction(final SessionPool pool,
                                    final AlertCallback alert,
+                                   final LoginCallback login,
                                    final ProgressListener progress) {
         this.pool = pool;
         this.alert = alert;
-        this.progressListener = progress;
+        this.login = login;
+        this.progress = progress;
     }
 
     @Override
     public void message(final String message) {
-        progressListener.message(message);
+        progress.message(message);
     }
 
     /**

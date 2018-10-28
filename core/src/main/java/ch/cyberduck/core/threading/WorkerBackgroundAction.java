@@ -18,9 +18,9 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.pool.SessionPool;
@@ -45,9 +45,8 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
     public WorkerBackgroundAction(final Controller controller,
                                   final SessionPool session,
                                   final Worker<T> worker,
-                                  final ProgressListener progress,
-                                  final TranscriptListener transcript) {
-        super(controller, session, progress, transcript);
+                                  final ProgressListener progress) {
+        super(controller, session, progress);
         this.worker = worker;
     }
 
@@ -55,9 +54,9 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
                                   final SessionPool session,
                                   final Worker<T> worker,
                                   final ProgressListener progress,
-                                  final TranscriptListener transcript,
-                                  final AlertCallback alert) {
-        super(controller, session, progress, transcript, alert);
+                                  final AlertCallback alert,
+                                  final LoginCallback login) {
+        super(controller, session, progress, alert, login);
         this.worker = worker;
     }
 
