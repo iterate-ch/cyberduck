@@ -78,6 +78,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
+import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultBackgroundExecutor;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -101,6 +102,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -120,7 +122,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Setting the main menu and implements application delegate methods
  */
-public class MainController extends BundleController implements NSApplication.Delegate {
+public class MainController extends BundleController implements NSApplication.Delegate, NSMenu.Validation {
     private static final Logger log = Logger.getLogger(MainController.class);
 
     /**
@@ -1420,5 +1422,17 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             }
         }
+    }
+
+    @Override
+    public boolean validateMenuItem(final NSMenuItem item) {
+        final Selector action = item.action();
+        if(action.equals(Foundation.selector("updateMenuClicked:"))) {
+            if(updater.hasUpdatePrivileges()) {
+                return Updater.create().validateMenuItem(item);
+            }
+            return false;
+        }
+        return true;
     }
 }
