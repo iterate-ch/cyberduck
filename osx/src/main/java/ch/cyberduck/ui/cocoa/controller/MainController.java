@@ -654,7 +654,7 @@ public class MainController extends BundleController implements NSApplication.De
                         newDocument().addBookmark(host);
                         // Register in application support
                         final Local profiles = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-                            PreferencesFactory.get().getProperty("profiles.folder.name"));
+                            preferences.getProperty("profiles.folder.name"));
                         if(!profiles.exists()) {
                             new DefaultLocalDirectoryFeature().mkdir(profiles);
                         }
@@ -1063,7 +1063,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         reporter.checkForCrash(preferences.getProperty("website.crash"));
         if(updater.hasUpdatePrivileges()) {
-            if(PreferencesFactory.get().getBoolean("update.check")) {
+            if(preferences.getBoolean("update.check")) {
                 final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
                 if(next < System.currentTimeMillis()) {
                     updater.check(true);
