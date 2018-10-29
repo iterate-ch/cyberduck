@@ -17,12 +17,8 @@ package ch.cyberduck.core.ftp.list;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -95,15 +91,10 @@ public class FTPListService implements ListService {
     }
 
     public FTPListService(final FTPSession session, final String system, final TimeZone zone) {
-        this(session, new DisabledPasswordStore(), new DisabledLoginCallback(), system, zone);
-    }
-
-    public FTPListService(final FTPSession session, final HostPasswordStore keychain, final LoginCallback prompt,
-                          final String system, final TimeZone zone) {
         this.session = session;
         // Directory listing parser depending on response for SYST command
         final CompositeFileEntryParser parser = new FTPParserSelector().getParser(system, zone);
-        this.implementations.put(Command.list, new FTPDefaultListService(session, keychain, prompt, parser, Command.list));
+        this.implementations.put(Command.list, new FTPDefaultListService(session, parser, Command.list));
         if(PreferencesFactory.get().getBoolean("ftp.command.stat")) {
             if(StringUtils.isNotBlank(system)) {
                 if(!system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
@@ -119,7 +110,7 @@ public class FTPListService implements ListService {
             this.implementations.put(Command.mlsd, new FTPMlsdListService(session));
         }
         if(PreferencesFactory.get().getBoolean("ftp.command.lista")) {
-            this.implementations.put(Command.lista, new FTPDefaultListService(session, keychain, prompt, parser, Command.lista));
+            this.implementations.put(Command.lista, new FTPDefaultListService(session, parser, Command.lista));
         }
     }
 

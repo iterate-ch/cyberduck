@@ -17,10 +17,8 @@ package ch.cyberduck.core.ftp.list;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.DataConnectionAction;
@@ -39,14 +37,10 @@ public class FTPDefaultListService implements ListService {
     private final FTPSession session;
     private final FTPListService.Command command;
     private final FTPDataResponseReader reader;
-    private final HostPasswordStore keychain;
-    private final LoginCallback prompt;
 
-    public FTPDefaultListService(final FTPSession session, final HostPasswordStore keychain, final LoginCallback prompt,
+    public FTPDefaultListService(final FTPSession session,
                                  final CompositeFileEntryParser parser, final FTPListService.Command command) {
         this.session = session;
-        this.keychain = keychain;
-        this.prompt = prompt;
         this.command = command;
         this.reader = new FTPListResponseReader(parser, false);
     }
