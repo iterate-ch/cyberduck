@@ -54,37 +54,6 @@ public class KeychainLoginServiceTest {
         l.validate(new Host(new TestProtocol(), "h"), "", new LoginOptions());
     }
 
-    @Test(expected = LoginCanceledException.class)
-    public void testConnectionWarning() throws Exception {
-        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", new Credentials(
-                "u", "p"
-        ));
-        final AtomicBoolean warned = new AtomicBoolean(false);
-        final Session session = new NullSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        LoginService l = new KeychainLoginService(new DisabledLoginCallback() {
-            @Override
-            public void warn(final Host bookmark, final String title, final String message,
-                             final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
-                warned.set(true);
-                throw new LoginCanceledException();
-            }
-        }, new DisabledPasswordStore());
-        try {
-            l.authenticate(Proxy.DIRECT, session, PathCache.empty(), new ProgressListener() {
-                @Override
-                public void message(final String message) {
-                    //
-                }
-            }, new DisabledCancelCallback());
-            fail();
-        }
-        catch(LoginCanceledException e) {
-            assertTrue(warned.get());
-            throw e;
-        }
-    }
-
     @Test
     public void testFindPasswordSftp() throws Exception {
         final AtomicBoolean keychain = new AtomicBoolean(false);
