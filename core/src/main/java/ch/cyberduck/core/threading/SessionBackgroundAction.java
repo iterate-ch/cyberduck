@@ -19,15 +19,12 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.LoginService;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
@@ -133,6 +130,23 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         BackgroundException failure = null;
         try {
             return this.run(session);
+        }
+        catch(LoginFailureException e) {
+            final Host bookmark = pool.getHost();
+            try {
+                // Prompt for new credentials
+                bookmark.setCredentials(login.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                    LocaleFactory.localizedString("Login failed", "Credentials"), e.getMessage(), new LoginOptions(bookmark.getProtocol())));
+                // Try to authenticate again
+                session.login(ProxyFactory.get().find(bookmark), new DisabledPasswordStore(), login, new DisabledCancelCallback());
+                // Run action again after login
+                return this.run();
+            }
+            catch(BackgroundException f) {
+                log.warn(String.format("Ignore error %s after login failure %s ", f, e));
+            }
+            failure = e;
+            throw e;
         }
         catch(BackgroundException e) {
             failure = e;
