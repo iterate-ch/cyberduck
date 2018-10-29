@@ -28,12 +28,12 @@ public class LoginConnectionServiceTest {
             }
         };
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener(),
-                new DisabledProxyFinder() {
-                    @Override
-                    public Proxy find(final Host target) {
-                        return new Proxy(Proxy.Type.HTTP, "proxy.local", 6666);
-                    }
-                });
+            new DisabledProxyFinder() {
+                @Override
+                public Proxy find(final Host target) {
+                    return new Proxy(Proxy.Type.HTTP, "proxy.local", 6666);
+                }
+            });
         s.check(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
@@ -52,7 +52,7 @@ public class LoginConnectionServiceTest {
                 return true;
             }
         }, new DisabledPasswordStore(),
-                new DisabledProgressListener()
+            new DisabledProgressListener()
         );
         try {
             s.check(session, PathCache.empty(), new DisabledCancelCallback());
@@ -81,7 +81,7 @@ public class LoginConnectionServiceTest {
     @Test(expected = ConnectionCanceledException.class)
     public void testNoHostname() throws Exception {
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                new DisabledProgressListener());
+            new DisabledProgressListener());
         s.check(new NullSession(new Host(new TestProtocol(), "")), PathCache.empty(), new DisabledCancelCallback());
     }
 
@@ -141,6 +141,32 @@ public class LoginConnectionServiceTest {
         finally {
             assertTrue(keychain.get());
             assertTrue(prompt.get());
+        }
+    }
+
+    @Test(expected = LoginCanceledException.class)
+    public void testConnectionWarning() throws Exception {
+        final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", new Credentials(
+            "u", "p"
+        ));
+        final AtomicBoolean warned = new AtomicBoolean(false);
+        final Session session = new NullSession(host);
+        final LoginConnectionService l = new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public void warn(final Host bookmark, final String title, final String message,
+                             final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                warned.set(true);
+                throw new LoginCanceledException();
+            }
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+            new DisabledProgressListener());
+        try {
+            l.connect(session, PathCache.empty(), new DisabledCancelCallback());
+            fail();
+        }
+        catch(LoginCanceledException e) {
+            assertTrue(warned.get());
+            throw e;
         }
     }
 }
