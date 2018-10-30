@@ -32,6 +32,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.ProxyFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -132,25 +133,27 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             return this.run(session);
         }
         catch(LoginFailureException e) {
-            final Host bookmark = pool.getHost();
-            try {
-                // Prompt for new credentials
-                final LoginOptions options = new LoginOptions(bookmark.getProtocol());
-                if(options.password) {
-                    bookmark.setCredentials(login.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
+            if(PreferencesFactory.get().getBoolean("connection.retry.login.enable")) {
+                final Host bookmark = pool.getHost();
+                try {
+                    // Prompt for new credentials
+                    final LoginOptions options = new LoginOptions(bookmark.getProtocol());
+                    if(options.password) {
+                        bookmark.setCredentials(login.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                            LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
+                    }
+                    if(options.token) {
+                        bookmark.setCredentials(login.prompt(bookmark,
+                            LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
+                    }
+                    // Try to authenticate again
+                    session.login(ProxyFactory.get().find(bookmark), new DisabledPasswordStore(), login, new DisabledCancelCallback());
+                    // Run action again after login
+                    return this.run();
                 }
-                if(options.token) {
-                    bookmark.setCredentials(login.prompt(bookmark,
-                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
+                catch(BackgroundException f) {
+                    log.warn(String.format("Ignore error %s after login failure %s ", f, e));
                 }
-                // Try to authenticate again
-                session.login(ProxyFactory.get().find(bookmark), new DisabledPasswordStore(), login, new DisabledCancelCallback());
-                // Run action again after login
-                return this.run();
-            }
-            catch(BackgroundException f) {
-                log.warn(String.format("Ignore error %s after login failure %s ", f, e));
             }
             failure = e;
             throw e;
