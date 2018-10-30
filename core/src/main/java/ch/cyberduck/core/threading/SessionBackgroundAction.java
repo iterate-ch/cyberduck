@@ -135,8 +135,15 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             final Host bookmark = pool.getHost();
             try {
                 // Prompt for new credentials
-                bookmark.setCredentials(login.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                    LocaleFactory.localizedString("Login failed", "Credentials"), e.getMessage(), new LoginOptions(bookmark.getProtocol())));
+                final LoginOptions options = new LoginOptions(bookmark.getProtocol());
+                if(options.password) {
+                    bookmark.setCredentials(login.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
+                }
+                if(options.token) {
+                    bookmark.setCredentials(login.prompt(bookmark,
+                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
+                }
                 // Try to authenticate again
                 session.login(ProxyFactory.get().find(bookmark), new DisabledPasswordStore(), login, new DisabledCancelCallback());
                 // Run action again after login
