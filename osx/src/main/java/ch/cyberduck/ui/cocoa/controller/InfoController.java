@@ -1211,7 +1211,7 @@ public class InfoController extends ToolbarWindowController {
         this.metadataAddButton = b;
         this.metadataAddButton.setTarget(this.id());
         this.metadataAddButton.addItemWithTitle(StringUtils.EMPTY);
-        this.metadataAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
+        this.metadataAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("NSActionTemplate"));
         this.metadataAddButton.addItemWithTitle(LocaleFactory.localizedString("Custom Header", "S3"));
         this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddCustomClicked:"));
         this.metadataAddButton.lastItem().setTarget(this.id());
@@ -2007,7 +2007,7 @@ public class InfoController extends ToolbarWindowController {
             final AclPermission feature = session.getFeature(AclPermission.class);
             aclAddButton.removeAllItems();
             this.aclAddButton.addItemWithTitle(StringUtils.EMPTY);
-            this.aclAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("gear.tiff"));
+            this.aclAddButton.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed("NSActionTemplate"));
             for(Acl.User user : feature.getAvailableAclUsers()) {
                 this.aclAddButton.addItemWithTitle(user.getPlaceholder());
                 this.aclAddButton.lastItem().setAction(Foundation.selector("aclAddButtonClicked:"));
