@@ -21,10 +21,7 @@ package ch.cyberduck.core.ssl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Session;
 
-import org.apache.log4j.Logger;
-
 public abstract class SSLSession<C> extends Session<C> {
-    private static final Logger log = Logger.getLogger(SSLSession.class);
 
     protected X509TrustManager trust;
     protected X509KeyManager key;

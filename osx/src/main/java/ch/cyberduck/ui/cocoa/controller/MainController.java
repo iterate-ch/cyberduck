@@ -654,7 +654,7 @@ public class MainController extends BundleController implements NSApplication.De
                         newDocument().addBookmark(host);
                         // Register in application support
                         final Local profiles = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-                            PreferencesFactory.get().getProperty("profiles.folder.name"));
+                            preferences.getProperty("profiles.folder.name"));
                         if(!profiles.exists()) {
                             new DefaultLocalDirectoryFeature().mkdir(profiles);
                         }
@@ -1063,7 +1063,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         reporter.checkForCrash(preferences.getProperty("website.crash"));
         if(updater.hasUpdatePrivileges()) {
-            if(PreferencesFactory.get().getBoolean("update.check")) {
+            if(preferences.getBoolean("update.check")) {
                 final long next = preferences.getLong("update.check.timestamp") + preferences.getLong("update.check.interval") * 1000;
                 if(next < System.currentTimeMillis()) {
                     updater.check(true);
@@ -1185,14 +1185,14 @@ public class MainController extends BundleController implements NSApplication.De
                 // Do not display if same version is installed
                 return NSApplication.NSTerminateNow;
             }
+            // Display after upgrade
             final Calendar nextreminder = Calendar.getInstance();
             nextreminder.setTimeInMillis(preferences.getLong("donate.reminder.date"));
-            // Display donationPrompt every n days
-            nextreminder.add(Calendar.DAY_OF_YEAR, preferences.getInteger("y"));
+            // Display prompt every n days
+            nextreminder.add(Calendar.DAY_OF_YEAR, preferences.getInteger("donate.reminder.interval"));
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Next reminder %s", nextreminder.getTime().toString()));
             }
-            // Display after upgrade
             if(nextreminder.getTime().after(new Date(System.currentTimeMillis()))) {
                 // Do not display if shown in the reminder interval
                 return NSApplication.NSTerminateNow;

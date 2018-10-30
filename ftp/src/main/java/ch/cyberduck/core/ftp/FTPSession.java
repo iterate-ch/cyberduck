@@ -272,7 +272,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 catch(IOException e) {
                     log.warn(String.format("SYST command failed %s", e.getMessage()));
                 }
-                listService = new FTPListService(this, keychain, prompt, system, zone);
+                listService = new FTPListService(this, system, zone);
                 if(client.hasFeature(FTPCmd.MFMT.getCommand())) {
                     timestamp = new FTPMFMTTimestampFeature(this);
                 }

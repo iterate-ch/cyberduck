@@ -19,10 +19,7 @@ import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.updater.AbstractPeriodicUpdateChecker;
 
-import org.apache.log4j.Logger;
-
 public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker {
-    private static final Logger log = Logger.getLogger(SparklePeriodicUpdateChecker.class);
 
     @Outlet
     private final Updater updater = Updater.create();

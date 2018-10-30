@@ -30,17 +30,15 @@ public class BackgroundCallable<T> implements Callable<T> {
 
     private final BackgroundAction<T> action;
     private final Controller controller;
-    private final BackgroundActionRegistry registry;
 
     /**
      * Keep client stacktrace
      */
     private final Exception client = new Exception();
 
-    public BackgroundCallable(final BackgroundAction<T> action, final Controller controller, final BackgroundActionRegistry registry) {
+    public BackgroundCallable(final BackgroundAction<T> action, final Controller controller) {
         this.action = action;
         this.controller = controller;
-        this.registry = registry;
     }
 
     @Override
@@ -65,12 +63,7 @@ public class BackgroundCallable<T> implements Callable<T> {
             return result;
         }
         finally {
-            try {
-                action.finish();
-            }
-            finally {
-                registry.remove(action);
-            }
+            action.finish();
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Invoke cleanup for background action %s", action));
             }

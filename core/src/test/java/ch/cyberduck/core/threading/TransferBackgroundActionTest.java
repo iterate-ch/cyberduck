@@ -237,7 +237,7 @@ public class TransferBackgroundActionTest {
         };
         assertFalse(alert.get());
         // Connect, prepare and run
-        new BackgroundCallable<Boolean>(action, controller, BackgroundActionRegistry.global()).call();
+        new BackgroundCallable<Boolean>(action, controller).call();
         assertTrue(alert.get());
         assertTrue(action.hasFailed());
 //        assertTrue(options.resumeRequested);

@@ -57,7 +57,7 @@ public class BackgroundCallableTest {
             public void invoke(final MainAction runnable, final boolean wait) {
                 //
             }
-        }, new BackgroundActionRegistry());
+        });
         assertSame(expected, c.call());
         assertFalse(action.isRunning());
         assertFalse(action.isCanceled());
@@ -116,7 +116,7 @@ public class BackgroundCallableTest {
             public void invoke(final MainAction runnable, final boolean wait) {
                 runnable.run();
             }
-        }, new BackgroundActionRegistry());
+        });
         assertNull(c.call());
         assertFalse(action.isRunning());
         assertFalse(action.isCanceled());
@@ -200,7 +200,7 @@ public class BackgroundCallableTest {
             public void invoke(final MainAction runnable, final boolean wait) {
                 runnable.run();
             }
-        }, new BackgroundActionRegistry());
+        });
         assertEquals(expected, c.call());
         assertFalse(action.isRunning());
         assertFalse(action.isCanceled());
@@ -247,7 +247,7 @@ public class BackgroundCallableTest {
             public void invoke(final MainAction runnable, final boolean wait) {
                 runnable.run();
             }
-        }, new BackgroundActionRegistry());
+        });
         assertSame(run, c.call());
         assertEquals(4, stack.size());
         assertEquals(cleanup, stack.pop());

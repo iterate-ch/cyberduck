@@ -52,14 +52,13 @@ public class FTPDefaultListServiceTest {
     @Test
     public void testListDefault() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
+            System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final ListService list = new FTPDefaultListService(session, new DisabledPasswordStore(), new DisabledLoginCallback(),
-                new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
-                FTPListService.Command.list);
+        final ListService list = new FTPDefaultListService(session, new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
+            FTPListService.Command.list);
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
@@ -71,14 +70,13 @@ public class FTPDefaultListServiceTest {
     @Test
     public void testListDefaultFlag() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
+            System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final FTPSession session = new FTPSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final ListService list = new FTPDefaultListService(session, new DisabledPasswordStore(), new DisabledLoginCallback(),
-                new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
-                FTPListService.Command.lista);
+        final ListService list = new FTPDefaultListService(session, new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
+            FTPListService.Command.lista);
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());

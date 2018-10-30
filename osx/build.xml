@@ -29,7 +29,8 @@
     <property name="spotlight" value="${module}/spotlight"/>
 
     <property name="app.runtime.system.min" value="10.7.3"/>
-    <property name="build.xcodeoptions" value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min} OTHER_LDFLAGS=-headerpad_max_install_names"/>
+    <property name="build.xcodeoptions"
+              value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 
     <property name="xcode.target" value="app"/>
 

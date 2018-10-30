@@ -31,6 +31,9 @@ import ch.cyberduck.core.vault.VaultRegistry;
 
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class StatelessSessionPool implements SessionPool {
     private static final Logger log = Logger.getLogger(StatelessSessionPool.class);
 
@@ -41,7 +44,7 @@ public class StatelessSessionPool implements SessionPool {
     private final Cache<Path> cache;
     private final VaultRegistry registry;
 
-    private final Object lock = new Object();
+    private final Lock lock = new ReentrantLock();
 
     public StatelessSessionPool(final ConnectionService connect, final Session<?> session, final Cache<Path> cache,
                                 final TranscriptListener transcript, final VaultRegistry registry) {
@@ -55,7 +58,8 @@ public class StatelessSessionPool implements SessionPool {
 
     @Override
     public Session<?> borrow(final BackgroundActionState callback) throws BackgroundException {
-        synchronized(lock) {
+        lock.lock();
+        try {
             connect.check(session.withListener(transcript), cache, new CancelCallback() {
                 @Override
                 public void verify() throws ConnectionCanceledException {
@@ -66,11 +70,15 @@ public class StatelessSessionPool implements SessionPool {
             });
             return session;
         }
+        finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public void release(final Session<?> conn, final BackgroundException failure) {
-        synchronized(lock) {
+        lock.lock();
+        try {
             if(null == failure) {
                 return;
             }
@@ -78,11 +86,15 @@ public class StatelessSessionPool implements SessionPool {
                 connect.close(conn);
             }
         }
+        finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public void evict() {
-        synchronized(lock) {
+        lock.lock();
+        try {
             try {
                 session.close();
             }
@@ -94,11 +106,15 @@ public class StatelessSessionPool implements SessionPool {
                 registry.clear();
             }
         }
+        finally {
+            lock.unlock();
+        }
     }
 
     @Override
     public void shutdown() {
-        synchronized(lock) {
+        lock.lock();
+        try {
             try {
                 session.close();
             }
@@ -108,6 +124,9 @@ public class StatelessSessionPool implements SessionPool {
             finally {
                 registry.clear();
             }
+        }
+        finally {
+            lock.unlock();
         }
     }
 

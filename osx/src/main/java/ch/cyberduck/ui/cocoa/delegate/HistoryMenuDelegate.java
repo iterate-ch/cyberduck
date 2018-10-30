@@ -24,6 +24,7 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.HistoryCollection;
@@ -46,12 +47,12 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 
     private final AbstractHostCollection collection
-            = HistoryCollection.defaultCollection();
+        = HistoryCollection.defaultCollection();
 
     private final MenuCallback callback;
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     public HistoryMenuDelegate() {
         this(new MenuCallback() {
@@ -80,14 +81,14 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         if(collection.size() > 0) {
             // The number of history plus a delimiter and the 'Clear' menu
-            return new NSInteger(collection.size() * 2 + 2);
+            return new NSInteger(collection.size() + 2);
         }
         return new NSInteger(1);
     }
 
     @Override
     public Host itemForIndex(final NSInteger index) {
-        return collection.get(index.intValue() / 2);
+        return collection.get(index.intValue());
     }
 
     /**
@@ -105,35 +106,30 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             // No more menu updates.
             return false;
         }
-        else if(row.intValue() < size * 2) {
-            boolean label = row.intValue() % 2 == 0;
+        else if(row.intValue() < size) {
             final Host h = this.itemForIndex(row);
-            if(label) {
-                item.setTitle(BookmarkNameProvider.toString(h));
-                item.setTarget(this.id());
-                item.setAction(this.getDefaultAction());
-                item.setRepresentedObject(h.getUuid());
-                item.setEnabled(true);
-                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), preferences.getInteger("bookmark.menu.icon.size")));
+            item.setTarget(this.id());
+            item.setAction(this.getDefaultAction());
+            item.setRepresentedObject(h.getUuid());
+            item.setEnabled(true);
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), preferences.getInteger("bookmark.menu.icon.size")));
+            final NSMutableAttributedString title = NSMutableAttributedString.create(String.format("%s ", BookmarkNameProvider.toString(h)));
+            final Date timestamp = h.getTimestamp();
+            if(null != timestamp) {
+                title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
+                    UserDateFormatterFactory.get().getLongFormat(timestamp.getTime()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
             }
             else {
-                // Dummy menu item with timestamp
-                final Date timestamp = h.getTimestamp();
-                if(null != timestamp) {
-                    item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(
-                        UserDateFormatterFactory.get().getLongFormat(timestamp.getTime()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
-                }
-                else {
-                    item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(
-                        LocaleFactory.localizedString("Unknown"), BundleController.MENU_HELP_FONT_ATTRIBUTES));
-                }
+                title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
+                    LocaleFactory.localizedString("Unknown"), BundleController.MENU_HELP_FONT_ATTRIBUTES));
             }
+            item.setAttributedTitle(title);
         }
-        else if(row.intValue() == size * 2) {
+        else if(row.intValue() == size) {
             menu.removeItemAtIndex(row);
             menu.insertItem_atIndex(this.seperator(), row);
         }
-        else if(row.intValue() == size * 2 + 1) {
+        else if(row.intValue() == size + 1) {
             item.setTitle(LocaleFactory.localizedString("Clear Menu"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("clearMenuItemClicked:"));

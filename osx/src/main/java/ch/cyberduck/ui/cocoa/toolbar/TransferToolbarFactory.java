@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -277,6 +278,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     button.setTarget(controller.id());
                     button.setAction(bandwidth.action());
                     item.setView(button);
+                    item.setMaxSize(new NSSize(button.frame().size.width.doubleValue(), button.frame().size.height.doubleValue()));
                     return item;
                 }
                 case connections: {
@@ -305,6 +307,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     button.setAction(connections.action());
                     button.selectItemAtIndex(button.indexOfItemWithRepresentedObject(preferences.getProperty("queue.connections.limit")));
                     item.setView(button);
+                    item.setMaxSize(new NSSize(button.frame().size.width.doubleValue(), button.frame().size.height.doubleValue()));
                     return item;
                 }
                 default: {

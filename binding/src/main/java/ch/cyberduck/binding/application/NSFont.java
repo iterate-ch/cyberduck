@@ -82,6 +82,10 @@ public abstract class NSFont extends NSObject implements NSCopying {
         return CLASS.boldSystemFontOfSize(new CGFloat(fontSize));
     }
 
+    public static NSFont menuFontOfSize(double fontSize) {
+        return CLASS.menuFontOfSize(new CGFloat(fontSize));
+    }
+
     public static NSFont monospacedDigitSystemFontOfSize(double fontSize) {
         if(Rococoa.cast(CLASS, NSObject.class).respondsToSelector(
                 Foundation.selector("monospacedDigitSystemFontOfSize:weight:"))) {

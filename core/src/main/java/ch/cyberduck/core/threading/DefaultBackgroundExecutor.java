@@ -63,7 +63,7 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
         registry.add(action);
         action.init();
         // Start background task
-        final Callable<T> command = new BackgroundCallable<T>(action, controller, registry);
+        final Callable<T> command = new BackgroundCallable<T>(action, controller);
         try {
             final Future<T> task = concurrentExecutor.execute(command);
             if(log.isInfoEnabled()) {
@@ -75,6 +75,9 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
             log.error(String.format("Error scheduling background task %s for execution. %s", action, e.getMessage()));
             action.cleanup();
             return ConcurrentUtils.constantFuture(null);
+        }
+        finally {
+            registry.remove(action);
         }
     }
 
