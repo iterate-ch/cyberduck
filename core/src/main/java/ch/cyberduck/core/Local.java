@@ -432,7 +432,9 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         try {
             final Set<OpenOption> options = new HashSet<>();
             options.add(StandardOpenOption.WRITE);
-            options.add(StandardOpenOption.CREATE);
+            if(!this.exists()) {
+                options.add(StandardOpenOption.CREATE);
+            }
             if(append) {
                 options.add(StandardOpenOption.APPEND);
             }
