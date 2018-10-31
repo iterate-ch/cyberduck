@@ -202,7 +202,7 @@ public class FTPSessionTest {
         assertNotNull(session.getClient());
         assertEquals(new FTPProtocol(), host.getProtocol());
         final AtomicBoolean warned = new AtomicBoolean();
-        KeychainLoginService l = new KeychainLoginService(new DisabledLoginCallback() {
+        ConnectionService l = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public void warn(final Host bookmark, final String title, final String message, final String continueButton,
                              final String disconnectButton, final String preference) throws LoginCanceledException {
@@ -210,13 +210,8 @@ public class FTPSessionTest {
                 // Cancel to switch
                 throw new LoginCanceledException();
             }
-        }, new DisabledPasswordStore());
-        l.authenticate(Proxy.DIRECT, session, PathCache.empty(), new ProgressListener() {
-            @Override
-            public void message(final String message) {
-                //
-            }
-        }, new DisabledCancelCallback());
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
+        l.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertEquals(new FTPTLSProtocol(), host.getProtocol());
         assertTrue(warned.get());
     }
