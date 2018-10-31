@@ -19,12 +19,21 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.proxy.ProxyFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -41,28 +50,30 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
      * Contains the transcript of the session while this action was running
      */
     private StringBuilder transcript
-            = new StringBuilder();
+        = new StringBuilder();
 
     private static final String LINE_SEPARATOR
-            = System.getProperty("line.separator");
+        = System.getProperty("line.separator");
 
     private final AlertCallback alert;
-    private final ProgressListener progressListener;
+    private final LoginCallback login;
+    private final ProgressListener progress;
 
     protected final SessionPool pool;
 
     public SessionBackgroundAction(final SessionPool pool,
                                    final AlertCallback alert,
-                                   final ProgressListener progress,
-                                   final TranscriptListener transcript) {
+                                   final LoginCallback login,
+                                   final ProgressListener progress) {
         this.pool = pool;
         this.alert = alert;
-        this.progressListener = progress;
+        this.login = login;
+        this.progress = progress;
     }
 
     @Override
     public void message(final String message) {
-        progressListener.message(message);
+        progress.message(message);
     }
 
     /**
@@ -121,6 +132,32 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         try {
             return this.run(session);
         }
+        catch(LoginFailureException e) {
+            if(PreferencesFactory.get().getBoolean("connection.retry.login.enable")) {
+                final Host bookmark = pool.getHost();
+                try {
+                    // Prompt for new credentials
+                    final LoginOptions options = new LoginOptions(bookmark.getProtocol());
+                    if(options.password) {
+                        bookmark.setCredentials(login.prompt(bookmark, bookmark.getCredentials().getUsername(),
+                            LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
+                    }
+                    if(options.token) {
+                        bookmark.setCredentials(login.prompt(bookmark,
+                            LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
+                    }
+                    // Try to authenticate again
+                    session.login(ProxyFactory.get().find(bookmark), new DisabledPasswordStore(), login, new DisabledCancelCallback());
+                    // Run action again after login
+                    return this.run();
+                }
+                catch(BackgroundException f) {
+                    log.warn(String.format("Ignore error %s after login failure %s ", f, e));
+                }
+            }
+            failure = e;
+            throw e;
+        }
         catch(BackgroundException e) {
             failure = e;
             throw e;
@@ -134,19 +171,20 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
 
     @Override
     public boolean alert(final BackgroundException failure) {
-        if(!this.isCanceled()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Run alert callback %s for failure %s", alert, failure));
-            }
-            // Display alert if the action was not canceled intentionally
-            return alert.alert(pool.getHost(), failure, transcript);
+        // Display alert if the action was not canceled intentionally
+        if(this.isCanceled()) {
+            return false;
         }
-        return false;
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Run alert callback %s for failure %s", alert, failure));
+        }
+        // Display alert if the action was not canceled intentionally
+        return alert.alert(pool.getHost(), failure, transcript);
     }
 
     @Override
     public void cleanup() {
-        this.transcript.setLength(0);
+        transcript.setLength(0);
         this.message(StringUtils.EMPTY);
     }
 
