@@ -31,7 +31,8 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.preferences.Preferences;
@@ -200,7 +201,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         concat.append(part.getEtag());
                     }
                     final String expected = String.format("%s-%d",
-                        new MD5ChecksumCompute().compute(concat.toString(), new TransferStatus()), completed.size());
+                        ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
                     final String reference;
                     if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
                         reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
