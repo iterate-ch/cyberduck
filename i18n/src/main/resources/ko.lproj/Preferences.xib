@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
-        <capability name="box content view" minToolsVersion="7.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -209,11 +208,11 @@
                     <rect key="frame" x="17" y="222" width="473" height="175"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nXa-rF-OQT">
-                        <rect key="frame" x="2" y="2" width="469" height="158"/>
+                        <rect key="frame" x="3" y="3" width="467" height="157"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="32">
-                                <rect key="frame" x="263" y="42" width="197" height="26"/>
+                                <rect key="frame" x="263" y="42" width="195" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="35" id="33">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -234,7 +233,7 @@
                                 </buttonCell>
                             </button>
                             <textField verticalHuggingPriority="750" id="38">
-                                <rect key="frame" x="9" y="48" width="252" height="17"/>
+                                <rect key="frame" x="9" y="47" width="252" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="책갈피로 연결:" id="39">
                                     <font key="font" metaFont="system"/>
@@ -251,7 +250,7 @@
                                 </buttonCell>
                             </button>
                             <textField verticalHuggingPriority="750" id="42">
-                                <rect key="frame" x="9" y="96" width="451" height="28"/>
+                                <rect key="frame" x="9" y="96" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="종료 시 브라우저 연결 모두 저장 후 재시작시 연결 복구." id="43">
                                     <font key="font" metaFont="smallSystem"/>
@@ -260,7 +259,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" id="44">
-                                <rect key="frame" x="9" y="12" width="451" height="28"/>
+                                <rect key="frame" x="9" y="12" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="응용 프로그램 시작시 빈 브라우저를 열기. 선택된 책갈피에 해당하는 연결을 새로운 브우저에서 엽니다." id="45">
                                     <font key="font" metaFont="smallSystem"/>
@@ -275,11 +274,11 @@
                     <rect key="frame" x="17" y="16" width="473" height="202"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="jTZ-Rs-0Ac">
-                        <rect key="frame" x="2" y="2" width="469" height="185"/>
+                        <rect key="frame" x="3" y="3" width="467" height="184"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" id="47">
-                                <rect key="frame" x="17" y="39" width="244" height="17"/>
+                                <rect key="frame" x="17" y="38" width="244" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="기본 프로토콜:" id="48">
                                     <font key="font" metaFont="system"/>
@@ -288,7 +287,7 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton verticalHuggingPriority="750" id="49">
-                                <rect key="frame" x="263" y="33" width="197" height="26"/>
+                                <rect key="frame" x="263" y="33" width="195" height="26"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="52" id="50">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -317,7 +316,7 @@
                                 </buttonCell>
                             </button>
                             <textField verticalHuggingPriority="750" id="57">
-                                <rect key="frame" x="9" y="123" width="451" height="28"/>
+                                <rect key="frame" x="9" y="123" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="키체인에서 암호 찾기. 로그인 성공시 암호를 키체인에 저장하기를 기본설정으로 지정." id="58">
                                     <font key="font" metaFont="smallSystem"/>
@@ -326,7 +325,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField verticalHuggingPriority="750" id="59">
-                                <rect key="frame" x="9" y="65" width="451" height="28"/>
+                                <rect key="frame" x="9" y="65" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="연결된 브라우저 창을 닫기 전에 확인." id="60">
                                     <font key="font" metaFont="smallSystem"/>
@@ -347,7 +346,7 @@
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="h51-aZ-jAv">
-                        <rect key="frame" x="2" y="2" width="469" height="80"/>
+                        <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="63">
@@ -366,7 +365,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="69">
-                                <rect key="frame" x="9" y="40" width="451" height="28"/>
+                                <rect key="frame" x="9" y="40" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="작은 아이콘 사용시 책갈피의 별명만 표시됨." id="70">
                                     <font key="font" metaFont="smallSystem"/>
@@ -381,7 +380,7 @@
                     <rect key="frame" x="17" y="117" width="473" height="95"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="PyB-9Z-fc6">
-                        <rect key="frame" x="2" y="2" width="469" height="78"/>
+                        <rect key="frame" x="3" y="3" width="467" height="77"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button id="72">
@@ -415,11 +414,11 @@
                     <rect key="frame" x="17" y="216" width="473" height="186"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="zSl-Q7-PPX">
-                        <rect key="frame" x="2" y="2" width="469" height="169"/>
+                        <rect key="frame" x="3" y="3" width="467" height="168"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button id="79">
-                                <rect key="frame" x="10" y="141" width="444" height="18"/>
+                                <rect key="frame" x="10" y="140" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="숨겨진 파일 보기" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -427,7 +426,7 @@
                                 </buttonCell>
                             </button>
                             <button id="81">
-                                <rect key="frame" x="10" y="121" width="444" height="18"/>
+                                <rect key="frame" x="10" y="120" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="파일을 더블클릭하여 외부 편집기로 열기" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -504,7 +503,7 @@
                                 </connections>
                             </button>
                             <button id="97">
-                                <rect key="frame" x="10" y="101" width="444" height="18"/>
+                                <rect key="frame" x="10" y="100" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="리턴키로 이름 변경할 파일이나 폴더를 선택" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -1096,20 +1095,20 @@
                                     <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="246">
                                         <rect key="frame" x="12" y="177" width="437" height="76"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <clipView key="contentView" id="vAD-UH-Zk7">
+                                        <clipView key="contentView" drawsBackground="NO" id="vAD-UH-Zk7">
                                             <rect key="frame" x="1" y="1" width="435" height="74"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" usesFontPanel="YES" usesRuler="YES" quoteSubstitution="YES" dashSubstitution="YES" textReplacement="YES" spellingCorrection="YES" smartInsertDelete="YES" id="248">
                                                     <rect key="frame" x="0.0" y="0.0" width="435" height="74"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <size key="minSize" width="435" height="74"/>
                                                     <size key="maxSize" width="437" height="10000000"/>
                                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 </textView>
                                             </subviews>
-                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </clipView>
                                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="249">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
@@ -1123,20 +1122,20 @@
                                     <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="251">
                                         <rect key="frame" x="12" y="50" width="437" height="76"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <clipView key="contentView" id="jKQ-pd-auB">
+                                        <clipView key="contentView" drawsBackground="NO" id="jKQ-pd-auB">
                                             <rect key="frame" x="1" y="1" width="435" height="74"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <textView importsGraphics="NO" richText="NO" verticallyResizable="YES" usesFontPanel="YES" usesRuler="YES" quoteSubstitution="YES" dashSubstitution="YES" textReplacement="YES" spellingCorrection="YES" smartInsertDelete="YES" id="253">
                                                     <rect key="frame" x="0.0" y="0.0" width="435" height="74"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <size key="minSize" width="435" height="74"/>
                                                     <size key="maxSize" width="437" height="10000000"/>
                                                     <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 </textView>
                                             </subviews>
-                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </clipView>
                                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="254">
                                             <rect key="frame" x="-100" y="-100" width="87" height="18"/>
@@ -1194,7 +1193,7 @@
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="XGo-5u-0m0">
-                        <rect key="frame" x="2" y="2" width="469" height="80"/>
+                        <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="266">
@@ -1211,7 +1210,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="270">
-                                <rect key="frame" x="9" y="40" width="451" height="28"/>
+                                <rect key="frame" x="9" y="40" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="FTP 위치에서 가르키는 파일이나 링크를 열 응용 프로그램을 선택하시오." id="271">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1232,7 +1231,7 @@
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="QDL-re-aeA">
-                        <rect key="frame" x="2" y="2" width="469" height="80"/>
+                        <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="274">
@@ -1249,7 +1248,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="278">
-                                <rect key="frame" x="9" y="40" width="451" height="28"/>
+                                <rect key="frame" x="9" y="40" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="SFTP 위치에서 가르키는 파일이나 링크를 열 응용 프로그램을 선택하시오." id="279">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1270,7 +1269,7 @@
                     <rect key="frame" x="17" y="252" width="473" height="111"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="N8s-vX-pXb">
-                        <rect key="frame" x="2" y="2" width="469" height="94"/>
+                        <rect key="frame" x="3" y="3" width="467" height="93"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="282">
@@ -1287,7 +1286,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="286">
-                                <rect key="frame" x="9" y="40" width="449" height="42"/>
+                                <rect key="frame" x="9" y="40" width="447" height="41"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="선택된 기본 문자 인코딩은 브라우저에서 보여질 파일이름을 변환하는데 사용합니다. 이것은 서버에서 사용하는 문자 인코딩과 일치해야 합니다.T" id="287">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1302,11 +1301,11 @@
                     <rect key="frame" x="17" y="16" width="474" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nIK-94-OGK">
-                        <rect key="frame" x="2" y="2" width="470" height="77"/>
+                        <rect key="frame" x="3" y="3" width="468" height="76"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button verticalHuggingPriority="750" id="289">
-                                <rect key="frame" x="151" y="3" width="156" height="32"/>
+                                <rect key="frame" x="150" y="2" width="156" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="설정 변경…" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="290">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1314,7 +1313,7 @@
                                 </buttonCell>
                             </button>
                             <button id="291">
-                                <rect key="frame" x="10" y="49" width="445" height="18"/>
+                                <rect key="frame" x="10" y="48" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="시스템 프록시 설정 사용" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -1328,7 +1327,7 @@
                     <rect key="frame" x="17" y="114" width="474" height="134"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="Tuf-VX-07Q">
-                        <rect key="frame" x="2" y="2" width="470" height="117"/>
+                        <rect key="frame" x="3" y="3" width="468" height="116"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" id="294">
@@ -1443,7 +1442,7 @@
                     <rect key="frame" x="17" y="16" width="473" height="129"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="V20-wh-cwb">
-                        <rect key="frame" x="2" y="2" width="469" height="112"/>
+                        <rect key="frame" x="3" y="3" width="467" height="111"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button id="317">
@@ -1455,7 +1454,7 @@
                                 </buttonCell>
                             </button>
                             <button verticalHuggingPriority="750" id="319">
-                                <rect key="frame" x="143" y="38" width="182" height="32"/>
+                                <rect key="frame" x="142" y="38" width="182" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                                 <buttonCell key="cell" type="push" title="지금 업데이트 확인" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1463,7 +1462,7 @@
                                 </buttonCell>
                             </button>
                             <textField verticalHuggingPriority="750" id="321">
-                                <rect key="frame" x="9" y="12" width="447" height="14"/>
+                                <rect key="frame" x="8" y="12" width="447" height="14"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="center" id="322">
                                     <dateFormatter key="formatter" formatterBehavior="pre10_4" dateFormat="%x" id="323"/>
@@ -1476,7 +1475,7 @@
                                 </connections>
                             </textField>
                             <popUpButton verticalHuggingPriority="750" id="324">
-                                <rect key="frame" x="174" y="79" width="200" height="26"/>
+                                <rect key="frame" x="174" y="78" width="200" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="325">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -1497,15 +1496,15 @@
                     <rect key="frame" x="17" y="16" width="473" height="147"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="9Em-Vf-Pix">
-                        <rect key="frame" x="2" y="2" width="469" height="130"/>
+                        <rect key="frame" x="3" y="3" width="467" height="129"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <box verticalHuggingPriority="750" boxType="separator" id="329">
-                                <rect key="frame" x="12" y="101" width="445" height="5"/>
+                                <rect key="frame" x="12" y="101" width="443" height="5"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                             </box>
                             <textField verticalHuggingPriority="750" id="330">
-                                <rect key="frame" x="9" y="104" width="451" height="14"/>
+                                <rect key="frame" x="9" y="104" width="449" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                                 <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="다운로드" id="331">
                                     <font key="font" metaFont="smallSystemBold"/>
@@ -1514,7 +1513,7 @@
                                 </textFieldCell>
                             </textField>
                             <box verticalHuggingPriority="750" boxType="separator" id="332">
-                                <rect key="frame" x="12" y="38" width="445" height="5"/>
+                                <rect key="frame" x="12" y="38" width="443" height="5"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                             </box>
                             <textField verticalHuggingPriority="750" id="333">
@@ -1589,7 +1588,7 @@
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aiV-b9-PJY">
-                        <rect key="frame" x="2" y="2" width="469" height="80"/>
+                        <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="351">
@@ -1602,7 +1601,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="354">
-                                <rect key="frame" x="9" y="40" width="451" height="28"/>
+                                <rect key="frame" x="9" y="40" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="파일 업로드 시 암호화에 사용할 알고리즘을 선택하시오." id="355">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1617,7 +1616,7 @@
                     <rect key="frame" x="17" y="218" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aDe-7a-zvt">
-                        <rect key="frame" x="2" y="2" width="469" height="80"/>
+                        <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="357">
@@ -1630,7 +1629,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="360">
-                                <rect key="frame" x="9" y="40" width="451" height="28"/>
+                                <rect key="frame" x="9" y="40" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="버킷을 생성할 기본 위치." id="361">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1645,7 +1644,7 @@
                     <rect key="frame" x="17" y="117" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="wk5-XB-g4g">
-                        <rect key="frame" x="2" y="2" width="469" height="80"/>
+                        <rect key="frame" x="3" y="3" width="467" height="79"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="363">
@@ -1658,7 +1657,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="366">
-                                <rect key="frame" x="9" y="40" width="451" height="28"/>
+                                <rect key="frame" x="9" y="40" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="367">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1680,7 +1679,7 @@
                     <rect key="frame" x="17" y="16" width="473" height="132"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="HTA-ik-z0B">
-                        <rect key="frame" x="2" y="2" width="469" height="115"/>
+                        <rect key="frame" x="3" y="3" width="467" height="114"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <popUpButton verticalHuggingPriority="750" id="370">
@@ -1697,7 +1696,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="374">
-                                <rect key="frame" x="9" y="75" width="451" height="28"/>
+                                <rect key="frame" x="9" y="75" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="주어진 파일 형식을 편집할 수 있는 다른 응용프로그램이 없는 경우 파일을 열 테스트 편집기를 선택하시오. 편집기는 이미 설치가 되어 있어야 하면 ODB 인터페이스를 지원해야 함." id="375">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1726,11 +1725,11 @@
                     <rect key="frame" x="17" y="16" width="473" height="98"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="mcs-pM-Cfr">
-                        <rect key="frame" x="2" y="2" width="469" height="81"/>
+                        <rect key="frame" x="3" y="3" width="467" height="80"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" id="410">
-                                <rect key="frame" x="9" y="41" width="451" height="28"/>
+                                <rect key="frame" x="9" y="41" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="변경 내용은 용응 프로그램을 다시 시작할 때 적용됩니다." id="411">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1739,7 +1738,7 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton verticalHuggingPriority="750" id="412">
-                                <rect key="frame" x="9" y="9" width="197" height="26"/>
+                                <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="413">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -1752,19 +1751,19 @@
                 </box>
             </subviews>
         </customView>
-        <customView misplaced="YES" id="UTQ-mX-sfj" userLabel="Panel Cryptomator">
+        <customView id="UTQ-mX-sfj" userLabel="Panel Cryptomator">
             <rect key="frame" x="0.0" y="0.0" width="507" height="103"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box misplaced="YES" title="Cryptomator" id="Xoe-j6-yKO">
+                <box title="Cryptomator" id="Xoe-j6-yKO">
                     <rect key="frame" x="17" y="16" width="473" height="67"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="RhT-uu-LrO">
-                        <rect key="frame" x="2" y="2" width="469" height="50"/>
+                        <rect key="frame" x="3" y="3" width="467" height="49"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button misplaced="YES" id="Tzo-pv-NCb">
-                                <rect key="frame" x="10" y="22" width="253" height="18"/>
+                            <button id="Tzo-pv-NCb">
+                                <rect key="frame" x="10" y="21" width="253" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Auto detect and open vault in browser" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
