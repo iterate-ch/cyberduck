@@ -46,9 +46,6 @@ public class S3TransferAccelerationServiceTest {
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final S3TransferAccelerationService service = new S3TransferAccelerationService(session);
-        service.setStatus(container, false);
-        assertFalse(service.getStatus(container));
-        service.setStatus(container, true);
-        assertTrue(service.getStatus(container));
+        service.getStatus(container);
     }
 }
