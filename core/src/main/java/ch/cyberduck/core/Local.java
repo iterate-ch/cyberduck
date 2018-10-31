@@ -38,8 +38,10 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
@@ -411,7 +413,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     public InputStream getInputStream() throws AccessDeniedException {
         try {
             final FileChannel channel = FileChannel.open(Paths.get(path), StandardOpenOption.READ);
-            return Channels.newInputStream(channel);
+            return new SeekableByteChannelInputStream(channel);
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(e.getMessage(), e);
@@ -494,5 +496,73 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         sb.append("path='").append(path).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    private static final class SeekableByteChannelInputStream extends InputStream {
+        private final SeekableByteChannel channel;
+        private long markPosition = 0L;
+
+        public SeekableByteChannelInputStream(final SeekableByteChannel channel) {
+            this.channel = channel;
+        }
+
+        @Override
+        public int read() throws IOException {
+            final ByteBuffer buffer = ByteBuffer.wrap(new byte[1]);
+            final int bytesRead = channel.read(buffer);
+            if(bytesRead > 0) {
+                buffer.position(0);
+                return buffer.get();
+            }
+            else {
+                return -1;
+            }
+        }
+
+        @Override
+        public int read(final byte[] b, final int off, final int len) throws IOException {
+            final ByteBuffer buffer = ByteBuffer.wrap(b);
+            buffer.position(off);
+            buffer.limit(off + len);
+            final int bytesRead = channel.read(buffer);
+            if(bytesRead > 0) {
+                return bytesRead;
+            }
+            else {
+                return -1;
+            }
+        }
+
+        @Override
+        public long skip(final long n) throws IOException {
+            channel.position(channel.position() + n);
+            return channel.position();
+        }
+
+        @Override
+        public boolean markSupported() {
+            return true;
+        }
+
+        @Override
+        public void mark(final int readlimit) {
+            try {
+                markPosition = channel.position();
+            }
+            catch(final IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public void reset() throws IOException {
+            channel.position(markPosition);
+            markPosition = 0;
+        }
+
+        @Override
+        public void close() throws IOException {
+            channel.close();
+        }
     }
 }

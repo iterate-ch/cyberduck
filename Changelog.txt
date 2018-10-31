@@ -5,6 +5,7 @@ https://cyberduck.io/
 - [Bugfix] Refinements to dark mode (macOS) (#10508, #10510)
 - [Bugfix] Failure running script in Terminal. Not authorized to send Apple events to Terminal (macOS) (#10475)
 - [Bugfix] Upload action not enabled when server is not returning permission mask (FTP) (#10506)
+- [Bugfix] Large uploads requiring checksum of parts fail with network timeout (#10516)
 
 6.8.2
 - [Bugfix] Failure transferring more than one file (FTP) (#10494)
