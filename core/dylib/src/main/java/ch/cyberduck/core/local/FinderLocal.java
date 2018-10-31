@@ -23,7 +23,6 @@ import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.io.LocalRepeatableFileInputStream;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -200,24 +199,11 @@ public class FinderLocal extends Local {
             resolved = this.lock(false);
         }
         catch(AccessDeniedException e) {
+            log.warn(String.format("Failure obtaining lock for %s. %s", this, e.getMessage()));
             return super.getInputStream();
         }
-        try {
-            return new ProxyInputStream(new LocalRepeatableFileInputStream(new File(resolved.path()))) {
-                @Override
-                public void close() throws IOException {
-                    try {
-                        super.close();
-                    }
-                    finally {
-                        release(resolved);
-                    }
-                }
-            };
-        }
-        catch(FileNotFoundException e) {
-            throw new LocalAccessDeniedException(e.getMessage(), e);
-        }
+        final InputStream proxy = super.getInputStream(resolved.path());
+        return new LockReleaseProxyInputStream(proxy, resolved);
     }
 
     private static String resolveAlias(final String absolute) {
@@ -236,5 +222,24 @@ public class FinderLocal extends Local {
     @Override
     public FinderLocalAttributes attributes() {
         return new FinderLocalAttributes(this);
+    }
+
+    private final class LockReleaseProxyInputStream extends ProxyInputStream {
+        private final NSURL resolved;
+
+        public LockReleaseProxyInputStream(final InputStream proxy, final NSURL resolved) {
+            super(proxy);
+            this.resolved = resolved;
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                super.close();
+            }
+            finally {
+                release(resolved);
+            }
+        }
     }
 }

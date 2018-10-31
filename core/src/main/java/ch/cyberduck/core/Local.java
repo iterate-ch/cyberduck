@@ -411,6 +411,10 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public InputStream getInputStream() throws AccessDeniedException {
+        return this.getInputStream(path);
+    }
+
+    protected InputStream getInputStream(final String path) throws LocalAccessDeniedException {
         try {
             final FileChannel channel = FileChannel.open(Paths.get(path), StandardOpenOption.READ);
             return new SeekableByteChannelInputStream(channel);
@@ -421,6 +425,10 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public OutputStream getOutputStream(final boolean append) throws AccessDeniedException {
+        return this.getOutputStream(path, append);
+    }
+
+    protected OutputStream getOutputStream(final String path, final boolean append) throws LocalAccessDeniedException {
         try {
             final Set<OpenOption> options = new HashSet<>();
             options.add(StandardOpenOption.WRITE);
