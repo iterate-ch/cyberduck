@@ -205,3 +205,9 @@ source_file = en.lproj/Cryptomator.strings
 source_lang = en
 type = STRINGS
 
+[cyberduck.SDS]
+file_filter = <lang>.lproj/SDS.strings
+source_file = en.lproj/SDS.strings
+source_lang = en
+type = STRINGS
+
