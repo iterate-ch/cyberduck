@@ -919,7 +919,7 @@ public abstract class Preferences implements Locales {
         /**
          * Enable login prompt in connect retry
          */
-        this.setDefault("connection.retry.login.enable", String.valueOf(false));
+        this.setDefault("connection.retry.login.enable", String.valueOf(true));
 
         this.setDefault("connection.hostname.default", StringUtils.EMPTY);
         /*
