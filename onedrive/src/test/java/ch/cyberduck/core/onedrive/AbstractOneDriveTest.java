@@ -15,24 +15,15 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,33 +33,30 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public abstract class AbstractOneDriveTest {
-
+public abstract class AbstractOneDriveTest extends AbstractGraphTest {
     protected OneDriveSession session;
 
-    @After
-    public void disconnect() throws Exception {
-        session.close();
+    @Override
+    protected Protocol protocol() {
+        return new OneDriveProtocol();
     }
 
-    @Before
-    public void setup() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OneDriveProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
-        session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                fail(reason);
-                return null;
-            }
-        }, new DisabledHostKeyCallback(),
-            new TestPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+    @Override
+    protected Local profile() {
+        return new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile");
     }
 
-    public static class TestPasswordStore extends DisabledPasswordStore {
+    @Override
+    protected HostPasswordStore passwordStore() {
+        return new TestPasswordStore();
+    }
+
+    @Override
+    protected GraphSession session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+        return (session = new OneDriveSession(host, trust, key));
+    }
+
+    public final static class TestPasswordStore extends DisabledPasswordStore {
         @Override
         public String getPassword(Scheme scheme, int port, String hostname, String user) {
             if(user.endsWith("Microsoft OneDrive (cyberduck) OAuth2 Access Token")) {

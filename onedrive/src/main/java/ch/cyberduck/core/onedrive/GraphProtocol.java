@@ -45,4 +45,14 @@ public abstract class GraphProtocol extends AbstractProtocol {
         // Only provide account email
         return false;
     }
+
+    @Override
+    public Type getType() {
+        return Type.onedrive;
+    }
+
+    @Override
+    public String disk() {
+        return "onedrive.tiff";
+    }
 }

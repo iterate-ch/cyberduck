@@ -28,11 +28,11 @@ public class SharepointProtocol extends GraphProtocol {
 
     @Override
     public String getName() {
-        return "SharePoint";
+        return "Sharepoint";
     }
 
     @Override
     public String getPrefix() {
-        return String.format("%s.%s", SharepointProtocol.class.getPackage().getName(), "SharePoint");
+        return String.format("%s.%s", SharepointProtocol.class.getPackage().getName(), "Sharepoint");
     }
 }

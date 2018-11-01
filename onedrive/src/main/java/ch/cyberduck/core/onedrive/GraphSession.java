@@ -15,20 +15,71 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.MultipartWrite;
+import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Search;
+import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
+import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
+import ch.cyberduck.core.onedrive.features.GraphBufferWriteFeature;
+import ch.cyberduck.core.onedrive.features.GraphCopyFeature;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
+import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
+import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
+import ch.cyberduck.core.onedrive.features.GraphFindFeature;
+import ch.cyberduck.core.onedrive.features.GraphMoveFeature;
+import ch.cyberduck.core.onedrive.features.GraphQuotaFeature;
+import ch.cyberduck.core.onedrive.features.GraphReadFeature;
+import ch.cyberduck.core.onedrive.features.GraphSearchFeature;
+import ch.cyberduck.core.onedrive.features.GraphTimestampFeature;
+import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
+import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpRequest;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.protocol.HttpContext;
 import org.nuxeo.onedrive.client.OneDriveAPI;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.RequestExecutor;
+import org.nuxeo.onedrive.client.RequestHeader;
+
+import java.io.IOException;
+import java.util.Set;
 
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
+    private OAuth2RequestInterceptor authorizationService;
+
+    protected final GraphFileIdProvider fileIdProvider = new GraphFileIdProvider(this);
+
     protected GraphSession(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
@@ -37,29 +88,154 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         return this.toItem(currentPath, true);
     }
 
-    public abstract OneDriveItem toItem(final Path currentPath, final boolean resolveLastItem) throws BackgroundException;
+    public abstract OneDriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException;
 
-    public OneDriveFile toFile(final Path currentPath) throws BackgroundException {
-        return this.toFile(currentPath, true);
+    public boolean isAccessible(final Path path) {
+        return this.isAccessible(path, true);
     }
 
-    public OneDriveFile toFile(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
-        final OneDriveItem item = this.toItem(currentPath, resolveLastItem);
+    public abstract boolean isAccessible(Path file, boolean container);
+
+    public abstract Path getContainer(Path file);
+
+    public OneDriveFile toFile(final Path file) throws BackgroundException {
+        return this.toFile(file, true);
+    }
+
+    public OneDriveFile toFile(final Path file, final boolean resolveLastItem) throws BackgroundException {
+        final OneDriveItem item = this.toItem(file, resolveLastItem);
         if(!(item instanceof OneDriveFile)) {
-            throw new NotfoundException(String.format("%s is not a file.", currentPath.getAbsolute()));
+            throw new NotfoundException(String.format("%s is not a file.", file.getAbsolute()));
         }
         return (OneDriveFile) item;
     }
 
-    public OneDriveFolder toFolder(final Path currentPath) throws BackgroundException {
-        return this.toFolder(currentPath, true);
+    public OneDriveFolder toFolder(final Path file) throws BackgroundException {
+        return this.toFolder(file, true);
     }
 
-    public OneDriveFolder toFolder(final Path currentPath, final boolean resolveLastItem) throws BackgroundException {
-        final OneDriveItem item = this.toItem(currentPath, resolveLastItem);
+    public OneDriveFolder toFolder(final Path file, final boolean resolveLastItem) throws BackgroundException {
+        final OneDriveItem item = this.toItem(file, resolveLastItem);
         if(!(item instanceof OneDriveFolder)) {
-            throw new NotfoundException(String.format("%s is not a folder.", currentPath.getAbsolute()));
+            throw new NotfoundException(String.format("%s is not a folder.", file.getAbsolute()));
         }
         return (OneDriveFolder) item;
+    }
+
+    @Override
+    protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
+        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol()) {
+            @Override
+            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                if(request.containsHeader(HttpHeaders.AUTHORIZATION)) {
+                    super.process(request, context);
+                }
+            }
+        }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        configuration.addInterceptorLast(authorizationService);
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
+        final RequestExecutor executor = new GraphCommonsHttpRequestExecutor(configuration.build()) {
+            @Override
+            public void addAuthorizationHeader(final Set<RequestHeader> headers) {
+                // Placeholder
+                headers.add(new RequestHeader(HttpHeaders.AUTHORIZATION, "Bearer"));
+            }
+        };
+        return new OneDriveAPI() {
+            @Override
+            public RequestExecutor getExecutor() {
+                return executor;
+            }
+
+            @Override
+            public boolean isBusinessConnection() {
+                return false;
+            }
+
+            @Override
+            public boolean isGraphConnection() {
+                if(StringUtils.equals("graph.microsoft.com", host.getHostname())) {
+                    return true;
+                }
+                else if(StringUtils.equals("graph.microsoft.de", host.getHostname())) {
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public String getBaseURL() {
+                return String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), host.getProtocol().getContext());
+            }
+
+            @Override
+            public String getEmailURL() {
+                return null;
+            }
+        };
+    }
+
+    @Override
+    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        authorizationService.setTokens(authorizationService.authorize(host, keychain, prompt, cancel));
+    }
+
+    @Override
+    protected void logout() throws BackgroundException {
+        try {
+            client.getExecutor().close();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T _getFeature(final Class<T> type) {
+        if(type == IdProvider.class) {
+            return (T) fileIdProvider;
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new GraphAttributesFinderFeature(this);
+        }
+        if(type == Directory.class) {
+            return (T) new GraphDirectoryFeature(this);
+        }
+        if(type == Read.class) {
+            return (T) new GraphReadFeature(this);
+        }
+        if(type == Write.class) {
+            return (T) new GraphWriteFeature(this);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new GraphBufferWriteFeature(this);
+        }
+        if(type == Delete.class) {
+            return (T) new GraphDeleteFeature(this);
+        }
+        if(type == Touch.class) {
+            return (T) new GraphTouchFeature(this);
+        }
+        if(type == Move.class) {
+            return (T) new GraphMoveFeature(this);
+        }
+        if(type == Copy.class) {
+            return (T) new GraphCopyFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new GraphFindFeature(this);
+        }
+        if(type == Search.class) {
+            return (T) new GraphSearchFeature(this);
+        }
+        if(type == Timestamp.class) {
+            return (T) new GraphTimestampFeature(this);
+        }
+        if (type == Quota.class) {
+            return (T) new GraphQuotaFeature(this);
+        }
+        return super._getFeature(type);
     }
 }

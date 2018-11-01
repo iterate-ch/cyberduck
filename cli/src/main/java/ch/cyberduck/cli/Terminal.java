@@ -42,6 +42,7 @@ import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.manta.MantaProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
 import ch.cyberduck.core.onedrive.OneDriveProtocol;
+import ch.cyberduck.core.onedrive.SharepointProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
@@ -127,6 +128,7 @@ public class Terminal {
             new DropboxProtocol(),
             new DropboxProtocol(),
             new OneDriveProtocol(),
+            new SharepointProtocol(),
             new LocalProtocol(),
             new SDSProtocol(),
             new MantaProtocol()

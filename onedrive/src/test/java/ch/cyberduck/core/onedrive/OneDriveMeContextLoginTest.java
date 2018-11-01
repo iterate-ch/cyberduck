@@ -17,8 +17,8 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
@@ -78,8 +78,7 @@ public class OneDriveMeContextLoginTest {
 
     @Test
     public void testLogin() throws Exception {
-        final Path home = new OneDriveHomeFinderFeature(session).find();
-        assertFalse(home.isRoot());
-        assertTrue(new PathContainerService().isContainer(home));
+        final Path home = new DefaultHomeFinderService(session).find();
+        assertTrue(home.isRoot());
     }
 }

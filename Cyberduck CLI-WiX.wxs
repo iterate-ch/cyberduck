@@ -214,6 +214,9 @@
       <Component Id="onedrive.cyberduckprofile">
         <File Source="$(var.CLI.TargetDir)/profiles/Microsoft OneDrive.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
+      <Component Id="sharepoint.cyberduckprofile">
+        <File Source="$(var.CLI.TargetDir)/profiles/Microsoft SharePoint.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
       <Component Id="rackspace.cyberduckprofile">
         <File Source="$(var.CLI.TargetDir)/profiles/Rackspace US.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>

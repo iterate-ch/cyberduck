@@ -30,12 +30,13 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.onedrive.features.OneDriveHomeFinderFeature;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -44,6 +45,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 @Category(IntegrationTest.class)
 public class OneDriveBusinessContextLoginTest {
 
@@ -51,7 +53,7 @@ public class OneDriveBusinessContextLoginTest {
     public void testLogin() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OneDriveProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/Microsoft OneDrive Business.cyberduckprofile"));
+            new Local("../profiles/default/Microsoft SharePoint.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         final OneDriveSession session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
@@ -78,6 +80,6 @@ public class OneDriveBusinessContextLoginTest {
                     return super.getPassword(hostname, user);
                 }
             }, new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        assertEquals("/b!9prv2DvXt0Cua27a0kKBHlYP69u02QdCtkueQRimv8UsYPDHr-_uQoMvBiuYAjdH", (new OneDriveHomeFinderFeature(session).find().getAbsolute()));
+        assertEquals("/b!9prv2DvXt0Cua27a0kKBHlYP69u02QdCtkueQRimv8UsYPDHr-_uQoMvBiuYAjdH", (new DefaultHomeFinderService(session).find().getAbsolute()));
     }
 }

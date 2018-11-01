@@ -60,7 +60,7 @@ public class OneDriveSharingLinkUrlProvider implements PromptUrlProvider {
 
         }
         catch(OneDriveAPIException e) {
-            throw new OneDriveExceptionMappingService().map(e);
+            throw new GraphExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

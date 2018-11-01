@@ -1,0 +1,67 @@
+package ch.cyberduck.core.onedrive.features;
+
+/*
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.Quota;
+import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
+import ch.cyberduck.core.onedrive.GraphSession;
+import ch.cyberduck.core.onedrive.OneDriveSession;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
+
+import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveDrive;
+import org.nuxeo.onedrive.client.OneDriveItem;
+
+import java.io.IOException;
+
+public class GraphQuotaFeature implements Quota {
+
+    private final GraphSession session;
+
+    public GraphQuotaFeature(final GraphSession session) {
+        this.session = session;
+    }
+
+    @Override
+    public Space get() throws BackgroundException {
+        final Path home = new DefaultHomeFinderService(session).find();
+        if (!session.isAccessible(home)) {
+            // not accessible (important for Sharepoint)1
+            return new Space(0L, Long.MAX_VALUE);
+        }
+        final OneDriveDrive.Metadata metadata;
+        try {
+            // retrieve OneDriveItem from home
+            final OneDriveItem item = session.toItem(home, true);
+            // returns drive, which can then query metadata.
+            metadata = item.getDrive().getMetadata();
+        }
+        catch(OneDriveAPIException e) {
+            throw new GraphExceptionMappingService().map("Failure to read attributes of {0}", e, home);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, home);
+        }
+        return new Space(
+            metadata.getUsed() != null ? metadata.getUsed() : 0,
+            metadata.getTotal() != null ? metadata.getTotal() : Long.MAX_VALUE);
+    }
+}
