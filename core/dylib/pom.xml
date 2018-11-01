@@ -89,5 +89,20 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.rococoa</groupId>
+            <artifactId>librococoa</artifactId>
+            <version>0.8.2</version>
+            <type>dylib</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>libjnidispatch</artifactId>
+            <classifier>x86_64</classifier>
+            <type>dylib</type>
+            <version>5.0.0</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 </project>

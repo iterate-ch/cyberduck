@@ -14,7 +14,8 @@
   ~ GNU General Public License for more details.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ch.cyberduck</groupId>
@@ -34,29 +35,6 @@
             <groupId>org.rococoa</groupId>
             <artifactId>rococoa-core</artifactId>
             <version>0.8.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.rococoa</groupId>
-            <artifactId>librococoa</artifactId>
-            <version>0.8.2</version>
-            <type>dylib</type>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>libjnidispatch</artifactId>
-            <classifier>native</classifier>
-            <type>dylib</type>
-            <version>4.2</version>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>

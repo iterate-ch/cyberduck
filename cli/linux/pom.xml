@@ -73,5 +73,21 @@
             <artifactId>cli</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>libjnidispatch</artifactId>
+            <classifier>x86_32</classifier>
+            <type>so</type>
+            <version>5.0.0</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>libjnidispatch</artifactId>
+            <classifier>x86_64</classifier>
+            <type>so</type>
+            <version>5.0.0</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 </project>

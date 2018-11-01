@@ -30,29 +30,29 @@ import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
 public interface FSEvents extends Library {
-    FSEvents library = (FSEvents) Native.loadLibrary("Carbon", FSEvents.class);
+    FSEvents library = Native.load("Carbon", FSEvents.class);
 
     CFArrayRef CFArrayCreate(
-            CFAllocatorRef allocator, // always set to Pointer.NULL
-            Pointer[] values,
-            CFIndex numValues,
-            Void callBacks // always set to Pointer.NULL
+        CFAllocatorRef allocator, // always set to Pointer.NULL
+        Pointer[] values,
+        CFIndex numValues,
+        Void callBacks // always set to Pointer.NULL
     );
 
     CFStringRef CFStringCreateWithCharacters(
-            Void alloc, //  always pass NULL
-            char[] chars,
-            CFIndex numChars
+        Void alloc, //  always pass NULL
+        char[] chars,
+        CFIndex numChars
     );
 
     FSEventStreamRef FSEventStreamCreate(
-            Pointer v, // always use Pointer.NULL
-            FSEventStreamCallback callback,
-            Pointer context,  // always use Pointer.NULL
-            CFArrayRef pathsToWatch,
-            long sinceWhen, // use -1 for events since now
-            double latency, // in seconds
-            int flags // 0 is good for now
+        Pointer v, // always use Pointer.NULL
+        FSEventStreamCallback callback,
+        Pointer context,  // always use Pointer.NULL
+        CFArrayRef pathsToWatch,
+        long sinceWhen, // use -1 for events since now
+        double latency, // in seconds
+        int flags // 0 is good for now
 
     );
 
