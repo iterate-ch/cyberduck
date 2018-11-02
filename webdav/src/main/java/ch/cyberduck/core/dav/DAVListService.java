@@ -31,9 +31,10 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineException;
@@ -54,7 +55,10 @@ public class DAVListService implements ListService {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
             final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(directory), 1,
-                Collections.singleton(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE));
+                Stream.of(
+                    DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
+                    DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
+                    collect(Collectors.toSet()));
             for(final DavResource resource : resources) {
                 // Try to parse as RFC 2396
                 final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
@@ -66,10 +70,9 @@ public class DAVListService implements ListService {
                     }
                     throw new NotfoundException(directory.getAbsolute());
                 }
-                final PathAttributes attributes = this.attributes.toAttributes(resource);
+                final PathAttributes attr = attributes.toAttributes(resource);
                 final Path file = new Path(directory, PathNormalizer.name(href),
-                    resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
-                    attributes);
+                    resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attr);
                 children.add(file);
                 listener.chunk(directory, children);
             }
