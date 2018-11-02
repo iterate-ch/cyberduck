@@ -40,9 +40,12 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
     public static final QName LAST_MODIFIED_DEFAULT_NAMESPACE =
         SardineUtil.createQNameWithDefaultNamespace("lastmodified");
 
+    // Modified timestamp we want to preserve - set by Cyberduck
     public static final QName LAST_MODIFIED_CUSTOM_NAMESPACE =
         SardineUtil.createQNameWithCustomNamespace("lastmodified");
 
+    // Contains the server side timestamp at the time we have set our custom lastmodified. If this value differs
+    // from the modification date on the server the resource has been modified by another user or application.
     public static final QName LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE =
         SardineUtil.createQNameWithCustomNamespace("lastmodified_server");
 
