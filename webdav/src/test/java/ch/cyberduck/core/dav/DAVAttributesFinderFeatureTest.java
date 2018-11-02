@@ -8,18 +8,28 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import javax.xml.namespace.QName;
+import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import com.github.sardine.DavResource;
+
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @Category(IntegrationTest.class)
 public class DAVAttributesFinderFeatureTest {
@@ -27,7 +37,7 @@ public class DAVAttributesFinderFeatureTest {
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -46,7 +56,7 @@ public class DAVAttributesFinderFeatureTest {
     @Test
     public void testFind() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -66,5 +76,51 @@ public class DAVAttributesFinderFeatureTest {
             // Expected
         }
         session.close();
+    }
+
+    @Test
+    public void testCustomModified_NotModified() throws Exception {
+        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(null);
+        final DavResource mock = mock(DavResource.class);
+
+        Map<QName, String> map = new HashMap<>();
+        final String ts = "Mon, 29 Oct 2018 21:14:06 UTC";
+        map.put(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, ts);
+        map.put(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE, "Thu, 01 Nov 2018 15:31:57 UTC");
+        when(mock.getModified()).thenReturn(new DateTime("2018-11-01T15:31:57Z").toDate());
+        when(mock.getCustomPropsNS()).thenReturn(map);
+
+        final PathAttributes attrs = f.toAttributes(mock);
+        assertEquals(new RFC1123DateFormatter().parse(ts).getTime(), attrs.getModificationDate());
+    }
+
+    @Test
+    public void testCustomModified_NotSet() throws Exception {
+        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(null);
+        final DavResource mock = mock(DavResource.class);
+
+        Map<QName, String> map = new HashMap<>();
+        final Date modified = new DateTime("2018-11-01T15:31:57Z").toDate();
+        when(mock.getModified()).thenReturn(modified);
+        when(mock.getCustomPropsNS()).thenReturn(map);
+
+        final PathAttributes attrs = f.toAttributes(mock);
+        assertEquals(modified.getTime(), attrs.getModificationDate());
+    }
+
+    @Test
+    public void testCustomModified_Modified() throws Exception {
+        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(null);
+        final DavResource mock = mock(DavResource.class);
+
+        Map<QName, String> map = new HashMap<>();
+        map.put(DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE, "Mon, 29 Oct 2018 21:14:06 UTC");
+        map.put(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE, "Thu, 01 Nov 2018 15:31:57 UTC");
+        final Date modified = new DateTime("2018-11-02T15:31:57Z").toDate();
+        when(mock.getModified()).thenReturn(modified);
+        when(mock.getCustomPropsNS()).thenReturn(map);
+
+        final PathAttributes attrs = f.toAttributes(mock);
+        assertEquals(modified.getTime(), attrs.getModificationDate());
     }
 }
