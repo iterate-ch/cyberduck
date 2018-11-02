@@ -70,10 +70,9 @@ public class DAVListService implements ListService {
                     }
                     throw new NotfoundException(directory.getAbsolute());
                 }
-                final PathAttributes attributes = this.attributes.toAttributes(resource);
+                final PathAttributes attr = attributes.toAttributes(resource);
                 final Path file = new Path(directory, PathNormalizer.name(href),
-                    resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file),
-                    attributes);
+                    resource.isDirectory() ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file), attr);
                 children.add(file);
                 listener.chunk(directory, children);
             }
