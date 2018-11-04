@@ -43,6 +43,18 @@ public class DriveAttributesFinderFeatureTest extends AbstractDriveTest {
     }
 
     @Test
+    public void testFindRoot() throws Exception {
+        final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, new DriveFileidProvider(session).withCache(cache));
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory))));
+    }
+
+    @Test
+    public void testFindMyDrive() throws Exception {
+        final DriveAttributesFinderFeature f = new DriveAttributesFinderFeature(session, new DriveFileidProvider(session).withCache(cache));
+        assertEquals(PathAttributes.EMPTY, f.find(DriveHomeFinderService.MYDRIVE_FOLDER));
+    }
+
+    @Test
     public void testFind() throws Exception {
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
