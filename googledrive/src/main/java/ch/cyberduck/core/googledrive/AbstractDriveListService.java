@@ -80,6 +80,7 @@ public abstract class AbstractDriveListService implements ListService {
                     // Whether the requesting application supports Team Drives
                     .setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable"))
                     .setQ(query)
+                    // Please note that there is a current limitation for users with approximately one million files in which the requested sort order is ignored
                     .setOrderBy("name")
                     .setPageToken(page)
                     .setFields(fields)
