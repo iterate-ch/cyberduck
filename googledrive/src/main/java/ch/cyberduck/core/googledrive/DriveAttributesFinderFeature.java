@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -53,6 +54,9 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         if(file.isRoot()) {
+            return PathAttributes.EMPTY;
+        }
+        if(new PathContainerService().isContainer(file)) {
             return PathAttributes.EMPTY;
         }
         final AttributedList<Path> list = new FileidDriveListService(session, fileid, file).list(file.getParent(), new DisabledListProgressListener());
