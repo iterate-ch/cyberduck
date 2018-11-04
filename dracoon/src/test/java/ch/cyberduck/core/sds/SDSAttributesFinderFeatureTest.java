@@ -58,6 +58,13 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
     }
 
     @Test
+    public void testFindRoot() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
+        assertEquals(PathAttributes.EMPTY, f.find(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory))));
+    }
+
+    @Test
     public void testFindFile() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(

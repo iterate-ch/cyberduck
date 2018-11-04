@@ -49,6 +49,10 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
+        if(file.isRoot()) {
+            // {"code":400,"message":"Bad Request","debugInfo":"Node ID must be positive.","errorCode":-80001}
+            return PathAttributes.EMPTY;
+        }
         try {
             final Node node = new NodesApi(session.getClient()).getFsNode(
                 Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
