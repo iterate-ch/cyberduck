@@ -53,11 +53,26 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
     }
 
     @Test
-    public void testListLexicographically() throws Exception {
+    public void testListLexicographicallyLetters() throws Exception {
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path f2 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path f1 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(f1.getName().compareTo(f2.getName()) < 0);
+        final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        assertEquals(f1, list.get(0));
+        assertEquals(f2, list.get(1));
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(f1, f2, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListLexicographicallyNumbers() throws Exception {
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path f2 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "103", EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path f1 = new DriveTouchFeature(session, fileid).touch(new Path(directory, "101", EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(f1.getName().compareTo(f2.getName()) < 0);
         final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
         assertEquals(2, list.size());
         assertEquals(f1, list.get(0));
