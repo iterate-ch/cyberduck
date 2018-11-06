@@ -61,7 +61,9 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);
         StorageObject stored = null;
         for(TransferStatus chunk : chunks) {
-            chunk.setChecksum(new MD5ChecksumCompute().compute(local.getInputStream(), chunk));
+            final TransferStatus s = new TransferStatus(chunk);
+            s.setOffset(0);
+            chunk.setChecksum(new MD5ChecksumCompute().compute(local.getInputStream(), s));
             stored = super.upload(file, local, throttle, listener, chunk, callback);
         }
         return stored;
