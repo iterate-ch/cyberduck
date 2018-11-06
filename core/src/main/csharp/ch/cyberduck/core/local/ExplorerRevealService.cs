@@ -15,8 +15,10 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 //
-using System.IO;
 using ch.cyberduck.core.local;
+using System;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Ch.Cyberduck.Core.Local
 {
@@ -24,19 +26,50 @@ namespace Ch.Cyberduck.Core.Local
     {
         public bool reveal(ch.cyberduck.core.Local l)
         {
-            if (l.exists())
+            IntPtr nativeFolder = IntPtr.Zero;
+            try
             {
-                string path = l.getAbsolute();
-                DirectoryInfo d = new DirectoryInfo(path);
-                string parameter = "";
-                if (d.Parent != null)
+                uint psfgaoOut;
+                NativeMethods.SHParseDisplayName(l.getParent().getAbsolute(), IntPtr.Zero, out nativeFolder, 0, out psfgaoOut);
+
+                if (nativeFolder == IntPtr.Zero)
                 {
-                    parameter = "/select,";
+                    return false;
                 }
-                return ApplicationLauncherFactory.get()
-                    .open(new Application("explorer.exe", null), parameter + path);
+
+                IntPtr nativeFile = IntPtr.Zero;
+                try
+                {
+                    NativeMethods.SHParseDisplayName(l.getAbsolute(), IntPtr.Zero, out nativeFile, 0, out psfgaoOut);
+
+                    IntPtr[] fileArray;
+                    if (nativeFile != IntPtr.Zero)
+                    {
+                        fileArray = new IntPtr[] { nativeFile };
+                    }
+                    else
+                    {
+                        fileArray = new IntPtr[] { };
+                    }
+
+                    NativeMethods.SHOpenFolderAndSelectItems(nativeFolder, (uint)fileArray.Length, fileArray, 0);
+                }
+                finally
+                {
+                    if (nativeFile != IntPtr.Zero)
+                    {
+                        Marshal.FreeCoTaskMem(nativeFile);
+                    }
+                }
             }
-            return false;
+            finally
+            {
+                if (nativeFolder != IntPtr.Zero)
+                {
+                    Marshal.FreeCoTaskMem(nativeFolder);
+                }
+            }
+            return true;
         }
     }
 }
