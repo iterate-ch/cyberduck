@@ -273,16 +273,18 @@
             <key>NSAllowsArbitraryLoads</key>
             <true/>
         </dict>
-        <key>${SPARKLE_KEY_PREFIX}FeedURL</key>
+        #ifdef SPARKLE_BUILD
+        <key>SUFeedURL</key>
         <string>${SPARKLEFEED}</string>
-        <key>${SPARKLE_KEY_PREFIX}CheckAtStartup</key>
+        <key>SUCheckAtStartup</key>
         <false/>
-        <key>${SPARKLE_KEY_PREFIX}EnableSystemProfiling</key>
+        <key>SUEnableSystemProfiling</key>
         <false/>
-        <key>${SPARKLE_KEY_PREFIX}PublicDSAKeyFile</key>
+        <key>SUPublicDSAKeyFile</key>
         <string>update.pem</string>
-        <key>${SPARKLE_KEY_PREFIX}ExpectsDSASignature</key>
+        <key>SUExpectsDSASignature</key>
         <true/>
+        #endif
         <key>NSServices</key>
         <array>
             <dict>

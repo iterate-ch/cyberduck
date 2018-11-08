@@ -29,8 +29,15 @@
     <property name="spotlight" value="${module}/spotlight"/>
 
     <property name="app.runtime.system.min" value="10.7.3"/>
-    <property name="build.xcodeoptions"
+
+    <property name="build.xcodeoptions.default"
               value="SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
+
+    <condition property="build.xcodeoptions"
+               value="${build.xcodeoptions.default} SPARKLEFEED='https://version.cyberduck.io/${sparkle.feed}/changelog.rss' INFOPLIST_PREPROCESSOR_DEFINITIONS=SPARKLE_BUILD"
+               else="${build.xcodeoptions.default}">
+        <isset property="sparkle.feed"/>
+    </condition>
 
     <property name="xcode.target" value="app"/>
 
@@ -64,7 +71,7 @@
         <echo message="Building ${app.bundle} with configuration ${xcode.configuration}"/>
         <local name="build.settings"/>
         <property name="build.settings"
-                  value="${build.xcodeoptions} RUNTIME_SOURCE=${runtime.dependency} VERSION=${version} REVISION=${revision} SPARKLEFEED='https://version.cyberduck.io/${sparkle.feed}/changelog.rss' SPARKLE_KEY_PREFIX='${sparkle.key.prefix}' COPYRIGHT='${copyright}'"/>
+                  value="${build.xcodeoptions} RUNTIME_SOURCE=${runtime.dependency} VERSION=${version} REVISION=${revision} COPYRIGHT='${copyright}'"/>
         <echo message="Build settings ${build.settings}"/>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
             <arg line="xcodebuild -project ${home}/'Cyberduck.xcodeproj' -configuration '${xcode.configuration}' -target '${xcode.target}' ${build.settings}"/>

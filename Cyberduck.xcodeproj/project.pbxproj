@@ -2002,7 +2002,6 @@
 				470C646B1328CBDD00146FB6 /* CopyFiles */,
 				47C253691BF0D92800863EAF /* CopyFiles */,
 				47EFE4E11BED03E7009AC47B /* ShellScript */,
-				4723B4F01BF13FE8004FF004 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2313,20 +2312,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		4723B4F01BF13FE8004FF004 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "sed -i '.tmp' 's/${SPARKLE_KEY_PREFIX}/'${SPARKLE_KEY_PREFIX}'/g' \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nrm \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\".tmp\n";
-			showEnvVarsInLog = 0;
-		};
 		4735940F0CE76EE50085DEAC /* Prune NIBs */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

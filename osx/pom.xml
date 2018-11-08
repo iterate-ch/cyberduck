@@ -202,7 +202,6 @@
                                         <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}" />
                                         <property name="sparkle.feed" value="${sparkle.feed}" />
-                                        <property name="sparkle.key.prefix" value="${sparkle.key.prefix}" />
                                         <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
                                     </tasks>
                                 </configuration>
@@ -231,11 +230,9 @@
             </activation>
             <properties>
                 <xcode.configuration>Release</xcode.configuration>
-                <sparkle.feed>/dev/null</sparkle.feed>
-                <sparkle.key.prefix>SU</sparkle.key.prefix>
                 <installer.certificate>3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)</installer.certificate>
                 <codesign.certificate>Developer ID Application: David Kocher (G69SCX94XU)</codesign.certificate>
-                <codesign.arg>--entitlements ../setup/app/sandbox.entitlements</codesign.arg>
+                <codesign.arg>--entitlements ../setup/app/default.entitlements</codesign.arg>
             </properties>
         </profile>
         <profile>
@@ -268,7 +265,6 @@
                                         <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}" />
                                         <property name="sparkle.feed" value="${sparkle.feed}" />
-                                        <property name="sparkle.key.prefix" value="${sparkle.key.prefix}" />
                                         <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
                                     </tasks>
                                 </configuration>
@@ -288,7 +284,6 @@
                                         <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}" />
                                         <property name="sparkle.feed" value="${sparkle.feed}" />
-                                        <property name="sparkle.key.prefix" value="${sparkle.key.prefix}" />
                                         <property name="codesign.certificate" value="${codesign.certificate}" />
                                         <property name="codesign.arg" value="${codesign.arg}" />
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
