@@ -125,7 +125,7 @@ public class S3VersioningFeature implements Versioning {
             cache.remove(container);
         }
         catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e);
+            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
     }
 
