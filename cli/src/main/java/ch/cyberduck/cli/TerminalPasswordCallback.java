@@ -17,6 +17,7 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
@@ -24,6 +25,7 @@ import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 public class TerminalPasswordCallback implements PasswordCallback {
 
@@ -45,23 +47,24 @@ public class TerminalPasswordCallback implements PasswordCallback {
             final char[] input = console.readPassword("%n%s: ", options.getPasswordPlaceholder());
             final Credentials credentials = new Credentials();
             credentials.setPassword(String.valueOf(input));
-            promptSaveCredentials(options, credentials);
-            return credentials;
+            return this.prompt(options, credentials);
         }
         catch(ConnectionCanceledException e) {
             throw new LoginCanceledException(e);
         }
     }
 
-    void promptSaveCredentials(final LoginOptions options, final Credentials credentials) {
+    protected Credentials prompt(final LoginOptions options, final Credentials credentials) {
         if(options.save && options.keychain) {
-            if (!PreferencesFactory.get().getBoolean("keychain.secure")) {
-                console.printf("WARNING! Proceed with caution. Passwords are stored in plain text.");
+            if(!PreferencesFactory.get().getBoolean("keychain.secure")) {
+                console.printf(String.format("WARNING! Passwords are stored in plain text in %s.",
+                    LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "credentials").getAbbreviatedPath()));
             }
             credentials.setSaved(prompt.prompt(LocaleFactory.get().localize("Save password", "Credentials")));
         }
         else {
             credentials.setSaved(options.save);
         }
+        return credentials;
     }
 }

@@ -21,13 +21,11 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -80,8 +78,7 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
                 credentials.setPassword(String.valueOf(input));
                 Arrays.fill(input, ' ');
             }
-            promptSaveCredentials(options, credentials);
-            return credentials;
+            return this.prompt(options, credentials);
         }
         catch(ConnectionCanceledException e) {
             throw new LoginCanceledException(e);
@@ -89,7 +86,7 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
     }
 
     @Override
-    public Local select(final Local identity) throws LoginCanceledException {
+    public Local select(final Local identity) {
         return identity;
     }
 }
