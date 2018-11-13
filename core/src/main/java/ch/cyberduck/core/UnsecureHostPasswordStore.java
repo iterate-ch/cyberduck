@@ -1,6 +1,7 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.log4j.Logger;
@@ -17,7 +18,12 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
 
     private Properties load() {
         final Properties properties = new Properties();
-        ensureDirectoryExists();
+        try {
+            new DefaultLocalDirectoryFeature().mkdir(file.getParent());
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e.getDetail()));
+        }
         if(file.exists()) {
             try {
                 try (InputStream in = file.getInputStream()) {
@@ -35,8 +41,6 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
     }
 
     private void save(final Properties properties) {
-        ensureDirectoryExists();
-
         try (OutputStream out = file.getOutputStream(false)) {
             properties.store(out, "Credentials");
         }
@@ -45,19 +49,6 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
         }
         catch(IOException e) {
             log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e.getMessage()));
-        }
-    }
-
-    private void ensureDirectoryExists() {
-        if(file.getParent().exists()) {
-            return;
-        }
-
-        try {
-            file.getParent().mkdir();
-        }
-        catch(AccessDeniedException e) {
-            log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e.getDetail()));
         }
     }
 
