@@ -147,7 +147,14 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                             LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
                     }
                     // Try to authenticate again
-                    session.login(ProxyFactory.get().find(bookmark), new DisabledPasswordStore(), login, new DisabledCancelCallback());
+                    session.login(ProxyFactory.get().find(bookmark), new DisabledPasswordStore(), login, new CancelCallback() {
+                        @Override
+                        public void verify() throws ConnectionCanceledException {
+                            if(SessionBackgroundAction.this.isCanceled()) {
+                                throw new ConnectionCanceledException();
+                            }
+                        }
+                    });
                     // Run action again after login
                     return this.run();
                 }
