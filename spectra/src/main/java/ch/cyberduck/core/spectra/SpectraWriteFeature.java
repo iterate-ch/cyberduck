@@ -15,21 +15,26 @@
 package ch.cyberduck.core.spectra;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.s3.S3DisabledMultipartService;
+import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
 
 public class SpectraWriteFeature extends S3WriteFeature {
+
+    private final PathContainerService containerService
+        = new S3PathContainerService();
 
     public SpectraWriteFeature(final SpectraSession session) {
         this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
@@ -40,17 +45,13 @@ public class SpectraWriteFeature extends S3WriteFeature {
     }
 
     /**
-     * Add default metadata
+     * Add default metadata. Do not add checksum as object metadata must remain constant for all chunks.
      */
     protected S3Object getDetails(final Path file, final TransferStatus status) {
-        final S3Object object = super.getDetails(file, status);
-        final Checksum checksum = status.getChecksum();
-        if(Checksum.NONE != checksum) {
-            switch(checksum.algorithm) {
-                case crc32:
-                    object.addMetadata("Content-CRC32", checksum.hash);
-                    break;
-            }
+        final S3Object object = new S3Object(containerService.getKey(file));
+        final String mime = status.getMime();
+        if(StringUtils.isNotBlank(mime)) {
+            object.setContentType(mime);
         }
         return object;
     }
