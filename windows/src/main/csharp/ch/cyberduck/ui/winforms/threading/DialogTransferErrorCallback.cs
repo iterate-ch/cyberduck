@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
             _controller = controller;
         }
 
-        public bool prompt(TransferItem item, BackgroundException failure)
+        public bool prompt(TransferItem item, TransferStatus status, BackgroundException failure)
         {
             if (_supressed)
             {

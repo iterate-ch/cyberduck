@@ -21,6 +21,7 @@ import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.cocoa.controller.TransferErrorAlertController;
 
 public class PromptTransferErrorCallback implements TransferErrorCallback {
@@ -35,7 +36,7 @@ public class PromptTransferErrorCallback implements TransferErrorCallback {
     }
 
     @Override
-    public boolean prompt(final TransferItem item, final BackgroundException failure) {
+    public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure) {
         if(suppressed) {
             return !option;
         }
