@@ -17,6 +17,7 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
 
     private Properties load() {
         final Properties properties = new Properties();
+        ensureDirectoryExists();
         if(file.exists()) {
             try {
                 try (InputStream in = file.getInputStream()) {
@@ -34,15 +35,7 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
     }
 
     private void save(final Properties properties) {
-        if(!file.getParent().exists()) {
-            try {
-                file.getParent().mkdir();
-            }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e.getDetail()));
-                return;
-            }
-        }
+        ensureDirectoryExists();
 
         try (OutputStream out = file.getOutputStream(false)) {
             properties.store(out, "Credentials");
@@ -52,6 +45,19 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
         }
         catch(IOException e) {
             log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e.getMessage()));
+        }
+    }
+
+    private void ensureDirectoryExists() {
+        if(file.getParent().exists()) {
+            return;
+        }
+
+        try {
+            file.getParent().mkdir();
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e.getDetail()));
         }
     }
 
