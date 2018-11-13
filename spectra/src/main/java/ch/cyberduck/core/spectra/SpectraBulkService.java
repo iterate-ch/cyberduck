@@ -153,7 +153,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     case upload:
                         job = helper.startWriteJob(
                             container.getKey().getName(), container.getValue(), WriteJobOptions.create()
-                                .withMaxUploadSize(Integer.MAX_VALUE);
+                                .withMaxUploadSize(Integer.MAX_VALUE));
                         break;
                     default:
                         throw new NotfoundException(String.format("Unsupported transfer type %s", type));
