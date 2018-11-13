@@ -18,38 +18,12 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.PathContainerHomeFinderService;
 
-import java.util.EnumSet;
-
-public class S3HomeFinderService extends DefaultHomeFinderService {
-
-    private final PathContainerService containerService
-            = new S3PathContainerService();
+public class S3HomeFinderService extends PathContainerHomeFinderService {
 
     public S3HomeFinderService(final Session session) {
-        super(session);
-    }
-
-    @Override
-    public Path find() throws BackgroundException {
-        final Path home = super.find();
-        if(containerService.isContainer(home)) {
-            return new Path(home.getParent(), home.getName(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        }
-        return home;
-    }
-
-    @Override
-    public Path find(final Path root, final String path) {
-        final Path home = super.find(root, path);
-        if(containerService.isContainer(home)) {
-            return new Path(home.getParent(), home.getName(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        }
-        return home;
+        super(session, new S3PathContainerService());
     }
 }

@@ -15,37 +15,11 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.shared.PathContainerHomeFinderService;
 
-import java.util.EnumSet;
-
-public class B2HomeFinderService extends DefaultHomeFinderService {
-
-    private final PathContainerService containerService
-            = new B2PathContainerService();
+public class B2HomeFinderService extends PathContainerHomeFinderService {
 
     public B2HomeFinderService(final B2Session session) {
-        super(session);
-    }
-
-    @Override
-    public Path find() throws BackgroundException {
-        final Path home = super.find();
-        if(containerService.isContainer(home)) {
-            return new Path(home.getParent(), home.getName(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        }
-        return home;
-    }
-
-    @Override
-    public Path find(final Path root, final String path) {
-        final Path home = super.find(root, path);
-        if(containerService.isContainer(home)) {
-            return new Path(home.getParent(), home.getName(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        }
-        return home;
+        super(session, new B2PathContainerService());
     }
 }
