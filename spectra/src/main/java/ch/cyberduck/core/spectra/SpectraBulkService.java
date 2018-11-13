@@ -61,7 +61,6 @@ import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
 import com.spectralogic.ds3client.helpers.options.ReadJobOptions;
 import com.spectralogic.ds3client.helpers.options.WriteJobOptions;
 import com.spectralogic.ds3client.models.BulkObject;
-import com.spectralogic.ds3client.models.ChecksumType;
 import com.spectralogic.ds3client.models.JobNode;
 import com.spectralogic.ds3client.models.MasterObjectList;
 import com.spectralogic.ds3client.models.Objects;
@@ -154,8 +153,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     case upload:
                         job = helper.startWriteJob(
                             container.getKey().getName(), container.getValue(), WriteJobOptions.create()
-                                .withMaxUploadSize(Integer.MAX_VALUE)
-                                .withChecksumType(ChecksumType.Type.CRC_32));
+                                .withMaxUploadSize(Integer.MAX_VALUE);
                         break;
                     default:
                         throw new NotfoundException(String.format("Unsupported transfer type %s", type));
