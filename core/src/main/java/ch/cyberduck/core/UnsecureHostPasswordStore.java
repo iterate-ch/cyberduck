@@ -34,6 +34,16 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
     }
 
     private void save(final Properties properties) {
+        if(!file.getParent().exists()) {
+            try {
+                file.getParent().mkdir();
+            }
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e.getDetail()));
+                return;
+            }
+        }
+
         try (OutputStream out = file.getOutputStream(false)) {
             properties.store(out, "Credentials");
         }
