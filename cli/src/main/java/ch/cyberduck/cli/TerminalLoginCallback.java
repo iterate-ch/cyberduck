@@ -80,15 +80,7 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
                 credentials.setPassword(String.valueOf(input));
                 Arrays.fill(input, ' ');
             }
-            if(options.save && options.keychain) {
-                if (!PreferencesFactory.get().getBoolean("keychain.secure")) {
-                    console.printf("WARNING! Proceed with caution. Passwords are stored in plain text.");
-                }
-                credentials.setSaved(prompt.prompt(LocaleFactory.get().localize("Save password", "Credentials")));
-            }
-            else {
-                credentials.setSaved(options.save);
-            }
+            promptSaveCredentials(options, credentials);
             return credentials;
         }
         catch(ConnectionCanceledException e) {
