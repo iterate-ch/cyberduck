@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp.auth;
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
@@ -45,7 +44,7 @@ public class SFTPAgentAuthentication implements AuthenticationProvider<Boolean> 
     }
 
     @Override
-    public Boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel)
+    public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
         throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using agent %s for %s", agent, bookmark));

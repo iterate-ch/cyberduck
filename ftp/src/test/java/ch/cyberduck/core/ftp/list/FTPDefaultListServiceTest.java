@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -56,7 +55,7 @@ public class FTPDefaultListServiceTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final ListService list = new FTPDefaultListService(session, new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
             FTPListService.Command.list);
         final Path directory = new FTPWorkdirService(session).find();
@@ -74,7 +73,7 @@ public class FTPDefaultListServiceTest {
         ));
         final FTPSession session = new FTPSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final ListService list = new FTPDefaultListService(session, new CompositeFileEntryParser(Arrays.asList(new UnixFTPEntryParser())),
             FTPListService.Command.lista);
         final Path directory = new FTPWorkdirService(session).find();

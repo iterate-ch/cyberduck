@@ -19,8 +19,6 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -147,7 +145,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                             LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
                     }
                     // Try to authenticate again
-                    session.login(ProxyFactory.get().find(bookmark), new DisabledPasswordStore(), login, new CancelCallback() {
+                    session.login(ProxyFactory.get().find(bookmark), login, new CancelCallback() {
                         @Override
                         public void verify() throws ConnectionCanceledException {
                             if(SessionBackgroundAction.this.isCanceled()) {

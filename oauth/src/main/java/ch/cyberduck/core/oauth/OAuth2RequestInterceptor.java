@@ -17,6 +17,7 @@ package ch.cyberduck.core.oauth;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -43,7 +44,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
     /**
      * Currently valid tokens
      */
-    private Tokens tokens = Tokens.EMPTY;
+    private OAuthTokens tokens = OAuthTokens.EMPTY;
 
     public OAuth2RequestInterceptor(final HttpClient client, final Protocol protocol) {
         this(client, protocol.getOAuthTokenUrl(), protocol.getOAuthAuthorizationUrl(), protocol.getOAuthClientId(), protocol.getOAuthClientSecret(), protocol.getOAuthScopes());
@@ -68,11 +69,11 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
         super(transport, tokenServerUrl, authorizationServerUrl, clientid, clientsecret, scopes);
     }
 
-    public void setTokens(final Tokens tokens) {
+    public void setTokens(final OAuthTokens tokens) {
         this.tokens = tokens;
     }
 
-    public Tokens refresh() throws BackgroundException {
+    public OAuthTokens refresh() throws BackgroundException {
         return super.refresh(tokens);
     }
 

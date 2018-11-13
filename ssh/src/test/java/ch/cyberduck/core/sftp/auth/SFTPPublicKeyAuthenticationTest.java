@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
@@ -58,7 +57,7 @@ public class SFTPPublicKeyAuthenticationTest {
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-            assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
+            assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     fail();
@@ -105,7 +104,7 @@ public class SFTPPublicKeyAuthenticationTest {
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
             final AtomicBoolean p = new AtomicBoolean();
             try {
-                assertFalse(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
+                assertFalse(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
                     @Override
                     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                         p.set(true);
@@ -169,7 +168,7 @@ public class SFTPPublicKeyAuthenticationTest {
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
             final AtomicBoolean b = new AtomicBoolean();
             try {
-                assertFalse(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
+                assertFalse(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
                     @Override
                     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                         b.set(true);
@@ -202,7 +201,7 @@ public class SFTPPublicKeyAuthenticationTest {
             final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", credentials);
             final SFTPSession session = new SFTPSession(host);
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-            assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback() {
+            assertTrue(new SFTPPublicKeyAuthentication(session).authenticate(host, new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                     fail();

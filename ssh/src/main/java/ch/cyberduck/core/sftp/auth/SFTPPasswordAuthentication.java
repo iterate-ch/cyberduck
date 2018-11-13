@@ -19,7 +19,6 @@ import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
@@ -52,7 +51,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
     }
 
     @Override
-    public Boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback callback, final CancelCallback cancel)
+    public Boolean authenticate(final Host bookmark, final LoginCallback callback, final CancelCallback cancel)
         throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         if(StringUtils.isBlank(credentials.getPassword())) {
@@ -64,7 +63,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
                 new LoginOptions(bookmark.getProtocol()).user(false));
             if(input.isPublicKeyAuthentication()) {
                 credentials.setIdentity(input.getIdentity());
-                return new SFTPPublicKeyAuthentication(session).authenticate(bookmark, keychain, callback, cancel);
+                return new SFTPPublicKeyAuthentication(session).authenticate(bookmark, callback, cancel);
             }
             credentials.setSaved(input.isSaved());
             credentials.setPassword(input.getPassword());

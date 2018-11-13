@@ -22,5 +22,7 @@ public interface HostPasswordStore extends PasswordStore {
 
     String findPrivateKeyPassphrase(Host bookmark);
 
+    OAuthTokens findOAuthTokens(Host bookmark);
+
     void save(Host bookmark);
 }

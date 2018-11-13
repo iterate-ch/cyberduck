@@ -39,11 +39,13 @@ public class Credentials implements Comparable<Credentials> {
      */
     private String password = StringUtils.EMPTY;
     private String token = StringUtils.EMPTY;
+    private OAuthTokens oauth = OAuthTokens.EMPTY;
 
     /**
      * Private key identity for SSH public key authentication.
      */
     private Local identity;
+    private String identityPassphrase = StringUtils.EMPTY;
 
     /**
      * Client certificate alias for TLS
@@ -71,7 +73,9 @@ public class Credentials implements Comparable<Credentials> {
         this.user = copy.user;
         this.password = copy.password;
         this.token = copy.token;
+        this.oauth = copy.oauth;
         this.identity = copy.identity;
+        this.identityPassphrase = copy.identityPassphrase;
         this.certificate = copy.certificate;
         this.persist = copy.persist;
         this.passed = copy.passed;
@@ -152,6 +156,19 @@ public class Credentials implements Comparable<Credentials> {
         return this;
     }
 
+    public OAuthTokens getOauth() {
+        return oauth;
+    }
+
+    public void setOauth(final OAuthTokens oauth) {
+        this.oauth = oauth;
+    }
+
+    public Credentials withOauthAccessToken(final OAuthTokens oauth) {
+        this.oauth = oauth;
+        return this;
+    }
+
     /**
      * @return true if the password will be added to the system keychain when logged in successfully
      */
@@ -200,6 +217,10 @@ public class Credentials implements Comparable<Credentials> {
         return StringUtils.isNotBlank(token);
     }
 
+    public boolean isOAuthAuthentication() {
+        return oauth.validate();
+    }
+
     /**
      * SSH specific
      *
@@ -235,6 +256,19 @@ public class Credentials implements Comparable<Credentials> {
     public void setIdentity(final Local file) {
         this.identity = file;
         this.passed = false;
+    }
+
+    public String getIdentityPassphrase() {
+        return identityPassphrase;
+    }
+
+    public void setIdentityPassphrase(final String identityPassphrase) {
+        this.identityPassphrase = identityPassphrase;
+    }
+
+    public Credentials withIdentityPassphrase(final String identityPassphrase) {
+        this.identityPassphrase = identityPassphrase;
+        return this;
     }
 
     public String getCertificate() {

@@ -17,11 +17,18 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.net.URI;
+
 public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     private static final Logger log = Logger.getLogger(DefaultHostPasswordStore.class);
+
+    private final Preferences preferences = PreferencesFactory.get();
 
     /**
      * Find password for login
@@ -116,6 +123,26 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
     }
 
+    @Override
+    public OAuthTokens findOAuthTokens(final Host bookmark) {
+        final long expiry = preferences.getLong(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()));
+        final String prefix = this.getOAuthPrefix(bookmark);
+        return new OAuthTokens(this.getPassword(bookmark.getProtocol().getScheme(),
+            bookmark.getPort(), URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost(),
+            String.format("%s OAuth2 Access Token", prefix)),
+            this.getPassword(bookmark.getProtocol().getScheme(),
+                bookmark.getPort(), URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost(),
+                String.format("%s OAuth2 Refresh Token", prefix)),
+            expiry);
+    }
+
+    private String getOAuthPrefix(final Host bookmark) {
+        if(StringUtils.isNotBlank(bookmark.getCredentials().getUsername())) {
+            return String.format("%s (%s)", bookmark.getProtocol().getDescription(), bookmark.getCredentials().getUsername());
+        }
+        return bookmark.getProtocol().getDescription();
+    }
+
     /**
      * Adds the password to the login keychain
      *
@@ -163,6 +190,23 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         if(credentials.isTokenAuthentication()) {
             this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
                 bookmark.getHostname(), bookmark.getProtocol().getTokenPlaceholder(), credentials.getToken());
+        }
+        if(credentials.isOAuthAuthentication()) {
+            final String prefix = this.getOAuthPrefix(bookmark);
+            if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
+                this.addPassword(bookmark.getProtocol().getScheme(),
+                    bookmark.getPort(), URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost(),
+                    String.format("%s OAuth2 Access Token", prefix), credentials.getOauth().getAccessToken());
+            }
+            if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
+                this.addPassword(bookmark.getProtocol().getScheme(),
+                    bookmark.getPort(), URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost(),
+                    String.format("%s OAuth2 Refresh Token", prefix), credentials.getOauth().getRefreshToken());
+            }
+            // Save expiry
+            if(credentials.getOauth().getExpiryInMilliseconds() != null) {
+                preferences.setProperty(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()), credentials.getOauth().getExpiryInMilliseconds());
+            }
         }
     }
 }

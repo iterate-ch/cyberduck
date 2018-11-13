@@ -137,6 +137,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isOAuthConfigurable() {
+        return StringUtils.isNotBlank(this.getOAuthClientId());
+    }
+
+    @Override
     public boolean isCertificateConfigurable() {
         return false;
     }
@@ -260,8 +265,11 @@ public abstract class AbstractProtocol implements Protocol {
             }
         }
         if(options.publickey) {
-            // No password may be required to decrypt private key
             if(credentials.isPublicKeyAuthentication()) {
+                // No password may be required to decrypt private key
+                if(StringUtils.isBlank(credentials.getIdentityPassphrase())) {
+                    return false;
+                }
                 return true;
             }
             if(!options.password) {

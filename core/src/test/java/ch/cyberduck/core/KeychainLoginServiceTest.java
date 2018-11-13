@@ -22,7 +22,7 @@ public class KeychainLoginServiceTest {
         host.setDefaultPath("/dav/basic");
         final Session session = new NullSession(host) {
             @Override
-            public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+            public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
                 throw new LoginCanceledException();
             }
         };
