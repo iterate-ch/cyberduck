@@ -29,7 +29,7 @@ public class DriveSearchListService extends AbstractDriveListService {
     }
 
     @Override
-    protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
+    protected String query(final Path directory, final ListProgressListener listener) {
         // The contains operator only performs prefix matching for a name.
         return String.format("name contains '%s'", query);
     }

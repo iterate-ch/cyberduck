@@ -30,7 +30,7 @@ public class DriveStarredFolderListService extends AbstractDriveListService {
     }
 
     @Override
-    protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
+    protected String query(final Path directory, final ListProgressListener listener) {
         return "starred";
     }
 }
