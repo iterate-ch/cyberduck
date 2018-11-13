@@ -27,6 +27,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -80,6 +81,9 @@ public class TerminalLoginCallback extends TerminalPasswordCallback implements L
                 Arrays.fill(input, ' ');
             }
             if(options.save && options.keychain) {
+                if (!PreferencesFactory.get().getBoolean("keychain.secure")) {
+                    console.printf("WARNING! Proceed with caution. Passwords are stored in plain text.");
+                }
                 credentials.setSaved(prompt.prompt(LocaleFactory.get().localize("Save password", "Credentials")));
             }
             else {
