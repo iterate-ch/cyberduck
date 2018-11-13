@@ -168,7 +168,7 @@
             </activation>
             <properties>
                 <xcode.configuration>Release</xcode.configuration>
-                <sparkle.feed>/dev/null</sparkle.feed>
+                <sparkle.feed>local</sparkle.feed>
                 <codesign.certificate>Developer ID Application: David Kocher (G69SCX94XU)</codesign.certificate>
                 <installer.certificate>3rd Party Mac Developer Installer: David Kocher (G69SCX94XU)</installer.certificate>
             </properties>
