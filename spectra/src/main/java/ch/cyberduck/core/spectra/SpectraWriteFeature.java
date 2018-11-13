@@ -18,6 +18,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.model.S3Object;
+import org.jets3t.service.utils.ServiceUtils;
 
 public class SpectraWriteFeature extends S3WriteFeature {
 
@@ -53,11 +55,22 @@ public class SpectraWriteFeature extends S3WriteFeature {
         if(StringUtils.isNotBlank(mime)) {
             object.setContentType(mime);
         }
+        final Checksum checksum = status.getChecksum();
+        if(Checksum.NONE != checksum) {
+            switch(checksum.algorithm) {
+                case crc32:
+                    object.addMetadata("Content-CRC32", checksum.hash);
+                    break;
+                case md5:
+                    object.addMetadata("Content-MD5", ServiceUtils.toBase64(ServiceUtils.fromHex(checksum.hash)));
+                    break;
+            }
+        }
         return object;
     }
 
     @Override
     public ChecksumCompute checksum(final Path file) {
-        return ChecksumComputeFactory.get(HashAlgorithm.crc32);
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 }
