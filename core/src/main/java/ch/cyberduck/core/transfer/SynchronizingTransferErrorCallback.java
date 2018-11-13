@@ -25,9 +25,9 @@ public class SynchronizingTransferErrorCallback implements TransferErrorCallback
     }
 
     @Override
-    public boolean prompt(final TransferItem item, final BackgroundException failure) throws BackgroundException {
+    public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure) throws BackgroundException {
         synchronized(this) {
-            return proxy.prompt(item, failure);
+            return proxy.prompt(item, status, failure);
         }
     }
 }
