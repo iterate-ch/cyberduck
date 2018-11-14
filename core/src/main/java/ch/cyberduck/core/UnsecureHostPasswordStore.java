@@ -1,6 +1,7 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.log4j.Logger;
@@ -17,6 +18,12 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
 
     private Properties load() {
         final Properties properties = new Properties();
+        try {
+            new DefaultLocalDirectoryFeature().mkdir(file.getParent());
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e.getDetail()));
+        }
         if(file.exists()) {
             try {
                 try (InputStream in = file.getInputStream()) {
