@@ -22,20 +22,7 @@ import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.SheetController;
-import ch.cyberduck.binding.application.AlertSheetReturnCodeMapper;
-import ch.cyberduck.binding.application.NSAlert;
-import ch.cyberduck.binding.application.NSApplication;
-import ch.cyberduck.binding.application.NSCell;
-import ch.cyberduck.binding.application.NSImage;
-import ch.cyberduck.binding.application.NSMenu;
-import ch.cyberduck.binding.application.NSMenuItem;
-import ch.cyberduck.binding.application.NSPasteboard;
-import ch.cyberduck.binding.application.NSPopUpButton;
-import ch.cyberduck.binding.application.NSView;
-import ch.cyberduck.binding.application.NSWindow;
-import ch.cyberduck.binding.application.NSWorkspace;
-import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.binding.application.WindowListener;
+import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSAppleEventDescriptor;
 import ch.cyberduck.binding.foundation.NSAppleEventManager;
 import ch.cyberduck.binding.foundation.NSArray;
@@ -78,7 +65,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
-import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultBackgroundExecutor;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -122,7 +108,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Setting the main menu and implements application delegate methods
  */
-public class MainController extends BundleController implements NSApplication.Delegate, NSMenu.Validation {
+public class MainController extends BundleController implements NSApplication.Delegate, NSMenu.Validation, NSUserInterfaceValidations {
     private static final Logger log = Logger.getLogger(MainController.class);
 
     /**
@@ -1429,7 +1415,7 @@ public class MainController extends BundleController implements NSApplication.De
         final Selector action = item.action();
         if(action.equals(Foundation.selector("updateMenuClicked:"))) {
             if(updater.hasUpdatePrivileges()) {
-                return Updater.create().validateMenuItem(item);
+                return !updater.isUpdateInProgress();
             }
             return false;
         }
