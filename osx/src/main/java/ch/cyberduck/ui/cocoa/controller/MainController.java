@@ -22,7 +22,20 @@ import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.SheetController;
-import ch.cyberduck.binding.application.*;
+import ch.cyberduck.binding.application.AlertSheetReturnCodeMapper;
+import ch.cyberduck.binding.application.NSAlert;
+import ch.cyberduck.binding.application.NSApplication;
+import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSMenu;
+import ch.cyberduck.binding.application.NSMenuItem;
+import ch.cyberduck.binding.application.NSPasteboard;
+import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.application.NSWindow;
+import ch.cyberduck.binding.application.NSWorkspace;
+import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.application.WindowListener;
 import ch.cyberduck.binding.foundation.NSAppleEventDescriptor;
 import ch.cyberduck.binding.foundation.NSAppleEventManager;
 import ch.cyberduck.binding.foundation.NSArray;
@@ -108,7 +121,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Setting the main menu and implements application delegate methods
  */
-public class MainController extends BundleController implements NSApplication.Delegate, NSMenu.Validation, NSUserInterfaceValidations {
+public class MainController extends BundleController implements NSApplication.Delegate, NSMenu.Validation {
     private static final Logger log = Logger.getLogger(MainController.class);
 
     /**
