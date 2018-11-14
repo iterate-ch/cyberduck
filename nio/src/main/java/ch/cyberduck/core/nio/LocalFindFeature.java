@@ -41,6 +41,9 @@ public class LocalFindFeature implements Find {
         final boolean exists = session.toPath(file).toFile().exists();
         if(exists) {
             if(!file.isRoot()) {
+                if(file.isSymbolicLink()) {
+                    return true;
+                }
                 try {
                     if(!StringUtils.equals(session.toPath(file).toFile().getCanonicalFile().getName(), file.getName())) {
                         return false;
