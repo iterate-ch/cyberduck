@@ -22,7 +22,9 @@ import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import java.util.EnumSet;
@@ -39,6 +41,18 @@ public class LocalFindFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertFalse(new LocalFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        session.close();
+    }
+
+    @Test
+    public void testFindCaseSensitive() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path home = new LocalHomeFinderFeature(session).find();
+        final Path file = new LocalTouchFeature(session).touch(new Path(home, StringUtils.lowerCase(UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new LocalFindFeature(session).find(file));
+        assertFalse(new LocalFindFeature(session).find(new Path(home, StringUtils.capitalize(file.getName()), EnumSet.of(Path.Type.file))));
         session.close();
     }
 

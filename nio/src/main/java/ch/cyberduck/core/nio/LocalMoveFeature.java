@@ -23,30 +23,23 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 public class LocalMoveFeature implements Move {
 
     private final LocalSession session;
-    private Delete delete;
 
     public LocalMoveFeature(final LocalSession session) {
         this.session = session;
-        this.delete = new LocalDeleteFeature(session);
     }
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        try {
-            Files.move(session.toPath(file), session.toPath(renamed), StandardCopyOption.REPLACE_EXISTING);
-            // Copy attributes from original file
-            return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-                new LocalAttributesFinderFeature(session).find(renamed));
+        if(!session.toPath(file).toFile().renameTo(session.toPath(renamed).toFile())) {
+            throw new LocalExceptionMappingService().map("Cannot rename {0}", new IOException(), file);
         }
-        catch(IOException e) {
-            throw new LocalExceptionMappingService().map("Cannot rename {0}", e, file);
-        }
+        // Copy attributes from original file
+        return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
+            new LocalAttributesFinderFeature(session).find(renamed));
     }
 
     @Override
@@ -56,7 +49,6 @@ public class LocalMoveFeature implements Move {
 
     @Override
     public Move withDelete(final Delete delete) {
-        this.delete = delete;
         return this;
     }
 
