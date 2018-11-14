@@ -22,7 +22,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 
 public class LocalMoveFeature implements Move {
 
@@ -35,7 +35,7 @@ public class LocalMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         if(!session.toPath(file).toFile().renameTo(session.toPath(renamed).toFile())) {
-            throw new LocalExceptionMappingService().map("Cannot rename {0}", new IOException(), file);
+            throw new LocalExceptionMappingService().map("Cannot rename {0}", new NoSuchFileException(file.getName()), file);
         }
         // Copy attributes from original file
         return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
