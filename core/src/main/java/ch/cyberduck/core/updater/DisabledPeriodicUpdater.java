@@ -37,4 +37,9 @@ public class DisabledPeriodicUpdater implements PeriodicUpdateChecker {
     public boolean hasUpdatePrivileges() {
         return false;
     }
+
+    @Override
+    public boolean isUpdateInProgress() {
+        return false;
+    }
 }

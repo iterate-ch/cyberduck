@@ -89,4 +89,6 @@ public abstract class Updater extends NSObject {
 
     public abstract boolean validateMenuItem(NSMenuItem menuItem);
 
+    public abstract boolean updateInProgress();
+
 }
