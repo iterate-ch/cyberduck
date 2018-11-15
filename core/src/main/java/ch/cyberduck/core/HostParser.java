@@ -134,83 +134,94 @@ public final class HostParser {
         String hostname = preferences.getProperty("connection.hostname.default");
         String path = null;
         int port = protocol.getDefaultPort();
-        // Handle IPv6
-        if(input.indexOf('[', begin) != -1 && input.indexOf(']', begin) != -1) {
-            if(input.indexOf(']', begin) > input.indexOf('[', begin)) {
-                begin = input.indexOf('[', begin) + 1;
-                cut = input.indexOf(']', begin);
+        if(protocol.isHostnameConfigurable()) {
+            // Handle IPv6
+            if(input.indexOf('[', begin) != -1 && input.indexOf(']', begin) != -1) {
+                if(input.indexOf(']', begin) > input.indexOf('[', begin)) {
+                    begin = input.indexOf('[', begin) + 1;
+                    cut = input.indexOf(']', begin);
+                    String address = input.substring(begin, cut);
+                    if(isv6Address(address)) {
+                        hostname = address;
+                        begin += hostname.length();
+                    }
+                }
+            }
+            else if(input.indexOf(Path.DELIMITER, begin) != -1) {
+                cut = input.indexOf(Path.DELIMITER, begin);
                 String address = input.substring(begin, cut);
                 if(isv6Address(address)) {
                     hostname = address;
                     begin += hostname.length();
                 }
             }
-        }
-        else if(input.indexOf(Path.DELIMITER, begin) != -1) {
-            cut = input.indexOf(Path.DELIMITER, begin);
-            String address = input.substring(begin, cut);
-            if(isv6Address(address)) {
-                hostname = address;
-                begin += hostname.length();
+            else {
+                if(isv6Address(input)) {
+                    hostname = input;
+                    begin += hostname.length();
+                }
+            }
+            if(StringUtils.isBlank(hostname)) {
+                // Handle DNS name or IPv4
+                if(StringUtils.isNotBlank(input)) {
+                    if(input.indexOf(':', begin) != -1
+                        && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
+                        cut = input.indexOf(':', begin);
+                    }
+                    else if(input.indexOf(Path.DELIMITER, begin) != -1) {
+                        cut = input.indexOf(Path.DELIMITER, begin);
+                    }
+                    else {
+                        cut = input.length();
+                    }
+                    hostname = input.substring(begin, cut);
+                    begin += hostname.length();
+                }
+            }
+
+            if (StringUtils.isBlank(hostname)) {
+                hostname = protocol.getDefaultHostname();
+            }
+
+            if(protocol.isPortConfigurable() && input.indexOf(':', begin) != -1
+                && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
+                begin = input.indexOf(':', begin) + 1;
+                String portString;
+                if(input.indexOf(Path.DELIMITER, begin) != -1) {
+                    cut = input.indexOf(Path.DELIMITER, begin);
+                    portString = input.substring(begin, cut);
+                    try {
+                        port = Integer.parseInt(portString);
+                        begin += portString.length();
+                    }
+                    catch(NumberFormatException e) {
+                        log.warn("Invalid port number given");
+                    }
+                    try {
+                        path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
+                        begin += path.length();
+                    }
+                    catch(UnsupportedEncodingException | IllegalArgumentException e) {
+                        log.error(e.getMessage(), e);
+                    }
+                }
+                else {
+                    portString = input.substring(begin, input.length());
+                    try {
+                        port = Integer.parseInt(portString);
+                        begin += portString.length();
+                    }
+                    catch(NumberFormatException e) {
+                        log.warn("Invalid port number given");
+                    }
+                }
             }
         }
         else {
-            if(isv6Address(input)) {
-                hostname = input;
-                begin += hostname.length();
-            }
+            hostname = protocol.getDefaultHostname();
         }
-        if(StringUtils.isBlank(hostname)) {
-            // Handle DNS name or IPv4
-            if(StringUtils.isNotBlank(input)) {
-                if(input.indexOf(':', begin) != -1
-                    && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
-                    cut = input.indexOf(':', begin);
-                }
-                else if(input.indexOf(Path.DELIMITER, begin) != -1) {
-                    cut = input.indexOf(Path.DELIMITER, begin);
-                }
-                else {
-                    cut = input.length();
-                }
-                hostname = input.substring(begin, cut);
-                begin += hostname.length();
-            }
-        }
-        if(input.indexOf(':', begin) != -1
-            && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
-            begin = input.indexOf(':', begin) + 1;
-            String portString;
-            if(input.indexOf(Path.DELIMITER, begin) != -1) {
-                cut = input.indexOf(Path.DELIMITER, begin);
-                portString = input.substring(begin, cut);
-                try {
-                    port = Integer.parseInt(portString);
-                    begin += portString.length();
-                }
-                catch(NumberFormatException e) {
-                    log.warn("Invalid port number given");
-                }
-                try {
-                    path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
-                    begin += path.length();
-                }
-                catch(UnsupportedEncodingException | IllegalArgumentException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-            else {
-                portString = input.substring(begin, input.length());
-                try {
-                    port = Integer.parseInt(portString);
-                    begin += portString.length();
-                }
-                catch(NumberFormatException e) {
-                    log.warn("Invalid port number given");
-                }
-            }
-        }
-        if(input.indexOf(Path.DELIMITER, begin) != -1) {
+
+        if(protocol.isPathConfigurable() && input.indexOf(Path.DELIMITER, begin) != -1) {
             try {
                 path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
             }
@@ -218,35 +229,15 @@ public final class HostParser {
                 log.error(e.getMessage(), e);
             }
         }
-        switch(protocol.getType()) {
-            case b2:
-            case s3:
-            case googlestorage:
-            case swift:
-            case azure:
-            case onedrive:
-                if(StringUtils.isNotBlank(protocol.getDefaultHostname())) {
-                    if(StringUtils.isNotBlank(hostname)) {
-                        // Replace with static hostname and prefix path with bucket
-                        if(StringUtils.isBlank(path)) {
-                            path = PathNormalizer.normalize(hostname);
-                        }
-                        else {
-                            path = PathNormalizer.normalize(hostname) + path;
-                        }
-                        hostname = protocol.getDefaultHostname();
-                    }
-                }
+        if(StringUtils.isBlank(path)) {
+            path = protocol.getDefaultPath(); // use default path if path is empty
         }
-        if(!protocol.isHostnameConfigurable()) {
-            // case file:
-            // case googledrive:
-            // case dropbox:
-            // case onedrive:
-            if(StringUtils.isNotBlank(protocol.getDefaultHostname())) {
-                hostname = protocol.getDefaultHostname();
-            }
+        if(path.indexOf(Path.DELIMITER) != 0) {
+            // handles protocol://path, protocol://user@path/
+            // indexOf would start at after protocol:// making path invalid (e.g. user@)
+            path = Path.DELIMITER + path;
         }
+
         return new Host(protocol, hostname, port, path, new Credentials(username, password));
     }
 
