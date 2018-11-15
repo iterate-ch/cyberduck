@@ -34,28 +34,28 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 public class LocalSymlinkFeatureTest {
 
     @Test
     public void testSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        if(session.isPosixFilesystem()) {
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-            session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-            final Path workdir = new LocalHomeFinderFeature(session).find();
-            final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-            new LocalTouchFeature(session).touch(target, new TransferStatus());
-            final Path link = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
-            new LocalSymlinkFeature(session).symlink(link, target.getName());
-            assertTrue(new LocalFindFeature(session).find(link));
-            assertEquals(EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink),
-                new LocalListService(session).list(workdir, new DisabledListProgressListener()).get(link).getType());
-            new LocalDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            assertFalse(new LocalFindFeature(session).find(link));
-            assertTrue(new LocalFindFeature(session).find(target));
-            new LocalDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            session.close();
-        }
+        assumeTrue(session.isPosixFilesystem());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path workdir = new LocalHomeFinderFeature(session).find();
+        final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new LocalTouchFeature(session).touch(target, new TransferStatus());
+        final Path link = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+        new LocalSymlinkFeature(session).symlink(link, target.getName());
+        assertTrue(new LocalFindFeature(session).find(link));
+        assertEquals(EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink),
+            new LocalListService(session).list(workdir, new DisabledListProgressListener()).get(link).getType());
+        new LocalDeleteFeature(session).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new LocalFindFeature(session).find(link));
+        assertTrue(new LocalFindFeature(session).find(target));
+        new LocalDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
     }
 }
