@@ -16,6 +16,7 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
@@ -23,6 +24,7 @@ import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.nio.file.NoSuchFileException;
+import java.util.Collections;
 
 public class LocalMoveFeature implements Move {
 
@@ -34,6 +36,9 @@ public class LocalMoveFeature implements Move {
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+        if(status.isExists()) {
+            new LocalDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledPasswordCallback(), callback);
+        }
         if(!session.toPath(file).toFile().renameTo(session.toPath(renamed).toFile())) {
             throw new LocalExceptionMappingService().map("Cannot rename {0}", new NoSuchFileException(file.getName()), file);
         }
