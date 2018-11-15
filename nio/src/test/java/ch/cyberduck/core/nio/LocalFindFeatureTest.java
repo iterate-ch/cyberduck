@@ -15,6 +15,7 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -50,7 +51,7 @@ public class LocalFindFeatureTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature(session).find();
-        final Path file = new LocalTouchFeature(session).touch(new Path(home, StringUtils.lowerCase(UUID.randomUUID().toString()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path file = new LocalTouchFeature(session).touch(new Path(home, StringUtils.lowerCase(new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new LocalFindFeature(session).find(file));
         assertFalse(new LocalFindFeature(session).find(new Path(home, StringUtils.capitalize(file.getName()), EnumSet.of(Path.Type.file))));
         session.close();
