@@ -37,7 +37,7 @@ public class LocalFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
-        if(file.isSymbolicLink()) {
+        if(Files.isSymbolicLink(session.toPath(file))) {
             // Do not follow symbolic link to test for file
             return Files.exists(session.toPath(file), LinkOption.NOFOLLOW_LINKS);
         }
