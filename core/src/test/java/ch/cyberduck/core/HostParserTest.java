@@ -25,8 +25,95 @@ public class HostParserTest {
 
     @Test
     public void parse() throws Exception {
-        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https)))).get("https://t%40u@host/key");
+        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https))))
+            .get("https://t%40u@host:443/key");
         assertEquals("host", host.getHostname());
+        assertEquals(443, host.getPort());
         assertEquals("t@u", host.getCredentials().getUsername());
+        assertEquals("/key", host.getDefaultPath());
+    }
+
+    @Test
+    public void parseNonConfigurableEmptyURL() {
+        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
+            @Override
+            public String getDefaultHostname() {
+                return "host";
+            }
+
+            @Override
+            public String getDefaultPath() {
+                return "/default-path";
+            }
+
+            @Override
+            public boolean isHostnameConfigurable() {
+                return false;
+            }
+
+            @Override
+            public boolean isPathConfigurable() {
+                return false;
+            }
+        }))).get("https://");
+        assertEquals("host", host.getHostname());
+        assertEquals("/default-path", host.getDefaultPath());
+    }
+
+    @Test
+    public void parseEmptyHost() {
+        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
+            @Override
+            public String getDefaultHostname() {
+                return "host";
+            }
+
+            @Override
+            public String getDefaultPath() {
+                return "/default-path";
+            }
+
+            @Override
+            public boolean isPathConfigurable() {
+                return false;
+            }
+        }))).get("https://");
+        assertEquals("host", host.getHostname());
+        assertEquals("/default-path", host.getDefaultPath());
+    }
+
+    @Test
+    public void parseEmptyHostWithPath() {
+        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
+            @Override
+            public String getDefaultHostname() {
+                return "host";
+            }
+
+            @Override
+            public String getDefaultPath() {
+                return "/default-path";
+            }
+        }))).get("https:///changed-path");
+        assertEquals("host", host.getHostname());
+        assertEquals("/changed-path", host.getDefaultPath());
+    }
+
+    @Test
+    public void parseDefaultHostname() throws Exception {
+        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
+            @Override
+            public String getDefaultHostname() {
+                return "defaultHostname";
+            }
+
+            @Override
+            public boolean isHostnameConfigurable() {
+                return false;
+            }
+        }))).get("https://user@folder/file");
+        assertEquals("defaultHostname", host.getHostname());
+        assertEquals("user", host.getCredentials().getUsername());
+        assertEquals("/folder/file", host.getDefaultPath());
     }
 }
