@@ -46,6 +46,19 @@ public class LocalFindFeatureTest {
     }
 
     @Test
+    public void testFindSymlink() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path home = new LocalHomeFinderFeature(session).find();
+        final Path file = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
+        // Symlink to non existing target
+        new LocalSymlinkFeature(session).symlink(file, UUID.randomUUID().toString());
+        assertTrue(new LocalFindFeature(session).find(file));
+        session.close();
+    }
+
+    @Test
     public void testFindCaseSensitive() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
