@@ -93,9 +93,9 @@
                                     <artifactItems>
                                         <artifactItem>
                                             <groupId>net.adoptopenjdk</groupId>
-                                            <artifactId>jre</artifactId>
+                                            <artifactId>jdk</artifactId>
                                             <type>zip</type>
-                                            <version>8u192</version>
+                                            <version>11.0.1</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
