@@ -8,10 +8,6 @@
     <packaging>pom</packaging>
     <version>6.8.4-SNAPSHOT</version>
 
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
-
     <modules>
         <!-- Core components -->
         <module>binding</module>
