@@ -8,10 +8,6 @@
     <packaging>pom</packaging>
     <version>6.8.4-SNAPSHOT</version>
 
-    <prerequisites>
-        <maven>3.2.5</maven>
-    </prerequisites>
-
     <modules>
         <!-- Core components -->
         <module>binding</module>
@@ -386,7 +382,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.19.1</version>
+                    <version>2.20.1</version>
                     <configuration>
                         <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
                         <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
