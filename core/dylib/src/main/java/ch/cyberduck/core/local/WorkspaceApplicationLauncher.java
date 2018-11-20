@@ -35,16 +35,16 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     private static final Logger log = Logger.getLogger(WorkspaceApplicationLauncher.class);
 
     private final NSWorkspace workspace
-            = NSWorkspace.sharedWorkspace();
+        = NSWorkspace.sharedWorkspace();
 
     private final Map<Application, ApplicationQuitCallback> registered
-            = new HashMap<Application, ApplicationQuitCallback>();
+        = new HashMap<Application, ApplicationQuitCallback>();
 
     public void register(final Application application, final ApplicationQuitCallback callback) {
         workspace.notificationCenter().addObserver(terminate.id(),
-                Foundation.selector("terminated:"),
-                NSWorkspace.WorkspaceDidTerminateApplicationNotification,
-                null);
+            Foundation.selector("terminated:"),
+            NSWorkspace.WorkspaceDidTerminateApplicationNotification,
+            null);
         if(log.isInfoEnabled()) {
             log.info(String.format("Register application %s for callback %s", application, callback));
         }
@@ -61,7 +61,7 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
                 return;
             }
             final Application application = new Application(notification.userInfo().objectForKey(
-                    "NSApplicationBundleIdentifier").toString());
+                "NSApplicationBundleIdentifier").toString());
             if(registered.containsKey(application)) {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Run quit callback for application %s", application));
@@ -111,7 +111,10 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
 
     @Override
     public boolean open(final Application application, final String args) {
-        throw new UnsupportedOperationException();
+        synchronized(NSWorkspace.class) {
+            // Open application by name should work without any special entitlements when sandboxed
+            return workspace.launchApplication(application.getName());
+        }
     }
 
     /**
@@ -122,7 +125,7 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     public void bounce(final Local file) {
         synchronized(NSWorkspace.class) {
             NSDistributedNotificationCenter.defaultCenter().postNotification(
-                    NSNotification.notificationWithName("com.apple.DownloadFileFinished", file.getAbsolute())
+                NSNotification.notificationWithName("com.apple.DownloadFileFinished", file.getAbsolute())
             );
         }
     }
