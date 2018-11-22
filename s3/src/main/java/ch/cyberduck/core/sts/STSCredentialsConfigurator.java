@@ -137,7 +137,7 @@ public class STSCredentialsConfigurator {
                                     .keychain(false)
                             ).getPassword() : null
                         )
-                        .withRoleSessionName(String.format("%s-%s", preferences.getProperty("application.name"), new AsciiRandomStringService().random()));
+                        .withRoleSessionName(new AsciiRandomStringService().random());
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
                     }
