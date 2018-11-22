@@ -15,6 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -65,6 +66,11 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
 
     @Override
     public Bulk<Void> withDelete(final Delete delete) {
+        return this;
+    }
+
+    @Override
+    public Bulk<Void> withCache(final Cache<Path> cache) {
         return this;
     }
 

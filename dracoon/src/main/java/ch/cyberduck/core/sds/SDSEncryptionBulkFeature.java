@@ -15,8 +15,12 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -30,6 +34,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.dracoon.sdk.crypto.Crypto;
@@ -39,6 +44,8 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
+
+    private Cache<Path> cache = PathCache.empty();
 
     public SDSEncryptionBulkFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
@@ -52,8 +59,17 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 case download:
                     break;
                 default:
+                    final Map<Path, Boolean> encrypted = new HashMap<>();
                     for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                        if(nodeid.isEncrypted(entry.getKey().remote)) {
+                        final Path container = new PathContainerService().getContainer(entry.getKey().remote);
+                        if(encrypted.containsKey(container)) {
+                            continue;
+                        }
+                        encrypted.put(container, nodeid.withCache(cache).isEncrypted(entry.getKey().remote));
+                    }
+                    for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+                        final Path container = new PathContainerService().getContainer(entry.getKey().remote);
+                        if(encrypted.get(container)) {
                             final TransferStatus status = entry.getValue();
                             final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
                             final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
@@ -91,6 +107,12 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     @Override
     public Bulk<Void> withDelete(final Delete delete) {
+        return this;
+    }
+
+    @Override
+    public Bulk<Void> withCache(final Cache<Path> cache) {
+        this.cache = cache;
         return this;
     }
 }
