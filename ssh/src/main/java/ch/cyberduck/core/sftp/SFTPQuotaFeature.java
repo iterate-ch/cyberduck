@@ -31,6 +31,8 @@ import net.schmizz.sshj.sftp.Response;
 import net.schmizz.sshj.sftp.SFTPEngine;
 
 public class SFTPQuotaFeature implements Quota {
+    private static final int MIN_SFTP_SPACE_AVAILABLE_VERSION = 6;
+
     private static final Logger log = Logger.getLogger(SFTPQuotaFeature.class);
 
     private final SFTPSession session;
@@ -42,11 +44,13 @@ public class SFTPQuotaFeature implements Quota {
     @Override
     public Space get() throws BackgroundException {
         final Path home = new SFTPHomeDirectoryService(session).find();
-        try {
-            return this.getSpaceAvailable(session.sftp(), home);
-        }
-        catch(BackgroundException e) {
-            log.info(String.format("Failure obtaining disk quota. %s.", e.getDetail()));
+        if (isSpaceAvailableExtensionAvailable()) {
+            try {
+                return this.getSpaceAvailable(session.sftp(), home);
+            }
+            catch(BackgroundException e) {
+                log.info(String.format("Failure obtaining disk quota. %s.", e.getDetail()));
+            }
         }
         try {
             return this.getSpaceStatVFSOpenSSH(session.sftp(), home);
@@ -61,6 +65,15 @@ public class SFTPQuotaFeature implements Quota {
             log.info(String.format("Failure obtaining disk quota. %s.", e.getDetail()));
         }
         return new Space(0L, Long.MAX_VALUE);
+    }
+
+    private boolean isSpaceAvailableExtensionAvailable() {
+        try {
+            return session.sftp().getOperativeProtocolVersion() >= MIN_SFTP_SPACE_AVAILABLE_VERSION;
+        }
+        catch(BackgroundException e) {
+            return false;
+        }
     }
 
     private Space getSpaceAvailable(SFTPEngine sftp, final Path directory) throws BackgroundException {
