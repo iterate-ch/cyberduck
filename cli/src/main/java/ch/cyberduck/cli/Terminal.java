@@ -353,7 +353,7 @@ public class Terminal {
         }
         final TerminalTransferBackgroundAction action = new TerminalTransferBackgroundAction(controller, reader,
             source, destination,
-            transfer, new TransferOptions().reload(true), prompt, meter,
+            transfer.withCache(cache), new TransferOptions().reload(true), prompt, meter,
             input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                 ? new DisabledStreamListener() : new TerminalStreamListener(meter)
         );
