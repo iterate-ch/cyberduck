@@ -167,10 +167,21 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
 
     public Local getSymlinkTarget() throws NotfoundException, LocalAccessDeniedException {
         try {
+            try {
+                Paths.get(path).toRealPath();
+            }
+            catch(NoSuchFileException ignore) {
+                // Proceed if target is not found
+            }
+            catch(FileSystemException e) {
+                // Too many levels of symbolic links
+                log.warn(String.format("Failure resolving symlink target for %s. %s", path, e.getMessage()));
+                throw new LocalNotfoundException(MessageFormat.format("Failure to read attributes of {0}", this.getName()), e);
+            }
             // For a link that actually points to something (either a file or a directory),
             // the absolute path is the path through the link, whereas the canonical path
             // is the path the link references.
-            final Path target = Files.readSymbolicLink(Paths.get(this.path));
+            final Path target = Files.readSymbolicLink(Paths.get(path));
             if(target.isAbsolute()) {
                 return LocalFactory.get(target.toString());
             }
