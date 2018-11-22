@@ -15,7 +15,9 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
@@ -51,6 +53,12 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
     @Override
     public Bulk<R> withDelete(final Delete delete) {
         proxy.withDelete(delete);
+        return this;
+    }
+
+    @Override
+    public Bulk<R> withCache(final Cache<Path> cache) {
+        proxy.withCache(cache);
         return this;
     }
 
