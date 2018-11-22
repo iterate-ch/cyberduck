@@ -57,8 +57,15 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 case download:
                     break;
                 default:
+                    boolean encrypted = false;
                     for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                        if(nodeid.isEncrypted(entry.getKey().remote)) {
+                        if(nodeid.withCache(cache).isEncrypted(entry.getKey().remote)) {
+                            encrypted = true;
+                        }
+                        break;
+                    }
+                    for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+                        if(encrypted) {
                             final TransferStatus status = entry.getValue();
                             final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
                             final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
