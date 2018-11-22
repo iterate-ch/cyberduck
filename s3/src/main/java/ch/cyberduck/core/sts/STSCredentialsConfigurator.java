@@ -74,7 +74,7 @@ public class STSCredentialsConfigurator {
         }
         final File file = AwsProfileFileLocationProvider.DEFAULT_CREDENTIALS_LOCATION_PROVIDER.getLocation();
         if(null == file) {
-            log.warn("Missing configuration file ~/.aws/ccredentials. Skip auto configuration");
+            log.warn("Missing configuration file ~/.aws/credentials. Skip auto configuration");
             return host.getCredentials();
         }
         // Iterating all profiles on our own because AWSProfileCredentialsConfigurator does not support MFA tokens
