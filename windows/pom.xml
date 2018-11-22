@@ -188,7 +188,7 @@
                     <artifactId>WinSparkle</artifactId>
                     <classifier>native</classifier>
                     <type>dll</type>
-                    <version>0.5.x86</version>
+                    <version>0.6.0.x86</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
