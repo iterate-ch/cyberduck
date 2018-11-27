@@ -44,7 +44,7 @@ public class SFTPQuotaFeature implements Quota {
     @Override
     public Space get() throws BackgroundException {
         final Path home = new SFTPHomeDirectoryService(session).find();
-        if (isSpaceAvailableExtensionAvailable()) {
+        if(isSpaceAvailableExtensionAvailable()) {
             try {
                 return this.getSpaceAvailable(session.sftp(), home);
             }
@@ -52,7 +52,7 @@ public class SFTPQuotaFeature implements Quota {
                 log.info(String.format("Failure obtaining disk quota. %s.", e.getDetail()));
             }
         }
-        if (isStatVFSOpenSSHSupported()) {
+        if(isStatVFSOpenSSHSupported()) {
             try {
                 return this.getSpaceStatVFSOpenSSH(session.sftp(), home);
             }
