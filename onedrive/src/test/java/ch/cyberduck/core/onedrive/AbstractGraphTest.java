@@ -30,15 +30,12 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.After;
 import org.junit.Before;
 
@@ -46,8 +43,6 @@ import java.util.Collections;
 import java.util.HashSet;
 
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeThat;
-import static org.junit.Assume.assumeTrue;
 
 public abstract class AbstractGraphTest {
     private GraphSession session;
@@ -55,14 +50,6 @@ public abstract class AbstractGraphTest {
     @After
     public void disconnect() throws Exception {
         session.close();
-    }
-
-    @Before
-    public void setupPreferencesWindows(){
-        assumeTrue(SystemUtils.IS_OS_WINDOWS);
-        final Preferences preferences = PreferencesFactory.get();
-        preferences.setProperty("connection.ssl.securerandom.algorithm", "Windows-PRNG");
-        preferences.setProperty("connection.ssl.securerandom.provider", "SunMSCAPI");
     }
 
     @Before
