@@ -48,31 +48,34 @@ public class CryptoReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final Path encrypted = vault.encrypt(session, file);
-            // Header
-            final Cryptor cryptor = vault.getCryptor();
-            final TransferStatus headerStatus = new TransferStatus(status);
-            headerStatus.setOffset(0);
-            final InputStream in = proxy.read(encrypted, headerStatus.length(status.isAppend() ?
-                    cryptor.fileHeaderCryptor().headerSize() :
-                    vault.toCiphertextSize(status.getLength())), callback);
-            final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
-            final int read = IOUtils.read(in, headerBuffer.array());
-            final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
-            if(status.isAppend()) {
-                IOUtils.closeQuietly(in);
-                final TransferStatus s = new TransferStatus(status).length(-1L);
-                s.setOffset(this.align(status.getOffset()));
-                final CryptoInputStream crypto = new CryptoInputStream(proxy.read(encrypted, s, callback), cryptor, header, this.chunk(status.getOffset()));
-                crypto.skip(this.position(status.getOffset()));
-                return crypto;
-            }
-            else {
-                return new CryptoInputStream(in, cryptor, header, vault.numberOfChunks(status.getOffset()));
-            }
+            return this.readEncrypted(vault.encrypt(session, file), status, callback);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+    }
+
+    public InputStream readEncrypted(final Path encrypted, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException, IOException {
+        // Header
+        final Cryptor cryptor = vault.getCryptor();
+        final TransferStatus headerStatus = new TransferStatus(status);
+        headerStatus.setOffset(0);
+        final InputStream in = proxy.read(encrypted, headerStatus.length(status.isAppend() ?
+            cryptor.fileHeaderCryptor().headerSize() :
+            vault.toCiphertextSize(status.getLength())), callback);
+        final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
+        final int read = IOUtils.read(in, headerBuffer.array());
+        final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
+        if(status.isAppend()) {
+            IOUtils.closeQuietly(in);
+            final TransferStatus s = new TransferStatus(status).length(-1L);
+            s.setOffset(this.align(status.getOffset()));
+            final CryptoInputStream crypto = new CryptoInputStream(proxy.read(encrypted, s, callback), cryptor, header, this.chunk(status.getOffset()));
+            crypto.skip(this.position(status.getOffset()));
+            return crypto;
+        }
+        else {
+            return new CryptoInputStream(in, cryptor, header, vault.numberOfChunks(status.getOffset()));
         }
     }
 
