@@ -2682,13 +2682,12 @@ public class BrowserController extends WindowController
 
     @Action
     public void connectButtonClicked(final ID sender) {
-        final Host bookmark = new Host(ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")));
-        final ConnectionController controller = ConnectionControllerFactory.create(this, bookmark);
+        final ConnectionController controller = ConnectionControllerFactory.create(this);
         final SheetInvoker sheet = new SheetInvoker(new SheetCallback() {
             @Override
             public void callback(final int returncode) {
                 if(returncode == SheetCallback.DEFAULT_OPTION) {
-                    mount(bookmark);
+                    mount(controller.getBookmark());
                 }
                 controller.callback(returncode);
             }
