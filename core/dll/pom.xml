@@ -63,25 +63,6 @@
                                     <outputDirectory>${project.build.directory}</outputDirectory>
                                 </configuration>
                             </execution>
-                            <execution>
-                                <id>unpack-jre</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>net.adoptopenjdk</groupId>
-                                            <artifactId>jre</artifactId>
-                                            <type>zip</type>
-                                            <version>8u192</version>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <excludes>**/*.dylib</excludes>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
-                                </configuration>
-                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
@@ -112,25 +93,31 @@
             </build>
             <dependencies>
                 <dependency>
-                    <groupId>sunmscapi</groupId>
+                    <groupId>net.adoptopenjdk</groupId>
                     <artifactId>sunmscapi</artifactId>
                     <classifier>native</classifier>
                     <type>dll</type>
-                    <version>7.0.250.17</version>
+                    <version>8u192</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>sunmscapi</groupId>
+                    <groupId>net.adoptopenjdk</groupId>
                     <artifactId>sunmscapi</artifactId>
-                    <version>7.0.250.17</version>
+                    <version>8u192</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>sunec</groupId>
+                    <groupId>net.adoptopenjdk</groupId>
                     <artifactId>sunec</artifactId>
                     <classifier>native</classifier>
                     <type>dll</type>
-                    <version>8.0.920.14</version>
+                    <version>8u192</version>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>net.adoptopenjdk</groupId>
+                    <artifactId>sunec</artifactId>
+                    <version>8u192</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
