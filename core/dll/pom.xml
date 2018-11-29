@@ -117,8 +117,6 @@
                 <dependency>
                     <groupId>net.adoptopenjdk</groupId>
                     <artifactId>sunec</artifactId>
-                    <classifier>native</classifier>
-                    <type>dll</type>
                     <version>8u192</version>
                     <scope>runtime</scope>
                 </dependency>
