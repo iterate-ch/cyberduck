@@ -20,7 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import org.junit.Test;
 import javax.security.auth.x500.X500Principal;
 import java.security.KeyStore;
 import java.security.Principal;
-import java.security.Security;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertFalse;
@@ -41,7 +39,6 @@ public class KeychainStoreTest {
 
     @Before
     public void initBC() throws Exception {
-        Security.insertProviderAt(new BouncyCastleProvider(), 1);
         keychain = KeyStore.getInstance("KeychainStore", "Apple");
         keychain.load(null, null);
     }
