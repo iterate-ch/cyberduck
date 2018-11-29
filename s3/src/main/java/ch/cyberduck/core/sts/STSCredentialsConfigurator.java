@@ -18,11 +18,14 @@ package ch.cyberduck.core.sts;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UseragentProvider;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -32,18 +35,21 @@ import ch.cyberduck.core.proxy.ProxyFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.function.Predicate;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSSessionCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.profile.ProfilesConfigFile;
+import com.amazonaws.auth.profile.internal.AbstractProfilesConfigFileScanner;
+import com.amazonaws.auth.profile.internal.AllProfiles;
 import com.amazonaws.auth.profile.internal.BasicProfile;
-import com.amazonaws.profile.path.AwsProfileFileLocationProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
@@ -62,22 +68,30 @@ public class STSCredentialsConfigurator {
         this.prompt = prompt;
     }
 
-    public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException {
+    public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException, AccessDeniedException {
         final Credentials credentials = new Credentials(host.getCredentials());
         // Find matching profile name or AWS access key in ~/.aws/credentials
-        final String profile = host.getCredentials().getUsername();
+        final Local file = LocalFactory.get(LocalFactory.get(LocalFactory.get(), ".aws"), "credentials");
         // Profile can be null – the default profile from the configuration will be loaded
+        final String profile = host.getCredentials().getUsername();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Look for profile name %s in ~/.aws/credentials", profile));
+            log.debug(String.format("Look for profile name %s in %s", profile, file));
         }
-        final File file = AwsProfileFileLocationProvider.DEFAULT_CREDENTIALS_LOCATION_PROVIDER.getLocation();
-        if(null == file) {
+        if(!file.exists()) {
             log.warn("Missing configuration file ~/.aws/credentials. Skip auto configuration");
             return host.getCredentials();
         }
         // Iterating all profiles on our own because AWSProfileCredentialsConfigurator does not support MFA tokens
-        final ProfilesConfigFile config = new ProfilesConfigFile(file);
-        final Map<String, BasicProfile> profiles = config.getAllBasicProfiles();
+        final Map<String, Map<String, String>> allProfileProperties = new ProfilesConfigFileLoaderHelper()
+            .parseProfileProperties(new Scanner(file.getInputStream(), StandardCharsets.UTF_8.name()));
+        // Convert the loaded property map to credential objects
+        final Map<String, BasicProfile> profilesByName = new LinkedHashMap<String, BasicProfile>();
+        for(Map.Entry<String, Map<String, String>> entry : allProfileProperties.entrySet()) {
+            String profileName = entry.getKey();
+            Map<String, String> properties = entry.getValue();
+            profilesByName.put(profileName, new BasicProfile(profileName, properties));
+        }
+        final Map<String, BasicProfile> profiles = new AllProfiles(profilesByName).getProfiles();
         final Optional<Map.Entry<String, BasicProfile>> optional = profiles.entrySet().stream().filter(new Predicate<Map.Entry<String, BasicProfile>>() {
             @Override
             public boolean test(final Map.Entry<String, BasicProfile> entry) {
@@ -251,5 +265,63 @@ public class STSCredentialsConfigurator {
             }))
             .withClientConfiguration(configuration)
             .withRegion(StringUtils.isNotBlank(region) ? Regions.fromName(region) : Regions.DEFAULT_REGION).build();
+    }
+
+    /**
+     * Implementation of AbstractProfilesConfigFileScanner that groups profile properties into a map
+     * while scanning through the credentials profile.
+     */
+    private static final class ProfilesConfigFileLoaderHelper extends AbstractProfilesConfigFileScanner {
+
+        /**
+         * Map from the parsed profile name to the map of all the property values included the
+         * specific profile
+         */
+        protected final Map<String, Map<String, String>> allProfileProperties = new LinkedHashMap<String, Map<String, String>>();
+
+        /**
+         * Parses the input and returns a map of all the profile properties.
+         */
+        public Map<String, Map<String, String>> parseProfileProperties(Scanner scanner) {
+            allProfileProperties.clear();
+            run(scanner);
+            return new LinkedHashMap<String, Map<String, String>>(allProfileProperties);
+        }
+
+        @Override
+        protected void onEmptyOrCommentLine(String profileName, String line) {
+            // Ignore empty or comment line
+        }
+
+        @Override
+        protected void onProfileStartingLine(String newProfileName, String line) {
+            // If the same profile name has already been declared, clobber the
+            // previous one
+            allProfileProperties.put(newProfileName, new HashMap<String, String>());
+        }
+
+        @Override
+        protected void onProfileEndingLine(String prevProfileName) {
+            // No-op
+        }
+
+        @Override
+        protected void onProfileProperty(String profileName, String propertyKey,
+                                         String propertyValue, boolean isSupportedProperty,
+                                         String line) {
+            Map<String, String> properties = allProfileProperties.get(profileName);
+
+            if(properties.containsKey(propertyKey)) {
+                throw new IllegalArgumentException(
+                    "Duplicate property values for [" + propertyKey + "].");
+            }
+
+            properties.put(propertyKey, propertyValue);
+        }
+
+        @Override
+        protected void onEndOfFile() {
+            // No-op
+        }
     }
 }
