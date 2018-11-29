@@ -17,7 +17,8 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.http.DelayedHttpEntity;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
-import ch.cyberduck.core.threading.DefaultThreadPool;
+import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.ThreadPoolFactory;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.http.Header;
@@ -95,7 +96,7 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
             }
         };
         request.setEntity(entity);
-        final DefaultThreadPool executor = new DefaultThreadPool(String.format("http-%s", url), 1);
+        final ThreadPool executor = ThreadPoolFactory.get(String.format("http-%s", url), 1);
         final Future<CloseableHttpResponse> future = executor.execute(new Callable<CloseableHttpResponse>() {
             @Override
             public CloseableHttpResponse call() throws Exception {
