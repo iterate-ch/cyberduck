@@ -99,7 +99,8 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
             }
         }
         if(status.getLockId() != null) {
-            headers.add(new BasicHeader("If", "(<" + status.getLockId() + ">)"));
+            // Indicate that the client has knowledge of that state token
+            headers.add(new BasicHeader(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
         }
         return this.write(file, headers, status);
     }
