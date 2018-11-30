@@ -95,7 +95,7 @@
                 <dependency>
                     <groupId>net.adoptopenjdk</groupId>
                     <artifactId>sunmscapi</artifactId>
-                    <classifier>native</classifier>
+                    <classifier>x86_32</classifier>
                     <type>dll</type>
                     <version>8u192</version>
                     <scope>runtime</scope>
@@ -109,7 +109,7 @@
                 <dependency>
                     <groupId>net.adoptopenjdk</groupId>
                     <artifactId>sunec</artifactId>
-                    <classifier>native</classifier>
+                    <classifier>x86_32</classifier>
                     <type>dll</type>
                     <version>8u192</version>
                     <scope>runtime</scope>
