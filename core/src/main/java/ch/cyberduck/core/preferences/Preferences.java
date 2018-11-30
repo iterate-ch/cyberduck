@@ -662,8 +662,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("ftp.timezone.auto", String.valueOf(false));
         this.setDefault("ftp.timezone.default", TimeZone.getDefault().getID());
 
-        this.setDefault("ftp.symlink.absolute", String.valueOf(false));
-
         /*
           Authentication header version
          */
@@ -1018,8 +1016,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("ssh.algorithm.mac.blacklist", StringUtils.EMPTY);
         this.setDefault("ssh.algorithm.kex.blacklist", StringUtils.EMPTY);
         this.setDefault("ssh.algorithm.signature.blacklist", StringUtils.EMPTY);
-
-        this.setDefault("sftp.symlink.absolute", String.valueOf(false));
 
         this.setDefault("sftp.read.maxunconfirmed", String.valueOf(64));
         this.setDefault("sftp.write.maxunconfirmed", String.valueOf(64));
