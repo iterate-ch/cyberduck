@@ -17,8 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.http.DelayedHttpEntity;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
-import ch.cyberduck.core.threading.ThreadPool;
-import ch.cyberduck.core.threading.ThreadPoolFactory;
+import ch.cyberduck.core.threading.DefaultThreadPool;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -111,7 +110,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
             }
         };
         request.setEntity(entity);
-        final ThreadPool executor = ThreadPoolFactory.get(String.format("http-%s", url), 1);
+        final DefaultThreadPool executor = new DefaultThreadPool(String.format("http-%s", url), 1);
         final Future<CloseableHttpResponse> future = executor.execute(new Callable<CloseableHttpResponse>() {
             @Override
             public CloseableHttpResponse call() throws Exception {
