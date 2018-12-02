@@ -527,7 +527,7 @@
                         <tabViewItem label="Allmänt" identifier="1" id="101">
                             <view key="view" id="102">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button id="103">
                                         <rect key="frame" x="10" y="169" width="441" height="18"/>
@@ -1210,7 +1210,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="270">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="392" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ange förvalt program som öppnas för filer eller länkar som hänvisar till en FTP-adress." id="271">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1248,7 +1248,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="278">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="392" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ange förvalt program som öppnas för filer eller länkar som hänvisar till en SFTP-adress." id="279">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1455,7 +1455,7 @@
                                 </buttonCell>
                             </button>
                             <button verticalHuggingPriority="750" id="319">
-                                <rect key="frame" x="170" y="38" width="126" height="32"/>
+                                <rect key="frame" x="136" y="38" width="195" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
                                 <buttonCell key="cell" type="push" title="Leta efter uppdatering nu" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -1658,7 +1658,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="366">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="447" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="367">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1697,7 +1697,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="374">
-                                <rect key="frame" x="9" y="75" width="449" height="27"/>
+                                <rect key="frame" x="9" y="75" width="431" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ange en textredigerare som förval. Textredigeraren måste vara installerad och ha stöd för ODB-gränssnittet." id="375">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1764,7 +1764,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button id="Tzo-pv-NCb">
-                                <rect key="frame" x="10" y="21" width="253" height="18"/>
+                                <rect key="frame" x="10" y="21" width="295" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="Upptäck automatiskt och öppna vault i fillista" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>

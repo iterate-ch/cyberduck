@@ -1020,7 +1020,7 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <clipView key="contentView" id="GpH-MS-fG7">
                         <rect key="frame" x="1" y="0.0" width="358" height="135"/>
-                        <autoresizingMask key="autoresizingMask"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" multipleSelection="NO" typeSelect="NO" autosaveName="Metadata" rowHeight="15" headerView="242" id="235">
                                 <rect key="frame" x="0.0" y="0.0" width="358" height="118"/>
@@ -1143,7 +1143,7 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <clipView key="contentView" id="rMW-ks-ynj">
                         <rect key="frame" x="1" y="0.0" width="358" height="101"/>
-                        <autoresizingMask key="autoresizingMask"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" multipleSelection="NO" typeSelect="NO" autosaveName="Metadata" rowHeight="15" headerView="267" id="260">
                                 <rect key="frame" x="0.0" y="0.0" width="358" height="84"/>
