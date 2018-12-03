@@ -31,35 +31,37 @@ public class CryptoDecryptPrivateKeyTest {
     public void testDecryptPrivateKey() throws Exception {
 
         final String pk = "-----BEGIN ENCRYPTED PRIVATE KEY-----\n" +
-            "MIIFKzBVBgkqhkiG9w0BBQ0wSDAnBgkqhkiG9w0BBQwwGgQUmkLyZ7aqpBxIt1p3\n" +
-            "fh1NHXNjkYwCAicQMB0GCWCGSAFlAwQBKgQQwt50hDFaJeroFEE4+hNqdASCBNDM\n" +
-            "41b+QZKvW5uzmhkRKU5tyhvholv/0jvUAQGBKGPS6sueWahUch6pWrZNCUfo/bIf\n" +
-            "V3sjKNysJpNtWjIbCzhpehOkT4s0bItJR9YV4+VU3VEmaWCDSDV44KLq8Zwphdhd\n" +
-            "a3l1bb0xWUnOc/jX4GbY2hvlxgpgEduzd+xjku+bs3Tlca4vN4s1bYu7yL6e5LV4\n" +
-            "1pOMyXZxm+qt/OknrCHQuxD9mXxwkKErF4FAQBz/7cGzrk+/8Sa5xFRMyg8ERmAc\n" +
-            "KZwcxJhYaGodiatpvPyDAhO4BlBL/2RbTw1d3PkNw1wCTXyy1yVcYlo2S/ALZGpP\n" +
-            "Wy7c1hEzd/ntaPQ33jTYdrzNfwVDZCZFSTcTWXUEaCrYt+QgwuQNq45uWyoPGiGh\n" +
-            "FWoVCeLK4VJtAicylIGSey51YvAVmC7LbztAG7rGXHb3PvbbmDSlt8E0NUdiqr6T\n" +
-            "DBDP+OT0aEhG3TdZd4PEhONlMQsi/bg1sAI6ZhkJ48xd66a+MdvyJ1BERKOccG/L\n" +
-            "t30Gx43+Srup9wKkyTQ5ZOm9rIJRGiqzOU2mLr1BCpWQH8Fa76S1qPoAbCRuyhSS\n" +
-            "iVrNomqSfjQS7sFLCTArP5rFlVyQ0s2aPe7CD7ZxiqJvKhu3bowD6XOsQ7xi24vb\n" +
-            "j5z8OveD5cVttoKidmymuHhBwRnpUaMpuh0KSlI/XPUPXkFspgoI9xAk7amcRaFs\n" +
-            "mpOuG3LrIetrW9ojR82DKzHUibOcbQLFqhsA4U8VJPcgDY3Tjzz21La7LYxC6Cc8\n" +
-            "nCFLdSKZE+iei2a3BqWHBUdwpoR/5uQcGbM++WLFD2QKDdLYgGf0cqDRPwlwv0No\n" +
-            "c68qxKUQGf43TYFy8KJObO0nNNEX6kjjxYAT+xOac2i7imHMjYBXSgTCmFc7nN3X\n" +
-            "G4JCJJFj9QyqlI+6XP50FbHgJM2yil+hKAwWbp6+cNdDyNhVrVa/7pQwcQn6ZwsH\n" +
-            "eSE3CkmI9q7FYcGV6MUFLbEPqvSrL0claaVB8dm6W++yU/QyHFjBMN/IpRDdUQ2A\n" +
-            "WGKKFFhcvk2tI6QWpkUgHtuncs78iNDrqgmbTyN6bjBmCZ3vTv7cwV5kf4xxkbq8\n" +
-            "kJN+EyfWNMjIvFpeBVF3YG/bLBTa+QBdQmIOXNnuazdHh8r5oiRLbxCBcbma+X/J\n" +
-            "Rf9V0NJFdwxF1wm95jSj/ZivVyKUyVMQHHw22Q/7wqSknpDJ0x5Ruhq7rbHSbfNv\n" +
-            "MLVYNu9lNVhF2KuhTiKi2xFA7+bai7yIF9mB9NUC9YDOkJYc6AqqOq/0IaHzdc95\n" +
-            "UcCojoq8jP7tN3CNLWHZx/r3kUrZ7Cs1VBgR0XwKK2ko55k7ba2inkPRDJEzoDI8\n" +
-            "RDrm7U87zAllWySsSFbWL88ulFE7U6SAEULMzOIO5n4tO2sBuv48uADWs7BCl57i\n" +
-            "A2YEuqZc567lUgW4sCgURcXLZW6f9AKJpvB1Y7YudekX97USw3aKlSA9lb2sOIRE\n" +
-            "YyMSvuBlOOMrm2O++wzfx8k+Ww6lkAEj6tRGYRSasigF+cyDjRioVV/q/LEl977V\n" +
-            "1XXxRIw9SlOfWvjURsILoj1YINtFKXf2fPnGY3W6P+BIK91B2hBnVGG3EExHoxup\n" +
-            "lD/wZM8NDhfudi3u7+bY7XTvEoP8CeesnD101MfHig==\n" +
-            "-----END ENCRYPTED PRIVATE KEY-----";
+            "MIIFnDCBxQYJKoZIhvcNAQUNMIG3MIGVBgkqhkiG9w0BBQwwgYcEgYAzxG7mDxu4\n" +
+            "TYtue+YQykOFgXlbFSJ9wbvVhVlbJP/16jewb4DhMZ/EWGzufLougL1WCwMc0BGM\n" +
+            "wiozMk3Xl7kYCILBe78dsfS8bDZG9bMyS3PBuUn5Zuo4hhNMMtrJ4qYIOXYKsjml\n" +
+            "rq5aipZXy3d/nfaHpGYTLGJTvSyZKDaGaQICJxAwHQYJYIZIAWUDBAEqBBDBxJJq\n" +
+            "F0v+NbVvALtyDqOyBIIE0Kx8ce2gVTbC4FAowW/cV2texJWMZDe/i/NcTYvXide7\n" +
+            "d8abj23zxWMT6+h89d27mXOD5BQMyXZSXMNAzHoMq2T0/uJwHNbm9VSXIZWrJ1wT\n" +
+            "AHaipyUY5oQ3L0eu5CWqXISspRL7xlLAuIptpHunJIcvMvrK1o9xpJoEiZWUmq67\n" +
+            "1tkDBH3hokcWU9u2YSwQsuZGHY1S0Z9QTiCry1nL8iz1ceRSee6J+ysjnbpxPsO1\n" +
+            "UnNoKLIYYSm8Fep6O635Tc/XkytMF5GpJvLJNYZXuxTIRGUGcnk82hEwmTPp9ANc\n" +
+            "4vycg7c4M7VMqPZsGjQtoYZLE0EQ243BZQdKG7pob9HIt+zTLmBtbMPrTsxCMEeS\n" +
+            "eX5BrK7RDmHz4bM+Jv9KsO7xjWX4lZRXgRAkiMt1tV+IRVfsjDKEJzzyfvzIhWXe\n" +
+            "rnK4A8o+jubXLxrUMFWdRvb5iGDCGxmb2JrjiFDXNIudMpB3vFWEulfvMw7cdGDo\n" +
+            "C7FurwwycJhtRAvJFAZ7C//pyH8Gl8XjDjY/F44ORxQP9qfACier4vy5go2JMljM\n" +
+            "3YQB5m3xeXXz5pzkTX0ept1JKAAovedAP27+7WS0ziuUS1g1Er2cRrFKHCi9Sb0W\n" +
+            "QqZqeWBloG/t4axCd8De/YTXTX4dgYD+BiTzBTRA33JTYrkl9b8MrbEaZgwHWsr1\n" +
+            "6+YgQjYTRPQmiV8NBTm3/zbFV+Y/KBgd+P12ISKfONLZzhzE5+7CE0gAEotb1fCY\n" +
+            "o6ds0WJim2rT0Sfb5WA/xTtlerM7mYK0troOhO30NIUUmg4wtS6SsRqrS1KzuVx0\n" +
+            "AS7cyI9Zb0Rz+oc/MhnLf51hx+c3wBBnBdgrxtXRrBbtRIlRUSzhtJBcpELwQGFu\n" +
+            "4wB3Tjil3HwF4JjTRUBy4TUf41W8aQtkoi8JOCnS6gy87fbiEBay7Pi/0DOF7HSI\n" +
+            "iyZhKfOMJunTlTdmIbg/d024tVJqMnVZrTKeLwlJX2M9qncIQKJB7SYzfSdbvV92\n" +
+            "A4AXKKwQoXg/jiC3u4XSiqQ10lVBKsantH1Gargm2uYNMJTJhu3qaec19wbvREuA\n" +
+            "X2bHNQ3NZJThUEcgfCQdcoIWWVfuWWVBd+v8Ta9/vPHG6za9IG5wWMkB+fV5wE6H\n" +
+            "GbFlV9shwWZLLN0VYAAir31r5DAwAJiQ3lhregBgUYkNMRdBhsn3jLGzPxByGw/3\n" +
+            "QXRJUq0+ZnKlI1y83XsfDTrsyY3jgua1P4MOrk5Khkpz6pcz3nGIsAXpsymPfFYm\n" +
+            "rTXEaVVe9F+5UM8LzIQH7TyGL7c4mGTnUTBY3LE27whIusvZDq21maRU+8A84bFn\n" +
+            "xCvFHXQs53NV3Tb4ZHl5SrdJllC/MYrj4xau3g1cRS0xJSUaW7FLa2AgC9/Ps8uL\n" +
+            "7nVnJ6nKLBMejBfrK0+uFqGuGDP4jOl8H26V+dycY/5ecBYhF9Bts5aKEFhkqibG\n" +
+            "2Qt3tuP/WvAzJAAFw+YYTKUyW8YvDh1hf74cD8RxiNYZ0UuVoqADxbycNZ3+26rC\n" +
+            "lnXEetmYD961oHZclzis4CUcDbLRbgcmv/fvpoj9OIgBOumB/1ku0ZmicXvlJ6wD\n" +
+            "S+2l6QSAHZF3rmD0D7lSGMu0rdF648h8HkLsoABONdoHJrCE5ehnBvSLd34Hdwt7\n" +
+            "-----END ENCRYPTED PRIVATE KEY-----\n";
 
         final UserKeyPair pair = new UserKeyPair();
         final UserPrivateKey privateKey = new UserPrivateKey();
@@ -69,6 +71,6 @@ public class CryptoDecryptPrivateKeyTest {
         final UserPublicKey publicKey = new UserPublicKey();
         publicKey.setPublicKey(StringUtils.EMPTY);
         pair.setUserPublicKey(publicKey);
-        Assert.assertTrue(Crypto.checkUserKeyPair(pair, "abcd"));
+        Assert.assertTrue(Crypto.checkUserKeyPair(pair, "abcdabc1"));
     }
 }
