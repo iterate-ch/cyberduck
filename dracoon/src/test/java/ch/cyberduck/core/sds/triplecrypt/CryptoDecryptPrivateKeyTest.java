@@ -17,6 +17,7 @@ package ch.cyberduck.core.sds.triplecrypt;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.dracoon.sdk.crypto.Crypto;
@@ -26,6 +27,11 @@ import com.dracoon.sdk.crypto.model.UserPrivateKey;
 import com.dracoon.sdk.crypto.model.UserPublicKey;
 
 public class CryptoDecryptPrivateKeyTest {
+
+    @Before
+    public void setUnsafeProperty() {
+        System.setProperty("org.bouncycastle.asn1.allow_unsafe_integer", "true");
+    }
 
     @Test
     public void testDecryptPrivateKey() throws Exception {
