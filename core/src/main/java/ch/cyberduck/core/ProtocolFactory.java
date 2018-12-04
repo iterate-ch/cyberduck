@@ -204,7 +204,7 @@ public final class ProtocolFactory {
                 break;
         }
         return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(
-            enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(null)
+            enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(null)
         );
     }
 
