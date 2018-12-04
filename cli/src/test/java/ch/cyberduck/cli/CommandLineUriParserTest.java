@@ -83,7 +83,7 @@ public class CommandLineUriParserTest {
     }
 
     @Test
-    public void testScheme() throws Exception {
+    public void testDefaultWebDAVForHttpScheme() throws Exception {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
@@ -95,6 +95,19 @@ public class CommandLineUriParserTest {
         factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/DAVS.cyberduckprofile")));
         assertEquals(0, new Host(new DAVSSLProtocol(), "ftp.gnu.org", 443, "/gnu/wget/wget-1.19.1.tar.gz", new Credentials("anonymous", null))
             .compareTo(new CommandLineUriParser(input, factory).parse("https://ftp.gnu.org/gnu/wget/wget-1.19.1.tar.gz")));
+    }
+
+    @Test
+    public void testCustomProvider() throws Exception {
+        final CommandLineParser parser = new PosixParser();
+        final CommandLine input = parser.parse(new Options(), new String[]{});
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singletonList(new SwiftProtocol())));
+        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Rackspace US.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Swift.cyberduckprofile")));
+        assertEquals(0, new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", 443, "/container")
+            .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://container/")));
+        assertEquals(0, new Host(new SwiftProtocol(), "OS_AUTH_URL", 443, "/container")
+            .compareTo(new CommandLineUriParser(input, factory).parse("swift://container/")));
     }
 
     @Test
