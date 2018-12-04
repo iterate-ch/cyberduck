@@ -61,7 +61,7 @@ public final class ProtocolFactory {
     public void register(Protocol... protocols) {
         // Order determines list in connection dropdown
         for(Protocol protocol : protocols) {
-            register(protocol);
+            this.register(protocol);
         }
         if(bundle.exists()) {
             try {
