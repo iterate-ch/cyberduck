@@ -53,18 +53,10 @@ public class CommandLineUriParserTest {
     public void testParse() throws Exception {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
-
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol() {
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-        }, new S3Protocol() {
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-        })));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
+        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/FTP.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/FTPS.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/S3 (HTTPS).cyberduckprofile")));
         assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
             .compareTo(new CommandLineUriParser(input, factory).parse("s3://AWS456@cyberduck-test/key")));
         assertEquals(0, new Host(new FTPTLSProtocol(), "cyberduck.io", 55, "/folder", new Credentials("anonymous", null))
