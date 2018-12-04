@@ -23,6 +23,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -315,7 +316,7 @@ public abstract class AbstractProtocol implements Protocol {
         int result = this.getIdentifier() != null ? this.getIdentifier().hashCode() : 0;
         result = 31 * result + (this.getScheme() != null ? this.getScheme().hashCode() : 0);
         result = 31 * result + (this.getProvider() != null ? this.getProvider().hashCode() : 0);
-        result = 31 * result + (this.getSchemes() != null ? this.getSchemes().hashCode() : 0);
+        result = 31 * result + (this.getSchemes() != null ? Arrays.hashCode(this.getSchemes()) : 0);
         return result;
     }
 
