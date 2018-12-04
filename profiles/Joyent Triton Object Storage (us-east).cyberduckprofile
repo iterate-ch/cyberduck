@@ -26,7 +26,6 @@
         <key>Schemes</key>
         <array>
             <string>triton</string>
-            <string>https</string>
         </array>
         <key>Default Hostname</key>
         <string>us-east.manta.joyent.com</string>

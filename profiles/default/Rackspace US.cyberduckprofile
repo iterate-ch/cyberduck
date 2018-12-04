@@ -27,7 +27,6 @@
     <key>Schemes</key>
     <array>
         <string>rackspace</string>
-        <string>https</string>
     </array>
     <key>Name</key>
    	<string>Cloud Files</string>

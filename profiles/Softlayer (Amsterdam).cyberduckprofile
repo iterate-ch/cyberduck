@@ -9,7 +9,6 @@
         <key>Schemes</key>
         <array>
             <string>softlayer</string>
-            <string>https</string>
         </array>
         <key>Description</key>
         <string>Softlayer Object Storage (Amsterdam)</string>

@@ -42,7 +42,6 @@
         <key>Schemes</key>
         <array>
             <string>wasabi</string>
-            <string>https</string>
         </array>
     </dict>
 </plist>

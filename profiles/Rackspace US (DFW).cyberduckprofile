@@ -6,6 +6,10 @@
         <string>swift</string>
         <key>Vendor</key>
         <string>rackspace-dfw</string>
+        <key>Schemes</key>
+        <array>
+            <string>rackspace</string>
+        </array>
         <key>Type</key>
         <string>swift</string>
         <key>Name</key>

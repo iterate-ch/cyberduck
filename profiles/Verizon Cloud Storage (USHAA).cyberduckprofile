@@ -9,7 +9,6 @@
         <key>Schemes</key>
         <array>
             <string>verizon</string>
-            <string>https</string>
         </array>
         <key>Description</key>
         <string>Verizon Cloud Storage (3 Data Center Spread, USA)</string>
