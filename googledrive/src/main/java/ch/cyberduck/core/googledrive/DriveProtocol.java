@@ -42,11 +42,6 @@ public class DriveProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String getDefaultHostname() {
-        return "www.googleapis.com";
-    }
-
-    @Override
     public boolean isHostnameConfigurable() {
         return false;
     }

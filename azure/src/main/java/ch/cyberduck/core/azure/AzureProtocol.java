@@ -33,15 +33,6 @@ public class AzureProtocol extends AbstractProtocol {
         return "Azure";
     }
 
-    /**
-     * URL format: Blobs are addressable using the following URL format:
-     * http://<storage account>.blob.core.windows.net/<container>/<blob>
-     */
-    @Override
-    public String getDefaultHostname() {
-        return "storageaccount.blob.core.windows.net";
-    }
-
     @Override
     public String getUsernamePlaceholder() {
         return LocaleFactory.localizedString("Storage Account Name", "Azure");

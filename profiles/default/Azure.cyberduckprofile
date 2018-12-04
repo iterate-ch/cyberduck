@@ -23,5 +23,7 @@
         <string>iterate GmbH</string>
         <key>Bundled</key>
         <true/>
+        <key>Default Hostname</key>
+        <string>storageaccount.blob.core.windows.net</string>
     </dict>
 </plist>
