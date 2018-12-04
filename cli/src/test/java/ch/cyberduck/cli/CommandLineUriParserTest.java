@@ -25,8 +25,6 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
@@ -43,7 +41,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -111,59 +108,5 @@ public class CommandLineUriParserTest {
             .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://container/")));
         assertEquals(0, new Host(generic, "OS_AUTH_URL", 443, "/container")
             .compareTo(new CommandLineUriParser(input, factory).parse("swift://container/")));
-    }
-
-    @Test
-    public void testSpecificProfile() throws Exception {
-        final TestProtocol provider1 = new TestProtocol(Scheme.https) {
-            @Override
-            public String getIdentifier() {
-                return "swift";
-            }
-
-            @Override
-            public boolean isBundled() {
-                return true;
-            }
-
-            @Override
-            public String getProvider() {
-                return "iterate GmbH";
-            }
-        };
-        final TestProtocol provider2 = new TestProtocol(Scheme.https) {
-            @Override
-            public String getIdentifier() {
-                return "swift";
-            }
-
-            @Override
-            public boolean isBundled() {
-                return true;
-            }
-
-            @Override
-            public String getProvider() {
-                return "iterate GmbH";
-            }
-
-            @Override
-            public String getDefaultHostname() {
-                return "identity.api.rackspacecloud.com";
-            }
-
-            @Override
-            public String[] getSchemes() {
-                return new String[]{"rackspace"};
-            }
-        };
-        final ProtocolFactory f_sort1 = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(provider1, provider2)));
-        final ProtocolFactory f_sort2 = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(provider2, provider1)));
-        final CommandLineParser parser = new PosixParser();
-        final CommandLine input = parser.parse(new Options(), new String[]{});
-        assertEquals(provider1, new CommandLineUriParser(input, f_sort1).parse("swift://cyberduck-test/key").getProtocol());
-        assertEquals(provider2, new CommandLineUriParser(input, f_sort1).parse("rackspace://cyberduck-test/key").getProtocol());
-        assertEquals(provider1, new CommandLineUriParser(input, f_sort2).parse("swift://cyberduck-test/key").getProtocol());
-        assertEquals(provider2, new CommandLineUriParser(input, f_sort2).parse("rackspace://cyberduck-test/key").getProtocol());
     }
 }
