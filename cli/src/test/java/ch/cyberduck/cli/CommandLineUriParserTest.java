@@ -104,8 +104,11 @@ public class CommandLineUriParserTest {
         factory.register(rackspace);
         final Profile generic = new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Swift.cyberduckprofile"));
         factory.register(generic);
+        assertEquals(rackspace, new CommandLineUriParser(input, factory).parse("rackspace://container//").getProtocol());
         assertEquals(0, new Host(rackspace, "identity.api.rackspacecloud.com", 443, "/container")
             .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://container/")));
+
+        assertEquals(generic, new CommandLineUriParser(input, factory).parse("swift://container/").getProtocol());
         assertEquals(0, new Host(generic, "OS_AUTH_URL", 443, "/container")
             .compareTo(new CommandLineUriParser(input, factory).parse("swift://container/")));
     }
