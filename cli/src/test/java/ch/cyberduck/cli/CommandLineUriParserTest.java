@@ -23,7 +23,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
@@ -41,7 +40,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
@@ -65,18 +63,10 @@ public class CommandLineUriParserTest {
     public void testProfile() throws Exception {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
-        final Set<Protocol> list = new HashSet<>(Arrays.asList(
-                new SwiftProtocol(),
-                new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol() {
-                    @Override
-                    public boolean isEnabled() {
-                        return true;
-                    }
-                })))
-                        .read(new Local("../profiles/default/Rackspace US.cyberduckprofile"))
-        ));
-        assertEquals(0, new Host(new ProtocolFactory(list).forName("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))
-            .compareTo(new CommandLineUriParser(input, new ProtocolFactory(list)).parse("rackspace://u@cdn.cyberduck.ch/")));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol())));
+        factory.register(new ProfilePlistReader(factory).read(new Local("../profiles/default/Rackspace US.cyberduckprofile")));
+        assertEquals(0, new Host(factory.forName("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))
+            .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://u@cdn.cyberduck.ch/")));
 
     }
 
