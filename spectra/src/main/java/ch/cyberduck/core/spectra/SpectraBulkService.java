@@ -56,6 +56,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.spectralogic.ds3client.Ds3Client;
+import com.spectralogic.ds3client.commands.spectrads3.CancelAllActiveJobsSpectraS3Request;
 import com.spectralogic.ds3client.commands.spectrads3.GetJobChunksReadyForClientProcessingSpectraS3Request;
 import com.spectralogic.ds3client.commands.spectrads3.GetJobChunksReadyForClientProcessingSpectraS3Response;
 import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
@@ -331,8 +332,12 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      */
     protected void clear() throws BackgroundException {
         try {
+            // Cancel all active jobs to remove references to cached objects
+            final Ds3Client ds3Client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            ds3Client.cancelAllActiveJobsSpectraS3(new CancelAllActiveJobsSpectraS3Request());
+            // Clear cache
             final RequestEntityRestStorageService client = session.getClient();
-            final HttpPut request = new HttpPut(String.format("%s://%s/_rest_/cache_filesystem?reclaim", session.getHost().getProtocol().getScheme(), session.getHost().getHostname()));
+            final HttpPut request = new HttpPut(String.format("%s://%s:8080/_rest_/cache_filesystem?reclaim", session.getHost().getProtocol().getScheme(), session.getHost().getHostname()));
             client.authorizeHttpRequest(request, null, null);
             final HttpResponse response = client.getHttpClient().execute(request);
             if(HttpStatus.SC_NO_CONTENT != response.getStatusLine().getStatusCode()) {
