@@ -184,6 +184,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.exists = copy.exists;
         this.append = copy.append;
         this.segment = copy.segment;
+        this.segments = copy.segments;
         this.rejected = copy.rejected;
         this.offset.set(copy.offset.get());
         this.length = copy.length;
