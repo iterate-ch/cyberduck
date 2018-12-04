@@ -22,6 +22,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
@@ -102,11 +103,13 @@ public class CommandLineUriParserTest {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singletonList(new SwiftProtocol())));
-        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Rackspace US.cyberduckprofile")));
-        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Swift.cyberduckprofile")));
-        assertEquals(0, new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", 443, "/container")
+        final Profile rackspace = new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Rackspace US.cyberduckprofile"));
+        factory.register(rackspace);
+        final Profile generic = new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Swift.cyberduckprofile"));
+        factory.register(generic);
+        assertEquals(0, new Host(rackspace, "identity.api.rackspacecloud.com", 443, "/container")
             .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://container/")));
-        assertEquals(0, new Host(new SwiftProtocol(), "OS_AUTH_URL", 443, "/container")
+        assertEquals(0, new Host(generic, "OS_AUTH_URL", 443, "/container")
             .compareTo(new CommandLineUriParser(input, factory).parse("swift://container/")));
     }
 
