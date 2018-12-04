@@ -192,7 +192,7 @@ public final class ProtocolFactory {
      */
     public Protocol forScheme(final List<Protocol> enabled, final String scheme) {
         try {
-            return this.forScheme(Scheme.valueOf(scheme));
+            return this.forScheme(enabled, Scheme.valueOf(scheme));
         }
         catch(IllegalArgumentException e) {
             log.warn(String.format("Unknown scheme %s", scheme));
