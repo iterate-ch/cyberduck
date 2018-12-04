@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3PathContainerService;
@@ -212,46 +213,38 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Query status for job %s", job));
             }
-            final MasterObjectList list = new MasterObjectList();
-            list.setObjects(Collections.emptyList());
-            List<TransferStatus> chunks = this.query(file, status, job, list);
-            if(chunks.isEmpty()) {
-                // Fetch current list from server
-                final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
-                // For GET, the client may need to issue multiple GET requests for a single object if it has
-                // been broken up into multiple pieces due to its large size
-                // For PUT, This will allocate a working window of job chunks, if possible, and return a list of
-                // the job chunks that the client can upload. The client should PUT all of the object parts
-                // from the list of job chunks returned and repeat this process until all chunks are transferred
+            // Fetch current list from server
+            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            // For GET, the client may need to issue multiple GET requests for a single object if it has
+            // been broken up into multiple pieces due to its large size
+            // For PUT, This will allocate a working window of job chunks, if possible, and return a list of
+            // the job chunks that the client can upload. The client should PUT all of the object parts
+            // from the list of job chunks returned and repeat this process until all chunks are transferred
 
-                final GetJobChunksReadyForClientProcessingSpectraS3Response response = client.getJobChunksReadyForClientProcessingSpectraS3(
-                    new GetJobChunksReadyForClientProcessingSpectraS3Request(UUID.fromString(job)).withPreferredNumberOfChunks(Integer.MAX_VALUE));
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Job status %s for job %s", response.getStatus(), job));
+            final GetJobChunksReadyForClientProcessingSpectraS3Response response = client.getJobChunksReadyForClientProcessingSpectraS3(
+                new GetJobChunksReadyForClientProcessingSpectraS3Request(UUID.fromString(job)).withPreferredNumberOfChunks(Integer.MAX_VALUE));
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Job status %s for job %s", response.getStatus(), job));
+            }
+            switch(response.getStatus()) {
+                case RETRYLATER: {
+                    final Duration delay = Duration.ofSeconds(response.getRetryAfterSeconds());
+                    throw new RetriableAccessDeniedException(String.format("Job %s not yet loaded into cache", job), delay);
                 }
-                switch(response.getStatus()) {
-                    case RETRYLATER: {
-                        final Duration delay = Duration.ofSeconds(response.getRetryAfterSeconds());
-                        throw new RetriableAccessDeniedException(String.format("Job %s not yet loaded into cache", job), delay);
-                    }
-                }
-                final MasterObjectList master = response.getMasterObjectListResult();
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Master object list with %d objects for %s", master.getObjects().size(), file));
-                    log.info(String.format("Master object list status %s for %s", master.getStatus(), file));
-                }
-                chunks = this.query(file, status, job, master);
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Server returned %d chunks for %s", chunks.size(), file));
-                }
-                if(chunks.isEmpty()) {
-                    log.error(String.format("File %s not found in object list for job %s", file.getName(), job));
-                    // Still look for Retry-After header for non empty master object list
-                    if(response.getStatus() == GetJobChunksReadyForClientProcessingSpectraS3Response.Status.RETRYLATER) {
-                        final Duration delay = Duration.ofSeconds(response.getRetryAfterSeconds());
-                        throw new RetriableAccessDeniedException(String.format("Cache is full for job %s", job), delay);
-                    }
-                }
+            }
+            final MasterObjectList master = response.getMasterObjectListResult();
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Master object list with %d objects for %s", master.getObjects().size(), file));
+                log.info(String.format("Master object list status %s for %s", master.getStatus(), file));
+            }
+            final List<TransferStatus> chunks = query(file, status, job, master);
+            if(chunks.isEmpty()) {
+                log.info(String.format("Still missing chunks for file %s for job %s", file.getName(), job));
+                throw new RetriableAccessDeniedException(String.format("Missing chunks for job %s", job),
+                    Duration.ofSeconds(PreferencesFactory.get().getInteger("spectra.retry.delay")));
+            }
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Server returned %d chunks for %s", chunks.size(), file));
             }
             return chunks;
         }
@@ -265,7 +258,8 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
 
     private List<TransferStatus> query(final Path file, final TransferStatus status, final String job,
                                        final MasterObjectList master) throws BackgroundException {
-        final List<TransferStatus> chunks = new ArrayList<TransferStatus>();
+        final List<TransferStatus> chunks = new ArrayList<>();
+        long bytes = 0;
         for(Objects objects : master.getObjects()) {
             final UUID nodeId = objects.getNodeId();
             if(null == nodeId) {
@@ -320,8 +314,13 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         log.info(String.format("Add chunk %s for file %s", chunk, file));
                     }
                     chunks.add(chunk);
+                    bytes += chunk.getLength();
                 }
             }
+        }
+        if(bytes < status.getLength()) {
+            // Still missing chunks
+            return new ArrayList<>();
         }
         return chunks;
     }
@@ -337,7 +336,8 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             ds3Client.cancelAllActiveJobsSpectraS3(new CancelAllActiveJobsSpectraS3Request());
             // Clear cache
             final RequestEntityRestStorageService client = session.getClient();
-            final HttpPut request = new HttpPut(String.format("%s://%s:8080/_rest_/cache_filesystem?reclaim", session.getHost().getProtocol().getScheme(), session.getHost().getHostname()));
+            final HttpPut request = new HttpPut(String.format("%s://%s:%s/_rest_/cache_filesystem?reclaim", session.getHost().getProtocol().getScheme(),
+                session.getHost().getHostname(), session.getHost().getPort()));
             client.authorizeHttpRequest(request, null, null);
             final HttpResponse response = client.getHttpClient().execute(request);
             if(HttpStatus.SC_NO_CONTENT != response.getStatusLine().getStatusCode()) {
