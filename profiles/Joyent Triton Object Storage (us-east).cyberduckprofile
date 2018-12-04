@@ -23,8 +23,11 @@
         <string>triton</string>
         <key>Description</key>
         <string>Joyent Triton Object Storage (us-east)</string>
-        <key>Scheme</key>
-        <string>https</string>
+        <key>Schemes</key>
+        <array>
+            <string>triton</string>
+            <string>https</string>
+        </array>
         <key>Default Hostname</key>
         <string>us-east.manta.joyent.com</string>
         <key>Hostname Configurable</key>

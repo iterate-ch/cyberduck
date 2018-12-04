@@ -6,6 +6,11 @@
         <string>s3</string>
         <key>Vendor</key>
         <string>verizoncloudstorage-iad3a</string>
+        <key>Schemes</key>
+        <array>
+            <string>verizon</string>
+            <string>https</string>
+        </array>
         <key>Description</key>
         <string>Verizon Cloud Storage (East Coast USA)</string>
         <key>Default Hostname</key>

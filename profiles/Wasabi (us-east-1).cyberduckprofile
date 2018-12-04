@@ -39,5 +39,10 @@
         <array>
             <string>us-east-1</string>
         </array>
+        <key>Schemes</key>
+        <array>
+            <string>wasabi</string>
+            <string>https</string>
+        </array>
     </dict>
 </plist>
