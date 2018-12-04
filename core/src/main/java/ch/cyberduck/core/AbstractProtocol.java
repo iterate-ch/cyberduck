@@ -63,14 +63,8 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public Scheme[] getSchemes() {
-        try {
-            final Scheme identifier = Scheme.valueOf(this.getIdentifier());
-            return new Scheme[]{this.getScheme(), identifier};
-        }
-        catch(IllegalArgumentException e) {
-            return new Scheme[]{this.getScheme()};
-        }
+    public String[] getSchemes() {
+        return new String[]{this.getScheme().name(), this.getIdentifier()};
     }
 
     @Override
@@ -318,6 +312,7 @@ public abstract class AbstractProtocol implements Protocol {
         int result = this.getIdentifier() != null ? this.getIdentifier().hashCode() : 0;
         result = 31 * result + (this.getScheme() != null ? this.getScheme().hashCode() : 0);
         result = 31 * result + (this.getProvider() != null ? this.getProvider().hashCode() : 0);
+        result = 31 * result + (this.getSchemes() != null ? this.getSchemes().hashCode() : 0);
         return result;
     }
 

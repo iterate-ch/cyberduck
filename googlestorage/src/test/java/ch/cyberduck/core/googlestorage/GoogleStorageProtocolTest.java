@@ -49,7 +49,7 @@ public class GoogleStorageProtocolTest {
 
     @Test
     public void testSchemes() {
-        assertTrue(Arrays.asList(new GoogleStorageProtocol().getSchemes()).contains(Scheme.https));
+        assertTrue(Arrays.asList(new GoogleStorageProtocol().getSchemes()).contains(Scheme.https.name()));
     }
 
     @Test

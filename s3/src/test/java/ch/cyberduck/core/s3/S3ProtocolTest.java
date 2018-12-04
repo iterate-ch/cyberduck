@@ -32,8 +32,8 @@ public class S3ProtocolTest {
 
     @Test
     public void testSchemes() {
-        assertTrue(Arrays.asList(new S3Protocol().getSchemes()).contains(Scheme.s3));
-        assertTrue(Arrays.asList(new S3Protocol().getSchemes()).contains(Scheme.https));
+        assertTrue(Arrays.asList(new S3Protocol().getSchemes()).contains(Scheme.s3.name()));
+        assertTrue(Arrays.asList(new S3Protocol().getSchemes()).contains(Scheme.https.name()));
     }
 
     @Test

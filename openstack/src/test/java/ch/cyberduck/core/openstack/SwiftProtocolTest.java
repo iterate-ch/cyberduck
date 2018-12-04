@@ -33,6 +33,6 @@ public class SwiftProtocolTest {
 
     @Test
     public void testSchemes() {
-        assertTrue(Arrays.asList(new SwiftProtocol().getSchemes()).contains(Scheme.https));
+        assertTrue(Arrays.asList(new SwiftProtocol().getSchemes()).contains(Scheme.https.name()));
     }
 }

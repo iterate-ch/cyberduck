@@ -157,7 +157,7 @@ public interface Protocol extends Comparable<Protocol> {
     /**
      * @return Protocol schemes
      */
-    Scheme[] getSchemes();
+    String[] getSchemes();
 
     /**
      * @return Default hostname for server

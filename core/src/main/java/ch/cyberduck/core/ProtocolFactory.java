@@ -186,26 +186,8 @@ public final class ProtocolFactory {
         return enabled.stream().filter(protocol -> protocol.getType().equals(type)).findFirst().orElse(null);
     }
 
-    /**
-     * @param scheme Protocol scheme
-     * @return Standard protocol for this scheme. This is ambiguous
-     */
-    public Protocol forScheme(final List<Protocol> enabled, final String scheme) {
-        try {
-            return this.forScheme(enabled, Scheme.valueOf(scheme));
-        }
-        catch(IllegalArgumentException e) {
-            log.warn(String.format("Unknown scheme %s", scheme));
-            return null;
-        }
-    }
-
     public Protocol forScheme(final Scheme scheme) {
         final List<Protocol> enabled = this.find();
-        return this.forScheme(enabled, scheme);
-    }
-
-    private Protocol forScheme(final List<Protocol> enabled, final Scheme scheme) {
         final Scheme filter;
         switch(scheme) {
             case http:
@@ -218,7 +200,11 @@ public final class ProtocolFactory {
                 filter = scheme;
                 break;
         }
-        return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(
+        return this.forScheme(enabled, filter.name());
+    }
+
+    private Protocol forScheme(final List<Protocol> enabled, final String scheme) {
+        return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(
             enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(null)
         );
     }

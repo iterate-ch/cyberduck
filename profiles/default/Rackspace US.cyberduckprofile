@@ -19,7 +19,7 @@
 	<key>Protocol</key>
 	<string>swift</string>
 	<key>Vendor</key>
-	<string>rackspace</string>
+    <string>iterate GmbH</string>
     <key>Bundled</key>
     <true/>
     <key>Type</key>

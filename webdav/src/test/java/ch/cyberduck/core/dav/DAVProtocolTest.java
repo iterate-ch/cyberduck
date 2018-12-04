@@ -26,7 +26,7 @@ public class DAVProtocolTest {
 
     @Test
     public void testSchemes() {
-        assertTrue(Arrays.asList(new DAVProtocol().getSchemes()).contains(Scheme.http));
+        assertTrue(Arrays.asList(new DAVProtocol().getSchemes()).contains(Scheme.http.name()));
     }
 
     @Test

@@ -107,7 +107,7 @@ public class CommandLineUriParserTest {
 
     @Test
     public void testSpecificProfile() throws Exception {
-        final TestProtocol provider1 = new TestProtocol(Scheme.dav) {
+        final TestProtocol provider1 = new TestProtocol(Scheme.https) {
             @Override
             public String getIdentifier() {
                 return "swift";
@@ -123,7 +123,7 @@ public class CommandLineUriParserTest {
                 return "iterate GmbH";
             }
         };
-        final TestProtocol provider2 = new TestProtocol(Scheme.dav) {
+        final TestProtocol provider2 = new TestProtocol(Scheme.https) {
             @Override
             public String getIdentifier() {
                 return "swift";
@@ -136,7 +136,17 @@ public class CommandLineUriParserTest {
 
             @Override
             public String getProvider() {
-                return "rackspace";
+                return "iterate GmbH";
+            }
+
+            @Override
+            public String getDefaultHostname() {
+                return "identity.api.rackspacecloud.com";
+            }
+
+            @Override
+            public String[] getSchemes() {
+                return new String[]{"rackspace"};
             }
         };
         final ProtocolFactory f_sort1 = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(provider1, provider2)));
