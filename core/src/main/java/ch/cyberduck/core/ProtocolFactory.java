@@ -187,25 +187,24 @@ public final class ProtocolFactory {
     }
 
     public Protocol forScheme(final Scheme scheme) {
-        final List<Protocol> enabled = this.find();
-        final Scheme filter;
+        return this.forScheme(this.find(), scheme.name());
+    }
+
+    private Protocol forScheme(final List<Protocol> enabled, final String scheme) {
+        final String filter;
         switch(scheme) {
-            case http:
-                filter = Scheme.dav;
+            case "http":
+                filter = Scheme.dav.name();
                 break;
-            case https:
-                filter = Scheme.davs;
+            case "https":
+                filter = Scheme.davs.name();
                 break;
             default:
                 filter = scheme;
                 break;
         }
-        return this.forScheme(enabled, filter.name());
-    }
-
-    private Protocol forScheme(final List<Protocol> enabled, final String scheme) {
-        return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(
-            enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(null)
+        return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(
+            enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(null)
         );
     }
 
