@@ -160,8 +160,8 @@ public final class ProtocolFactory {
             }
             return false;
         }).findFirst().orElse(
-            enabled.stream().filter(protocol -> StringUtils.equals(protocol.getIdentifier(), identifier)).findFirst().orElse(
-                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
+            enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
+                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getIdentifier(), identifier)).findFirst().orElse(
                     enabled.stream().filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(
                         this.forScheme(enabled, identifier)
                     )
@@ -187,7 +187,11 @@ public final class ProtocolFactory {
     }
 
     public Protocol forScheme(final Scheme scheme) {
-        return this.forScheme(this.find(), scheme.name());
+        return this.forScheme(scheme.name());
+    }
+
+    public Protocol forScheme(final String scheme) {
+        return this.forScheme(this.find(), scheme);
     }
 
     private Protocol forScheme(final List<Protocol> enabled, final String scheme) {
