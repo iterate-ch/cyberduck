@@ -74,24 +74,20 @@ public class CommandLinePathParserTest {
 
     @Test
     public void testParseProfile() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol() {
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-        })));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol())));
         final ProfilePlistReader reader = new ProfilePlistReader(factory, new DeserializerFactory());
         final Profile profile = reader.read(
                 new Local("../profiles/default/Rackspace US.cyberduckprofile")
         );
         assertNotNull(profile);
+        factory.register(profile);
 
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         assertEquals(new Path("/cdn.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                new CommandLinePathParser(input, new ProtocolFactory(new HashSet<>(Arrays.asList(new SwiftProtocol(), profile)))).parse("rackspace://u@cdn.cyberduck.ch/"));
+            new CommandLinePathParser(input, factory).parse("rackspace://u@cdn.cyberduck.ch/"));
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                new CommandLinePathParser(input, new ProtocolFactory(new HashSet<>(Arrays.asList(new SwiftProtocol(), profile)))).parse("rackspace:///"));
+            new CommandLinePathParser(input, factory).parse("rackspace:///"));
     }
 }
