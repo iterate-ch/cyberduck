@@ -320,7 +320,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         }
         if(bytes < status.getLength()) {
             // Still missing chunks
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
         return chunks;
     }
