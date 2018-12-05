@@ -149,9 +149,7 @@ public final class ProtocolFactory {
                 enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
                     // Fallback for bug in 6.1
                     enabled.stream().filter(protocol -> StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)).findFirst().orElse(
-                        enabled.stream().filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(
-                            this.forScheme(enabled, identifier)
-                        )
+                        this.forScheme(enabled, identifier, enabled.stream().filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(null))
                     )
                 )
             );
@@ -174,14 +172,14 @@ public final class ProtocolFactory {
     }
 
     public Protocol forScheme(final Scheme scheme) {
-        return this.forScheme(scheme.name());
+        return this.forScheme(scheme.name(), null);
     }
 
-    public Protocol forScheme(final String scheme) {
-        return this.forScheme(this.find(), scheme);
+    public Protocol forScheme(final String scheme, final Protocol fallback) {
+        return this.forScheme(this.find(), scheme, fallback);
     }
 
-    private Protocol forScheme(final List<Protocol> enabled, final String scheme) {
+    private Protocol forScheme(final List<Protocol> enabled, final String scheme, final Protocol fallback) {
         final String filter;
         switch(scheme) {
             case "http":
@@ -195,7 +193,7 @@ public final class ProtocolFactory {
                 break;
         }
         return enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(filter)).findFirst().orElse(
-            enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(null)
+            enabled.stream().filter(protocol -> Arrays.asList(protocol.getSchemes()).contains(scheme)).findFirst().orElse(fallback)
         );
     }
 
