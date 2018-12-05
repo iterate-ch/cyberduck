@@ -145,10 +145,12 @@ public final class ProtocolFactory {
 
     public Protocol forName(final List<Protocol> enabled, final String identifier, final String provider) {
         final Protocol match =
+            // Matching vendor string
             enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), provider)).findFirst().orElse(
                 enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
                     // Fallback for bug in 6.1
                     enabled.stream().filter(protocol -> StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)).findFirst().orElse(
+                        // Matching scheme with fallback to generic protocol type
                         this.forScheme(enabled, identifier, enabled.stream().filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(null))
                     )
                 )
