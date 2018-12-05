@@ -144,30 +144,17 @@ public final class ProtocolFactory {
     }
 
     public Protocol forName(final List<Protocol> enabled, final String identifier, final String provider) {
-        final Protocol match = enabled.stream().filter(protocol -> {
-            if(StringUtils.equals(protocol.getIdentifier(), identifier)) {
-                if(null == provider) {
-                    // Matching protocol with no custom provider
-                    return true;
-                }
-                else {
-                    return StringUtils.equals(protocol.getProvider(), provider);
-                }
-            }
-            // Fallback for bug in 6.1
-            if(StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)) {
-                return true;
-            }
-            return false;
-        }).findFirst().orElse(
-            enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
-                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getIdentifier(), identifier)).findFirst().orElse(
-                    enabled.stream().filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(
-                        this.forScheme(enabled, identifier)
+        final Protocol match =
+            enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), provider)).findFirst().orElse(
+                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
+                    // Fallback for bug in 6.1
+                    enabled.stream().filter(protocol -> StringUtils.equals(String.format("%s-%s", protocol.getIdentifier(), protocol.getProvider()), identifier)).findFirst().orElse(
+                        enabled.stream().filter(protocol -> StringUtils.equals(protocol.getType().name(), identifier)).findFirst().orElse(
+                            this.forScheme(enabled, identifier)
+                        )
                     )
                 )
-            )
-        );
+            );
         if(null == match) {
             if(enabled.isEmpty()) {
                 log.error(String.format("List of registered protocols in %s is empty", this));
