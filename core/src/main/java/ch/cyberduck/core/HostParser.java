@@ -24,8 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.log4j.Logger;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.regex.Pattern;
 
 public final class HostParser {
@@ -70,175 +70,272 @@ public final class HostParser {
     }
 
     public static Host parse(final ProtocolFactory factory, final Protocol scheme, final String url) {
-        final String input = url.trim();
-        int begin = 0;
-        int cut;
-        Protocol protocol = null;
-        if(input.indexOf("://", begin) != -1) {
-            cut = input.indexOf("://", begin);
-            protocol = factory.forName(input.substring(begin, cut));
-            begin += cut - begin + 3;
+        final StringBuilder stringBuilder = new StringBuilder();
+        final StringReader reader = new HostParser.StringReader(url);
+
+        while(reader.peek() != -1) {
+            final char c = (char) reader.read();
+            if(Character.isAlphabetic(c)
+                || Character.isDigit(c)
+                || c == '+'
+                || c == '-'
+                || c == '.') {
+                stringBuilder.append(c);
+            }
+            else if(Character.isWhitespace(c)) {
+                if(stringBuilder.length() != 0) {
+                    // Whitespace inside scheme. Break.
+                    // TODO: Error out.
+                    return null;
+                }
+            }
+            else if(c == ':') {
+                break;
+            }
         }
+
+        Protocol protocol = factory.forName(stringBuilder.toString());
         if(null == protocol) {
             protocol = scheme;
         }
-        String username;
-        String password = null;
-        if(protocol.isAnonymousConfigurable()) {
-            username = preferences.getProperty("connection.login.anon.name");
+
+        final Host host = new Host(protocol);
+
+        final URITypes uriType = resolveURIType(findURIType(reader), protocol);
+        if(uriType == URITypes.Undefined) {
+            // scheme:
+            if(StringUtils.isBlank(protocol.getDefaultHostname())) {
+                // TODO: Error out. This is not supported.
+            }
+            if(StringUtils.isBlank(protocol.getDefaultPath())) {
+                // TODO: Error out.This is not supported.
+            }
+
+            return host;
+        }
+
+        if(uriType == URITypes.Authority) {
+            parseAuthority(reader);
+        }
+        else if(uriType == URITypes.Absolute) {
+            parseAbsolute(reader);
+        }
+        else if(uriType == URITypes.Rootless) {
+            parseRootless(reader);
         }
         else {
-            username = preferences.getProperty("connection.login.name");
+            // TODO Error. This should not happen.
         }
-        if(input.indexOf('@', begin) != -1) {
-            if(-1 == input.indexOf(Path.DELIMITER, begin)
-                || input.indexOf('@', begin) < input.indexOf(Path.DELIMITER, begin)) {
-                cut = input.indexOf('@', begin);
-                // Handle at sign in username
-                while(cut < input.lastIndexOf('@')) {
-                    if(input.indexOf(Path.DELIMITER, begin) != -1
-                        && input.indexOf('@', cut + 1) > input.indexOf(Path.DELIMITER, begin)) {
-                        // At sign is part of the path
-                        break;
-                    }
-                    cut = input.indexOf('@', cut + 1);
+
+        return host;
+    }
+
+    static final String URI_SCHEME = "+-.";
+    static final String URI_UNRESERVED = "-._~";
+    static final String URI_SUBDELIMS = "!$&'()*+,;=";
+    static final String URI_PCHAR = ":@";
+
+    static void parseScheme(StringReader reader) {
+        final StringBuilder stringBuilder = new StringBuilder();
+        while(reader.peek() != -1) {
+            final char c = (char) reader.read();
+            if(Character.isAlphabetic(c)
+                || Character.isDigit(c)
+                || URI_SCHEME.indexOf(c) != -1) {
+                stringBuilder.append(c);
+            }
+            else if(Character.isWhitespace(c)) {
+                if(stringBuilder.length() != 0) {
+                    // Whitespace inside scheme. Break.
+                    // TODO: Error out.
+                    return; // invalid. Return empty.
                 }
-                if(input.indexOf(':', begin) != -1
-                    && cut > input.indexOf(':', begin)) {
-                    // ':' is not for the port number but username:pass separator
-                    username = input.substring(begin, input.indexOf(':', begin));
-                    begin += username.length() + 1;
-                    cut = input.indexOf('@', begin);
-                    try {
-                        username = URLDecoder.decode(username, "UTF-8");
+            }
+            else if(c == ':') {
+                break; // valid. Break to return stringbuilder
+            }
+        }
+        // TODO: EOF, should this be considered safe? ("scheme" instead of "scheme:")
+    }
+
+    static void parseAuthority(StringReader reader) {
+        String userComponent = StringUtils.EMPTY;
+        String authorityComponent = StringUtils.EMPTY;
+        String pathComponent = StringUtils.EMPTY;
+
+        boolean validUser = true;
+        boolean validAuthority = true;
+        boolean validPath = true;
+
+        final StringBuilder builder = new StringBuilder();
+        while(reader.peek() != -1) { // find User and Authority.
+            final char c = (char) reader.read();
+            if(validUser && c == '@') {
+                userComponent = builder.toString();
+                builder.setLength(0);
+                validUser = false;
+                validAuthority = true;
+                validPath = true;
+                continue;
+            }
+            else if(c == '/') {
+                validUser = false;
+                validAuthority = false;
+                authorityComponent = builder.toString();
+                builder.setLength(0);
+                break;
+            }
+            else {
+
+            }
+
+        }
+        while(reader.peek() != -1) {
+
+        }
+    }
+
+    static void parseAbsolute(StringReader reader) {
+        final StringBuilder pathBuilder = new StringBuilder();
+        while(reader.peek() != -1) {
+            final char c = (char) reader.read();
+            if(isPChar(c) || c == '/') {
+                pathBuilder.append(c);
+            }
+            else if(c == '%') {
+                pathBuilder.append(readPercentCharacter(reader));
+            }
+            else {
+                // TODO: Error out. This is not supported.
+            }
+        }
+    }
+
+    static void parseRootless(StringReader reader) {
+        String userComponent = StringUtils.EMPTY;
+        String passwordComponent = StringUtils.EMPTY;
+        String pathComponent = StringUtils.EMPTY;
+
+        boolean validUser = true;
+        boolean continuePassword = false;
+
+        final StringBuilder stringBuilder = new StringBuilder();
+        while(reader.peek() != -1) {
+            final char c = (char) reader.read();
+            if(c == '/') {
+                // TODO: Starts new segment.
+                validUser = false;
+                stringBuilder.append(c);
+            }
+            else if(isPChar(c)) {
+                if(!isValidUserInfo(c)) {
+                    if(validUser && c == '@') {
+                        if(continuePassword) {
+                            passwordComponent = stringBuilder.toString();
+                        }
+                        else  {
+                            userComponent = stringBuilder.toString();
+                        }
+                        stringBuilder.setLength(0);
                     }
-                    catch(UnsupportedEncodingException e) {
-                        log.error(e.getMessage(), e);
+                    else {
+                        stringBuilder.append(c);
                     }
-                    password = input.substring(begin, cut);
-                    begin += password.length() + 1;
+                    validUser = false;
+                }
+                else if(c == ':') {
+                    if(validUser) {
+                        if (continuePassword) {
+                            // TODO: Error out.
+                            //  This is not supported (two ":" in UserInfo)
+                        }
+                        userComponent = stringBuilder.toString();
+                        stringBuilder.setLength(0);
+                        continuePassword = true;
+                    }
+                    else {
+                        stringBuilder.append(c);
+                    }
                 }
                 else {
-                    // No password given
-                    username = input.substring(begin, cut);
-                    begin += username.length() + 1;
-                    try {
-                        username = URLDecoder.decode(username, "UTF-8");
-                    }
-                    catch(UnsupportedEncodingException e) {
-                        log.error(e.getMessage(), e);
-                    }
+                    stringBuilder.append(c);
                 }
+            }
+            else if(c == '%') {
+                stringBuilder.append(readPercentCharacter(reader));
+            }
+            else if(Character.isWhitespace(c)) {
+                // TODO We do allow whitespace in path and user component!
+                //  this is a violation to RFC 3986.
+                stringBuilder.append(c);
+            }
+            else {
+                // TODO This is not supported!
+                //  Error out.
+                break;
             }
         }
-        String hostname = preferences.getProperty("connection.hostname.default");
-        String path = null;
-        int port = protocol.getDefaultPort();
-        if(protocol.isHostnameConfigurable()) {
-            // Handle IPv6
-            if(input.indexOf('[', begin) != -1 && input.indexOf(']', begin) != -1) {
-                if(input.indexOf(']', begin) > input.indexOf('[', begin)) {
-                    begin = input.indexOf('[', begin) + 1;
-                    cut = input.indexOf(']', begin);
-                    String address = input.substring(begin, cut);
-                    if(isv6Address(address)) {
-                        hostname = address;
-                        begin += hostname.length();
+        pathComponent = stringBuilder.toString();
+    }
+
+    private static boolean isUnreservedCharacter(char c) {
+        return Character.isAlphabetic(c) || Character.isDigit(c) || URI_UNRESERVED.indexOf(c) != -1;
+    }
+
+    private static boolean isSubDelimsCharacter(char c) {
+        return URI_SUBDELIMS.indexOf(c) != -1;
+    }
+
+    private static boolean isPChar(char c) {
+        return isUnreservedCharacter(c) || isSubDelimsCharacter(c) || URI_PCHAR.indexOf(c) != -1;
+    }
+
+    private static boolean isValidUserInfo(char c) {
+        return isUnreservedCharacter(c) || isSubDelimsCharacter(c) || c == ':';
+    }
+
+    private static URITypes findURIType(StringReader reader) {
+        final StringReader copy = reader.copy();
+        if(copy.peek() != -1) {
+            char c = (char) copy.read();
+            if(c == '/') {
+                if(copy.peek() != -1) {
+                    c = (char) copy.read();
+                    if(c == '/') {
+                        reader.skip(2);
+                        return URITypes.Authority;
                     }
-                }
-            }
-            else if(input.indexOf(Path.DELIMITER, begin) != -1) {
-                cut = input.indexOf(Path.DELIMITER, begin);
-                String address = input.substring(begin, cut);
-                if(isv6Address(address)) {
-                    hostname = address;
-                    begin += hostname.length();
+                    else {
+                        reader.skip(1);
+                        return URITypes.Absolute;
+                    }
                 }
             }
             else {
-                if(isv6Address(input)) {
-                    hostname = input;
-                    begin += hostname.length();
-                }
+                return URITypes.Rootless;
             }
-            if(StringUtils.isBlank(hostname)) {
-                // Handle DNS name or IPv4
-                if(StringUtils.isNotBlank(input)) {
-                    if(input.indexOf(':', begin) != -1
-                        && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
-                        cut = input.indexOf(':', begin);
-                    }
-                    else if(input.indexOf(Path.DELIMITER, begin) != -1) {
-                        cut = input.indexOf(Path.DELIMITER, begin);
-                    }
-                    else {
-                        cut = input.length();
-                    }
-                    hostname = input.substring(begin, cut);
-                    begin += hostname.length();
-                }
-            }
+        }
+        return URITypes.Undefined;
+    }
 
-            if (StringUtils.isBlank(hostname)) {
-                hostname = protocol.getDefaultHostname();
+    private static URITypes resolveURIType(final URITypes from, final Protocol protocol) {
+        if(!protocol.isHostnameConfigurable()) {
+            if(URITypes.Authority == from) {
+                return URITypes.Absolute;
             }
+        }
+        return from;
+    }
 
-            if(protocol.isPortConfigurable() && input.indexOf(':', begin) != -1
-                && (input.indexOf(Path.DELIMITER, begin) == -1 || input.indexOf(':', begin) < input.indexOf(Path.DELIMITER, begin))) {
-                begin = input.indexOf(':', begin) + 1;
-                String portString;
-                if(input.indexOf(Path.DELIMITER, begin) != -1) {
-                    cut = input.indexOf(Path.DELIMITER, begin);
-                    portString = input.substring(begin, cut);
-                    try {
-                        port = Integer.parseInt(portString);
-                        begin += portString.length();
-                    }
-                    catch(NumberFormatException e) {
-                        log.warn("Invalid port number given");
-                    }
-                    try {
-                        path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
-                        begin += path.length();
-                    }
-                    catch(UnsupportedEncodingException | IllegalArgumentException e) {
-                        log.error(e.getMessage(), e);
-                    }
-                }
-                else {
-                    portString = input.substring(begin, input.length());
-                    try {
-                        port = Integer.parseInt(portString);
-                        begin += portString.length();
-                    }
-                    catch(NumberFormatException e) {
-                        log.warn("Invalid port number given");
-                    }
-                }
-            }
+    private static char readPercentCharacter(StringReader reader) {
+        StringBuilder string = new StringBuilder();
+        for(int i = 0; i < 2 && reader.peek() != -1; i++) {
+            string.append((char) reader.read());
         }
-        else {
-            hostname = protocol.getDefaultHostname();
+        if(string.length() != 2) {
+            return Character.MIN_VALUE;
         }
-
-        if(protocol.isPathConfigurable() && input.indexOf(Path.DELIMITER, begin) != -1) {
-            try {
-                path = URLDecoder.decode(input.substring(begin, input.length()), "UTF-8");
-            }
-            catch(UnsupportedEncodingException | IllegalArgumentException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
-        if(StringUtils.isBlank(path)) {
-            path = protocol.getDefaultPath(); // use default path if path is empty
-        }
-        if(path.indexOf(Path.DELIMITER) != 0) {
-            // handles protocol://path, protocol://user@path/
-            // indexOf would start at after protocol:// making path invalid (e.g. user@)
-            path = Path.DELIMITER + path;
-        }
-
-        return new Host(protocol, hostname, port, path, new Credentials(username, password));
+        return (char) Integer.parseUnsignedInt(string.toString(), 16);
     }
 
     private static final Pattern IPV6_STD_PATTERN = Pattern.compile(
@@ -250,5 +347,80 @@ public final class HostParser {
             return true;
         }
         return InetAddressUtils.isIPv6Address(address);
+    }
+
+    final static class StringReader {
+        private final int eof;
+        private final String text;
+        private int position = 0;
+
+        public StringReader(final String text) {
+            this.text = text;
+            eof = this.text.length();
+        }
+
+        private StringReader(final StringReader reader) {
+            this.text = reader.text;
+            this.position = reader.position;
+            this.eof = reader.eof;
+        }
+
+        public int read() {
+            if(position >= eof) {
+                return -1;
+            }
+            char c = text.charAt(position);
+            position++;
+            return c;
+        }
+
+        public int peek() {
+            if(position >= eof) {
+                return -1;
+            }
+            return text.charAt(position);
+        }
+
+        public void skip(int chars) {
+            position += chars;
+        }
+
+        public StringReader copy() {
+            return new StringReader(this);
+        }
+    }
+
+    enum URITypes {
+        Authority,
+        Absolute,
+        Rootless,
+        Undefined
+    }
+
+    final static class URIComponent {
+        private final String value;
+        private final URIComponents uriComponent;
+
+        URIComponent(final String value, final URIComponents uriComponent) {
+            this.value = value;
+            this.uriComponent = uriComponent;
+        }
+
+        public URIComponents getUriComponent() {
+            return uriComponent;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    enum URIComponents {
+        Scheme,
+        UserInformation,
+        PasswordInformation,
+        Target,
+        Port,
+        Path
     }
 }

@@ -133,4 +133,19 @@ public class HostParserTest {
         assertEquals("user", host.getCredentials().getUsername());
         assertEquals("/folder/file", host.getDefaultPath());
     }
+
+    @Test
+    public void testParseAuthority() {
+
+    }
+
+    @Test
+    public void testParseSceheme() {
+
+    }
+
+    @Test
+    public void testParseAbsolute() {
+
+    }
 }
