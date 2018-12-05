@@ -58,14 +58,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
         try {
             switch(type) {
                 case download: {
-                    final Map<Path, Boolean> rooms = new HashMap<>();
-                    for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                        final Path container = new PathContainerService().getContainer(entry.getKey().remote);
-                        if(rooms.containsKey(container)) {
-                            continue;
-                        }
-                        rooms.put(container, nodeid.withCache(cache).isEncrypted(entry.getKey().remote));
-                    }
+                    final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);
                     for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
                         final Path container = new PathContainerService().getContainer(entry.getKey().remote);
                         if(rooms.get(container)) {
@@ -76,14 +69,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                     break;
                 }
                 default: {
-                    final Map<Path, Boolean> rooms = new HashMap<>();
-                    for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                        final Path container = new PathContainerService().getContainer(entry.getKey().remote);
-                        if(rooms.containsKey(container)) {
-                            continue;
-                        }
-                        rooms.put(container, nodeid.withCache(cache).isEncrypted(entry.getKey().remote));
-                    }
+                    final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);
                     for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
                         final Path container = new PathContainerService().getContainer(entry.getKey().remote);
                         if(rooms.get(container)) {
@@ -103,6 +89,18 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    private Map<Path, Boolean> getRoomEncryptionStatus(final Map<TransferItem, TransferStatus> files) throws BackgroundException {
+        final Map<Path, Boolean> rooms = new HashMap<>();
+        for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+            final Path container = new PathContainerService().getContainer(entry.getKey().remote);
+            if(rooms.containsKey(container)) {
+                continue;
+            }
+            rooms.put(container, nodeid.withCache(cache).isEncrypted(entry.getKey().remote));
+        }
+        return rooms;
     }
 
     @Override
