@@ -40,6 +40,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import static org.junit.Assert.assertEquals;
 
@@ -89,7 +90,7 @@ public class CommandLineUriParserTest {
     public void testCustomProvider() throws Exception {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singletonList(new SwiftProtocol())));
+        final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Collections.singletonList(new SwiftProtocol())));
         final Profile rackspace = new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Rackspace US.cyberduckprofile"));
         factory.register(rackspace);
         final Profile generic = new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Swift.cyberduckprofile"));
