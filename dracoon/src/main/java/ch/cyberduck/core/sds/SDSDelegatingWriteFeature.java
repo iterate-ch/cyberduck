@@ -45,7 +45,8 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
 
     @Override
     public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(nodeid.isEncrypted(file)) {
+        if(null != status.getEncryption()) {
+            // File key is set in encryption bulk feature if container is encrypted
             return new CryptoWriteFeature(session, proxy).write(file, status, callback);
         }
         return proxy.write(file, status, callback);
