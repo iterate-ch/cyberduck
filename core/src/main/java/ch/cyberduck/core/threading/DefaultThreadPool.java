@@ -73,7 +73,11 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
     }
 
     public DefaultThreadPool(final String prefix, final int size, final Priority priority, final Thread.UncaughtExceptionHandler handler) {
-        super(new ThreadPoolExecutor(size, size,
+        super(createExecutor(prefix, size, priority, handler));
+    }
+
+    public static ThreadPoolExecutor createExecutor(final String prefix, final int size, final Priority priority, final Thread.UncaughtExceptionHandler handler) {
+        return new ThreadPoolExecutor(size, size,
             PreferencesFactory.get().getLong("threading.pool.keepalive.seconds"), TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(),
             new NamedThreadFactory(prefix, priority, handler)) {
@@ -83,6 +87,6 @@ public class DefaultThreadPool extends ExecutorServiceThreadPool {
                     handler.uncaughtException(Thread.currentThread(), t);
                 }
             }
-        });
+        };
     }
 }

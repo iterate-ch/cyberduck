@@ -32,8 +32,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
-import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -94,7 +94,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                                  final StreamListener listener,
                                  final TransferStatus status,
                                  final ConnectionCallback callback) throws BackgroundException {
-        final DefaultThreadPool pool = new DefaultThreadPool("largeupload", concurrency);
+        final ThreadPool pool = ThreadPoolFactory.get("largeupload", concurrency);
         try {
             final String fileid;
             // Get the results of the uploads in the order they were submitted
