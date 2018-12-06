@@ -83,7 +83,6 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
 
     private static final String REQUEST_PARAMETER_JOBID_IDENTIFIER = "job";
     private static final String REQUEST_PARAMETER_OFFSET = "offset";
-    private static final String REQUEST_PARAMETER_NUMBER_OF_OBJECTS = "objects";
 
     public SpectraBulkService(final SpectraSession session) {
         this.session = session;
@@ -168,14 +167,14 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         throw new NotfoundException(String.format("Unsupported transfer type %s", type));
                 }
                 jobs.add(master.getJobId());
-                final Map<String, Long> counters = this.getNumberOfObjects(master);
+                final Map<String, Integer> counters = this.getNumberOfObjects(master);
                 for(Map.Entry<TransferItem, TransferStatus> item : files.entrySet()) {
                     if(container.getKey().equals(containerService.getContainer(item.getKey().remote))) {
                         final TransferStatus status = item.getValue();
                         final Map<String, String> parameters = new HashMap<>(status.getParameters());
                         parameters.put(REQUEST_PARAMETER_JOBID_IDENTIFIER, master.getJobId().toString());
-                        parameters.put(REQUEST_PARAMETER_NUMBER_OF_OBJECTS, String.valueOf(counters.get(containerService.getKey(item.getKey().remote))));
                         status.withParameters(parameters);
+                        status.setPart(counters.get(containerService.getKey(item.getKey().remote)));
                     }
                 }
             }
@@ -192,11 +191,11 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         }
     }
 
-    private Map<String, Long> getNumberOfObjects(final MasterObjectList objects) {
-        final Map<String, Long> counters = new HashMap<>();
+    private Map<String, Integer> getNumberOfObjects(final MasterObjectList objects) {
+        final Map<String, Integer> counters = new HashMap<>();
         for(Objects object : objects.getObjects()) {
             for(BulkObject bulkObject : object.getObjects()) {
-                counters.merge(bulkObject.getName(), 1L, Long::sum);
+                counters.merge(bulkObject.getName(), 1, Integer::sum);
             }
         }
         return counters;
@@ -272,7 +271,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     private List<TransferStatus> query(final Path file, final TransferStatus status, final String job,
                                        final MasterObjectList master) throws BackgroundException {
         final List<TransferStatus> chunks = new ArrayList<>();
-        long counter = 0;
+        int counter = 0;
         for(Objects objects : master.getObjects()) {
             final UUID nodeId = objects.getNodeId();
             if(null == nodeId) {
@@ -331,7 +330,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 }
             }
         }
-        if(counter < Long.valueOf(status.getParameters().get(REQUEST_PARAMETER_NUMBER_OF_OBJECTS))) {
+        if(counter < status.getPart()) {
             // Still missing chunks
             return Collections.emptyList();
         }
