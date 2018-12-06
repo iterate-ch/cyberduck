@@ -920,7 +920,7 @@ public class BrowserController extends WindowController
         final NSSegmentedCell cell = Rococoa.cast(this.bookmarkSwitchView.cell(), NSSegmentedCell.class);
         cell.setToolTip_forSegment(LocaleFactory.localizedString("Browser", "Preferences"), BookmarkSwitchSegement.browser.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.browser.image(), BookmarkSwitchSegement.browser.ordinal());
-        cell.setToolTip_forSegment(LocaleFactory.localizedString("Bookmarks"), BookmarkSwitchSegement.bookmarks.ordinal());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Bookmarks", "Browser"), BookmarkSwitchSegement.bookmarks.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.bookmarks.image(), BookmarkSwitchSegement.bookmarks.ordinal());
         cell.setToolTip_forSegment(LocaleFactory.localizedString("History"), BookmarkSwitchSegement.history.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.history.image(), BookmarkSwitchSegement.history.ordinal());
@@ -1498,7 +1498,7 @@ public class BrowserController extends WindowController
         }
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkColumn.bookmark.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Bookmarks"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Bookmarks", "Browser"));
             c.setMinWidth(150);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(BookmarkCell.bookmarkCell());
@@ -2112,8 +2112,7 @@ public class BrowserController extends WindowController
                 else {
                     if(getSelectedTabView() == BrowserTab.bookmarks) {
                         statusLabel.setAttributedStringValue(
-                            NSAttributedString.attributedStringWithAttributes(String.format("%s %s", bookmarkTable.numberOfRows(),
-                                LocaleFactory.localizedString("Bookmarks")),
+                            NSAttributedString.attributedStringWithAttributes(String.format(LocaleFactory.localizedString("{0} Bookmarks"), bookmarkTable.numberOfRows()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES
                             )
                         );

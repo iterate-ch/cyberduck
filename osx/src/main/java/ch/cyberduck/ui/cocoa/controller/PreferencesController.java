@@ -511,7 +511,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void setDefaultBookmarkCombobox(NSPopUpButton b) {
         this.defaultBookmarkCombobox = b;
-        this.defaultBookmarkCombobox.setToolTip(LocaleFactory.localizedString("Bookmarks"));
+        this.defaultBookmarkCombobox.setToolTip(LocaleFactory.localizedString("Bookmarks", "Preferences"));
         this.defaultBookmarkCombobox.removeAllItems();
         this.defaultBookmarkCombobox.addItemWithTitle(LocaleFactory.localizedString("None"));
         this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());

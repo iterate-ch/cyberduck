@@ -182,7 +182,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             deleteBookmarkToolStripButton.Tag = ResourcesBundle.removePressed;
 
             browserToolStripButton.ToolTipText = LocaleFactory.localizedString("Browser", "Preferences");
-            bookmarksToolStripButton.ToolTipText = LocaleFactory.localizedString("Bookmarks", "Preferences");
+            bookmarksToolStripButton.ToolTipText = LocaleFactory.localizedString("Bookmarks", "Browser");
             historyToolStripButton.ToolTipText = LocaleFactory.localizedString("History");
             bonjourToolStripButton.ToolTipText = LocaleFactory.localizedString("Bonjour", "Browser");
 
