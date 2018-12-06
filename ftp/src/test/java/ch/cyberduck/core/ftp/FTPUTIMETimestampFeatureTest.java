@@ -26,9 +26,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -40,7 +38,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class FTPUTIMETimestampFeatureTest {
@@ -62,21 +61,6 @@ public class FTPUTIMETimestampFeatureTest {
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         new FTPUTIMETimestampFeature(session).setTimestamp(test, modified);
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
-    }
-
-    @Test
-    public void testFeature() throws Exception {
-        final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
-        final FTPSession session = new FTPSession(host);
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        assertNull(session.getFeature(Timestamp.class));
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertNotNull(session.getFeature(Timestamp.class));
         session.close();
     }
 }
