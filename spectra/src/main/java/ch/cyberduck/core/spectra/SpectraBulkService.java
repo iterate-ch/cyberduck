@@ -58,11 +58,12 @@ import java.util.UUID;
 
 import com.spectralogic.ds3client.Ds3Client;
 import com.spectralogic.ds3client.commands.spectrads3.CancelAllActiveJobsSpectraS3Request;
+import com.spectralogic.ds3client.commands.spectrads3.GetBulkJobSpectraS3Request;
+import com.spectralogic.ds3client.commands.spectrads3.GetBulkJobSpectraS3Response;
 import com.spectralogic.ds3client.commands.spectrads3.GetJobChunksReadyForClientProcessingSpectraS3Request;
 import com.spectralogic.ds3client.commands.spectrads3.GetJobChunksReadyForClientProcessingSpectraS3Response;
-import com.spectralogic.ds3client.helpers.Ds3ClientHelpers;
-import com.spectralogic.ds3client.helpers.options.ReadJobOptions;
-import com.spectralogic.ds3client.helpers.options.WriteJobOptions;
+import com.spectralogic.ds3client.commands.spectrads3.PutBulkJobSpectraS3Request;
+import com.spectralogic.ds3client.commands.spectrads3.PutBulkJobSpectraS3Response;
 import com.spectralogic.ds3client.models.BulkObject;
 import com.spectralogic.ds3client.models.JobNode;
 import com.spectralogic.ds3client.models.MasterObjectList;
@@ -115,7 +116,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
      */
     @Override
     public Set<UUID> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        final Ds3ClientHelpers helper = Ds3ClientHelpers.wrap(new SpectraClientBuilder().wrap(session.getClient(), session.getHost()));
+        final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
         final Map<Path, List<Ds3Object>> objects = new HashMap<Path, List<Ds3Object>>();
         for(Map.Entry<TransferItem, TransferStatus> item : files.entrySet()) {
             final Path file = item.getKey().remote;
@@ -152,27 +153,28 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                 if(container.getValue().isEmpty()) {
                     continue;
                 }
-                final Ds3ClientHelpers.Job job;
+                final MasterObjectList master;
                 switch(type) {
                     case download:
-                        job = helper.startReadJob(
-                            container.getKey().getName(), container.getValue(), ReadJobOptions.create());
+                        final GetBulkJobSpectraS3Response getResponse = client.getBulkJobSpectraS3(new GetBulkJobSpectraS3Request(container.getKey().getName(), container.getValue()));
+                        master = getResponse.getMasterObjectList();
                         break;
                     case upload:
-                        job = helper.startWriteJob(
-                            container.getKey().getName(), container.getValue(), WriteJobOptions.create()
-                                .withMaxUploadSize(Integer.MAX_VALUE));
+                        final PutBulkJobSpectraS3Response putResponse = client.putBulkJobSpectraS3(new PutBulkJobSpectraS3Request(container.getKey().getName(), container.getValue()).withMaxUploadSize(Long.MAX_VALUE));
+                        master = putResponse.getMasterObjectList();
                         break;
                     default:
                         throw new NotfoundException(String.format("Unsupported transfer type %s", type));
                 }
-                jobs.add(job.getJobId());
+                jobs.add(master.getJobId());
+                final Map<String, Integer> counters = this.getNumberOfObjects(master);
                 for(Map.Entry<TransferItem, TransferStatus> item : files.entrySet()) {
                     if(container.getKey().equals(containerService.getContainer(item.getKey().remote))) {
                         final TransferStatus status = item.getValue();
                         final Map<String, String> parameters = new HashMap<>(status.getParameters());
-                        parameters.put(REQUEST_PARAMETER_JOBID_IDENTIFIER, job.getJobId().toString());
+                        parameters.put(REQUEST_PARAMETER_JOBID_IDENTIFIER, master.getJobId().toString());
                         status.withParameters(parameters);
+                        status.setPart(counters.get(containerService.getKey(item.getKey().remote)));
                     }
                 }
             }
@@ -187,6 +189,16 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    private Map<String, Integer> getNumberOfObjects(final MasterObjectList objects) {
+        final Map<String, Integer> counters = new HashMap<>();
+        for(Objects object : objects.getObjects()) {
+            for(BulkObject bulkObject : object.getObjects()) {
+                counters.merge(bulkObject.getName(), 1, Integer::sum);
+            }
+        }
+        return counters;
     }
 
     /**
@@ -259,7 +271,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     private List<TransferStatus> query(final Path file, final TransferStatus status, final String job,
                                        final MasterObjectList master) throws BackgroundException {
         final List<TransferStatus> chunks = new ArrayList<>();
-        long bytes = 0;
+        int counter = 0;
         for(Objects objects : master.getObjects()) {
             final UUID nodeId = objects.getNodeId();
             if(null == nodeId) {
@@ -314,11 +326,11 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                         log.info(String.format("Add chunk %s for file %s", chunk, file));
                     }
                     chunks.add(chunk);
-                    bytes += chunk.getLength();
+                    counter++;
                 }
             }
         }
-        if(bytes < status.getLength()) {
+        if(counter < status.getPart()) {
             // Still missing chunks
             return Collections.emptyList();
         }
