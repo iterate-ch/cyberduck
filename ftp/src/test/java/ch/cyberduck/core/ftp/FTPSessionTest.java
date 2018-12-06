@@ -51,28 +51,6 @@ public class FTPSessionTest {
         });
     }
 
-    @Test
-    public void testConnectAnonymous() throws Exception {
-        final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
-        final FTPSession session = new FTPSession(host);
-        assertEquals(Session.State.closed, session.getState());
-        final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback(),
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener());
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        assertEquals(Session.State.open, session.getState());
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        assertNotNull(new FTPWorkdirService(session).find());
-        session.close();
-        assertEquals(Session.State.closed, session.getState());
-        assertFalse(session.isConnected());
-    }
-
     @Ignore
     @Test(expected = ConnectionRefusedException.class)
     public void testConnectHttpProxyForbiddenHttpResponse() throws Exception {
