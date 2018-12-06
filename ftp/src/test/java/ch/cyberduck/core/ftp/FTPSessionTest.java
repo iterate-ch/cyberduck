@@ -80,16 +80,6 @@ public class FTPSessionTest {
         session.close();
     }
 
-    @Test(expected = LoginFailureException.class)
-    public void testConnectTLSNotSupported() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "mirror.switch.ch", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
-        final FTPSession session = new FTPSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-    }
-
     @Test
     public void testConnect() throws Exception {
         final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
