@@ -166,6 +166,30 @@
                                 </configuration>
                             </execution>
                             <execution>
+                                <id>unpack-i18n-strings</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>ch.cyberduck</groupId>
+                                            <artifactId>i18n</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/Resources
+                                    </outputDirectory>
+                                    <includes>
+                                        *.lproj/Browser.strings.1,*.lproj/Preferences.strings.1,*.lproj/Main.strings.1
+                                    </includes>
+                                    <overWriteReleases>true</overWriteReleases>
+                                    <overWriteSnapshots>true</overWriteSnapshots>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>unpack-profiles</id>
                                 <phase>generate-sources</phase>
                                 <goals>
