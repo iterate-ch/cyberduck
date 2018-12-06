@@ -114,7 +114,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
                         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
                             final TransferStatus status = entry.getValue();
-                            if(status.getEncryption() != null) {
+                            if(Encryption.Algorithm.NONE != status.getEncryption()) {
                                 final TransferItem item = entry.getKey();
                                 background.operate(callback, item.remote);
                             }
