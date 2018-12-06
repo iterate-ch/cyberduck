@@ -28,11 +28,9 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.ftp.FTPWorkdirService;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -54,19 +52,4 @@ public class FTPMlsdListServiceTest {
         list.list(directory, new DisabledListProgressListener());
         session.close();
     }
-
-    @Test(expected = InteroperabilityException.class)
-    public void testListNotSupportedSwitch() throws Exception {
-        final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
-        final FTPSession session = new FTPSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        final ListService list = new FTPMlsdListService(session);
-        final Path directory = new FTPWorkdirService(session).find();
-        list.list(directory, new DisabledListProgressListener());
-        session.close();
-    }
 }
-
