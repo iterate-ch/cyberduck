@@ -122,7 +122,10 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
                             );
                             additional = callback.prompt(bookmark, title.toString(),
-                                message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
+                                message.toString(), new LoginOptions()
+                                    .password(true)
+                                    .user(false)
+                                    .keychain(false)
                             );
                         }
                         catch(LoginCanceledException e) {
