@@ -39,7 +39,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 import static org.junit.Assert.assertEquals;
@@ -50,7 +49,7 @@ public class CommandLineUriParserTest {
     public void testParse() throws Exception {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
+        final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
         factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/FTP.cyberduckprofile")));
         factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/FTPS.cyberduckprofile")));
         factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/S3 (HTTPS).cyberduckprofile")));
@@ -64,7 +63,7 @@ public class CommandLineUriParserTest {
     public void testProfile() throws Exception {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol())));
+        final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Collections.singleton(new SwiftProtocol())));
         factory.register(new ProfilePlistReader(factory).read(new Local("../profiles/default/Rackspace US.cyberduckprofile")));
         assertEquals(0, new Host(factory.forName("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))
             .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://u@cdn.cyberduck.ch/")));
@@ -76,7 +75,7 @@ public class CommandLineUriParserTest {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(
+        final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(
                 new AzureProtocol(),
                 new DAVSSLProtocol()
         )));
