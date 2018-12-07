@@ -117,6 +117,15 @@ public class STSCredentialsConfigurator {
                         sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken());
                     // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
                     // Role using the long lived AWS credentials
+                    final Credentials input = prompt.prompt(
+                        host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                            basicProfile.getProperties().get("mfa_serial")),
+                        new LoginOptions(host.getProtocol())
+                            .password(true)
+                            .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                            .keychain(false)
+                    );
                     final AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
                         .withRoleArn(basicProfile.getRoleArn())
                         // Specify this value if the IAM user has a policy that requires MFA authentication
@@ -127,15 +136,7 @@ public class STSCredentialsConfigurator {
                             // Specify this value if the trust policy of the role being assumed includes a condition that requires MFA authentication.
                             // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
                             // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
-                            prompt.prompt(
-                                host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                                String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                                    basicProfile.getProperties().get("mfa_serial")),
-                                new LoginOptions(host.getProtocol())
-                                    .password(true)
-                                    .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                                    .keychain(false)
-                            ).getPassword() : null
+                            input.getPassword() : null
                         )
                         .withRoleSessionName(String.format("%s-%s", preferences.getProperty("application.name"), new AsciiRandomStringService().random()));
                     if(log.isDebugEnabled()) {
