@@ -41,6 +41,9 @@ public interface LoginService {
      * @param cache    Directory listing cache
      * @param listener Authentication message callback
      * @param cancel   Cancel callback while authentication is in progress
+     * @return False if authentication fails
+     * @throws LoginCanceledException Login prompt canceled by user
+     * @throws LoginFailureException  Login attempt failed
      */
     boolean authenticate(Proxy proxy, Session session, Cache<Path> cache, ProgressListener listener, CancelCallback cancel) throws BackgroundException;
 }
