@@ -18,6 +18,7 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.BundledProtocolPredicate;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
@@ -60,18 +61,18 @@ public final class TerminalHelpPrinter {
                 case swift:
                 case azure:
                 case onedrive:
-                    protocols.append("\t").append(String.format("%s://<container>/<key>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
+                    protocols.append("\t").append(String.format("%s://<container>/<key>", new BundledProtocolPredicate().test(p) ? p.getIdentifier() : p.getProvider()));
                     break;
                 default:
                     if(p.isHostnameConfigurable()) {
-                        protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
+                        protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", new BundledProtocolPredicate().test(p) ? p.getIdentifier() : p.getProvider()));
                     }
                     else {
                         // case file:
                         // case googledrive:
                         // case dropbox:
                         // case onedrive:
-                        protocols.append("\t").append(String.format("%s://<folder>/<file>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
+                        protocols.append("\t").append(String.format("%s://<folder>/<file>", new BundledProtocolPredicate().test(p) ? p.getIdentifier() : p.getProvider()));
                     }
                     break;
             }
