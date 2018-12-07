@@ -48,7 +48,7 @@ public class LoginConnectionService implements ConnectionService {
                                   final HostKeyCallback key,
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener) {
-        this(new KeychainLoginService(prompt, keychain), prompt, key, listener);
+        this(new KeychainLoginService(keychain), prompt, key, listener);
     }
 
     public LoginConnectionService(final LoginCallback prompt,
@@ -56,7 +56,7 @@ public class LoginConnectionService implements ConnectionService {
                                   final HostPasswordStore keychain,
                                   final ProgressListener listener,
                                   final ProxyFinder proxy) {
-        this(new KeychainLoginService(prompt, keychain), prompt, key, listener, proxy);
+        this(new KeychainLoginService(keychain), prompt, key, listener, proxy);
     }
 
     public LoginConnectionService(final LoginService login,
@@ -96,7 +96,7 @@ public class LoginConnectionService implements ConnectionService {
             login.validate(bookmark,
                 MessageFormat.format(LocaleFactory.localizedString(
                     "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                new LoginOptions(bookmark.getProtocol()));
+                prompt, new LoginOptions(bookmark.getProtocol()));
         }
         this.connect(session, cache, callback);
         return true;
@@ -168,7 +168,7 @@ public class LoginConnectionService implements ConnectionService {
     }
 
     private void authenticate(final Proxy proxy, final Session session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
-        if(!login.authenticate(proxy, session, cache, listener, callback)) {
+        if(!login.authenticate(proxy, session, cache, listener, prompt, callback)) {
             if(session.isConnected()) {
                 // Next attempt with updated credentials
                 this.authenticate(proxy, session, cache, callback);

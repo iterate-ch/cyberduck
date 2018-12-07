@@ -117,8 +117,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             .usernamePlaceholder(LocaleFactory.localizedString("Access Key ID", "S3"))
             .passwordPlaceholder(LocaleFactory.localizedString("Secret Access Key", "S3"));
         try {
-            final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
-            login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), options);
+            final KeychainLoginService login = new KeychainLoginService(PasswordStoreFactory.get());
+            login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), prompt, options);
             return run.call();
         }
         catch(LoginFailureException failure) {

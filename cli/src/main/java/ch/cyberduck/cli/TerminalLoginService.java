@@ -37,13 +37,13 @@ public class TerminalLoginService extends KeychainLoginService {
     private final CommandLine input;
 
     public TerminalLoginService(final CommandLine input, final LoginCallback prompt) {
-        super(prompt, input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name())
+        super(input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name())
                 ? new DisabledPasswordStore() : PasswordStoreFactory.get());
         this.input = input;
     }
 
     @Override
-    public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
+    public void validate(final Host bookmark, final String message, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
         final Credentials credentials = bookmark.getCredentials();
         if(input.hasOption(TerminalOptionsBuilder.Params.username.name())) {
             credentials.setUsername(input.getOptionValue(TerminalOptionsBuilder.Params.username.name()));
@@ -57,6 +57,6 @@ public class TerminalLoginService extends KeychainLoginService {
         if(StringUtils.isNotBlank(credentials.getUsername()) && StringUtils.isNotBlank(credentials.getPassword())) {
             return;
         }
-        super.validate(bookmark, message, options);
+        super.validate(bookmark, message, prompt, options);
     }
 }

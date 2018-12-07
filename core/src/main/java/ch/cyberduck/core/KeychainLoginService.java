@@ -31,16 +31,15 @@ import java.text.MessageFormat;
 public class KeychainLoginService implements LoginService {
     private static final Logger log = Logger.getLogger(KeychainLoginService.class);
 
-    private final LoginCallback callback;
     private final HostPasswordStore keychain;
 
-    public KeychainLoginService(final LoginCallback prompt, final HostPasswordStore keychain) {
-        this.callback = prompt;
+    public KeychainLoginService(final HostPasswordStore keychain) {
         this.keychain = keychain;
     }
 
     @Override
-    public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
+    public void validate(final Host bookmark, final String message, final LoginCallback prompt,
+                         final LoginOptions options) throws LoginCanceledException, LoginFailureException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));
         }
@@ -48,7 +47,7 @@ public class KeychainLoginService implements LoginService {
         if(credentials.isPublicKeyAuthentication()) {
             if(!credentials.getIdentity().attributes().getPermission().isReadable()) {
                 log.warn(String.format("Prompt to select identity file not readable %s", credentials.getIdentity()));
-                credentials.setIdentity(callback.select(credentials.getIdentity()));
+                credentials.setIdentity(prompt.select(credentials.getIdentity()));
             }
         }
         if(options.keychain) {
@@ -102,11 +101,21 @@ public class KeychainLoginService implements LoginService {
             }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
-            this.prompt(bookmark, message, options);
+            this.prompt(bookmark, message, prompt, options);
         }
     }
 
-    protected void prompt(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException {
+    /**
+     * Prompt for credentials if not found in keychain
+     *
+     * @param bookmark Host configuration
+     * @param message  Message in prompt
+     * @param callback Login prompt
+     * @param options  Available login options for protocol
+     * @throws LoginCanceledException Prompt canceled by user
+     */
+    protected void prompt(final Host bookmark, final String message, final LoginCallback callback,
+                          final LoginOptions options) throws LoginCanceledException {
         final Credentials credentials = bookmark.getCredentials();
         if(options.password) {
             final StringAppender appender = new StringAppender();
@@ -144,7 +153,8 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public boolean authenticate(final Proxy proxy, final Session session, final Cache<Path> cache, final ProgressListener listener, final CancelCallback cancel) throws BackgroundException {
+    public boolean authenticate(final Proxy proxy, final Session session, final Cache<Path> cache,
+                                final ProgressListener listener, final LoginCallback callback, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
         final Credentials credentials = bookmark.getCredentials();
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
