@@ -36,9 +36,8 @@ public class TerminalLoginService extends KeychainLoginService {
 
     private final CommandLine input;
 
-    public TerminalLoginService(final CommandLine input, final LoginCallback prompt) {
-        super(input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name())
-                ? new DisabledPasswordStore() : PasswordStoreFactory.get());
+    public TerminalLoginService(final CommandLine input) {
+        super(input.hasOption(TerminalOptionsBuilder.Params.nokeychain.name()) ? new DisabledPasswordStore() : PasswordStoreFactory.get());
         this.input = input;
     }
 
