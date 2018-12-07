@@ -113,47 +113,35 @@ public class KeychainLoginService implements LoginService {
      *
      * @param bookmark Host configuration
      * @param message  Message in prompt
-     * @param callback Login prompt
+     * @param prompt   Login prompt
      * @param options  Available login options for protocol
      * @throws LoginCanceledException Prompt canceled by user
      */
-    public void prompt(final Host bookmark, final String message, final LoginCallback callback, final LoginOptions options) throws LoginCanceledException {
+    public void prompt(final Host bookmark, final String message, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException {
         final Credentials credentials = bookmark.getCredentials();
         if(options.password) {
-            final Credentials prompt = callback.prompt(bookmark, credentials.getUsername(),
+            final Credentials input = prompt.prompt(bookmark, credentials.getUsername(),
                 String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
                 message,
                 options);
-            credentials.setSaved(prompt.isSaved());
-            credentials.setUsername(prompt.getUsername());
-            credentials.setPassword(prompt.getPassword());
-            credentials.setIdentity(prompt.getIdentity());
+            credentials.setSaved(input.isSaved());
+            credentials.setUsername(input.getUsername());
+            credentials.setPassword(input.getPassword());
+            credentials.setIdentity(input.getIdentity());
         }
         if(options.token) {
-            final Credentials prompt = callback.prompt(bookmark,
+            final Credentials input = prompt.prompt(bookmark,
                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                 message,
                 options);
-            credentials.setSaved(prompt.isSaved());
-            credentials.setToken(prompt.getPassword());
-        }
-        if(options.publickey) {
-            //todo check if the key is password protected
-            final Credentials prompt = callback.prompt(bookmark,
-                LocaleFactory.localizedString("Private key password protected", "Credentials"),
-                String.format("%s (%s)",
-                    LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                    credentials.getIdentity().getAbbreviatedPath()), options
-            );
-            credentials.setSaved(prompt.isSaved());
-            credentials.setIdentityPassphrase(prompt.getPassword());
-            credentials.setIdentity(prompt.getIdentity());
+            credentials.setSaved(input.isSaved());
+            credentials.setToken(input.getPassword());
         }
     }
 
     @Override
     public boolean authenticate(final Proxy proxy, final Session session, final ProgressListener listener,
-                                final LoginCallback callback, final CancelCallback cancel) throws BackgroundException {
+                                final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
         final Credentials credentials = bookmark.getCredentials();
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
@@ -162,7 +150,7 @@ public class KeychainLoginService implements LoginService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", bookmark));
             }
-            session.login(proxy, callback, cancel);
+            session.login(proxy, prompt, cancel);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login successful for session %s", session));
             }
@@ -181,7 +169,7 @@ public class KeychainLoginService implements LoginService {
             final LoginOptions options = new LoginOptions(bookmark.getProtocol());
             if(options.user && options.password) {
                 // Default login prompt with username and password input
-                final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
+                final Credentials input = prompt.prompt(bookmark, credentials.getUsername(),
                     LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
                 credentials.setUsername(input.getUsername());
                 credentials.setPassword(input.getPassword());
@@ -199,7 +187,7 @@ public class KeychainLoginService implements LoginService {
                 final StringAppender details = new StringAppender();
                 details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
                 details.append(e.getDetail());
-                this.prompt(bookmark, details.toString(), callback, options);
+                this.prompt(bookmark, details.toString(), prompt, options);
                 // Retry
                 return false;
             }

@@ -19,7 +19,9 @@ import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -95,11 +97,29 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                 provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
-                        if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {
-                            // Return null if user cancels
-                            return StringUtils.EMPTY.toCharArray();
+                        final String password = credentials.getIdentityPassphrase();
+                        if(StringUtils.isEmpty(password)) {
+                            try {
+                                // Use password prompt
+                                final Credentials input = prompt.prompt(bookmark,
+                                    LocaleFactory.localizedString("Private key password protected", "Credentials"),
+                                    String.format("%s (%s)",
+                                        LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                        identity.getAbbreviatedPath()),
+                                    new LoginOptions()
+                                        .user(false).password(true)
+                                );
+                                credentials.setSaved(input.isSaved());
+                                credentials.setIdentityPassphrase(input.getPassword());
+                                return input.getPassword().toCharArray();
+                            }
+                            catch(LoginCanceledException e) {
+                                canceled.set(true);
+                                // Return null if user cancels
+                                return StringUtils.EMPTY.toCharArray();
+                            }
                         }
-                        return credentials.getIdentityPassphrase().toCharArray();
+                        return password.toCharArray();
                     }
 
                     @Override
