@@ -39,7 +39,6 @@ public interface LoginService {
      *
      * @param proxy    Proxy configuration
      * @param session  Session
-     * @param cache    Directory listing cache
      * @param listener Authentication message callback
      * @param prompt    Login prompt
      * @param cancel   Cancel callback while authentication is in progress
@@ -47,5 +46,5 @@ public interface LoginService {
      * @throws LoginCanceledException Login prompt canceled by user
      * @throws LoginFailureException  Login attempt failed
      */
-    boolean authenticate(Proxy proxy, Session session, Cache<Path> cache, ProgressListener listener, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
+    boolean authenticate(Proxy proxy, Session session, ProgressListener listener, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
 }
