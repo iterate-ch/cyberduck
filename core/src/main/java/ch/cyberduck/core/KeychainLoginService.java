@@ -101,7 +101,10 @@ public class KeychainLoginService implements LoginService {
             }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
-            this.prompt(bookmark, message, prompt, options);
+            final StringAppender details = new StringAppender();
+            details.append(message);
+            details.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
+            this.prompt(bookmark, details.toString(), prompt, options);
         }
     }
 
@@ -114,16 +117,12 @@ public class KeychainLoginService implements LoginService {
      * @param options  Available login options for protocol
      * @throws LoginCanceledException Prompt canceled by user
      */
-    protected void prompt(final Host bookmark, final String message, final LoginCallback callback,
-                          final LoginOptions options) throws LoginCanceledException {
+    public void prompt(final Host bookmark, final String message, final LoginCallback callback, final LoginOptions options) throws LoginCanceledException {
         final Credentials credentials = bookmark.getCredentials();
         if(options.password) {
-            final StringAppender appender = new StringAppender();
-            appender.append(message);
-            appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
             final Credentials prompt = callback.prompt(bookmark, credentials.getUsername(),
                 String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                appender.toString(),
+                message,
                 options);
             credentials.setSaved(prompt.isSaved());
             credentials.setUsername(prompt.getUsername());
@@ -133,7 +132,7 @@ public class KeychainLoginService implements LoginService {
         if(options.token) {
             final Credentials prompt = callback.prompt(bookmark,
                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"),
+                message,
                 options);
             credentials.setSaved(prompt.isSaved());
             credentials.setToken(prompt.getPassword());
@@ -153,8 +152,8 @@ public class KeychainLoginService implements LoginService {
     }
 
     @Override
-    public boolean authenticate(final Proxy proxy, final Session session, final Cache<Path> cache,
-                                final ProgressListener listener, final LoginCallback callback, final CancelCallback cancel) throws BackgroundException {
+    public boolean authenticate(final Proxy proxy, final Session session, final ProgressListener listener,
+                                final LoginCallback callback, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
         final Credentials credentials = bookmark.getCredentials();
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
