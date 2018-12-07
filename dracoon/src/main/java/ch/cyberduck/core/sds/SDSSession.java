@@ -145,8 +145,11 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
                 break;
             case radius:
-                final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions(host.getProtocol()).user(false).keychain(false)
+                final Credentials additional = controller.prompt(host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                    new LoginOptions()
+                        .user(false)
+                        .keychain(false)
                 );
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
@@ -190,8 +193,11 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
         }
         catch(PartialLoginFailureException e) {
-            final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                e.getDetail(), new LoginOptions(host.getProtocol()).user(false).keychain(false)
+            final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(),
+                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), e.getDetail(),
+                new LoginOptions()
+                    .user(false)
+                    .keychain(false)
             );
             return this.login(controller, new LoginRequest()
                 .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
