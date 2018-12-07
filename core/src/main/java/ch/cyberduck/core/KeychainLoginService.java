@@ -196,29 +196,13 @@ public class KeychainLoginService implements LoginService {
                 return false;
             }
             else {
-                // Password prompt
-                if(options.password) {
-                    final Credentials input = callback.prompt(bookmark,
-                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
-                    if(input.isPasswordAuthentication()) {
-                        credentials.setPassword(input.getPassword());
-                        credentials.setSaved(input.isSaved());
-                    }
-                    // Retry
-                    return false;
-                }
-                else if(options.token) {
-                    final Credentials input = callback.prompt(bookmark,
-                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
-                    if(input.isPasswordAuthentication()) {
-                        credentials.setToken(input.getPassword());
-                        credentials.setSaved(input.isSaved());
-                    }
-                    // Retry
-                    return false;
-                }
+                final StringAppender details = new StringAppender();
+                details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
+                details.append(e.getDetail());
+                this.prompt(bookmark, details.toString(), callback, options);
+                // Retry
+                return false;
             }
-            throw e;
         }
     }
 }
