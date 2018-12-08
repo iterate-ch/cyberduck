@@ -2762,7 +2762,7 @@ public class BrowserController extends WindowController
     }
 
     public boolean isIdle() {
-        return this.getRegistry().isEmpty();
+        return registry.isEmpty();
     }
 
     /**

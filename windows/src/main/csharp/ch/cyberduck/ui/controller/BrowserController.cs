@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
@@ -1392,7 +1392,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (isActivityRunning())
             {
                 // Remove all pending actions)
-                foreach (BackgroundAction action in getRegistry().toArray(new BackgroundAction[getRegistry().size()]))
+                foreach (BackgroundAction action in registry.toArray(new BackgroundAction[registry.size()]))
                 {
                     action.cancel();
                 }
@@ -2657,7 +2657,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool isIdle()
         {
-            return getRegistry().isEmpty();
+            return registry.isEmpty();
         }
 
         public static bool ApplicationShouldTerminate()
@@ -2760,7 +2760,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void SetStatus()
         {
-            BackgroundAction current = getRegistry().getCurrent();
+            BackgroundAction current = registry.getCurrent();
             message(null != current ? current.getActivity() : null);
         }
 
