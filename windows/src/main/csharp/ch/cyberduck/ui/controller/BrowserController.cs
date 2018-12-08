@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
@@ -2639,9 +2639,8 @@ namespace Ch.Cyberduck.Ui.Controller
             CallbackDelegate callbackDelegate =
                 delegate
                 {
-                    background(new MountAction(this,
-                        SessionPoolFactory.create(this, _cache, host, SessionPoolFactory.Usage.browser), host,
-                        _limitListener));
+                    _controller.Session = SessionPoolFactory.create(this, _cache, host, SessionPoolFactory.Usage.browser);
+                    background(new MountAction(this, _pool, host, _limitListener));
                 };
             Unmount(callbackDelegate);
         }
@@ -3322,7 +3321,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        _controller.Session = _pool;
                         _controller._pasteboard = PathPasteboardFactory.getPasteboard(_pool.getHost());
                         // Set the working directory
                         _controller.SetWorkdir(workdir);
