@@ -17,6 +17,7 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -25,14 +26,25 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import com.dracoon.sdk.crypto.Crypto;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class SDSNodeIdProvider implements IdProvider {
     private static final Logger log = Logger.getLogger(SDSNodeIdProvider.class);
@@ -132,6 +144,20 @@ public class SDSNodeIdProvider implements IdProvider {
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
+    }
+
+    public void setFileKey(final TransferStatus status) throws BackgroundException {
+        final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
+        final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            writer.writeValue(out, fileKey);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
+        status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
+        status.setEncryption(new Encryption.Algorithm("AES256", null));
     }
 
     @Override
