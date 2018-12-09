@@ -116,30 +116,26 @@ public class SDSNodeIdProvider implements IdProvider {
         }
         // Get top level share
         final Path container = new PathContainerService().getContainer(file);
+        if(container.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
+            return Boolean.valueOf(container.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
+        }
         if(cache.isCached(container.getParent())) {
             final AttributedList<Path> list = cache.get(container.getParent());
             final Path found = list.find(new SimplePathPredicate(container));
             if(null != found) {
-                if(found.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
-                    return true;
-                }
+                return Boolean.valueOf(found.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
             }
         }
         try {
-            if(container.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
-                return true;
-            }
             // Top-level nodes only
             final NodeList nodes = new NodesApi(session.getClient()).getFsNodes(0,
                 Long.parseLong(ROOT_NODE_ID), null, String.format("type:eq:%s|name:cn:%s", "room", container.getName()),
                 null, null, null, StringUtils.EMPTY, null);
             for(Node node : nodes.getItems()) {
                 if(node.getName().equals(container.getName())) {
-                    if(node.getIsEncrypted()) {
-                        container.attributes().withCustom(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(true));
-                        return true;
-                    }
-                    return false;
+                    final Boolean encrypted = node.getIsEncrypted();
+                    container.attributes().withCustom(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(encrypted));
+                    return encrypted;
                 }
             }
             log.warn(String.format("Unknown room %s", container));

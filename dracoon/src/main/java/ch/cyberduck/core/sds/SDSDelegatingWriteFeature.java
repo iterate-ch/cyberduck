@@ -72,7 +72,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
 
     @Override
     public ChecksumCompute checksum(final Path file) {
-        if(containerService.getContainer(file).attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
+        if(Boolean.valueOf(containerService.getContainer(file).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))) {
             return new CryptoWriteFeature(session, proxy).checksum(file);
         }
         return proxy.checksum(file);

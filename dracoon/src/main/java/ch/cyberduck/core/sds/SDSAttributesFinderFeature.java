@@ -80,9 +80,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         if(null != node.getCntUploadShares()) {
             custom.put(SDSAttributesFinderFeature.KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
         }
-        if(node.getIsEncrypted()) {
-            custom.put(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(true));
-        }
+        custom.put(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(node.getIsEncrypted()));
         attributes.setCustom(custom);
         return attributes;
     }
