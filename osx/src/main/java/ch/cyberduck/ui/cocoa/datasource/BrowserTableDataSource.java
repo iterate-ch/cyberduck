@@ -192,8 +192,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         if(identifier.equals(BrowserColumn.filename.name())) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
-                final Path renamed = new Path(
-                    item.getParent(), value.toString(), item.getType());
+                final Path renamed = new Path(item.getParent(), value.toString(), item.getType(), item.attributes());
                 new MoveController(controller).rename(item, renamed);
             }
         }
@@ -401,7 +400,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     // The file should be copied
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path next : pasteboard) {
-                        Path renamed = new Path(destination, next.getName(), next.getType());
+                        Path renamed = new Path(destination, next.getName(), next.getType(), next.attributes());
                         files.put(next, renamed);
                     }
                     new CopyController(controller).copy(files);
@@ -410,7 +409,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     // The file should be renamed
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path next : pasteboard) {
-                        final Path renamed = new Path(destination, next.getName(), next.getType());
+                        final Path renamed = new Path(destination, next.getName(), next.getType(), next.attributes());
                         files.put(next, renamed);
                     }
                     new MoveController(controller).rename(files);

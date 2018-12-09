@@ -2905,7 +2905,7 @@ public class BrowserController extends WindowController
             final Map<Path, Path> files = new HashMap<Path, Path>();
             final Path parent = this.workdir();
             for(final Path next : pasteboard) {
-                Path renamed = new Path(parent, next.getName(), next.getType());
+                Path renamed = new Path(parent, next.getName(), next.getType(), next.attributes());
                 files.put(next, renamed);
             }
             pasteboard.clear();
