@@ -135,7 +135,11 @@ public class SDSNodeIdProvider implements IdProvider {
                 null, null, null, StringUtils.EMPTY, null);
             for(Node node : nodes.getItems()) {
                 if(node.getName().equals(container.getName())) {
-                    return node.getIsEncrypted();
+                    if(node.getIsEncrypted()) {
+                        container.attributes().withCustom(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(true));
+                        return true;
+                    }
+                    return false;
                 }
             }
             log.warn(String.format("Unknown room %s", container));
