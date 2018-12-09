@@ -36,6 +36,7 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -52,6 +53,7 @@ import org.cryptomator.cryptofs.CryptoFileSystemUris;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -61,6 +63,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertArrayEquals;
 
+@Category(IntegrationTest.class)
 public class SFTPCryptomatorInteroperabilityTest {
 
     private static int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);

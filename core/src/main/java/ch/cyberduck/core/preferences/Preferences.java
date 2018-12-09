@@ -799,6 +799,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
         this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
 
+        this.setDefault("spectra.retry.delay", String.valueOf(60)); // 1 minute
+
         /*
           NTLM Windows Domain
          */

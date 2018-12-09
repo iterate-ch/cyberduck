@@ -724,7 +724,7 @@ public class MainController extends BundleController implements NSApplication.De
             return false;
         }
         final NSPopUpButton bookmarksPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
-        bookmarksPopup.setToolTip(LocaleFactory.localizedString("Bookmarks"));
+        bookmarksPopup.setToolTip(LocaleFactory.localizedString("Bookmarks", "Browser"));
         for(Host b : bookmarks) {
             String title = BookmarkNameProvider.toString(b);
             int i = 1;

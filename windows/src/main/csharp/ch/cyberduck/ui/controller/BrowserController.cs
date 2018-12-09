@@ -407,8 +407,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (View.CurrentView == BrowserView.Bookmark || View.CurrentView == BrowserView.History ||
                     View.CurrentView == BrowserView.Bonjour)
                 {
-                    label = String.Format("{0} {1}", View.NumberOfBookmarks,
-                        LocaleFactory.localizedString("Bookmarks"));
+                    label = String.Format(LocaleFactory.localizedString("{0} Bookmarks"), View.NumberOfBookmarks);
                 }
                 else
                 {

@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
@@ -45,7 +46,8 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
 
     @Override
     public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(nodeid.isEncrypted(file)) {
+        if(Encryption.Algorithm.NONE != status.getEncryption()) {
+            // File key is set in encryption bulk feature if container is encrypted
             return new CryptoWriteFeature(session, proxy).write(file, status, callback);
         }
         return proxy.write(file, status, callback);
