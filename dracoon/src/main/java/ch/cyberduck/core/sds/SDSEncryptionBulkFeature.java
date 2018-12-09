@@ -81,10 +81,11 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 if(PreferencesFactory.get().getBoolean("sds.encryption.missingkeys.upload")) {
                     if(session.userAccount().isEncryptionEnabled()) {
                         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
+                        final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);
                         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                            final TransferItem item = entry.getKey();
-                            if(nodeid.isEncrypted(entry.getKey().remote)) {
-                                background.operate(callback, item.remote);
+                            final Path container = new PathContainerService().getContainer(entry.getKey().remote);
+                            if(rooms.get(container)) {
+                                background.operate(callback, entry.getKey().remote);
                             }
                         }
                     }
