@@ -54,8 +54,7 @@ public class SDSDelegatingMoveFeature implements Move {
                 return proxy.move(source, target, status, callback, connectionCallback);
             }
         }
-        if(nodeid.isEncrypted(source) ^
-            nodeid.isEncrypted(target)) {
+        if(nodeid.isEncrypted(source) ^ nodeid.isEncrypted(target)) {
             // Moving into or from an encrypted room
             final Copy copy = session.getFeature(Copy.class);
             if(log.isDebugEnabled()) {
