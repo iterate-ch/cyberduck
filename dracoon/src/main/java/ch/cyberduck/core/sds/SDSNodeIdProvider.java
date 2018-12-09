@@ -126,7 +126,7 @@ public class SDSNodeIdProvider implements IdProvider {
             }
         }
         try {
-            if(container.getType().contains(Path.Type.vault)) {
+            if(container.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
                 return true;
             }
             // Top-level nodes only

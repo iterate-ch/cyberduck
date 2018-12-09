@@ -119,7 +119,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     @Test
     public void testMoveFromEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
@@ -170,7 +170,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     @Test
     public void testMoveToEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
@@ -209,9 +209,9 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     @Test
     public void testMoveBetweenEncryptedDataRooms() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
-        final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume));
         room2.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room2));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -339,7 +339,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         // create file inside encrypted room
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(encrypted, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.directory)), null, new TransferStatus());
-        final Path renamed = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path renamed = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encrypted, renamed), new SessionPool.SingleSessionPool(session), PathCache.empty(),
             new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);

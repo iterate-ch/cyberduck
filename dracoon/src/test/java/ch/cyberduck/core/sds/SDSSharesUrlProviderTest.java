@@ -251,7 +251,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
     @Test
     public void testEncrypted() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String password = new AlphanumericRandomStringService().random();
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
@@ -278,7 +278,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testEncryptedMissingPassword() throws Exception {
-        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         try {
@@ -331,7 +331,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
 
     @Test
     public void testUploadAccountEncrypted() throws Exception {
-        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.decrypted)), null, new TransferStatus());
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toUploadUrl(folder,

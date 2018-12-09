@@ -76,8 +76,8 @@ public class SDSDelegatingMoveFeature implements Move {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^
-            containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+        if(containerService.getContainer(source).attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED) ^
+            containerService.getContainer(target).attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
             return session.getFeature(Copy.class).isRecursive(source, target);
         }
         return proxy.isRecursive(source, target);
@@ -85,8 +85,8 @@ public class SDSDelegatingMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^
-            containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+        if(containerService.getContainer(source).attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED) ^
+            containerService.getContainer(target).attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
             return session.getFeature(Copy.class).isSupported(source, target);
         }
         return proxy.isSupported(source, target);
