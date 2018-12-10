@@ -110,7 +110,8 @@ public final class MainApplication {
 
             // Must implement NSApplicationDelegate protocol
             app.setDelegate(c.id());
-
+            // When the Finder launches an app, using a value of NO for flag allows the app to become active if the user waits for it to launch
+            app.activateIgnoringOtherApps(false);
             // Starts the main event loop. The loop continues until a stop: or terminate: message is
             // received. Upon each iteration through the loop, the next available event
             // from the window server is stored and then dispatched by sending it to NSApp using sendEvent:.

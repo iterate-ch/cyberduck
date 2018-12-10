@@ -15,7 +15,9 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -33,6 +35,11 @@ public class DisabledBulkFeature implements Bulk<Map<TransferItem, TransferStatu
 
     @Override
     public Bulk<Map<TransferItem, TransferStatus>> withDelete(final Delete delete) {
+        return this;
+    }
+
+    @Override
+    public Bulk<Map<TransferItem, TransferStatus>> withCache(final Cache<Path> cache) {
         return this;
     }
 

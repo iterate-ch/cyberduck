@@ -29,4 +29,9 @@ public class DisabledChecksumCompute implements ChecksumCompute {
         IOUtils.closeQuietly(in);
         return Checksum.NONE;
     }
+
+    @Override
+    public Checksum compute(final String data, final TransferStatus status) throws ChecksumException {
+        return Checksum.NONE;
+    }
 }

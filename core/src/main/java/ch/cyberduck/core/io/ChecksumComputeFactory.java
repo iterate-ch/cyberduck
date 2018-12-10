@@ -26,7 +26,7 @@ public final class ChecksumComputeFactory {
     public static ChecksumCompute get(final HashAlgorithm algorithm) {
         switch(algorithm) {
             case md5:
-                return new MD5ChecksumCompute();
+                return new MD5FastChecksumCompute();
             case sha1:
                 return new SHA1ChecksumCompute();
             case sha256:

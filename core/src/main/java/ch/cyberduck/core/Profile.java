@@ -554,6 +554,8 @@ public class Profile implements Protocol, Serializable {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Profile{");
         sb.append("parent=").append(parent);
+        sb.append(", vendor=").append(this.value("Vendor"));
+        sb.append(", description=").append(this.value("Description"));
         sb.append(", image=").append(disk);
         sb.append('}');
         return sb.toString();

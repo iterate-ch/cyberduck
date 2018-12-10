@@ -920,7 +920,7 @@ public class BrowserController extends WindowController
         final NSSegmentedCell cell = Rococoa.cast(this.bookmarkSwitchView.cell(), NSSegmentedCell.class);
         cell.setToolTip_forSegment(LocaleFactory.localizedString("Browser", "Preferences"), BookmarkSwitchSegement.browser.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.browser.image(), BookmarkSwitchSegement.browser.ordinal());
-        cell.setToolTip_forSegment(LocaleFactory.localizedString("Bookmarks"), BookmarkSwitchSegement.bookmarks.ordinal());
+        cell.setToolTip_forSegment(LocaleFactory.localizedString("Bookmarks", "Browser"), BookmarkSwitchSegement.bookmarks.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.bookmarks.image(), BookmarkSwitchSegement.bookmarks.ordinal());
         cell.setToolTip_forSegment(LocaleFactory.localizedString("History"), BookmarkSwitchSegement.history.ordinal());
         this.bookmarkSwitchView.setImage_forSegment(BookmarkSwitchSegement.history.image(), BookmarkSwitchSegement.history.ordinal());
@@ -1498,7 +1498,7 @@ public class BrowserController extends WindowController
         }
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkColumn.bookmark.name());
-            c.headerCell().setStringValue(LocaleFactory.localizedString("Bookmarks"));
+            c.headerCell().setStringValue(LocaleFactory.localizedString("Bookmarks", "Browser"));
             c.setMinWidth(150);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setDataCell(BookmarkCell.bookmarkCell());
@@ -2112,8 +2112,7 @@ public class BrowserController extends WindowController
                 else {
                     if(getSelectedTabView() == BrowserTab.bookmarks) {
                         statusLabel.setAttributedStringValue(
-                            NSAttributedString.attributedStringWithAttributes(String.format("%s %s", bookmarkTable.numberOfRows(),
-                                LocaleFactory.localizedString("Bookmarks")),
+                            NSAttributedString.attributedStringWithAttributes(String.format(LocaleFactory.localizedString("{0} Bookmarks"), bookmarkTable.numberOfRows()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES
                             )
                         );
@@ -2269,7 +2268,7 @@ public class BrowserController extends WindowController
     public void createSymlinkButtonClicked(final ID sender) {
         final CreateSymlinkController sheet = new CreateSymlinkController(this.getWorkdirFromSelection(), this.getSelectedPath(), cache, new CreateSymlinkController.Callback() {
             public void callback(final Path selected, final Path link) {
-                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool, new CreateSymlinkWorker(link, selected) {
+                background(new WorkerBackgroundAction<Path>(BrowserController.this, pool, new CreateSymlinkWorker(link, selected.getName()) {
                     @Override
                     public void cleanup(final Path symlink) {
                         reload(workdir(), Collections.singletonList(symlink), Collections.singletonList(symlink));
@@ -2682,13 +2681,12 @@ public class BrowserController extends WindowController
 
     @Action
     public void connectButtonClicked(final ID sender) {
-        final Host bookmark = new Host(ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")));
-        final ConnectionController controller = ConnectionControllerFactory.create(this, bookmark);
+        final ConnectionController controller = ConnectionControllerFactory.create(this);
         final SheetInvoker sheet = new SheetInvoker(new SheetCallback() {
             @Override
             public void callback(final int returncode) {
                 if(returncode == SheetCallback.DEFAULT_OPTION) {
-                    mount(bookmark);
+                    mount(controller.getBookmark());
                 }
                 controller.callback(returncode);
             }
@@ -2907,7 +2905,7 @@ public class BrowserController extends WindowController
             final Map<Path, Path> files = new HashMap<Path, Path>();
             final Path parent = this.workdir();
             for(final Path next : pasteboard) {
-                Path renamed = new Path(parent, next.getName(), next.getType());
+                Path renamed = new Path(parent, next.getName(), next.getType(), next.attributes());
                 files.put(next, renamed);
             }
             pasteboard.clear();

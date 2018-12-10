@@ -19,7 +19,15 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+
 public class LocalFindFeature implements Find {
+    private static final Logger log = Logger.getLogger(LocalFindFeature.class);
 
     private final LocalSession session;
 
@@ -29,7 +37,26 @@ public class LocalFindFeature implements Find {
 
     @Override
     public boolean find(final Path file) throws BackgroundException {
+        if(Files.isSymbolicLink(session.toPath(file))) {
+            // Do not follow symbolic link to test for file
+            return Files.exists(session.toPath(file), LinkOption.NOFOLLOW_LINKS);
+        }
+        // The Files.exists method has noticeably poor performance in JDK 8, and can slow an
+        // application significantly when used to check files that don't actually exist.
         // https://rules.sonarsource.com/java/tag/performance/RSPEC-3725
-        return session.toPath(file).toFile().exists();
+        final boolean exists = session.toPath(file).toFile().exists();
+        if(exists) {
+            if(!file.isRoot()) {
+                try {
+                    if(!StringUtils.equals(session.toPath(file).toFile().getCanonicalFile().getName(), file.getName())) {
+                        return false;
+                    }
+                }
+                catch(IOException e) {
+                    log.warn(String.format("Failure obtaining canonical file reference for %s", file));
+                }
+            }
+        }
+        return exists;
     }
 }

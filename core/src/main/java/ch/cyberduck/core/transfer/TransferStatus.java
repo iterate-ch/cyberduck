@@ -50,13 +50,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * Change target filename
      */
     private Rename rename
-            = new Rename();
+        = new Rename();
 
     /**
      * Temporary filename only used for transfer. Rename when file transfer is complete
      */
     private final Displayname displayname
-            = new Displayname();
+        = new Displayname();
 
     /**
      * Target file or directory already exists
@@ -84,7 +84,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * The number of transferred bytes. Must be less or equals size.
      */
     private final AtomicLong offset
-            = new AtomicLong(0);
+        = new AtomicLong(0);
     /**
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
      */
@@ -94,13 +94,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      * The transfer has been canceled by the user.
      */
     private final AtomicBoolean canceled
-            = new AtomicBoolean();
+        = new AtomicBoolean();
 
     private final AtomicBoolean complete
-            = new AtomicBoolean();
+        = new AtomicBoolean();
 
     private final CountDownLatch done
-            = new CountDownLatch(1);
+        = new CountDownLatch(1);
 
     private Checksum checksum = Checksum.NONE;
 
@@ -137,13 +137,13 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private Long timestamp;
 
     private Map<String, String> parameters
-            = Collections.emptyMap();
+        = Collections.emptyMap();
 
     private Map<String, String> metadata
-            = Collections.emptyMap();
+        = Collections.emptyMap();
 
     private List<TransferStatus> segments
-            = Collections.emptyList();
+        = Collections.emptyList();
 
     /**
      * Part number
@@ -170,6 +170,8 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     private int retry;
 
+    private Object lockId;
+
     public TransferStatus() {
         // Default
     }
@@ -182,6 +184,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.exists = copy.exists;
         this.append = copy.append;
         this.segment = copy.segment;
+        this.segments = copy.segments;
         this.rejected = copy.rejected;
         this.offset.set(copy.offset.get());
         this.length = copy.length;
@@ -203,6 +206,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.filekey = copy.filekey;
         this.nonces = copy.nonces;
         this.retry = copy.retry;
+        this.lockId = copy.lockId;
     }
 
     /**
@@ -582,6 +586,14 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public boolean isRetry() {
         return retry > 0;
+    }
+
+    public Object getLockId() {
+        return lockId;
+    }
+
+    public void setLockId(final Object lockId) {
+        this.lockId = lockId;
     }
 
     @Override

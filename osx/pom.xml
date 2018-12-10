@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>6.8.4-SNAPSHOT</version>
+        <version>6.8.5-SNAPSHOT</version>
     </parent>
     <artifactId>osx</artifactId>
     <packaging>jar</packaging>
@@ -130,10 +130,10 @@
                                 <configuration>
                                     <artifactItems>
                                         <artifactItem>
-                                            <groupId>com.oracle.java</groupId>
+                                            <groupId>net.adoptopenjdk</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u162</version>
+                                            <version>8u192</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -163,6 +163,30 @@
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/PlugIns/Runtime.jre/Contents/Home/lib/security</outputDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>unpack-i18n-strings</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>ch.cyberduck</groupId>
+                                            <artifactId>i18n</artifactId>
+                                            <version>${project.version}</version>
+                                            <type>jar</type>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/Resources
+                                    </outputDirectory>
+                                    <includes>
+                                        *.lproj/Browser.strings.1,*.lproj/Preferences.strings.1,*.lproj/Main.strings.1
+                                    </includes>
+                                    <overWriteReleases>true</overWriteReleases>
+                                    <overWriteSnapshots>true</overWriteSnapshots>
                                 </configuration>
                             </execution>
                             <execution>
@@ -297,6 +321,17 @@
             </build>
         </profile>
     </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <excludes>*.xib</excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>

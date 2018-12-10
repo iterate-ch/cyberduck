@@ -18,6 +18,8 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,10 +33,12 @@ public final class ConnectionControllerFactory {
         //
     }
 
-    public static ConnectionController create(final WindowController parent, final Host bookmark) {
+    public static ConnectionController create(final WindowController parent) {
         synchronized(NSApplication.sharedApplication()) {
             if(!open.containsKey(parent)) {
-                final ConnectionController c = new ConnectionController(bookmark) {
+                final ConnectionController c = new ConnectionController(
+                    new Host(ProtocolFactory.get().forName(PreferencesFactory.get().getProperty("connection.protocol.default")))
+                ) {
                     @Override
                     public void invalidate() {
                         open.remove(parent);

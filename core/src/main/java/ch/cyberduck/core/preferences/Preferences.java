@@ -120,6 +120,8 @@ public abstract class Preferences implements Locales {
         // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
         final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
+        // Add missing factory. http://bouncy-castle.1462172.n4.nabble.com/Keychain-issue-as-of-version-1-53-follow-up-tc4659509.html
+        provider.put("Alg.Alias.SecretKeyFactory.PBE", "PBEWITHSHAAND3-KEYTRIPLEDES-CBC");
         if(log.isInfoEnabled()) {
             log.info(String.format("Install provider %s at position %d", provider, position));
         }
@@ -660,8 +662,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("ftp.timezone.auto", String.valueOf(false));
         this.setDefault("ftp.timezone.default", TimeZone.getDefault().getID());
 
-        this.setDefault("ftp.symlink.absolute", String.valueOf(false));
-
         /*
           Authentication header version
          */
@@ -798,6 +798,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
         this.setDefault("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
         this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
+
+        this.setDefault("spectra.retry.delay", String.valueOf(60)); // 1 minute
 
         /*
           NTLM Windows Domain
@@ -1016,8 +1018,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("ssh.algorithm.mac.blacklist", StringUtils.EMPTY);
         this.setDefault("ssh.algorithm.kex.blacklist", StringUtils.EMPTY);
         this.setDefault("ssh.algorithm.signature.blacklist", StringUtils.EMPTY);
-
-        this.setDefault("sftp.symlink.absolute", String.valueOf(false));
 
         this.setDefault("sftp.read.maxunconfirmed", String.valueOf(64));
         this.setDefault("sftp.write.maxunconfirmed", String.valueOf(64));

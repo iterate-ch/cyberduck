@@ -36,6 +36,7 @@
     <!-- Designated requirement -->
     <property name="codesign.requirement.source" value="${setup}/app/codesign-requirement.txt"/>
     <property name="codesign.requirement" value="${setup}/app/codesign-requirement.bin"/>
+    <!-- Enable hardened runtime -->
     <property name="codesign.options" value="--force --options runtime"/>
     <property name="codesign.arg" value="--entitlements ${setup}/app/default.entitlements"/>
 

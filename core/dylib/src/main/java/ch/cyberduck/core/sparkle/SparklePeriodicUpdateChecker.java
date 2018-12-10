@@ -44,4 +44,9 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
     public boolean hasUpdatePrivileges() {
         return null != updater;
     }
+
+    @Override
+    public boolean isUpdateInProgress() {
+        return null != updater && updater.updateInProgress();
+    }
 }

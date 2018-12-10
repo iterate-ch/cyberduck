@@ -30,6 +30,7 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -45,6 +46,7 @@ import static org.junit.Assert.assertEquals;
 public class DataConnectionActionExecutorTest {
 
     @Test
+    @Ignore
     public void testFallbackDataConnectionSocketTimeout() throws Exception {
         final Host host = new Host(new FTPProtocol(), "mirror.switch.ch", new Credentials(
             PreferencesFactory.get().getProperty("connection.login.anon.name"), null

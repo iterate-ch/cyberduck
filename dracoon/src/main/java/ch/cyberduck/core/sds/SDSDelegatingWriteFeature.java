@@ -46,6 +46,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     @Override
     public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
+            // File key is set in encryption bulk feature if container is encrypted
             return new CryptoWriteFeature(session, proxy).write(file, status, callback);
         }
         return proxy.write(file, status, callback);
@@ -71,7 +72,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
 
     @Override
     public ChecksumCompute checksum(final Path file) {
-        if(containerService.getContainer(file).getType().contains(Path.Type.vault)) {
+        if(Boolean.valueOf(containerService.getContainer(file).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))) {
             return new CryptoWriteFeature(session, proxy).checksum(file);
         }
         return proxy.checksum(file);

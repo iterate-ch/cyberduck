@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -39,7 +39,7 @@
                                     <action selector="aboutMenuClicked:" target="-2" id="366"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Sök uppdateringar…" id="229">
+                            <menuItem title="Sök efter uppdateringar…" id="229">
                                 <connections>
                                     <action selector="updateMenuClicked:" target="-2" id="367"/>
                                 </connections>
@@ -96,7 +96,7 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="File" id="243">
+                <menuItem title="Arkiv" id="243">
                     <attributedString key="attributedTitle">
                         <fragment content="File">
                             <attributes>
@@ -107,7 +107,7 @@
                     </attributedString>
                     <menu key="submenu" title="Arkiv" id="244">
                         <items>
-                            <menuItem title="Ny fillista…" tag="1" keyEquivalent="n" id="245">
+                            <menuItem title="Nytt fönster" tag="1" keyEquivalent="n" id="245">
                                 <attributedString key="attributedTitle"/>
                                 <connections>
                                     <action selector="newBrowserMenuClicked:" target="-2" id="374"/>
@@ -135,7 +135,7 @@
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="Nytt krypterat vault…" keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
@@ -146,13 +146,13 @@
                                     <action selector="createFileButtonClicked:" target="-1" id="378"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Symbolic Link…" id="252">
+                            <menuItem title="Ny symbolisk länk…" id="252">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Ändra namn…" id="253">
+                            <menuItem title="Byt namn…" id="253">
                                 <connections>
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
@@ -165,9 +165,9 @@
                             <menuItem isSeparatorItem="YES" id="255">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Öppna webb-URL" id="256">
+                            <menuItem title="Öppna URL" id="256">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Öppna webb-URL" id="257"/>
+                                <menu key="submenu" title="Öppna URL" id="257"/>
                             </menuItem>
                             <menuItem title="Redigera med" id="258">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -180,7 +180,7 @@
                                     <action selector="quicklookButtonClicked:" target="-1" id="382"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Visa info" tag="2" keyEquivalent="i" id="261">
+                            <menuItem title="Info" tag="2" keyEquivalent="i" id="261">
                                 <connections>
                                     <action selector="infoButtonClicked:" target="-1" id="383"/>
                                 </connections>
@@ -205,7 +205,7 @@
                                     <action selector="downloadToButtonClicked:" target="-1" id="386"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Skicka…" keyEquivalent="" id="266">
+                            <menuItem title="Överför…" keyEquivalent="" id="266">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                                 <connections>
                                     <action selector="uploadButtonClicked:" target="-1" id="387"/>
@@ -330,7 +330,7 @@ CA
                                     <action selector="toggleToolbarShown:" target="-1" id="402"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Anpassa verktygsfältet…" tag="1" id="299">
+                            <menuItem title="Anpassa verktygsfält…" tag="1" id="299">
                                 <connections>
                                     <action selector="runToolbarCustomizationPalette:" target="-1" id="403"/>
                                 </connections>
@@ -437,23 +437,23 @@ CA
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Sort By" id="325">
+                            <menuItem title="Sortera efter" id="325">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Sort By" id="326">
+                                <menu key="submenu" title="Sortera efter" id="326">
                                     <items>
-                                        <menuItem title="Nickname" keyEquivalent="1" id="327">
+                                        <menuItem title="Smeknamn" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByNickame:" target="-1" id="418"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Hostname" keyEquivalent="2" id="328">
+                                        <menuItem title="Värd" keyEquivalent="2" id="328">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByHostname:" target="-1" id="419"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Protocol" keyEquivalent="3" id="329">
+                                        <menuItem title="Protokoll" keyEquivalent="3" id="329">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByProtocol:" target="-1" id="420"/>
@@ -465,12 +465,12 @@ CA
                             <menuItem isSeparatorItem="YES" id="330">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Nytt bokmärke…" keyEquivalent="B" id="331">
+                            <menuItem title="Nytt bokmärke" keyEquivalent="B" id="331">
                                 <connections>
                                     <action selector="addBookmarkButtonClicked:" target="-1" id="421"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Radera Bokmärke" id="332">
+                            <menuItem title="Radera bokmärke" id="332">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="deleteBookmarkButtonClicked:" target="-1" id="422"/>
@@ -496,7 +496,7 @@ CA
                 <menuItem title="Fönster" id="336">
                     <menu key="submenu" title="Fönster" systemMenu="window" id="337">
                         <items>
-                            <menuItem title="Minimera fönster" keyEquivalent="m" id="338">
+                            <menuItem title="Minimera" keyEquivalent="m" id="338">
                                 <connections>
                                     <action selector="performMiniaturize:" target="-1" id="425"/>
                                 </connections>
@@ -528,7 +528,7 @@ CA
                 <menuItem title="Hjälp" id="344">
                     <menu key="submenu" title="Hjälp" id="345">
                         <items>
-                            <menuItem title="Cyberduck Hjälp" keyEquivalent="?" id="346">
+                            <menuItem title="Cyberduck hjälp" keyEquivalent="?" id="346">
                                 <connections>
                                     <action selector="helpMenuClicked:" target="-2" id="429"/>
                                 </connections>
@@ -561,7 +561,7 @@ CA
         </menu>
         <menu title="Meny" id="351">
             <items>
-                <menuItem title="Ny fillista…" keyEquivalent="n" id="352">
+                <menuItem title="Nytt fönster" keyEquivalent="n" id="352">
                     <connections>
                         <action selector="newBrowserMenuClicked:" target="-2" id="433"/>
                     </connections>

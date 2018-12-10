@@ -62,8 +62,11 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     @Override
     public StatusOutputStream<Reply> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        return this.writeEncrypted(vault.encrypt(session, file), status, callback);
+    }
+
+    public StatusOutputStream<Reply> writeEncrypted(final Path encrypted, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final Path encrypted = vault.encrypt(session, file);
             final Cryptor cryptor = vault.getCryptor();
             final StatusOutputStream<Reply> out;
             if(status.getOffset() == 0) {

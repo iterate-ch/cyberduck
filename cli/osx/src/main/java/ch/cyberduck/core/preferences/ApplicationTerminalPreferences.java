@@ -74,5 +74,7 @@ public class ApplicationTerminalPreferences extends TerminalPreferences {
 
         this.setDefault("connection.ssl.keystore.type", "KeychainStore");
         this.setDefault("connection.ssl.keystore.provider", "Apple");
+
+        this.setDefault("keychain.secure", String.valueOf(true));
     }
 }

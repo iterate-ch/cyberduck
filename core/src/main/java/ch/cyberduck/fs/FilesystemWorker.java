@@ -63,19 +63,6 @@ public class FilesystemWorker extends MountWorker {
     }
 
     @Override
-    public void cancel() {
-        try {
-            fs.unmount();
-        }
-        catch(BackgroundException e) {
-            log.warn(e.getMessage());
-        }
-        finally {
-            super.cancel();
-        }
-    }
-
-    @Override
     public boolean equals(final Object o) {
         if(this == o) {
             return true;

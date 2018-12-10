@@ -78,6 +78,8 @@ public class TerminalPreferences extends Preferences {
 
         this.setDefault("queue.copy.action", TransferAction.comparison.name());
         this.setDefault("queue.copy.reload.action", TransferAction.comparison.name());
+
+        this.setDefault("keychain.secure", String.valueOf(false));
     }
 
     public TerminalPreferences withDefaults(final CommandLine input) {

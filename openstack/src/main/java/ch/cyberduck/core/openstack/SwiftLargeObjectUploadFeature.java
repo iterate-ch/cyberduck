@@ -35,8 +35,8 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
-import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -98,7 +98,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
                                 final StreamListener listener,
                                 final TransferStatus status,
                                 final ConnectionCallback callback) throws BackgroundException {
-        final DefaultThreadPool pool = new DefaultThreadPool("multipart", concurrency);
+        final ThreadPool pool = ThreadPoolFactory.get("multipart", concurrency);
         final List<Path> existingSegments = new ArrayList<Path>();
         if(status.isAppend() || status.isRetry()) {
             // Get a lexicographically ordered list of the existing file segments

@@ -74,7 +74,7 @@ public class STSCredentialsConfigurator {
         }
         final File file = AwsProfileFileLocationProvider.DEFAULT_CREDENTIALS_LOCATION_PROVIDER.getLocation();
         if(null == file) {
-            log.warn("Missing configuration file ~/.aws/ccredentials. Skip auto configuration");
+            log.warn("Missing configuration file ~/.aws/credentials. Skip auto configuration");
             return host.getCredentials();
         }
         // Iterating all profiles on our own because AWSProfileCredentialsConfigurator does not support MFA tokens
@@ -138,7 +138,7 @@ public class STSCredentialsConfigurator {
                             // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
                             input.getPassword() : null
                         )
-                        .withRoleSessionName(String.format("%s-%s", preferences.getProperty("application.name"), new AsciiRandomStringService().random()));
+                        .withRoleSessionName(new AsciiRandomStringService().random());
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
                     }

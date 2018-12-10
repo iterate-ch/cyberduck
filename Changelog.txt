@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+7.0.0
+- [Feature] Default connection profile for Microsoft Sharepoint (#10115)
+
 6.8.3
 - [Bugfix] Refinements to dark mode (macOS) (#10508, #10510)
 - [Bugfix] Failure running script in Terminal. Not authorized to send Apple events to Terminal (macOS) (#10475)

@@ -101,6 +101,7 @@ import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -120,7 +121,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Setting the main menu and implements application delegate methods
  */
-public class MainController extends BundleController implements NSApplication.Delegate {
+public class MainController extends BundleController implements NSApplication.Delegate, NSMenu.Validation {
     private static final Logger log = Logger.getLogger(MainController.class);
 
     /**
@@ -723,7 +724,7 @@ public class MainController extends BundleController implements NSApplication.De
             return false;
         }
         final NSPopUpButton bookmarksPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
-        bookmarksPopup.setToolTip(LocaleFactory.localizedString("Bookmarks"));
+        bookmarksPopup.setToolTip(LocaleFactory.localizedString("Bookmarks", "Browser"));
         for(Host b : bookmarks) {
             String title = BookmarkNameProvider.toString(b);
             int i = 1;
@@ -1420,5 +1421,17 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             }
         }
+    }
+
+    @Override
+    public boolean validateMenuItem(final NSMenuItem item) {
+        final Selector action = item.action();
+        if(action.equals(Foundation.selector("updateMenuClicked:"))) {
+            if(updater.hasUpdatePrivileges()) {
+                return !updater.isUpdateInProgress();
+            }
+            return false;
+        }
+        return true;
     }
 }

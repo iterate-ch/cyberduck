@@ -407,8 +407,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (View.CurrentView == BrowserView.Bookmark || View.CurrentView == BrowserView.History ||
                     View.CurrentView == BrowserView.Bonjour)
                 {
-                    label = String.Format("{0} {1}", View.NumberOfBookmarks,
-                        LocaleFactory.localizedString("Bookmarks"));
+                    label = String.Format(LocaleFactory.localizedString("{0} Bookmarks"), View.NumberOfBookmarks);
                 }
                 else
                 {
@@ -1014,7 +1013,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 IDictionary<Path, Path> files = new Dictionary<Path, Path>();
                 foreach (Path next in dropargs.SourceModels)
                 {
-                    Path renamed = new Path(destination, next.getName(), next.getType());
+                    Path renamed = new Path(destination, next.getName(), next.getType(), next.attributes());
                     files.Add(next, renamed);
                 }
                 if (files.Count > 0)
@@ -1549,7 +1548,7 @@ namespace Ch.Cyberduck.Ui.Controller
             for (int i = 0; i < _pasteboard.size(); i++)
             {
                 Path next = (Path) _pasteboard.get(i);
-                Path renamed = new Path(parent, next.getName(), next.getType());
+                Path renamed = new Path(parent, next.getName(), next.getType(), next.attributes());
                 files.Add(next, renamed);
             }
             _pasteboard.clear();

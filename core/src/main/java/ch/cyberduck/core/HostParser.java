@@ -36,7 +36,7 @@ public final class HostParser {
     /**
      * Default scheme if not in URI
      */
-    private final Protocol scheme;
+    private final Protocol defaultScheme;
 
     private final ProtocolFactory factory;
 
@@ -46,16 +46,16 @@ public final class HostParser {
 
     public HostParser(final ProtocolFactory factory) {
         this.factory = factory;
-        this.scheme = factory.forName(preferences.getProperty("connection.protocol.default"));
+        this.defaultScheme = factory.forName(preferences.getProperty("connection.protocol.default"));
     }
 
-    public HostParser(final ProtocolFactory factory, final Protocol scheme) {
+    public HostParser(final ProtocolFactory factory, final Protocol defaultScheme) {
         this.factory = factory;
-        this.scheme = scheme;
+        this.defaultScheme = defaultScheme;
     }
 
     public Host get(final String url) {
-        return HostParser.parse(factory, scheme, url);
+        return HostParser.parse(factory, defaultScheme, url);
     }
 
     /**
@@ -69,7 +69,7 @@ public final class HostParser {
             preferences.getProperty("connection.protocol.default")), url);
     }
 
-    public static Host parse(final ProtocolFactory factory, final Protocol scheme, final String url) {
+    public static Host parse(final ProtocolFactory factory, final Protocol defaultScheme, final String url) {
         final String input = url.trim();
         int begin = 0;
         int cut;
@@ -80,7 +80,7 @@ public final class HostParser {
             begin += cut - begin + 3;
         }
         if(null == protocol) {
-            protocol = scheme;
+            protocol = defaultScheme;
         }
         String username;
         String password = null;
