@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.sds.triplecrypt.CryptoReadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -39,7 +38,7 @@ public class SDSDelegatingReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        if(Encryption.Algorithm.NONE != status.getEncryption()) {
+        if(nodeid.isEncrypted(file)) {
             return new CryptoReadFeature(session, nodeid, proxy).read(file, status, callback);
         }
         else {
