@@ -30,7 +30,14 @@ public abstract class SheetController extends WindowController implements SheetC
 
     private final NSApplication application = NSApplication.sharedApplication();
 
-    private SheetCallback callback = new DisabledSheetCallback();
+    private SheetCallback callback = new SheetCallback() {
+        @Override
+        public void callback(final int returncode) {
+            if(SheetCallback.CANCEL_OPTION == returncode) {
+                window.orderOut(null);
+            }
+        }
+    };
     private InputValidator validator;
 
     public SheetController() {
