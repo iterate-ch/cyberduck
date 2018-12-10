@@ -57,6 +57,7 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
 using ch.cyberduck.core.urlhandler;
+using ch.cyberduck.core.pool;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
