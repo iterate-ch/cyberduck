@@ -579,7 +579,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (BrowserController c in Browsers)
                 {
-                    if (c.IsIdle() && !c.IsMounted())
+                    if (SessionPool.DISCONNECTED == controller.Session)
                     {
                         c.Invoke(c.View.BringToFront);
 
