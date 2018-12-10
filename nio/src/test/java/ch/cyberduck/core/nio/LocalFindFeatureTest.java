@@ -50,7 +50,7 @@ public class LocalFindFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         assumeTrue(session.isPosixFilesystem());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature(session).find();
         final Path file = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.symboliclink));
         // Symlink to non existing target
@@ -63,7 +63,7 @@ public class LocalFindFeatureTest {
     public void testFindCaseSensitive() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature(session).find();
         final Path file = new LocalTouchFeature(session).touch(new Path(home, StringUtils.lowerCase(new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new LocalFindFeature(session).find(file));
