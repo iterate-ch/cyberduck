@@ -1338,18 +1338,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDisconnect()
         {
-            // disconnect/stop button update
-            View.ActivityRunning = isActivityRunning();
-            if (!IsConnected())
-            {
-                return isActivityRunning();
-            }
             return IsConnected();
         }
 
         private bool View_ValidateStop()
         {
-            return isActivityRunning();
+            return !IsIdle();
         }
 
         private bool View_ValidateSendCustomCommand()
@@ -1389,13 +1383,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_Disconnect()
         {
-            if (isActivityRunning())
+            // Remove all pending actions)
+            foreach (BackgroundAction action in registry.toArray(new BackgroundAction[registry.size()]))
             {
-                // Remove all pending actions)
-                foreach (BackgroundAction action in registry.toArray(new BackgroundAction[registry.size()]))
-                {
-                    action.cancel();
-                }
+                action.cancel();
             }
             CallbackDelegate run = delegate
             {
@@ -1512,7 +1503,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateTextEncoding()
         {
-            return IsMounted() && !isActivityRunning();
+            return IsMounted();
         }
 
         private void View_ToggleLogDrawer()
@@ -2654,7 +2645,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return Session.getState() == ch.cyberduck.core.Session.State.open && !_cache.isEmpty();
         }
 
-        public bool isIdle()
+        public bool IsIdle()
         {
             return registry.isEmpty();
         }
@@ -2708,7 +2699,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>True if the unmount process is in progress or has been finished, false if cancelled</returns>
         public bool Unmount(DialogCallbackDelegate unmountImpl, CallbackDelegate disconnected)
         {
-            if (IsConnected() || isActivityRunning())
+            if (IsConnected())
             {
                 if (PreferencesFactory.get().getBoolean("browser.disconnect.confirm"))
                 {

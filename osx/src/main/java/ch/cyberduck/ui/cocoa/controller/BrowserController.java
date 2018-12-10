@@ -1304,7 +1304,6 @@ public class BrowserController extends WindowController
 
             @Override
             public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSTextFieldCell cell, final NSTableColumn tableColumn, final NSInteger row) {
-                final String identifier = tableColumn.identifier();
                 final Path file = browserListModel.get(BrowserController.this.workdir()).get(row.intValue());
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(file)) {
@@ -2112,7 +2111,7 @@ public class BrowserController extends WindowController
                 else {
                     if(getSelectedTabView() == BrowserTab.bookmarks) {
                         statusLabel.setAttributedStringValue(
-                            NSAttributedString.attributedStringWithAttributes(String.format(LocaleFactory.localizedString("{0} Bookmarks"), bookmarkTable.numberOfRows()),
+                            NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Bookmarks"), bookmarkTable.numberOfRows()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES
                             )
                         );
@@ -2696,12 +2695,10 @@ public class BrowserController extends WindowController
 
     @Action
     public void disconnectButtonClicked(final ID sender) {
-        if(this.isActivityRunning()) {
-            // Remove all pending actions
-            for(BackgroundAction action : registry.toArray(
-                new BackgroundAction[registry.size()])) {
-                action.cancel();
-            }
+        // Remove all pending actions
+        for(BackgroundAction action : registry.toArray(
+            new BackgroundAction[registry.size()])) {
+            action.cancel();
         }
         this.disconnect(new Runnable() {
             @Override
@@ -2762,6 +2759,9 @@ public class BrowserController extends WindowController
     }
 
     public boolean isIdle() {
+        if(pool == SessionPool.DISCONNECTED) {
+            return false;
+        }
         return registry.isEmpty();
     }
 

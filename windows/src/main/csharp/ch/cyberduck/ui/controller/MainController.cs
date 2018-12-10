@@ -579,7 +579,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (BrowserController c in Browsers)
                 {
-                    if (c.isIdle() && !c.IsMounted())
+                    if (c.IsIdle() && !c.IsMounted())
                     {
                         c.Invoke(c.View.BringToFront);
 
