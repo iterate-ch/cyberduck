@@ -41,7 +41,7 @@ import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.ControllerBackgroundAction;
+import ch.cyberduck.core.threading.RegistryBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 
 import org.apache.commons.lang3.StringUtils;
@@ -128,7 +128,7 @@ public class CommandController extends SheetController implements TranscriptList
         if(StringUtils.isNotBlank(command)) {
             progress.startAnimation(null);
             sender.setEnabled(false);
-            parent.background(new ControllerBackgroundAction<Void>(this, session) {
+            parent.background(new RegistryBackgroundAction<Void>(this, session) {
                 @Override
                 public boolean alert(final BackgroundException e) {
                     return false;

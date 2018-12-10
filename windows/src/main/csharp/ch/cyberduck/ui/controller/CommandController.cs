@@ -60,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class CommandControllerBackgroundAction : ControllerBackgroundAction
+        private class CommandControllerBackgroundAction : RegistryBackgroundAction
         {
             private readonly string _command;
             private readonly CommandController _controller;
