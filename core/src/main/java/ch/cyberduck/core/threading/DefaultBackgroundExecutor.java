@@ -60,25 +60,21 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run action %s in background", action));
         }
+        // Add action to registry of controller. Will be removed automatically when stopped
         registry.add(action);
         action.init();
         // Start background task
         final Callable<T> command = new BackgroundCallable<T>(action, controller);
         try {
-            try {
-                final Future<T> task = concurrentExecutor.execute(command);
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Scheduled background runnable %s for execution", action));
-                }
-                return task;
+            final Future<T> task = concurrentExecutor.execute(command);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Scheduled background runnable %s for execution", action));
             }
-            catch(Exception e) {
-                registry.remove(action);
-                throw e;
-            }
+            return task;
         }
         catch(RejectedExecutionException e) {
             log.error(String.format("Error scheduling background task %s for execution. %s", action, e.getMessage()));
+            action.cancel();
             action.cleanup();
             return ConcurrentUtils.constantFuture(null);
         }
