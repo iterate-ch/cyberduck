@@ -2630,7 +2630,7 @@ namespace Ch.Cyberduck.Ui.Controller
             CallbackDelegate callbackDelegate =
                 delegate
                 {
-                    _controller.Session = SessionPoolFactory.create(this, _cache, host, SessionPoolFactory.Usage.browser);
+                    Session = SessionPoolFactory.create(this, _cache, host, SessionPoolFactory.Usage.browser);
                     background(new MountAction(this, _pool, host, _limitListener));
                 };
             Unmount(callbackDelegate);
