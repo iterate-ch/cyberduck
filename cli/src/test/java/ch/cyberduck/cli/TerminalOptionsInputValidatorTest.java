@@ -18,7 +18,6 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ftp.FTPProtocol;
@@ -60,7 +59,7 @@ public class TerminalOptionsInputValidatorTest {
         final Set<Protocol> list = new HashSet<>(Arrays.asList(
                 new SwiftProtocol(),
                 new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol())))
-                        .read(new Local("../profiles/default/Rackspace US.cyberduckprofile"))
+                    .read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile"))
         ));
         assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace://cdn.duck.sh/%%~nc"));
     }
@@ -71,7 +70,7 @@ public class TerminalOptionsInputValidatorTest {
         final Set<Protocol> list = new HashSet<>(Arrays.asList(
                 new SwiftProtocol(),
                 new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol())))
-                        .read(new Local("../profiles/default/Rackspace US.cyberduckprofile"))
+                    .read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile"))
         ));
         assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate(uri));
     }
@@ -81,7 +80,7 @@ public class TerminalOptionsInputValidatorTest {
         final Set<Protocol> list = new HashSet<>(Arrays.asList(
                 new SwiftProtocol(),
                 new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol())))
-                        .read(new Local("../profiles/default/Rackspace US.cyberduckprofile"))
+                    .read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile"))
         ));
         assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace:///"));
         assertFalse(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace://"));

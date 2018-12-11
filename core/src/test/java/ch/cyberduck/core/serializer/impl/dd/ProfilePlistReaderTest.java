@@ -177,11 +177,11 @@ public class ProfilePlistReaderTest {
             }
         })));
         final Profile profile = reader.read(
-            new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
+            new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
         );
         assertNotNull(profile);
         assertEquals(profile, reader.read(
-            new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
+            new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());
@@ -211,11 +211,11 @@ public class ProfilePlistReaderTest {
             }
         })));
         final Profile profile = reader.read(
-            new Local("src/test/resources/S3 (HTTPS).cyberduckprofile")
+            new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
         );
         assertNotNull(profile);
         assertEquals(profile, reader.read(
-            new Local("src/test/resources/S3 (HTTPS).cyberduckprofile")
+            new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());

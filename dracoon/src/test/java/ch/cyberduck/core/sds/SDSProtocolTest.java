@@ -35,7 +35,7 @@ public class SDSProtocolTest {
     public void testParse() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/default/DRACOON (Email Address).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (Email Address).cyberduckprofile"));
         assertTrue(profile.isHostnameConfigurable());
         assertTrue(profile.isPortConfigurable());
         assertTrue(profile.isUsernameConfigurable());

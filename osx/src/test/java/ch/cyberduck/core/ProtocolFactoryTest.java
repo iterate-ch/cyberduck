@@ -31,11 +31,11 @@ public class ProtocolFactoryTest {
     @Test
     public void testParse() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
-        final Profile ftp = new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/FTP.cyberduckprofile"));
+        final Profile ftp = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTP.cyberduckprofile"));
         factory.register(ftp);
-        final Profile ftps = new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/FTPS.cyberduckprofile"));
+        final Profile ftps = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile"));
         factory.register(ftps);
-        final Profile s3 = new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/S3 (HTTPS).cyberduckprofile"));
+        final Profile s3 = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         factory.register(s3);
         assertEquals(ftp, factory.forName("ftp"));
         assertEquals(ftp, factory.forName("ftp", "iterate GmbH"));

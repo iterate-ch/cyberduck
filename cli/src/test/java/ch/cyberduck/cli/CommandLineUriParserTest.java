@@ -20,8 +20,6 @@ package ch.cyberduck.cli;
 
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
@@ -50,9 +48,9 @@ public class CommandLineUriParserTest {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
         final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
-        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/FTP.cyberduckprofile")));
-        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/FTPS.cyberduckprofile")));
-        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/S3 (HTTPS).cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTP.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile")));
         assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
             .compareTo(new CommandLineUriParser(input, factory).parse("s3://AWS456@cyberduck-test/key")));
         assertEquals(0, new Host(new FTPTLSProtocol(), "cyberduck.io", 55, "/folder", new Credentials("anonymous", null))
@@ -64,7 +62,7 @@ public class CommandLineUriParserTest {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
         final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Collections.singleton(new SwiftProtocol())));
-        factory.register(new ProfilePlistReader(factory).read(new Local("../profiles/default/Rackspace US.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile")));
         assertEquals(0, new Host(factory.forName("rackspace"), "identity.api.rackspacecloud.com", 443, "/cdn.cyberduck.ch/", new Credentials("u", null))
             .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://u@cdn.cyberduck.ch/")));
 
@@ -79,8 +77,8 @@ public class CommandLineUriParserTest {
                 new AzureProtocol(),
                 new DAVSSLProtocol()
         )));
-        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Azure.cyberduckprofile")));
-        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/DAVS.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Azure.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/DAVS.cyberduckprofile")));
         assertEquals(0, new Host(new DAVSSLProtocol(), "ftp.gnu.org", 443, "/gnu/wget/wget-1.19.1.tar.gz", new Credentials("anonymous", null))
             .compareTo(new CommandLineUriParser(input, factory).parse("https://ftp.gnu.org/gnu/wget/wget-1.19.1.tar.gz")));
     }
@@ -90,9 +88,9 @@ public class CommandLineUriParserTest {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
         final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Collections.singletonList(new SwiftProtocol())));
-        final Profile rackspace = new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Rackspace US.cyberduckprofile"));
+        final Profile rackspace = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile"));
         factory.register(rackspace);
-        final Profile generic = new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/Swift.cyberduckprofile"));
+        final Profile generic = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Swift.cyberduckprofile"));
         factory.register(generic);
         assertEquals(rackspace, new CommandLineUriParser(input, factory).parse("rackspace://container//").getProtocol());
         assertEquals(0, new Host(rackspace, "identity.api.rackspacecloud.com", 443, "/container")

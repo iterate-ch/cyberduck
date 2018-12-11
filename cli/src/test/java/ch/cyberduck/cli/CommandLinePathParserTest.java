@@ -19,8 +19,6 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.DeserializerFactory;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
@@ -50,9 +48,9 @@ public class CommandLinePathParserTest {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
-        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/FTP.cyberduckprofile")));
-        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/FTPS.cyberduckprofile")));
-        factory.register(new ProfilePlistReader(factory).read(LocalFactory.get("../profiles/default/S3 (HTTPS).cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTP.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile")));
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
                 new CommandLinePathParser(input, factory).parse("ftps://u@test.cyberduck.ch/"));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.directory)),
@@ -77,7 +75,7 @@ public class CommandLinePathParserTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol())));
         final ProfilePlistReader reader = new ProfilePlistReader(factory, new DeserializerFactory());
         final Profile profile = reader.read(
-                new Local("../profiles/default/Rackspace US.cyberduckprofile")
+            this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile")
         );
         assertNotNull(profile);
         factory.register(profile);
