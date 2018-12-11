@@ -162,10 +162,6 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             }
             return;
         }
-        if(StringUtils.isEmpty(credentials.getPassword())) {
-            log.warn(String.format("No password in credentials for bookmark %s", bookmark.getHostname()));
-            return;
-        }
         if(credentials.isAnonymousLogin()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Do not write anonymous credentials for bookmark %s", bookmark.getHostname()));
@@ -177,11 +173,15 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
         }
         if(credentials.isPublicKeyAuthentication()) {
             this.addPassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
-                credentials.getPassword());
+                credentials.getIdentityPassphrase());
         }
         if(credentials.isPasswordAuthentication()) {
             if(StringUtils.isEmpty(credentials.getUsername())) {
                 log.warn(String.format("No username in credentials for bookmark %s", bookmark.getHostname()));
+                return;
+            }
+            if(StringUtils.isEmpty(credentials.getPassword())) {
+                log.warn(String.format("No password in credentials for bookmark %s", bookmark.getHostname()));
                 return;
             }
             this.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
