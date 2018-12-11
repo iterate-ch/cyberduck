@@ -157,23 +157,6 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         store = NSUserDefaults.standardUserDefaults();
     }
 
-    /**
-     * Properties that must be accessible in NSUserDefaults with default values
-     */
-    @Override
-    protected void post() {
-        _init("browser.view.autoexpand.useDelay");
-        _init("browser.view.autoexpand.delay");
-
-        _init("connection.retry");
-        _init("connection.retry.delay");
-        _init("connection.timeout.seconds");
-
-        _init("bookmark.icon.size");
-
-        super.post();
-    }
-
     @Override
     protected void setDefaults() {
         // Parent defaults
