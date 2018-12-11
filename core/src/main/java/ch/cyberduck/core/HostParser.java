@@ -55,7 +55,11 @@ public final class HostParser {
     }
 
     public Host get(final String url) {
-        return HostParser.parse(factory, defaultScheme, url);
+        final Host parsed = HostParser.parse(factory, defaultScheme, url);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Parsed %s as %s", url, parsed));
+        }
+        return parsed;
     }
 
     /**
@@ -65,8 +69,12 @@ public final class HostParser {
      * @return Bookmark
      */
     public static Host parse(final String url) {
-        return parse(ProtocolFactory.get(), ProtocolFactory.get().forName(
+        final Host parsed = parse(ProtocolFactory.get(), ProtocolFactory.get().forName(
             preferences.getProperty("connection.protocol.default")), url);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Parsed %s as %s", url, parsed));
+        }
+        return parsed;
     }
 
     public static Host parse(final ProtocolFactory factory, final Protocol defaultScheme, final String url) {

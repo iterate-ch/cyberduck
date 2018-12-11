@@ -32,8 +32,8 @@ public class S3ProtocolTest {
 
     @Test
     public void testSchemes() {
-        assertTrue(Arrays.asList(new S3Protocol().getSchemes()).contains(Scheme.s3));
-        assertTrue(Arrays.asList(new S3Protocol().getSchemes()).contains(Scheme.https));
+        assertTrue(Arrays.asList(new S3Protocol().getSchemes()).contains(Scheme.s3.name()));
+        assertTrue(Arrays.asList(new S3Protocol().getSchemes()).contains(Scheme.https.name()));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class S3ProtocolTest {
     @Test
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(new Local("../profiles/default/S3 (HTTPS).cyberduckprofile"));
+        final Profile profile = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         assertTrue(profile.isHostnameConfigurable());
         assertTrue(profile.isPortConfigurable());
         assertTrue(profile.isUsernameConfigurable());

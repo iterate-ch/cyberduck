@@ -43,7 +43,7 @@ public class AbstractDropboxTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DropboxProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/default/Dropbox.cyberduckprofile"));
+            this.getClass().getResourceAsStream("/Dropbox.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
         session = new DropboxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {

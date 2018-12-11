@@ -58,7 +58,8 @@ public class ProfileDictionary {
             final Protocol parent = protocols.forName(protocols.find(new Predicate<Protocol>() {
                 @Override
                 public boolean test(final Protocol protocol) {
-                    return true;
+                    // Return default registered protocol specification as parent but not other profile
+                    return !(protocol.isEnabled() || protocol.isBundled());
                 }
             }), protocol, null);
             if(null == parent) {

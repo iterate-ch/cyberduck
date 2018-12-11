@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
@@ -39,6 +38,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import org.junit.After;
 import org.junit.Before;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
 
@@ -70,7 +70,7 @@ public abstract class AbstractGraphTest {
 
     protected abstract Protocol protocol();
 
-    protected abstract Local profile();
+    protected abstract InputStream profile();
 
     protected abstract HostPasswordStore passwordStore();
 

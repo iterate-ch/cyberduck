@@ -23,5 +23,7 @@
         <string>iterate GmbH</string>
         <key>Bundled</key>
         <true/>
+        <key>Default Hostname</key>
+        <string>s3.amazonaws.com</string>
     </dict>
 </plist>

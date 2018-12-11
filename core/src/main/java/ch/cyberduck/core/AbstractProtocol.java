@@ -23,7 +23,9 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -63,14 +65,9 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public Scheme[] getSchemes() {
-        try {
-            final Scheme identifier = Scheme.valueOf(this.getIdentifier());
-            return new Scheme[]{this.getScheme(), identifier};
-        }
-        catch(IllegalArgumentException e) {
-            return new Scheme[]{this.getScheme()};
-        }
+    public String[] getSchemes() {
+        final HashSet<String> schemes = new HashSet<>(Arrays.asList(this.getIdentifier(), this.getScheme().name()));
+        return schemes.toArray(new String[schemes.size()]);
     }
 
     @Override

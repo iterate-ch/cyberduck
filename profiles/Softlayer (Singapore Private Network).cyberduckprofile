@@ -6,6 +6,10 @@
         <string>swift</string>
         <key>Vendor</key>
         <string>softlayer-sng01-networklayer</string>
+        <key>Schemes</key>
+        <array>
+            <string>softlayer</string>
+        </array>
         <key>Description</key>
         <string>Softlayer Object Storage (Singapore)</string>
         <key>Default Hostname</key>

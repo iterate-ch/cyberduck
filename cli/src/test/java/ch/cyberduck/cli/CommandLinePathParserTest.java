@@ -19,7 +19,6 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.DeserializerFactory;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
@@ -48,19 +47,10 @@ public class CommandLinePathParserTest {
     public void testParse() throws Exception {
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
-
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol() {
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-        }, new S3Protocol() {
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-        })
-        ));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTP.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile")));
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory)),
                 new CommandLinePathParser(input, factory).parse("ftps://u@test.cyberduck.ch/"));
         assertEquals(new Path("/d", EnumSet.of(Path.Type.directory)),
@@ -82,24 +72,20 @@ public class CommandLinePathParserTest {
 
     @Test
     public void testParseProfile() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol() {
-            @Override
-            public boolean isEnabled() {
-                return true;
-            }
-        })));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SwiftProtocol())));
         final ProfilePlistReader reader = new ProfilePlistReader(factory, new DeserializerFactory());
         final Profile profile = reader.read(
-                new Local("../profiles/default/Rackspace US.cyberduckprofile")
+            this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile")
         );
         assertNotNull(profile);
+        factory.register(profile);
 
         final CommandLineParser parser = new PosixParser();
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         assertEquals(new Path("/cdn.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                new CommandLinePathParser(input, new ProtocolFactory(new HashSet<>(Arrays.asList(new SwiftProtocol(), profile)))).parse("rackspace://u@cdn.cyberduck.ch/"));
+            new CommandLinePathParser(input, factory).parse("rackspace://u@cdn.cyberduck.ch/"));
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
-                new CommandLinePathParser(input, new ProtocolFactory(new HashSet<>(Arrays.asList(new SwiftProtocol(), profile)))).parse("rackspace:///"));
+            new CommandLinePathParser(input, factory).parse("rackspace:///"));
     }
 }

@@ -18,6 +18,6 @@ public class DAVSSLProtocolTest {
 
     @Test
     public void testSchemes() {
-        assertTrue(Arrays.asList(new DAVSSLProtocol().getSchemes()).contains(Scheme.https));
+        assertTrue(Arrays.asList(new DAVSSLProtocol().getSchemes()).contains(Scheme.https.name()));
     }
 }

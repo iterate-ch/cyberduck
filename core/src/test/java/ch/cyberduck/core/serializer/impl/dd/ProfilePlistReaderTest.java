@@ -42,6 +42,11 @@ public class ProfilePlistReaderTest {
             public Type getType() {
                 return Type.dropbox;
             }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
         }))).read(
             new Local("src/test/resources/Dropbox.cyberduckprofile")
         );
@@ -55,6 +60,11 @@ public class ProfilePlistReaderTest {
             public Type getType() {
                 return Type.dav;
             }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
         }))).read(
             new Local("src/test/resources/Unknown.cyberduckprofile")
         );
@@ -63,7 +73,12 @@ public class ProfilePlistReaderTest {
 
     @Test
     public void testRegions() throws Exception {
-        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol()))).read(
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
+        }))).read(
             new Local("src/test/resources/Custom Regions S3.cyberduckprofile")
         );
         assertNotNull(profile);
@@ -79,6 +94,11 @@ public class ProfilePlistReaderTest {
             @Override
             public Type getType() {
                 return Type.s3;
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
             }
         })));
         final Profile profile = reader.read(
@@ -102,6 +122,11 @@ public class ProfilePlistReaderTest {
             public Type getType() {
                 return Type.swift;
             }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
         })));
         final Profile https = reader.read(
             new Local("src/test/resources/Openstack Swift (Swauth).cyberduckprofile")
@@ -120,6 +145,11 @@ public class ProfilePlistReaderTest {
             @Override
             public Type getType() {
                 return Type.swift;
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
             }
         })));
         final Profile keystone = reader.read(
@@ -140,13 +170,18 @@ public class ProfilePlistReaderTest {
             public Type getType() {
                 return Type.s3;
             }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
         })));
         final Profile profile = reader.read(
-            new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
+            new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
         );
         assertNotNull(profile);
         assertEquals(profile, reader.read(
-            new Local("src/test/resources/S3 (HTTP).cyberduckprofile")
+            new Local("src/test/resources/Test S3 (HTTP).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());
@@ -169,13 +204,18 @@ public class ProfilePlistReaderTest {
             public Type getType() {
                 return Type.s3;
             }
+
+            @Override
+            public boolean isEnabled() {
+                return false;
+            }
         })));
         final Profile profile = reader.read(
-            new Local("src/test/resources/S3 (HTTPS).cyberduckprofile")
+            new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
         );
         assertNotNull(profile);
         assertEquals(profile, reader.read(
-            new Local("src/test/resources/S3 (HTTPS).cyberduckprofile")
+            new Local("src/test/resources/Test S3 (HTTPS).cyberduckprofile")
         ));
         assertEquals(Protocol.Type.s3, profile.getType());
         assertEquals(new TestProtocol(), profile.getProtocol());

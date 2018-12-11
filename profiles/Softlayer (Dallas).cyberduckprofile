@@ -6,6 +6,10 @@
         <string>swift</string>
         <key>Vendor</key>
         <string>softlayer-dal05</string>
+        <key>Schemes</key>
+        <array>
+            <string>softlayer</string>
+        </array>
         <key>Description</key>
         <string>Softlayer Object Storage (Dallas)</string>
         <key>Default Hostname</key>
