@@ -75,7 +75,7 @@ public class SDSNodeIdProvider implements IdProvider {
             final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
                 if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return found.attributes().getVersionId();
+                    return this.set(file, found.attributes().getVersionId());
                 }
             }
         }
@@ -97,7 +97,7 @@ public class SDSNodeIdProvider implements IdProvider {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Return node %s for file %s", node.getId(), file));
                     }
-                    return node.getId().toString();
+                    return this.set(file, node.getId().toString());
                 }
             }
             throw new NotfoundException(file.getAbsolute());
@@ -105,6 +105,11 @@ public class SDSNodeIdProvider implements IdProvider {
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
+    }
+
+    protected String set(final Path file, final String id) {
+        file.attributes().setVersionId(id);
+        return id;
     }
 
     public boolean isEncrypted(final Path file) throws BackgroundException {

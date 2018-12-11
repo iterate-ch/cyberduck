@@ -57,7 +57,7 @@ public class DriveFileidProvider implements IdProvider {
             final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
                 if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return found.attributes().getVersionId();
+                    return this.set(file, found.attributes().getVersionId());
                 }
             }
         }
@@ -68,7 +68,7 @@ public class DriveFileidProvider implements IdProvider {
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
             }
-            return found.attributes().getVersionId();
+            return this.set(file, found.attributes().getVersionId());
         }
         final AttributedList<Path> list = new FileidDriveListService(session, this, file).list(file.getParent(), new DisabledListProgressListener());
         final Path found = list.filter(new Comparator<Path>() {
@@ -80,7 +80,12 @@ public class DriveFileidProvider implements IdProvider {
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return found.attributes().getVersionId();
+        return this.set(file, found.attributes().getVersionId());
+    }
+
+    protected String set(final Path file, final String id) {
+        file.attributes().setVersionId(id);
+        return id;
     }
 
     @Override

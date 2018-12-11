@@ -48,7 +48,7 @@ public class GraphFileIdProvider implements IdProvider {
             final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
                 if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return found.attributes().getVersionId();
+                    return this.set(file, found.attributes().getVersionId());
                 }
             }
         }
@@ -57,7 +57,12 @@ public class GraphFileIdProvider implements IdProvider {
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return found.attributes().getVersionId();
+        return this.set(file, found.attributes().getVersionId());
+    }
+
+    protected String set(final Path file, final String id) {
+        file.attributes().setVersionId(id);
+        return id;
     }
 
     @Override

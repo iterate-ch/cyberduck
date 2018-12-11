@@ -58,7 +58,8 @@ public class B2FileidProvider implements IdProvider {
             final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
                 if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return found.attributes().getVersionId();
+                    // Cache in file attributes
+                    return set(file, found.attributes().getVersionId());
                 }
             }
         }
@@ -69,14 +70,16 @@ public class B2FileidProvider implements IdProvider {
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
             }
-            return found.attributes().getVersionId();
+            // Cache in file attributes
+            return this.set(file, found.attributes().getVersionId());
         }
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
             final Path found = list.find(new SimplePathPredicate(file));
             if(null != found) {
                 if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return found.attributes().getVersionId();
+                    // Cache in file attributes
+                    return this.set(file, found.attributes().getVersionId());
                 }
             }
         }
@@ -86,7 +89,8 @@ public class B2FileidProvider implements IdProvider {
                 containerService.getKey(file), 2);
             for(B2FileInfoResponse info : response.getFiles()) {
                 if(StringUtils.equals(containerService.getKey(file), info.getFileName())) {
-                    return info.getFileId();
+                    // Cache in file attributes
+                    return this.set(file, info.getFileId());
                 }
             }
             throw new NotfoundException(file.getAbsolute());
@@ -97,6 +101,11 @@ public class B2FileidProvider implements IdProvider {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
+    }
+
+    protected String set(final Path file, final String id) {
+        file.attributes().setVersionId(id);
+        return id;
     }
 
     @Override
