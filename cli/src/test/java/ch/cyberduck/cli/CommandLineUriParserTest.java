@@ -74,8 +74,8 @@ public class CommandLineUriParserTest {
         final CommandLine input = parser.parse(new Options(), new String[]{});
 
         final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(
-                new AzureProtocol(),
-                new DAVSSLProtocol()
+            new AzureProtocol(),
+            new DAVSSLProtocol()
         )));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Azure.cyberduckprofile")));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/DAVS.cyberduckprofile")));
@@ -94,14 +94,14 @@ public class CommandLineUriParserTest {
         factory.register(generic);
         assertEquals(rackspace, new CommandLineUriParser(input, factory).parse("rackspace://container//").getProtocol());
         final Host parsedRackspaceScheme = new CommandLineUriParser(input, factory).parse("rackspace://container/");
-        System.out.printf("Parsed 'rackspace://container/' as %s", parsedRackspaceScheme);
-        assertEquals(0, new Host(rackspace, "identity.api.rackspacecloud.com", 443, "/container")
-            .compareTo(parsedRackspaceScheme));
+        final Host expectedRackspace = new Host(rackspace, "identity.api.rackspacecloud.com", 443, "/container");
+        System.out.printf("Parsed 'rackspace://container/' as %s. Expected %s", parsedRackspaceScheme, expectedRackspace);
+        assertEquals(0, expectedRackspace.compareTo(parsedRackspaceScheme));
 
         assertEquals(generic, new CommandLineUriParser(input, factory).parse("swift://container/").getProtocol());
         final Host parsedGenericScheme = new CommandLineUriParser(input, factory).parse("swift://container/");
-        System.out.printf("Parsed 'swift://container/' as %s", parsedGenericScheme);
-        assertEquals(0, new Host(generic, "OS_AUTH_URL", 443, "/container")
-            .compareTo(parsedGenericScheme));
+        final Host expectedGeneric = new Host(generic, "OS_AUTH_URL", 443, "/container");
+        System.out.printf("Parsed 'swift://container/' as %s. Expected %s", parsedGenericScheme, expectedGeneric);
+        assertEquals(0, expectedGeneric.compareTo(parsedGenericScheme));
     }
 }
