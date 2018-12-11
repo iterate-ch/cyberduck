@@ -9,6 +9,9 @@
         <customObject id="-2" userLabel="File's Owner" customClass="CDPreferencesController">
             <connections>
                 <outlet property="alternatingRowBackgroundCheckbox" destination="72" id="425"/>
+                <outlet property="autoExpandCheckbox" destination="85" id="iLuquie9phae"/>
+                <outlet property="autoExpandDelayCheckbox" destination="95" id="Xia9goo4uise"/>
+                <outlet property="autoExpandDelaySlider" destination="87" id="ohtahyadoo4o"/>
                 <outlet property="bookmarkSizePopup" destination="63" id="426"/>
                 <outlet property="bringQueueToBackCheckbox" destination="117" id="427"/>
                 <outlet property="bringQueueToFrontCheckbox" destination="115" id="428"/>
@@ -23,6 +26,13 @@
                 <outlet property="chmodUploadTypePopup" destination="216" id="437"/>
                 <outlet property="configureProxiesButton" destination="289" id="438"/>
                 <outlet property="confirmDisconnectCheckbox" destination="55" id="439"/>
+                <outlet property="connectionRetryCheckbox" destination="304" id="shaengek3ahN"/>
+                <outlet property="connectionRetryDelayField" destination="298" id="uw3pei3eeJaj"/>
+                <outlet property="connectionRetryDelayStepper" destination="296" id="aiph4Phoh4nu"/>
+                <outlet property="connectionRetryNumberField" destination="308" id="uam7xoogheiY"/>
+                <outlet property="connectionRetryNumberStepper" destination="306" id="eit4vai3Uong"/>
+                <outlet property="connectionTimeoutField" destination="312" id="Ahjeib9Aibuw"/>
+                <outlet property="connectionTimeoutStepper" destination="310" id="pheoL3Nengez"/>
                 <outlet property="cryptomatorCheckbox" destination="Tzo-pv-NCb" id="taecaeH4"/>
                 <outlet property="defaultBookmarkCombobox" destination="32" id="441"/>
                 <outlet property="defaultBucketLocation" destination="357" id="442"/>
@@ -448,20 +458,13 @@
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.browser.view.autoexpand" id="531"/>
-                                </connections>
                             </button>
                             <slider verticalHuggingPriority="750" id="87">
                                 <rect key="frame" x="164" y="31" width="216" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <sliderCell key="cell" controlSize="small" alignment="left" minValue="0.10000000000000001" maxValue="2" doubleValue="1.05" tickMarkPosition="below" numberOfTickMarks="9" allowsTickMarkValuesOnly="YES" sliderType="linear" id="88">
+                                <sliderCell key="cell" controlSize="small" alignment="left" maxValue="2" doubleValue="1" tickMarkPosition="below" numberOfTickMarks="9" allowsTickMarkValuesOnly="YES" sliderType="linear" id="88">
                                     <font key="font" size="12" name="Helvetica"/>
                                 </sliderCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.browser.view.autoexpand.delay" id="528"/>
-                                    <binding destination="314" name="enabled" keyPath="values.browser.view.autoexpand.useDelay" id="529"/>
-                                </connections>
                             </slider>
                             <textField verticalHuggingPriority="750" id="89">
                                 <rect key="frame" x="120.5" y="12" width="100" height="11"/>
@@ -497,10 +500,6 @@
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
-                                <connections>
-                                    <binding destination="314" name="enabled" keyPath="values.browser.view.autoexpand" id="527"/>
-                                    <binding destination="314" name="value" keyPath="values.browser.view.autoexpand.useDelay" id="526"/>
-                                </connections>
                             </button>
                             <button id="97">
                                 <rect key="frame" x="10" y="100" width="444" height="18"/>
@@ -527,7 +526,7 @@
                         <tabViewItem label="Generale" identifier="1" id="101">
                             <view key="view" id="102">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button id="103">
                                         <rect key="frame" x="10" y="169" width="441" height="18"/>
@@ -1344,9 +1343,6 @@
                                 <rect key="frame" x="349" y="35" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="30" doubleValue="1" id="297"/>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.retry.delay" id="525"/>
-                                </connections>
                             </stepper>
                             <textField verticalHuggingPriority="750" id="298">
                                 <rect key="frame" x="298" y="37" width="45" height="19"/>
@@ -1356,9 +1352,6 @@
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.retry.delay" id="524"/>
-                                </connections>
                             </textField>
                             <textField verticalHuggingPriority="750" id="300">
                                 <rect key="frame" x="9" y="13" width="284" height="14"/>
@@ -1385,17 +1378,11 @@
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.retry" id="523"/>
-                                </connections>
                             </button>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="306">
                                 <rect key="frame" x="349" y="9" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="9" doubleValue="1" id="307"/>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.retry" id="522"/>
-                                </connections>
                             </stepper>
                             <textField verticalHuggingPriority="750" id="308">
                                 <rect key="frame" x="298" y="11" width="45" height="19"/>
@@ -1405,17 +1392,11 @@
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.retry" id="521"/>
-                                </connections>
                             </textField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="310">
                                 <rect key="frame" x="349" y="84" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" minValue="10" maxValue="120" doubleValue="60" id="311"/>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.timeout.seconds" id="520"/>
-                                </connections>
                             </stepper>
                             <textField verticalHuggingPriority="750" id="312">
                                 <rect key="frame" x="298" y="86" width="45" height="19"/>
@@ -1425,9 +1406,6 @@
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.timeout.seconds" id="519"/>
-                                </connections>
                             </textField>
                         </subviews>
                     </view>
