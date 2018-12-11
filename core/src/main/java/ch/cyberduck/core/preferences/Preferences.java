@@ -341,7 +341,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("browser.font.size", String.valueOf(12f));
 
         this.setDefault("browser.view.autoexpand", String.valueOf(true));
-        this.setDefault("browser.view.autoexpand.useDelay", String.valueOf(true));
+        this.setDefault("browser.view.autoexpand.delay.enable", String.valueOf(true));
         this.setDefault("browser.view.autoexpand.delay", "1.0"); // in seconds
 
         this.setDefault("browser.hidden.regex", "\\..*");

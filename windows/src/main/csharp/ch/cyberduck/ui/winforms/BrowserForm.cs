@@ -2700,7 +2700,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
 
                 bool autoExpand = PreferencesFactory.get().getBoolean("browser.view.autoexpand");
-                bool useDelay = PreferencesFactory.get().getBoolean("browser.view.autoexpand.useDelay");
+                bool useDelay = PreferencesFactory.get().getBoolean("browser.view.autoexpand.delay.enable");
                 int delay = Convert.ToInt32(PreferencesFactory.get().getFloat("browser.view.autoexpand.delay"));
 
                 if (autoExpand)
