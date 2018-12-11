@@ -178,6 +178,10 @@ public final class LoginOptions {
         return anonymous;
     }
 
+    public boolean oauth() {
+        return oauth;
+    }
+
     public String icon() {
         return icon;
     }
