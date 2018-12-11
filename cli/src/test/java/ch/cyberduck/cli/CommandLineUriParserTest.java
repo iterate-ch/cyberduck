@@ -93,15 +93,11 @@ public class CommandLineUriParserTest {
         final Profile generic = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Swift.cyberduckprofile"));
         factory.register(generic);
         assertEquals(rackspace, new CommandLineUriParser(input, factory).parse("rackspace://container//").getProtocol());
-        final Host parsedRackspaceScheme = new CommandLineUriParser(input, factory).parse("rackspace://container/");
-        final Host expectedRackspace = new Host(rackspace, "identity.api.rackspacecloud.com", 443, "/container");
-        System.out.printf("Parsed 'rackspace://container/' as %s. Expected %s", parsedRackspaceScheme, expectedRackspace);
-        assertEquals(0, expectedRackspace.compareTo(parsedRackspaceScheme));
+        assertEquals(0, new Host(rackspace, "identity.api.rackspacecloud.com", 443, "/container")
+            .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://container/")));
 
         assertEquals(generic, new CommandLineUriParser(input, factory).parse("swift://container/").getProtocol());
-        final Host parsedGenericScheme = new CommandLineUriParser(input, factory).parse("swift://container/");
-        final Host expectedGeneric = new Host(generic, "OS_AUTH_URL", 443, "/container");
-        System.out.printf("Parsed 'swift://container/' as %s. Expected %s", parsedGenericScheme, expectedGeneric);
-        assertEquals(0, expectedGeneric.compareTo(parsedGenericScheme));
+        assertEquals(0, new Host(generic, "OS_AUTH_URL", 443, "/container")
+            .compareTo(new CommandLineUriParser(input, factory).parse("swift://container/")));
     }
 }
