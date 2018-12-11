@@ -44,6 +44,11 @@ public class Transmit4BookmarkCollection extends XmlBookmarkCollection {
         return "com.panic.Transmit";
     }
 
+    @Override
+    public String getName() {
+        return "Transmit 4";
+    }
+
     private class FavoriteHandler extends AbstractHandler {
         private final ProtocolFactory protocols;
         private Host current = null;

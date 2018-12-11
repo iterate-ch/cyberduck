@@ -41,6 +41,11 @@ public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
+    public String getName() {
+        return "Fetch";
+    }
+
+    @Override
     public Local getFile() {
         return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.fetch.location"));
     }
