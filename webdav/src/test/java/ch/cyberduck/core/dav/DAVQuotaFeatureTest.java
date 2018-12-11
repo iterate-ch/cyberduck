@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -43,7 +42,7 @@ public class DAVQuotaFeatureTest {
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Quota.Space quota = new DAVQuotaFeature(session).get();
         assertNotNull(quota);
         assertEquals(Long.MAX_VALUE, quota.available, 0L);
@@ -57,7 +56,7 @@ public class DAVQuotaFeatureTest {
         ));
         final DAVSession session = new DAVSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Quota.Space quota = new DAVQuotaFeature(session).get();
         assertNotNull(quota);
         assertEquals(Long.MAX_VALUE, quota.available, 0L);

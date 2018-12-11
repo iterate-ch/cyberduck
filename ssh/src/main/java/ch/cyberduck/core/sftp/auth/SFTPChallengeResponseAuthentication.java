@@ -19,7 +19,6 @@ import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
@@ -56,7 +55,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
     }
 
     @Override
-    public Boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback callback, final CancelCallback cancel) throws BackgroundException {
+    public Boolean authenticate(final Host bookmark, final LoginCallback callback, final CancelCallback cancel) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login using challenge response authentication for %s", bookmark));
         }
@@ -123,7 +122,10 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials")
                             );
                             additional = callback.prompt(bookmark, title.toString(),
-                                message.toString(), new LoginOptions(bookmark.getProtocol()).user(false).publickey(false).keychain(false)
+                                message.toString(), new LoginOptions()
+                                    .password(true)
+                                    .user(false)
+                                    .keychain(false)
                             );
                         }
                         catch(LoginCanceledException e) {
@@ -144,7 +146,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
         }
         catch(IOException e) {
             if(publickey.get()) {
-                return new SFTPPublicKeyAuthentication(session).authenticate(bookmark, keychain, callback, cancel);
+                return new SFTPPublicKeyAuthentication(session).authenticate(bookmark, callback, cancel);
             }
             if(canceled.get()) {
                 throw new LoginCanceledException();

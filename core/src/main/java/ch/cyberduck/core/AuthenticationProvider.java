@@ -23,8 +23,7 @@ public interface AuthenticationProvider<R> {
     /**
      * @return True if authentication is complete
      */
-    R authenticate(Host bookmark, HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel)
-        throws BackgroundException;
+    R authenticate(Host bookmark, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
 
     String getMethod();
 }

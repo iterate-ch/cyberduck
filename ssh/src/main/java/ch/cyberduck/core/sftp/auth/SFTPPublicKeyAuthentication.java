@@ -18,7 +18,6 @@ package ch.cyberduck.core.sftp.auth;
 import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -60,7 +59,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
     }
 
     @Override
-    public Boolean authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel)
+    public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
         throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         if(log.isDebugEnabled()) {
@@ -98,24 +97,21 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                 provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
-                        final String password = keychain.findPrivateKeyPassphrase(bookmark);
+                        final String password = credentials.getIdentityPassphrase();
                         if(StringUtils.isEmpty(password)) {
                             try {
                                 // Use password prompt
-                                final Credentials passphrase = prompt.prompt(bookmark,
+                                final Credentials input = prompt.prompt(bookmark,
                                     LocaleFactory.localizedString("Private key password protected", "Credentials"),
                                     String.format("%s (%s)",
                                         LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                        identity.getAbbreviatedPath()), new LoginOptions(bookmark.getProtocol())
-                                        .user(false).password(true).publickey(false)
+                                        identity.getAbbreviatedPath()),
+                                    new LoginOptions()
+                                        .user(false).password(true)
                                 );
-                                if(passphrase.isSaved()) {
-                                    if(log.isInfoEnabled()) {
-                                        log.info(String.format("Save passphrase for %s", resource));
-                                    }
-                                    keychain.addPassword(bookmark.getHostname(), identity.getAbbreviatedPath(), passphrase.getPassword());
-                                }
-                                return passphrase.getPassword().toCharArray();
+                                credentials.setSaved(input.isSaved());
+                                credentials.setIdentityPassphrase(input.getPassword());
+                                return input.getPassword().toCharArray();
                             }
                             catch(LoginCanceledException e) {
                                 canceled.set(true);

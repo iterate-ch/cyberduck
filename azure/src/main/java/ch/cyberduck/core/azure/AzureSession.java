@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -159,7 +158,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final StorageCredentials credentials = client.getCredentials();
         if(host.getCredentials().isPasswordAuthentication()) {
             // Update credentials

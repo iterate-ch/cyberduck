@@ -102,8 +102,8 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
         final LoginOptions options = new LoginOptions(bookmark.getProtocol()).anonymous(false).publickey(false);
         try {
-            final KeychainLoginService login = new KeychainLoginService(prompt, PasswordStoreFactory.get());
-            login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), options);
+            final KeychainLoginService login = new KeychainLoginService(PasswordStoreFactory.get());
+            login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), prompt, options);
             return run.call();
         }
         catch(LoginFailureException failure) {

@@ -24,7 +24,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostnameConfiguratorFactory;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -223,7 +222,7 @@ public class SFTPSession extends Session<SSHClient> {
     }
 
     @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final List<AuthenticationProvider<Boolean>> methods = new ArrayList<AuthenticationProvider<Boolean>>();
         final Credentials credentials = host.getCredentials();
         if(credentials.isAnonymousLogin()) {
@@ -248,7 +247,7 @@ public class SFTPSession extends Session<SSHClient> {
             }
             cancel.verify();
             try {
-                if(!auth.authenticate(host, keychain, prompt, cancel)) {
+                if(!auth.authenticate(host, prompt, cancel)) {
                     if(client.getUserAuth().hadPartialSuccess()) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Partial login success with credentials %s and authentication method %s", credentials, auth));

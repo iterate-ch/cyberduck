@@ -225,8 +225,8 @@ public class Terminal {
             }
             final String uri = input.getOptionValue(action.name());
             final Host host = new CommandLineUriParser(input).parse(uri);
-            final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input,
-                new TerminalLoginCallback(reader)), new TerminalLoginCallback(reader), new TerminalHostKeyVerifier(reader), progress);
+            final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input
+            ), new TerminalLoginCallback(reader), new TerminalHostKeyVerifier(reader), progress);
             source = SessionPoolFactory.create(connect, transcript, cache, host,
                 new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
                 new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),

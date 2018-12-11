@@ -34,6 +34,7 @@ public final class LoginOptions {
      */
     public boolean password = true;
     public boolean token = false;
+    public boolean oauth = false;
     /**
      * Enable option to save password in keychain
      */
@@ -70,6 +71,7 @@ public final class LoginOptions {
         user = copy.user;
         password = copy.password;
         token = copy.token;
+        oauth = copy.oauth;
         keychain = copy.keychain;
         save = copy.save;
         publickey = copy.publickey;
@@ -94,6 +96,7 @@ public final class LoginOptions {
         user = protocol.isUsernameConfigurable();
         password = protocol.isPasswordConfigurable();
         token = protocol.isTokenConfigurable();
+        oauth = protocol.isOAuthConfigurable();
         icon = protocol.icon();
         usernamePlaceholder = protocol.getUsernamePlaceholder();
         passwordPlaceholder = protocol.getPasswordPlaceholder();
@@ -111,6 +114,11 @@ public final class LoginOptions {
 
     public LoginOptions token(boolean e) {
         token = e;
+        return this;
+    }
+
+    public LoginOptions oauth(boolean e) {
+        oauth = e;
         return this;
     }
 
@@ -168,6 +176,10 @@ public final class LoginOptions {
 
     public boolean anonymous() {
         return anonymous;
+    }
+
+    public boolean oauth() {
+        return oauth;
     }
 
     public String icon() {

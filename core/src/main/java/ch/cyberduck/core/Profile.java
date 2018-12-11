@@ -382,6 +382,14 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public boolean isOAuthConfigurable() {
+        if(StringUtils.isBlank(this.value("OAuth Configurable"))) {
+            return parent.isOAuthConfigurable();
+        }
+        return this.bool("OAuth Configurable");
+    }
+
+    @Override
     public boolean isCertificateConfigurable() {
         if(StringUtils.isBlank(this.value("Certificate Configurable"))) {
             return parent.isCertificateConfigurable();

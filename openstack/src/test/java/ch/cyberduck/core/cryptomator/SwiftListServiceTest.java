@@ -65,7 +65,7 @@ public class SwiftListServiceTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         home.attributes().setRegion("IAD");
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));

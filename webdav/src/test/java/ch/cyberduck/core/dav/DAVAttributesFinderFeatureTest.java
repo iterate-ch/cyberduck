@@ -4,7 +4,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -41,7 +40,7 @@ public class DAVAttributesFinderFeatureTest {
         ));
         final DAVSession session = new DAVSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         try {
@@ -60,7 +59,7 @@ public class DAVAttributesFinderFeatureTest {
         ));
         final DAVSession session = new DAVSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path("/trunk/LICENSE.txt", EnumSet.of(Path.Type.file));
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(test);

@@ -75,7 +75,7 @@ public class SFTPReadFeatureTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final int length = 140000;
         final byte[] content = RandomUtils.nextBytes(length);

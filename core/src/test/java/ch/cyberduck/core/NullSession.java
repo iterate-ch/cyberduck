@@ -27,7 +27,7 @@ public class NullSession extends Session<Void> implements ListService {
     }
 
     @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         throw new LoginCanceledException();
     }
 

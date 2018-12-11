@@ -18,13 +18,12 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.threading.CancelCallback;
 
 public class DisabledCancelCallback implements CancelCallback {
 
     @Override
-    public void verify() throws LoginCanceledException {
+    public void verify() {
         //
     }
 }

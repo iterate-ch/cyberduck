@@ -72,11 +72,10 @@ public interface Protocol extends Comparable<Protocol> {
      * @return True if password is required
      */
     boolean isPasswordConfigurable();
-
     boolean isTokenConfigurable();
 
+    boolean isOAuthConfigurable();
     boolean isCertificateConfigurable();
-
     boolean isPrivateKeyConfigurable();
 
     /**

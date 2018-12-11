@@ -4,7 +4,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cdn.Distribution;
@@ -31,7 +30,7 @@ public class SwiftDistributionPurgeFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftDistributionPurgeFeature feature = new SwiftDistributionPurgeFeature(session);
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
@@ -46,7 +45,7 @@ public class SwiftDistributionPurgeFeatureTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final SwiftDistributionPurgeFeature feature = new SwiftDistributionPurgeFeature(session);
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");

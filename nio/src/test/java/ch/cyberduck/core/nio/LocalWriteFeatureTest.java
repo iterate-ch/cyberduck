@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -57,7 +56,7 @@ public class LocalWriteFeatureTest {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         if(session.isPosixFilesystem()) {
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-            session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
             final Path workdir = new LocalHomeFinderFeature(session).find();
             final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
             new LocalTouchFeature(session).touch(target, new TransferStatus());
@@ -98,7 +97,7 @@ public class LocalWriteFeatureTest {
     public void testWriteNotFound() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir.getAbsolute() + "/nosuchdirectory/" + UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalWriteFeature(session).write(test, new TransferStatus(), new DisabledConnectionCallback());
@@ -108,7 +107,7 @@ public class LocalWriteFeatureTest {
     public void testAppend() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(new LocalWriteFeature(session).append(test, 0L, PathCache.empty()).append);
@@ -121,7 +120,7 @@ public class LocalWriteFeatureTest {
     public void testWriteContentRange() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final LocalWriteFeature feature = new LocalWriteFeature(session);
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -159,7 +158,7 @@ public class LocalWriteFeatureTest {
     public void testWriteRangeEndFirst() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final LocalWriteFeature feature = new LocalWriteFeature(session);
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -200,7 +199,7 @@ public class LocalWriteFeatureTest {
     public void testWriteTildeFilename() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final LocalWriteFeature feature = new LocalWriteFeature(session);
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, String.format("~$%s", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file));

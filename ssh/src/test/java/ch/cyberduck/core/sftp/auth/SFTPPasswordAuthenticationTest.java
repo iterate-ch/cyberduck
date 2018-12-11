@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
@@ -43,7 +42,7 @@ public class SFTPPasswordAuthenticationTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        assertTrue(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertTrue(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }
 
@@ -54,7 +53,7 @@ public class SFTPPasswordAuthenticationTest {
         ));
         final SFTPSession session = new SFTPSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        assertFalse(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+        assertFalse(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginCallback(), new DisabledCancelCallback()));
         session.close();
     }
 }

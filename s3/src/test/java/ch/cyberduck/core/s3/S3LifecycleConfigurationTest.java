@@ -21,7 +21,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
@@ -47,7 +46,7 @@ public class S3LifecycleConfigurationTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(30, new S3LifecycleConfiguration(session).getConfiguration(
                 new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
         ).getExpiration(), 0L);
@@ -65,7 +64,7 @@ public class S3LifecycleConfigurationTest {
                                 System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
                         )));
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(LifecycleConfiguration.empty(), new S3LifecycleConfiguration(session).getConfiguration(
                 new Path("bucket", EnumSet.of(Path.Type.directory))
         ));
