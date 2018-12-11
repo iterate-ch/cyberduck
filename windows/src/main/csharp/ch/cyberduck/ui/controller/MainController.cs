@@ -57,6 +57,7 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
 using ch.cyberduck.core.urlhandler;
+using ch.cyberduck.core.pool;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
@@ -579,7 +580,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (BrowserController c in Browsers)
                 {
-                    if (c.isIdle() && !c.IsMounted())
+                    if (SessionPool.DISCONNECTED == c.Session)
                     {
                         c.Invoke(c.View.BringToFront);
 
