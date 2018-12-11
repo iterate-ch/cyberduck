@@ -24,7 +24,7 @@ import ch.cyberduck.core.pool.SessionPool;
 
 public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAction<T> {
 
-    private final BackgroundActionRegistry registry
+    private final BackgroundActionRegistry global
         = BackgroundActionRegistry.global();
 
     public RegistryBackgroundAction(final Controller controller,
@@ -49,13 +49,13 @@ public abstract class RegistryBackgroundAction<T> extends ControllerBackgroundAc
     @Override
     public void init() {
         // Add to the registry so it will be displayed in the activity window.
-        registry.add(this);
+        global.add(this);
         super.init();
     }
 
     @Override
     public void cleanup() {
-        registry.remove(this);
+        global.remove(this);
         super.cleanup();
     }
 }

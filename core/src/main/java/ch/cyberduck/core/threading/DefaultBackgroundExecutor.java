@@ -60,6 +60,7 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Run action %s in background", action));
         }
+        // Add action to registry of controller. Will be removed automatically when stopped
         registry.add(action);
         action.init();
         // Start background task
@@ -73,11 +74,9 @@ public class DefaultBackgroundExecutor implements BackgroundExecutor {
         }
         catch(RejectedExecutionException e) {
             log.error(String.format("Error scheduling background task %s for execution. %s", action, e.getMessage()));
+            action.cancel();
             action.cleanup();
             return ConcurrentUtils.constantFuture(null);
-        }
-        finally {
-            registry.remove(action);
         }
     }
 
