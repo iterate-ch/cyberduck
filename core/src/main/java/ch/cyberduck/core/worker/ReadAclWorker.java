@@ -48,7 +48,9 @@ public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            next.attributes().setAcl(feature.getPermission(next));
+            if(Acl.EMPTY == next.attributes().getAcl()) {
+                next.attributes().setAcl(feature.getPermission(next));
+            }
             for(Acl.UserAndRole acl : next.attributes().getAcl().asList()) {
                 if(updated.contains(acl)) {
                     continue;
