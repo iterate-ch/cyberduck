@@ -108,7 +108,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     private Acl toAcl(final Node node) {
         final Acl acl = new Acl();
-        final Acl.User user = new Acl.CanonicalUser(String.valueOf(session.userAccount().getId()));
+        final Acl.User user = new Acl.CanonicalUser();
         if(node.getPermissions().getManage()) {
             acl.addAll(user, SDSPermissionsFeature.MANAGE_ROLE);
         }
