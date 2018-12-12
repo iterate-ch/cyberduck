@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -191,22 +191,8 @@
                             <menu key="menu" title="Отображение" id="ubn-VG-6TR"/>
                         </popUpButtonCell>
                     </popUpButton>
-                    <button verticalHuggingPriority="750" id="10">
-                        <rect key="frame" x="297" y="13" width="84" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="push" title="Отмена" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="11">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-Gw
-</string>
-                        </buttonCell>
-                        <connections>
-                            <action selector="closeSheet:" target="-2" id="91"/>
-                        </connections>
-                    </button>
                     <button verticalHuggingPriority="750" tag="1" id="14">
-                        <rect key="frame" x="381" y="13" width="104" height="32"/>
+                        <rect key="frame" x="353" y="13" width="132" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="push" title="Подключиться" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" tag="1" inset="2" id="15">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -220,7 +206,7 @@ DQ
                         </connections>
                     </button>
                     <button horizontalHuggingPriority="750" verticalHuggingPriority="750" id="66">
-                        <rect key="frame" x="270" y="18" width="21" height="23"/>
+                        <rect key="frame" x="239" y="18" width="21" height="23"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="help" bezelStyle="helpButton" alignment="center" borderStyle="border" inset="2" id="67">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -237,6 +223,20 @@ DQ
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                    </button>
+                    <button verticalHuggingPriority="750" id="10">
+                        <rect key="frame" x="264" y="13" width="89" height="32"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="push" title="Отмена" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="11">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="closeSheet:" target="-2" id="91"/>
+                        </connections>
                     </button>
                 </subviews>
             </view>
