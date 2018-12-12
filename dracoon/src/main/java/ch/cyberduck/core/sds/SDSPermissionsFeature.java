@@ -77,13 +77,17 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
     }
 
     public boolean containsRole(final Path file, final Acl.Role role) {
-        final Acl acl = file.attributes().getAcl();
-        if(acl.isEmpty()) {
-            log.warn(String.format("Missing ACL on file %s", file));
+        if(Acl.EMPTY == file.attributes().getAcl()) {
+            // Missing initialization
+            log.warn(String.format("Unknown ACLs on file %s", file));
             return true;
         }
+        if(file.attributes().getAcl().isEmpty()) {
+            // No permissions for Home room
+            return false;
+        }
         final Long accountId = session.userAccount().getId();
-        final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(accountId)));
+        final Set<Acl.Role> roles = file.attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(accountId)));
         if(null == roles) {
             log.warn(String.format("Missing roles for account %d", accountId));
             return false;
