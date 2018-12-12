@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -66,7 +67,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public String[] getSchemes() {
-        final HashSet<String> schemes = new HashSet<>(Arrays.asList(this.getIdentifier(), this.getScheme().name()));
+        final HashSet<String> schemes = new LinkedHashSet<>(Arrays.asList(this.getIdentifier(), this.getScheme().name()));
         return schemes.toArray(new String[schemes.size()]);
     }
 
