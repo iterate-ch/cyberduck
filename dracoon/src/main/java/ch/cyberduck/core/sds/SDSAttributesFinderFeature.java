@@ -63,7 +63,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    public PathAttributes toAttributes(final Node node) {
+    public PathAttributes toAttributes(final Node node) throws BackgroundException {
         final PathAttributes attributes = new PathAttributes();
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setRevision(node.getBranchVersion());
@@ -85,7 +85,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         return attributes;
     }
 
-    private Permission toPermission(final Node node) {
+    private Permission toPermission(final Node node) throws BackgroundException {
         final Permission permission = new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none);
         if(node.getIsEncrypted() && node.getType() == Node.TypeEnum.FILE) {
             if(null != session.keyPair()) {
