@@ -54,7 +54,7 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
         final Throwable cause = ExceptionUtils.getRootCause(exception);
         if(cause != null) {
             if(cause instanceof RuntimeException) {
-                log.warn(String.format("Cancel retry request with execution count %d for failure %s", executionCount, cause));
+                log.error(String.format("Cancel retry request with execution count %d for failure %s", executionCount, cause));
                 return false;
             }
         }
