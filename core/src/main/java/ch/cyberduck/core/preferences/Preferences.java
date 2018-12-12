@@ -796,7 +796,8 @@ public abstract class Preferences implements Locales {
         // Run missing file keys in bulk feature after upload
         this.setDefault("sds.encryption.missingkeys.upload", String.valueOf(true));
         this.setDefault("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
-        this.setDefault("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
+        this.setDefault("sds.encryption.keys.ttl", String.valueOf(3600000)); // 1 hour
+        this.setDefault("sds.useracount.ttl", String.valueOf(3600000)); // 1 hour
         this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
 
         this.setDefault("spectra.retry.delay", String.valueOf(60)); // 1 minute

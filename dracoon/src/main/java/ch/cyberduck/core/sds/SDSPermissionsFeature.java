@@ -60,7 +60,7 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        return Collections.singletonList(new Acl.CanonicalUser(String.valueOf(session.userAccount().getId())));
+        return Collections.singletonList(new Acl.CanonicalUser());
     }
 
     @Override
@@ -86,10 +86,8 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
             // No permissions for Home room
             return false;
         }
-        final Long accountId = session.userAccount().getId();
-        final Set<Acl.Role> roles = file.attributes().getAcl().get(new Acl.CanonicalUser(String.valueOf(accountId)));
+        final Set<Acl.Role> roles = file.attributes().getAcl().get(new Acl.CanonicalUser());
         if(null == roles) {
-            log.warn(String.format("Missing roles for account %d", accountId));
             return false;
         }
         return roles.contains(role);
