@@ -22,7 +22,7 @@
         <key>Vendor</key>
         <string>cyberduck</string>
         <key>Description</key>
-        <string>Microsoft SharePoint Legacy</string>
+        <string>Microsoft SharePoint Document Library</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
