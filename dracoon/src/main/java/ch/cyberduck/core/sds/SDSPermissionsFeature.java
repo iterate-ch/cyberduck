@@ -50,10 +50,7 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
 
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
-        if(Acl.EMPTY.equals(file.attributes().getAcl())) {
-            return new SDSAttributesFinderFeature(session, nodeid).find(file).getAcl();
-        }
-        return file.attributes().getAcl();
+        return new SDSAttributesFinderFeature(session, nodeid).find(file).getAcl();
     }
 
     @Override
@@ -80,23 +77,17 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
     }
 
     public boolean containsRole(final Path file, final Acl.Role role) {
-        try {
-            final Acl acl = this.getPermission(file);
-            if(acl.isEmpty()) {
-                log.warn(String.format("Missing ACL on file %s", file));
-                return true;
-            }
-            final Long accountId = session.userAccount().getId();
-            final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(accountId)));
-            if(null == roles) {
-                log.warn(String.format("Missing roles for account %d", accountId));
-                return false;
-            }
-            return roles.contains(role);
-        }
-        catch(BackgroundException e) {
-            log.warn(String.format("Unable to retrieve user account information. %s", e.getDetail()));
+        final Acl acl = file.attributes().getAcl();
+        if(acl.isEmpty()) {
+            log.warn(String.format("Missing ACL on file %s", file));
             return true;
         }
+        final Long accountId = session.userAccount().getId();
+        final Set<Acl.Role> roles = acl.get(new Acl.CanonicalUser(String.valueOf(accountId)));
+        if(null == roles) {
+            log.warn(String.format("Missing roles for account %d", accountId));
+            return false;
+        }
+        return roles.contains(role);
     }
 }
