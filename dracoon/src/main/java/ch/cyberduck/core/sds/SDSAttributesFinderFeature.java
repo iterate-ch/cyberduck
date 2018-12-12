@@ -63,7 +63,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    public PathAttributes toAttributes(final Node node) throws BackgroundException {
+    public PathAttributes toAttributes(final Node node) {
         final PathAttributes attributes = new PathAttributes();
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setRevision(node.getBranchVersion());
