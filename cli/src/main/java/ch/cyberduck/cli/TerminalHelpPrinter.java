@@ -35,6 +35,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 
 public final class TerminalHelpPrinter {
 
@@ -107,19 +108,25 @@ public final class TerminalHelpPrinter {
 
     protected static String getScheme(final Protocol protocol) {
         if(new BundledProtocolPredicate().test(protocol)) {
-            for(String scheme : protocol.getSchemes()) {
+            for(String scheme :
+                protocol.getSchemes()) {
                 // Return first custom scheme registered
                 return scheme;
             }
             // Return default name
             return protocol.getIdentifier();
         }
-        // Third party profile
+        // Find parent protocol definition for profile
+        final Protocol standard = ProtocolFactory.get().forName(protocol.getIdentifier());
+        if(Arrays.equals(protocol.getSchemes(), standard.getSchemes())) {
+            // No custom scheme set in profile
+            return protocol.getProvider();
+        }
         for(String scheme : protocol.getSchemes()) {
             // First custom scheme in profile
             return scheme;
         }
-        // Default vendor string
+        // Default vendor string of third party profile
         return protocol.getProvider();
     }
 }
