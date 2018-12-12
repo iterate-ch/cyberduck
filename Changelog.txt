@@ -1,8 +1,12 @@
 Cyberduck
 https://cyberduck.io/
 
-7.0.0
-- [Feature] Default connection profile for Microsoft Sharepoint (#10115)
+6.9.0
+- [Feature] Default connection profile for Microsoft Sharepoint Online (#10115)
+- [Feature] Support for eu-west-3 (Stockholm) region (S3)
+- [Bugfix] Stop button to interrupt transfer (#10363)
+- [Bugfix] Save passphrase for private key in keychain only after successful connect (#10526)
+- [Bugfix] Updated localizations
 
 6.8.3
 - [Bugfix] Refinements to dark mode (macOS) (#10508, #10510)
