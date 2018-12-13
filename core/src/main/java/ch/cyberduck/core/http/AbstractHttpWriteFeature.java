@@ -100,7 +100,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
                         }
                         response = command.call(entity);
                     }
-                    catch(BackgroundException e) {
+                    catch(Exception e) {
                         exception = e;
                     }
                     finally {
@@ -112,7 +112,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
                 }
             };
             final ThreadFactory factory
-                    = new NamedThreadFactory(String.format("http-%s", file.getName()));
+                = new NamedThreadFactory(String.format("http-%s", file.getName()));
             final Thread t = factory.newThread(target);
             t.start();
             // Wait for output stream to become available
