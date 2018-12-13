@@ -227,6 +227,7 @@ public final class HostParser {
             }
         }
         switch(protocol.getType()) {
+            // Protocols where we can omit the hostname and only reference the container
             case b2:
             case s3:
             case googlestorage:
