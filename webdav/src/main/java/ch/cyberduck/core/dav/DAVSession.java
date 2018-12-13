@@ -56,9 +56,19 @@ import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.NTCredentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.auth.win.WindowsCredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
+import org.apache.http.impl.client.WinHttpClients;
 import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
@@ -127,10 +137,38 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-            // Windows credentials. Provide empty string for NTLM domain by default.
-            preferences.getProperty("webdav.ntlm.workstation"),
-            preferences.getProperty("webdav.ntlm.domain"));
+        final CredentialsProvider provider = new BasicCredentialsProvider();
+        if(WinHttpClients.isWinAuthAvailable()) {
+            final Credentials credentials = new WindowsCredentialsProvider(new SystemDefaultCredentialsProvider()).getCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM)
+            );
+            provider.setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
+                credentials);
+            provider.setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
+                credentials);
+        }
+        else {
+            provider.setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
+                new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                    preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain")));
+            provider.setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
+                new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                    preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain")));
+        }
+        provider.setCredentials(
+            new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
+            new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        provider.setCredentials(
+            new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.DIGEST),
+            new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        provider.setCredentials(
+            new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
+            new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        client.setCredentials(provider);
         if(preferences.getBoolean("webdav.basic.preemptive")) {
             switch(proxy.getType()) {
                 case DIRECT:
