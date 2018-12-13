@@ -98,8 +98,8 @@ public class CommandLineUriParserTest {
         assertEquals(0, new Host(rackspace, "identity.api.rackspacecloud.com", 443, "/container")
             .compareTo(new CommandLineUriParser(input, factory).parse("rackspace://container/")));
 
-        assertEquals(generic, new CommandLineUriParser(input, factory).parse("swift://container/").getProtocol());
-        assertEquals(0, new Host(generic, "OS_AUTH_URL", 443, "/container")
-            .compareTo(new CommandLineUriParser(input, factory).parse("swift://container/")));
+        assertEquals(generic, new CommandLineUriParser(input, factory).parse("swift://auth.cloud.ovh.net/container/").getProtocol());
+        assertEquals(0, new Host(generic, "auth.cloud.ovh.net", 443, "/container")
+            .compareTo(new CommandLineUriParser(input, factory).parse("swift://auth.cloud.ovh.net/container/")));
     }
 }

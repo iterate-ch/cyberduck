@@ -23,7 +23,5 @@
         <string>iterate GmbH</string>
         <key>Bundled</key>
         <true/>
-        <key>Default Hostname</key>
-        <string>OS_AUTH_URL</string>
     </dict>
 </plist>
