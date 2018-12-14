@@ -26,10 +26,10 @@ public class LaxHostnameDelegatingTrustManagerTest {
     @Test
     public void testSetTarget() throws Exception {
         assertEquals("s3.amazonaws.com",
-                new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), "s3.amazonaws.com").getTarget());
+            new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), "s3.amazonaws.com").getTarget());
         assertEquals("cyberduck.s3.amazonaws.com",
-                new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), "cyberduck.s3.amazonaws.com").getTarget());
+            new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), "cyberduck.s3.amazonaws.com").getTarget());
         assertEquals("duck.s3.amazonaws.com",
-                new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), "cyber.duck.s3.amazonaws.com").getTarget());
+            new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), "cyber.duck.s3.amazonaws.com").getTarget());
     }
 }

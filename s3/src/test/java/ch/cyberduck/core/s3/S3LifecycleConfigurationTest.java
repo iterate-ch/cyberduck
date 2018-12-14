@@ -17,14 +17,8 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -33,40 +27,25 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class S3LifecycleConfigurationTest {
+public class S3LifecycleConfigurationTest extends AbstractS3Test {
 
     @Test
     public void testGetConfiguration() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(30, new S3LifecycleConfiguration(session).getConfiguration(
-                new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
+            new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
         ).getExpiration(), 0L);
         assertEquals(1, new S3LifecycleConfiguration(session).getConfiguration(
-                new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
+            new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
         ).getTransition(), 0L);
         session.close();
     }
 
     @Test
     public void testGetConfigurationAccessDenied() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(LifecycleConfiguration.empty(), new S3LifecycleConfiguration(session).getConfiguration(
-                new Path("bucket", EnumSet.of(Path.Type.directory))
+            new Path("bucket", EnumSet.of(Path.Type.directory))
         ));
         session.close();
     }

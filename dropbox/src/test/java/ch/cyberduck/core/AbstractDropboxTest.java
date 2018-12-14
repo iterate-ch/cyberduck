@@ -46,14 +46,15 @@ public class AbstractDropboxTest {
             this.getClass().getResourceAsStream("/Dropbox.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
         session = new DropboxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 fail(reason);
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new TestPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new TestPasswordStore(), new DisabledProgressListener());
+        login.check(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     public static class TestPasswordStore extends DisabledPasswordStore {

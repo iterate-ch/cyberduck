@@ -373,10 +373,7 @@ public class Profile implements Protocol, Serializable {
 
     @Override
     public boolean isOAuthConfigurable() {
-        if(StringUtils.isBlank(this.value("OAuth Configurable"))) {
-            return parent.isOAuthConfigurable();
-        }
-        return this.bool("OAuth Configurable");
+        return StringUtils.isNotBlank(this.getOAuthClientId());
     }
 
     @Override

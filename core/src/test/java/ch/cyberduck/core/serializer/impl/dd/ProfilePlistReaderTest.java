@@ -48,7 +48,7 @@ public class ProfilePlistReaderTest {
                 return false;
             }
         }))).read(
-            new Local("src/test/resources/Dropbox.cyberduckprofile")
+            new Local("src/test/resources/Test Dropbox.cyberduckprofile")
         );
         assertNotNull(profile);
     }

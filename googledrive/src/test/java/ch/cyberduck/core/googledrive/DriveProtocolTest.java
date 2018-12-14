@@ -46,6 +46,7 @@ public class DriveProtocolTest {
         assertFalse(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
         assertTrue(profile.isUsernameConfigurable());
+        assertTrue(profile.isOAuthConfigurable());
         assertFalse(profile.isPasswordConfigurable());
     }
 }

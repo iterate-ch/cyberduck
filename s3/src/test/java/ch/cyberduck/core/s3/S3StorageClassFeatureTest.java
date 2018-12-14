@@ -17,15 +17,11 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -41,23 +37,16 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class S3StorageClassFeatureTest {
+public class S3StorageClassFeatureTest extends AbstractS3Test {
 
     @Test
     public void testGetClasses() throws Exception {
         assertEquals(Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, "ONEZONE_IA", S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, S3Object.STORAGE_CLASS_GLACIER),
-                new S3StorageClassFeature(new S3Session(new Host(new S3Protocol()))).getClasses());
+            new S3StorageClassFeature(new S3Session(new Host(new S3Protocol()))).getClasses());
     }
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3StorageClassFeature feature = new S3StorageClassFeature(session);
@@ -66,13 +55,6 @@ public class S3StorageClassFeatureTest {
 
     @Test
     public void testSetClassFile() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new S3TouchFeature(session).touch(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final S3StorageClassFeature feature = new S3StorageClassFeature(session);
@@ -88,16 +70,9 @@ public class S3StorageClassFeatureTest {
 
     @Test
     public void testSetClassPlaceholder() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
-                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final S3StorageClassFeature feature = new S3StorageClassFeature(session);
         assertEquals(S3Object.STORAGE_CLASS_STANDARD, feature.getClass(test));
         feature.setClass(test, S3Object.STORAGE_CLASS_INFREQUENT_ACCESS);

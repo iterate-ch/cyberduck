@@ -78,6 +78,11 @@ public class S3Protocol extends AbstractProtocol {
     }
 
     @Override
+    public String getDefaultHostname() {
+        return "s3.amazonaws.com";
+    }
+
+    @Override
     public Set<Location.Name> getRegions() {
         return new HashSet<Location.Name>(Arrays.asList(
             new S3LocationFeature.S3Region("us-east-1"),

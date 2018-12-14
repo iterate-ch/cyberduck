@@ -71,33 +71,33 @@ public class S3ExceptionMappingServiceTest {
     public void testMapping() {
         assertEquals("Message. Please contact your web hosting service provider for assistance.", new S3ExceptionMappingService().map(new ServiceException("message")).getDetail());
         assertEquals("Exceeded 403 retry limit (1). Please contact your web hosting service provider for assistance.", new S3ExceptionMappingService().map(
-                new ServiceException("Exceeded 403 retry limit (1).")).getDetail());
+            new ServiceException("Exceeded 403 retry limit (1).")).getDetail());
         assertEquals("Interoperability failure", new S3ExceptionMappingService().map(
-                new ServiceException("Exceeded 403 retry limit (1).")).getMessage());
+            new ServiceException("Exceeded 403 retry limit (1).")).getMessage());
     }
 
     @Test
     public void testDNSFailure() {
         assertEquals("Custom.",
-                new S3ExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getMessage());
+            new S3ExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getMessage());
         assertEquals("H. DNS is the network service that translates a server name to its Internet address. This error is most often caused by having no connection to the Internet or a misconfigured network. It can also be caused by an unresponsive DNS server or a firewall preventing access to the network.",
-                new S3ExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getDetail());
+            new S3ExceptionMappingService().map("custom", new ServiceException("message", new UnknownHostException("h"))).getDetail());
     }
 
     @Test
     public void testCustomMessage() {
         assertEquals("Custom.",
-                new S3ExceptionMappingService().map("custom", new ServiceException("message")).getMessage());
+            new S3ExceptionMappingService().map("custom", new ServiceException("message")).getMessage());
         assertEquals("Message. Please contact your web hosting service provider for assistance.",
-                new S3ExceptionMappingService().map("custom", new ServiceException("message")).getDetail());
+            new S3ExceptionMappingService().map("custom", new ServiceException("message")).getDetail());
     }
 
     @Test
     public void testIAMFailure() {
         assertEquals("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9.",
-                new S3ExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message")).getMessage());
+            new S3ExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message")).getMessage());
         assertEquals("Message. Please contact your web hosting service provider for assistance.",
-                new S3ExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message")).getDetail());
+            new S3ExceptionMappingService().map("The IAM policy must allow the action s3:GetBucketLocation on the resource arn:aws:s3:::endpoint-9a527d70-d432-4601-b24b-735e721b82c9", new ServiceException("message")).getDetail());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class S3ExceptionMappingServiceTest {
         final SSLHandshakeException f = new SSLHandshakeException("f");
         f.initCause(new CertificateException("c"));
         assertEquals(ConnectionCanceledException.class, new S3ExceptionMappingService().map(
-                new ServiceException(f)).getClass());
+            new ServiceException(f)).getClass());
     }
 
     @Test
@@ -118,18 +118,18 @@ public class S3ExceptionMappingServiceTest {
     @Test
     public void testWrapped() {
         assertEquals("Access Denied. Please contact your web hosting service provider for assistance.", new S3ExceptionMappingService().map(new ServiceException(new S3ServiceException("m",
-                        "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>D84EDAE486BD2D71</RequestId><HostId>tVNWw2hK+FVpFnWUVf2LdDM6rgtjo/cibINRUVc/HpqMZbgNTg311LSltHYvRQdX</HostId></Error>"))).getDetail()
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>D84EDAE486BD2D71</RequestId><HostId>tVNWw2hK+FVpFnWUVf2LdDM6rgtjo/cibINRUVc/HpqMZbgNTg311LSltHYvRQdX</HostId></Error>"))).getDetail()
         );
     }
 
     @Test
     public void testAlgorithmFailure() {
         assertEquals("EC AlgorithmParameters not available. Please contact your web hosting service provider for assistance.",
-                new S3ExceptionMappingService().map(new S3ServiceException(
-                        new SSLException(
-                                new RuntimeException(
-                                        new NoSuchAlgorithmException("EC AlgorithmParameters not available")
-                                )
-                        ))).getDetail());
+            new S3ExceptionMappingService().map(new S3ServiceException(
+                new SSLException(
+                    new RuntimeException(
+                        new NoSuchAlgorithmException("EC AlgorithmParameters not available")
+                    )
+                ))).getDetail());
     }
 }
