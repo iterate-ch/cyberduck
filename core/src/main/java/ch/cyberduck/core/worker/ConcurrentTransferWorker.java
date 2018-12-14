@@ -141,7 +141,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    public Future<TransferStatus> submit(final TransferCallable callable) throws BackgroundException {
+    public Future<TransferStatus> submit(final TransferCallable callable) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit %s to pool", callable));
         }
