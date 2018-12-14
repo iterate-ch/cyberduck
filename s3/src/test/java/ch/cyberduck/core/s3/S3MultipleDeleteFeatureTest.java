@@ -18,16 +18,11 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -47,17 +42,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class S3MultipleDeleteFeatureTest {
+public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeleteFile() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
@@ -69,16 +57,9 @@ public class S3MultipleDeleteFeatureTest {
 
     @Test
     public void testDeletePlaceholder() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
-                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -88,13 +69,6 @@ public class S3MultipleDeleteFeatureTest {
 
     @Test
     public void testDeleteVersionedPlaceholder() throws Exception {
-        final S3Session session = new S3Session(
-            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                new Credentials(
-                    System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         {
@@ -120,31 +94,17 @@ public class S3MultipleDeleteFeatureTest {
 
     @Test
     public void testDeleteContainer() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(container, null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(container));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(container,
-                new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(container));
         session.close();
     }
 
     @Test
     public void testDeleteNotFoundKey() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
         for(int i = 0; i < 1010; i++) {
@@ -156,13 +116,6 @@ public class S3MultipleDeleteFeatureTest {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundBucket() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume));
         new S3MultipleDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

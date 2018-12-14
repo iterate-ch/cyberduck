@@ -23,11 +23,11 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -49,41 +49,10 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class KMSEncryptionFeatureTest {
-
-    @Test(expected = InteroperabilityException.class)
-    public void testSetEncryptionKMSDefaultKeySignatureVersionV2() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
-        try {
-            final S3EncryptionFeature feature = new S3EncryptionFeature(session);
-            feature.setEncryption(test, KMSEncryptionFeature.SSE_KMS_DEFAULT);
-        }
-        finally {
-            new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
-        session.close();
-    }
+public class KMSEncryptionFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSetEncryptionKMSDefaultKeySignatureVersionV4() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
@@ -98,14 +67,6 @@ public class KMSEncryptionFeatureTest {
 
     @Test
     public void testSetEncryptionKMSCustomKeySignatureVersionV4() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
@@ -120,14 +81,6 @@ public class KMSEncryptionFeatureTest {
 
     @Test
     public void testGetKeys_eu_west_1() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final KMSEncryptionFeature kms = new KMSEncryptionFeature(session);
         assertFalse(kms.getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback()).isEmpty());
         session.close();
@@ -135,14 +88,6 @@ public class KMSEncryptionFeatureTest {
 
     @Test
     public void testGetKeys_ap_southeast_2() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final KMSEncryptionFeature kms = new KMSEncryptionFeature(session);
         final Set<Encryption.Algorithm> keys = kms.getKeys(new Path("test-ap-southeast-2-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
         assertTrue(keys.contains(Encryption.Algorithm.NONE));
@@ -154,10 +99,10 @@ public class KMSEncryptionFeatureTest {
     @Test(expected = LoginFailureException.class)
     public void testCreateUserAuthenticationFailure() throws Exception {
         final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                "key", "secret"
-                        )));
+            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                new Credentials(
+                    "key", "secret"
+                )));
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
@@ -167,14 +112,6 @@ public class KMSEncryptionFeatureTest {
 
     @Test(expected = ConnectionTimeoutException.class)
     public void testTimeout() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, 1);
         try {
             kms.getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());

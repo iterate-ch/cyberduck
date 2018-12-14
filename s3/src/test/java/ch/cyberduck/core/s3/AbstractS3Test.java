@@ -1,4 +1,4 @@
-package ch.cyberduck.core.b2;
+package ch.cyberduck.core.s3;
 
 /*
  * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
@@ -29,6 +29,8 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,35 +40,33 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractB2Test {
+public class AbstractS3Test {
 
-    protected final PathCache cache = new PathCache(100);
-    protected B2Session session;
+    protected S3Session session;
 
     @After
     public void disconnect() throws Exception {
         session.close();
-        cache.clear();
     }
 
     @Before
     public void setup() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new B2Protocol())));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/B2.cyberduckprofile"));
-        session = new B2Session(
-            new Host(profile, profile.getDefaultHostname(),
-                new Credentials(
-                    System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
-                )));
+            this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+        ));
+        session = new S3Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 fail(reason);
                 return null;
             }
         }, new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, PathCache.empty(), new DisabledCancelCallback());
+        session.getHost().getCredentials().setPassword(System.getProperties().getProperty("s3.secret"));
     }
 }

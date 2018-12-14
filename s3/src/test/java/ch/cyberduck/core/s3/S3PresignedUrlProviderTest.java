@@ -51,7 +51,7 @@ public class S3PresignedUrlProviderTest {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol()), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
-                "test-eu-west-1-cyberduck", "eu-west-1", "f", expiry.getTimeInMillis());
+            "test-eu-west-1-cyberduck", "eu-west-1", "f", expiry.getTimeInMillis());
         assertNotNull(url);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         assertEquals(404, connection.getResponseCode());
@@ -62,7 +62,7 @@ public class S3PresignedUrlProviderTest {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol()), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
-                "test-eu-central-1-cyberduck", "eu-central-1", "f", expiry.getTimeInMillis());
+            "test-eu-central-1-cyberduck", "eu-central-1", "f", expiry.getTimeInMillis());
         assertNotNull(url);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         assertEquals(404, connection.getResponseCode());
@@ -74,7 +74,7 @@ public class S3PresignedUrlProviderTest {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol()), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
-                "test-eu-central-1-cyberduck", "eu-central-1", "@f", expiry.getTimeInMillis());
+            "test-eu-central-1-cyberduck", "eu-central-1", "@f", expiry.getTimeInMillis());
         assertNotNull(url);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         assertEquals(404, connection.getResponseCode());
@@ -85,7 +85,7 @@ public class S3PresignedUrlProviderTest {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol()), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
-                "test-us-east-1-cyberduck", null, "f", expiry.getTimeInMillis());
+            "test-us-east-1-cyberduck", null, "f", expiry.getTimeInMillis());
         assertNotNull(url);
         final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         assertEquals(404, connection.getResponseCode());
@@ -96,7 +96,7 @@ public class S3PresignedUrlProviderTest {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol(), "h"), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
-                "test-us-east-1-cyberduck", null, "f", expiry.getTimeInMillis());
+            "test-us-east-1-cyberduck", null, "f", expiry.getTimeInMillis());
         assertNotNull(url);
         assertEquals("test-us-east-1-cyberduck.h", URI.create(url).getHost());
     }

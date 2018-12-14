@@ -59,24 +59,25 @@ public class AbstractGoogleStorageTest {
                 System.getProperties().getProperty("google.projectid"), null
         ));
         session = new GoogleStorageSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 fail(reason);
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                        if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("google.accesstoken");
-                        }
-                        if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("google.refreshtoken");
-                        }
-                        return null;
+            new DisabledPasswordStore() {
+                @Override
+                public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+                    if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
+                        return System.getProperties().getProperty("google.accesstoken");
                     }
-                }, new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+                    if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
+                        return System.getProperties().getProperty("google.refreshtoken");
+                    }
+                    return null;
+                }
+            }, new DisabledProgressListener());
+        login.check(session, PathCache.empty(), new DisabledCancelCallback());
     }
 }

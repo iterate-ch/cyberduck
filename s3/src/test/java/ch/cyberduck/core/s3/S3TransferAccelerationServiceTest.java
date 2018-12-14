@@ -15,13 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -30,16 +24,10 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 
 @Category(IntegrationTest.class)
-public class S3TransferAccelerationServiceTest {
+public class S3TransferAccelerationServiceTest extends AbstractS3Test {
 
     @Test
     public void getStatus() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-        ));
-        final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final S3TransferAccelerationService service = new S3TransferAccelerationService(session);
         service.getStatus(container);

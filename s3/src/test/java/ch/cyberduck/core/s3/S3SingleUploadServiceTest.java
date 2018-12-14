@@ -15,9 +15,6 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -29,7 +26,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.local.LocalTouchFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -49,14 +45,14 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class S3SingleUploadServiceTest {
+public class S3SingleUploadServiceTest extends AbstractS3Test {
 
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
         final S3Session session = new S3Session(new Host(new S3Protocol()));
         assertSame(NullInputStream.class, new S3SingleUploadService(session,
-                new S3WriteFeature(session, new S3DisabledMultipartService())).decorate(n, null).getClass());
+            new S3WriteFeature(session, new S3DisabledMultipartService())).decorate(n, null).getClass());
     }
 
     @Test
@@ -67,13 +63,6 @@ public class S3SingleUploadServiceTest {
 
     @Test
     public void testUpload() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
@@ -87,7 +76,7 @@ public class S3SingleUploadServiceTest {
         status.setLength(random.getBytes().length);
         status.setMime("text/plain");
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledLoginCallback());
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
@@ -101,13 +90,6 @@ public class S3SingleUploadServiceTest {
 
     @Test
     public void testUploadSSE() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
@@ -122,7 +104,7 @@ public class S3SingleUploadServiceTest {
         status.setMime("text/plain");
         status.setEncryption(KMSEncryptionFeature.SSE_KMS_DEFAULT);
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledLoginCallback());
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
@@ -138,15 +120,6 @@ public class S3SingleUploadServiceTest {
 
     @Test
     public void testUploadWithSHA256Checksum() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        ))) {
-
-        };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString() + ".txt";
@@ -160,7 +133,7 @@ public class S3SingleUploadServiceTest {
         status.setLength(random.getBytes().length);
         status.setMime("text/plain");
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledLoginCallback());
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertTrue(new S3FindFeature(session).find(test));
         final PathAttributes attributes = new S3AttributesFinderFeature(session).find(test);
         assertEquals(random.getBytes().length, attributes.getSize());
@@ -174,13 +147,6 @@ public class S3SingleUploadServiceTest {
 
     @Test(expected = NotfoundException.class)
     public void testUploadInvalidContainer() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3SingleUploadService m = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -188,6 +154,6 @@ public class S3SingleUploadServiceTest {
         LocalTouchFactory.get().touch(local);
         final TransferStatus status = new TransferStatus();
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status, new DisabledLoginCallback());
+            status, new DisabledLoginCallback());
     }
 }

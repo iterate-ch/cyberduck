@@ -24,7 +24,7 @@ public class AmazonIdentityConfigurationTest {
     @Test
     public void testCreateUser() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host);
         final String username = UUID.randomUUID().toString();
@@ -38,15 +38,15 @@ public class AmazonIdentityConfigurationTest {
 //            iam.delete(username, new DisabledLoginController());
 //        }
         iam.create(username, "{\n" +
-                "  \"Version\": \"2012-10-17\",\n" +
-                "  \"Statement\": [\n" +
-                "    {\n" +
-                "      \"Effect\": \"Allow\",\n" +
-                "      \"Action\": \"s3:*\",\n" +
-                "      \"Resource\": \"*\"\n" +
-                "    }\n" +
-                "  ]\n" +
-                "}", new DisabledLoginCallback());
+            "  \"Version\": \"2012-10-17\",\n" +
+            "  \"Statement\": [\n" +
+            "    {\n" +
+            "      \"Effect\": \"Allow\",\n" +
+            "      \"Action\": \"s3:*\",\n" +
+            "      \"Resource\": \"*\"\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}", new DisabledLoginCallback());
         assertNotNull(iam.getCredentials(username));
         iam.delete(username, new DisabledLoginCallback());
         assertNull(iam.getCredentials(username));
@@ -55,7 +55,7 @@ public class AmazonIdentityConfigurationTest {
     @Test(expected = LoginCanceledException.class)
     public void testCreateUserAuthenticationFailure() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                "key", "secret"
+            "key", "secret"
         ));
         new AmazonIdentityConfiguration(host).create("u", "{}", new DisabledLoginCallback());
     }
@@ -63,7 +63,7 @@ public class AmazonIdentityConfigurationTest {
     @Test(expected = ConnectionTimeoutException.class)
     public void testTimeout() throws Exception {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host, 1);
         final String username = UUID.randomUUID().toString();

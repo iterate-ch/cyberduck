@@ -37,29 +37,22 @@ import static ch.cyberduck.core.features.Location.unknown;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class S3LocationFeatureTest {
+public class S3LocationFeatureTest extends AbstractS3Test {
 
     @Test
     public void testGetLocation() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3LocationFeature feature = new S3LocationFeature(session);
         assertEquals(new S3LocationFeature.S3Region("eu-west-1"), feature.getLocation(
-                new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
+            new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
         ));
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), feature.getLocation(
-                new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
+            new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
         ));
         assertEquals(new S3LocationFeature.S3Region("us-east-1"), feature.getLocation(
-                new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
+            new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory))
         ));
         assertEquals(unknown, feature.getLocation(
-                new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory))
+            new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory))
         ));
         session.close();
     }
@@ -67,31 +60,19 @@ public class S3LocationFeatureTest {
     @Test
     public void testForbidden() throws Exception {
         final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         assertEquals(unknown,
-                new S3LocationFeature(session).getLocation(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
+            new S3LocationFeature(session).getLocation(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
         session.close();
     }
 
     @Test
     public void testGetLocationAWS4SignatureFrankfurt() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        ))) {
-            @Override
-            public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
-                return S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
-            }
-        };
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
-                new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
+            new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
         ));
         session.close();
     }
@@ -99,10 +80,10 @@ public class S3LocationFeatureTest {
     @Test
     public void testAccessPathStyleBucketEuCentral() throws Exception {
         final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        ))) {
+            new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
+                new Credentials(
+                    System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
+                ))) {
             @Override
             public S3Protocol.AuthenticationHeaderSignatureVersion getSignatureVersion() {
                 return S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256;
@@ -118,7 +99,7 @@ public class S3LocationFeatureTest {
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new S3LocationFeature.S3Region("eu-central-1"), new S3LocationFeature(session).getLocation(
-                new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
+            new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory))
         ));
         session.close();
     }
@@ -131,7 +112,7 @@ public class S3LocationFeatureTest {
     @Test
     public void testEmptyThirdPartyProvider() throws Exception {
         final Host host = new Host(new S3Protocol(), "mys3", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final S3Session session = new S3Session(host);
         assertTrue(new S3LocationFeature(session).getLocations().isEmpty());
