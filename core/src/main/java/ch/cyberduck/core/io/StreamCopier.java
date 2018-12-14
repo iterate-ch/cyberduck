@@ -124,6 +124,8 @@ public final class StreamCopier {
                         progress.setComplete();
                     }
                 }
+                final StreamCloser c = new DefaultStreamCloser();
+                c.close(out);
             }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);
@@ -131,7 +133,6 @@ public final class StreamCopier {
             finally {
                 final StreamCloser c = new DefaultStreamCloser();
                 c.close(in);
-                c.close(out);
             }
         }
         catch(BackgroundException e) {
