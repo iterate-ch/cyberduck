@@ -75,7 +75,7 @@ public class SingleTransferWorkerTest {
     @Test
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[62768];
+        final byte[] content = new byte[98305];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
@@ -137,8 +137,8 @@ public class SingleTransferWorkerTest {
 
         }.run(session, session));
         local.delete();
-        assertEquals(62768L, counter.getSent(), 0L);
-        assertEquals(62768L, new DefaultAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(98305L, counter.getSent(), 0L);
+        assertEquals(98305L, new DefaultAttributesFinderFeature(session).find(test).getSize());
         assertTrue(failed.get());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
