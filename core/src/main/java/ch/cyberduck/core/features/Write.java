@@ -61,6 +61,9 @@ public interface Write<Reply> {
          */
         public final boolean append;
 
+        /**
+         * File exists
+         */
         public final boolean override;
 
         /**
