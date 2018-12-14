@@ -35,6 +35,7 @@ import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sds.SDSSession;
 import ch.cyberduck.core.sds.SDSWriteFeature;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -66,6 +67,10 @@ import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.dracoon.sdk.crypto.CryptoSystemException;
+import com.dracoon.sdk.crypto.InvalidFileKeyException;
+import com.dracoon.sdk.crypto.InvalidKeyPairException;
 
 import static org.junit.Assert.*;
 
@@ -147,6 +152,135 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
                                 failed.set(true);
                                 throw new SocketTimeoutException();
                             }
+                        }
+                    }) {
+                        @Override
+                        public VersionId getStatus() throws BackgroundException {
+                            return proxy.getStatus();
+                        }
+                    };
+                }
+            };
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Write.class) {
+                    return (T) write;
+                }
+                return super._getFeature(type);
+            }
+        };
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new Path(
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
+        final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
+        assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt(final TransferItem file) {
+                return TransferAction.overwrite;
+            }
+        }, new DisabledTransferErrorCallback(),
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty()) {
+
+        }.run(session, session));
+        local.delete();
+        assertEquals(98305L, counter.getSent(), 0L);
+        assertTrue(failed.get());
+        assertEquals(98305L, new SDSAttributesFinderFeature(session, fileid).find(test).getSize());
+        new SDSDeleteFeature(session, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testTransferredSizeRepeatFailureOnComplete() throws Exception {
+        final SDSNodeIdProvider fileid = new SDSNodeIdProvider(session);
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] content = new byte[98305];  // chunk size 32768
+        new Random().nextBytes(content);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        out.close();
+        final AtomicBoolean failed = new AtomicBoolean();
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
+            final SDSWriteFeature write = new SDSWriteFeature(this, fileid) {
+                @Override
+                protected VersionId complete(final String uploadId, final TransferStatus status) throws IOException, InvalidFileKeyException, InvalidKeyPairException, CryptoSystemException, BackgroundException, ApiException {
+                    if(!failed.get()) {
+                        failed.set(true);
+                        throw new SocketTimeoutException();
+                    }
+                    return super.complete(uploadId, status);
+                }
+            };
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> T _getFeature(final Class<T> type) {
+                if(type == Write.class) {
+                    return (T) write;
+                }
+                return super._getFeature(type);
+            }
+        };
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new Path(
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
+        final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
+        assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt(final TransferItem file) {
+                return TransferAction.overwrite;
+            }
+        }, new DisabledTransferErrorCallback(),
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty()) {
+
+        }.run(session, session));
+        local.delete();
+        assertEquals(98305L, counter.getSent(), 0L);
+        assertTrue(failed.get());
+        assertEquals(98305L, new SDSAttributesFinderFeature(session, fileid).find(test).getSize());
+        new SDSDeleteFeature(session, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testTransferredSizeRepeatFailureOnClose() throws Exception {
+        final SDSNodeIdProvider fileid = new SDSNodeIdProvider(session);
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] content = new byte[98305];  // chunk size 32768
+        new Random().nextBytes(content);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        out.close();
+        final AtomicBoolean failed = new AtomicBoolean();
+        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
+        ));
+        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
+            final SDSWriteFeature write = new SDSWriteFeature(this, fileid) {
+                @Override
+                public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                    final HttpResponseOutputStream<VersionId> proxy = super.write(file, status, callback);
+                    if(failed.get()) {
+                        // Second attempt successful
+                        return proxy;
+                    }
+                    return new HttpResponseOutputStream<VersionId>(new CountingOutputStream(proxy) {
+                        @Override
+                        public void close() throws IOException {
+                            if(!failed.get()) {
+                                failed.set(true);
+                                throw new SocketTimeoutException();
+                            }
+                            super.close();
                         }
                     }) {
                         @Override

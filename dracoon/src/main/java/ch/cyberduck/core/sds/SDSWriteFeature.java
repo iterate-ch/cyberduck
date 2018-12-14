@@ -122,19 +122,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         finally {
                             EntityUtils.consume(response.getEntity());
                         }
-                        final CompleteUploadRequest body = new CompleteUploadRequest()
-                            .resolutionStrategy(status.isExists() ? CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteUploadRequest.ResolutionStrategyEnum.FAIL);
-                        if(status.getFilekey() != null) {
-                            final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
-                            final FileKey fileKey = reader.readValue(status.getFilekey().array());
-                            final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
-                                TripleCryptConverter.toCryptoPlainFileKey(fileKey),
-                                TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
-                            );
-                            body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
-                        }
-                        final Node upload = new NodesApi(client).completeFileUpload(uploadId, body, StringUtils.EMPTY, null);
-                        return new VersionId(String.valueOf(upload.getId()));
+                        return complete(uploadId, status);
                     }
                     catch(IOException e) {
                         throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
@@ -157,6 +145,23 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
         }
+    }
+
+    protected VersionId complete(final String uploadId, final TransferStatus status) throws IOException, InvalidFileKeyException, InvalidKeyPairException, CryptoSystemException, BackgroundException, ApiException {
+        final SDSApiClient client = session.getClient();
+        final CompleteUploadRequest body = new CompleteUploadRequest()
+            .resolutionStrategy(status.isExists() ? CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteUploadRequest.ResolutionStrategyEnum.FAIL);
+        if(status.getFilekey() != null) {
+            final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
+            final FileKey fileKey = reader.readValue(status.getFilekey().array());
+            final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
+                TripleCryptConverter.toCryptoPlainFileKey(fileKey),
+                TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
+            );
+            body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
+        }
+        final Node upload = new NodesApi(client).completeFileUpload(uploadId, body, StringUtils.EMPTY, null);
+        return new VersionId(String.valueOf(upload.getId()));
     }
 
     @Override
