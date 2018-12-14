@@ -20,7 +20,7 @@ package ch.cyberduck.core;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 
 public class LoginOptionsTest {
 
@@ -31,6 +31,6 @@ public class LoginOptionsTest {
         a.keychain = false;
         final LoginOptions b = new LoginOptions();
         b.keychain = true;
-        assertFalse(a.equals(b));
+        assertNotEquals(a, b);
     }
 }
