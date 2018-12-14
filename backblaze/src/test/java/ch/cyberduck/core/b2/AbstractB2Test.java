@@ -25,10 +25,16 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.After;
 import org.junit.Before;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
@@ -45,18 +51,22 @@ public class AbstractB2Test {
 
     @Before
     public void setup() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new B2Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+            this.getClass().getResourceAsStream("/B2.cyberduckprofile"));
         session = new B2Session(
-            new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(),
+            new Host(profile, profile.getDefaultHostname(),
                 new Credentials(
                     System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
                 )));
-        new LoginConnectionService(new DisabledLoginCallback() {
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 fail(reason);
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            new DisabledPasswordStore(), new DisabledProgressListener());
+        login.check(session, PathCache.empty(), new DisabledCancelCallback());
     }
 }
