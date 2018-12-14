@@ -209,10 +209,10 @@ public class HttpConnectionPoolBuilder {
                 Charset.forName(preferences.getProperty("http.credentials.charset"))))
             .register(AuthSchemes.DIGEST, new DigestSchemeFactory(
                 Charset.forName(preferences.getProperty("http.credentials.charset"))))
-            .register(AuthSchemes.NTLM, WinHttpClients.isWinAuthAvailable() ?
+            .register(AuthSchemes.NTLM, preferences.getBoolean("webdav.ntlm.iwa.enable") && WinHttpClients.isWinAuthAvailable() ?
                 new BackportWindowsNTLMSchemeFactory(null) :
                 new NTLMSchemeFactory())
-            .register(AuthSchemes.SPNEGO, WinHttpClients.isWinAuthAvailable() ?
+            .register(AuthSchemes.SPNEGO, preferences.getBoolean("webdav.ntlm.iwa.enable") && WinHttpClients.isWinAuthAvailable() ?
                 new BackportWindowsNegotiateSchemeFactory(null) :
                 new SPNegoSchemeFactory())
             .register(AuthSchemes.KERBEROS, new KerberosSchemeFactory()).build());
