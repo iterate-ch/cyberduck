@@ -37,16 +37,16 @@ public class AWSSessionCredentialsRetrieverTest {
     @Test
     public void testParse() throws Exception {
         final Credentials c = new AWSSessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new DisabledTranscriptListener(),
-                "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
-                .parse(IOUtils.toInputStream("{\n" +
-                        "  \"Code\" : \"Success\",\n" +
-                        "  \"LastUpdated\" : \"2012-04-26T16:39:16Z\",\n" +
-                        "  \"Type\" : \"AWS-HMAC\",\n" +
-                        "  \"AccessKeyId\" : \"AKIAIOSFODNN7EXAMPLE\",\n" +
-                        "  \"SecretAccessKey\" : \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\",\n" +
-                        "  \"Token\" : \"token\",\n" +
-                        "  \"Expiration\" : \"2012-04-27T22:39:16Z\"\n" +
-                        "}", Charset.defaultCharset()));
+            "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
+            .parse(IOUtils.toInputStream("{\n" +
+                "  \"Code\" : \"Success\",\n" +
+                "  \"LastUpdated\" : \"2012-04-26T16:39:16Z\",\n" +
+                "  \"Type\" : \"AWS-HMAC\",\n" +
+                "  \"AccessKeyId\" : \"AKIAIOSFODNN7EXAMPLE\",\n" +
+                "  \"SecretAccessKey\" : \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\",\n" +
+                "  \"Token\" : \"token\",\n" +
+                "  \"Expiration\" : \"2012-04-27T22:39:16Z\"\n" +
+                "}", Charset.defaultCharset()));
         assertEquals("AKIAIOSFODNN7EXAMPLE", c.getUsername());
         assertEquals("wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", c.getPassword());
         assertEquals("token", c.getToken());
@@ -56,7 +56,7 @@ public class AWSSessionCredentialsRetrieverTest {
     @Ignore
     public void testGet() throws Exception {
         new AWSSessionCredentialsRetriever(new DisabledX509TrustManager(), new DefaultX509KeyManager(), new ProtocolFactory(Collections.singleton(new DAVProtocol())), new DisabledTranscriptListener(),
-                "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
-                .get();
+            "http://169.254.169.254/latest/meta-data/iam/security-credentials/s3access")
+            .get();
     }
 }

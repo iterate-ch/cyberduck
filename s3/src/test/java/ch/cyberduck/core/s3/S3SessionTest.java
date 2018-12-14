@@ -8,7 +8,6 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Copy;
@@ -43,7 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class S3SessionTest {
+public class S3SessionTest extends AbstractS3Test {
 
     @Test
     public void testHttpProfile() throws Exception {
@@ -82,26 +81,6 @@ public class S3SessionTest {
             }
         }, new DefaultX509KeyManager());
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-    }
-
-    @Test
-    public void testConnectUnsecured() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-        ));
-        final S3Session session = new S3Session(host);
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
-        assertEquals(Session.State.closed, session.getState());
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         assertTrue(session.isConnected());
         session.close();
         assertFalse(session.isConnected());
@@ -154,7 +133,10 @@ public class S3SessionTest {
 
     @Test
     public void testConnectDefaultPath() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+            this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+        final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
             System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
         host.setDefaultPath("/test-us-east-1-cyberduck");
@@ -164,40 +146,12 @@ public class S3SessionTest {
         session.close();
     }
 
-    @Test(expected = LoginFailureException.class)
-    public void testLoginFailure() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("s3.key"), "s"
-        ));
-        final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-    }
-
-    @Test
-    public void testLoginFailureFix() throws Exception {
-        final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
-            System.getProperties().getProperty("s3.key"), "s"
-        ));
-        final AtomicBoolean p = new AtomicBoolean();
-        final S3Session session = new S3Session(host);
-        new LoginConnectionService(new DisabledLoginCallback() {
-            @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                if(p.get()) {
-                    throw new LoginCanceledException();
-                }
-                p.set(true);
-                return new Credentials(username, System.getProperties().getProperty("s3.secret"));
-            }
-        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
-        assertTrue(p.get());
-        session.close();
-    }
-
     @Test(expected = BackgroundException.class)
     public void testCustomHostnameUnknown() throws Exception {
-        final Host host = new Host(new S3Protocol(), "testu.cyberduck.ch", new Credentials(
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new S3Protocol())));
+        final Profile profile = new ProfilePlistReader(factory).read(
+            this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
+        final Host host = new Host(profile, "testu.cyberduck.ch", new Credentials(
             System.getProperties().getProperty("s3.key"), "s"
         ));
         final S3Session session = new S3Session(host);

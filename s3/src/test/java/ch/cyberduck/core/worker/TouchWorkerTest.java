@@ -24,6 +24,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
@@ -37,7 +38,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class TouchWorkerTest {
+public class TouchWorkerTest extends AbstractS3Test {
 
     @Test
     public void testSuccessWithServerSideEncryptionBucketPolicy() throws Exception {
