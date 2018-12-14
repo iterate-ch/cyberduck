@@ -337,8 +337,8 @@ public abstract class Transfer implements Serializable {
      */
     public abstract Path transfer(Session<?> source, Session<?> destination, Path file, Local local,
                                   TransferOptions options, TransferStatus status,
-                                  ConnectionCallback connectionCallback,
-                                  final PasswordCallback passwordCallback, ProgressListener progressListener,
+                                  ConnectionCallback connectionCallback, PasswordCallback passwordCallback,
+                                  ProgressListener progressListener,
                                   StreamListener streamListener) throws BackgroundException;
 
     public void start() {
