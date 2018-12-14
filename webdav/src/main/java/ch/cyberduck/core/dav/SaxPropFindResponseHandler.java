@@ -46,12 +46,11 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
 
     @Override
     protected Multistatus getMultistatus(final InputStream stream) throws IOException {
-
-        SAXParserFactory spf = SAXParserFactory.newInstance();
+        final SAXParserFactory spf = SAXParserFactory.newInstance();
         spf.setNamespaceAware(true);
         try {
-            SAXParser saxParser = spf.newSAXParser();
-            XMLReader xmlReader = saxParser.getXMLReader();
+            final SAXParser saxParser = spf.newSAXParser();
+            final XMLReader xmlReader = saxParser.getXMLReader();
             final SaxHandler handler = new SaxHandler();
             xmlReader.setContentHandler(handler);
             xmlReader.parse(new InputSource(stream));
@@ -62,7 +61,7 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
         }
     }
 
-    private static class SaxHandler extends DefaultHandler {
+    private static final class SaxHandler extends DefaultHandler {
 
         private Multistatus multistatus;
 
