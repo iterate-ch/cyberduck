@@ -137,7 +137,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final CredentialsProvider provider = new BasicCredentialsProvider();
-        if(WinHttpClients.isWinAuthAvailable()) {
+        if(preferences.getBoolean("webdav.ntlm.iwa.enable") && WinHttpClients.isWinAuthAvailable()) {
             provider.setCredentials(
                 new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
                 new WindowsCredentialsProvider(new BasicCredentialsProvider()).getCredentials(

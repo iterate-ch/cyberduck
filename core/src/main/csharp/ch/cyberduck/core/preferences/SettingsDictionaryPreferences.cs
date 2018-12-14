@@ -328,6 +328,8 @@ namespace Ch.Cyberduck.Core.Preferences
                     // The name of this computer cannot be obtained.
                 }
             }
+            this.setDefault("webdav.ntlm.iwa.enable", true.ToString());
+
             if (Utils.IsRunningAsUWP)
             {
                 SetUWPDefaults();
