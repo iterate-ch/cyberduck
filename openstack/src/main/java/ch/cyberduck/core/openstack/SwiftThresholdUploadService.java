@@ -92,7 +92,7 @@ public class SwiftThresholdUploadService implements Upload<StorageObject> {
         // Previous segments to delete
         final List<Path> segments = new ArrayList<Path>();
         if(preferences.getBoolean("openstack.upload.largeobject.cleanup")) {
-            if(!status.isAppend() && !status.isRetry()) {
+            if(!status.isAppend()) {
                 // Cleanup if necessary
                 segments.addAll(new SwiftSegmentService(session, regionService).list(file));
             }

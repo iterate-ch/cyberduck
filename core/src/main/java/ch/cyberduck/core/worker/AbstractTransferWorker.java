@@ -380,10 +380,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         try {
                             source = borrow(Connection.source);
                             destination = borrow(Connection.destination);
-                            item.remote = transfer.transfer(source, destination,
-                                segment.getRename().remote != null ? segment.getRename().remote : item.remote,
-                                segment.getRename().local != null ? segment.getRename().local : item.local,
-                                options, segment, connectionCallback, passwordCallback, progress, stream);
+                            // Do transfer with retry
+                            this.retry(source, destination, segment);
                             // Recursive
                             if(item.remote.isDirectory()) {
                                 if(!cache.isCached(item)) {
@@ -403,17 +401,51 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 segment.getRename().local != null ? segment.getRename().local : item.local,
                                 options, segment, progress);
                         }
+                        finally {
+                            if(source != null) {
+                                // Return session to pool
+                                release(source, Connection.source);
+                            }
+                            if(destination != null) {
+                                // Return session to pool
+                                release(destination, Connection.destination);
+                            }
+                        }
+                        return segment;
+                    }
+
+                    private void retry(final Session<?> source, final Session<?> destination, final TransferStatus segment) throws BackgroundException {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Transfer item %s with status %s", item, segment));
+                        }
+                        try {
+                            transfer.transfer(source, destination,
+                                segment.getRename().remote != null ? segment.getRename().remote : item.remote,
+                                segment.getRename().local != null ? segment.getRename().local : item.local,
+                                options, segment, connectionCallback, passwordCallback, progress, stream);
+                        }
                         catch(ConnectionCanceledException e) {
+                            log.warn(String.format("Canceled transfer of %s", item));
                             segment.setFailure();
                             throw e;
                         }
                         catch(BackgroundException e) {
+                            log.warn(String.format("Failure transferring %s. %s", item, e.getDetail()));
                             if(this.retry(e, progress, new TransferBackgroundActionState(status))) {
-                                // Set retry count to make multipart uploads search for existing segments
-                                segment.setRetry(this.getCount());
-                                // Retry immediately
-                                log.info(String.format("Retry %s with transfer status %s", item, segment));
-                                return call();
+                                final TransferPathFilter filter = transfer.filter(source, destination, TransferAction.resume, progress);
+                                if(filter.accept(item.remote, item.local, new TransferStatus().exists(true))) {
+                                    if(log.isDebugEnabled()) {
+                                        log.debug(String.format("Retry transfer of %s", item));
+                                    }
+                                    final TransferStatus retry = filter.prepare(item.remote, item.local, new TransferStatus().exists(true), progress);
+                                    // Retry immediately
+                                    log.info(String.format("Retry %s with transfer status %s", item, segment));
+                                    this.retry(source, destination, retry);
+                                    return;
+                                }
+                            }
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Cancel retry for %s", item));
                             }
                             segment.setFailure();
                             if(table.size() == 1) {
@@ -429,17 +461,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 throw new ConnectionCanceledException(e);
                             }
                         }
-                        finally {
-                            if(source != null) {
-                                // Return session to pool
-                                release(source, Connection.source);
-                            }
-                            if(destination != null) {
-                                // Return session to pool
-                                release(destination, Connection.destination);
-                            }
-                        }
-                        return segment;
                     }
 
                     @Override
