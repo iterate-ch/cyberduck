@@ -57,7 +57,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -139,15 +138,16 @@ public class DAVSession extends HttpSession<DAVClient> {
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final CredentialsProvider provider = new BasicCredentialsProvider();
         if(WinHttpClients.isWinAuthAvailable()) {
-            final Credentials credentials = new WindowsCredentialsProvider(new SystemDefaultCredentialsProvider()).getCredentials(
-                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM)
-            );
             provider.setCredentials(
                 new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
-                credentials);
+                new WindowsCredentialsProvider(new BasicCredentialsProvider()).getCredentials(
+                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM)
+                ));
             provider.setCredentials(
                 new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
-                credentials);
+                new WindowsCredentialsProvider(new SystemDefaultCredentialsProvider()).getCredentials(
+                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO)
+                ));
         }
         else {
             provider.setCredentials(
