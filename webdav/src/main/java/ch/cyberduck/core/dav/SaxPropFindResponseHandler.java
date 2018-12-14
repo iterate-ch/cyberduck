@@ -15,6 +15,7 @@ package ch.cyberduck.core.dav;
  * GNU General Public License for more details.
  */
 
+import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -39,6 +40,7 @@ import com.github.sardine.model.Prop;
 import com.github.sardine.model.Propstat;
 import com.github.sardine.model.Resourcetype;
 import com.github.sardine.model.Response;
+import com.github.sardine.util.SardineUtil;
 
 public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
 
@@ -71,9 +73,12 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
 
         private StringBuilder data;
 
+        private Element root;
+
         @Override
         public void startDocument() throws SAXException {
             multistatus = new Multistatus();
+            root = SardineUtil.createElement(SardineUtil.createQNameWithCustomNamespace("root"));
         }
 
         @Override
@@ -83,22 +88,18 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
                 multistatus.getResponse().add(response);
             }
             else if(localName.equals("propstat")) {
-                //assertNotNull(response);
                 propstat = new Propstat();
                 response.getPropstat().add(propstat);
             }
             else if(localName.equals("prop")) {
-                //assertNotNull(propstat);
                 prop = new Prop();
                 propstat.setProp(prop);
             }
             else if(localName.equals("resourcetype")) {
-                //assertNotNull(prop);
                 type = new Resourcetype();
                 prop.setResourcetype(type);
             }
             else if(localName.equals("collection")) {
-                //assertNotNull(type);
                 type.setCollection(new Collection());
             }
             data = new StringBuilder();
@@ -145,14 +146,14 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
                 prop.setGetetag(value);
             }
             else if(localName.equals("lastmodified_server")) {
-                final Getetag value = new Getetag();
-                value.getContent().add(data.toString());
-                prop.setGetetag(value);
+                final Element element = SardineUtil.createElement(root, DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
+                element.setTextContent(data.toString());
+                prop.getAny().add(element);
             }
             else if(localName.equals("lastmodified")) {
-                final Getetag value = new Getetag();
-                value.getContent().add(data.toString());
-                prop.setGetetag(value);
+                final Element element = SardineUtil.createElement(root, DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
+                element.setTextContent(data.toString());
+                prop.getAny().add(element);
             }
             if(localName.equals("href")) {
                 response.getHref().add(data.toString());
@@ -162,12 +163,5 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
         public Multistatus getMultistatus() {
             return multistatus;
         }
-
-        private void assertNotNull(final Object o) throws SAXException {
-            if(o == null) {
-                throw new SAXException("Not a valid DAV response");
-            }
-        }
     }
-
 }
