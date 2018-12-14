@@ -275,7 +275,7 @@ public class ConcurrentTransferWorkerTest {
             });
         }
         worker.await();
-        assertTrue(entry.getCount() == 0);
+        assertEquals(0, entry.getCount());
         worker.cleanup(true);
     }
 }
