@@ -44,7 +44,7 @@ public class StreamCopierTest {
                 assertTrue(bytes > 0L);
                 assertTrue(bytes <= 32768L);
                 sent += bytes;
-                assertTrue(sent == received);
+                assertEquals(sent, received);
             }
 
             @Override
