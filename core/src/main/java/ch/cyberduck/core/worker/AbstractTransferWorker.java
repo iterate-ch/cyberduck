@@ -440,7 +440,10 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                     final TransferStatus retry = filter.prepare(item.remote, item.local, new TransferStatus().exists(true), progress);
                                     // Retry immediately
                                     log.info(String.format("Retry %s with transfer status %s", item, segment));
-                                    this.retry(source, destination, retry);
+                                    this.retry(source, destination, segment
+                                        .length(retry.getLength())
+                                        .skip(retry.getOffset())
+                                        .append(retry.isAppend()));
                                     return;
                                 }
                             }
