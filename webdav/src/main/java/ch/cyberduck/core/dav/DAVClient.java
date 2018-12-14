@@ -27,15 +27,24 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineImpl;
 import com.github.sardine.impl.handler.VoidResponseHandler;
-import com.github.sardine.impl.io.ContentLengthInputStream;
+import com.github.sardine.impl.methods.HttpPropFind;
+import com.github.sardine.model.Multistatus;
+import com.github.sardine.model.Propfind;
+import com.github.sardine.model.Response;
+import com.github.sardine.util.SardineUtil;
 
 public class DAVClient extends SardineImpl {
 
@@ -66,6 +75,25 @@ public class DAVClient extends SardineImpl {
             request.setURI(URI.create(String.format("%s%s", uri, request.getURI().getRawPath())));
         }
         return super.execute(request);
+    }
+
+    @Override
+    protected List<DavResource> propfind(final String url, final int depth, final Propfind body) throws IOException {
+        HttpPropFind entity = new HttpPropFind(url);
+        entity.setDepth(depth < 0 ? "infinity" : Integer.toString(depth));
+        entity.setEntity(new StringEntity(SardineUtil.toXml(body), StandardCharsets.UTF_8));
+        Multistatus multistatus = this.execute(entity, new SaxPropFindResponseHandler());
+        List<Response> responses = multistatus.getResponse();
+        List<DavResource> resources = new ArrayList<DavResource>(responses.size());
+        for(Response response : responses) {
+            try {
+                resources.add(new DavResource(response));
+            }
+            catch(URISyntaxException e) {
+                //log.warning(String.format("Ignore resource with invalid URI %s", response.getHref().get(0)));
+            }
+        }
+        return resources;
     }
 
     @Override
