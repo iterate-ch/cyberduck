@@ -29,6 +29,7 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URI;
@@ -47,6 +48,8 @@ import com.github.sardine.model.Response;
 import com.github.sardine.util.SardineUtil;
 
 public class DAVClient extends SardineImpl {
+
+    private static final Logger log = Logger.getLogger(DAVClient.class);
 
     private final String uri;
 
@@ -90,7 +93,7 @@ public class DAVClient extends SardineImpl {
                 resources.add(new DavResource(response));
             }
             catch(URISyntaxException e) {
-                //log.warning(String.format("Ignore resource with invalid URI %s", response.getHref().get(0)));
+                log.warn(String.format("Ignore resource with invalid URI %s", response.getHref().get(0)));
             }
         }
         return resources;
