@@ -31,6 +31,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -111,11 +112,11 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 assertEquals("Multi-Factor Authentication", reason);
                 assertFalse(options.user);
                 assertTrue(options.password);
-                return new Credentials(username, "889153");
+                return new Credentials(StringUtils.EMPTY, "889153");
             }
         }, new DisabledCancelCallback());
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
