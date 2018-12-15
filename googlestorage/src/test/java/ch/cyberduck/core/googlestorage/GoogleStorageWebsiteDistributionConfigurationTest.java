@@ -63,8 +63,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
     @Test
     public void testUrl() throws Exception {
         final DistributionConfiguration configuration
-                = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
-                new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
+            = new GoogleStorageWebsiteDistributionConfiguration(session);
         assertEquals("http://test.cyberduck.ch.storage.googleapis.com/f", configuration.toUrl(new Path("test.cyberduck.ch/f", EnumSet.of(Path.Type.file))).find(
                 DescriptiveUrl.Type.origin).getUrl());
     }
