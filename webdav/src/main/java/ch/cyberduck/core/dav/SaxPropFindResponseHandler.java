@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.namespace.QName;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
@@ -154,8 +155,14 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
                 element.setTextContent(data.toString());
                 prop.getAny().add(element);
             }
-            if(localName.equals("href")) {
+            else if(localName.equals("href")) {
                 response.getHref().add(data.toString());
+            }
+            else if(!uri.equals(SardineUtil.DEFAULT_NAMESPACE_URI)) {
+                // Custom property
+                final Element element = SardineUtil.createElement(root, new QName(uri, localName, SardineUtil.DEFAULT_NAMESPACE_PREFIX));
+                element.setTextContent(data.toString());
+                prop.getAny().add(element);
             }
         }
 
