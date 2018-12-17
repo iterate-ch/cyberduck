@@ -99,6 +99,8 @@ public class Terminal {
     private final ProgressListener progress;
     private final TranscriptListener transcript;
 
+    private final ProtocolFactory protocols = ProtocolFactory.get();
+
     private enum Exit {
         success,
         failure
@@ -110,7 +112,7 @@ public class Terminal {
 
     public Terminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults.withDefaults(input);
-        ProtocolFactory.get().register(
+        this.protocols.register(
             new FTPProtocol(),
             new FTPTLSProtocol(),
             new SFTPProtocol(),
@@ -224,7 +226,19 @@ public class Terminal {
                 return Exit.failure;
             }
             final String uri = input.getOptionValue(action.name());
-            final Host host = new CommandLineUriParser(input).parse(uri);
+            if(input.hasOption(TerminalOptionsBuilder.Params.profile.name())) {
+                final String file = input.getOptionValue(TerminalOptionsBuilder.Params.profile.name());
+                final Protocol profile = ProfileReaderFactory.get().read(LocalFactory.get(file));
+                if(null != profile) {
+                    if(profile.isEnabled()) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Register profile %s", profile));
+                        }
+                        protocols.register(profile);
+                    }
+                }
+            }
+            final Host host = new CommandLineUriParser(input, protocols).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input
             ), new TerminalLoginCallback(reader), new TerminalHostKeyVerifier(reader), progress);
             source = SessionPoolFactory.create(connect, transcript, cache, host,
