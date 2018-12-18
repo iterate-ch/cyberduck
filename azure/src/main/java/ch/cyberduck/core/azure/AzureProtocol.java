@@ -60,7 +60,7 @@ public class AzureProtocol extends AbstractProtocol {
 
     @Override
     public String getDescription() {
-        return "Windows Azure Storage";
+        return "Windows Azure Blob Storage";
     }
 
     @Override
