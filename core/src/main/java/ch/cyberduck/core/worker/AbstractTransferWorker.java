@@ -156,7 +156,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     /**
      * Release session from pool for transfer
      */
-    protected abstract void release(Session session, Connection type) throws BackgroundException;
+    protected abstract void release(Session session, Connection type, BackgroundException failure) throws BackgroundException;
 
     @Override
     public Boolean initialize() {
@@ -231,8 +231,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         }
         finally {
             transfer.post(source, destination, table, connectionCallback);
-            this.release(source, Connection.source);
-            this.release(destination, Connection.destination);
+            this.release(source, Connection.source, null);
+            this.release(destination, Connection.destination, null);
             if(transfer.isReset()) {
                 notification.notify(transfer.isComplete() ?
                     String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
@@ -339,10 +339,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         }
                     }
                     finally {
-                        // Return session to pool
-                        release(source, Connection.source);
-                        // Return session to pool
-                        release(destination, Connection.destination);
+                        release(source, Connection.source, null);
+                        release(destination, Connection.destination, null);
                     }
                 }
 
@@ -383,22 +381,22 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             throw new TransferCanceledException();
                         }
                         // Transfer
+                        // Do transfer with retry
+                        this.retry(segment);
+                        // Recursive
+                        if(item.remote.isDirectory()) {
+                            if(!cache.isCached(item)) {
+                                log.warn(String.format("Missing entry for %s in cache", item));
+                            }
+                            for(TransferItem f : cache.get(item)) {
+                                // Recursive
+                                transfer(f, action);
+                            }
+                            cache.remove(item);
+                        }
                         final Session<?> source = borrow(Connection.source);
                         final Session<?> destination = borrow(Connection.destination);
                         try {
-                            // Do transfer with retry
-                            this.retry(source, destination, segment);
-                            // Recursive
-                            if(item.remote.isDirectory()) {
-                                if(!cache.isCached(item)) {
-                                    log.warn(String.format("Missing entry for %s in cache", item));
-                                }
-                                for(TransferItem f : cache.get(item)) {
-                                    // Recursive
-                                    transfer(f, action);
-                                }
-                                cache.remove(item);
-                            }
                             // Determine transfer filter implementation from selected overwrite action
                             final TransferPathFilter filter = transfer.filter(source, destination, action, progress);
                             // Post process of file.
@@ -408,18 +406,18 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 options, segment, progress);
                         }
                         finally {
-                            // Return session to pool
-                            release(source, Connection.source);
-                            // Return session to pool
-                            release(destination, Connection.destination);
+                            release(source, Connection.source, null);
+                            release(destination, Connection.destination, null);
                         }
                         return segment;
                     }
 
-                    private void retry(final Session<?> source, final Session<?> destination, final TransferStatus segment) throws BackgroundException {
+                    private void retry(final TransferStatus segment) throws BackgroundException {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Transfer item %s with status %s", item, segment));
                         }
+                        final Session<?> source = borrow(Connection.source);
+                        final Session<?> destination = borrow(Connection.destination);
                         try {
                             transfer.transfer(source, destination,
                                 segment.getRename().remote != null ? segment.getRename().remote : item.remote,
@@ -442,7 +440,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                     final TransferStatus retry = filter.prepare(item.remote, item.local, new TransferStatus().exists(true), progress);
                                     // Retry immediately
                                     log.info(String.format("Retry %s with transfer status %s", item, segment));
-                                    this.retry(source, destination, segment
+                                    this.retry(segment
                                         .length(retry.getLength())
                                         .skip(retry.getOffset())
                                         .append(retry.isAppend()));
@@ -465,6 +463,10 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             else {
                                 throw new ConnectionCanceledException(e);
                             }
+                        }
+                        finally {
+                            release(source, Connection.source, null);
+                            release(destination, Connection.destination, null);
                         }
                     }
 
@@ -506,9 +508,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                     options, status.complete(), progress);
                             }
                             finally {
-                                // Return session to pool
-                                release(source, Connection.source);
-                                release(destination, Connection.destination);
+                                release(source, Connection.source, null);
+                                release(destination, Connection.destination, null);
                             }
                         }
                         else {

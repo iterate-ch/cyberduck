@@ -38,7 +38,6 @@ import ch.cyberduck.core.transfer.download.AbstractDownloadFilter;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -72,8 +71,8 @@ public class ConcurrentTransferWorkerTest {
             new DisabledConnectionCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
-        worker.release(session, ConcurrentTransferWorker.Connection.source);
-        worker.release(session, ConcurrentTransferWorker.Connection.source);
+        worker.release(session, ConcurrentTransferWorker.Connection.source, null);
+        worker.release(session, ConcurrentTransferWorker.Connection.source, null);
     }
 
     @Test
@@ -112,7 +111,7 @@ public class ConcurrentTransferWorkerTest {
         // Override default transfer queue size
         pool.withMaxTotal(1);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
-        worker.release(session, ConcurrentTransferWorker.Connection.source);
+        worker.release(session, ConcurrentTransferWorker.Connection.source, null);
         assertEquals(Session.State.closed, session.getState());
         final Session<?> reuse = worker.borrow(ConcurrentTransferWorker.Connection.source);
         assertSame(session, reuse);
@@ -134,13 +133,12 @@ public class ConcurrentTransferWorkerTest {
                 }
             }
         }).start();
-        worker.release(reuse, ConcurrentTransferWorker.Connection.source);
+        worker.release(reuse, ConcurrentTransferWorker.Connection.source, null);
         lock.await(1, TimeUnit.MINUTES);
         worker.cleanup(true);
     }
 
     @Test
-    @Ignore
     public void testConcurrentSessions() throws Exception {
         final int files = 20;
         final int connections = 3;
@@ -206,7 +204,7 @@ public class ConcurrentTransferWorkerTest {
         pool.withMaxTotal(connections);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
         assertTrue(worker.run());
-        worker.release(session, ConcurrentTransferWorker.Connection.source);
+        worker.release(session, ConcurrentTransferWorker.Connection.source, null);
         for(int i = 1; i <= files; i++) {
             assertTrue(transferred.contains(new Path("/t" + i, EnumSet.of(Path.Type.file))));
         }
@@ -247,7 +245,7 @@ public class ConcurrentTransferWorkerTest {
             }
         }).start();
         Thread.sleep(2000L);
-        worker.release(session, ConcurrentTransferWorker.Connection.source);
+        worker.release(session, ConcurrentTransferWorker.Connection.source, null);
     }
 
     @Test

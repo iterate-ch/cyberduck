@@ -15,19 +15,9 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.BytecountStreamListener;
-import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
@@ -37,9 +27,14 @@ import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
+import ch.cyberduck.core.pool.DefaultSessionPool;
+import ch.cyberduck.core.pool.PooledSessionFactory;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -49,10 +44,12 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.CountingOutputStream;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -83,58 +80,77 @@ public class SingleTransferWorkerTest {
                 System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
         ));
         final AtomicBoolean failed = new AtomicBoolean();
-        final FTPSession session = new FTPSession(host) {
-            final FTPWriteFeature write = new FTPWriteFeature(this) {
-                @Override
-                public StatusOutputStream<Integer> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-                    final StatusOutputStream<Integer> proxy = super.write(file, status, callback);
-                    if(failed.get()) {
-                        // Second attempt successful
-                        return proxy;
-                    }
-                    return new StatusOutputStream<Integer>(new CountingOutputStream(proxy) {
-                        @Override
-                        protected void afterWrite(final int n) throws IOException {
-                            super.afterWrite(n);
-                            if(this.getByteCount() >= 42768L) {
-                                // Buffer size
-                                assertEquals(32768L, status.getOffset());
-                                failed.set(true);
-                                throw new SocketTimeoutException();
-                            }
-                        }
-                    }) {
-                        @Override
-                        public Integer getStatus() throws BackgroundException {
-                            return proxy.getStatus();
-                        }
-                    };
-                }
-            };
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T> T _getFeature(final Class<T> type) {
-                if(type == Write.class) {
-                    return (T) write;
-                }
-                return super._getFeature(type);
-            }
-        };
+        final FTPSession session = new FTPSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
         final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
-        assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new Credentials(
+                    System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
+                );
+            }
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
+        final DefaultSessionPool pool = new DefaultSessionPool(connect,
+            new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledTranscriptListener(), host,
+            new GenericObjectPool<Session>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                PathCache.empty(), host, new DefaultVaultRegistry(new DisabledPasswordCallback())) {
+                @Override
+                public Session create() {
+                    return new FTPSession(host) {
+                        final FTPWriteFeature write = new FTPWriteFeature(this) {
+                            @Override
+                            public StatusOutputStream<Integer> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                final StatusOutputStream<Integer> proxy = super.write(file, status, callback);
+                                if(failed.get()) {
+                                    // Second attempt successful
+                                    return proxy;
+                                }
+                                return new StatusOutputStream<Integer>(new CountingOutputStream(proxy) {
+                                    @Override
+                                    protected void afterWrite(final int n) throws IOException {
+                                        super.afterWrite(n);
+                                        if(this.getByteCount() >= 42768L) {
+                                            // Buffer size
+                                            assertEquals(32768L, status.getOffset());
+                                            failed.set(true);
+                                            throw new SocketTimeoutException();
+                                        }
+                                    }
+                                }) {
+                                    @Override
+                                    public Integer getStatus() throws BackgroundException {
+                                        return proxy.getStatus();
+                                    }
+                                };
+                            }
+                        };
+
+                        @Override
+                        @SuppressWarnings("unchecked")
+                        public <T> T _getFeature(final Class<T> type) {
+                            if(type == Write.class) {
+                                return (T) write;
+                            }
+                            return super._getFeature(type);
+                        }
+                    };
+                }
+            }));
+        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
+            pool, SessionPool.DISCONNECTED, t, new TransferOptions(),
+            new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
-
-        }.run());
+            new DisabledConnectionCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), counter, new DisabledNotificationService()
+        );
+        assertTrue(worker.run());
         local.delete();
         assertEquals(98305L, counter.getSent(), 0L);
         assertEquals(98305L, new DefaultAttributesFinderFeature(session).find(test).getSize());

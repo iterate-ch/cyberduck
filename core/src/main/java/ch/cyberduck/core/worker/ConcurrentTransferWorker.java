@@ -129,13 +129,13 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    protected void release(final Session session, final Connection type) {
+    protected void release(final Session session, final Connection type, final BackgroundException failure) {
         switch(type) {
             case source:
-                source.release(session, null);
+                source.release(session, failure);
                 break;
             case destination:
-                destination.release(session, null);
+                destination.release(session, failure);
                 break;
         }
     }
