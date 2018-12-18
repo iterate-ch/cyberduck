@@ -230,13 +230,17 @@ public class Terminal {
                 final String file = input.getOptionValue(TerminalOptionsBuilder.Params.profile.name());
                 final Protocol profile = ProfileReaderFactory.get().read(LocalFactory.get(file));
                 if(null != profile) {
-                    if(profile.isEnabled()) {
-                        if(log.isDebugEnabled()) {
-                            log.debug(String.format("Register profile %s", profile));
-                        }
-                        protocols.register(profile);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Register profile %s", profile));
                     }
+                    protocols.register(profile);
                 }
+                else {
+                    protocols.loadDefaultProfiles();
+                }
+            }
+            else {
+                protocols.loadDefaultProfiles();
             }
             final Host host = new CommandLineUriParser(input, protocols).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input

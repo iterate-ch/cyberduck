@@ -63,8 +63,17 @@ public final class ProtocolFactory {
         for(Protocol protocol : protocols) {
             this.register(protocol);
         }
+    }
+
+    /**
+     * Load profiles embedded in bundles and installed in the application support directory.
+     */
+    public void loadDefaultProfiles() {
         if(bundle.exists()) {
             try {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Load profiles from %s", bundle));
+                }
                 for(Local f : bundle.list().filter(new ProfileFilter())) {
                     final Profile profile = ProfileReaderFactory.get().read(f);
                     if(null == profile) {
@@ -86,6 +95,9 @@ public final class ProtocolFactory {
             PreferencesFactory.get().getProperty("profiles.folder.name"));
         if(library.exists()) {
             try {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Load profiles from %s", library));
+                }
                 for(Local profile : library.list().filter(new ProfileFilter())) {
                     final Profile protocol = ProfileReaderFactory.get().read(profile);
                     if(null == protocol) {
