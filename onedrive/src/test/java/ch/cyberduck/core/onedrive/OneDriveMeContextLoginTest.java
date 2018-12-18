@@ -64,7 +64,7 @@ public class OneDriveMeContextLoginTest {
             this.getClass().getResourceAsStream("/Microsoft OneDrive.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
         session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 fail(reason);
@@ -87,7 +87,8 @@ public class OneDriveMeContextLoginTest {
                 public String getPassword(String hostname, String user) {
                     return super.getPassword(hostname, user);
                 }
-            }, new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+            }, new DisabledProgressListener());
+        login.check(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test

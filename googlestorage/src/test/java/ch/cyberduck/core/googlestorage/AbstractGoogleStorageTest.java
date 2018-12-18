@@ -41,7 +41,8 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractGoogleStorageTest {
+public class
+AbstractGoogleStorageTest {
 
     protected GoogleStorageSession session;
 

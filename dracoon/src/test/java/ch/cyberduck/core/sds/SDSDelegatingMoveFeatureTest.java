@@ -91,6 +91,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        test.attributes().setVersionId(null);
         assertFalse(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(target));
         assertEquals(0, session.getMetrics().get(Copy.class));
@@ -110,6 +111,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         new SDSTouchFeature(session, nodeid).touch(test2, new TransferStatus());
         final Path target = new Path(room2, "A (2)", EnumSet.of(Path.Type.file));
         new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test1, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        test1.attributes().setVersionId(null);
         assertFalse(new SDSFindFeature(nodeid).find(test1));
         assertTrue(new SDSFindFeature(nodeid).find(test2));
         assertTrue(new SDSFindFeature(nodeid).find(target));
@@ -148,6 +150,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
             }
         });
         assertEquals(1, session.getMetrics().get(Copy.class));
+        test.attributes().setVersionId(null);
         assertFalse(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(target));
         final byte[] compare = new byte[content.length];
@@ -187,6 +190,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         final Path target = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus().length(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(1, session.getMetrics().get(Copy.class));
+        test.attributes().setVersionId(null);
         assertFalse(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(target));
         final byte[] compare = new byte[content.length];
@@ -226,7 +230,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus().length(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(0, session.getMetrics().get(Copy.class));
+        test.attributes().setVersionId(null);
         assertFalse(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(target));
         final byte[] compare = new byte[content.length];

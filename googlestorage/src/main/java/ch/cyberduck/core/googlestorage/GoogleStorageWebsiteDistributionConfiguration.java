@@ -166,6 +166,6 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
 
     @Override
     public String getHostname() {
-        return new GoogleStorageProtocol().getDefaultHostname();
+        return session.getHost().getProtocol().getDefaultHostname();
     }
 }
