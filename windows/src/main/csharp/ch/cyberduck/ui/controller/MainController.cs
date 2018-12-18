@@ -155,7 +155,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(),
                 new MantaProtocol(),
                 new SDSProtocol());
-            protocols.loadDefaultProfiles();
+            ProtocolFactory.get().loadDefaultProfiles();
         }
 
         /// <summary>
