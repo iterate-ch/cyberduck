@@ -1,4 +1,4 @@
-package ch.cyberduck.core.dav;
+package ch.cyberduck.core.dav.microsoft;
 
 /*
  * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
@@ -16,6 +16,8 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.date.RFC1123DateFormatter;
+import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.dav.DAVTimestampFeature;
 
 import javax.xml.namespace.QName;
 import java.util.Collections;
@@ -24,15 +26,15 @@ import java.util.TimeZone;
 
 import com.github.sardine.DavResource;
 
-public class DAVTimestampIISFeature extends DAVTimestampFeature {
+public class MicrosoftIISDAVTimestampFeature extends DAVTimestampFeature {
 
-    public static final String MS_NAMESPACE_URI = "urn:schemas-microsoft-com:";
-    public static final String MS_NAMESPACE_PREFIX = "Z";
-    public static final String MS_NAMESPACE_LASTMODIFIED = "Win32LastModifiedTime";
+    private static final String MS_NAMESPACE_URI = "urn:schemas-microsoft-com:";
+    private static final String MS_NAMESPACE_PREFIX = "Z";
+    private static final String MS_NAMESPACE_LASTMODIFIED = "Win32LastModifiedTime";
 
     public static final QName LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE = new QName(MS_NAMESPACE_URI, MS_NAMESPACE_LASTMODIFIED, MS_NAMESPACE_PREFIX);
 
-    public DAVTimestampIISFeature(final DAVSession session) {
+    public MicrosoftIISDAVTimestampFeature(final DAVSession session) {
         super(session);
     }
 

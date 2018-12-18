@@ -1,4 +1,4 @@
-package ch.cyberduck.core.dav;
+package ch.cyberduck.core.dav.microsoft;
 
 /*
  * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
@@ -19,6 +19,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
+import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
+import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.dav.DAVSession;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,12 +33,12 @@ import java.util.Map;
 
 import com.github.sardine.DavResource;
 
-public class DAVAttributesFinderIISFeature extends DAVAttributesFinderFeature {
-    private static final Logger log = Logger.getLogger(DAVAttributesFinderIISFeature.class);
+public class MicrosoftIISDAVAttributesFinderFeature extends DAVAttributesFinderFeature {
+    private static final Logger log = Logger.getLogger(MicrosoftIISDAVAttributesFinderFeature.class);
 
     private final DAVSession session;
 
-    public DAVAttributesFinderIISFeature(DAVSession session) {
+    public MicrosoftIISDAVAttributesFinderFeature(DAVSession session) {
         super(session);
         this.session = session;
     }
@@ -47,14 +50,14 @@ public class DAVAttributesFinderIISFeature extends DAVAttributesFinderFeature {
     protected PathAttributes toAttributes(final DavResource resource) {
         final PathAttributes attributes = super.toAttributes(resource);
         final Map<QName, String> properties = resource.getCustomPropsNS();
-        if(null != properties && properties.containsKey(DAVTimestampIISFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE)) {
-            final String value = properties.get(DAVTimestampIISFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE);
+        if(null != properties && properties.containsKey(MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE)) {
+            final String value = properties.get(MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE);
             if(StringUtils.isNotBlank(value)) {
                 try {
                     attributes.setModificationDate(new RFC1123DateFormatter().parse(value).getTime());
                 }
                 catch(InvalidDateException e) {
-                    log.warn(String.format("Failure parsing property %s with value %s", DAVTimestampIISFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE, value));
+                    log.warn(String.format("Failure parsing property %s with value %s", MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE, value));
                     if(resource.getModified() != null) {
                         attributes.setModificationDate(resource.getModified().getTime());
                     }
@@ -62,7 +65,7 @@ public class DAVAttributesFinderIISFeature extends DAVAttributesFinderFeature {
             }
             else {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Missing value for property %s", DAVTimestampIISFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE));
+                    log.debug(String.format("Missing value for property %s", MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE));
                 }
                 if(resource.getModified() != null) {
                     attributes.setModificationDate(resource.getModified().getTime());

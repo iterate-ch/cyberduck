@@ -1,4 +1,4 @@
-package ch.cyberduck.core.dav;
+package ch.cyberduck.core.dav.microsoft;
 
 /*
  * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
@@ -16,17 +16,21 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
+import ch.cyberduck.core.dav.DAVListService;
+import ch.cyberduck.core.dav.DAVPathEncoder;
+import ch.cyberduck.core.dav.DAVSession;
 
 import java.io.IOException;
 import java.util.List;
 
 import com.github.sardine.DavResource;
 
-public class DAVListIISService extends DAVListService {
+public class MicrosoftIISDAVListService extends DAVListService {
 
     private final DAVSession session;
 
-    public DAVListIISService(final DAVSession session, final DAVAttributesFinderFeature attributes) {
+    public MicrosoftIISDAVListService(final DAVSession session, final DAVAttributesFinderFeature attributes) {
         super(session, attributes);
         this.session = session;
     }

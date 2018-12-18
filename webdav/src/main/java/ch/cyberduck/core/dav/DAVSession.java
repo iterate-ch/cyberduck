@@ -31,6 +31,9 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVAttributesFinderFeature;
+import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVListService;
+import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
@@ -80,6 +83,9 @@ public class DAVSession extends HttpSession<DAVClient> {
     private final Preferences preferences
         = PreferencesFactory.get();
 
+    /**
+     * Detected Microsoft IIS
+     */
     private boolean iis;
 
     public DAVSession(final Host host) {
@@ -277,7 +283,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return iis ? (T) new DAVListIISService(this, new DAVAttributesFinderIISFeature(this)) :
+            return iis ? (T) new MicrosoftIISDAVListService(this, new MicrosoftIISDAVAttributesFinderFeature(this)) :
                 (T) new DAVListService(this, new DAVAttributesFinderFeature(this));
         }
         if(type == Directory.class) {
@@ -311,10 +317,10 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVFindFeature(this);
         }
         if(type == AttributesFinder.class) {
-            return iis ? (T) new DAVAttributesFinderIISFeature(this) : (T) new DAVAttributesFinderFeature(this);
+            return iis ? (T) new MicrosoftIISDAVAttributesFinderFeature(this) : (T) new DAVAttributesFinderFeature(this);
         }
         if(type == Timestamp.class) {
-            return iis ? (T) new DAVTimestampIISFeature(this) : (T) new DAVTimestampFeature(this);
+            return iis ? (T) new MicrosoftIISDAVTimestampFeature(this) : (T) new DAVTimestampFeature(this);
         }
         if(type == Quota.class) {
             return (T) new DAVQuotaFeature(this);
