@@ -416,10 +416,10 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Transfer item %s with status %s", item, segment));
                         }
-                        final Session<?> source = borrow(Connection.source);
-                        final Session<?> destination = borrow(Connection.destination);
+                        final Session<?> s = borrow(Connection.source);
+                        final Session<?> d = borrow(Connection.destination);
                         try {
-                            transfer.transfer(source, destination,
+                            transfer.transfer(s, d,
                                 segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                 segment.getRename().local != null ? segment.getRename().local : item.local,
                                 options, segment, connectionCallback, passwordCallback, progress, stream);
@@ -430,21 +430,31 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             throw e;
                         }
                         catch(BackgroundException e) {
+                            release(s, Connection.source, e);
+                            release(d, Connection.destination, e);
                             log.warn(String.format("Failure transferring %s. %s", item, e.getDetail()));
                             if(this.retry(e, progress, new TransferBackgroundActionState(status))) {
-                                final TransferPathFilter filter = transfer.filter(source, destination, TransferAction.resume, progress);
-                                if(filter.accept(item.remote, item.local, new TransferStatus().exists(true))) {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug(String.format("Retry transfer of %s", item));
+                                final Session<?> source = borrow(Connection.source);
+                                final Session<?> destination = borrow(Connection.destination);
+                                try {
+                                    final TransferPathFilter filter = transfer.filter(source, destination, TransferAction.resume, progress);
+                                    if(filter.accept(item.remote, item.local, new TransferStatus().exists(true))) {
+                                        if(log.isDebugEnabled()) {
+                                            log.debug(String.format("Retry transfer of %s", item));
+                                        }
+                                        final TransferStatus retry = filter.prepare(item.remote, item.local, new TransferStatus().exists(true), progress);
+                                        // Retry immediately
+                                        log.info(String.format("Retry %s with transfer status %s", item, segment));
+                                        this.retry(segment
+                                            .length(retry.getLength())
+                                            .skip(retry.getOffset())
+                                            .append(retry.isAppend()));
+                                        return;
                                     }
-                                    final TransferStatus retry = filter.prepare(item.remote, item.local, new TransferStatus().exists(true), progress);
-                                    // Retry immediately
-                                    log.info(String.format("Retry %s with transfer status %s", item, segment));
-                                    this.retry(segment
-                                        .length(retry.getLength())
-                                        .skip(retry.getOffset())
-                                        .append(retry.isAppend()));
-                                    return;
+                                }
+                                finally {
+                                    release(source, Connection.source, null);
+                                    release(destination, Connection.destination, null);
                                 }
                             }
                             if(log.isDebugEnabled()) {
@@ -465,8 +475,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             }
                         }
                         finally {
-                            release(source, Connection.source, null);
-                            release(destination, Connection.destination, null);
+                            release(s, Connection.source, null);
+                            release(d, Connection.destination, null);
                         }
                     }
 
