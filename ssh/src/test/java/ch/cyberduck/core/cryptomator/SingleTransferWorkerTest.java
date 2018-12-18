@@ -119,7 +119,7 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(dir1));
         final PathAttributes attributes1 = new CryptoAttributesFeature(session, new SFTPAttributesFinderFeature(session), cryptomator).find(file1);
         assertEquals(1513092263000L, attributes1.getModificationDate());

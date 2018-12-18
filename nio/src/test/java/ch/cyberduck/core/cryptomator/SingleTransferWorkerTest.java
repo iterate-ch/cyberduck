@@ -111,7 +111,7 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         assertTrue(new CryptoFindFeature(session, new LocalFindFeature(session), cryptomator).find(dir1));
         Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new LocalAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {

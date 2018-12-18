@@ -24,7 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -57,9 +56,7 @@ public abstract class Worker<T> {
         return containers;
     }
 
-    public T run(final Session<?> session) throws BackgroundException {
-        throw new ConnectionCanceledException();
-    }
+    public abstract T run(Session<?> session) throws BackgroundException;
 
     public void cleanup(T result) {
         //

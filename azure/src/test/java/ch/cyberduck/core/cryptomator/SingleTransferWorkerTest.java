@@ -111,7 +111,7 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(dir1));
         assertEquals(content.length, new CryptoAttributesFeature(session, new AzureAttributesFinderFeature(session, null), cryptomator).find(file1).getSize());
         {

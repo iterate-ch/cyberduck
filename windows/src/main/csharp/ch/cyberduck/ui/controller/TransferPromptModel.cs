@@ -249,12 +249,12 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class TransferPromptListAction : TransferWorkerBackgroundAction
+        private class TransferPromptListAction : WorkerBackgroundAction
         {
             public TransferPromptListAction(TransferPromptModel model, TransferPromptController controller,
                 SessionPool source, SessionPool destination, TransferItem directory, Transfer transfer, TransferItemCache cache)
                 : base(
-                    controller, source, destination,
+                    controller, source,
                     new InnerTransferPromptListWorker(model, controller, transfer, directory, cache))
             {
             }

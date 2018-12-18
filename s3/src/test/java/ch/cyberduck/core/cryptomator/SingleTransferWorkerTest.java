@@ -101,7 +101,7 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         assertTrue(new CryptoFindFeature(session, new S3FindFeature(session), cryptomator).find(dir1));
         assertEquals(content.length, new CryptoAttributesFeature(session, new S3AttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {

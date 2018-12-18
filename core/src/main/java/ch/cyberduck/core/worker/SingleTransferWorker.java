@@ -18,7 +18,6 @@ package ch.cyberduck.core.worker;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.ProgressListener;
@@ -28,7 +27,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
-import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
@@ -36,7 +34,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.concurrent.ConcurrentUtils;
 
-import java.util.Map;
 import java.util.concurrent.Future;
 
 public class SingleTransferWorker extends AbstractTransferWorker {
@@ -50,30 +47,6 @@ public class SingleTransferWorker extends AbstractTransferWorker {
                                 final ProgressListener listener, final StreamListener streamListener,
                                 final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback, final NotificationService notification) {
         super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback, passwordCallback, notification);
-        this.source = source;
-        this.destination = destination;
-    }
-
-    public SingleTransferWorker(final Session source, final Session destination, final Transfer transfer, final TransferOptions options,
-                                final TransferSpeedometer meter, final TransferPrompt prompt,
-                                final TransferErrorCallback error,
-                                final ProgressListener listener, final StreamListener streamListener,
-                                final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
-                                final NotificationService notification,
-                                final Cache<TransferItem> cache) {
-        super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback, passwordCallback, notification, cache);
-        this.source = source;
-        this.destination = destination;
-    }
-
-    public SingleTransferWorker(final Session source, final Session destination, final Transfer transfer, final TransferOptions options,
-                                final TransferSpeedometer meter, final TransferPrompt prompt,
-                                final TransferErrorCallback error,
-                                final ProgressListener progress, final StreamListener stream,
-                                final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
-                                final NotificationService notification,
-                                final Cache<TransferItem> cache, final Map<TransferItem, TransferStatus> table) {
-        super(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, cache, table);
         this.source = source;
         this.destination = destination;
     }

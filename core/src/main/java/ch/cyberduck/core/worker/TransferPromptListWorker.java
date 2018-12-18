@@ -33,7 +33,7 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 
-public class TransferPromptListWorker extends TransferWorker<List<TransferItem>> {
+public class TransferPromptListWorker extends Worker<List<TransferItem>> {
     private static final Logger log = Logger.getLogger(TransferPromptListWorker.class);
 
     private final Path directory;
@@ -44,9 +44,7 @@ public class TransferPromptListWorker extends TransferWorker<List<TransferItem>>
 
     private final ProgressListener listener;
 
-    public TransferPromptListWorker(final Transfer transfer,
-                                    final Path directory, final Local local,
-                                    final ProgressListener listener) {
+    public TransferPromptListWorker(final Transfer transfer, final Path directory, final Local local, final ProgressListener listener) {
         this.directory = directory;
         this.local = local;
         this.transfer = transfer;
@@ -54,11 +52,11 @@ public class TransferPromptListWorker extends TransferWorker<List<TransferItem>>
     }
 
     @Override
-    public List<TransferItem> run(final Session<?> source, final Session<?> destination) throws BackgroundException {
+    public List<TransferItem> run(final Session<?> session) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List directory %s", directory));
         }
-        return transfer.list(source, destination, directory, local, new WorkerListProgressListener(this, listener));
+        return transfer.list(session, directory, local, new WorkerListProgressListener(this, listener));
     }
 
     @Override

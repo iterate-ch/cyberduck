@@ -105,7 +105,7 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         byte[] compare = new byte[content.length];
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
         test.attributes().setVersionId(versionId);
@@ -170,9 +170,9 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty()) {
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         local.delete();
         assertEquals(5L * 1024L * 1024L, counter.getSent(), 0L);
         assertEquals(5L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize());

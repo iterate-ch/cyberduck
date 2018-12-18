@@ -98,7 +98,7 @@ public class CopyTransferTest {
             }
         };
         assertEquals(Collections.singletonList(new TransferItem(new Path("/s/c", EnumSet.of(Path.Type.file)))),
-                t.list(session, session, new Path("/s", EnumSet.of(Path.Type.directory)), null, new DisabledListProgressListener())
+            t.list(session, new Path("/s", EnumSet.of(Path.Type.directory)), null, new DisabledListProgressListener())
         );
     }
 }
