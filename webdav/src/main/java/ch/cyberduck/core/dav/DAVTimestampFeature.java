@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import com.github.sardine.DavResource;
@@ -63,15 +64,7 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
             final List<DavResource> resources = session.getClient().propfind(new DAVPathEncoder().encode(file), 1,
                 Collections.singleton(SardineUtil.createQNameWithDefaultNamespace("getlastmodified")));
             for(DavResource resource : resources) {
-                final HashMap<QName, String> props = new HashMap<>();
-                if(resource.getModified() != null) {
-                    props.put(LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE,
-                        new RFC1123DateFormatter().format(resource.getModified(), TimeZone.getTimeZone("UTC")));
-                }
-                props.put(LAST_MODIFIED_CUSTOM_NAMESPACE,
-                    new RFC1123DateFormatter().format(modified, TimeZone.getTimeZone("UTC")));
-
-                session.getClient().patch(new DAVPathEncoder().encode(file), props);
+                session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, modified));
                 break;
             }
         }
@@ -81,5 +74,16 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, file);
         }
+    }
+
+    protected Map<QName, String> getCustomProperties(final DavResource resource, final Long modified) {
+        final HashMap<QName, String> props = new HashMap<>();
+        if(resource.getModified() != null) {
+            props.put(LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE,
+                new RFC1123DateFormatter().format(resource.getModified(), TimeZone.getTimeZone("UTC")));
+        }
+        props.put(LAST_MODIFIED_CUSTOM_NAMESPACE,
+            new RFC1123DateFormatter().format(modified, TimeZone.getTimeZone("UTC")));
+        return props;
     }
 }

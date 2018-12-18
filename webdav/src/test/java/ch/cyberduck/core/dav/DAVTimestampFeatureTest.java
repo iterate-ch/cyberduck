@@ -45,7 +45,7 @@ public class DAVTimestampFeatureTest {
     @Test
     public void testSetTimestamp() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
+            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
         ));
         host.setDefaultPath("/dav/basic");
         final DAVSession session = new DAVSession(host);

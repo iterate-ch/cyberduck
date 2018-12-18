@@ -80,6 +80,8 @@ public class DAVSession extends HttpSession<DAVClient> {
     private final Preferences preferences
         = PreferencesFactory.get();
 
+    private boolean iis;
+
     public DAVSession(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
@@ -156,7 +158,18 @@ public class DAVSession extends HttpSession<DAVClient> {
         try {
             final Path home = new DefaultHomeFinderService(this).find();
             try {
-                client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
+                client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new ValidatingResponseHandler<Void>() {
+                    @Override
+                    public Void handleResponse(final HttpResponse response) {
+                        for(Header h : response.getAllHeaders()) {
+                            if(HttpHeaders.SERVER.equals(h.getName())) {
+                                iis = StringUtils.contains(h.getValue(), "Microsoft-IIS");
+                                break;
+                            }
+                        }
+                        return null;
+                    }
+                });
             }
             catch(SardineException e) {
                 switch(e.getStatusCode()) {
@@ -264,7 +277,8 @@ public class DAVSession extends HttpSession<DAVClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new DAVListService(this);
+            return iis ? (T) new DAVListIISService(this, new DAVAttributesFinderIISFeature(this)) :
+                (T) new DAVListService(this, new DAVAttributesFinderFeature(this));
         }
         if(type == Directory.class) {
             return (T) new DAVDirectoryFeature(this);
@@ -297,10 +311,10 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVFindFeature(this);
         }
         if(type == AttributesFinder.class) {
-            return (T) new DAVAttributesFinderFeature(this);
+            return iis ? (T) new DAVAttributesFinderIISFeature(this) : (T) new DAVAttributesFinderFeature(this);
         }
         if(type == Timestamp.class) {
-            return (T) new DAVTimestampFeature(this);
+            return iis ? (T) new DAVTimestampIISFeature(this) : (T) new DAVTimestampFeature(this);
         }
         if(type == Quota.class) {
             return (T) new DAVQuotaFeature(this);
