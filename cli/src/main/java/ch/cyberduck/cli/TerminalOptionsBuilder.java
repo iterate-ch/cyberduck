@@ -49,7 +49,7 @@ public final class TerminalOptionsBuilder {
             .create('p'));
         options.addOption(OptionBuilder
             .withDescription("Use connection profile")
-            .withLongOpt(Params.existing.name())
+            .withLongOpt(Params.profile.name())
             .hasArg(true).withArgName("profile")
             .isRequired(false)
             .create());
