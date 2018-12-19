@@ -46,20 +46,19 @@ public class DAVListService implements ListService {
     private final DAVAttributesFinderFeature attributes;
 
     public DAVListService(final DAVSession session) {
+        this(session, new DAVAttributesFinderFeature(session));
+    }
+
+    public DAVListService(final DAVSession session, final DAVAttributesFinderFeature attributes) {
         this.session = session;
-        this.attributes = new DAVAttributesFinderFeature(session);
+        this.attributes = attributes;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<Path>();
-            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(directory), 1,
-                Stream.of(
-                    DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                    DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
-                    collect(Collectors.toSet()));
-            for(final DavResource resource : resources) {
+            for(final DavResource resource : this.list(directory)) {
                 // Try to parse as RFC 2396
                 final String href = PathNormalizer.normalize(resource.getHref().getPath(), true);
                 if(href.equals(directory.getAbsolute())) {
@@ -84,6 +83,14 @@ public class DAVListService implements ListService {
         catch(IOException e) {
             throw new HttpExceptionMappingService().map(e, directory);
         }
+    }
+
+    protected List<DavResource> list(final Path directory) throws IOException {
+        return session.getClient().list(new DAVPathEncoder().encode(directory), 1,
+            Stream.of(
+                DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
+                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
+                collect(Collectors.toSet()));
     }
 
     @Override
