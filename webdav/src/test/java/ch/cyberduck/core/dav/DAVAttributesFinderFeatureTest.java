@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @Category(IntegrationTest.class)
-public class DAVAttributesFinderFeatureTest {
+public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {

@@ -52,6 +52,30 @@
             <artifactId>joda-time</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.milton</groupId>
+            <artifactId>milton-api</artifactId>
+            <version>2.7.4.4</version>
+        </dependency>
+        <dependency>
+            <groupId>io.milton</groupId>
+            <artifactId>milton-server-ce</artifactId>
+            <version>2.7.4.4</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <id>bintray-milton</id>
+            <name>bintray</name>
+            <url>http://dl.bintray.com/milton/Milton</url>
+        </repository>
+    </repositories>
 </project>
 

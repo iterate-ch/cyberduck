@@ -39,7 +39,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DAVListServiceTest {
+public class DAVListServiceTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
