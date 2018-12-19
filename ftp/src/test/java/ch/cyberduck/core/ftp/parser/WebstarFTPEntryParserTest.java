@@ -43,7 +43,7 @@ public class WebstarFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "-rwx------          17      332      640 Dec 20 08:54 file 1"
+            "-rwx------          17      332      640 Dec 20 08:54 file 1"
         );
         assertNotNull(parsed);
         assertEquals("file 1", parsed.getName());
@@ -51,7 +51,7 @@ public class WebstarFTPEntryParserTest {
         assertEquals(640, parsed.getSize());
 
         parsed = parser.parseFTPEntry(
-                "drwx------             folder          2 Dec 20 08:55 folder1"
+            "drwx------             folder          2 Dec 20 08:55 folder1"
         );
         assertNotNull(parsed);
         assertEquals("folder1", parsed.getName());

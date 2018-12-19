@@ -44,7 +44,7 @@ public class FilezillaFTPEntryParserTest {
 
         // #3119
         parsed = parser.parseFTPEntry(
-                "-rw-r--r-- 1 ftp ftp         100847 Sep 10  2004 octfront2.jpg"
+            "-rw-r--r-- 1 ftp ftp         100847 Sep 10  2004 octfront2.jpg"
         );
         assertNotNull(parsed);
         assertEquals("octfront2.jpg", parsed.getName());

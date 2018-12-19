@@ -333,6 +333,11 @@ public class Host implements Serializable, Comparable<Host> {
         this.credentials = credentials;
     }
 
+    public Host withCredentials(final Credentials credentials) {
+        this.credentials = credentials;
+        return this;
+    }
+
     /**
      * @return Credentials to modify CDN configuration
      */

@@ -44,7 +44,7 @@ public class FreeboxFTPEntryParserTest {
 
 
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--   1  freebox  freebox 2064965868 Apr 15 21:17 M6 - Capital 15-04-2007 21h37 1h40m.ts"
+            "-rw-r--r--   1  freebox  freebox 2064965868 Apr 15 21:17 M6 - Capital 15-04-2007 21h37 1h40m.ts"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "M6 - Capital 15-04-2007 21h37 1h40m.ts");
@@ -56,7 +56,7 @@ public class FreeboxFTPEntryParserTest {
         assertEquals(15, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--   1  freebox  freebox 75906880 Sep 08 06:33 Direct 8 - Gym direct - 08-09-2007 08h30 1h08m.ts"
+            "-rw-r--r--   1  freebox  freebox 75906880 Sep 08 06:33 Direct 8 - Gym direct - 08-09-2007 08h30 1h08m.ts"
         );
         assertNotNull(parsed);
         assertEquals("Direct 8 - Gym direct - 08-09-2007 08h30 1h08m.ts", parsed.getName());
@@ -77,7 +77,7 @@ public class FreeboxFTPEntryParserTest {
         assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
 
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--   1  freebox  freebox 1171138668 May 19 17:20 France 3 national - 19-05-2007 18h15 1h05m.ts"
+            "-rw-r--r--   1  freebox  freebox 1171138668 May 19 17:20 France 3 national - 19-05-2007 18h15 1h05m.ts"
         );
         assertNotNull(parsed);
         assertEquals("France 3 national - 19-05-2007 18h15 1h05m.ts", parsed.getName());

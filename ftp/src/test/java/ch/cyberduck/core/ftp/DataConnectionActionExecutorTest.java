@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class DataConnectionActionExecutorTest {
+public class DataConnectionActionExecutorTest extends AbstractFTPTest {
 
     @Test
     @Ignore
@@ -86,7 +86,6 @@ public class DataConnectionActionExecutorTest {
         };
         f.data(action, new DisabledProgressListener());
         assertEquals(1, count.get());
-        session.close();
     }
 
     @Test
@@ -118,6 +117,6 @@ public class DataConnectionActionExecutorTest {
         };
         f.data(action, new DisabledProgressListener());
         assertEquals(1, count.get());
-        session.close();
+        ;
     }
 }

@@ -44,7 +44,7 @@ public class TrellixFTPEntryParserTest {
 
         //#1213
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--  FTP  User       10439 Apr 20 05:29 ASCheckbox_2_0.zip"
+            "-rw-r--r--  FTP  User       10439 Apr 20 05:29 ASCheckbox_2_0.zip"
         );
         assertNotNull(parsed);
         assertEquals("ASCheckbox_2_0.zip", parsed.getName());

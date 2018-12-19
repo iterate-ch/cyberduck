@@ -45,7 +45,7 @@ public class OpensolarisFTPEntryParserTest {
 
         // #3689
         parsed = parser.parseFTPEntry(
-                "drwxr-xr-x+  5 niels    staff          7 Sep  6 13:46 data"
+            "drwxr-xr-x+  5 niels    staff          7 Sep  6 13:46 data"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "data");

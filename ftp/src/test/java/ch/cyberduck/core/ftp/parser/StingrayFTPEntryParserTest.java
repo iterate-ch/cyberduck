@@ -46,7 +46,7 @@ public class StingrayFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "-r--r--r--          0     165100     165100 Aug  1 10:24 grau2.tif"
+            "-r--r--r--          0     165100     165100 Aug  1 10:24 grau2.tif"
         );
         assertNotNull(parsed);
         assertEquals("grau2.tif", parsed.getName());
@@ -74,7 +74,7 @@ public class StingrayFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "dr--r--r--                folder          0 Aug  1 10:18 TestCyberduck"
+            "dr--r--r--                folder          0 Aug  1 10:18 TestCyberduck"
         );
         assertNotNull(parsed);
         assertEquals("TestCyberduck", parsed.getName());

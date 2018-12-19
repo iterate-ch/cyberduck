@@ -21,9 +21,9 @@ public class FTPExceptionMappingServiceTest {
     @Test
     public void testMap() throws Exception {
         assertEquals(ConnectionCanceledException.class,
-                new FTPExceptionMappingService().map(new SocketException("Software caused connection abort")).getClass());
+            new FTPExceptionMappingService().map(new SocketException("Software caused connection abort")).getClass());
         assertEquals(ConnectionCanceledException.class,
-                new FTPExceptionMappingService().map(new SocketException("Socket closed")).getClass());
+            new FTPExceptionMappingService().map(new SocketException("Socket closed")).getClass());
     }
 
     @Test
@@ -49,10 +49,10 @@ public class FTPExceptionMappingServiceTest {
     @Test
     public void testSocketTimeout() throws Exception {
         assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
-                .map(new SocketTimeoutException()).getClass());
+            .map(new SocketTimeoutException()).getClass());
         assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
-                .map("message", new SocketTimeoutException()).getClass());
+            .map("message", new SocketTimeoutException()).getClass());
         assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
-                .map("message", new SocketTimeoutException(), new Path("/f", EnumSet.of(Path.Type.file))).getClass());
+            .map("message", new SocketTimeoutException(), new Path("/f", EnumSet.of(Path.Type.file))).getClass());
     }
 }

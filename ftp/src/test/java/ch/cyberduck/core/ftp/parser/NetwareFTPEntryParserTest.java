@@ -47,7 +47,7 @@ public class NetwareFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "- [RWCEAFMS] wtubbs 24038 May 05 17:57 CIMSscheduler_log_May02_4.txt"
+            "- [RWCEAFMS] wtubbs 24038 May 05 17:57 CIMSscheduler_log_May02_4.txt"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "CIMSscheduler_log_May02_4.txt");
@@ -58,7 +58,7 @@ public class NetwareFTPEntryParserTest {
         assertEquals(5, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
-                "- [RWCEAFMS] wtubbs 9965 May 01 18:15 CIMSscheduler_log_May01.txt"
+            "- [RWCEAFMS] wtubbs 9965 May 01 18:15 CIMSscheduler_log_May01.txt"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "CIMSscheduler_log_May01.txt");
@@ -77,7 +77,7 @@ public class NetwareFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "- [RWCEAFMS] Petersm                             0 May 05  2004 /data/FTP_pub/WelcomeTo_PeakFTP"
+            "- [RWCEAFMS] Petersm                             0 May 05  2004 /data/FTP_pub/WelcomeTo_PeakFTP"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "/data/FTP_pub/WelcomeTo_PeakFTP");

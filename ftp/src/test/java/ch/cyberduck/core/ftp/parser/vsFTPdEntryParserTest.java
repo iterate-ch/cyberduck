@@ -45,7 +45,7 @@ public class vsFTPdEntryParserTest {
 
         // #5437
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--    1 3642     3643          106 Nov 15 22:20 index.html"
+            "-rw-r--r--    1 3642     3643          106 Nov 15 22:20 index.html"
         );
         assertNotNull(parsed);
         assertEquals("index.html", parsed.getName());
