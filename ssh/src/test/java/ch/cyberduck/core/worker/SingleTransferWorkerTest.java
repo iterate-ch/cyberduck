@@ -27,7 +27,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
@@ -76,7 +75,7 @@ public class SingleTransferWorkerTest extends AbstractSFTPTest {
     @Test
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[62768];
+        final byte[] content = new byte[98305];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
@@ -134,13 +133,13 @@ public class SingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty()) {
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         local.delete();
-        assertEquals(62768L, counter.getSent(), 0L);
+        assertEquals(98305L, counter.getSent(), 0L);
         assertTrue(failed.get());
-        assertEquals(62768L, new SFTPAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(98305L, new SFTPAttributesFinderFeature(session).find(test).getSize());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

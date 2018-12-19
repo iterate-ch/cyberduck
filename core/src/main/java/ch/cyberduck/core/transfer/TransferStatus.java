@@ -165,11 +165,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     private NonceGenerator nonces;
 
-    /**
-     * Retry count
-     */
-    private int retry;
-
     private Object lockId;
 
     public TransferStatus() {
@@ -205,7 +200,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.header = copy.header;
         this.filekey = copy.filekey;
         this.nonces = copy.nonces;
-        this.retry = copy.retry;
         this.lockId = copy.lockId;
     }
 
@@ -576,18 +570,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
-    public void setRetry(final int retry) {
-        this.retry = retry;
-    }
-
-    public int getRetry() {
-        return retry;
-    }
-
-    public boolean isRetry() {
-        return retry > 0;
-    }
-
     public Object getLockId() {
         return lockId;
     }
@@ -629,7 +611,6 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     public String toString() {
         final StringBuilder sb = new StringBuilder("TransferStatus{");
         sb.append("exists=").append(exists);
-        sb.append(", retry=").append(retry);
         sb.append(", append=").append(append);
         sb.append(", segments=").append(segments);
         sb.append(", offset=").append(offset);

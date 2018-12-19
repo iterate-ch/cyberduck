@@ -26,7 +26,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVProtocol;
@@ -74,7 +73,7 @@ public class SingleTransferWorkerTest {
     @Test
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[62768];
+        final byte[] content = new byte[98305];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
@@ -125,12 +124,12 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty()) {
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         local.delete();
-        assertEquals(62768L, counter.getSent(), 0L);
-        assertEquals(62768L, new DAVAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(98305L, counter.getSent(), 0L);
+        assertEquals(98305L, new DAVAttributesFinderFeature(session).find(test).getSize());
         assertTrue(failed.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

@@ -186,18 +186,18 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public List<TransferItem> list(final Session<?> source, final Session<?> destination, final Path directory, final Local local,
+    public List<TransferItem> list(final Session<?> session, final Path directory, final Local local,
                                    final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", directory));
         }
         final Set<TransferItem> children = new HashSet<TransferItem>();
-        final Find finder = source.getFeature(Find.class, new DefaultFindFeature(source)).withCache(cache);
+        final Find finder = session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache);
         if(finder.find(directory)) {
-            children.addAll(download.list(source, destination, directory, local, listener));
+            children.addAll(download.list(session, directory, local, listener));
         }
         if(local.exists()) {
-            children.addAll(upload.list(source, destination, directory, local, listener));
+            children.addAll(upload.list(session, directory, local, listener));
         }
         return new ArrayList<TransferItem>(children);
     }

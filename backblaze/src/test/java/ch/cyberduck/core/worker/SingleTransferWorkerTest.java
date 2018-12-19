@@ -26,7 +26,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.b2.AbstractB2Test;
 import ch.cyberduck.core.b2.B2AttributesFinderFeature;
 import ch.cyberduck.core.b2.B2DeleteFeature;
@@ -130,9 +129,9 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty()) {
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         local.delete();
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFinderFeature(session, fileid).find(test).getSize());

@@ -168,7 +168,7 @@ public class TransferDictionaryTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()).run(session, session);
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()).run();
         assertTrue(t.isComplete());
         final Transfer serialized = new TransferDictionary().deserialize(t.serialize(SerializerFactory.get()));
         assertNotSame(t, serialized);

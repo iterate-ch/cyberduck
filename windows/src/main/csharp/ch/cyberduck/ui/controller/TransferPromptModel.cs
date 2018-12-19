@@ -215,13 +215,13 @@ namespace Ch.Cyberduck.Ui.Controller
             _controller.background(new FilterAction(this, _controller, _source, _destination, Transfer, _action, _cache));
         }
 
-        private class FilterAction : TransferWorkerBackgroundAction
+        private class FilterAction : WorkerBackgroundAction
         {
             public FilterAction(TransferPromptModel model, TransferPromptController controller,
                 SessionPool source, SessionPool destination,
                 Transfer transfer, TransferAction action, TransferItemCache cache)
                 : base(
-                    controller, source, destination,
+                    controller, source,
                     new InnerTransferPromptFilterWorker(model, controller, transfer, action, cache))
             {
             }
@@ -249,12 +249,12 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class TransferPromptListAction : TransferWorkerBackgroundAction
+        private class TransferPromptListAction : WorkerBackgroundAction
         {
             public TransferPromptListAction(TransferPromptModel model, TransferPromptController controller,
                 SessionPool source, SessionPool destination, TransferItem directory, Transfer transfer, TransferItemCache cache)
                 : base(
-                    controller, source, destination,
+                    controller, source,
                     new InnerTransferPromptListWorker(model, controller, transfer, directory, cache))
             {
             }

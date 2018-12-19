@@ -113,7 +113,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             if(null != status.getTimestamp()) {
                 fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
             }
-            if(status.isAppend() || status.isRetry()) {
+            if(status.isAppend()) {
                 // Add already completed parts
                 final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, this.fileid);
                 final List<B2FileInfoResponse> uploads = partService.find(file);
@@ -138,7 +138,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             long offset = 0;
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 boolean skip = false;
-                if(status.isAppend() || status.isRetry()) {
+                if(status.isAppend()) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Determine if part number %d can be skipped", partNumber));
                     }

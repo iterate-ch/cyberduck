@@ -31,7 +31,7 @@ import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
-import ch.cyberduck.core.threading.TransferWorkerBackgroundAction;
+import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -141,7 +141,7 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
             }
         }
         else if(!cache.isCached(directory)) {
-            controller.background(new TransferWorkerBackgroundAction<List<TransferItem>>(controller, source, destination,
+            controller.background(new WorkerBackgroundAction<List<TransferItem>>(controller, source,
                     new TransferPromptListWorker(transfer, directory.remote, directory.local, controller) {
                         @Override
                         public void cleanup(final List<TransferItem> list) {
@@ -155,7 +155,7 @@ public abstract class TransferPromptDataSource extends OutlineDataSource {
     }
 
     private void filter() {
-        controller.background(new TransferWorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, source, destination,
+        controller.background(new WorkerBackgroundAction<Map<TransferItem, TransferStatus>>(controller, source,
                 new TransferPromptFilterWorker(transfer, action, cache, controller) {
                             @Override
                             public void cleanup(final Map<TransferItem, TransferStatus> accepted) {

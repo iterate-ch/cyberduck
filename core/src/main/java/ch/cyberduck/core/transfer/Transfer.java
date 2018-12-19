@@ -273,7 +273,7 @@ public abstract class Transfer implements Serializable {
      * @param listener    Progress listener
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
-    public abstract TransferPathFilter filter(Session<?> source, Session<?> destination, TransferAction action, ProgressListener listener);
+    public abstract TransferPathFilter filter(Session<?> source, final Session<?> destination, TransferAction action, ProgressListener listener);
 
     /**
      * @param source          Connection to source server of transfer. May be null.
@@ -284,21 +284,19 @@ public abstract class Transfer implements Serializable {
      * @param listener        Listener
      * @return Duplicate file strategy from preferences or user selection
      */
-    public abstract TransferAction action(Session<?> source, Session<?> destination, boolean resumeRequested, boolean reloadRequested,
+    public abstract TransferAction action(Session<?> source, final Session<?> destination, boolean resumeRequested, boolean reloadRequested,
                                           TransferPrompt prompt, ListProgressListener listener) throws BackgroundException;
 
     /**
      * Returns the children of this path filtering it with the default regex filter
      *
-     * @param source      Connection to source server of transfer. May be null.
-     * @param destination Connection to target server of transfer
+     * @param session      Connection to source server of transfer. May be null.
      * @param directory   The directory to list the children
      * @param local       Local directory
      * @param listener    Listener
      * @return A list of child items
      */
-    public abstract List<TransferItem> list(Session<?> source, Session<?> destination, Path directory, Local local,
-                                            ListProgressListener listener) throws BackgroundException;
+    public abstract List<TransferItem> list(Session<?> session, Path directory, Local local, ListProgressListener listener) throws BackgroundException;
 
     /**
      * @param source      Connection to source server of transfer. May be null.
@@ -337,8 +335,8 @@ public abstract class Transfer implements Serializable {
      */
     public abstract Path transfer(Session<?> source, Session<?> destination, Path file, Local local,
                                   TransferOptions options, TransferStatus status,
-                                  ConnectionCallback connectionCallback,
-                                  final PasswordCallback passwordCallback, ProgressListener progressListener,
+                                  ConnectionCallback connectionCallback, PasswordCallback passwordCallback,
+                                  ProgressListener progressListener,
                                   StreamListener streamListener) throws BackgroundException;
 
     public void start() {

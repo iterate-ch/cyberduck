@@ -164,9 +164,9 @@ public class ConcurrentTransferWorkerTest {
         pool.withMaxTotal(connections);
         final Session<?> s = worker.borrow(ConcurrentTransferWorker.Connection.source);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
-        assertTrue(worker.run(session, session));
-        worker.release(session, ConcurrentTransferWorker.Connection.source);
-        worker.release(s, ConcurrentTransferWorker.Connection.source);
+        assertTrue(worker.run());
+        worker.release(session, ConcurrentTransferWorker.Connection.source, null);
+        worker.release(s, ConcurrentTransferWorker.Connection.source, null);
         assertEquals(0L, transfer.getTransferred(), 0L);
         worker.cleanup(true);
     }

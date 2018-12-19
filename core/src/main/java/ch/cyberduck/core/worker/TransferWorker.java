@@ -25,7 +25,12 @@ import java.util.concurrent.Callable;
 
 public abstract class TransferWorker<T> extends Worker<T> {
 
-    public abstract T run(Session<?> source, Session<?> destination) throws BackgroundException;
+    public abstract T run() throws BackgroundException;
+
+    @Override
+    public T run(final Session<?> session) throws BackgroundException {
+        return this.run();
+    }
 
     interface TransferCallable extends Callable<TransferStatus> {
         TransferStatus call() throws BackgroundException;
