@@ -38,6 +38,9 @@ public class MicrosoftIISDAVAttributesFinderFeature extends DAVAttributesFinderF
 
     private final DAVSession session;
 
+    private final RFC1123DateFormatter rfc1123
+        = new RFC1123DateFormatter();
+
     public MicrosoftIISDAVAttributesFinderFeature(DAVSession session) {
         super(session);
         this.session = session;
@@ -54,7 +57,7 @@ public class MicrosoftIISDAVAttributesFinderFeature extends DAVAttributesFinderF
             final String value = properties.get(MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE);
             if(StringUtils.isNotBlank(value)) {
                 try {
-                    attributes.setModificationDate(new RFC1123DateFormatter().parse(value).getTime());
+                    attributes.setModificationDate(rfc1123.parse(value).getTime());
                 }
                 catch(InvalidDateException e) {
                     log.warn(String.format("Failure parsing property %s with value %s", MicrosoftIISDAVTimestampFeature.LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE, value));

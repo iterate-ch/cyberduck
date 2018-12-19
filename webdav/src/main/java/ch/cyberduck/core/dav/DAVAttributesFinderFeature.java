@@ -49,7 +49,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
 
     private final DAVSession session;
 
-    private final RFC1123DateFormatter dateParser
+    private final RFC1123DateFormatter rfc1123
         = new RFC1123DateFormatter();
 
     public DAVAttributesFinderFeature(DAVSession session) {
@@ -89,7 +89,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                         new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
                     final PathAttributes attributes = new PathAttributes();
                     try {
-                        attributes.setModificationDate(dateParser.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
+                        attributes.setModificationDate(rfc1123.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
                     }
                     catch(InvalidDateException p) {
                         log.warn(String.format("%s is not RFC 1123 format %s", headers.get(HttpHeaders.LAST_MODIFIED), p.getMessage()));
@@ -137,11 +137,11 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                     if(properties.containsKey(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE)) {
                         final String svalue = properties.get(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
                         if(StringUtils.isNotBlank(svalue)) {
-                            final Date server = dateParser.parse(svalue);
+                            final Date server = rfc1123.parse(svalue);
                             if(server.equals(resource.getModified())) {
                                 // file not touched with a different client
                                 attributes.setModificationDate(
-                                    dateParser.parse(value).getTime());
+                                    rfc1123.parse(value).getTime());
                             }
                             else {
                                 // file touched with a different client, use default modified date from server
@@ -161,7 +161,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                     }
                     else {
                         attributes.setModificationDate(
-                            dateParser.parse(value).getTime());
+                            rfc1123.parse(value).getTime());
                     }
                 }
                 catch(InvalidDateException e) {
