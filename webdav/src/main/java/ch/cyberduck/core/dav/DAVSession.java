@@ -166,7 +166,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             try {
                 client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new ValidatingResponseHandler<Void>() {
                     @Override
-                    public Void handleResponse(final HttpResponse response) {
+                    public Void handleResponse(final HttpResponse response) throws IOException {
                         for(Header h : response.getAllHeaders()) {
                             if(HttpHeaders.SERVER.equals(h.getName())) {
                                 iis = StringUtils.contains(h.getValue(), "Microsoft-IIS");
@@ -178,6 +178,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                                 break;
                             }
                         }
+                        this.validateResponse(response);
                         return null;
                     }
                 });
