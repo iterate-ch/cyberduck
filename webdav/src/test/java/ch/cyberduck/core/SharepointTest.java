@@ -17,7 +17,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -29,7 +28,6 @@ public class SharepointTest {
 
     @Test
     public void test() throws Exception {
-        PreferencesFactory.get().setProperty("webdav.ntlm.domain", System.getProperties().getProperty("webdav.sharepoint.domain"));
         final Host host = new Host(new DAVProtocol(), "51.144.72.59", new Credentials(
             System.getProperties().getProperty("webdav.sharepoint.user"), System.getProperties().getProperty("webdav.sharepoint.password")
         ));
