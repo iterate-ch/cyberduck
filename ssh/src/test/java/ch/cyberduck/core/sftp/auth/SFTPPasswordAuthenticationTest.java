@@ -15,45 +15,24 @@ package ch.cyberduck.core.sftp.auth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SFTPPasswordAuthenticationTest {
-
-    @Test
-    public void testAuthenticate() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        assertTrue(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginCallback(), new DisabledCancelCallback()));
-        session.close();
-    }
+public class SFTPPasswordAuthenticationTest extends AbstractSFTPTest {
 
     @Test(expected = LoginFailureException.class)
     public void testAuthenticateFailure() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), "p"
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        assertFalse(new SFTPPasswordAuthentication(session).authenticate(host, new DisabledLoginCallback(), new DisabledCancelCallback()));
-        session.close();
+        session.getHost().getCredentials().setPassword("p");
+        assertFalse(new SFTPPasswordAuthentication(session).authenticate(session.getHost(), new DisabledLoginCallback(), new DisabledCancelCallback()));
+
     }
 }

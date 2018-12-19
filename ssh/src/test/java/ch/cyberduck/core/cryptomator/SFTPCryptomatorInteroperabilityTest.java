@@ -126,7 +126,6 @@ public class SFTPCryptomatorInteroperabilityTest {
         final byte[] readContent = new byte[content.length];
         IOUtils.readFully(read, readContent);
         assertArrayEquals(content, readContent);
-        session.close();
     }
 
     /**
@@ -161,6 +160,5 @@ public class SFTPCryptomatorInteroperabilityTest {
         final byte[] readContent = new byte[content.length];
         IOUtils.readFully(read, readContent);
         assertArrayEquals(content, readContent);
-        session.close();
     }
 }

@@ -54,28 +54,15 @@ import net.schmizz.sshj.transport.mac.MAC;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SFTPSessionTest {
+public class SFTPSessionTest extends AbstractSFTPTest {
 
     @Test
     public void testLoginPassword() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        assertFalse(session.isConnected());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertTrue(session.isConnected());
-        session.close();
-        assertFalse(session.isConnected());
     }
 
     @Test
     public void testAllHMAC() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
-        final SFTPSession session = new SFTPSession(host);
         final DefaultConfig defaultConfig = new DefaultConfig();
         defaultConfig.setMACFactories(
             new HMACSHA2256.Factory(),
@@ -92,8 +79,6 @@ public class SFTPSessionTest {
 
     @Test
     public void testAES256CTRCipher() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
-        final SFTPSession session = new SFTPSession(host);
         final DefaultConfig configuration = new DefaultConfig();
         configuration.setCipherFactories(Collections.singletonList(new AES256CTR.Factory()));
         final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
@@ -103,8 +88,6 @@ public class SFTPSessionTest {
 
     @Test
     public void testECDHNistPKeyExchange() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
-        final SFTPSession session = new SFTPSession(host);
         final DefaultConfig configuration = new DefaultConfig();
         configuration.setKeyExchangeFactories(Collections.singletonList(new ECDHNistP.Factory256()));
         final SSHClient client = session.connect(new DisabledHostKeyCallback(), configuration);
@@ -265,7 +248,6 @@ public class SFTPSessionTest {
             new DisabledProgressListener());
         login.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(change.get());
-        session.close();
     }
 
     @Ignore
