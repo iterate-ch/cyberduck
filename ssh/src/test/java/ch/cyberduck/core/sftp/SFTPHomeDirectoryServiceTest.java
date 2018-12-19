@@ -15,13 +15,7 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -32,25 +26,19 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class SFTPHomeDirectoryServiceTest {
+public class SFTPHomeDirectoryServiceTest extends AbstractSFTPTest {
 
     @Test
     public void testFind() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        assertEquals(new Path("/home/jenkins", EnumSet.of(Path.Type.directory)), new SFTPHomeDirectoryService(session).find());
-        session.close();
+        assertEquals(new Path("/", EnumSet.of(Path.Type.directory)), new SFTPHomeDirectoryService(session).find());
+
     }
 
     @Test
     public void testFindWithWorkdir() throws Exception {
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
-                new SFTPHomeDirectoryService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
+            new SFTPHomeDirectoryService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
-                new SFTPHomeDirectoryService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "/sandbox"));
+            new SFTPHomeDirectoryService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "/sandbox"));
     }
 }

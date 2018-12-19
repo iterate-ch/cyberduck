@@ -39,22 +39,22 @@ public class SFTPExceptionMappingServiceTest {
     @Test
     public void testMapReadFailure() throws Exception {
         assertEquals(SocketException.class,
-                new SFTPExceptionMappingService().map(new SocketException("Unexpected end of sftp stream.")).getCause().getClass());
+            new SFTPExceptionMappingService().map(new SocketException("Unexpected end of sftp stream.")).getCause().getClass());
     }
 
     @Test
     public void testWrapped() throws Exception {
         assertEquals(InteroperabilityException.class,
-                new SFTPExceptionMappingService().map(new TransportException(DisconnectReason.UNKNOWN, new SSHException(DisconnectReason.PROTOCOL_ERROR))).getClass());
+            new SFTPExceptionMappingService().map(new TransportException(DisconnectReason.UNKNOWN, new SSHException(DisconnectReason.PROTOCOL_ERROR))).getClass());
     }
 
     @Test
     public void testSocketTimeout() throws Exception {
         assertEquals(ConnectionTimeoutException.class, new SFTPExceptionMappingService()
-                .map(new SocketTimeoutException()).getClass());
+            .map(new SocketTimeoutException()).getClass());
         assertEquals(ConnectionTimeoutException.class, new SFTPExceptionMappingService()
-                .map("message", new SocketTimeoutException()).getClass());
+            .map("message", new SocketTimeoutException()).getClass());
         assertEquals(ConnectionTimeoutException.class, new SFTPExceptionMappingService()
-                .map("message", new SocketTimeoutException(), new Path("/f", EnumSet.of(Path.Type.file))).getClass());
+            .map("message", new SocketTimeoutException(), new Path("/f", EnumSet.of(Path.Type.file))).getClass());
     }
 }

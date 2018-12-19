@@ -15,39 +15,23 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SFTPQuotaFeatureTest {
+public class SFTPQuotaFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testGet() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path workdir = new SFTPHomeDirectoryService(session).find();
         final Quota.Space quota = new SFTPQuotaFeature(session).get();
         assertNotNull(quota.available);
         assertNotNull(quota.used);
         assertNotEquals(0L, quota.available, 0L);
-        assertNotEquals(0L, quota.used, 0L);
-        session.close();
+        assertEquals(0L, quota.used, 0L);
     }
 }
