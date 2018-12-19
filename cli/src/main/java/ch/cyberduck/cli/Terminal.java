@@ -24,6 +24,7 @@ import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Home;
@@ -99,6 +100,8 @@ public class Terminal {
     private final ProgressListener progress;
     private final TranscriptListener transcript;
 
+    private final ProtocolFactory protocols = ProtocolFactory.get();
+
     private enum Exit {
         success,
         failure
@@ -110,7 +113,7 @@ public class Terminal {
 
     public Terminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
         this.preferences = defaults.withDefaults(input);
-        ProtocolFactory.get().register(
+        this.protocols.register(
             new FTPProtocol(),
             new FTPTLSProtocol(),
             new SFTPProtocol(),
@@ -203,6 +206,29 @@ public class Terminal {
                 System.exit(1);
             }
         });
+        if(input.hasOption(TerminalOptionsBuilder.Params.profile.name())) {
+            final String file = input.getOptionValue(TerminalOptionsBuilder.Params.profile.name());
+            final Protocol profile;
+            try {
+                profile = ProfileReaderFactory.get().read(LocalFactory.get(file));
+            }
+            catch(AccessDeniedException e) {
+                console.printf("%s%n", e.getDetail(false));
+                return Exit.failure;
+            }
+            if(null != profile) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Register profile %s", profile));
+                }
+                protocols.register(profile);
+            }
+            else {
+                protocols.loadDefaultProfiles();
+            }
+        }
+        else {
+            protocols.loadDefaultProfiles();
+        }
         if(input.hasOption(TerminalAction.help.name())) {
             TerminalHelpPrinter.print(options);
             return Exit.success;
@@ -224,7 +250,7 @@ public class Terminal {
                 return Exit.failure;
             }
             final String uri = input.getOptionValue(action.name());
-            final Host host = new CommandLineUriParser(input).parse(uri);
+            final Host host = new CommandLineUriParser(input, protocols).parse(uri);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input
             ), new TerminalLoginCallback(reader), new TerminalHostKeyVerifier(reader), progress);
             source = SessionPoolFactory.create(connect, transcript, cache, host,

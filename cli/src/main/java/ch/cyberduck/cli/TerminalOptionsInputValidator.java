@@ -134,7 +134,7 @@ public class TerminalOptionsInputValidator {
         if(uri.indexOf("://", 0) != -1) {
             final Protocol protocol = factory.forName(uri.substring(0, uri.indexOf("://", 0)));
             if(null == protocol) {
-                console.printf("Missing protocol in URI %s%n", uri);
+                console.printf("Unknown protocol in URI %s%n", uri);
                 return false;
             }
         }

@@ -74,7 +74,8 @@ public final class MainApplication {
             // Register factory implementations.
             final Preferences preferences = new ApplicationUserDefaultsPreferences();
             PreferencesFactory.set(preferences);
-            ProtocolFactory.get().register(
+            final ProtocolFactory protocols = ProtocolFactory.get();
+            protocols.register(
                     new FTPProtocol(),
                     new FTPTLSProtocol(),
                     new SFTPProtocol(),
@@ -105,7 +106,7 @@ public final class MainApplication {
                 log.info(String.format("Native library path:%s", System.getProperty("java.library.path")));
                 log.info(String.format("Using default encoding %s", System.getProperty("file.encoding")));
             }
-
+            protocols.loadDefaultProfiles();
             final MainController c = new MainController();
 
             // Must implement NSApplicationDelegate protocol
