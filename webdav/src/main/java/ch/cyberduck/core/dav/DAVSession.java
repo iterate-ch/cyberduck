@@ -170,6 +170,11 @@ public class DAVSession extends HttpSession<DAVClient> {
                         for(Header h : response.getAllHeaders()) {
                             if(HttpHeaders.SERVER.equals(h.getName())) {
                                 iis = StringUtils.contains(h.getValue(), "Microsoft-IIS");
+                                if(iis) {
+                                    if(log.isDebugEnabled()) {
+                                        log.debug("Microsoft-IIS backend detected - use IIS WebDAV features");
+                                    }
+                                }
                                 break;
                             }
                         }
