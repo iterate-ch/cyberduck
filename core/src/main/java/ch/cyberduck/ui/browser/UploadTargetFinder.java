@@ -32,6 +32,9 @@ public class UploadTargetFinder {
         if(null == selected) {
             return workdir;
         }
+        if(selected.getType().contains(Path.Type.volume)) {
+            return selected;
+        }
         return selected.getParent();
     }
 }
