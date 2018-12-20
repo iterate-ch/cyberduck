@@ -808,6 +808,11 @@ public abstract class Preferences implements Locales {
         this.setDefault("webdav.ntlm.domain", StringUtils.EMPTY);
         this.setDefault("webdav.ntlm.workstation", StringUtils.EMPTY);
 
+        /**
+         * Enable Integrated Windows Authentication (IWA) for target server authentication
+         */
+        this.setDefault("webdav.ntlm.windows.authentication.enable", String.valueOf(false));
+
         /*
           Enable preemptive authentication if valid credentials are found
          */
@@ -941,7 +946,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("connection.proxy.enable", String.valueOf(true));
         this.setDefault("connection.proxy.ntlm.domain", StringUtils.EMPTY);
         /*
-          Integrated Windows Authentication
+          Integrated Windows Authentication (IWA)
          */
         this.setDefault("connection.proxy.windows.authentication.enable", String.valueOf(false));
 

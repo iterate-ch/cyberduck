@@ -168,6 +168,18 @@ public class DAVSessionTest {
     }
 
     @Test
+    public void testLoginNTLM() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "winbuild.iterate.ch", new Credentials(
+            System.getProperties().getProperty("webdav.iis.user"), System.getProperties().getProperty("webdav.iis.password")
+        ));
+        host.setDefaultPath("/WebDAV");
+        final DAVSession session = new DAVSession(host);
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.close();
+    }
+
+    @Test
     public void testTouch() throws Exception {
         final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
             System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")

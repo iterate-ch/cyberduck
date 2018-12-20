@@ -302,7 +302,7 @@ namespace Ch.Cyberduck.Core.Preferences
             // Enable Integrated Windows Authentication
             this.setDefault("connection.proxy.windows.authentication.enable", true.ToString());
 
-            this.setDefault("webdav.ntlm.environment", false.ToString());
+            this.setDefault("webdav.ntlm.environment", true.ToString());
             if (getBoolean("webdav.ntlm.environment"))
             {
                 // NTLM Windows Domain
