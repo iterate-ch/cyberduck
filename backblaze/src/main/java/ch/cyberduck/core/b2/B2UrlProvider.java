@@ -24,17 +24,14 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.UrlProvider;
 
-import org.apache.log4j.Logger;
-
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Locale;
 
 public class B2UrlProvider implements UrlProvider {
-    private static final Logger log = Logger.getLogger(B2UrlProvider.class);
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+        = new B2PathContainerService();
 
     private final B2Session session;
 
@@ -50,10 +47,10 @@ public class B2UrlProvider implements UrlProvider {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         if(file.isFile()) {
             final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
-                    URIEncoder.encode(containerService.getContainer(file).getName()),
-                    URIEncoder.encode(containerService.getKey(file)));
+                URIEncoder.encode(containerService.getContainer(file).getName()),
+                URIEncoder.encode(containerService.getKey(file)));
             list.add(new DescriptiveUrl(URI.create(download), DescriptiveUrl.Type.http,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), Scheme.https.name().toUpperCase(Locale.ROOT))));
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), Scheme.https.name().toUpperCase(Locale.ROOT))));
         }
         return list;
     }
