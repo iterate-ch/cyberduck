@@ -33,10 +33,10 @@ public class DAVExceptionMappingServiceTest {
     @Test
     public void testMap() throws Exception {
         Assert.assertEquals(LoginFailureException.class,
-                new DAVExceptionMappingService().map(new SardineException("m", 401, "r")).getClass());
+            new DAVExceptionMappingService().map(new SardineException("m", 401, "r")).getClass());
         assertEquals(AccessDeniedException.class,
-                new DAVExceptionMappingService().map(new SardineException("m", 403, "r")).getClass());
+            new DAVExceptionMappingService().map(new SardineException("m", 403, "r")).getClass());
         assertEquals(NotfoundException.class,
-                new DAVExceptionMappingService().map(new SardineException("m", 404, "r")).getClass());
+            new DAVExceptionMappingService().map(new SardineException("m", 404, "r")).getClass());
     }
 }
