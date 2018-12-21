@@ -15,14 +15,26 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.ftp.FTPProtocol;
+import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.pool.DefaultSessionPool;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -35,18 +47,6 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-import org.apache.ftpserver.FtpServer;
-import org.apache.ftpserver.FtpServerFactory;
-import org.apache.ftpserver.ftplet.Authority;
-import org.apache.ftpserver.ftplet.FtpException;
-import org.apache.ftpserver.ftplet.UserManager;
-import org.apache.ftpserver.listener.ListenerFactory;
-import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
-import org.apache.ftpserver.usermanager.impl.BaseUser;
-import org.apache.ftpserver.usermanager.impl.ConcurrentLoginPermission;
-import org.apache.ftpserver.usermanager.impl.WritePermission;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -55,75 +55,12 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Ignore
-public class ConcurrentTransferWorkerTest {
-
-    private static int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
-
-    private final Protocol protocol = new AbstractProtocol() {
-        public String getIdentifier() {
-            return this.getScheme().name();
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return PORT_NUMBER;
-        }
-
-        @Override
-        public String getDescription() {
-            return null;
-        }
-
-        @Override
-        public String getProvider() {
-            return "embedded";
-        }
-
-        public Scheme getScheme() {
-            return Scheme.ftp;
-        }
-
-        @Override
-        public String getPrefix() {
-            return new FTPProtocol().getPrefix();
-        }
-    };
-
-    private static FtpServer server;
-
-    @BeforeClass
-    public static void start() throws Exception {
-        final FtpServerFactory serverFactory = new FtpServerFactory();
-        final PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
-        userManagerFactory.setUrl(ConcurrentTransferWorkerTest.class.getResource("/ftpserver-user.properties"));
-        final UserManager userManager = userManagerFactory.createUserManager();
-        BaseUser user = new BaseUser();
-        user.setName("test");
-        user.setPassword("test");
-        user.setHomeDirectory(new TemporaryApplicationResourcesFinder().find().getAbsolute());
-        List<Authority> authorities = new ArrayList<Authority>();
-        authorities.add(new WritePermission());
-        authorities.add(new ConcurrentLoginPermission(2, Integer.MAX_VALUE));
-        user.setAuthorities(authorities);
-        userManager.save(user);
-        serverFactory.setUserManager(userManager);
-        final ListenerFactory factory = new ListenerFactory();
-        factory.setPort(PORT_NUMBER);
-        serverFactory.addListener("default", factory.createListener());
-        server = serverFactory.createServer();
-        server.start();
-    }
-
-    @AfterClass
-    public static void stop() throws FtpException {
-        server.stop();
-    }
+public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
 
     @Test
     public void testConcurrentSessions() throws Exception {
@@ -134,26 +71,25 @@ public class ConcurrentTransferWorkerTest {
         for(int i = 1; i <= files; i++) {
             list.add(new TransferItem(new Path(String.format("/t%d", i), EnumSet.of(Path.Type.file)), file));
         }
-        final Host host = new Host(protocol, "localhost", PORT_NUMBER, new Credentials("test", "test"));
-        final Transfer transfer = new UploadTransfer(host, list);
+        final Transfer transfer = new UploadTransfer(session.getHost(), list);
         final DefaultSessionPool pool = new DefaultSessionPool(
-                new LoginConnectionService(new DisabledLoginCallback() {
-                    @Override
-                    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                        return new Credentials(username, "test");
-                    }
+            new LoginConnectionService(new DisabledLoginCallback() {
+                @Override
+                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                    return new Credentials(username, "test");
+                }
 
-                    @Override
-                    public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
-                        //
-                    }
-                }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
-                        new DisabledProgressListener()),
-                new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledTranscriptListener(), host);
+                @Override
+                public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                    //
+                }
+            }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
+                new DisabledProgressListener()),
+            new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+            new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledTranscriptListener(), session.getHost());
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                pool.withMaxTotal(connections), SessionPool.DISCONNECTED,
-                transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
+            pool.withMaxTotal(connections), SessionPool.DISCONNECTED,
+            transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;

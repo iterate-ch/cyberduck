@@ -31,36 +31,36 @@ import static org.junit.Assert.*;
 public class NTFTPEntryParserTest {
 
     private static final String[] samples =
-            {
-                    "05-26-95  10:57AM               143712 $LDR$",
-                    "05-20-97  03:31PM                  681 .bash_history",
-                    "12-05-96  05:03PM       <DIR>          absoft2",
-                    "11-14-97  04:21PM                  953 AUDITOR3.INI",
-                    "05-22-97  08:08AM                  828 AUTOEXEC.BAK",
-                    "01-22-98  01:52PM                  795 AUTOEXEC.BAT",
-                    "05-13-97  01:46PM                  828 AUTOEXEC.DOS",
-                    "12-03-96  06:38AM                  403 AUTOTOOL.LOG",
-                    "12-03-96  06:38AM       <DIR>          123xyz",
-                    "01-20-97  03:48PM       <DIR>          bin",
-                    "05-26-1995  10:57AM               143712 $LDR$",
-                    "07-10-07  07:32PM                69610 Algemene Leveringsvoorwaarden *******.pdf",
-                    "07-11-07  12:52AM       <DIR>          aspnet_client",
-                    "07-10-07  07:30PM       <DIR>          auth",
-                    "07-03-07  01:55PM       <DIR>          cgi-bin",
-                    "07-10-07  07:32PM                  428 global.asa",
-                    "07-03-07  01:55PM       <DIR>          icon",
-                    "07-10-07  07:29PM       <DIR>          img",
-                    "07-10-07  07:32PM       <DIR>          include",
-                    "07-10-07  07:32PM                 3384 index.html",
-                    "07-10-07  07:32PM       <DIR>          js",
-                    "07-10-07  07:37PM       <DIR>          kandidaten",
-                    "07-10-07  07:32PM       <DIR>          lib",
-                    "07-10-07  07:37PM       <DIR>          opdrachtgevers",
-                    "07-10-07  07:32PM                 1309 stijl1.css",
-                    "07-10-07  07:32PM       <DIR>          style",
-                    "07-15-07  02:40PM       <DIR>          temp",
-                    "07-10-07  07:32PM       <DIR>          vacatures"
-            };
+        {
+            "05-26-95  10:57AM               143712 $LDR$",
+            "05-20-97  03:31PM                  681 .bash_history",
+            "12-05-96  05:03PM       <DIR>          absoft2",
+            "11-14-97  04:21PM                  953 AUDITOR3.INI",
+            "05-22-97  08:08AM                  828 AUTOEXEC.BAK",
+            "01-22-98  01:52PM                  795 AUTOEXEC.BAT",
+            "05-13-97  01:46PM                  828 AUTOEXEC.DOS",
+            "12-03-96  06:38AM                  403 AUTOTOOL.LOG",
+            "12-03-96  06:38AM       <DIR>          123xyz",
+            "01-20-97  03:48PM       <DIR>          bin",
+            "05-26-1995  10:57AM               143712 $LDR$",
+            "07-10-07  07:32PM                69610 Algemene Leveringsvoorwaarden *******.pdf",
+            "07-11-07  12:52AM       <DIR>          aspnet_client",
+            "07-10-07  07:30PM       <DIR>          auth",
+            "07-03-07  01:55PM       <DIR>          cgi-bin",
+            "07-10-07  07:32PM                  428 global.asa",
+            "07-03-07  01:55PM       <DIR>          icon",
+            "07-10-07  07:29PM       <DIR>          img",
+            "07-10-07  07:32PM       <DIR>          include",
+            "07-10-07  07:32PM                 3384 index.html",
+            "07-10-07  07:32PM       <DIR>          js",
+            "07-10-07  07:37PM       <DIR>          kandidaten",
+            "07-10-07  07:32PM       <DIR>          lib",
+            "07-10-07  07:37PM       <DIR>          opdrachtgevers",
+            "07-10-07  07:32PM                 1309 stijl1.css",
+            "07-10-07  07:32PM       <DIR>          style",
+            "07-15-07  02:40PM       <DIR>          temp",
+            "07-10-07  07:32PM       <DIR>          vacatures"
+        };
 
     private FTPFileEntryParser parser;
     private SimpleDateFormat df;
@@ -83,12 +83,12 @@ public class NTFTPEntryParserTest {
         FTPFile parsed = parser.parseFTPEntry("12-05-96  05:03PM       <DIR>          absoft2");
         assertNotNull("Could not parse entry.", parsed);
         assertEquals("Thu Dec 05 17:03:00 1996",
-                df.format(parsed.getTimestamp().getTime()));
+            df.format(parsed.getTimestamp().getTime()));
         assertTrue(parsed.isDirectory());
         assertEquals("absoft2", parsed.getName());
 
         parsed = parser.parseFTPEntry(
-                "12-03-96  06:38AM       <DIR>          123456");
+            "12-03-96  06:38AM       <DIR>          123456");
         assertNotNull("Could not parse entry.", parsed);
         assertTrue(parsed.isDirectory());
         assertEquals("123456", parsed.getName());
@@ -97,10 +97,10 @@ public class NTFTPEntryParserTest {
     @Test
     public void testParseFieldsOnFile() throws Exception {
         FTPFile parsed = parser.parseFTPEntry(
-                "05-22-97  12:08AM                  5000000000 AUTOEXEC.BAK");
+            "05-22-97  12:08AM                  5000000000 AUTOEXEC.BAK");
         assertNotNull("Could not parse entry.", parsed);
         assertEquals("Thu May 22 00:08:00 1997",
-                df.format(parsed.getTimestamp().getTime()));
+            df.format(parsed.getTimestamp().getTime()));
         assertTrue(parsed.isFile());
         assertEquals("AUTOEXEC.BAK", parsed.getName());
         assertEquals(5000000000l, parsed.getSize());
@@ -116,11 +116,11 @@ public class NTFTPEntryParserTest {
     @Test
     public void testDirectoryBeginningWithNumberFollowedBySpaces() throws Exception {
         FTPFile parsed = parser.parseFTPEntry(
-                "12-03-96  06:38AM       <DIR>          123 xyz");
+            "12-03-96  06:38AM       <DIR>          123 xyz");
         assertNotNull(parsed);
         assertEquals("123 xyz", parsed.getName());
         parsed = parser.parseFTPEntry(
-                "12-03-96  06:38AM       <DIR>          123 abc xyz");
+            "12-03-96  06:38AM       <DIR>          123 abc xyz");
         assertNotNull(parsed);
         assertEquals("123 abc xyz", parsed.getName());
     }
@@ -128,7 +128,7 @@ public class NTFTPEntryParserTest {
     @Test
     public void testElectic() throws Exception {
         FTPFile parsed = parser.parseFTPEntry(
-                "09-04-06  11:28AM                  149 gearkommandon with spaces.txt");
+            "09-04-06  11:28AM                  149 gearkommandon with spaces.txt");
         assertNotNull(parsed);
         assertEquals("gearkommandon with spaces.txt", parsed.getName());
         assertEquals(FTPFile.FILE_TYPE, parsed.getType());

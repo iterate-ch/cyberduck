@@ -41,7 +41,7 @@ public class AXSPortFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "---------   1 owner    group         1845484 Dec 22 10:20 OPTICS.RPY");
+            "---------   1 owner    group         1845484 Dec 22 10:20 OPTICS.RPY");
         assertNull(parsed);
 
     }
@@ -51,7 +51,7 @@ public class AXSPortFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "d--------   1 owner    group               0 Dec 22 10:19 DATALOGS");
+            "d--------   1 owner    group               0 Dec 22 10:19 DATALOGS");
         assertNull(parsed);
     }
 }

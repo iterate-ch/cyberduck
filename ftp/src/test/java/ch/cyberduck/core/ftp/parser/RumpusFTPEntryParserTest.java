@@ -43,7 +43,7 @@ public class RumpusFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drwxr-xr-x               folder        0 Oct 18 13:02 Akrilik"
+            "drwxr-xr-x               folder        0 Oct 18 13:02 Akrilik"
         );
         assertNotNull(parsed);
         assertEquals("Akrilik", parsed.getName());
@@ -61,7 +61,7 @@ public class RumpusFTPEntryParserTest {
         assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
 
         parsed = parser.parseFTPEntry(
-                "drwxrwxrwx               folder        0 Oct 11 14:53 Uploads"
+            "drwxrwxrwx               folder        0 Oct 11 14:53 Uploads"
         );
         assertNotNull(parsed);
         assertEquals("Uploads", parsed.getName());
@@ -79,7 +79,7 @@ public class RumpusFTPEntryParserTest {
         assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
 
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--        0      589878   589878 Oct 15 13:03 WebDAV SS.bmp"
+            "-rw-r--r--        0      589878   589878 Oct 15 13:03 WebDAV SS.bmp"
         );
         assertNotNull(parsed);
         assertEquals("WebDAV SS.bmp", parsed.getName());
@@ -103,21 +103,21 @@ public class RumpusFTPEntryParserTest {
 
         FTPFile parsed;
         parsed = parser.parseFTPEntry(
-                "drwxrwxrwx               folder        0 Jan 19 20:36 Mastered 1644"
+            "drwxrwxrwx               folder        0 Jan 19 20:36 Mastered 1644"
         );
         assertNotNull(parsed);
         assertEquals("Mastered 1644", parsed.getName());
         assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
 
         parsed = parser.parseFTPEntry(
-                "-rwxrwxrwx        0   208143684 208143684 Jan 14 02:13 Dhannya dhannya.rar"
+            "-rwxrwxrwx        0   208143684 208143684 Jan 14 02:13 Dhannya dhannya.rar"
         );
         assertNotNull(parsed);
         assertEquals("Dhannya dhannya.rar", parsed.getName());
         assertEquals(FTPFile.FILE_TYPE, parsed.getType());
 
         parsed = parser.parseFTPEntry(
-                "drwxr-xr-x               folder        0 Jan 14 16:04 Probeordner");
+            "drwxr-xr-x               folder        0 Jan 14 16:04 Probeordner");
         assertNotNull(parsed);
         assertEquals("Probeordner", parsed.getName());
         assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());

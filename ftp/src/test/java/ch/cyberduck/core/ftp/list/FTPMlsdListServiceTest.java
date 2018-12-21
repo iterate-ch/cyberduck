@@ -15,41 +15,25 @@ package ch.cyberduck.core.ftp.list;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPWorkdirService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-@Category(IntegrationTest.class)
-public class FTPMlsdListServiceTest {
+import static org.junit.Assert.assertFalse;
 
-    @Test(expected = InteroperabilityException.class)
-    public void testListNotSupportedTest() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+@Category(IntegrationTest.class)
+public class FTPMlsdListServiceTest extends AbstractFTPTest {
+
+    @Test
+    public void testList() throws Exception {
         final ListService list = new FTPMlsdListService(session);
         final Path directory = new FTPWorkdirService(session).find();
-        list.list(directory, new DisabledListProgressListener());
-        session.close();
+        assertFalse(list.list(directory, new DisabledListProgressListener()).isEmpty());
     }
 }

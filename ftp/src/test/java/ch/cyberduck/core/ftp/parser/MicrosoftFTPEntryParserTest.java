@@ -46,7 +46,7 @@ public class MicrosoftFTPEntryParserTest {
 
         // #3701
         parsed = parser.parseFTPEntry(
-                "12-04-06  12:43PM                65335 fon1.kucuk.jpg"
+            "12-04-06  12:43PM                65335 fon1.kucuk.jpg"
         );
         assertNotNull(parsed);
         assertEquals("fon1.kucuk.jpg", parsed.getName());
