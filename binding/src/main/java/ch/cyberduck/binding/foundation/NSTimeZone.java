@@ -33,6 +33,10 @@ public abstract class NSTimeZone extends NSObject {
         return CLASS.systemTimeZone();
     }
 
+    public static NSTimeZone timeZoneWithName(final String tzName) {
+        return CLASS.timeZoneWithName(tzName);
+    }
+
     public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSTimeZone* systemTimeZone()</code><br>
@@ -51,6 +55,8 @@ public abstract class NSTimeZone extends NSObject {
          * <i>from NSExtendedTimeZone native declaration : :25</i>
          */
         NSTimeZone defaultTimeZone();
+
+        NSTimeZone timeZoneWithName(String tzName);
 
         /**
          * Original signature : <code>void setDefaultTimeZone(NSTimeZone*)</code><br>
