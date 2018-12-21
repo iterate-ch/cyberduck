@@ -118,7 +118,7 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
     @Test
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[5 * 1024 * 1024]; // Minimum multipart upload size
+        final byte[] content = new byte[6 * 1024 * 1024]; // Minimum multipart upload size
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
@@ -135,7 +135,7 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
                 if(type == Upload.class) {
-                    return (T) new S3MultipartUploadService(this, new S3WriteFeature(this), 1024L * 1024L, 5) {
+                    return (T) new S3MultipartUploadService(this, new S3WriteFeature(this), 5 * 1024L * 1024L, 5) {
                         @Override
                         protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
                             if(failed.get()) {
@@ -174,8 +174,8 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
 
         }.run());
         local.delete();
-        assertEquals(5L * 1024L * 1024L, counter.getSent(), 0L);
-        assertEquals(5L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(6L * 1024L * 1024L, counter.getSent(), 0L);
+        assertEquals(6L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize());
         assertTrue(failed.get());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
