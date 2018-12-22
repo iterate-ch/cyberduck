@@ -15,12 +15,11 @@ package ch.cyberduck.core.dav;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultPathPredicate;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -43,7 +42,7 @@ public class DAVTimestampFeatureTest extends AbstractDAVTest {
         session.getFeature(Touch.class).touch(file, new TransferStatus());
         new DAVTimestampFeature(session).setTimestamp(file, 5000L);
         assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
-        assertEquals(5000L, new DAVListService(session).list(file.getParent(), new DisabledListProgressListener()).find(new DefaultPathPredicate(file)).attributes().getModificationDate());
+        assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
