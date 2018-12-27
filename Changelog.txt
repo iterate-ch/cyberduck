@@ -2,6 +2,7 @@ Cyberduck
 https://cyberduck.io/
 
 6.9.0
+- [Localize] Estonian Localization
 - [Feature] Default connection profile for Microsoft Sharepoint Online (#10115)
 - [Feature] Support for eu-west-3 (Stockholm) region (S3)
 - [Feature] Add --profile option to select connection profile (CLI)
