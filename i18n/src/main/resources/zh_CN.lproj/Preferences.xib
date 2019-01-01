@@ -16,6 +16,8 @@
                 <outlet property="bringQueueToBackCheckbox" destination="117" id="427"/>
                 <outlet property="bringQueueToFrontCheckbox" destination="115" id="428"/>
                 <outlet property="browserSerializeCheckbox" destination="40" id="429"/>
+                <outlet property="checksumDownloadCheckbox" destination="jvf-VY-vT3" id="Aiv4sae4emei"/>
+                <outlet property="checksumUploadCheckbox" destination="Buu-j0-hMk" id="shaC9aa4phee"/>
                 <outlet property="chmodDownloadCheckbox" destination="152" id="430"/>
                 <outlet property="chmodDownloadCustomCheckbox" destination="206" id="431"/>
                 <outlet property="chmodDownloadDefaultCheckbox" destination="208" id="432"/>

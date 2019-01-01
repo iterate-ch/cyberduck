@@ -83,6 +83,8 @@
                 <outlet property="panelUpdate" destination="315" id="489"/>
                 <outlet property="preserveModificationDownloadCheckbox" destination="230" id="491"/>
                 <outlet property="preserveModificationUploadCheckbox" destination="228" id="492"/>
+                <outlet property="checksumDownloadCheckbox" destination="jvf-VY-vT3" id="Aiv4sae4emei"/>
+                <outlet property="checksumUploadCheckbox" destination="Buu-j0-hMk" id="shaC9aa4phee"/>
                 <outlet property="protocolCombobox" destination="49" id="493"/>
                 <outlet property="removeFromQueueCheckbox" destination="105" id="494"/>
                 <outlet property="returnKeyCheckbox" destination="97" id="495"/>
