@@ -375,7 +375,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="69">
-                                <rect key="frame" x="9" y="40" width="515" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="When using small icons, only the nickname of the bookmark is displayed in the bookmark drawer." id="70">
                                     <font key="font" metaFont="smallSystem"/>
@@ -705,7 +705,7 @@
                         <tabViewItem label="Pozwolenia" identifier="2" id="148">
                             <view key="view" id="149">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button id="150">
                                         <rect key="frame" x="10" y="115" width="441" height="18"/>
@@ -1013,7 +1013,7 @@
                         <tabViewItem label="Datowniki" identifier="3" id="226">
                             <view key="view" id="227">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button id="228">
                                         <rect key="frame" x="10" y="200" width="441" height="18"/>
@@ -1060,10 +1060,60 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
+                        <tabViewItem label="Checksum" identifier="" id="VK5-4m-22V">
+                            <view key="view" id="Sgm-g4-6Sg">
+                                <rect key="frame" x="10" y="33" width="489" height="308"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <button id="Buu-j0-hMk">
+                                        <rect key="frame" x="10" y="200" width="441" height="18"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                    <button id="jvf-VY-vT3">
+                                        <rect key="frame" x="10" y="257" width="441" height="18"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                    <box verticalHuggingPriority="750" boxType="separator" id="ztf-zi-J0f">
+                                        <rect key="frame" x="12" y="279" width="465" height="5"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                    </box>
+                                    <textField verticalHuggingPriority="750" id="Pdu-UD-1af">
+                                        <rect key="frame" x="9" y="282" width="471" height="14"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Downloads" id="jMp-5G-M0R">
+                                            <font key="font" metaFont="smallSystemBold"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <box verticalHuggingPriority="750" boxType="separator" id="UKO-fJ-LRI">
+                                        <rect key="frame" x="12" y="222" width="465" height="5"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                    </box>
+                                    <textField verticalHuggingPriority="750" id="oCu-3p-Hmv">
+                                        <rect key="frame" x="9" y="225" width="443" height="14"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Uploads" id="OF7-e3-pIZ">
+                                            <font key="font" metaFont="smallSystemBold"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
                         <tabViewItem label="Zaawansowane" identifier="4" id="238">
                             <view key="view" id="239">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <box verticalHuggingPriority="750" boxType="separator" id="240">
                                         <rect key="frame" x="12" y="279" width="437" height="5"/>
@@ -1209,7 +1259,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="270">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Select the default application to be opened for files or links pointing to an FTP location." id="271">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1247,7 +1297,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="278">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Select the default application to be opened for files or links pointing to an SFTP location." id="279">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1580,7 +1630,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="354">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the algirithm to encrypt files with on upload." id="355">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1608,7 +1658,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="360">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="The location in which buckets will be created by default." id="361">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1636,7 +1686,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="366">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="367">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1675,7 +1725,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="374">
-                                <rect key="frame" x="9" y="75" width="449" height="27"/>
+                                <rect key="frame" x="9" y="75" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Select a text editor to edit files with by default. The editor must be installed on your system and support the ODB interface." id="375">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1708,7 +1758,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" id="410">
-                                <rect key="frame" x="9" y="41" width="449" height="27"/>
+                                <rect key="frame" x="9" y="41" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Zmiany wejdą w życie po następnym otwarciu aplikacji." id="411">
                                     <font key="font" metaFont="smallSystem"/>

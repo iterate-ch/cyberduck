@@ -376,7 +376,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="69">
-                                <rect key="frame" x="9" y="40" width="497" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Prilikom korišćenja malih ikona, prikazuje se samo nadimak bukmarka." id="70">
                                     <font key="font" metaFont="smallSystem"/>
@@ -706,7 +706,7 @@
                         <tabViewItem label="Dozvole" identifier="2" id="148">
                             <view key="view" id="149">
                                 <rect key="frame" x="10" y="33" width="528" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button id="150">
                                         <rect key="frame" x="10" y="115" width="441" height="18"/>
@@ -1014,7 +1014,7 @@
                         <tabViewItem label="Vremenski pečat" identifier="3" id="226">
                             <view key="view" id="227">
                                 <rect key="frame" x="10" y="33" width="528" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button id="228">
                                         <rect key="frame" x="10" y="200" width="441" height="18"/>
@@ -1061,10 +1061,60 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
+                        <tabViewItem label="Checksum" identifier="" id="VK5-4m-22V">
+                            <view key="view" id="Sgm-g4-6Sg">
+                                <rect key="frame" x="10" y="33" width="528" height="308"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <button id="Buu-j0-hMk">
+                                        <rect key="frame" x="10" y="200" width="441" height="18"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                    <button id="jvf-VY-vT3">
+                                        <rect key="frame" x="10" y="257" width="441" height="18"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                    <box verticalHuggingPriority="750" boxType="separator" id="ztf-zi-J0f">
+                                        <rect key="frame" x="12" y="279" width="504" height="5"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                    </box>
+                                    <textField verticalHuggingPriority="750" id="Pdu-UD-1af">
+                                        <rect key="frame" x="9" y="282" width="510" height="14"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Downloads" id="jMp-5G-M0R">
+                                            <font key="font" metaFont="smallSystemBold"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <box verticalHuggingPriority="750" boxType="separator" id="UKO-fJ-LRI">
+                                        <rect key="frame" x="12" y="222" width="504" height="5"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                    </box>
+                                    <textField verticalHuggingPriority="750" id="oCu-3p-Hmv">
+                                        <rect key="frame" x="9" y="225" width="443" height="14"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Uploads" id="OF7-e3-pIZ">
+                                            <font key="font" metaFont="smallSystemBold"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
                         <tabViewItem label="Napredno" identifier="4" id="238">
                             <view key="view" id="239">
                                 <rect key="frame" x="10" y="33" width="528" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <box verticalHuggingPriority="750" boxType="separator" id="240">
                                         <rect key="frame" x="12" y="279" width="504" height="5"/>
@@ -1210,7 +1260,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="270">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Izaberite podrazumevanu aplikaciju koja će se otvoriti za datoteke ili linkove koji ukazuju na FTP lokaciju." id="271">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1248,7 +1298,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="278">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Izaberite podrazumevanu aplikaciju koja će se otvoriti za datoteke ili linkove koji ukazuju na SFTP lokaciju." id="279">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1581,7 +1631,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="354">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Izaberite algoritam kojim ćete enkodirati datoteke prilikom prenosa." id="355">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1609,7 +1659,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="360">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Podrazumevana lokacija u kojoj će se snimati grupni logovi." id="361">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1637,7 +1687,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="366">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="367">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1676,7 +1726,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="374">
-                                <rect key="frame" x="9" y="75" width="449" height="27"/>
+                                <rect key="frame" x="9" y="75" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Izaberite podrazumevani tekstualni editor za otvaranje datoteka." id="375">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1709,7 +1759,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" id="410">
-                                <rect key="frame" x="9" y="41" width="449" height="27"/>
+                                <rect key="frame" x="9" y="41" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Promene će biti vidljive kada pokrenete aplikaciju sledeći put." id="411">
                                     <font key="font" metaFont="smallSystem"/>
