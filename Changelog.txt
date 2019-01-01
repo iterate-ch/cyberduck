@@ -7,6 +7,7 @@ https://cyberduck.io/
 - [Feature] Support for eu-west-3 (Stockholm) region (S3)
 - [Feature] Improve listing performance for versioned buckets (S3) (#10426)
 - [Feature] Add --profile option to select connection profile (CLI)
+- [Feature] Add --nochecksum option to skip verifying checksums (CLI)
 - [Bugfix] Stop button to interrupt transfer (#10363)
 - [Bugfix] Save passphrase for private key in keychain only after successful connect (#10526)
 - [Bugfix] Failure authenticating with proxy using Integrated Windows Authentication (IWA) authentication (WebDAV, Windows)
