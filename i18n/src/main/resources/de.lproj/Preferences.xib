@@ -1062,7 +1062,7 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
-                        <tabViewItem label="Checksum" identifier="" id="VK5-4m-22V">
+                        <tabViewItem label="Prüfsumme" identifier="" id="VK5-4m-22V">
                             <view key="view" id="Sgm-g4-6Sg">
                                 <rect key="frame" x="10" y="33" width="474" height="308"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
