@@ -40,7 +40,7 @@ public final class DownloadFilterOptions {
         timestamp = preferences.getBoolean("queue.download.timestamp.change");
         wherefrom = preferences.getBoolean("queue.download.wherefrom");
         icon = preferences.getBoolean("queue.download.icon.update");
-        checksum = preferences.getBoolean("queue.download.checksum");
+        checksum = preferences.getBoolean("queue.download.checksum.calculate");
     }
 
     @Override

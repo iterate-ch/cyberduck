@@ -508,7 +508,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("queue.download.permissions.folder.default", String.valueOf(755));
 
         this.setDefault("queue.download.timestamp.change", String.valueOf(true));
-        this.setDefault("queue.download.checksum", String.valueOf(true));
+        this.setDefault("queue.download.checksum.calculate", String.valueOf(true));
 
         this.setDefault("queue.download.skip.enable", String.valueOf(true));
         this.setDefault("queue.download.skip.regex.default",
