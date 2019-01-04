@@ -153,37 +153,100 @@ public final class HostParser {
     }
 
     static boolean parseAuthority(final StringReader reader, final Host host) {
+
+        final StringBuilder userBuilder = new StringBuilder();
+        final StringBuilder passwordBuilder = new StringBuilder();
+        final StringBuilder authorityBuilder = new StringBuilder();
+        final StringBuilder portBuilder = new StringBuilder();
+
         String userComponent = StringUtils.EMPTY;
+        String passwordComponent = StringUtils.EMPTY;
         String authorityComponent = StringUtils.EMPTY;
         String portComponent = StringUtils.EMPTY;
-        String pathComponent = StringUtils.EMPTY;
 
         boolean validUser = true;
         boolean validAuthority = true;
         boolean validPort = true;
-        boolean validPath = true;
 
-        final StringBuilder builder = new StringBuilder();
+        boolean closeUser = false;
+        boolean closePassword = false;
+
         while(!reader.endOfString()) { // find User and Authority.
             final char c = (char) reader.read();
-            if(validUser && c == '@') {
-                userComponent = builder.toString();
-                builder.setLength(0);
-                validUser = false;
-                validAuthority = true;
-                validPort = true;
-                validPath = true;
-                continue;
+
+            if(':' == c) {
+                // If : encountered, restart builder and concat authority
+
+                if(validUser) {
+                    if(closeUser) {
+                        if(!closePassword) {
+                            passwordBuilder.append(c);
+                        }
+                    }
+                    else {
+                        closeUser = true;
+                    }
+                }
+
+                portBuilder.setLength(0);
+
+                validPort = true; // overwrites Port state
             }
-            else if(c == '/') {
+            else if('@' == c) {
+                // there must not be any at-sign after user-info
+                if(!validUser) {
+                    return false;
+                }
+                // (move anything from Authority to User)
+                // Finish User Information
+                // Authority may include username … builder includes Password.
+
                 validUser = false;
-                validAuthority = false;
-                authorityComponent = builder.toString();
-                builder.setLength(0);
-                break;
+                closeUser = true;
+                closePassword = true;
+
+                authorityBuilder.setLength(0); // reset authority
+                portBuilder.setLength(0); // reset port
+            }
+            else if('/' == c) {
+                // finish this thing up.
+
+                if(!closeUser) {
+                    userBuilder.setLength(0);
+                }
+                if(!closePassword) {
+                    passwordBuilder.setLength(0);
+                }
+                host.setHostname(authorityBuilder.toString());
+                if(validPort) {
+                    host.setPort(Integer.parseInt(portBuilder.toString()));
+                }
+
+                return true;
+            }
+            else if('%' == c) {
+                validPort = false;
+
+                final char percented = readPercentCharacter(reader);
+                if(!closeUser) {
+                    userBuilder.append(percented);
+                }
+                if(!closePassword) {
+                    passwordBuilder.append(percented);
+                }
+                authorityBuilder.append(percented);
+                portBuilder.setLength(0);
             }
             else {
-
+                if(!Character.isDigit(c)) {
+                    validPort = false;
+                }
+                if(!closeUser) {
+                    userBuilder.append(c);
+                }
+                if(!closePassword) {
+                    passwordBuilder.append(c);
+                }
             }
         }
 
