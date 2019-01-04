@@ -26,6 +26,8 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
+import java.util.PrimitiveIterator;
 import java.util.regex.Pattern;
 
 public final class HostParser {
@@ -153,104 +155,147 @@ public final class HostParser {
     }
 
     static boolean parseAuthority(final StringReader reader, final Host host) {
-
+        final StringBuilder buffer = new StringBuilder();
         final StringBuilder userBuilder = new StringBuilder();
-        final StringBuilder passwordBuilder = new StringBuilder();
-        final StringBuilder authorityBuilder = new StringBuilder();
-        final StringBuilder portBuilder = new StringBuilder();
+        StringBuilder passwordBuilder = null;
 
-        String userComponent = StringUtils.EMPTY;
-        String passwordComponent = StringUtils.EMPTY;
-        String authorityComponent = StringUtils.EMPTY;
-        String portComponent = StringUtils.EMPTY;
-
-        boolean validUser = true;
-        boolean validAuthority = true;
-        boolean validPort = true;
-
-        boolean closeUser = false;
-        boolean closePassword = false;
-
-        while(!reader.endOfString()) { // find User and Authority.
+        boolean atSignFlag = false;
+        while(!reader.endOfString()) {
             final char c = (char) reader.read();
 
-            if(':' == c) {
-                // If : encountered, restart builder and concat authority
-
-                if(validUser) {
-                    if(closeUser) {
-                        if(!closePassword) {
-                            passwordBuilder.append(c);
-                        }
+            if('@' == c) {
+                if(atSignFlag) {
+                    buffer.append(c);
+                    continue;
+                }
+                atSignFlag = true;
+                for(int i = 0; i < buffer.length(); i++) {
+                    final char t = buffer.charAt(i);
+                    if(Character.isWhitespace(t)) {
+                        return false;
+                    }
+                    if(t == ':' && passwordBuilder == null) {
+                        passwordBuilder = new StringBuilder();
+                        continue;
+                    }
+                    if(passwordBuilder != null) {
+                        passwordBuilder.append(t);
                     }
                     else {
-                        closeUser = true;
+                        userBuilder.append(t);
                     }
                 }
-
-                portBuilder.setLength(0);
-
-                validPort = true; // overwrites Port state
-            }
-            else if('@' == c) {
-                // there must not be any at-sign after user-info
-                if(!validUser) {
-                    return false;
-                }
-                // (move anything from Authority to User)
-                // Finish User Information
-                // Authority may include username … builder includes Password.
-
-                validUser = false;
-                closeUser = true;
-                closePassword = true;
-
-                authorityBuilder.setLength(0); // reset authority
-                portBuilder.setLength(0); // reset port
-            }
-            else if('/' == c) {
-                // finish this thing up.
-
-                if(!closeUser) {
-                    userBuilder.setLength(0);
-                }
-                if(!closePassword) {
-                    passwordBuilder.setLength(0);
-                }
-                host.setHostname(authorityBuilder.toString());
-                if(validPort) {
-                    host.setPort(Integer.parseInt(portBuilder.toString()));
-                }
-
-                return true;
+                buffer.setLength(0);
             }
             else if('%' == c) {
-                validPort = false;
-
-                final char percented = readPercentCharacter(reader);
-                if(!closeUser) {
-                    userBuilder.append(percented);
-                }
-                if(!closePassword) {
-                    passwordBuilder.append(percented);
-                }
-                authorityBuilder.append(percented);
-                portBuilder.setLength(0);
+                buffer.append(readPercentCharacter(reader));
+            }
+            else if('/' == c) {
+                break;
             }
             else {
-                if(!Character.isDigit(c)) {
-                    validPort = false;
-                }
-                if(!closeUser) {
-                    userBuilder.append(c);
-                }
-                if(!closePassword) {
-                    passwordBuilder.append(c);
-                }
+                buffer.append(c);
             }
         }
 
-        return false;
+        if(atSignFlag) {
+            if(host.getProtocol().isUsernameConfigurable()) {
+                if(userBuilder.length() > 0) {
+                    host.getCredentials().setUsername(userBuilder.toString());
+                }
+            }
+            userBuilder.setLength(0);
+            if(passwordBuilder != null) {
+                if(host.getProtocol().isPasswordConfigurable()) {
+                    if(passwordBuilder.length() > 0) {
+                        host.getCredentials().setPassword(passwordBuilder.toString());
+                    }
+                }
+                passwordBuilder.setLength(0);
+            }
+        }
+
+        reader.skip(-buffer.length());
+        return parseHostname(reader, host);
+    }
+
+    static boolean parseHostname(final StringReader reader, final Host host) {
+        final StringBuilder buffer = new StringBuilder();
+
+        boolean isPort = false;
+        boolean bracketFlag = false;
+        while(!reader.endOfString()) {
+            final char c = (char) reader.read();
+
+            if('/' == c) {
+                break;
+            }
+            else if('%' == c) {
+                buffer.append(readPercentCharacter(reader));
+            }
+            else if(':' == c) {
+                if(bracketFlag) {
+                    buffer.append(c);
+                }
+                else {
+                    isPort = true;
+                    break;
+                }
+            }
+            else {
+                if(c == '[' && !bracketFlag) {
+                    bracketFlag = true;
+                }
+                else if(c == ']' && bracketFlag) {
+                    bracketFlag = false;
+                }
+                buffer.append(c);
+            }
+        }
+
+        if(bracketFlag) {
+            return false;
+        }
+
+        if(host.getProtocol().isHostnameConfigurable()) {
+            if(buffer.length() == 0) {
+                return false;
+            }
+            host.setHostname(buffer.toString());
+        }
+
+        if(isPort) {
+            return parsePort(reader, host);
+        }
+
+        return true;
+    }
+
+    static boolean parsePort(final StringReader reader, final Host host) {
+        int port = 0;
+        while(!reader.endOfString()) {
+            final char c = (char) reader.read();
+
+            if(Character.isDigit(c)) {
+                port = port * 10 + Character.getNumericValue(c);
+            }
+            else if(c == '/') {
+                break;
+            }
+            else {
+                return false;
+            }
+        }
+
+        if(port <= 0 || port >= 65536) {
+            return false;
+        }
+
+        if(host.getProtocol().isPortConfigurable()) {
+            host.setPort(port);
+        }
+
+        return true;
     }
 
     static boolean parseAbsolute(final StringReader reader, final Host host) {
@@ -284,7 +329,7 @@ public final class HostParser {
         boolean continuePassword = false;
 
         final StringBuilder stringBuilder = new StringBuilder();
-        while(reader.peek() != -1) {
+        while(!reader.endOfString()) {
             final char c = (char) reader.read();
             if(c == '/') {
                 // TODO: Starts new segment.
@@ -346,10 +391,10 @@ public final class HostParser {
 
     static URITypes findURIType(final StringReader reader) {
         final StringReader copy = reader.copy();
-        if(copy.peek() != -1) {
+        if(!copy.endOfString()) {
             char c = (char) copy.read();
             if(c == '/') {
-                if(copy.peek() != -1) {
+                if(!copy.endOfString()) {
                     c = (char) copy.read();
                     if(c == '/') {
                         reader.skip(2);
@@ -417,10 +462,10 @@ public final class HostParser {
 
     final static class StringReader {
         private final int eof;
-        private final String text;
+        private final CharSequence text;
         private int position = 0;
 
-        public StringReader(final String text) {
+        public StringReader(final CharSequence text) {
             this.text = text;
             eof = this.text.length();
         }

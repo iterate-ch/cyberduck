@@ -184,6 +184,31 @@ public class HostParserTest {
     }
 
     @Test
+    public void testParseAuthorityUserPasswordDomain() {
+        final Host host = new Host(new TestProtocol());
+        final String authority = "user:password@domain.tld";
+        final HostParser.StringReader reader = new HostParser.StringReader(authority);
+
+        assertTrue(HostParser.parseAuthority(reader, host));
+        assertEquals("user", host.getCredentials().getUsername());
+        assertEquals("password", host.getCredentials().getPassword());
+        assertEquals("domain.tld", host.getHostname());
+    }
+
+    @Test
+    public void testParseAuthorityUserPasswordDomainPort() {
+        final Host host = new Host(new TestProtocol());
+        final String authority = "user:password@domain.tld:1337";
+        final HostParser.StringReader reader = new HostParser.StringReader(authority);
+
+        assertTrue(HostParser.parseAuthority(reader, host));
+        assertEquals("user", host.getCredentials().getUsername());
+        assertEquals("password", host.getCredentials().getPassword());
+        assertEquals("domain.tld", host.getHostname());
+        assertEquals(1337, host.getPort());
+    }
+
+    @Test
     public void testParseAuthorityUserDefaultDomain() {
         final Host host = new Host(new TestProtocol() {
             @Override
@@ -200,6 +225,7 @@ public class HostParserTest {
         final HostParser.StringReader reader = new HostParser.StringReader(authority);
 
         assertTrue(HostParser.parseAuthority(reader, host));
+        assertEquals(host.getProtocol().getDefaultHostname(), host.getHostname());
     }
 
     @Test
