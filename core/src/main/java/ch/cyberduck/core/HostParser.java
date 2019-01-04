@@ -70,31 +70,14 @@ public final class HostParser {
     }
 
     public static Host parse(final ProtocolFactory factory, final Protocol scheme, final String url) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        final StringReader reader = new HostParser.StringReader(url);
+        final StringReader reader = new StringReader(url);
 
-        while(reader.peek() != -1) {
-            final char c = (char) reader.read();
-            if(Character.isAlphabetic(c)
-                || Character.isDigit(c)
-                || c == '+'
-                || c == '-'
-                || c == '.') {
-                stringBuilder.append(c);
-            }
-            else if(Character.isWhitespace(c)) {
-                if(stringBuilder.length() != 0) {
-                    // Whitespace inside scheme. Break.
-                    // TODO: Error out.
-                    return null;
-                }
-            }
-            else if(c == ':') {
-                break;
-            }
+        Value<String> schemeValue = new Value<>();
+        if(!parseScheme(reader, schemeValue)) {
+            // TODO: Error out. Scheme was invalid.
         }
 
-        Protocol protocol = factory.forName(stringBuilder.toString());
+        Protocol protocol = factory.forName(schemeValue.getValue());
         if(null == protocol) {
             protocol = scheme;
         }
@@ -115,13 +98,22 @@ public final class HostParser {
         }
 
         if(uriType == URITypes.Authority) {
-            parseAuthority(reader);
+            if(!parseAuthority(reader, host)) {
+                // TODO: Error out.
+            }
+            if(!parseAbsolute(reader, host)) {
+                // TODO: Error out.
+            }
         }
         else if(uriType == URITypes.Absolute) {
-            parseAbsolute(reader);
+            if(!parseAbsolute(reader, host)) {
+                // TODO: Error out.
+            }
         }
         else if(uriType == URITypes.Rootless) {
-            parseRootless(reader);
+            if(!parseRootless(reader, host)) {
+                // TODO: Error out.
+            }
         }
         else {
             // TODO Error. This should not happen.
@@ -135,9 +127,9 @@ public final class HostParser {
     static final String URI_SUBDELIMS = "!$&'()*+,;=";
     static final String URI_PCHAR = ":@";
 
-    static void parseScheme(StringReader reader) {
+    static boolean parseScheme(final StringReader reader, final Value<String> scheme) {
         final StringBuilder stringBuilder = new StringBuilder();
-        while(reader.peek() != -1) {
+        while(!reader.endOfString()) {
             final char c = (char) reader.read();
             if(Character.isAlphabetic(c)
                 || Character.isDigit(c)
@@ -148,33 +140,38 @@ public final class HostParser {
                 if(stringBuilder.length() != 0) {
                     // Whitespace inside scheme. Break.
                     // TODO: Error out.
-                    return; // invalid. Return empty.
+                    return false; // invalid. Return empty.
                 }
             }
             else if(c == ':') {
-                break; // valid. Break to return stringbuilder
+                scheme.setValue(stringBuilder.toString());
+                return true; // valid. Break to return stringbuilder
             }
         }
         // TODO: EOF, should this be considered safe? ("scheme" instead of "scheme:")
+        return false;
     }
 
-    static void parseAuthority(StringReader reader) {
+    static boolean parseAuthority(final StringReader reader, final Host host) {
         String userComponent = StringUtils.EMPTY;
         String authorityComponent = StringUtils.EMPTY;
+        String portComponent = StringUtils.EMPTY;
         String pathComponent = StringUtils.EMPTY;
 
         boolean validUser = true;
         boolean validAuthority = true;
+        boolean validPort = true;
         boolean validPath = true;
 
         final StringBuilder builder = new StringBuilder();
-        while(reader.peek() != -1) { // find User and Authority.
+        while(!reader.endOfString()) { // find User and Authority.
             final char c = (char) reader.read();
             if(validUser && c == '@') {
                 userComponent = builder.toString();
                 builder.setLength(0);
                 validUser = false;
                 validAuthority = true;
+                validPort = true;
                 validPath = true;
                 continue;
             }
@@ -188,16 +185,14 @@ public final class HostParser {
             else {
 
             }
-
         }
-        while(reader.peek() != -1) {
 
-        }
+        return false;
     }
 
-    static void parseAbsolute(StringReader reader) {
+    static boolean parseAbsolute(final StringReader reader, final Host host) {
         final StringBuilder pathBuilder = new StringBuilder();
-        while(reader.peek() != -1) {
+        while(!reader.endOfString()) {
             final char c = (char) reader.read();
             if(isPChar(c) || c == '/') {
                 pathBuilder.append(c);
@@ -207,11 +202,17 @@ public final class HostParser {
             }
             else {
                 // TODO: Error out. This is not supported.
+                return false;
             }
         }
+        host.setDefaultPath(pathBuilder.toString());
+        return true;
     }
 
-    static void parseRootless(StringReader reader) {
+    static boolean parseRootless(final StringReader reader, final Host host) {
+        // This is not RFC-compliant.
+        // * Rootless-path must not include authentication information.
+
         String userComponent = StringUtils.EMPTY;
         String passwordComponent = StringUtils.EMPTY;
         String pathComponent = StringUtils.EMPTY;
@@ -233,7 +234,7 @@ public final class HostParser {
                         if(continuePassword) {
                             passwordComponent = stringBuilder.toString();
                         }
-                        else  {
+                        else {
                             userComponent = stringBuilder.toString();
                         }
                         stringBuilder.setLength(0);
@@ -245,7 +246,7 @@ public final class HostParser {
                 }
                 else if(c == ':') {
                     if(validUser) {
-                        if (continuePassword) {
+                        if(continuePassword) {
                             // TODO: Error out.
                             //  This is not supported (two ":" in UserInfo)
                         }
@@ -276,25 +277,11 @@ public final class HostParser {
             }
         }
         pathComponent = stringBuilder.toString();
+
+        return true;
     }
 
-    private static boolean isUnreservedCharacter(char c) {
-        return Character.isAlphabetic(c) || Character.isDigit(c) || URI_UNRESERVED.indexOf(c) != -1;
-    }
-
-    private static boolean isSubDelimsCharacter(char c) {
-        return URI_SUBDELIMS.indexOf(c) != -1;
-    }
-
-    private static boolean isPChar(char c) {
-        return isUnreservedCharacter(c) || isSubDelimsCharacter(c) || URI_PCHAR.indexOf(c) != -1;
-    }
-
-    private static boolean isValidUserInfo(char c) {
-        return isUnreservedCharacter(c) || isSubDelimsCharacter(c) || c == ':';
-    }
-
-    private static URITypes findURIType(StringReader reader) {
+    static URITypes findURIType(final StringReader reader) {
         final StringReader copy = reader.copy();
         if(copy.peek() != -1) {
             char c = (char) copy.read();
@@ -318,7 +305,7 @@ public final class HostParser {
         return URITypes.Undefined;
     }
 
-    private static URITypes resolveURIType(final URITypes from, final Protocol protocol) {
+    static URITypes resolveURIType(final URITypes from, final Protocol protocol) {
         if(!protocol.isHostnameConfigurable()) {
             if(URITypes.Authority == from) {
                 return URITypes.Absolute;
@@ -327,8 +314,24 @@ public final class HostParser {
         return from;
     }
 
-    private static char readPercentCharacter(StringReader reader) {
-        StringBuilder string = new StringBuilder();
+    private static boolean isUnreservedCharacter(final char c) {
+        return Character.isAlphabetic(c) || Character.isDigit(c) || URI_UNRESERVED.indexOf(c) != -1;
+    }
+
+    private static boolean isSubDelimsCharacter(final char c) {
+        return URI_SUBDELIMS.indexOf(c) != -1;
+    }
+
+    private static boolean isPChar(final char c) {
+        return isUnreservedCharacter(c) || isSubDelimsCharacter(c) || URI_PCHAR.indexOf(c) != -1;
+    }
+
+    private static boolean isValidUserInfo(final char c) {
+        return isUnreservedCharacter(c) || isSubDelimsCharacter(c) || c == ':';
+    }
+
+    private static char readPercentCharacter(final StringReader reader) {
+        final StringBuilder string = new StringBuilder();
         for(int i = 0; i < 2 && reader.peek() != -1; i++) {
             string.append((char) reader.read());
         }
@@ -365,6 +368,10 @@ public final class HostParser {
             this.eof = reader.eof;
         }
 
+        public boolean endOfString() {
+            return position >= eof;
+        }
+
         public int read() {
             if(position >= eof) {
                 return -1;
@@ -381,12 +388,31 @@ public final class HostParser {
             return text.charAt(position);
         }
 
-        public void skip(int chars) {
+        public void skip(final int chars) {
             position += chars;
+            if(chars > 0 && position > eof) {
+                position = eof;
+            }
+            if(chars < 0 && position < 0) {
+                position = 0;
+            }
         }
 
         public StringReader copy() {
             return new StringReader(this);
+        }
+    }
+
+    final static class Value<T> {
+        private T value;
+
+        public T getValue() {
+            return value;
+        }
+
+        public T setValue(final T value) {
+            this.value = value;
+            return value;
         }
     }
 

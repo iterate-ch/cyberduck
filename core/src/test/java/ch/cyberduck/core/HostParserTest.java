@@ -15,11 +15,16 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class HostParserTest {
 
@@ -135,17 +140,96 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseAuthority() {
-
+    public void testFindUriType() {
+        final Map<String, HostParser.URITypes> tests = ImmutableMap.<String, HostParser.URITypes>builder()
+            .put("/path", HostParser.URITypes.Absolute)
+            .put("user@domain/path", HostParser.URITypes.Rootless)
+            .put("//user@domain.tld:port/path", HostParser.URITypes.Authority)
+            .put("", HostParser.URITypes.Undefined).build();
+        for(Map.Entry<String, HostParser.URITypes> entry : tests.entrySet()) {
+            final HostParser.StringReader reader = new HostParser.StringReader(entry.getKey());
+            assertEquals(HostParser.findURIType(reader), entry.getValue());
+        }
     }
 
     @Test
-    public void testParseSceheme() {
+    public void testParseScheme() {
+        final HostParser.Value<String> value = new HostParser.Value<>();
+        final String test = "https:";
+        final HostParser.StringReader reader = new HostParser.StringReader(test);
 
+        assertTrue(HostParser.parseScheme(reader, value));
+        assertEquals("https", value.getValue());
+    }
+
+    @Test
+    public void testParseAuthoritySimpleDomain() {
+        final Host host = new Host(new TestProtocol());
+        final String authority = "domain.tld";
+        final HostParser.StringReader reader = new HostParser.StringReader(authority);
+
+        assertTrue(HostParser.parseAuthority(reader, host));
+        assertEquals(authority, host.getHostname());
+    }
+
+    @Test
+    public void testParseAuthorityUserDomain() {
+        final Host host = new Host(new TestProtocol());
+        final String authority = "user@domain.tld";
+        final HostParser.StringReader reader = new HostParser.StringReader(authority);
+
+        assertTrue(HostParser.parseAuthority(reader, host));
+        assertEquals("user", host.getCredentials().getUsername());
+        assertEquals("domain.tld", host.getHostname());
+    }
+
+    @Test
+    public void testParseAuthorityUserDefaultDomain() {
+        final Host host = new Host(new TestProtocol() {
+            @Override
+            public boolean isHostnameConfigurable() {
+                return false;
+            }
+
+            @Override
+            public String getDefaultHostname() {
+                return "test";
+            }
+        });
+        final String authority = "user@/";
+        final HostParser.StringReader reader = new HostParser.StringReader(authority);
+
+        assertTrue(HostParser.parseAuthority(reader, host));
     }
 
     @Test
     public void testParseAbsolute() {
+        final Host host = new Host(new TestProtocol());
+        final String path = "/path/sub/directory";
+        final HostParser.StringReader reader = new HostParser.StringReader(path);
 
+        assertTrue(HostParser.parseAbsolute(reader, host));
+        assertEquals(path, host.getDefaultPath());
+    }
+
+    @Test
+    public void testParseRootless() {
+        final Host host = new Host(new TestProtocol());
+        final String path = "path/sub/directory";
+        final HostParser.StringReader reader = new HostParser.StringReader(path);
+
+        assertTrue(HostParser.parseRootless(reader, host));
+        assertEquals(path, host.getDefaultPath());
+    }
+
+    @Test
+    public void testParseRootlessWithUser() {
+        final Host host = new Host(new TestProtocol());
+        final String path = "user@path/sub/directory";
+        final HostParser.StringReader reader = new HostParser.StringReader(path);
+
+        assertTrue(HostParser.parseRootless(reader, host));
+        assertEquals("user", host.getCredentials().getUsername());
+        assertEquals("path/sub/directory", host.getDefaultPath());
     }
 }
