@@ -61,6 +61,9 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSSessionCredentials;
+import com.amazonaws.auth.AWSSessionCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.cloudfront.AmazonCloudFront;
 import com.amazonaws.services.cloudfront.AmazonCloudFrontClientBuilder;
@@ -117,7 +120,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             .usernamePlaceholder(LocaleFactory.localizedString("Access Key ID", "S3"))
             .passwordPlaceholder(LocaleFactory.localizedString("Secret Access Key", "S3"));
         try {
-            final KeychainLoginService login = new KeychainLoginService(PasswordStoreFactory.get());
+            final LoginService login = new KeychainLoginService(PasswordStoreFactory.get());
             login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), prompt, options);
             return run.call();
         }
@@ -723,8 +726,34 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     private AmazonCloudFront client(final Path container) throws BackgroundException {
-        return AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
-            new com.amazonaws.auth.AWSCredentials() {
+        return AmazonCloudFrontClientBuilder.standard().withCredentials(bookmark.getCredentials().isTokenAuthentication() ?
+            new AWSSessionCredentialsProvider() {
+                @Override
+                public AWSSessionCredentials getCredentials() {
+                    return new AWSSessionCredentials() {
+                        @Override
+                        public String getSessionToken() {
+                            return bookmark.getCredentials().getToken();
+                        }
+
+                        @Override
+                        public String getAWSAccessKeyId() {
+                            return bookmark.getCredentials().getUsername();
+                        }
+
+                        @Override
+                        public String getAWSSecretKey() {
+                            return bookmark.getCredentials().getPassword();
+                        }
+                    };
+                }
+
+                @Override
+                public void refresh() {
+                    // Not supported
+                }
+            } :
+            new AWSStaticCredentialsProvider(new AWSCredentials() {
                 @Override
                 public String getAWSAccessKeyId() {
                     return bookmark.getCredentials().getUsername();
@@ -734,7 +763,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 public String getAWSSecretKey() {
                     return bookmark.getCredentials().getPassword();
                 }
-            })
-        ).withClientConfiguration(configuration).withRegion(locationFeature.getLocation(container).getIdentifier()).build();
+            }))
+            .withClientConfiguration(configuration)
+            .withRegion(locationFeature.getLocation(container).getIdentifier()).build();
     }
 }

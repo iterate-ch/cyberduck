@@ -20,6 +20,7 @@ import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -50,6 +51,8 @@ import java.util.concurrent.Callable;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSSessionCredentials;
+import com.amazonaws.auth.AWSSessionCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
@@ -64,7 +67,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private final Preferences preferences = PreferencesFactory.get();
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final ClientConfiguration configuration;
 
@@ -102,13 +105,13 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
         final LoginOptions options = new LoginOptions(bookmark.getProtocol()).anonymous(false).publickey(false);
         try {
-            final KeychainLoginService login = new KeychainLoginService(PasswordStoreFactory.get());
+            final LoginService login = new KeychainLoginService(PasswordStoreFactory.get());
             login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), prompt, options);
             return run.call();
         }
         catch(LoginFailureException failure) {
             bookmark.setCredentials(prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                    LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options));
+                LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options));
             return this.authenticated(run, prompt);
         }
     }
@@ -151,21 +154,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
             keys.addAll(this.authenticated(new Authenticated<Set<Algorithm>>() {
                 @Override
                 public Set<Algorithm> call() throws BackgroundException {
-                    final Location.Name region = locationFeature.getLocation(container);
-                    final AWSKMS client = AWSKMSClientBuilder.standard()
-                            .withCredentials(new AWSStaticCredentialsProvider(new AWSCredentials() {
-                                @Override
-                                public String getAWSAccessKeyId() {
-                                    return bookmark.getCredentials().getUsername();
-                                }
-
-                                @Override
-                                public String getAWSSecretKey() {
-                                    return bookmark.getCredentials().getPassword();
-                                }
-                            }))
-                            .withClientConfiguration(configuration)
-                            .withRegion(region.getIdentifier()).build();
+                    final AWSKMS client = client(container);
                     try {
                         final Map<String, String> aliases = new HashMap<String, String>();
                         for(AliasListEntry entry : client.listAliases().getAliases()) {
@@ -173,7 +162,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                         }
                         final Set<Algorithm> keys = new HashSet<Algorithm>();
                         for(KeyListEntry entry : client.listKeys().getKeys()) {
-                            keys.add(new AliasedAlgorithm(entry, aliases.get(entry.getKeyId()), region));
+                            keys.add(new AliasedAlgorithm(entry, aliases.get(entry.getKeyId())));
                         }
                         return keys;
                     }
@@ -193,6 +182,50 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
         return keys;
     }
 
+    private AWSKMS client(final Path container) throws BackgroundException {
+        return AWSKMSClientBuilder.standard()
+            .withCredentials(bookmark.getCredentials().isTokenAuthentication() ?
+                new AWSSessionCredentialsProvider() {
+                    @Override
+                    public AWSSessionCredentials getCredentials() {
+                        return new AWSSessionCredentials() {
+                            @Override
+                            public String getSessionToken() {
+                                return bookmark.getCredentials().getToken();
+                            }
+
+                            @Override
+                            public String getAWSAccessKeyId() {
+                                return bookmark.getCredentials().getUsername();
+                            }
+
+                            @Override
+                            public String getAWSSecretKey() {
+                                return bookmark.getCredentials().getPassword();
+                            }
+                        };
+                    }
+
+                    @Override
+                    public void refresh() {
+                        // Not supported
+                    }
+                } :
+                new AWSStaticCredentialsProvider(new AWSCredentials() {
+                    @Override
+                    public String getAWSAccessKeyId() {
+                        return bookmark.getCredentials().getUsername();
+                    }
+
+                    @Override
+                    public String getAWSSecretKey() {
+                        return bookmark.getCredentials().getPassword();
+                    }
+                }))
+            .withClientConfiguration(configuration)
+            .withRegion(locationFeature.getLocation(container).getIdentifier()).build();
+    }
+
     /**
      * Default KMS Managed SSE with default key
      */
@@ -206,13 +239,11 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private static class AliasedAlgorithm extends Algorithm {
         private final KeyListEntry entry;
         private final String alias;
-        private final Location.Name region;
 
-        public AliasedAlgorithm(final KeyListEntry entry, final String alias, final Location.Name region) {
+        public AliasedAlgorithm(final KeyListEntry entry, final String alias) {
             super(KMSEncryptionFeature.SSE_KMS_DEFAULT.algorithm, entry.getKeyArn());
             this.entry = entry;
             this.alias = alias;
-            this.region = region;
         }
 
         @Override
@@ -221,10 +252,6 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
                 return String.format("SSE-KMS (%s)", entry.getKeyArn());
             }
             return String.format("SSE-KMS (%s - %s)", alias, entry.getKeyArn());
-        }
-
-        public Location.Name getRegion() {
-            return region;
         }
     }
 }

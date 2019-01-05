@@ -23,6 +23,7 @@ import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UseragentProvider;
@@ -40,6 +41,8 @@ import java.util.concurrent.Callable;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSSessionCredentials;
+import com.amazonaws.auth.AWSSessionCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
@@ -87,13 +90,13 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
         final LoginOptions options = new LoginOptions(bookmark.getProtocol()).anonymous(false).publickey(false);
         try {
-            final KeychainLoginService login = new KeychainLoginService(PasswordStoreFactory.get());
+            final LoginService login = new KeychainLoginService(PasswordStoreFactory.get());
             login.validate(bookmark, LocaleFactory.localizedString("AWS Identity and Access Management", "S3"), prompt, options);
             return run.call();
         }
         catch(LoginFailureException failure) {
             bookmark.setCredentials(prompt.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                    LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options));
+                LocaleFactory.localizedString("Login failed", "Credentials"), failure.getMessage(), options));
             return this.authenticated(run, prompt);
         }
     }
@@ -110,7 +113,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                 final AmazonIdentityManagement client = client();
                 try {
                     final ListAccessKeysResult keys
-                            = client.listAccessKeys(new ListAccessKeysRequest().withUserName(username));
+                        = client.listAccessKeys(new ListAccessKeysRequest().withUserName(username));
 
                     for(AccessKeyMetadata key : keys.getAccessKeyMetadata()) {
                         if(log.isDebugEnabled()) {
@@ -154,7 +157,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
             return null;
         }
         return new Credentials(key, PasswordStoreFactory.get().getPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
-                bookmark.getHostname(), key));
+            bookmark.getHostname(), key));
     }
 
     @Override
@@ -176,7 +179,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                         user = client.getUser(new GetUserRequest().withUserName(username)).getUser();
                     }
                     final CreateAccessKeyResult key = client.createAccessKey(
-                            new CreateAccessKeyRequest().withUserName(user.getUserName()));
+                        new CreateAccessKeyRequest().withUserName(user.getUserName()));
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Created access key %s for user %s", key, username));
                     }
@@ -190,8 +193,8 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                     PreferencesFactory.get().setProperty(String.format("%s%s", prefix, username), id);
                     // Save secret
                     PasswordStoreFactory.get().addPassword(
-                            bookmark.getProtocol().getScheme(), bookmark.getPort(), bookmark.getHostname(),
-                            id, key.getAccessKey().getSecretAccessKey());
+                        bookmark.getProtocol().getScheme(), bookmark.getPort(), bookmark.getHostname(),
+                        id, key.getAccessKey().getSecretAccessKey());
                 }
                 catch(AmazonClientException e) {
                     throw new AmazonServiceExceptionMappingService().map("Cannot write user configuration", e);
@@ -205,8 +208,35 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
     }
 
     private AmazonIdentityManagement client() {
-        return AmazonIdentityManagementClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(new AWSCredentials() {
+        return AmazonIdentityManagementClientBuilder.standard().withCredentials(
+            bookmark.getCredentials().isTokenAuthentication() ?
+                new AWSSessionCredentialsProvider() {
+                    @Override
+                    public AWSSessionCredentials getCredentials() {
+                        return new AWSSessionCredentials() {
+                            @Override
+                            public String getSessionToken() {
+                                return bookmark.getCredentials().getToken();
+                            }
+
+                            @Override
+                            public String getAWSAccessKeyId() {
+                                return bookmark.getCredentials().getUsername();
+                            }
+
+                            @Override
+                            public String getAWSSecretKey() {
+                                return bookmark.getCredentials().getPassword();
+                            }
+                        };
+                    }
+
+                    @Override
+                    public void refresh() {
+                        // Not supported
+                    }
+                } :
+                new AWSStaticCredentialsProvider(new AWSCredentials() {
                     @Override
                     public String getAWSAccessKeyId() {
                         return bookmark.getCredentials().getUsername();
@@ -217,7 +247,7 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
                         return bookmark.getCredentials().getPassword();
                     }
                 }))
-                .withClientConfiguration(configuration)
-                .withRegion(Regions.DEFAULT_REGION).build();
+            .withClientConfiguration(configuration)
+            .withRegion(Regions.DEFAULT_REGION).build();
     }
 }
