@@ -27,8 +27,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.BufferInputStream;
 import ch.cyberduck.core.io.BufferOutputStream;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.FileBuffer;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -113,10 +111,5 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
     @Override
     public boolean random() {
         return false;
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file) {
-        return new DisabledChecksumCompute();
     }
 }
