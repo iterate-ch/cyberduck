@@ -90,7 +90,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
     @Override
     protected MessageDigest digest() throws IOException {
         MessageDigest digest = null;
-        if(PreferencesFactory.get().getBoolean("s3.upload.md5")) {
+        if(PreferencesFactory.get().getBoolean("queue.upload.checksum.calculate")) {
             try {
                 digest = MessageDigest.getInstance("MD5");
             }
