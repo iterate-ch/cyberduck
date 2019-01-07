@@ -19,7 +19,6 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -32,7 +31,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -44,23 +42,11 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
 public class DAVUploadFeatureTest extends AbstractDAVTest {
-
-    @Test
-    public void testDecorate() throws Exception {
-        final NullInputStream n = new NullInputStream(1L);
-        final DAVSession session = new DAVSession(new Host(new DAVProtocol(), "h"));
-        assertSame(NullInputStream.class, new DAVUploadFeature(new DAVWriteFeature(session)).decorate(n, null).getClass());
-    }
-
-    @Test
-    public void testDigest() throws Exception {
-        final DAVSession session = new DAVSession(new Host(new DAVProtocol(), "h"));
-        assertNull(new DAVUploadFeature(new DAVWriteFeature(session)).digest());
-    }
 
     @Test(expected = AccessDeniedException.class)
     @Ignore
