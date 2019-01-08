@@ -81,6 +81,7 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                         // Return null if user cancels
                         return StringUtils.EMPTY.toCharArray();
                     }
+                    config.setPassword(credentials.getIdentityPassphrase());
                     return credentials.getIdentityPassphrase().toCharArray();
                 }
 
@@ -88,8 +89,8 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                 public boolean shouldRetry(Resource<?> resource) {
                     return false;
                 }
-            });
-
+            }
+        );
         return this.computeFingerprint(provider);
     }
 
