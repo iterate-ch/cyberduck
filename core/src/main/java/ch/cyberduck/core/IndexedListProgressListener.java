@@ -30,8 +30,16 @@ public abstract class IndexedListProgressListener implements ListProgressListene
 
     @Override
     public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
-        for(int i = index; i < list.size(); i++) {
+        int i = index;
+        while(i < list.size()) {
+            final int before = list.size();
             this.visit(list, i, list.get(i));
+            if(list.size() == before) {
+                i++;
+            }
+            else {
+                // current item has been removed
+            }
         }
         index = list.size();
     }
