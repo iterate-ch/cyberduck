@@ -118,7 +118,7 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
             fail();
         }
         catch(BackgroundException e) {
-            assertTrue(new DefaultFailureDiagnostics().determine(e) == FailureDiagnostics.Type.network);
+            assertSame(new DefaultFailureDiagnostics().determine(e), FailureDiagnostics.Type.network);
             throw e;
         }
         session.close();

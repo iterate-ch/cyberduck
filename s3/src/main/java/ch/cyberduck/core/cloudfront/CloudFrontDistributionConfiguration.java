@@ -21,6 +21,7 @@ package ch.cyberduck.core.cloudfront;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
+import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.DistributionUrlProvider;
@@ -61,7 +62,6 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.cloudfront.AmazonCloudFront;
 import com.amazonaws.services.cloudfront.AmazonCloudFrontClientBuilder;
 import com.amazonaws.services.cloudfront.model.*;
@@ -117,7 +117,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             .usernamePlaceholder(LocaleFactory.localizedString("Access Key ID", "S3"))
             .passwordPlaceholder(LocaleFactory.localizedString("Secret Access Key", "S3"));
         try {
-            final KeychainLoginService login = new KeychainLoginService(PasswordStoreFactory.get());
+            final LoginService login = new KeychainLoginService(PasswordStoreFactory.get());
             login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), prompt, options);
             return run.call();
         }
@@ -723,18 +723,9 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     private AmazonCloudFront client(final Path container) throws BackgroundException {
-        return AmazonCloudFrontClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(
-            new com.amazonaws.auth.AWSCredentials() {
-                @Override
-                public String getAWSAccessKeyId() {
-                    return bookmark.getCredentials().getUsername();
-                }
-
-                @Override
-                public String getAWSSecretKey() {
-                    return bookmark.getCredentials().getPassword();
-                }
-            })
-        ).withClientConfiguration(configuration).withRegion(locationFeature.getLocation(container).getIdentifier()).build();
+        return AmazonCloudFrontClientBuilder.standard()
+            .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(bookmark.getCredentials()))
+            .withClientConfiguration(configuration)
+            .withRegion(locationFeature.getLocation(container).getIdentifier()).build();
     }
 }
