@@ -19,15 +19,46 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.log4j.Logger;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.TimeZone;
+
 public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter> {
+    private static final Logger log = Logger.getLogger(UserDateFormatterFactory.class);
 
     private static final UserDateFormatterFactory factory = new UserDateFormatterFactory();
+
+    private Constructor<AbstractUserDateFormatter> constructor;
 
     protected UserDateFormatterFactory() {
         super("factory.dateformatter.class");
     }
 
+    public AbstractUserDateFormatter create(final String timezone) {
+        try {
+            if(null == constructor) {
+                constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, timezone.getClass());
+            }
+            if(null == constructor) {
+                log.warn(String.format("No matching constructor for parameter %s", timezone.getClass()));
+                // Call default constructor for disabled implementations
+                return clazz.newInstance();
+            }
+            return constructor.newInstance(timezone);
+        }
+        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
+            throw new FactoryException(e.getMessage(), e);
+        }
+    }
+
     public static AbstractUserDateFormatter get() {
-        return factory.create();
+        return get(TimeZone.getDefault().getID());
+    }
+
+    public static AbstractUserDateFormatter get(final String tz) {
+        return factory.create(tz);
     }
 }

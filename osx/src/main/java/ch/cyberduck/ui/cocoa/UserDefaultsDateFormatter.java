@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.binding.foundation.NSDate;
 import ch.cyberduck.binding.foundation.NSDateFormatter;
 import ch.cyberduck.binding.foundation.NSLocale;
+import ch.cyberduck.binding.foundation.NSTimeZone;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.date.UserDateFormatter;
@@ -28,7 +29,12 @@ import ch.cyberduck.core.date.UserDateFormatter;
 public class UserDefaultsDateFormatter extends AbstractUserDateFormatter implements UserDateFormatter {
 
     private static final NSLocale locale = NSLocale.currentLocale();
-    //NSLocale.createWithLocaleIdentifier(NSLocale.canonicalLocaleIdentifierFromString(PreferencesFactory.get().locale()));
+
+    private final String timezone;
+
+    public UserDefaultsDateFormatter(final String timezone) {
+        this.timezone = timezone;
+    }
 
     private static NSLocale locale() {
         return locale;
@@ -107,6 +113,7 @@ public class UserDefaultsDateFormatter extends AbstractUserDateFormatter impleme
             if(-1 == milliseconds) {
                 return LocaleFactory.localizedString("Unknown");
             }
+            shortDateNaturalFormatter.setTimeZone(NSTimeZone.timeZoneWithName(timezone));
             if(natural) {
                 return shortDateNaturalFormatter.stringFromDate(toDate(milliseconds));
             }
@@ -127,6 +134,7 @@ public class UserDefaultsDateFormatter extends AbstractUserDateFormatter impleme
             if(-1 == milliseconds) {
                 return LocaleFactory.localizedString("Unknown");
             }
+            mediumDateNaturalFormatter.setTimeZone(NSTimeZone.timeZoneWithName(timezone));
             if(natural) {
                 return mediumDateNaturalFormatter.stringFromDate(toDate(milliseconds));
             }
@@ -147,6 +155,7 @@ public class UserDefaultsDateFormatter extends AbstractUserDateFormatter impleme
             if(-1 == milliseconds) {
                 return LocaleFactory.localizedString("Unknown");
             }
+            longDateFormatter.setTimeZone(NSTimeZone.timeZoneWithName(timezone));
             if(natural) {
                 return longDateNaturalFormatter.stringFromDate(toDate(milliseconds));
             }

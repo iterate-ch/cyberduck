@@ -22,14 +22,24 @@ import ch.cyberduck.core.LocaleFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 public class DefaultUserDateFormatter extends AbstractUserDateFormatter {
+
+    private final String tz;
+
+    public DefaultUserDateFormatter(final String tz) {
+        this.tz = tz;
+    }
+
     @Override
     public String getShortFormat(final long milliseconds, final boolean natural) {
         if(-1 == milliseconds) {
             return LocaleFactory.localizedString("Unknown");
         }
-        return SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(milliseconds);
+        final DateFormat format = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        format.setTimeZone(TimeZone.getTimeZone(tz));
+        return format.format(milliseconds);
     }
 
     @Override
@@ -37,7 +47,9 @@ public class DefaultUserDateFormatter extends AbstractUserDateFormatter {
         if(-1 == milliseconds) {
             return LocaleFactory.localizedString("Unknown");
         }
-        return SimpleDateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(milliseconds);
+        final DateFormat format = SimpleDateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
+        format.setTimeZone(TimeZone.getTimeZone(tz));
+        return format.format(milliseconds);
     }
 
     @Override
@@ -45,6 +57,8 @@ public class DefaultUserDateFormatter extends AbstractUserDateFormatter {
         if(-1 == milliseconds) {
             return LocaleFactory.localizedString("Unknown");
         }
-        return SimpleDateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL).format(milliseconds);
+        final DateFormat format = SimpleDateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
+        format.setTimeZone(TimeZone.getTimeZone(tz));
+        return format.format(milliseconds);
     }
 }
