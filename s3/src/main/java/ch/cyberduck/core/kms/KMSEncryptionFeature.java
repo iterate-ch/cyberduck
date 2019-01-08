@@ -26,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UseragentProvider;
+import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -50,10 +51,6 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSSessionCredentials;
-import com.amazonaws.auth.AWSSessionCredentialsProvider;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.AliasListEntry;
@@ -184,44 +181,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     private AWSKMS client(final Path container) throws BackgroundException {
         return AWSKMSClientBuilder.standard()
-            .withCredentials(bookmark.getCredentials().isTokenAuthentication() ?
-                new AWSSessionCredentialsProvider() {
-                    @Override
-                    public AWSSessionCredentials getCredentials() {
-                        return new AWSSessionCredentials() {
-                            @Override
-                            public String getSessionToken() {
-                                return bookmark.getCredentials().getToken();
-                            }
-
-                            @Override
-                            public String getAWSAccessKeyId() {
-                                return bookmark.getCredentials().getUsername();
-                            }
-
-                            @Override
-                            public String getAWSSecretKey() {
-                                return bookmark.getCredentials().getPassword();
-                            }
-                        };
-                    }
-
-                    @Override
-                    public void refresh() {
-                        // Not supported
-                    }
-                } :
-                new AWSStaticCredentialsProvider(new AWSCredentials() {
-                    @Override
-                    public String getAWSAccessKeyId() {
-                        return bookmark.getCredentials().getUsername();
-                    }
-
-                    @Override
-                    public String getAWSSecretKey() {
-                        return bookmark.getCredentials().getPassword();
-                    }
-                }))
+            .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(bookmark.getCredentials()))
             .withClientConfiguration(configuration)
             .withRegion(locationFeature.getLocation(container).getIdentifier()).build();
     }

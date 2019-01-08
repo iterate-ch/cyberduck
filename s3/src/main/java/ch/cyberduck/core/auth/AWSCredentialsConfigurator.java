@@ -27,6 +27,8 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSSessionCredentials;
+import com.amazonaws.auth.AWSSessionCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 
 public class AWSCredentialsConfigurator implements CredentialsConfigurator {
     private static final Logger log = Logger.getLogger(AWSCredentialsConfigurator.class);
@@ -69,5 +71,46 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
         for(AWSCredentialsProvider provider : providers) {
             provider.refresh();
         }
+    }
+
+    public static AWSCredentialsProvider toAWSCredentialsProvider(final Credentials credentials) {
+        return credentials.isTokenAuthentication() ?
+            new AWSSessionCredentialsProvider() {
+                @Override
+                public AWSSessionCredentials getCredentials() {
+                    return new AWSSessionCredentials() {
+                        @Override
+                        public String getSessionToken() {
+                            return credentials.getToken();
+                        }
+
+                        @Override
+                        public String getAWSAccessKeyId() {
+                            return credentials.getUsername();
+                        }
+
+                        @Override
+                        public String getAWSSecretKey() {
+                            return credentials.getPassword();
+                        }
+                    };
+                }
+
+                @Override
+                public void refresh() {
+                    // Not supported
+                }
+            } :
+            new AWSStaticCredentialsProvider(new AWSCredentials() {
+                @Override
+                public String getAWSAccessKeyId() {
+                    return credentials.getUsername();
+                }
+
+                @Override
+                public String getAWSSecretKey() {
+                    return credentials.getPassword();
+                }
+            });
     }
 }
