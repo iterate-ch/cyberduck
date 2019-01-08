@@ -43,7 +43,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
-import org.jets3t.service.model.MultipartPart;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -51,7 +50,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -66,7 +64,7 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        final CryptoWriteFeature feature = new CryptoWriteFeature<List<MultipartPart>>(session, new S3MultipartWriteFeature(session), cryptomator);
+        final CryptoWriteFeature feature = new CryptoWriteFeature<>(session, new S3MultipartWriteFeature(session), cryptomator);
         final byte[] content = RandomUtils.nextBytes(6 * 1024 * 1024);
         final TransferStatus writeStatus = new TransferStatus();
         final Cryptor cryptor = cryptomator.getCryptor();

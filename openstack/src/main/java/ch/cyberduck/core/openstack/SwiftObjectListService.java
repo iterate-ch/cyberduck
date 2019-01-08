@@ -69,8 +69,8 @@ public class SwiftObjectListService implements ListService {
             final int limit = PreferencesFactory.get().getInteger("openstack.list.object.limit");
             String marker = null;
             List<StorageObject> list;
+            final Path container = containerService.getContainer(directory);
             do {
-                final Path container = containerService.getContainer(directory);
                 list = session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
                     containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER,
                     null, limit, marker, Path.DELIMITER);
