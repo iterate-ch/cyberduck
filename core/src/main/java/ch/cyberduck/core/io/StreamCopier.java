@@ -135,7 +135,7 @@ public final class StreamCopier {
                 c.close(in);
             }
         }
-        catch(BackgroundException e) {
+        catch(Exception e) {
             // Discard sent bytes if there is an error reply.
             final long sent = listener.getSent();
             progress.progress(-sent);
