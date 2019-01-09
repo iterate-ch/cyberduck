@@ -97,7 +97,7 @@ public final class LoginOptions {
         password = protocol.isPasswordConfigurable();
         token = protocol.isTokenConfigurable();
         oauth = protocol.isOAuthConfigurable();
-        icon = protocol.icon();
+        icon = protocol.disk();
         usernamePlaceholder = protocol.getUsernamePlaceholder();
         passwordPlaceholder = protocol.getPasswordPlaceholder();
     }

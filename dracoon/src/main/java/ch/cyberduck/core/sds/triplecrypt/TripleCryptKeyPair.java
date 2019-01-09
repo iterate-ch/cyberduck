@@ -52,7 +52,7 @@ public class TripleCryptKeyPair {
         if(null == passphrase) {
             credentials = callback.prompt(bookmark, LocaleFactory.localizedString("Decryption password required", "SDS"), message,
                 new LoginOptions()
-                    .icon(bookmark.getProtocol().icon())
+                    .icon(bookmark.getProtocol().disk())
             );
             if(credentials.getPassword() == null) {
                 throw new LoginCanceledException();
