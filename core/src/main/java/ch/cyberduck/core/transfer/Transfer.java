@@ -310,7 +310,8 @@ public abstract class Transfer implements Serializable {
      */
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(TransferItem item : roots) {
-            locks.put(item.local, item.local.lock(true));
+            final Local directory = item.local.getParent();
+            locks.put(directory, directory.lock(true));
         }
     }
 
@@ -323,7 +324,8 @@ public abstract class Transfer implements Serializable {
     public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(Iterator<Map.Entry<Local, Object>> iter = locks.entrySet().iterator(); iter.hasNext(); ) {
             final Map.Entry<Local, Object> entry = iter.next();
-            entry.getKey().release(entry.getValue());
+            final Local directory = entry.getKey().getParent();
+            directory.release(entry.getValue());
             iter.remove();
         }
     }
