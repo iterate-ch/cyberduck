@@ -221,6 +221,7 @@ public class S3VersioningFeature implements Versioning {
             session.getHost(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
             String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), mfaSerial),
             new LoginOptions()
+                .icon(session.getHost().getProtocol().disk())
                 .password(true)
                 .user(false)
                 .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))

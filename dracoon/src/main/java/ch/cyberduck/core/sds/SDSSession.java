@@ -148,6 +148,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 final Credentials additional = controller.prompt(host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                     LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
                     new LoginOptions()
+                        .icon(host.getProtocol().disk())
                         .user(false)
                         .keychain(false)
                 );
@@ -196,6 +197,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(),
                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), e.getDetail(),
                 new LoginOptions()
+                    .icon(host.getProtocol().disk())
                     .user(false)
                     .keychain(false)
             );

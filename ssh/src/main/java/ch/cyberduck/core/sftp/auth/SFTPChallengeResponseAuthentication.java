@@ -123,6 +123,7 @@ public class SFTPChallengeResponseAuthentication implements AuthenticationProvid
                             );
                             additional = callback.prompt(bookmark, title.toString(),
                                 message.toString(), new LoginOptions()
+                                    .icon(bookmark.getProtocol().disk())
                                     .password(true)
                                     .user(false)
                                     .keychain(false)
