@@ -154,7 +154,9 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                 permission.setSetgid(((FTPExtendedFile) f).isSetgid());
                 permission.setSticky(((FTPExtendedFile) f).isSticky());
             }
-            parsed.attributes().setPermission(permission);
+            if (!Permission.EMPTY.equals(permission)) {
+                parsed.attributes().setPermission(permission);
+            }
             final Calendar timestamp = f.getTimestamp();
             if(timestamp != null) {
                 parsed.attributes().setModificationDate(timestamp.getTimeInMillis());
