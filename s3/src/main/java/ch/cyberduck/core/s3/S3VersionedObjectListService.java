@@ -177,6 +177,7 @@ public class S3VersionedObjectListService implements ListService {
             public Path call() throws BackgroundException {
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setRegion(bucket.attributes().getRegion());
+                final Path path = new Path(String.format("%s%s", bucket.getAbsolute(), PathNormalizer.normalize(common)), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                 try {
                     final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
                         bucket.getName(), common, String.valueOf(Path.DELIMITER), 1,
@@ -201,9 +202,9 @@ public class S3VersionedObjectListService implements ListService {
                     }
                 }
                 catch(ServiceException e) {
-                    throw new S3ExceptionMappingService().map(String.format("Listing directory %s failed", common), e);
+                    throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, path);
                 }
-                return new Path(String.format("%s%s", bucket.getAbsolute(), PathNormalizer.normalize(common)), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                return path;
             }
         });
     }
