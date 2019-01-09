@@ -97,8 +97,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                 provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
-                        final String password = credentials.getIdentityPassphrase();
-                        if(StringUtils.isEmpty(password)) {
+                        if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {
                             try {
                                 // Use password prompt
                                 final Credentials input = prompt.prompt(bookmark,
@@ -111,7 +110,6 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                                 );
                                 credentials.setSaved(input.isSaved());
                                 credentials.setIdentityPassphrase(input.getPassword());
-                                return input.getPassword().toCharArray();
                             }
                             catch(LoginCanceledException e) {
                                 canceled.set(true);
@@ -119,7 +117,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                                 return StringUtils.EMPTY.toCharArray();
                             }
                         }
-                        return password.toCharArray();
+                        return credentials.getIdentityPassphrase().toCharArray();
                     }
 
                     @Override
