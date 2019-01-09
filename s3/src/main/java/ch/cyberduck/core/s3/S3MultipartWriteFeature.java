@@ -199,7 +199,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
                 if(completed.isEmpty()) {
                     log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
                     session.getClient().multipartAbortUpload(multipart);
-                    new S3TouchFeature(session).touch(file, new TransferStatus());
+                    versionId.set(new VersionId(new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId()));
                 }
                 else {
                     final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);

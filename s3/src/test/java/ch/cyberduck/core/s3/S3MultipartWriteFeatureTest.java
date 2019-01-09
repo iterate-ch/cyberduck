@@ -67,7 +67,30 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         assertEquals(content.length, IOUtils.copyLarge(in, out));
         in.close();
         out.close();
-        assertNotNull(out.getStatus());
+        assertNull(out.getStatus().id);
+        assertTrue(new DefaultFindFeature(session).find(file));
+        final byte[] compare = new byte[content.length];
+        final InputStream stream = new S3ReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(content, compare);
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteZeroLengthVersioning() throws Exception {
+        final S3MultipartWriteFeature feature = new S3MultipartWriteFeature(session);
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final byte[] content = RandomUtils.nextBytes(0);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(-1L);
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final HttpResponseOutputStream<VersionId> out = feature.write(file, status, new DisabledConnectionCallback());
+        final ByteArrayInputStream in = new ByteArrayInputStream(content);
+        assertEquals(content.length, IOUtils.copyLarge(in, out));
+        in.close();
+        out.close();
+        assertNotNull(out.getStatus().id);
         assertTrue(new DefaultFindFeature(session).find(file));
         final byte[] compare = new byte[content.length];
         final InputStream stream = new S3ReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
