@@ -23,9 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -63,8 +61,6 @@ public class S3VersionedObjectListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final String prefix = this.createPrefix(directory);
         final Path bucket = containerService.getContainer(directory);
-        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(bucket) :
-            VersioningConfiguration.empty();
         final AttributedList<Path> children = new AttributedList<Path>();
         try {
             String priorLastKey = null;
@@ -88,9 +84,7 @@ public class S3VersionedObjectListService implements ListService {
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    if(versioning.isEnabled()) {
-                        attributes.setVersionId(marker.getVersionId());
-                    }
+                    attributes.setVersionId(marker.getVersionId());
                     if(!StringUtils.equals(lastKey, key)) {
                         // Reset revision for next file
                         revision = 0L;
@@ -128,26 +122,24 @@ public class S3VersionedObjectListService implements ListService {
                     }
                     final PathAttributes attributes = new PathAttributes();
                     attributes.setRegion(bucket.attributes().getRegion());
-                    if(versioning.isEnabled()) {
-                        final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
-                            bucket.getName(), common, String.valueOf(Path.DELIMITER), 1,
-                            null, null, false);
-                        if(versions.getItems().length == 1) {
-                            final BaseVersionOrDeleteMarker version = versions.getItems()[0];
-                            if(version.getKey().equals(common)) {
-                                attributes.setVersionId(version.getVersionId());
-                                if(version.isDeleteMarker()) {
-                                    attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                                    attributes.setDuplicate(true);
-                                }
+                    final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
+                        bucket.getName(), common, String.valueOf(Path.DELIMITER), 1,
+                        null, null, false);
+                    if(versions.getItems().length == 1) {
+                        final BaseVersionOrDeleteMarker version = versions.getItems()[0];
+                        if(version.getKey().equals(common)) {
+                            attributes.setVersionId(version.getVersionId());
+                            if(version.isDeleteMarker()) {
+                                attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                                attributes.setDuplicate(true);
                             }
-                            else {
-                                // no placeholder but objects inside - need to check if all of them are deleted
-                                final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
-                                    StringUtils.EMPTY, 1, null, false);
-                                if(unversioned.getObjects().length == 0) {
-                                    attributes.setDuplicate(true);
-                                }
+                        }
+                        else {
+                            // no placeholder but objects inside - need to check if all of them are deleted
+                            final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
+                                StringUtils.EMPTY, 1, null, false);
+                            if(unversioned.getObjects().length == 0) {
+                                attributes.setDuplicate(true);
                             }
                         }
                     }
