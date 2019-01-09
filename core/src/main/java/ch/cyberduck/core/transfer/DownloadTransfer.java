@@ -60,7 +60,7 @@ public class DownloadTransfer extends Transfer {
     private final Comparator<Path> comparator;
 
     private Cache<Path> cache
-            = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
+        = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
     private final DownloadSymlinkResolver symlinkResolver;
 
@@ -68,7 +68,7 @@ public class DownloadTransfer extends Transfer {
 
     public DownloadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
-                PreferencesFactory.get().getBoolean("queue.download.skip.enable") ? new DownloadRegexFilter() : new DownloadDuplicateFilter());
+            PreferencesFactory.get().getBoolean("queue.download.skip.enable") ? new DownloadRegexFilter() : new DownloadDuplicateFilter());
     }
 
     public DownloadTransfer(final Host host, final Path root, final Local local, final Filter<Path> f) {
@@ -77,7 +77,7 @@ public class DownloadTransfer extends Transfer {
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots) {
         this(host, roots,
-                PreferencesFactory.get().getBoolean("queue.download.skip.enable") ? new DownloadRegexFilter() : new DownloadDuplicateFilter());
+            PreferencesFactory.get().getBoolean("queue.download.skip.enable") ? new DownloadRegexFilter() : new DownloadDuplicateFilter());
     }
 
     public DownloadTransfer(final Host host, final List<TransferItem> roots, final Filter<Path> f) {
@@ -114,7 +114,7 @@ public class DownloadTransfer extends Transfer {
             log.debug(String.format("List children for %s", directory));
         }
         if(directory.isSymbolicLink()
-                && new DownloadSymlinkResolver(roots).resolve(directory)) {
+            && new DownloadSymlinkResolver(roots).resolve(directory)) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Do not list children for symbolic link %s", directory));
             }
@@ -178,12 +178,12 @@ public class DownloadTransfer extends Transfer {
         final TransferAction action;
         if(reloadRequested) {
             action = TransferAction.forName(
-                    PreferencesFactory.get().getProperty("queue.download.reload.action"));
+                PreferencesFactory.get().getProperty("queue.download.reload.action"));
         }
         else {
             // Use default
             action = TransferAction.forName(
-                    PreferencesFactory.get().getProperty("queue.download.action"));
+                PreferencesFactory.get().getProperty("queue.download.action"));
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem download : roots) {
@@ -224,12 +224,14 @@ public class DownloadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
         }
+        super.pre(source, destination, files, callback);
     }
 
     @Override
     public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         final Bulk<?> feature = source.getFeature(Bulk.class);
         feature.post(Type.download, files, callback);
+        super.post(source, destination, files, callback);
     }
 
     @Override
@@ -243,7 +245,7 @@ public class DownloadTransfer extends Transfer {
             if(symlinkResolver.resolve(file)) {
                 // Make relative symbolic link
                 final String target = symlinkResolver.relativize(file.getAbsolute(),
-                        file.getSymlinkTarget().getAbsolute());
+                    file.getSymlinkTarget().getAbsolute());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Create symbolic link from %s to %s", local, target));
                 }
@@ -254,7 +256,7 @@ public class DownloadTransfer extends Transfer {
         }
         if(file.isFile()) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
-                    file.getName()));
+                file.getName()));
             final Local folder = local.getParent();
             if(!folder.exists()) {
                 new DefaultLocalDirectoryFeature().mkdir(folder);
@@ -272,7 +274,7 @@ public class DownloadTransfer extends Transfer {
         else if(file.isDirectory()) {
             if(!status.isExists()) {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
-                        local.getName()));
+                    local.getName()));
                 new DefaultLocalDirectoryFeature().mkdir(local);
                 status.setComplete();
             }
