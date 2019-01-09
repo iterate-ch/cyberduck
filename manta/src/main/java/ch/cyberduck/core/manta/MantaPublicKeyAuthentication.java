@@ -20,7 +20,9 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -78,8 +80,23 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
                 @Override
                 public char[] reqPassword(Resource<?> resource) {
                     if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {
-                        // Return null if user cancels
-                        return StringUtils.EMPTY.toCharArray();
+                        try {
+                            // Use password prompt
+                            final Credentials input = prompt.prompt(bookmark,
+                                LocaleFactory.localizedString("Private key password protected", "Credentials"),
+                                String.format("%s (%s)",
+                                    LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
+                                    identity.getAbbreviatedPath()),
+                                new LoginOptions()
+                                    .user(false).password(true)
+                            );
+                            credentials.setSaved(input.isSaved());
+                            credentials.setIdentityPassphrase(input.getPassword());
+                        }
+                        catch(LoginCanceledException e) {
+                            // Return null if user cancels
+                            return StringUtils.EMPTY.toCharArray();
+                        }
                     }
                     config.setPassword(credentials.getIdentityPassphrase());
                     return credentials.getIdentityPassphrase().toCharArray();
