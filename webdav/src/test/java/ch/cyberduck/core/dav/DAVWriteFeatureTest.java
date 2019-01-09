@@ -78,7 +78,6 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
             assertArrayEquals(reference, buffer);
         }
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test

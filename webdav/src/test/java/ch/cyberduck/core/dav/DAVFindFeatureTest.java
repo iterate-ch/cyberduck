@@ -32,7 +32,6 @@ public class DAVFindFeatureTest extends AbstractDAVTest {
         assertFalse(new DAVFindFeature(session).find(
             new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))
         ));
-        session.close();
     }
 
 

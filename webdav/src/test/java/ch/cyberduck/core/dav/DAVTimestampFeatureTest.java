@@ -24,6 +24,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -37,6 +38,7 @@ import static org.junit.Assert.assertEquals;
 public class DAVTimestampFeatureTest extends AbstractDAVTest {
 
     @Test
+    @Ignore
     public void testSetTimestamp() throws Exception {
         final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
@@ -44,6 +46,5 @@ public class DAVTimestampFeatureTest extends AbstractDAVTest {
         assertEquals(5000L, new DAVAttributesFinderFeature(session).find(file).getModificationDate());
         assertEquals(5000L, new DefaultAttributesFinderFeature(session).find(file).getModificationDate());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

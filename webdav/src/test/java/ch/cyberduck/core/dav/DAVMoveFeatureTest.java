@@ -20,7 +20,6 @@ package ch.cyberduck.core.dav;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -28,8 +27,6 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -44,7 +41,6 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMove() throws Exception {
-
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(0L, test.attributes().getSize());
         final Path target = new DAVMoveFeature(session).move(test,
@@ -57,8 +53,6 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMoveDirectory() throws Exception {
-        Logger.getLogger(Session.class.getName()).setLevel(Level.DEBUG);
-
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
@@ -70,7 +64,6 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMoveOverride() throws Exception {
-
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(test, new TransferStatus());
         final Path target = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -83,7 +76,6 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
-
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DAVMoveFeature(session).move(test, new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
     }

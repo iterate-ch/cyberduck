@@ -31,6 +31,7 @@ import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -73,6 +74,7 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
     }
 
     @Test
+    @Ignore
     public void testSetMetadataFile() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
@@ -83,11 +85,11 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
 
     }
 
     @Test
+    @Ignore
     public void testSetMetadataFolder() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
@@ -98,7 +100,5 @@ public class DAVMetadataFeatureTest extends AbstractDAVTest {
         assertTrue(metadata.containsKey("Test"));
         assertEquals(v, metadata.get("Test"));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
-
     }
 }

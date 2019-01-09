@@ -81,7 +81,6 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         }
         finally {
             local.delete();
-            session.close();
         }
     }
 
@@ -115,6 +114,5 @@ public class DAVUploadFeatureTest extends AbstractDAVTest {
         assertArrayEquals(content, buffer);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-        session.close();
     }
 }

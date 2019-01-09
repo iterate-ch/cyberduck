@@ -45,7 +45,6 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testCopyFile() throws Exception {
-
         final Path test = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)),
             new DAVAttributesFinderFeature(session)).touch(test, new TransferStatus());
@@ -55,12 +54,10 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         assertTrue(new DAVFindFeature(session).find(copy));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testCopyToExistingFile() throws Exception {
-
         final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -77,7 +74,6 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testCopyDirectory() throws Exception {
-
         final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));
@@ -89,6 +85,5 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         assertTrue(new DAVFindFeature(session).find(copy));
         assertTrue(new DAVFindFeature(session).find(new Path(copy, name, EnumSet.of(Path.Type.file))));
         new DAVDeleteFeature(session).delete(Arrays.asList(copy, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

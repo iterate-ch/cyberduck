@@ -47,7 +47,6 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testReadNotFound() throws Exception {
-
         final TransferStatus status = new TransferStatus();
         try {
             new DAVReadFeature(session).read(new Path(new DefaultHomeFinderService(session).find(), "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
@@ -111,10 +110,8 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testReadRange() throws Exception {
-
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
-
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
         final OutputStream out = local.getOutputStream(false);
@@ -143,10 +140,8 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testReadRangeUnknownLength() throws Exception {
-
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
-
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
         final OutputStream out = local.getOutputStream(false);
@@ -170,7 +165,6 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test

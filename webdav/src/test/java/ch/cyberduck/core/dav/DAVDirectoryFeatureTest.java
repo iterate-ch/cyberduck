@@ -40,12 +40,10 @@ public class DAVDirectoryFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testMakeDirectory() throws Exception {
-
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
         new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
-        session.close();
     }
 }
