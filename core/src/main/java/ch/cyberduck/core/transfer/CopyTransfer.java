@@ -212,7 +212,6 @@ public class CopyTransfer extends Transfer {
                 log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
             }
         }
-        super.pre(source, destination, files, callback);
     }
 
     @Override
@@ -229,7 +228,6 @@ public class CopyTransfer extends Transfer {
             }
             upload.post(Type.upload, targets, callback);
         }
-        super.post(source, destination, files, callback);
     }
 
     @Override
