@@ -20,6 +20,8 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.binding.foundation.NSFileManager;
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
@@ -141,10 +143,25 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public OutputStream getOutputStream(boolean append) throws AccessDeniedException {
+    public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
         final NSURL resolved;
         try {
             resolved = this.lock(false);
+            final AttributedList<Local> list = super.list(resolved.path(), filter);
+            this.release(resolved);
+            return list;
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure obtaining lock for %s. %s", this, e.getMessage()));
+            return super.list(filter);
+        }
+    }
+
+    @Override
+    public OutputStream getOutputStream(boolean append) throws AccessDeniedException {
+        final NSURL resolved;
+        try {
+            resolved = this.lock(this.exists());
         }
         catch(LocalAccessDeniedException e) {
             return super.getOutputStream(append);
