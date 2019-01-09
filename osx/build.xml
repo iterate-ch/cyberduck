@@ -19,7 +19,7 @@
  *	Bug fixes, suggestions and comments should be sent to:
  *	dkocher@cyberduck.io
  -->
-<project name="Cyberduck for Mac" basedir=".">
+<project name="Cyberduck for Mac" basedir="." xmlns:unless="ant:unless">
 
     <import file="../build.xml"/>
 
@@ -88,12 +88,12 @@
         <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}">
             <param name="bundle" value="${app.bundle}"/>
         </foreach>
-    </target>
-
-    <target name="package" depends="build">
-        <antcall target="codesign">
+        <antcall target="codesign" unless:true="${skipSign}">
             <param name="bundle" value="${app.bundle}"/>
         </antcall>
+    </target>
+
+    <target name="package">
         <mkdir dir="${build.deploy}"/>
         <antcall target="zip">
             <param name="directory" value="${build}"/>
