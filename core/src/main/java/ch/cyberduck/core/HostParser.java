@@ -138,7 +138,7 @@ public final class HostParser {
                 || URI_SCHEME.indexOf(c) != -1) {
                 stringBuilder.append(c);
             }
-            else if(Character.isWhitespace(c)) {
+            else if(' ' == c) {
                 if(stringBuilder.length() != 0) {
                     // Whitespace inside scheme. Break.
                     // TODO: Error out.
@@ -155,6 +155,7 @@ public final class HostParser {
     }
 
     static boolean parseAuthority(final StringReader reader, final Host host) {
+        int tracker = reader.position;
         final StringBuilder buffer = new StringBuilder();
         final StringBuilder userBuilder = new StringBuilder();
         StringBuilder passwordBuilder = null;
@@ -185,12 +186,13 @@ public final class HostParser {
                         userBuilder.append(t);
                     }
                 }
+                tracker = reader.position;
                 buffer.setLength(0);
             }
             else if('%' == c) {
                 buffer.append(readPercentCharacter(reader));
             }
-            else if('/' == c) {
+            else if(c == '/') {
                 break;
             }
             else {
@@ -215,7 +217,7 @@ public final class HostParser {
             }
         }
 
-        reader.skip(-buffer.length());
+        reader.skip(tracker - reader.position);
         return parseHostname(reader, host);
     }
 
@@ -280,6 +282,9 @@ public final class HostParser {
                 port = port * 10 + Character.getNumericValue(c);
             }
             else if(c == '/') {
+                // Move Reader one symbol back
+                // used in parseAbsolute (requires "/" at beginning)
+                reader.skip(-1);
                 break;
             }
             else {
@@ -307,6 +312,11 @@ public final class HostParser {
             }
             else if(c == '%') {
                 pathBuilder.append(readPercentCharacter(reader));
+            }
+            else if(c == ' ') {
+                // This is a violation of RFC.
+                // There must not be a space inside path
+                pathBuilder.append(c);
             }
             else {
                 // TODO: Error out. This is not supported.
@@ -373,7 +383,7 @@ public final class HostParser {
             else if(c == '%') {
                 stringBuilder.append(readPercentCharacter(reader));
             }
-            else if(Character.isWhitespace(c)) {
+            else if(' ' == c) {
                 // TODO We do allow whitespace in path and user component!
                 //  this is a violation to RFC 3986.
                 stringBuilder.append(c);
@@ -440,7 +450,7 @@ public final class HostParser {
 
     private static char readPercentCharacter(final StringReader reader) {
         final StringBuilder string = new StringBuilder();
-        for(int i = 0; i < 2 && reader.peek() != -1; i++) {
+        for(int i = 0; i < 2 && !reader.endOfString(); i++) {
             string.append((char) reader.read());
         }
         if(string.length() != 2) {
