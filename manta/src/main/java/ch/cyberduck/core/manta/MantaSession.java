@@ -52,6 +52,7 @@ import com.joyent.manta.config.AuthAwareConfigContext;
 import com.joyent.manta.config.ChainedConfigContext;
 import com.joyent.manta.config.DefaultsConfigContext;
 import com.joyent.manta.config.StandardConfigContext;
+import com.joyent.manta.exception.ConfigurationException;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.http.MantaConnectionFactoryConfigurator;
@@ -94,6 +95,9 @@ public class MantaSession extends HttpSession<MantaClient> {
             config.reload();
             // Instantiation of client does not validate credentials. List the home path to test the connection
             client.isDirectoryEmpty(new MantaHomeFinderFeature(this).find().getAbsolute());
+        }
+        catch(ConfigurationException e) {
+            throw new BackgroundException(e.getRawMessage(), e);
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map(e);
