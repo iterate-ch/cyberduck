@@ -30,6 +30,8 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertFalse;
+
 public class SwiftAccountLoaderTest {
 
     @Test
@@ -41,6 +43,6 @@ public class SwiftAccountLoaderTest {
         new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new SwiftAccountLoader(session).operate(new DisabledLoginCallback(), container);
+        assertFalse(new SwiftAccountLoader(session).operate(new DisabledLoginCallback(), container).isEmpty());
     }
 }
