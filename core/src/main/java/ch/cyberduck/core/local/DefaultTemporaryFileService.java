@@ -27,15 +27,13 @@ import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.io.File;
 
 public class DefaultTemporaryFileService extends AbstractTemporaryFileService implements TemporaryFileService {
-    private static final Logger log = Logger.getLogger(DefaultTemporaryFileService.class);
 
     private final String delimiter
-            = PreferencesFactory.get().getProperty("local.delimiter");
+        = PreferencesFactory.get().getProperty("local.delimiter");
 
     @Override
     public Local create(final Path file) {
@@ -76,7 +74,7 @@ public class DefaultTemporaryFileService extends AbstractTemporaryFileService im
 
         final File shortenTestPath = new File(PreferencesFactory.get().getProperty("tmp.dir"), String.format(normalizedPathFormat, delimiter, uid, "", attributes, normalizedFileName));
         final int shortenLength = PreferencesFactory.get().getInteger("local.temporaryfiles.shortening.threshold") - shortenTestPath.getAbsolutePath().length();
-        if (shortenLength < 0) {
+        if(shortenLength < 0) {
             // should throw Exception or warn user that this operation might result in CD crash
         }
 
