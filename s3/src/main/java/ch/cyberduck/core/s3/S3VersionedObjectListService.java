@@ -23,11 +23,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Versioning;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.threading.BackgroundExceptionCallable;
+import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.ThreadPoolFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -37,8 +39,12 @@ import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import org.jets3t.service.model.S3Version;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -55,18 +61,25 @@ public class S3VersionedObjectListService implements ListService {
 
     private final S3Session session;
 
+    private final Integer concurrency;
+
     public S3VersionedObjectListService(final S3Session session) {
+        this(session, PreferencesFactory.get().getInteger("s3.listing.concurrency"));
+    }
+
+    public S3VersionedObjectListService(final S3Session session, final Integer concurrency) {
         this.session = session;
+        this.concurrency = concurrency;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final String prefix = this.createPrefix(directory);
-        final Path bucket = containerService.getContainer(directory);
-        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(bucket) :
-            VersioningConfiguration.empty();
-        final AttributedList<Path> children = new AttributedList<Path>();
+        final ThreadPool pool = ThreadPoolFactory.get("list", concurrency);
         try {
+            final String prefix = this.createPrefix(directory);
+            final Path bucket = containerService.getContainer(directory);
+            final AttributedList<Path> children = new AttributedList<Path>();
+            final List<Future<Path>> folders = new ArrayList<Future<Path>>();
             String priorLastKey = null;
             String priorLastVersionId = null;
             long revision = 0L;
@@ -88,9 +101,7 @@ public class S3VersionedObjectListService implements ListService {
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    if(versioning.isEnabled()) {
-                        attributes.setVersionId(marker.getVersionId());
-                    }
+                    attributes.setVersionId(marker.getVersionId());
                     if(!StringUtils.equals(lastKey, key)) {
                         // Reset revision for next file
                         revision = 0L;
@@ -126,44 +137,76 @@ public class S3VersionedObjectListService implements ListService {
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
-                    final PathAttributes attributes = new PathAttributes();
-                    attributes.setRegion(bucket.attributes().getRegion());
-                    if(versioning.isEnabled()) {
-                        final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
-                            bucket.getName(), common, String.valueOf(Path.DELIMITER), 1,
-                            null, null, false);
-                        if(versions.getItems().length == 1) {
-                            final BaseVersionOrDeleteMarker version = versions.getItems()[0];
-                            if(version.getKey().equals(common)) {
-                                attributes.setVersionId(version.getVersionId());
-                                if(version.isDeleteMarker()) {
-                                    attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                                    attributes.setDuplicate(true);
-                                }
-                            }
-                            else {
-                                // no placeholder but objects inside - need to check if all of them are deleted
-                                final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
-                                    StringUtils.EMPTY, 1, null, false);
-                                if(unversioned.getObjects().length == 0) {
-                                    attributes.setDuplicate(true);
-                                }
-                            }
-                        }
-                    }
-                    final Path file = new Path(String.format("%s%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
-                    children.add(file);
+                    folders.add(this.submit(pool, bucket, common));
                 }
                 priorLastKey = chunk.getNextKeyMarker();
                 priorLastVersionId = chunk.getNextVersionIdMarker();
                 listener.chunk(directory, children);
             }
             while(priorLastKey != null);
+            for(Future<Path> future : folders) {
+                try {
+                    children.add(future.get());
+                }
+                catch(InterruptedException e) {
+                    log.error("Listing versioned objects failed with interrupt failure");
+                    throw new ConnectionCanceledException(e);
+                }
+                catch(ExecutionException e) {
+                    log.warn(String.format("Listing versioned objects failed with execution failure %s", e.getMessage()));
+                    if(e.getCause() instanceof BackgroundException) {
+                        throw (BackgroundException) e.getCause();
+                    }
+                    throw new BackgroundException(e.getCause());
+                }
+            }
             return children;
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
+        finally {
+            // Cancel future tasks
+            pool.shutdown(false);
+        }
+    }
+
+    private Future<Path> submit(final ThreadPool pool, final Path bucket, final String common) {
+        return pool.execute(new BackgroundExceptionCallable<Path>() {
+            @Override
+            public Path call() throws BackgroundException {
+                final PathAttributes attributes = new PathAttributes();
+                attributes.setRegion(bucket.attributes().getRegion());
+                final Path path = new Path(String.format("%s%s", bucket.getAbsolute(), PathNormalizer.normalize(common)), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                try {
+                    final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
+                        bucket.getName(), common, String.valueOf(Path.DELIMITER), 1,
+                        null, null, false);
+                    if(versions.getItems().length == 1) {
+                        final BaseVersionOrDeleteMarker version = versions.getItems()[0];
+                        if(version.getKey().equals(common)) {
+                            attributes.setVersionId(version.getVersionId());
+                            if(version.isDeleteMarker()) {
+                                attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                                attributes.setDuplicate(true);
+                            }
+                        }
+                        else {
+                            // no placeholder but objects inside - need to check if all of them are deleted
+                            final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
+                                StringUtils.EMPTY, 1, null, false);
+                            if(unversioned.getObjects().length == 0) {
+                                attributes.setDuplicate(true);
+                            }
+                        }
+                    }
+                }
+                catch(ServiceException e) {
+                    throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, path);
+                }
+                return path;
+            }
+        });
     }
 
     @Override
