@@ -20,7 +20,10 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class FileidDriveListService extends AbstractDriveListService {
+
     private final DriveFileidProvider provider;
     private final Path file;
 
@@ -32,6 +35,10 @@ public class FileidDriveListService extends AbstractDriveListService {
 
     @Override
     protected String query(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return String.format("name = '%s' and '%s' in parents", file.getName(), provider.getFileid(directory, new DisabledListProgressListener()));
+        // Surround with single quotes '. Escape single quotes in queries with \', e.g., 'Valentine\'s Day'.
+        String escaped = file.getName();
+        escaped = StringUtils.replace(escaped, "\\", "\\\\");
+        escaped = StringUtils.replace(escaped, "'", "\\'");
+        return String.format("name = '%s' and '%s' in parents", escaped, provider.getFileid(directory, new DisabledListProgressListener()));
     }
 }
