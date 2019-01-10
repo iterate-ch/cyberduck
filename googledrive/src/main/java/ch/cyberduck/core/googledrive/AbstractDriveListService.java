@@ -95,7 +95,7 @@ public abstract class AbstractDriveListService implements ListService {
                         filename = String.format("%s.%s", PathNormalizer.name(f.getName()), urlFileWriter.getExtension());
                     }
                     else {
-                        filename = PathNormalizer.name(f.getName());
+                        filename = f.getName();
                     }
                     if(StringUtils.equals(filename, String.valueOf(Path.DELIMITER))) {
                         continue;
