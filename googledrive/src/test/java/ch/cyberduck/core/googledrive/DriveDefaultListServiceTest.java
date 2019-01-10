@@ -16,6 +16,7 @@ package ch.cyberduck.core.googledrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -62,6 +63,28 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         assertEquals(f1, list.get(0));
         assertEquals(f2, list.get(1));
         new DriveDeleteFeature(session, fileid).delete(Arrays.asList(f1, f2, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListFilenameSingleQuote() throws Exception {
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path f1 = new DriveTouchFeature(session, fileid).touch(new Path(directory, String.format("%s'", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
+        assertEquals(1, list.size());
+        assertEquals(f1, list.get(0));
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(f1, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListFilenameBackslash() throws Exception {
+        final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
+        final Path directory = new DriveDirectoryFeature(session, fileid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path f1 = new DriveTouchFeature(session, fileid).touch(new Path(directory, String.format("%s\\", new AsciiRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final AttributedList<Path> list = new DriveDefaultListService(session, fileid).list(directory, new DisabledListProgressListener());
+        assertEquals(1, list.size());
+        assertEquals(f1, list.get(0));
+        new DriveDeleteFeature(session, fileid).delete(Arrays.asList(f1, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test
