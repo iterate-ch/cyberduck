@@ -39,7 +39,6 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
         catch(NotfoundException e) {
             // Expected
         }
-        session.close();
     }
 
     @Test
@@ -50,6 +49,5 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
         final SFTPAttributesFinderFeature f = new SFTPAttributesFinderFeature(session);
         final PathAttributes attributes = f.find(symlink);
         assertNotNull(attributes);
-        session.close();
     }
 }

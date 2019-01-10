@@ -249,7 +249,6 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(encryptedFile));
         assertTrue(new SFTPFindFeature(session).find(cleartextFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(vault, clearFolder), new DisabledProgressListener()).run(session);
-        session.close();
         registry.clear();
     }
 

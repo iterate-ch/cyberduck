@@ -54,7 +54,6 @@ public class CopyWorkerTest extends AbstractSFTPTest {
         assertTrue(new SFTPFindFeature(session).find(source));
         assertTrue(new SFTPFindFeature(session).find(target));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
-        session.close();
     }
 
     @Test

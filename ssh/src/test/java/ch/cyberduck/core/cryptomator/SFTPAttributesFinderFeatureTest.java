@@ -71,7 +71,6 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
         assertNotNull(attributes);
         assertEquals(0L, attributes.getSize());
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -89,7 +88,6 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
         assertNotNull(attributes);
         assertEquals(0L, attributes.getSize());
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -113,6 +111,5 @@ public class SFTPAttributesFinderFeatureTest extends AbstractSFTPTest {
         assertEquals(0L, attributes.getSize());
         assertEquals(0L, cache.get(vault).get(0).attributes().getSize());
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }
