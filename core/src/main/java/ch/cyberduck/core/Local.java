@@ -224,10 +224,14 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
     }
 
     public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
+        return this.list(path, filter);
+    }
+
+    public AttributedList<Local> list(final String path, final Filter<String> filter) throws AccessDeniedException {
         final AttributedList<Local> children = new AttributedList<Local>();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(path), new DirectoryStream.Filter<Path>() {
             @Override
-            public boolean accept(final Path entry) throws IOException {
+            public boolean accept(final Path entry) {
                 if(null == entry.getFileName()) {
                     return false;
                 }

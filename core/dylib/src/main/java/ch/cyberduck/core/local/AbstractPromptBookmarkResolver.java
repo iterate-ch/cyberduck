@@ -27,8 +27,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
@@ -41,8 +39,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class AbstractPromptBookmarkResolver implements FilesystemBookmarkResolver<NSURL> {
     private static final Logger log = Logger.getLogger(AbstractPromptBookmarkResolver.class);
-
-    private final Preferences preferences = PreferencesFactory.get();
 
     private final int create;
     private final int resolve;
@@ -68,7 +64,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
             log.trace(String.format("Resolved file %s to url %s", file, url));
         }
         final NSData data = url.bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
-                create, null, null, error);
+            create, null, null, error);
         if(null == data) {
             log.warn(String.format("Failure getting bookmark data for file %s", file));
             final NSError f = error.getValueAs(NSError.class);
@@ -88,6 +84,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
     public NSURL resolve(final Local file, final boolean interactive) throws AccessDeniedException {
         final NSData bookmark;
         if(null == file.getBookmark()) {
+            log.warn(String.format("Missing security scoped bookmark for file %s", file));
             if(interactive) {
                 // Prompt user if no bookmark reference is available
                 final String reference = this.choose(file);
@@ -128,7 +125,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
                 panel.setCanChooseFiles(file.isFile());
                 panel.setAllowsMultipleSelection(false);
                 panel.setMessage(MessageFormat.format(LocaleFactory.localizedString("Select {0}", "Credentials"),
-                        file.getAbbreviatedPath()));
+                    file.getAbbreviatedPath()));
                 panel.setPrompt(LocaleFactory.localizedString("Choose"));
                 final NSInteger modal = panel.runModal(file.getParent().getAbsolute(), file.getName());
                 if(modal.intValue() == SheetCallback.DEFAULT_OPTION) {
@@ -143,12 +140,11 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
             }
         };
         proxy.invoke(action, action.lock(), true);
-        // Save Base64 encoded scoped reference
-        final String reference = this.create(selected.get());
-        if(reference == null) {
+        if(selected.get() == null) {
             throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file));
         }
-        return reference;
+        // Save Base64 encoded scoped reference
+        return this.create(selected.get());
     }
 
 }

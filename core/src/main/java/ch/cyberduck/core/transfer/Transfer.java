@@ -42,6 +42,8 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,6 +66,8 @@ public abstract class Transfer implements Serializable {
      * The number bytes already transferred of the files in the <code>queue</code> or null if unknown
      */
     private AtomicLong transferred;
+
+    private final Map<Local, Object> locks = new HashMap<>();
 
     public abstract Type getType();
 
@@ -305,7 +309,10 @@ public abstract class Transfer implements Serializable {
      * @param callback    Prompt
      */
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        //
+        for(TransferItem item : roots) {
+            final Local directory = item.local.getParent();
+            locks.put(directory, directory.lock(true));
+        }
     }
 
     /**
@@ -315,7 +322,12 @@ public abstract class Transfer implements Serializable {
      * @param callback    Prompt
      */
     public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        //
+        for(Iterator<Map.Entry<Local, Object>> iter = locks.entrySet().iterator(); iter.hasNext(); ) {
+            final Map.Entry<Local, Object> entry = iter.next();
+            final Local directory = entry.getKey().getParent();
+            directory.release(entry.getValue());
+            iter.remove();
+        }
     }
 
     /**
