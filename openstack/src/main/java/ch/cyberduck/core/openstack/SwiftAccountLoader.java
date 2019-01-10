@@ -62,6 +62,7 @@ public class SwiftAccountLoader extends OneTimeSchedulerFeature<Map<Region, Acco
                             log.debug(String.format("Set acccount temp URL key to %s", key));
                         }
                         session.getClient().updateAccountMetadata(region, Collections.singletonMap("X-Account-Meta-Temp-URL-Key", key));
+                        info.setTempUrlKey(key);
                     }
                     catch(GenericException e) {
                         log.warn(String.format("Ignore failure %s updating account metadata", e));
