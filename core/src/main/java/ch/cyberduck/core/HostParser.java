@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.PrimitiveIterator;
 import java.util.regex.Pattern;
@@ -86,24 +87,33 @@ public final class HostParser {
 
         final Host host = new Host(protocol);
 
-        final URITypes uriType = resolveURIType(findURIType(reader), protocol);
+        final URITypes uriType = findURIType(reader);
         if(uriType == URITypes.Undefined) {
             // scheme:
             if(StringUtils.isBlank(protocol.getDefaultHostname())) {
                 // TODO: Error out. This is not supported.
             }
-            if(StringUtils.isBlank(protocol.getDefaultPath())) {
-                // TODO: Error out.This is not supported.
-            }
 
             return host;
         }
 
-        if(uriType == URITypes.Authority) {
-            if(!parseAuthority(reader, host)) {
+        if(uriType == URITypes.Authority || uriType == URITypes.Rootless) {
+            final Boolean userInfoResult = parseUserInfo(reader, host);
+            if(Boolean.FALSE.equals(userInfoResult)) {
                 // TODO: Error out.
             }
-            if(!parseAbsolute(reader, host)) {
+
+            if(uriType == URITypes.Authority && !host.getProtocol().isHostnameConfigurable()) {
+                if(userInfoResult == null) {
+                    reader.skip(-1);
+                }
+            }
+            else {
+                if(!parseHostname(reader, host)) {
+                    // TODO: Error out.
+                }
+            }
+            if(!parsePath(reader, host)) {
                 // TODO: Error out.
             }
         }
@@ -112,13 +122,8 @@ public final class HostParser {
                 // TODO: Error out.
             }
         }
-        else if(uriType == URITypes.Rootless) {
-            if(!parseRootless(reader, host)) {
-                // TODO: Error out.
-            }
-        }
         else {
-            // TODO Error. This should not happen.
+            // TODO: Error out.
         }
 
         return host;
@@ -138,16 +143,17 @@ public final class HostParser {
                 || URI_SCHEME.indexOf(c) != -1) {
                 stringBuilder.append(c);
             }
-            else if(' ' == c) {
-                if(stringBuilder.length() != 0) {
-                    // Whitespace inside scheme. Break.
-                    // TODO: Error out.
-                    return false; // invalid. Return empty.
-                }
-            }
             else if(c == ':') {
                 scheme.setValue(stringBuilder.toString());
                 return true; // valid. Break to return stringbuilder
+            }
+            else {
+                if(c == ' ' && stringBuilder.length() == 0) {
+                    continue;
+                }
+                // Invalid character inside scheme.
+                // TODO: Error out.
+                return false;
             }
         }
         // TODO: EOF, should this be considered safe? ("scheme" instead of "scheme:")
@@ -155,69 +161,9 @@ public final class HostParser {
     }
 
     static boolean parseAuthority(final StringReader reader, final Host host) {
-        int tracker = reader.position;
-        final StringBuilder buffer = new StringBuilder();
-        final StringBuilder userBuilder = new StringBuilder();
-        StringBuilder passwordBuilder = null;
-
-        boolean atSignFlag = false;
-        while(!reader.endOfString()) {
-            final char c = (char) reader.read();
-
-            if('@' == c) {
-                if(atSignFlag) {
-                    buffer.append(c);
-                    continue;
-                }
-                atSignFlag = true;
-                for(int i = 0; i < buffer.length(); i++) {
-                    final char t = buffer.charAt(i);
-                    if(Character.isWhitespace(t)) {
-                        return false;
-                    }
-                    if(t == ':' && passwordBuilder == null) {
-                        passwordBuilder = new StringBuilder();
-                        continue;
-                    }
-                    if(passwordBuilder != null) {
-                        passwordBuilder.append(t);
-                    }
-                    else {
-                        userBuilder.append(t);
-                    }
-                }
-                tracker = reader.position;
-                buffer.setLength(0);
-            }
-            else if('%' == c) {
-                buffer.append(readPercentCharacter(reader));
-            }
-            else if(c == '/') {
-                break;
-            }
-            else {
-                buffer.append(c);
-            }
+        if(Boolean.FALSE.equals(parseUserInfo(reader, host))) {
+            return false;
         }
-
-        if(atSignFlag) {
-            if(host.getProtocol().isUsernameConfigurable()) {
-                if(userBuilder.length() > 0) {
-                    host.getCredentials().setUsername(userBuilder.toString());
-                }
-            }
-            userBuilder.setLength(0);
-            if(passwordBuilder != null) {
-                if(host.getProtocol().isPasswordConfigurable()) {
-                    if(passwordBuilder.length() > 0) {
-                        host.getCredentials().setPassword(passwordBuilder.toString());
-                    }
-                }
-                passwordBuilder.setLength(0);
-            }
-        }
-
-        reader.skip(tracker - reader.position);
         return parseHostname(reader, host);
     }
 
@@ -304,6 +250,94 @@ public final class HostParser {
     }
 
     static boolean parseAbsolute(final StringReader reader, final Host host) {
+        return parsePath(reader, host);
+    }
+
+    static boolean parseRootless(final StringReader reader, final Host host) {
+        // This is not RFC-compliant.
+        // * Rootless-path must not include authentication information.
+
+        if(Boolean.FALSE.equals(parseUserInfo(reader, host))) {
+            return false;
+        }
+        return parsePath(reader, host);
+    }
+
+    static Boolean parseUserInfo(final StringReader reader, final Host host) {
+        int tracker = reader.position;
+        final StringBuilder buffer = new StringBuilder();
+        final StringBuilder userBuilder = new StringBuilder();
+        StringBuilder passwordBuilder = null;
+
+        boolean atSignFlag = false;
+        while(!reader.endOfString()) {
+            final char c = (char) reader.read();
+
+            if('@' == c) {
+                atSignFlag = true;
+                final int length = buffer.length();
+                for(int i = 0; i < length; i++) {
+                    final char t = buffer.charAt(i);
+                    if(Character.isWhitespace(t)) {
+                        return false;
+                    }
+                    if(t == ':' && passwordBuilder == null) {
+                        passwordBuilder = new StringBuilder();
+                        continue;
+                    }
+                    if(passwordBuilder != null) {
+                        passwordBuilder.append(t);
+                    }
+                    else {
+                        userBuilder.append(t);
+                    }
+                }
+                tracker = reader.position;
+                buffer.setLength(0);
+                // found @-sign.
+                // Breaking out. Nothing more to check.
+                break;
+            }
+            else if('%' == c) {
+                buffer.append(readPercentCharacter(reader));
+            }
+            else if(c == '/') {
+                break;
+            }
+            else {
+                // TODO: Error on invalid characters. (flag for User information/Authority-Part
+                buffer.append(c);
+            }
+        }
+        reader.skip(tracker - reader.position);
+        if(atSignFlag) {
+            if(userBuilder.length() > 0) {
+                if(host.getProtocol().isUsernameConfigurable()) {
+                    host.getCredentials().setUsername(userBuilder.toString());
+                }
+                else {
+                    // TODO: Log warning.
+                }
+            }
+            userBuilder.setLength(0);
+            if(passwordBuilder != null) {
+                if(passwordBuilder.length() > 0) {
+                    if(host.getProtocol().isPasswordConfigurable()) {
+                        host.getCredentials().setPassword(passwordBuilder.toString());
+                    }
+                    else {
+                        // TODO: Log warning.
+                    }
+                }
+                passwordBuilder.setLength(0);
+            }
+
+            return true;
+        }
+        return null;
+    }
+
+    static boolean parsePath(final StringReader reader, final Host host) {
         final StringBuilder pathBuilder = new StringBuilder();
         while(!reader.endOfString()) {
             final char c = (char) reader.read();
@@ -323,79 +357,15 @@ public final class HostParser {
                 return false;
             }
         }
-        host.setDefaultPath(pathBuilder.toString());
-        return true;
-    }
 
-    static boolean parseRootless(final StringReader reader, final Host host) {
-        // This is not RFC-compliant.
-        // * Rootless-path must not include authentication information.
-
-        String userComponent = StringUtils.EMPTY;
-        String passwordComponent = StringUtils.EMPTY;
-        String pathComponent = StringUtils.EMPTY;
-
-        boolean validUser = true;
-        boolean continuePassword = false;
-
-        final StringBuilder stringBuilder = new StringBuilder();
-        while(!reader.endOfString()) {
-            final char c = (char) reader.read();
-            if(c == '/') {
-                // TODO: Starts new segment.
-                validUser = false;
-                stringBuilder.append(c);
-            }
-            else if(isPChar(c)) {
-                if(!isValidUserInfo(c)) {
-                    if(validUser && c == '@') {
-                        if(continuePassword) {
-                            passwordComponent = stringBuilder.toString();
-                        }
-                        else {
-                            userComponent = stringBuilder.toString();
-                        }
-                        stringBuilder.setLength(0);
-                    }
-                    else {
-                        stringBuilder.append(c);
-                    }
-                    validUser = false;
-                }
-                else if(c == ':') {
-                    if(validUser) {
-                        if(continuePassword) {
-                            // TODO: Error out.
-                            //  This is not supported (two ":" in UserInfo)
-                        }
-                        userComponent = stringBuilder.toString();
-                        stringBuilder.setLength(0);
-                        continuePassword = true;
-                    }
-                    else {
-                        stringBuilder.append(c);
-                    }
-                }
-                else {
-                    stringBuilder.append(c);
-                }
-            }
-            else if(c == '%') {
-                stringBuilder.append(readPercentCharacter(reader));
-            }
-            else if(' ' == c) {
-                // TODO We do allow whitespace in path and user component!
-                //  this is a violation to RFC 3986.
-                stringBuilder.append(c);
+        if(pathBuilder.length() > 0) {
+            if(host.getProtocol().isPathConfigurable()) {
+                host.setDefaultPath(pathBuilder.toString());
             }
             else {
-                // TODO This is not supported!
-                //  Error out.
-                break;
+                // TODO: Log warning.
             }
         }
-        pathComponent = stringBuilder.toString();
-
         return true;
     }
 
@@ -426,7 +396,7 @@ public final class HostParser {
     static URITypes resolveURIType(final URITypes from, final Protocol protocol) {
         if(!protocol.isHostnameConfigurable()) {
             if(URITypes.Authority == from) {
-                return URITypes.Absolute;
+                return URITypes.Rootless;
             }
         }
         return from;

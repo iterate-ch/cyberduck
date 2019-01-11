@@ -122,7 +122,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void parseDefaultHostnameWithUser() throws Exception {
+    public void parseDefaultHostnameWithUserRelativePath() throws Exception {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
             @Override
             public String getDefaultHostname() {
@@ -134,6 +134,24 @@ public class HostParserTest {
                 return false;
             }
         }))).get("https://user@folder/file");
+        assertEquals("defaultHostname", host.getHostname());
+        assertEquals("user", host.getCredentials().getUsername());
+        assertEquals("folder/file", host.getDefaultPath());
+    }
+
+    @Test
+    public void parseDefaultHostnameWithUserAbsolutePath() throws Exception {
+        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
+            @Override
+            public String getDefaultHostname() {
+                return "defaultHostname";
+            }
+
+            @Override
+            public boolean isHostnameConfigurable() {
+                return false;
+            }
+        }))).get("https://user@/folder/file");
         assertEquals("defaultHostname", host.getHostname());
         assertEquals("user", host.getCredentials().getUsername());
         assertEquals("/folder/file", host.getDefaultPath());
