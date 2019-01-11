@@ -101,7 +101,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    attributes.setVersionId(marker.getVersionId());
+                    attributes.setVersionId("null".equals(marker.getVersionId()) ? null : marker.getVersionId());
                     if(!StringUtils.equals(lastKey, key)) {
                         // Reset revision for next file
                         revision = 0L;
@@ -186,7 +186,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     if(versions.getItems().length == 1) {
                         final BaseVersionOrDeleteMarker version = versions.getItems()[0];
                         if(version.getKey().equals(common)) {
-                            attributes.setVersionId(version.getVersionId());
+                            attributes.setVersionId("null".equals(version.getVersionId()) ? null : version.getVersionId());
                             if(version.isDeleteMarker()) {
                                 attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                                 attributes.setDuplicate(true);
