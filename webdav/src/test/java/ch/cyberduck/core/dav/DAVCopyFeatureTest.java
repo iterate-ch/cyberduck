@@ -18,9 +18,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -66,7 +64,6 @@ public class DAVCopyFeatureTest extends AbstractDAVTest {
         new DefaultTouchFeature<String>(new DAVUploadFeature(new DAVWriteFeature(session)), new DAVAttributesFinderFeature(session)).touch(copy, new TransferStatus());
         new DAVCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
-        final AttributedList<Path> files = new DAVListService(session).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
         new DAVDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
