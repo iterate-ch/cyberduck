@@ -352,11 +352,6 @@ public class PathAttributes extends Attributes implements Serializable {
         return this;
     }
 
-    public PathAttributes withVersionId(final VersionId versionId) {
-        this.setVersionId(versionId.id);
-        return this;
-    }
-
     public String getDirectoryId() {
         return directoryId;
     }
