@@ -16,16 +16,25 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AsciiRandomStringService;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.text.RandomStringGenerator;
+import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
@@ -45,6 +54,47 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
+        final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(renamed);
+        assertFalse(metadata.isEmpty());
+        assertEquals("text/plain", metadata.get("Content-Type"));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testMoveVersioned() throws Exception {
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
+        assertNotNull(new S3TouchFeature(session).touch(test, new TransferStatus().withMime("text/plain")).attributes().getVersionId());
+        assertTrue(new S3FindFeature(session).find(test));
+        // Write some data to add a new version
+        final S3WriteFeature feature = new S3WriteFeature(session);
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(10).getBytes("UTF-8");
+        final TransferStatus status = new TransferStatus().withMime("text/plain");
+        status.setLength(content.length);
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        final HttpResponseOutputStream<StorageObject> out = feature.write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        // Get new path with updated version id
+        final AttributedList<Path> list = new S3ListService(session).list(container, new DisabledListProgressListener());
+        for(Path path : list) {
+            if(new SimplePathPredicate(test).test(path)) {
+                test = path;
+                break;
+            }
+        }
+        final Path renamed = new Path(container, String.format("%s-renamed", test.getName()), EnumSet.of(Path.Type.file));
+        new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(renamed));
+        // Ensure that the latest version of the source file is a delete marker
+        for(Path path : new S3ListService(session).list(container, new DisabledListProgressListener())) {
+            if(new SimplePathPredicate(test).test(path)) {
+                assertTrue(path.attributes().isDuplicate());
+                break;
+            }
+        }
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(renamed);
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
