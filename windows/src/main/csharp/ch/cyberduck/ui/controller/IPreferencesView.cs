@@ -83,6 +83,8 @@ namespace Ch.Cyberduck.Ui.Controller
         bool ChmodUploadDefaultEnabled { set; }
         bool PreserveModificationDownload { set; get; }
         bool PreserveModificationUpload { set; get; }
+        bool VerifyChecksumDownload { set; get; }
+        bool VerifyChecksumUpload { set; get; }
         bool DownloadSkip { set; get; }
         string DownloadSkipRegex { set; get; }
         bool DownloadSkipRegexEnabled { set; }
@@ -169,6 +171,8 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler UploadOtherExecuteChangedEvent;
         event VoidHandler PreserveModificationDownloadChangedEvent;
         event VoidHandler PreserveModificationUploadChangedEvent;
+        event VoidHandler VerifyChecksumDownloadChangedEvent;
+        event VoidHandler VerifyChecksumUploadChangedEvent;
         event VoidHandler DownloadSkipChangedEvent;
         event VoidHandler DownloadSkipRegexChangedEvent;
         event VoidHandler DownloadSkipRegexDefaultEvent;
