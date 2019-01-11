@@ -87,8 +87,12 @@ public class AbstractSFTPTest {
 
     @After
     public void stop() throws Exception {
-        session.close();
-        sshServer.stop();
+        try {
+            session.close();
+        }
+        finally {
+            sshServer.stop();
+        }
     }
 
     @Before
