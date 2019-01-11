@@ -16,9 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -78,12 +76,12 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
     public void testCopyToExistingFile() throws Exception {
         final Path folder = new GraphDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path test = new GraphTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path copy = new GraphTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        new GraphCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        final String target = new AlphanumericRandomStringService().random();
+        final Path copy = new GraphTouchFeature(session).touch(new Path(folder, target, EnumSet.of(Path.Type.file)), new TransferStatus());
+        new GraphCopyFeature(session).copy(test, new Path(folder, target, EnumSet.of(Path.Type.file)), new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
-        final AttributedList<Path> files = new GraphItemListService(session).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
-        new GraphDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session).delete(Arrays.asList(test, new Path(folder, target, EnumSet.of(Path.Type.file))), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
