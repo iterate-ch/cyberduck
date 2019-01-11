@@ -42,7 +42,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
@@ -119,18 +118,15 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testMoveToExistingFile() throws Exception {
-        final Path folder = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new GraphDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
-        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session).touch(test, new TransferStatus());
-        final Path temp = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new GraphTouchFeature(session).touch(temp, new TransferStatus());
+        final Path folder = new GraphDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path test = new GraphTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path temp = new GraphTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new GraphMoveFeature(session).move(temp, test, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new GraphItemListService(session).list(folder, new DisabledListProgressListener());
         assertEquals(1, files.size());
         assertFalse(find.find(temp));
         assertTrue(find.find(test));
-        new GraphDeleteFeature(session).delete(Arrays.asList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GraphDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
