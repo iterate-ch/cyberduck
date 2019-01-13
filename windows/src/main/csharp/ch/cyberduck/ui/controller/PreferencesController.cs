@@ -118,6 +118,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PreserveModificationDownloadChangedEvent += View_PreserveModificationDownloadChangedEvent;
             View.PreserveModificationUploadChangedEvent += View_PreserveModificationUploadChangedEvent;
 
+            View.VerifyChecksumDownloadChangedEvent += View_VerifyChecksumDownloadChangedEvent;
+            View.VerifyChecksumUploadChangedEvent += View_VerifyChecksumUploadChangedEvent;
+
             View.DownloadSkipChangedEvent += View_DownloadSkipChangedEvent;
             View.DownloadSkipRegexChangedEvent += View_DownloadSkipRegexChangedEvent;
             View.DownloadSkipRegexDefaultEvent += View_DownloadSkipRegexDefaultEvent;
@@ -158,6 +161,17 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UpdateFeedChangedEvent += View_UpdateFeedChangedEvent;
 
             #endregion
+        }
+
+        private void View_VerifyChecksumUploadChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("queue.upload.checksum.calculate", View.VerifyChecksumUpload);
+        }
+
+        private void View_VerifyChecksumDownloadChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("queue.download.checksum.calculate", View.VerifyChecksumDownload);
+
         }
 
         private void View_CryptomatorAutoDetectVaultChangedEvent()
@@ -935,6 +949,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.PreserveModificationDownload = PreferencesFactory.get().getBoolean("queue.download.timestamp.change");
             View.PreserveModificationUpload = PreferencesFactory.get().getBoolean("queue.upload.timestamp.change");
+
+            #endregion
+
+            #region Transfers - Checksum
+
+            View.VerifyChecksumDownload = PreferencesFactory.get().getBoolean("queue.download.checksum.calculate");
+            View.VerifyChecksumUpload = PreferencesFactory.get().getBoolean("queue.upload.checksum.calculate");
 
             #endregion
 

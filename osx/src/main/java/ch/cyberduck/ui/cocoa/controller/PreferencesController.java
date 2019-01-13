@@ -1187,6 +1187,38 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSButton checksumDownloadCheckbox;
+
+    public void setChecksumDownloadCheckbox(NSButton b) {
+        this.checksumDownloadCheckbox = b;
+        this.checksumDownloadCheckbox.setTarget(this.id());
+        this.checksumDownloadCheckbox.setAction(Foundation.selector("checksumDownloadCheckboxClicked:"));
+        this.checksumDownloadCheckbox.setState(preferences.getBoolean("queue.download.checksum.calculate") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void checksumDownloadCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.NSOnState;
+        preferences.setProperty("queue.download.checksum.calculate", enabled);
+    }
+
+    @Outlet
+    private NSButton checksumUploadCheckbox;
+
+    public void setChecksumUploadCheckbox(NSButton b) {
+        this.checksumUploadCheckbox = b;
+        this.checksumUploadCheckbox.setTarget(this.id());
+        this.checksumUploadCheckbox.setAction(Foundation.selector("checksumUploadCheckboxClicked:"));
+        this.checksumUploadCheckbox.setState(preferences.getBoolean("queue.upload.checksum.calculate") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void checksumUploadCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.NSOnState;
+        preferences.setProperty("queue.upload.checksum.calculate", enabled);
+    }
+
+    @Outlet
     private NSButton horizontalLinesCheckbox;
 
     public void setHorizontalLinesCheckbox(NSButton b) {

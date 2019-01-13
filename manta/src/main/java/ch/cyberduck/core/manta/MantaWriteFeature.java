@@ -24,8 +24,6 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -85,10 +83,5 @@ public class MantaWriteFeature implements Write<Void> {
     @Override
     public boolean random() {
         return false;
-    }
-
-    @Override
-    public ChecksumCompute checksum(Path path) {
-        return new DisabledChecksumCompute();
     }
 }

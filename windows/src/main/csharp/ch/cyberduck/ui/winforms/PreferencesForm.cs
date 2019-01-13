@@ -528,6 +528,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { preserveModificationUploadCheckbox.Checked = value; }
         }
 
+        public bool VerifyChecksumDownload
+        {
+            get { return verifyChecksumDownloadCheckbox.Checked; }
+            set { verifyChecksumDownloadCheckbox.Checked = value; }
+        }
+
+        public bool VerifyChecksumUpload
+        {
+            get { return verifyChecksumUploadCheckbox.Checked; }
+            set { verifyChecksumUploadCheckbox.Checked = value; }
+        }
+
         public bool DownloadSkip
         {
             get { return downloadSkipCheckbox.Checked; }
@@ -730,6 +742,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler UploadOtherExecuteChangedEvent = delegate { };
         public event VoidHandler PreserveModificationDownloadChangedEvent = delegate { };
         public event VoidHandler PreserveModificationUploadChangedEvent = delegate { };
+        public event VoidHandler VerifyChecksumDownloadChangedEvent = delegate { };
+        public event VoidHandler VerifyChecksumUploadChangedEvent = delegate { };
         public event VoidHandler DownloadSkipChangedEvent = delegate { };
         public event VoidHandler DownloadSkipRegexChangedEvent = delegate { };
         public event VoidHandler DownloadSkipRegexDefaultEvent = delegate { };
@@ -1469,6 +1483,16 @@ namespace Ch.Cyberduck.Ui.Winforms
                 cryptomatorButton.Checked = true;
                 panelManager.SelectedPanel = managedCryptomatorPanel;
             }
+        }
+
+        private void verifyChecksumDownloadCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            VerifyChecksumDownloadChangedEvent();
+        }
+
+        private void verifyChecksumUploadCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            VerifyChecksumUploadChangedEvent();
         }
     }
 }
