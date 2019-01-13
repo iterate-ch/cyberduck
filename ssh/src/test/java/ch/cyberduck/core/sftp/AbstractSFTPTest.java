@@ -45,6 +45,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import java.nio.file.Paths;
+import java.security.PublicKey;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.UUID;
@@ -75,6 +76,15 @@ public class AbstractSFTPTest {
         });
         sshServer.setKeyboardInteractiveAuthenticator(new DefaultKeyboardInteractiveAuthenticator());
         sshServer.setPublickeyAuthenticator(new StaticPublickeyAuthenticator(true) {
+            @Override
+            protected void handleAcceptance(final String username, final PublicKey key, final ServerSession session) {
+                super.handleAcceptance(username, key, session);
+            }
+
+            @Override
+            protected void handleRejection(final String username, final PublicKey key, final ServerSession session) {
+                super.handleRejection(username, key, session);
+            }
         });
         sshServer.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
         sshServer.setSubsystemFactories(Collections.singletonList(new SftpSubsystemFactory()));
@@ -110,7 +120,9 @@ public class AbstractSFTPTest {
                 fail(reason);
                 return null;
             }
-        }, new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+        },
+            new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(),
+            new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 }
