@@ -48,7 +48,7 @@ import java.util.concurrent.Future;
 
 import com.google.common.collect.ImmutableMap;
 
-public class S3VersionedObjectListService implements ListService {
+public class S3VersionedObjectListService extends S3AbstractListService implements ListService {
     private static final Logger log = Logger.getLogger(S3VersionedObjectListService.class);
 
     public static final String KEY_DELETE_MARKER = "delete_marker";
@@ -101,7 +101,7 @@ public class S3VersionedObjectListService implements ListService {
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    attributes.setVersionId(marker.getVersionId());
+                    attributes.setVersionId("null".equals(marker.getVersionId()) ? null : marker.getVersionId());
                     if(!StringUtils.equals(lastKey, key)) {
                         // Reset revision for next file
                         revision = 0L;
@@ -177,7 +177,8 @@ public class S3VersionedObjectListService implements ListService {
             public Path call() throws BackgroundException {
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setRegion(bucket.attributes().getRegion());
-                final Path path = new Path(String.format("%s%s", bucket.getAbsolute(), PathNormalizer.normalize(common)), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                final Path prefix = new Path(String.format("%s%s", bucket.getAbsolute(), PathNormalizer.normalize(common)),
+                    EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                 try {
                     final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
                         bucket.getName(), common, String.valueOf(Path.DELIMITER), 1,
@@ -185,7 +186,7 @@ public class S3VersionedObjectListService implements ListService {
                     if(versions.getItems().length == 1) {
                         final BaseVersionOrDeleteMarker version = versions.getItems()[0];
                         if(version.getKey().equals(common)) {
-                            attributes.setVersionId(version.getVersionId());
+                            attributes.setVersionId("null".equals(version.getVersionId()) ? null : version.getVersionId());
                             if(version.isDeleteMarker()) {
                                 attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                                 attributes.setDuplicate(true);
@@ -202,9 +203,9 @@ public class S3VersionedObjectListService implements ListService {
                     }
                 }
                 catch(ServiceException e) {
-                    throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, path);
+                    throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, prefix);
                 }
-                return path;
+                return prefix;
             }
         });
     }
@@ -212,24 +213,5 @@ public class S3VersionedObjectListService implements ListService {
     @Override
     public ListService withCache(final Cache<Path> cache) {
         return this;
-    }
-
-    protected String createPrefix(final Path directory) {
-        // Keys can be listed by prefix. By choosing a common prefix
-        // for the names of related keys and marking these keys with
-        // a special character that delimits hierarchy, you can use the list
-        // operation to select and browse keys hierarchically
-        String prefix = StringUtils.EMPTY;
-        if(!containerService.isContainer(directory)) {
-            // Restricts the response to only contain results that begin with the
-            // specified prefix. If you omit this optional argument, the value
-            // of Prefix for your query will be the empty string.
-            // In other words, the results will be not be restricted by prefix.
-            prefix = containerService.getKey(directory);
-            if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
-                prefix += Path.DELIMITER;
-            }
-        }
-        return prefix;
     }
 }

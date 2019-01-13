@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Redundancy;
@@ -44,7 +45,7 @@ public class S3MetadataFeature implements Headers {
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3AccessControlListFeature accessControlListFeature;
 
@@ -61,7 +62,16 @@ public class S3MetadataFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
-            return new S3AttributesFinderFeature(session).find(file).getMetadata();
+            try {
+                return new S3AttributesFinderFeature(session).find(file).getMetadata();
+            }
+            catch(NotfoundException e) {
+                if(file.isPlaceholder()) {
+                    // No placeholder file may exist but we just have a common prefix
+                    return Collections.emptyMap();
+                }
+                throw e;
+            }
         }
         return Collections.emptyMap();
     }
@@ -101,7 +111,14 @@ public class S3MetadataFeature implements Headers {
                 session.getClient().updateObjectMetadata(containerService.getContainer(file).getName(), target);
             }
             catch(ServiceException e) {
-                throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+                final BackgroundException failure = new S3ExceptionMappingService().map("Failure to write attributes of {0}", e, file);
+                if(file.isPlaceholder()) {
+                    if(failure instanceof NotfoundException) {
+                        // No placeholder file may exist but we just have a common prefix
+                        return;
+                    }
+                }
+                throw failure;
             }
         }
     }

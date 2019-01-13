@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
@@ -70,13 +71,18 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             return Acl.EMPTY;
         }
         catch(ServiceException e) {
-            try {
-                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            if(file.isPlaceholder()) {
+                if(failure instanceof NotfoundException) {
+                    // No placeholder file may exist but we just have a common prefix
+                    return Acl.EMPTY;
+                }
             }
-            catch(InteroperabilityException ignored) {
+            if(failure instanceof InteroperabilityException) {
                 // The specified method is not allowed against this resource. The case for delete markers in versioned buckets.
                 return Acl.EMPTY;
             }
+            throw failure;
         }
     }
 
@@ -103,7 +109,14 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
             }
         }
         catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Cannot change permissions of {0}", e, file);
+            final BackgroundException failure = new S3ExceptionMappingService().map("Cannot change permissions of {0}", e, file);
+            if(file.isPlaceholder()) {
+                if(failure instanceof NotfoundException) {
+                    // No placeholder file may exist but we just have a common prefix
+                    return;
+                }
+            }
+            throw failure;
         }
     }
 

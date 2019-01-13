@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -63,13 +64,22 @@ public class S3StorageClassFeature implements Redundancy {
     @Override
     public String getClass(final Path file) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
-            // HEAD request provides storage class information of the object.
-            // S3 returns this header for all objects except for Standard storage class objects.
-            final String redundancy = new S3AttributesFinderFeature(session).find(file).getStorageClass();
-            if(StringUtils.isBlank(redundancy)) {
-                return S3Object.STORAGE_CLASS_STANDARD;
+            try {
+                // HEAD request provides storage class information of the object.
+                // S3 returns this header for all objects except for Standard storage class objects.
+                final String redundancy = new S3AttributesFinderFeature(session).find(file).getStorageClass();
+                if(StringUtils.isBlank(redundancy)) {
+                    return S3Object.STORAGE_CLASS_STANDARD;
+                }
+                return redundancy;
             }
-            return redundancy;
+            catch(NotfoundException e) {
+                if(file.isPlaceholder()) {
+                    // No placeholder file may exist but we just have a common prefix
+                    return S3Object.STORAGE_CLASS_STANDARD;
+                }
+                throw e;
+            }
         }
         if(containerService.isContainer(file)) {
             final String key = String.format("s3.storageclass.%s", containerService.getContainer(file).getName());
@@ -87,11 +97,20 @@ public class S3StorageClassFeature implements Redundancy {
             preferences.setProperty(key, redundancy);
         }
         if(file.isFile() || file.isPlaceholder()) {
-            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
-            final TransferStatus status = new TransferStatus();
-            status.setLength(file.attributes().getSize());
-            status.setStorageClass(redundancy);
-            copy.copy(file, file, status, new DisabledConnectionCallback());
+            try {
+                final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
+                final TransferStatus status = new TransferStatus();
+                status.setLength(file.attributes().getSize());
+                status.setStorageClass(redundancy);
+                copy.copy(file, file, status, new DisabledConnectionCallback());
+            }
+            catch(NotfoundException e) {
+                if(file.isPlaceholder()) {
+                    // No placeholder file may exist but we just have a common prefix
+                    return;
+                }
+                throw e;
+            }
         }
     }
 }
