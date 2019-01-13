@@ -31,6 +31,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -294,10 +295,10 @@ public abstract class Transfer implements Serializable {
     /**
      * Returns the children of this path filtering it with the default regex filter
      *
-     * @param session      Connection to source server of transfer. May be null.
-     * @param directory   The directory to list the children
-     * @param local       Local directory
-     * @param listener    Listener
+     * @param session   Connection to source server of transfer. May be null.
+     * @param directory The directory to list the children
+     * @param local     Local directory
+     * @param listener  Listener
      * @return A list of child items
      */
     public abstract List<TransferItem> list(Session<?> session, Path directory, Local local, ListProgressListener listener) throws BackgroundException;
@@ -311,7 +312,12 @@ public abstract class Transfer implements Serializable {
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(TransferItem item : roots) {
             final Local directory = item.local.getParent();
-            locks.put(directory, directory.lock(true));
+            try {
+                locks.put(directory, directory.lock(true));
+            }
+            catch(AccessDeniedException e) {
+                // Ignore no lock support
+            }
         }
     }
 
