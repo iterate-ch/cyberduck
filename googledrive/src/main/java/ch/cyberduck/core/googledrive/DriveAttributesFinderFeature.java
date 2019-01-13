@@ -23,7 +23,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -60,7 +59,7 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         final AttributedList<Path> list = new FileidDriveListService(session, fileid, file).list(file.getParent(), new DisabledListProgressListener());
-        final Path found = list.find(new SimplePathPredicate(file));
+        final Path found = list.find(new DriveFileidProvider.IgnoreTrashedPathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
