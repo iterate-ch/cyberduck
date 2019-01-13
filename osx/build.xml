@@ -93,7 +93,7 @@
         </antcall>
     </target>
 
-    <target name="package">
+    <target name="package" depends="version">
         <mkdir dir="${build.deploy}"/>
         <antcall target="zip">
             <param name="directory" value="${build}"/>

@@ -87,12 +87,13 @@
         <echo message="	  ---------------------------------------------------------------"/>
         <echo message=""/>
         <echo message="Building ${ant.project.name} on ${os.name}/${os.arch} at ${touch.time}..."/>
-    </target>
 
-    <target name="version" depends="init">
         <taskdef resource="net/sf/antcontrib/antcontrib.properties">
             <classpath path="${lib.ext}/ant-contrib-1.0b3.jar"/>
         </taskdef>
+    </target>
+
+    <target name="version" depends="init">
         <propertyregex property="version"
                        override="true"
                        input="${version}"
