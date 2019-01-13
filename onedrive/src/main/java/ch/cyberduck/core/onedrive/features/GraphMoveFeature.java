@@ -51,6 +51,8 @@ public class GraphMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         if(status.isExists()) {
             delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
+            // Reset version ID for non existing file
+            renamed.attributes().setVersionId(null);
         }
         final OneDrivePatchOperation patchOperation = new OneDrivePatchOperation();
         if(!StringUtils.equals(file.getName(), renamed.getName())) {
