@@ -16,18 +16,16 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkResolver<Void> {
 
     @Override
-    public String create(final Local file) throws AccessDeniedException {
-        throw new LocalAccessDeniedException("Filesystem bookmark resolver disabled");
+    public String create(final Local file) {
+        return null;
     }
 
     @Override
-    public Void resolve(final Local file, final boolean interactive) throws AccessDeniedException {
-        throw new LocalAccessDeniedException("Filesystem bookmark resolver disabled");
+    public Void resolve(final Local file, final boolean interactive) {
+        return null;
     }
 }
