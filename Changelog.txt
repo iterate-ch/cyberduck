@@ -12,6 +12,11 @@ https://cyberduck.io/
 - [Bugfix] Stop button to interrupt transfer (#10363)
 - [Bugfix] Save passphrase for private key in keychain only after successful connect (#10526)
 - [Bugfix] Failure authenticating with proxy using Integrated Windows Authentication (IWA) authentication (WebDAV, Windows)
+- [Bugfix] Failure authenticating with NTLM authentication (WebDAV, Windows) (#10556)
+- [Bugfix] Failure to read attributes of common prefix (S3) (#8724)
+- [Bugfix] Asks for OAuth authentication code on every connect attempt (Google Drive) (#10555)
+- [Bugfix] Transfers with many files to vault take a long time to finish (Cryptomator) (#10564)
+- [Bugfix] Cannot list KMS keys when using IAM Cross Account Roles (S3) (#10565)
 - [Bugfix] Updated localizations
 
 6.8.3
