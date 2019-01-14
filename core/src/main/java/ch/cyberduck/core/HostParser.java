@@ -104,7 +104,7 @@ public final class HostParser {
             }
 
             if(uriType == URITypes.Authority && !host.getProtocol().isHostnameConfigurable()) {
-                if(userInfoResult == null) {
+                if (userInfoResult == null) {
                     reader.skip(-1);
                 }
             }
@@ -278,7 +278,7 @@ public final class HostParser {
                 final int length = buffer.length();
                 for(int i = 0; i < length; i++) {
                     final char t = buffer.charAt(i);
-                    if(Character.isWhitespace(t)) {
+                    if(t == ' ') {
                         return false;
                     }
                     if(t == ':' && passwordBuilder == null) {
@@ -341,6 +341,7 @@ public final class HostParser {
         final StringBuilder pathBuilder = new StringBuilder();
         while(!reader.endOfString()) {
             final char c = (char) reader.read();
+
             if(isPChar(c) || c == '/') {
                 pathBuilder.append(c);
             }
@@ -378,6 +379,12 @@ public final class HostParser {
                     c = (char) copy.read();
                     if(c == '/') {
                         reader.skip(2);
+                        if(!copy.endOfString()) {
+                            c = (char) copy.read();
+                            if(c == '/') {
+                                return URITypes.Absolute;
+                            }
+                        }
                         return URITypes.Authority;
                     }
                     else {
@@ -391,15 +398,6 @@ public final class HostParser {
             }
         }
         return URITypes.Undefined;
-    }
-
-    static URITypes resolveURIType(final URITypes from, final Protocol protocol) {
-        if(!protocol.isHostnameConfigurable()) {
-            if(URITypes.Authority == from) {
-                return URITypes.Rootless;
-            }
-        }
-        return from;
     }
 
     private static boolean isUnreservedCharacter(final char c) {
