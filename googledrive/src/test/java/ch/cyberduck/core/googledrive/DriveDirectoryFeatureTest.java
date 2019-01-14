@@ -18,6 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -29,8 +30,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DriveDirectoryFeatureTest extends AbstractDriveTest {
@@ -45,7 +45,8 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(),
                 new Delete.DisabledCallback());
         // Trashed
+        assertFalse(new DriveFindFeature(session, fileid).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
-        assertTrue(new DriveAttributesFinderFeature(session, fileid).find(test).isDuplicate());
+        assertTrue(new DefaultAttributesFinderFeature(session).find(test).isDuplicate());
     }
 }
