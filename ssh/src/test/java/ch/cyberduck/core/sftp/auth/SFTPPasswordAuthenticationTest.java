@@ -16,8 +16,10 @@ package ch.cyberduck.core.sftp.auth;
  */
 
 import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -31,8 +33,10 @@ public class SFTPPasswordAuthenticationTest extends AbstractSFTPTest {
 
     @Test(expected = LoginFailureException.class)
     public void testAuthenticateFailure() throws Exception {
+        // Reconnect
+        session.disconnect();
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.getHost().getCredentials().setPassword("p");
         assertFalse(new SFTPPasswordAuthentication(session).authenticate(session.getHost(), new DisabledLoginCallback(), new DisabledCancelCallback()));
-
     }
 }

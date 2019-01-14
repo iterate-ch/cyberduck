@@ -10,8 +10,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.filter.UploadRegexFilter;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamListener;
@@ -385,11 +383,6 @@ public class UploadTransferTest {
                         @Override
                         public boolean random() {
                             return false;
-                        }
-
-                        @Override
-                        public ChecksumCompute checksum(final Path file) {
-                            return new DisabledChecksumCompute();
                         }
                     };
                 }

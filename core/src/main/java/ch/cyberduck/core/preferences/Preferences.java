@@ -508,7 +508,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("queue.download.permissions.folder.default", String.valueOf(755));
 
         this.setDefault("queue.download.timestamp.change", String.valueOf(true));
-        this.setDefault("queue.download.checksum", String.valueOf(true));
+        this.setDefault("queue.download.checksum.calculate", String.valueOf(true));
 
         this.setDefault("queue.download.skip.enable", String.valueOf(true));
         this.setDefault("queue.download.skip.regex.default",
@@ -694,8 +694,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("s3.listing.chunksize", String.valueOf(1000));
         this.setDefault("s3.listing.concurrency", String.valueOf(25));
 
-        this.setDefault("s3.upload.md5", String.valueOf(true));
-
         this.setDefault("s3.upload.multipart", String.valueOf(true));
         this.setDefault("s3.upload.multipart.concurrency", String.valueOf(10));
         this.setDefault("s3.upload.multipart.partsize.minimum", String.valueOf(5L * 1024L * 1024L));
@@ -750,15 +748,12 @@ public abstract class Preferences implements Locales {
 //        this.setDefault("openstack.authentication.context", "/v1.0");
         // Keystone authentication
         this.setDefault("openstack.authentication.context", "/v2.0/tokens");
-        this.setDefault("openstack.upload.metadata.md5", String.valueOf(false));
         this.setDefault("openstack.metadata.default", StringUtils.EMPTY);
         this.setDefault("openstack.list.container.limit", String.valueOf(100));
         this.setDefault("openstack.list.object.limit", String.valueOf(10000));
         this.setDefault("openstack.account.preload", String.valueOf(true));
         this.setDefault("openstack.cdn.preload", String.valueOf(true));
         this.setDefault("openstack.container.size.preload", String.valueOf(true));
-
-        this.setDefault("openstack.upload.md5", String.valueOf(true));
 
         this.setDefault("openstack.upload.largeobject", String.valueOf(true));
         this.setDefault("openstack.upload.largeobject.concurrency", String.valueOf(5));
@@ -828,7 +823,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("webdav.redirect.PUT.follow", String.valueOf(false));
         this.setDefault("webdav.redirect.PROPFIND.follow", String.valueOf(true));
 
-        this.setDefault("webdav.upload.md5", String.valueOf(false));
         this.setDefault("webdav.metadata.default", StringUtils.EMPTY);
 
         this.setDefault("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");

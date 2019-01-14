@@ -18,12 +18,10 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
@@ -84,7 +82,6 @@ public class SwiftCopyFeatureTest {
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(copy, new TransferStatus());
         new SwiftCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
-        final AttributedList<Path> files = new SwiftObjectListService(session).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
         new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());

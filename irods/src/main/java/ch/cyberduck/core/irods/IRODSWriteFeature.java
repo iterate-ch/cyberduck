@@ -20,8 +20,6 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.shared.AppendWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -88,10 +86,5 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
         public Integer getStatus() throws BackgroundException {
             return handle;
         }
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file) {
-        return new DisabledChecksumCompute();
     }
 }

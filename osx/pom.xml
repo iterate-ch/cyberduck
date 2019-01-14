@@ -226,9 +226,6 @@
                                         <!-- 'Release' or 'Mac App Store' -->
                                         <property name="xcode.configuration" value="${xcode.configuration}" />
                                         <property name="sparkle.feed" value="${sparkle.feed}" />
-                                        <property name="codesign.certificate" value="${codesign.certificate}"/>
-                                        <property name="codesign.arg" value="${codesign.arg}"/>
-                                        <property name="skipSign" value="${skipSign}"/>
                                         <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
                                     </tasks>
                                 </configuration>
@@ -290,6 +287,9 @@
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="installer.certificate" value="${installer.certificate}"/>
+                                        <property name="codesign.certificate" value="${codesign.certificate}"/>
+                                        <property name="codesign.arg" value="${codesign.arg}"/>
+                                        <property name="skipSign" value="${skipSign}"/>
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
                                     </tasks>
                                 </configuration>

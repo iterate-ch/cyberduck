@@ -25,7 +25,6 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
@@ -57,7 +56,6 @@ import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
 public class STSCredentialsConfigurator {
     private static final Logger log = Logger.getLogger(STSCredentialsConfigurator.class);
 
-    private final Preferences preferences = PreferencesFactory.get();
     private final PasswordCallback prompt;
 
     public STSCredentialsConfigurator(final PasswordCallback prompt) {

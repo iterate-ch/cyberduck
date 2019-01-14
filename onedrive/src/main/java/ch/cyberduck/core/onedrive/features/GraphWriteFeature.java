@@ -27,8 +27,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
@@ -111,11 +109,6 @@ public class GraphWriteFeature implements Write<Void> {
     @Override
     public boolean random() {
         return false;
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file) {
-        return new DisabledChecksumCompute();
     }
 
     private final class ChunkedOutputStream extends OutputStream {

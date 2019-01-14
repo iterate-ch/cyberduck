@@ -27,6 +27,8 @@ import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.transfer.download.DownloadFilterOptions;
+import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
@@ -50,9 +52,19 @@ public final class TerminalTransferFactory {
                 else {
                     transfer = new DownloadTransfer(host, items);
                 }
+                if(input.hasOption(TerminalOptionsBuilder.Params.nochecksum.name())) {
+                    final DownloadFilterOptions options = new DownloadFilterOptions();
+                    options.checksum = Boolean.valueOf(input.getOptionValue(TerminalOptionsBuilder.Params.nochecksum.name()));
+                    ((DownloadTransfer) transfer).withOptions(options);
+                }
                 break;
             case upload:
                 transfer = new UploadTransfer(host, items);
+                if(input.hasOption(TerminalOptionsBuilder.Params.nochecksum.name())) {
+                    final UploadFilterOptions options = new UploadFilterOptions();
+                    options.checksum = Boolean.valueOf(input.getOptionValue(TerminalOptionsBuilder.Params.nochecksum.name()));
+                    ((UploadTransfer) transfer).withOptions(options);
+                }
                 break;
             case synchronize:
                 transfer = new SyncTransfer(host, items.iterator().next());

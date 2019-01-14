@@ -88,12 +88,12 @@
         <foreach target="lipo" param="arch" list="${build.lipo.arch.remove}">
             <param name="bundle" value="${app.bundle}"/>
         </foreach>
+    </target>
+
+    <target name="package" depends="version">
         <antcall target="codesign" unless:true="${skipSign}">
             <param name="bundle" value="${app.bundle}"/>
         </antcall>
-    </target>
-
-    <target name="package">
         <mkdir dir="${build.deploy}"/>
         <antcall target="zip">
             <param name="directory" value="${build}"/>

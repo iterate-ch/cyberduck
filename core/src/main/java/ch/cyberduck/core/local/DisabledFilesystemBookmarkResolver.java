@@ -23,11 +23,11 @@ public class DisabledFilesystemBookmarkResolver implements FilesystemBookmarkRes
 
     @Override
     public String create(final Local file) throws AccessDeniedException {
-        throw new LocalAccessDeniedException("Filesystem bookmark resolver disabled");
+        throw new LocalAccessDeniedException();
     }
 
     @Override
     public Void resolve(final Local file, final boolean interactive) throws AccessDeniedException {
-        throw new LocalAccessDeniedException("Filesystem bookmark resolver disabled");
+        throw new LocalAccessDeniedException();
     }
 }

@@ -29,8 +29,6 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -142,10 +140,5 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
     @Override
     public boolean random() {
         return true;
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file) {
-        return new DisabledChecksumCompute();
     }
 }

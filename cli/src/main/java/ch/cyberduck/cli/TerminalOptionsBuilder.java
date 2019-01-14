@@ -161,6 +161,11 @@ public final class TerminalOptionsBuilder {
             .isRequired(false)
             .create());
         options.addOption(OptionBuilder
+            .withDescription("Skip verifying checksum")
+            .withLongOpt(Params.nochecksum.name())
+            .isRequired(false)
+            .create());
+        options.addOption(OptionBuilder
             .withDescription("Do not save passwords in keychain")
             .withLongOpt(Params.nokeychain.name())
             .isRequired(false)
@@ -227,6 +232,7 @@ public final class TerminalOptionsBuilder {
         udt,
         parallel,
         throttle,
+        nochecksum,
         nokeychain,
         existing,
         verbose,

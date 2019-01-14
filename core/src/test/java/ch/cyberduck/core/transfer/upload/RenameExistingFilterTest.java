@@ -17,8 +17,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -175,11 +173,6 @@ public class RenameExistingFilterTest {
                         public boolean random() {
                             return false;
                         }
-
-                        @Override
-                        public ChecksumCompute checksum(final Path file) {
-                            return new DisabledChecksumCompute();
-                        }
                     };
                 }
                 return null;
@@ -272,11 +265,6 @@ public class RenameExistingFilterTest {
                         @Override
                         public boolean random() {
                             return false;
-                        }
-
-                        @Override
-                        public ChecksumCompute checksum(final Path file) {
-                            return new DisabledChecksumCompute();
                         }
                     };
                 }

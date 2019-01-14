@@ -113,6 +113,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     }
 
     @Test
+    @Ignore
     public void testWriteRangeEndFirst() throws Exception {
         final DAVWriteFeature feature = new DAVWriteFeature(session);
         final Path test = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

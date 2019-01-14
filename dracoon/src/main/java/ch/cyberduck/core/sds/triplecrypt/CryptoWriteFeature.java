@@ -22,8 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.ChecksumCompute;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.sds.SDSSession;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
@@ -82,10 +80,5 @@ public class CryptoWriteFeature implements Write<VersionId> {
     @Override
     public boolean random() {
         return proxy.random();
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file) {
-        return new DisabledChecksumCompute();
     }
 }

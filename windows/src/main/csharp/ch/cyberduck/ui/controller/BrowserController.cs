@@ -1013,7 +1013,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 IDictionary<Path, Path> files = new Dictionary<Path, Path>();
                 foreach (Path next in dropargs.SourceModels)
                 {
-                    Path renamed = new Path(destination, next.getName(), next.getType(), next.attributes());
+                    Path renamed = new Path(destination, next.getName(), next.getType(), next.attributes().withVersionId(null));
                     files.Add(next, renamed);
                 }
                 if (files.Count > 0)

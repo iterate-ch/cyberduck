@@ -164,6 +164,7 @@ public class FinderLocal extends Local {
             resolved = this.lock(this.exists());
         }
         catch(LocalAccessDeniedException e) {
+            log.warn(String.format("Failure obtaining lock for %s. %s", this, e.getMessage()));
             return super.getOutputStream(append);
         }
         try {

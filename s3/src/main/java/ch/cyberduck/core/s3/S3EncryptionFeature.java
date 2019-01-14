@@ -22,6 +22,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -38,7 +39,7 @@ public class S3EncryptionFeature implements Encryption {
     private final Preferences preferences = PreferencesFactory.get();
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3Session session;
 
@@ -76,7 +77,16 @@ public class S3EncryptionFeature implements Encryption {
     @Override
     public Algorithm getEncryption(final Path file) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
-            return new S3AttributesFinderFeature(session).find(file).getEncryption();
+            try {
+                return new S3AttributesFinderFeature(session).find(file).getEncryption();
+            }
+            catch(NotfoundException e) {
+                if(file.isPlaceholder()) {
+                    // No placeholder file may exist but we just have a common prefix
+                    return Algorithm.NONE;
+                }
+                throw e;
+            }
         }
         return Algorithm.NONE;
     }
@@ -92,12 +102,21 @@ public class S3EncryptionFeature implements Encryption {
             preferences.setProperty(key, setting.toString());
         }
         if(file.isFile() || file.isPlaceholder()) {
-            final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
-            // Copy item in place to write new attributes
-            final TransferStatus status = new TransferStatus();
-            status.setEncryption(setting);
-            status.setLength(file.attributes().getSize());
-            copy.copy(file, file, status, new DisabledConnectionCallback());
+            try {
+                final S3ThresholdCopyFeature copy = new S3ThresholdCopyFeature(session);
+                // Copy item in place to write new attributes
+                final TransferStatus status = new TransferStatus();
+                status.setEncryption(setting);
+                status.setLength(file.attributes().getSize());
+                copy.copy(file, file, status, new DisabledConnectionCallback());
+            }
+            catch(NotfoundException e) {
+                if(file.isPlaceholder()) {
+                    // No placeholder file may exist but we just have a common prefix
+                    return;
+                }
+                throw e;
+            }
         }
     }
 
