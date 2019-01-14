@@ -42,11 +42,6 @@ public class DropboxProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String getDefaultHostname() {
-        return "www.dropbox.com";
-    }
-
-    @Override
     public boolean isHostnameConfigurable() {
         return false;
     }

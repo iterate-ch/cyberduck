@@ -5,7 +5,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
@@ -63,7 +62,7 @@ public class SwiftDistributionConfigurationTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
             new SwiftDistributionConfigurationLoader(session).operate(new DisabledPasswordCallback(),
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))));
@@ -83,7 +82,7 @@ public class SwiftDistributionConfigurationTest {
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
             new SwiftDistributionConfigurationLoader(session).operate(new DisabledPasswordCallback(),
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))));

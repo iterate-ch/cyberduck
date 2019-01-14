@@ -136,10 +136,6 @@ public class DefaultSessionPool implements SessionPool {
             log.warn(String.format("Possibly large number of open connections (%d) in pool %s", numActive, this));
         }
         try {
-            /*
-             * The number of times this action has been run
-             */
-            int repeat = 0;
             while(!callback.isCanceled()) {
                 try {
                     if(log.isInfoEnabled()) {

@@ -30,4 +30,6 @@ public interface ChecksumCompute {
      * @return Calculated fingerprint
      */
     Checksum compute(InputStream in, TransferStatus status) throws ChecksumException;
+
+    Checksum compute(String data, TransferStatus status) throws ChecksumException;
 }

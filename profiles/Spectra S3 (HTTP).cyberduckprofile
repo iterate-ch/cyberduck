@@ -5,7 +5,7 @@
         <key>Protocol</key>
         <string>spectra</string>
         <key>Vendor</key>
-        <string>spectralogic</string>
+        <string>spectralogic-http</string>
         <key>Description</key>
         <string>Spectra S3 (HTTP)</string>
         <key>Scheme</key>
@@ -20,6 +20,11 @@
         <true/>
         <key>Port Configurable</key>
         <true/>
+        <key>Schemes</key>
+        <array>
+            <string>spectra</string>
+            <string>http</string>
+        </array>
         <key>Disk</key>
         <string>
             AAABAAYAAAAAAAEAIAAoIAQAZgAAAICAAAABACAAKAgBAI4gBABAQAAAAQAgAChCAAC2KAUAM

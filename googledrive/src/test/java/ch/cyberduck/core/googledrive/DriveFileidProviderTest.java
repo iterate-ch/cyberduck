@@ -55,6 +55,38 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
     }
 
     @Test
+    public void testGetFileidAccentCharacter() throws Exception {
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%sà", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
+        assertNotNull(new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
+        new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testGetFileidSingleQuoteCharacter() throws Exception {
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s'", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
+        assertNotNull(new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
+        new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testGetFileidBackslashCharacter() throws Exception {
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s\\", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
+        assertNotNull(new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
+        new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testGetFileidDoubleBackslashCharacter() throws Exception {
+        final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, String.format("%s\\\\", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        new DriveTouchFeature(session, new DriveFileidProvider(session).withCache(cache)).touch(test, new TransferStatus());
+        assertNotNull(new DriveFileidProvider(session).withCache(cache).getFileid(test, new DisabledListProgressListener()));
+        new DriveDeleteFeature(session, new DriveFileidProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testGetFileidSameName() throws Exception {
         final String filename = new AlphanumericRandomStringService().random();
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file));

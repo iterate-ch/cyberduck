@@ -56,6 +56,11 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
+    public String getName() {
+        return "Transmit";
+    }
+
+    @Override
     protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         final NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {

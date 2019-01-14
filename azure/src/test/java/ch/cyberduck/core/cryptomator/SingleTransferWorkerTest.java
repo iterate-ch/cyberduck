@@ -83,7 +83,7 @@ public class SingleTransferWorkerTest {
         ));
         final AzureSession session = new AzureSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
@@ -111,7 +111,7 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         assertTrue(new CryptoFindFeature(session, new AzureFindFeature(session, null), cryptomator).find(dir1));
         assertEquals(content.length, new CryptoAttributesFeature(session, new AzureAttributesFinderFeature(session, null), cryptomator).find(file1).getSize());
         {

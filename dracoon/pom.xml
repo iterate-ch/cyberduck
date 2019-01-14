@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>6.8.4-SNAPSHOT</version>
+        <version>6.8.5-SNAPSHOT</version>
     </parent>
     <artifactId>dracoon</artifactId>
     <properties>
@@ -130,7 +130,7 @@
                     <plugin>
                         <groupId>io.swagger</groupId>
                         <artifactId>swagger-codegen-maven-plugin</artifactId>
-                        <version>2.2.3</version>
+                        <version>2.3.1</version>
                         <executions>
                             <execution>
                                 <goals>

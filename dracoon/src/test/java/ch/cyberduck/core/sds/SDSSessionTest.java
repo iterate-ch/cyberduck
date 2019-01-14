@@ -31,6 +31,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -53,7 +54,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
@@ -66,7 +67,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         fail();
     }
 
@@ -109,13 +110,13 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback() {
+        session.login(Proxy.DIRECT, new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 assertEquals("Multi-Factor Authentication", reason);
                 assertFalse(options.user);
                 assertTrue(options.password);
-                return new Credentials(username, "889153");
+                return new Credentials(StringUtils.EMPTY, "889153");
             }
         }, new DisabledCancelCallback());
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
@@ -133,18 +134,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore() {
-            @Override
-            public String getPassword(Scheme scheme, int port, String hostname, String user) {
-                if(user.equals("Secure Data Space (post@iterate.ch) OAuth2 Access Token")) {
-                    return System.getProperties().getProperty("sds.accesstoken");
-                }
-                if(user.equals("Secure Data Space (post@iterate.ch) OAuth2 Refresh Token")) {
-                    return System.getProperties().getProperty("sds.refreshtoken");
-                }
-                return null;
-            }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
     }
 
@@ -157,7 +147,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(session.isConnected());
         assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
     }
 
     @Test(expected = ConnectionRefusedException.class)

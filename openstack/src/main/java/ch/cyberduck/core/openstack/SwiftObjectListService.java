@@ -69,25 +69,25 @@ public class SwiftObjectListService implements ListService {
             final int limit = PreferencesFactory.get().getInteger("openstack.list.object.limit");
             String marker = null;
             List<StorageObject> list;
+            final Path container = containerService.getContainer(directory);
             do {
-                final Path container = containerService.getContainer(directory);
                 list = session.getClient().listObjectsStartingWith(regionService.lookup(container), container.getName(),
                     containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory) + Path.DELIMITER,
                     null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
-                    final PathAttributes attributes = this.attributes.toAttributes(object);
+                    final PathAttributes attr = attributes.toAttributes(object);
                     final EnumSet<AbstractPath.Type> types = "application/directory"
                         .equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     if(StringUtils.endsWith(object.getName(), String.valueOf(Path.DELIMITER))) {
-                        if(children.contains(new Path(directory, PathNormalizer.name(object.getName()), EnumSet.of(Path.Type.directory), attributes))) {
+                        if(children.contains(new Path(directory, PathNormalizer.name(object.getName()), EnumSet.of(Path.Type.directory), attr))) {
                             // There is already a real placeholder file with application/directory MIME type. Only
                             // add virtual directory if the placeholder object is missing
                             continue;
                         }
                     }
-                    attributes.setOwner(container.attributes().getOwner());
-                    attributes.setRegion(container.attributes().getRegion());
-                    children.add(new Path(directory, PathNormalizer.name(object.getName()), types, attributes));
+                    attr.setOwner(container.attributes().getOwner());
+                    attr.setRegion(container.attributes().getRegion());
+                    children.add(new Path(directory, PathNormalizer.name(object.getName()), types, attr));
                     marker = object.getName();
                 }
                 listener.chunk(directory, children);

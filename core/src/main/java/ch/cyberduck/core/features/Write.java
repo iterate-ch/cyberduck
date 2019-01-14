@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -53,7 +54,9 @@ public interface Write<Reply> {
      */
     boolean random();
 
-    ChecksumCompute checksum(Path file);
+    default ChecksumCompute checksum(Path file) {
+        return new DisabledChecksumCompute();
+    }
 
     final class Append {
         /**
@@ -61,6 +64,9 @@ public interface Write<Reply> {
          */
         public final boolean append;
 
+        /**
+         * File exists
+         */
         public final boolean override;
 
         /**

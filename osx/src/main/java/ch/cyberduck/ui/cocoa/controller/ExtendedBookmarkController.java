@@ -246,7 +246,6 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     public void setWebURLField(final NSTextField field) {
         this.webURLField = field;
         final NSTextFieldCell cell = this.webURLField.cell();
-        cell.setPlaceholderString(new WebUrlProvider(bookmark).toUrl().getUrl());
         notificationCenter.addObserver(this.id(),
             Foundation.selector("webURLInputDidChange:"),
             NSControl.NSControlTextDidChangeNotification,
@@ -255,6 +254,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
             @Override
             public void change(Host bookmark) {
                 updateField(webURLField, bookmark.getWebURL());
+                cell.setPlaceholderString(new WebUrlProvider(bookmark).toUrl().getUrl());
             }
         });
     }

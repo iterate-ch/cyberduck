@@ -72,7 +72,7 @@ public class SingleTransferWorkerTest {
     public void testUpload() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new LocalHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         StringBuilder directoryname = new StringBuilder();
@@ -111,7 +111,7 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         assertTrue(new CryptoFindFeature(session, new LocalFindFeature(session), cryptomator).find(dir1));
         Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new LocalAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {

@@ -40,7 +40,7 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drw-rw-rw-   1 user      ftp             0  DEC 11 20:56 ADMIN_Documentation");
+            "drw-rw-rw-   1 user      ftp             0  DEC 11 20:56 ADMIN_Documentation");
         assertNotNull(parsed);
         assertNotNull(parsed.getTimestamp());
         assertEquals(Calendar.DECEMBER, parsed.getTimestamp().get(Calendar.MONTH));
@@ -49,7 +49,7 @@ public class UnixFTPEntryParserTest {
         assertEquals(56, parsed.getTimestamp().get(Calendar.MINUTE));
 
         parsed = parser.parseFTPEntry(
-                "drwxr-xr-x    3 ftp      ftp           512 Mar 15  2004 doc");
+            "drwxr-xr-x    3 ftp      ftp           512 Mar 15  2004 doc");
         assertNotNull(parsed);
         assertNotNull(parsed.getTimestamp());
         assertEquals(2004, parsed.getTimestamp().get(Calendar.YEAR));
@@ -57,7 +57,7 @@ public class UnixFTPEntryParserTest {
         assertEquals(15, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
-                "drwxrwxr-x    2 ftp      ftp           512 Oct 23  2007 aurox");
+            "drwxrwxr-x    2 ftp      ftp           512 Oct 23  2007 aurox");
         assertNotNull(parsed);
         assertNotNull(parsed.getTimestamp());
         assertEquals(2007, parsed.getTimestamp().get(Calendar.YEAR));
@@ -72,7 +72,7 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56 ADMIN_Documentation");
+            "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56 ADMIN_Documentation");
         assertNotNull(parsed);
         assertEquals(parsed.getType(), FTPFile.DIRECTORY_TYPE);
         assertEquals("user", parsed.getUser());
@@ -80,7 +80,7 @@ public class UnixFTPEntryParserTest {
         assertEquals("ADMIN_Documentation", parsed.getName());
 
         parsed = parser.parseFTPEntry(
-                "drwxr--r--   1 user     group          0 Feb 14 18:14 Downloads");
+            "drwxr--r--   1 user     group          0 Feb 14 18:14 Downloads");
         assertNotNull(parsed);
         assertEquals("Downloads", parsed.getName());
     }
@@ -95,7 +95,7 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56  ADMIN_Documentation");
+            "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56  ADMIN_Documentation");
         assertNotNull(parsed);
         assertEquals(" ADMIN_Documentation", parsed.getName());
     }
@@ -110,7 +110,7 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56 ADMIN_Documentation ");
+            "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56 ADMIN_Documentation ");
         assertNotNull(parsed);
         assertEquals("ADMIN_Documentation ", parsed.getName());
     }
@@ -127,7 +127,7 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "-rw-rw-rw- 1 ftp operator 9.0M Mar 22 17:44 Cyberduck-2.7.3.dmg"
+            "-rw-rw-rw- 1 ftp operator 9.0M Mar 22 17:44 Cyberduck-2.7.3.dmg"
         );
         assertNotNull(parsed);
         assertTrue(parsed.isFile());
@@ -140,7 +140,7 @@ public class UnixFTPEntryParserTest {
         assertEquals(22, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
-                "-rw-rw-rw- 1 ftp operator 61.8M Mar 7 18:42 GC Wayfinding pics.zip "
+            "-rw-rw-rw- 1 ftp operator 61.8M Mar 7 18:42 GC Wayfinding pics.zip "
         );
         assertNotNull(parsed);
         assertTrue(parsed.isFile());
@@ -152,7 +152,7 @@ public class UnixFTPEntryParserTest {
         assertEquals(7, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
-                "-rw-rw-rw- 1 ftp operator 172.4k Mar 7 16:01 HEALY071.TXT "
+            "-rw-rw-rw- 1 ftp operator 172.4k Mar 7 16:01 HEALY071.TXT "
         );
         assertNotNull(parsed);
         assertTrue(parsed.isFile());
@@ -171,7 +171,7 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--   1 20708    205             194 Oct 17 14:40 D3I0_805.fixlist");
+            "-rw-r--r--   1 20708    205             194 Oct 17 14:40 D3I0_805.fixlist");
         assertNotNull(parsed);
         assertTrue(parsed.isFile());
         assertNotNull(parsed.getTimestamp());
@@ -191,7 +191,7 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--   1 20708    205         3553312 Feb 18 2005  D3I0_515.fmr");
+            "-rw-r--r--   1 20708    205         3553312 Feb 18 2005  D3I0_515.fmr");
         assertNotNull(parsed);
         assertTrue(parsed.isFile());
         assertEquals("D3I0_515.fmr", parsed.getName());
@@ -203,7 +203,7 @@ public class UnixFTPEntryParserTest {
         assertEquals(2005, parsed.getTimestamp().get(Calendar.YEAR));
 
         parsed = parser.parseFTPEntry(
-                "drwxr-sr-x  14 17037    209            4096 Oct  6 2000  v3r7");
+            "drwxr-sr-x  14 17037    209            4096 Oct  6 2000  v3r7");
         assertNotNull(parsed);
         assertTrue(parsed.isDirectory());
         assertEquals("v3r7", parsed.getName());
@@ -216,7 +216,7 @@ public class UnixFTPEntryParserTest {
 
         // #2895
         parsed = parser.parseFTPEntry(
-                "-rwx------ 1 user group          38635 Jul 13 2006  users.xml");
+            "-rwx------ 1 user group          38635 Jul 13 2006  users.xml");
         assertNotNull(parsed);
         assertEquals(FTPFile.FILE_TYPE, parsed.getType());
         assertEquals("users.xml", parsed.getName());
@@ -235,7 +235,7 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drwxrwxrwx    41 spinkb  spinkb      1394 jan 21 20:57 Desktop");
+            "drwxrwxrwx    41 spinkb  spinkb      1394 jan 21 20:57 Desktop");
         assertNotNull(parsed);
         assertEquals("Desktop", parsed.getName());
         assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
@@ -253,7 +253,7 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drwxrwxrwx    41 spinkb  spinkb      1394 Feb 21 20:57 Desktop");
+            "drwxrwxrwx    41 spinkb  spinkb      1394 Feb 21 20:57 Desktop");
         assertNotNull(parsed);
         assertEquals("Desktop", parsed.getName());
         assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
@@ -271,7 +271,7 @@ public class UnixFTPEntryParserTest {
 
         //#215
         parsed = parser.parseFTPEntry(
-                "drwxrwsr-x+ 34 cristol  molvis      3072 Jul 12 20:16 molvis");
+            "drwxrwsr-x+ 34 cristol  molvis      3072 Jul 12 20:16 molvis");
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "molvis");
         assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
@@ -288,24 +288,24 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "-rw-rw-rw- 1 hoerspiel hoerspiel  3722053 19. Sep 13:24 Offenbarung 23 - Menschenopfer - 02.mp3"
+            "-rw-rw-rw- 1 hoerspiel hoerspiel  3722053 19. Sep 13:24 Offenbarung 23 - Menschenopfer - 02.mp3"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "Offenbarung 23 - Menschenopfer - 02.mp3");
 
         parsed = parser.parseFTPEntry(
-                "-rw-rw-rw- 1 hoerspiel hoerspiel 10128531 19. Sep 13:24 Offenbarung 23 - Menschenopfer - 01.mp3"
+            "-rw-rw-rw- 1 hoerspiel hoerspiel 10128531 19. Sep 13:24 Offenbarung 23 - Menschenopfer - 01.mp3"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "Offenbarung 23 - Menschenopfer - 01.mp3");
         parsed = parser.parseFTPEntry(
-                "-rw-rw-rw- 1 hoerspiel hoerspiel 11714687 19. Sep 13:25 Offenbarung 23 - Menschenopfer - 08.mp3"
+            "-rw-rw-rw- 1 hoerspiel hoerspiel 11714687 19. Sep 13:25 Offenbarung 23 - Menschenopfer - 08.mp3"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "Offenbarung 23 - Menschenopfer - 08.mp3");
 
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--   1 www-data www-data      10089849 Dec 20 09:30 Stone Catalog"
+            "-rw-r--r--   1 www-data www-data      10089849 Dec 20 09:30 Stone Catalog"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "Stone Catalog");
@@ -314,7 +314,7 @@ public class UnixFTPEntryParserTest {
         assertEquals(parsed.getSize(), 10089849);
 
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--   1 www-data www-data      34524204 Dec 20 13:41 Winter 2008 Newsletter.sit"
+            "-rw-r--r--   1 www-data www-data      34524204 Dec 20 13:41 Winter 2008 Newsletter.sit"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "Winter 2008 Newsletter.sit");
@@ -331,7 +331,7 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drwxr--r--   1 user     group          0 Feb 29 18:14 Downloads"
+            "drwxr--r--   1 user     group          0 Feb 29 18:14 Downloads"
         );
         assertNotNull(parsed);
         assertNotNull(parsed.getTimestamp());
@@ -345,7 +345,7 @@ public class UnixFTPEntryParserTest {
 
         // #1521
         parsed = parser.parseFTPEntry(
-                "drwxr--r--   1 user     group          0 Feb 29 18:14 Icon\r"
+            "drwxr--r--   1 user     group          0 Feb 29 18:14 Icon\r"
         );
         assertNotNull(parsed);
         assertEquals("Icon\r", parsed.getName());
@@ -358,13 +358,13 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drwsr--r--   1 user     group          0 Feb 29 18:14 Filename"
+            "drwsr--r--   1 user     group          0 Feb 29 18:14 Filename"
         );
         assertNotNull(parsed);
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION));
 
         parsed = parser.parseFTPEntry(
-                "drwSr--r--   1 user     group          0 Feb 29 18:14 Filename"
+            "drwSr--r--   1 user     group          0 Feb 29 18:14 Filename"
         );
         assertNotNull(parsed);
         assertFalse(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION));
@@ -377,13 +377,13 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drwxr-sr--   1 user     group          0 Feb 29 18:14 Filename"
+            "drwxr-sr--   1 user     group          0 Feb 29 18:14 Filename"
         );
         assertNotNull(parsed);
         assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION));
 
         parsed = parser.parseFTPEntry(
-                "drwxr-Sr--   1 user     group          0 Feb 29 18:14 Filename"
+            "drwxr-Sr--   1 user     group          0 Feb 29 18:14 Filename"
         );
         assertNotNull(parsed);
         assertFalse(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION));
@@ -396,13 +396,13 @@ public class UnixFTPEntryParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drwxr--r-t   1 user     group          0 Feb 29 18:14 Filename"
+            "drwxr--r-t   1 user     group          0 Feb 29 18:14 Filename"
         );
         assertNotNull(parsed);
         assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
 
         parsed = parser.parseFTPEntry(
-                "drwxr--r-T   1 user     group          0 Feb 29 18:14 Filename"
+            "drwxr--r-T   1 user     group          0 Feb 29 18:14 Filename"
         );
         assertNotNull(parsed);
         assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
@@ -416,7 +416,7 @@ public class UnixFTPEntryParserTest {
 
         // #5505
         parsed = parser.parseFTPEntry(
-                "drwxrwxrwx   1 owner    group               0 Dec  5  0:45 adele.handmadebyflloyd.com"
+            "drwxrwxrwx   1 owner    group               0 Dec  5  0:45 adele.handmadebyflloyd.com"
         );
         assertNotNull(parsed);
         assertEquals("adele.handmadebyflloyd.com", parsed.getName());
@@ -428,7 +428,7 @@ public class UnixFTPEntryParserTest {
 
         // #5505
         parsed = parser.parseFTPEntry(
-                "drwxrwxrwx   1 owner    group               0 Jan 22  2009 contact"
+            "drwxrwxrwx   1 owner    group               0 Jan 22  2009 contact"
         );
         assertNotNull(parsed);
         assertEquals("contact", parsed.getName());

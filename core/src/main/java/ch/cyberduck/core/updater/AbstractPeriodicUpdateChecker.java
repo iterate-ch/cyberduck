@@ -74,4 +74,9 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
     public boolean hasUpdatePrivileges() {
         return true;
     }
+
+    @Override
+    public boolean isUpdateInProgress() {
+        return false;
+    }
 }

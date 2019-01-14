@@ -64,7 +64,7 @@ public class CryptoDirectoryProvider {
      * Get encrypted filename for given clear text filename with id of parent encrypted directory.
      *
      * @param session     Connection
-     * @param directoryId Directory id
+     * @param directoryId Parent folder directory id
      * @param filename    Clear text filename
      * @param type        File type
      * @return Encrypted filename

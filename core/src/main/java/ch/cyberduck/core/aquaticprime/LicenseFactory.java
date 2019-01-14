@@ -192,7 +192,7 @@ public abstract class LicenseFactory extends Factory<License> {
     protected static final class LicenseFilter implements Filter<Local> {
         @Override
         public boolean accept(final Local file) {
-            return "cyberducklicense".equals(FilenameUtils.getExtension(file.getName()));
+            return "cyberducklicense".equalsIgnoreCase(FilenameUtils.getExtension(file.getName()));
         }
 
         @Override

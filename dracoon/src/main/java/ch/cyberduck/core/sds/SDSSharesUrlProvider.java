@@ -82,9 +82,11 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                         }
                     }
                 }
-                if(file.isDirectory() && containerService.getContainer(file).getType().contains(Path.Type.vault)) {
-                    // In encrypted rooms only files can be shared
-                    return false;
+                if(file.isDirectory()) {
+                    if(Boolean.valueOf(containerService.getContainer(file).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))) {
+                        // In encrypted rooms only files can be shared
+                        return false;
+                    }
                 }
                 return new SDSPermissionsFeature(session, nodeid).containsRole(file, SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE);
             }

@@ -29,5 +29,10 @@ public class HostParserTest {
         public boolean isEnabled() {
             return true;
         }
+
+        @Override
+        public String getDefaultHostname() {
+            return "s3.amazonaws.com";
+        }
     }
 }

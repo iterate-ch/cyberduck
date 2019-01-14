@@ -15,7 +15,6 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -43,7 +42,7 @@ public class DropboxProtocolTest {
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DropboxProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/default/Dropbox.cyberduckprofile"));
+            this.getClass().getResourceAsStream("/Dropbox.cyberduckprofile"));
         assertFalse(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
         assertTrue(profile.isUsernameConfigurable());

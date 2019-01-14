@@ -59,7 +59,7 @@ public class DriveWriteFeatureTest extends AbstractDriveTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
             assertNotNull(out.getStatus().id);
-            test.attributes().withVersionId(out.getStatus());
+            test.attributes().withVersionId(out.getStatus().id);
             assertTrue(new DefaultFindFeature(session).find(test));
             final PathAttributes attributes = new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes();
             assertEquals(content.length, attributes.getSize());

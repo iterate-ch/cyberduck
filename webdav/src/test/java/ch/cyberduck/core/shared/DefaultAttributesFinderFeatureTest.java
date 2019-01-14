@@ -16,16 +16,14 @@ package ch.cyberduck.core.shared;
  */
 
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.dav.AbstractDAVTest;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
-import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -45,29 +43,17 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class DefaultAttributesFinderFeatureTest {
+public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+
         new DefaultAttributesFinderFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
     @Test
     public void testAttributes() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+
         final PathCache cache = new PathCache(1);
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
         final String name = UUID.randomUUID().toString();
@@ -95,7 +81,7 @@ public class DefaultAttributesFinderFeatureTest {
         final Host host = new Host(new DAVSSLProtocol(), "update.cyberduck.io");
         final DAVSession session = new DAVSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session);
         final Path file = new Path("/robots.txt", EnumSet.of(Path.Type.file));
         final Attributes attributes = f.find(file);

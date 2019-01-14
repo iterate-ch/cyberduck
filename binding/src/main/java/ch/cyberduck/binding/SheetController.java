@@ -23,13 +23,21 @@ import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.ui.InputValidator;
 
 import org.apache.log4j.Logger;
+import org.rococoa.ID;
 
 public abstract class SheetController extends WindowController implements SheetCallback, InputValidator {
     private static final Logger log = Logger.getLogger(SheetController.class);
 
     private final NSApplication application = NSApplication.sharedApplication();
 
-    private SheetCallback callback = new DisabledSheetCallback();
+    private SheetCallback callback = new SheetCallback() {
+        @Override
+        public void callback(final int returncode) {
+            if(SheetCallback.CANCEL_OPTION == returncode) {
+                window.orderOut(null);
+            }
+        }
+    };
     private InputValidator validator;
 
     public SheetController() {
@@ -79,5 +87,10 @@ public abstract class SheetController extends WindowController implements SheetC
         }
         callback.callback(option);
         application.endSheet(window, option);
+    }
+
+    // Handle keyboard esc event when not running as sheet
+    public void cancel(ID sender) {
+        callback.callback(SheetCallback.CANCEL_OPTION);
     }
 }

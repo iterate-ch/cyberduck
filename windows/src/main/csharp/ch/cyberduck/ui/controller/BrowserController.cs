@@ -407,8 +407,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (View.CurrentView == BrowserView.Bookmark || View.CurrentView == BrowserView.History ||
                     View.CurrentView == BrowserView.Bonjour)
                 {
-                    label = String.Format("{0} {1}", View.NumberOfBookmarks,
-                        LocaleFactory.localizedString("Bookmarks"));
+                    label = String.Format(LocaleFactory.localizedString("{0} Bookmarks"), View.NumberOfBookmarks);
                 }
                 else
                 {
@@ -1014,7 +1013,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 IDictionary<Path, Path> files = new Dictionary<Path, Path>();
                 foreach (Path next in dropargs.SourceModels)
                 {
-                    Path renamed = new Path(destination, next.getName(), next.getType());
+                    Path renamed = new Path(destination, next.getName(), next.getType(), next.attributes().withVersionId(null));
                     files.Add(next, renamed);
                 }
                 if (files.Count > 0)
@@ -1339,18 +1338,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDisconnect()
         {
-            // disconnect/stop button update
-            View.ActivityRunning = isActivityRunning();
-            if (!IsConnected())
-            {
-                return isActivityRunning();
-            }
             return IsConnected();
         }
 
         private bool View_ValidateStop()
         {
-            return isActivityRunning();
+            return !IsIdle();
         }
 
         private bool View_ValidateSendCustomCommand()
@@ -1390,13 +1383,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_Disconnect()
         {
-            if (isActivityRunning())
+            // Remove all pending actions)
+            foreach (BackgroundAction action in registry.toArray(new BackgroundAction[registry.size()]))
             {
-                // Remove all pending actions)
-                foreach (BackgroundAction action in getRegistry().toArray(new BackgroundAction[getRegistry().size()]))
-                {
-                    action.cancel();
-                }
+                action.cancel();
             }
             CallbackDelegate run = delegate
             {
@@ -1513,7 +1503,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateTextEncoding()
         {
-            return IsMounted() && !isActivityRunning();
+            return IsMounted();
         }
 
         private void View_ToggleLogDrawer()
@@ -1549,7 +1539,7 @@ namespace Ch.Cyberduck.Ui.Controller
             for (int i = 0; i < _pasteboard.size(); i++)
             {
                 Path next = (Path) _pasteboard.get(i);
-                Path renamed = new Path(parent, next.getName(), next.getType());
+                Path renamed = new Path(parent, next.getName(), next.getType(), next.attributes());
                 files.Add(next, renamed);
             }
             _pasteboard.clear();
@@ -2640,9 +2630,8 @@ namespace Ch.Cyberduck.Ui.Controller
             CallbackDelegate callbackDelegate =
                 delegate
                 {
-                    background(new MountAction(this,
-                        SessionPoolFactory.create(this, _cache, host, SessionPoolFactory.Usage.browser), host,
-                        _limitListener));
+                    Session = SessionPoolFactory.create(this, _cache, host, SessionPoolFactory.Usage.browser);
+                    background(new MountAction(this, Session, host, _limitListener));
                 };
             Unmount(callbackDelegate);
         }
@@ -2656,9 +2645,9 @@ namespace Ch.Cyberduck.Ui.Controller
             return Session.getState() == ch.cyberduck.core.Session.State.open && !_cache.isEmpty();
         }
 
-        public bool isIdle()
+        public bool IsIdle()
         {
-            return getRegistry().isEmpty();
+            return registry.isEmpty();
         }
 
         public static bool ApplicationShouldTerminate()
@@ -2710,7 +2699,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>True if the unmount process is in progress or has been finished, false if cancelled</returns>
         public bool Unmount(DialogCallbackDelegate unmountImpl, CallbackDelegate disconnected)
         {
-            if (IsConnected() || isActivityRunning())
+            if (IsConnected())
             {
                 if (PreferencesFactory.get().getBoolean("browser.disconnect.confirm"))
                 {
@@ -2761,7 +2750,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void SetStatus()
         {
-            BackgroundAction current = getRegistry().getCurrent();
+            BackgroundAction current = registry.getCurrent();
             message(null != current ? current.getActivity() : null);
         }
 
@@ -3323,7 +3312,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        _controller.Session = _pool;
                         _controller._pasteboard = PathPasteboardFactory.getPasteboard(_pool.getHost());
                         // Set the working directory
                         _controller.SetWorkdir(workdir);

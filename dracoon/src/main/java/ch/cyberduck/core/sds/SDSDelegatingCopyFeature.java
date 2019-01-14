@@ -16,31 +16,21 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
-import com.dracoon.sdk.crypto.Crypto;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
 public class SDSDelegatingCopyFeature implements Copy {
 
-    private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private final SDSCopyFeature proxy;
     private final DefaultCopyFeature copy;
 
     public SDSDelegatingCopyFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSCopyFeature proxy) {
-        this.session = session;
+        this.nodeid = nodeid;
         this.proxy = proxy;
         this.copy = new DefaultCopyFeature(session);
     }
@@ -50,23 +40,12 @@ public class SDSDelegatingCopyFeature implements Copy {
         if(proxy.isSupported(source, target)) {
             return proxy.copy(source, target, status, callback);
         }
-        // File key must be set for new upload
-        this.setFileKey(status);
+        // Copy between encrypted and unencrypted data room
+        if(nodeid.isEncrypted(target)) {
+            // File key must be set for new upload
+            nodeid.setFileKey(status);
+        }
         return copy.copy(source, target, status, callback);
-    }
-
-    private void setFileKey(final TransferStatus status) throws BackgroundException {
-        // copy between encrypted and unencrypted data room
-        final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
-        final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try {
-            writer.writeValue(out, fileKey);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
-        status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
     }
 
     @Override

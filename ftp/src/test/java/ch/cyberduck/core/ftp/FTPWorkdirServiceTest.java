@@ -15,26 +15,14 @@ package ch.cyberduck.core.ftp;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
-
 import org.junit.Test;
-
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-public class FTPWorkdirServiceTest {
+public class FTPWorkdirServiceTest extends AbstractFTPTest {
 
     @Test
     public void testDefaultPath() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        final String name = UUID.randomUUID().toString();
-        host.setDefaultPath(name);
-        final FTPSession session = new FTPSession(host);
-        assertEquals("/" + name, new FTPWorkdirService(session).find().getAbsolute());
+        assertEquals("/", new FTPWorkdirService(session).find().getAbsolute());
     }
-
 }

@@ -139,6 +139,11 @@ public interface SessionPool {
 
         private static class DisabledProtocol extends AbstractProtocol {
             @Override
+            public String getName() {
+                return StringUtils.EMPTY;
+            }
+
+            @Override
             public String getIdentifier() {
                 return StringUtils.EMPTY;
             }

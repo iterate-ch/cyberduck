@@ -17,23 +17,16 @@ package ch.cyberduck.core.shared;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
-import ch.cyberduck.core.sftp.SFTPProtocol;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -52,16 +45,10 @@ import java.util.UUID;
 import static org.junit.Assert.assertArrayEquals;
 
 @Category(IntegrationTest.class)
-public class DefaultUploadFeatureTest {
+public class DefaultUploadFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testTransferAppend() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new byte[32770];
         new Random().nextBytes(content);
@@ -72,16 +59,16 @@ public class DefaultUploadFeatureTest {
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2);
             new DefaultUploadFeature<Void>(new SFTPWriteFeature(session)).upload(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                    status,
-                    new DisabledConnectionCallback());
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                status,
+                new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
             new DefaultUploadFeature<Void>(new SFTPWriteFeature(session)).upload(
-                    test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                    status,
-                    new DisabledConnectionCallback());
+                test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+                status,
+                new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final Read read = session.getFeature(Read.class);
@@ -92,6 +79,5 @@ public class DefaultUploadFeatureTest {
         final Delete delete = session.getFeature(Delete.class);
         delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-        session.close();
     }
 }

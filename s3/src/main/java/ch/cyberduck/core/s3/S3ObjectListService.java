@@ -32,7 +32,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
@@ -40,7 +39,7 @@ import org.jets3t.service.model.StorageObject;
 
 import java.util.EnumSet;
 
-public class S3ObjectListService implements ListService {
+public class S3ObjectListService extends S3AbstractListService implements ListService {
     private static final Logger log = Logger.getLogger(S3ObjectListService.class);
 
     private final Preferences preferences
@@ -141,24 +140,5 @@ public class S3ObjectListService implements ListService {
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
-    }
-
-    protected String createPrefix(final Path directory) {
-        // Keys can be listed by prefix. By choosing a common prefix
-        // for the names of related keys and marking these keys with
-        // a special character that delimits hierarchy, you can use the list
-        // operation to select and browse keys hierarchically
-        String prefix = StringUtils.EMPTY;
-        if(!containerService.isContainer(directory)) {
-            // Restricts the response to only contain results that begin with the
-            // specified prefix. If you omit this optional argument, the value
-            // of Prefix for your query will be the empty string.
-            // In other words, the results will be not be restricted by prefix.
-            prefix = containerService.getKey(directory);
-            if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
-                prefix += Path.DELIMITER;
-            }
-        }
-        return prefix;
     }
 }

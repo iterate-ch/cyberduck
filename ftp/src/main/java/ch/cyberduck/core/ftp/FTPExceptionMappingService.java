@@ -64,6 +64,7 @@ public class FTPExceptionMappingService extends AbstractExceptionMappingService<
             case FTPReply.NEED_ACCOUNT:
             case FTPReply.NEED_ACCOUNT_FOR_STORING_FILES:
             case FTPReply.FILE_NAME_NOT_ALLOWED:
+            case FTPReply.FILE_ACTION_NOT_TAKEN:
             case FTPReply.ACTION_ABORTED:
                 return new AccessDeniedException(buffer.toString(), e);
             case FTPReply.UNAVAILABLE_RESOURCE:

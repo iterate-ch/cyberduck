@@ -6,6 +6,10 @@
         <string>s3</string>
         <key>Vendor</key>
         <string>verizoncloudstorage-ams1a</string>
+        <key>Schemes</key>
+        <array>
+            <string>verizon</string>
+        </array>
         <key>Description</key>
         <string>Verizon Cloud Storage (Netherlands, EU)</string>
         <key>Default Hostname</key>

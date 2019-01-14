@@ -17,9 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -63,7 +61,6 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
         new DropboxTouchFeature(session).touch(copy, new TransferStatus());
         new DropboxCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
-        final AttributedList<Path> files = new DropboxListService(session).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(test));
         assertTrue(find.find(copy));
         new DropboxDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());

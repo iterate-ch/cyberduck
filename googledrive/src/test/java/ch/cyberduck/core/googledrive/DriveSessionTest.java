@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
@@ -64,7 +63,7 @@ public class DriveSessionTest extends AbstractDriveTest {
     public void testConnectInvalidKey() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new DriveProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/default/Google Drive.cyberduckprofile"));
+            this.getClass().getResourceAsStream("/Google Drive.cyberduckprofile"));
         final Host host = new Host(profile, "www.googleapis.com", new Credentials());
         final DriveSession session = new DriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {

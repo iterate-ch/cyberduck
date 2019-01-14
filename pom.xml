@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>6.8.4-SNAPSHOT</version>
+    <version>6.8.5-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -76,17 +76,17 @@
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna</artifactId>
-                <version>5.0.0</version>
+                <version>5.1.0</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna-platform</artifactId>
-                <version>5.0.0</version>
+                <version>5.1.0</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
-                <version>3.2.9</version>
+                <version>3.2.10</version>
             </dependency>
             <dependency>
                 <groupId>ch.iterate.s3</groupId>
@@ -116,12 +116,12 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15on</artifactId>
-                <version>1.52</version>
+                <version>1.60</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk15on</artifactId>
-                <version>1.52</version>
+                <version>1.60</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
@@ -196,42 +196,42 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-xml</artifactId>
-                <version>2.9.7</version>
+                <version>2.9.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>2.9.7</version>
+                <version>2.9.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>2.9.7</version>
+                <version>2.9.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.9.7</version>
+                <version>2.9.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
                 <artifactId>jackson-jaxrs-base</artifactId>
-                <version>2.9.7</version>
+                <version>2.9.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
                 <artifactId>jackson-jaxrs-json-provider</artifactId>
-                <version>2.9.7</version>
+                <version>2.9.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
-                <version>2.9.7</version>
+                <version>2.9.8</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-joda</artifactId>
-                <version>2.9.7</version>
+                <version>2.9.8</version>
             </dependency>
             <dependency>
                 <groupId>joda-time</groupId>
@@ -241,7 +241,7 @@
             <dependency>
                 <groupId>com.google.oauth-client</groupId>
                 <artifactId>google-oauth-client</artifactId>
-                <version>1.26.0</version>
+                <version>1.27.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.google.http-client</groupId>
@@ -262,7 +262,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.438</version>
+                <version>1.11.470</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -274,7 +274,12 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>27.0-jre</version>
+                <version>27.0.1-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>com.joyent.util</groupId>
+                <artifactId>fast-md5</artifactId>
+                <version>2.7.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -295,7 +300,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.6.1</version>
+                    <version>3.8.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <compilerArgument>-Xlint:unchecked</compilerArgument>
@@ -305,7 +310,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.0</version>
                     <configuration>
                         <archive>
                             <index>true</index>
@@ -328,11 +333,11 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.10</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.1.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                     </configuration>
@@ -369,7 +374,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.4</version>
+                    <version>3.0.1</version>
                     <configuration>
                         <additionalparam>-Xdoclint:none</additionalparam>
                         <encoding>UTF-8</encoding>
@@ -377,11 +382,12 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.19.1</version>
+                    <version>2.20.1</version>
                     <configuration>
                         <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
                         <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
+                            <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
                         </systemPropertyVariables>
                         <excludedGroups>ch.cyberduck.test.IntegrationTest</excludedGroups>
@@ -389,13 +395,14 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.19.1</version>
+                    <version>2.22.1</version>
                     <configuration>
                         <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                         <encoding>UTF-8</encoding>
                         <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
                         <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
                         <systemPropertyVariables>
+                            <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
                         </systemPropertyVariables>
                         <includes>
@@ -406,11 +413,11 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.1.1</version>
                     <executions>
                         <execution>
                             <id>copy-dependencies-dylib-target</id>
@@ -469,15 +476,15 @@
                 <plugin>
                     <groupId>org.commonjava.maven.plugins</groupId>
                     <artifactId>directory-maven-plugin</artifactId>
-                    <version>0.1</version>
+                    <version>0.3.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.6</version>
+                    <version>3.7.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>

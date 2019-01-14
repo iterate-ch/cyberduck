@@ -82,9 +82,10 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     return marker;
                 }
             }
+            final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             switch(session.getSignatureVersion()) {
                 case AWS4HMACSHA256:
-                    if(new S3ExceptionMappingService().map(e) instanceof InteroperabilityException) {
+                    if(failure instanceof InteroperabilityException) {
                         log.warn("Workaround HEAD failure using GET because the expected AWS region cannot be determined " +
                             "from the HEAD error message if using AWS4-HMAC-SHA256 with the wrong region specifier " +
                             "in the authentication header.");
@@ -100,13 +101,13 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                         }
                     }
             }
-            if(new S3ExceptionMappingService().map(e) instanceof AccessDeniedException) {
+            if(failure instanceof AccessDeniedException) {
                 log.warn(String.format("Missing permission to read object details for %s %s", file, e.getMessage()));
                 final StorageObject object = new StorageObject(containerService.getKey(file));
                 object.setBucketName(container);
                 return object;
             }
-            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            throw failure;
         }
     }
 

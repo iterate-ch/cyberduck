@@ -39,7 +39,7 @@ public final class HostParser {
     /**
      * Default scheme if not in URI
      */
-    private final Protocol scheme;
+    private final Protocol defaultScheme;
 
     private final ProtocolFactory factory;
 
@@ -49,16 +49,20 @@ public final class HostParser {
 
     public HostParser(final ProtocolFactory factory) {
         this.factory = factory;
-        this.scheme = factory.forName(preferences.getProperty("connection.protocol.default"));
+        this.defaultScheme = factory.forName(preferences.getProperty("connection.protocol.default"));
     }
 
-    public HostParser(final ProtocolFactory factory, final Protocol scheme) {
+    public HostParser(final ProtocolFactory factory, final Protocol defaultScheme) {
         this.factory = factory;
-        this.scheme = scheme;
+        this.defaultScheme = defaultScheme;
     }
 
     public Host get(final String url) {
-        return HostParser.parse(factory, scheme, url);
+        final Host parsed = HostParser.parse(factory, defaultScheme, url);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Parsed %s as %s", url, parsed));
+        }
+        return parsed;
     }
 
     /**
@@ -68,11 +72,15 @@ public final class HostParser {
      * @return Bookmark
      */
     public static Host parse(final String url) {
-        return parse(ProtocolFactory.get(), ProtocolFactory.get().forName(
+        final Host parsed = parse(ProtocolFactory.get(), ProtocolFactory.get().forName(
             preferences.getProperty("connection.protocol.default")), url);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Parsed %s as %s", url, parsed));
+        }
+        return parsed;
     }
 
-    public static Host parse(final ProtocolFactory factory, final Protocol scheme, final String url) {
+    public static Host parse(final ProtocolFactory factory, final Protocol defaultScheme, final String url) {
         final StringReader reader = new StringReader(url);
 
         Value<String> schemeValue = new Value<>();
@@ -82,7 +90,7 @@ public final class HostParser {
 
         Protocol protocol = factory.forName(schemeValue.getValue());
         if(null == protocol) {
-            protocol = scheme;
+            protocol = defaultScheme;
         }
 
         final Host host = new Host(protocol);

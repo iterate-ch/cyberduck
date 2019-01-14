@@ -9,10 +9,15 @@
         <customObject id="-2" userLabel="File's Owner" customClass="CDPreferencesController">
             <connections>
                 <outlet property="alternatingRowBackgroundCheckbox" destination="72" id="425"/>
+                <outlet property="autoExpandCheckbox" destination="85" id="iLuquie9phae"/>
+                <outlet property="autoExpandDelayCheckbox" destination="95" id="Xia9goo4uise"/>
+                <outlet property="autoExpandDelaySlider" destination="87" id="ohtahyadoo4o"/>
                 <outlet property="bookmarkSizePopup" destination="63" id="426"/>
                 <outlet property="bringQueueToBackCheckbox" destination="117" id="427"/>
                 <outlet property="bringQueueToFrontCheckbox" destination="115" id="428"/>
                 <outlet property="browserSerializeCheckbox" destination="40" id="429"/>
+                <outlet property="checksumDownloadCheckbox" destination="jvf-VY-vT3" id="Aiv4sae4emei"/>
+                <outlet property="checksumUploadCheckbox" destination="Buu-j0-hMk" id="shaC9aa4phee"/>
                 <outlet property="chmodDownloadCheckbox" destination="152" id="430"/>
                 <outlet property="chmodDownloadCustomCheckbox" destination="206" id="431"/>
                 <outlet property="chmodDownloadDefaultCheckbox" destination="208" id="432"/>
@@ -23,6 +28,13 @@
                 <outlet property="chmodUploadTypePopup" destination="216" id="437"/>
                 <outlet property="configureProxiesButton" destination="289" id="438"/>
                 <outlet property="confirmDisconnectCheckbox" destination="55" id="439"/>
+                <outlet property="connectionRetryCheckbox" destination="304" id="shaengek3ahN"/>
+                <outlet property="connectionRetryDelayField" destination="298" id="uw3pei3eeJaj"/>
+                <outlet property="connectionRetryDelayStepper" destination="296" id="aiph4Phoh4nu"/>
+                <outlet property="connectionRetryNumberField" destination="308" id="uam7xoogheiY"/>
+                <outlet property="connectionRetryNumberStepper" destination="306" id="eit4vai3Uong"/>
+                <outlet property="connectionTimeoutField" destination="312" id="Ahjeib9Aibuw"/>
+                <outlet property="connectionTimeoutStepper" destination="310" id="pheoL3Nengez"/>
                 <outlet property="cryptomatorCheckbox" destination="Tzo-pv-NCb" id="taecaeH4"/>
                 <outlet property="defaultBookmarkCombobox" destination="32" id="441"/>
                 <outlet property="defaultBucketLocation" destination="357" id="442"/>
@@ -135,7 +147,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Extern editor" identifier="pencil" id="12">
+                            <tabViewItem label="Extern redigerare" identifier="pencil" id="12">
                                 <view key="view" id="13">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -159,7 +171,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Google Drive" identifier="google" id="20">
+                            <tabViewItem label="Google Docs" identifier="google" id="20">
                                 <view key="view" id="21">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -358,16 +370,16 @@
                                     <menu key="menu" title="OtherViews" id="65">
                                         <items>
                                             <menuItem title="Använd små ikoner" state="on" id="66"/>
-                                            <menuItem title="Använd mediumikoner" tag="1" id="67"/>
+                                            <menuItem title="Använd medium ikoner" tag="1" id="67"/>
                                             <menuItem title="Använd stora ikoner" tag="2" id="68"/>
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="69">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="När små ikoner används visas bara bokmärkenas kortnamn i utdragslådan." id="70">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="När små ikoner används, visas bara bokmärkenas smeknamn i fillistan." id="70">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -386,7 +398,7 @@
                             <button id="72">
                                 <rect key="frame" x="10" y="50" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Använd alternerande bakgrundsfärg" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
+                                <buttonCell key="cell" type="check" title="Använd alternerande bakgrund på rader" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -420,7 +432,7 @@
                             <button id="79">
                                 <rect key="frame" x="10" y="140" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Visa filer som börjar med '.'" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
+                                <buttonCell key="cell" type="check" title="Visa dolda filer" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -428,7 +440,7 @@
                             <button id="81">
                                 <rect key="frame" x="10" y="120" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Dubbelklick öppnar filen i en extern editor" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
+                                <buttonCell key="cell" type="check" title="Dubbelklick öppnar filen i en extern redigerare" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -436,7 +448,7 @@
                             <button id="83">
                                 <rect key="frame" x="10" y="81" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Informationsfönstret visar alltid nuvarande urval" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="84">
+                                <buttonCell key="cell" type="check" title="Informationsfönstret visar alltid aktuella val" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="84">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -448,20 +460,13 @@
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.browser.view.autoexpand" id="531"/>
-                                </connections>
                             </button>
                             <slider verticalHuggingPriority="750" id="87">
                                 <rect key="frame" x="164" y="31" width="216" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <sliderCell key="cell" controlSize="small" alignment="left" minValue="0.10000000000000001" maxValue="2" doubleValue="1.05" tickMarkPosition="below" numberOfTickMarks="9" allowsTickMarkValuesOnly="YES" sliderType="linear" id="88">
+                                <sliderCell key="cell" controlSize="small" alignment="left" maxValue="2" doubleValue="1" tickMarkPosition="below" numberOfTickMarks="9" allowsTickMarkValuesOnly="YES" sliderType="linear" id="88">
                                     <font key="font" size="12" name="Helvetica"/>
                                 </sliderCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.browser.view.autoexpand.delay" id="528"/>
-                                    <binding destination="314" name="enabled" keyPath="values.browser.view.autoexpand.useDelay" id="529"/>
-                                </connections>
                             </slider>
                             <textField verticalHuggingPriority="750" id="89">
                                 <rect key="frame" x="120" y="12" width="101" height="11"/>
@@ -497,15 +502,11 @@
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="smallSystem"/>
                                 </buttonCell>
-                                <connections>
-                                    <binding destination="314" name="enabled" keyPath="values.browser.view.autoexpand" id="527"/>
-                                    <binding destination="314" name="value" keyPath="values.browser.view.autoexpand.useDelay" id="526"/>
-                                </connections>
                             </button>
                             <button id="97">
                                 <rect key="frame" x="10" y="100" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Använd Enter-tangenten för att ändra namn på mappar och filer" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
+                                <buttonCell key="cell" type="check" title="Använd Return-tangenten för att ändra namn på mappar och filer" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -527,7 +528,7 @@
                         <tabViewItem label="Allmänt" identifier="1" id="101">
                             <view key="view" id="102">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button id="103">
                                         <rect key="frame" x="10" y="169" width="441" height="18"/>
@@ -540,7 +541,7 @@
                                     <button id="105">
                                         <rect key="frame" x="10" y="214" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Ta bort objekt när överföringen har avslutats" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
+                                        <buttonCell key="cell" type="check" title="Ta bort objekt när överföringen är klar" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -548,7 +549,7 @@
                                     <textField verticalHuggingPriority="750" id="107">
                                         <rect key="frame" x="9" y="120" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Dublettfiler:" id="108">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Befintliga filer:" id="108">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -579,7 +580,7 @@
                                     <button id="115">
                                         <rect key="frame" x="10" y="254" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Visa överföringsfönstret överst när filer håller på att överföras" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="116">
+                                        <buttonCell key="cell" type="check" title="Visa fönstret överst när överföring påbörjas" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="116">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -587,7 +588,7 @@
                                     <button id="117">
                                         <rect key="frame" x="10" y="234" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Stäng överföringsfönstret när överföringen är klar" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="118">
+                                        <buttonCell key="cell" type="check" title="Stäng fönstret när överföringen är klar" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="118">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -621,7 +622,7 @@
                                     <textField verticalHuggingPriority="750" id="125">
                                         <rect key="frame" x="9" y="28" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Dublettfiler:" id="126">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Befintliga filer:" id="126">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -695,7 +696,7 @@
                                     <button id="146">
                                         <rect key="frame" x="10" y="52" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Upload with temporary filename" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
+                                        <buttonCell key="cell" type="check" title="Överför med temporärt filnamn" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="147">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -706,7 +707,7 @@
                         <tabViewItem label="Behörigheter" identifier="2" id="148">
                             <view key="view" id="149">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button id="150">
                                         <rect key="frame" x="10" y="115" width="441" height="18"/>
@@ -1011,15 +1012,15 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
-                        <tabViewItem label="Tidsmarkeringar" identifier="3" id="226">
+                        <tabViewItem label="Tidsstämplar" identifier="3" id="226">
                             <view key="view" id="227">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <button id="228">
                                         <rect key="frame" x="10" y="200" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Bevara ändringsdatum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
+                                        <buttonCell key="cell" type="check" title="Bibehåll ändringsdatum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1027,7 +1028,7 @@
                                     <button id="230">
                                         <rect key="frame" x="10" y="257" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Bevara ändringsdatum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
+                                        <buttonCell key="cell" type="check" title="Bibehåll ändringsdatum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1061,10 +1062,60 @@
                                 </subviews>
                             </view>
                         </tabViewItem>
-                        <tabViewItem label="Avancerat" identifier="4" id="238">
+                        <tabViewItem label="Checksum" identifier="" id="VK5-4m-22V">
+                            <view key="view" id="Sgm-g4-6Sg">
+                                <rect key="frame" x="10" y="33" width="461" height="308"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <button id="Buu-j0-hMk">
+                                        <rect key="frame" x="10" y="200" width="441" height="18"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                    <button id="jvf-VY-vT3">
+                                        <rect key="frame" x="10" y="257" width="441" height="18"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
+                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                            <font key="font" metaFont="system"/>
+                                        </buttonCell>
+                                    </button>
+                                    <box verticalHuggingPriority="750" boxType="separator" id="ztf-zi-J0f">
+                                        <rect key="frame" x="12" y="279" width="437" height="5"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                    </box>
+                                    <textField verticalHuggingPriority="750" id="Pdu-UD-1af">
+                                        <rect key="frame" x="9" y="282" width="443" height="14"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Downloads" id="jMp-5G-M0R">
+                                            <font key="font" metaFont="smallSystemBold"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <box verticalHuggingPriority="750" boxType="separator" id="UKO-fJ-LRI">
+                                        <rect key="frame" x="12" y="222" width="437" height="5"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                    </box>
+                                    <textField verticalHuggingPriority="750" id="oCu-3p-Hmv">
+                                        <rect key="frame" x="9" y="225" width="443" height="14"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Uploads" id="OF7-e3-pIZ">
+                                            <font key="font" metaFont="smallSystemBold"/>
+                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                </subviews>
+                            </view>
+                        </tabViewItem>
+                        <tabViewItem label="Filter" identifier="4" id="238">
                             <view key="view" id="239">
                                 <rect key="frame" x="10" y="33" width="461" height="308"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <subviews>
                                     <box verticalHuggingPriority="750" boxType="separator" id="240">
                                         <rect key="frame" x="12" y="279" width="437" height="5"/>
@@ -1210,7 +1261,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="270">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ange förvalt program som öppnas för filer eller länkar som hänvisar till en FTP-adress." id="271">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1248,7 +1299,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="278">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ange förvalt program som öppnas för filer eller länkar som hänvisar till en SFTP-adress." id="279">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1298,7 +1349,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Proxies" id="288">
+                <box title="Proxy" id="288">
                     <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nIK-94-OGK">
@@ -1344,9 +1395,6 @@
                                 <rect key="frame" x="349" y="35" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="30" doubleValue="1" id="297"/>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.retry.delay" id="525"/>
-                                </connections>
                             </stepper>
                             <textField verticalHuggingPriority="750" id="298">
                                 <rect key="frame" x="298" y="37" width="45" height="19"/>
@@ -1356,9 +1404,6 @@
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.retry.delay" id="524"/>
-                                </connections>
                             </textField>
                             <textField verticalHuggingPriority="750" id="300">
                                 <rect key="frame" x="9" y="13" width="284" height="14"/>
@@ -1385,17 +1430,11 @@
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.retry" id="523"/>
-                                </connections>
                             </button>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="306">
                                 <rect key="frame" x="349" y="9" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="9" doubleValue="1" id="307"/>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.retry" id="522"/>
-                                </connections>
                             </stepper>
                             <textField verticalHuggingPriority="750" id="308">
                                 <rect key="frame" x="298" y="11" width="45" height="19"/>
@@ -1405,17 +1444,11 @@
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.retry" id="521"/>
-                                </connections>
                             </textField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="310">
                                 <rect key="frame" x="349" y="84" width="15" height="22"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" minValue="10" maxValue="120" doubleValue="60" id="311"/>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.timeout.seconds" id="520"/>
-                                </connections>
                             </stepper>
                             <textField verticalHuggingPriority="750" id="312">
                                 <rect key="frame" x="298" y="86" width="45" height="19"/>
@@ -1425,9 +1458,6 @@
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
-                                <connections>
-                                    <binding destination="314" name="value" keyPath="values.connection.timeout.seconds" id="519"/>
-                                </connections>
                             </textField>
                         </subviews>
                     </view>
@@ -1455,9 +1485,9 @@
                                 </buttonCell>
                             </button>
                             <button verticalHuggingPriority="750" id="319">
-                                <rect key="frame" x="170" y="38" width="126" height="32"/>
+                                <rect key="frame" x="136" y="38" width="195" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
-                                <buttonCell key="cell" type="push" title="Uppdatera nu" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
+                                <buttonCell key="cell" type="push" title="Leta efter uppdatering nu" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1493,7 +1523,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="183"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Begränsa överföringshastighet" id="328">
+                <box title="Begränsa överföringar" id="328">
                     <rect key="frame" x="17" y="16" width="473" height="147"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="9Em-Vf-Pix">
@@ -1585,7 +1615,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="335"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Encryption" id="350">
+                <box title="Kryptering" id="350">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="aiV-b9-PJY">
@@ -1602,9 +1632,9 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="354">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Choose the algirithm to encrypt files with on upload." id="355">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Välj algoritmen för att kryptera filer vid överföring." id="355">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1630,7 +1660,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="360">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Förvald geografisk plats för nya buckets." id="361">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1658,7 +1688,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="366">
-                                <rect key="frame" x="9" y="40" width="449" height="27"/>
+                                <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="367">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1676,7 +1706,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="168"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Extern editor" id="369">
+                <box title="Redigerare" id="369">
                     <rect key="frame" x="17" y="16" width="473" height="132"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="HTA-ik-z0B">
@@ -1697,7 +1727,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField verticalHuggingPriority="750" id="374">
-                                <rect key="frame" x="9" y="75" width="449" height="27"/>
+                                <rect key="frame" x="9" y="75" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ange en textredigerare som förval. Textredigeraren måste vara installerad och ha stöd för ODB-gränssnittet." id="375">
                                     <font key="font" metaFont="smallSystem"/>
@@ -1730,9 +1760,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <textField verticalHuggingPriority="750" id="410">
-                                <rect key="frame" x="9" y="41" width="449" height="27"/>
+                                <rect key="frame" x="9" y="41" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ändringarna tar effekt nästa gång du startar programmet." id="411">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ändringar träder i kraft nästa gång du öppnar programmet." id="411">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1766,7 +1796,7 @@
                             <button id="Tzo-pv-NCb">
                                 <rect key="frame" x="10" y="21" width="253" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Auto detect and open vault in browser" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
+                                <buttonCell key="cell" type="check" title="Upptäck automatiskt och öppna vault i fillista" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>

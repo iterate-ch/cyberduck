@@ -1,16 +1,10 @@
 package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -24,16 +18,10 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SFTPSymlinkFeatureTest {
+public class SFTPSymlinkFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testSymlink() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final SFTPHomeDirectoryService workdir = new SFTPHomeDirectoryService(session);
         final Path target = new Path(workdir.find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(target, new TransferStatus());
@@ -46,6 +34,5 @@ public class SFTPSymlinkFeatureTest {
         assertFalse(new SFTPFindFeature(session).find(link));
         assertTrue(new SFTPFindFeature(session).find(target));
         new SFTPDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

@@ -16,15 +16,11 @@ package ch.cyberduck.core.cryptomator;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
@@ -37,15 +33,13 @@ import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPDirectoryFeature;
 import ch.cyberduck.core.sftp.SFTPFindFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
-import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.sftp.SFTPReadFeature;
-import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.sftp.SFTPTouchFeature;
 import ch.cyberduck.core.sftp.SFTPWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -76,16 +70,10 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class MoveWorkerTest {
+public class MoveWorkerTest extends AbstractSFTPTest {
 
     @Test
     public void testMoveSameFolderCryptomator() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -106,17 +94,10 @@ public class MoveWorkerTest {
         assertEquals(content.length, IOUtils.copy(new CryptoReadFeature(session, new SFTPReadFeature(session), cryptomator).read(target, new TransferStatus().length(content.length), new DisabledConnectionCallback()), out));
         assertArrayEquals(content, out.toByteArray());
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(target, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testMoveToDifferentFolderCryptomator() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -135,17 +116,10 @@ public class MoveWorkerTest {
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(target, targetFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testMoveToDifferentFolderLongFilenameCryptomator() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
@@ -164,17 +138,10 @@ public class MoveWorkerTest {
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(source));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(target));
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(target, targetFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testMoveFolder() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -200,17 +167,10 @@ public class MoveWorkerTest {
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testMoveFileIntoVault() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -230,18 +190,11 @@ public class MoveWorkerTest {
         assertFalse(new SFTPFindFeature(session).find(clearFile));
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(encryptedFile));
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFile, encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
         registry.clear();
     }
 
     @Test
     public void testMoveDirectoryIntoVault() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -264,18 +217,11 @@ public class MoveWorkerTest {
         assertFalse(new SFTPFindFeature(session).find(clearFolder));
         assertFalse(new SFTPFindFeature(session).find(clearFile));
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFile, encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
         registry.clear();
     }
 
     @Test
     public void testMoveFileOutsideVault() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -299,18 +245,11 @@ public class MoveWorkerTest {
         assertTrue(new SFTPFindFeature(session).find(fileRenamed));
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(encryptedFolder, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new SFTPDeleteFeature(session).delete(Arrays.asList(fileRenamed, clearFolder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
         registry.clear();
     }
 
     @Test
     public void testMoveDirectoryOutsideVault() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -335,7 +274,6 @@ public class MoveWorkerTest {
         assertTrue(new SFTPFindFeature(session).find(fileRenamed));
         new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         new SFTPDeleteFeature(session).delete(Arrays.asList(fileRenamed, directoryRenamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
         registry.clear();
     }
 }

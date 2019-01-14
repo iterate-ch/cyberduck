@@ -29,18 +29,22 @@ public interface LoginService {
      *
      * @param bookmark Credentials
      * @param message  Prompt message
+     * @param pompt    Login prompt
      * @param options  Login mechanism features
      */
-    void validate(Host bookmark, String message, LoginOptions options) throws LoginCanceledException, LoginFailureException;
+    void validate(Host bookmark, String message, LoginCallback pompt, LoginOptions options) throws LoginCanceledException, LoginFailureException;
 
     /**
      * Login and prompt on failure
      *
      * @param proxy    Proxy configuration
      * @param session  Session
-     * @param cache    Directory listing cache
      * @param listener Authentication message callback
+     * @param prompt    Login prompt
      * @param cancel   Cancel callback while authentication is in progress
+     * @return False if authentication fails
+     * @throws LoginCanceledException Login prompt canceled by user
+     * @throws LoginFailureException  Login attempt failed
      */
-    boolean authenticate(Proxy proxy, Session session, Cache<Path> cache, ProgressListener listener, CancelCallback cancel) throws BackgroundException;
+    boolean authenticate(Proxy proxy, Session session, ProgressListener listener, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
 }

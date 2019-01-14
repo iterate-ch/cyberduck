@@ -19,11 +19,11 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>6.8.4-SNAPSHOT</version>
+        <version>6.8.5-SNAPSHOT</version>
     </parent>
     <artifactId>manta</artifactId>
     <properties>
-        <manta-client-version>3.2.5</manta-client-version>
+        <manta-client-version>3.3.0</manta-client-version>
     </properties>
     <dependencies>
         <dependency>

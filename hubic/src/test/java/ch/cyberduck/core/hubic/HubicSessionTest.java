@@ -19,12 +19,10 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
@@ -51,12 +49,7 @@ public class HubicSessionTest {
             new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         try {
-            session.login(Proxy.DIRECT, new DisabledPasswordStore() {
-                @Override
-                public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                    return "1464730217WkCCqXpaGwQfxpUwI6wcXe6NvMCTJMg5lHrcBTRIaY4yAbRFBxvaSBparqNRsui9";
-                }
-            }, new DisabledLoginCallback(), new DisabledCancelCallback());
+            session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         }
         catch(LoginFailureException e) {
             assertEquals("Invalid refresh token. Please contact your web hosting service provider for assistance.", e.getDetail());
@@ -73,15 +66,7 @@ public class HubicSessionTest {
         final HubicSession session = new HubicSession(new Host(profile,
             new HubicProtocol().getDefaultHostname(), new Credentials("u@domain")));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore() {
-            @Override
-            public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                if(user.equals("hubiC (u@domain) OAuth2 Access Token")) {
-                    return "invalid";
-                }
-                return null;
-            }
-        }, new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         session.close();
     }
 }

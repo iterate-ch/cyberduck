@@ -18,7 +18,6 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
@@ -53,6 +52,7 @@ import com.joyent.manta.config.AuthAwareConfigContext;
 import com.joyent.manta.config.ChainedConfigContext;
 import com.joyent.manta.config.DefaultsConfigContext;
 import com.joyent.manta.config.StandardConfigContext;
+import com.joyent.manta.exception.ConfigurationException;
 import com.joyent.manta.exception.MantaClientHttpResponseException;
 import com.joyent.manta.exception.MantaException;
 import com.joyent.manta.http.MantaConnectionFactoryConfigurator;
@@ -82,11 +82,11 @@ public class MantaSession extends HttpSession<MantaClient> {
     }
 
     @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             config.setMantaUser(host.getCredentials().getUsername());
             if(host.getCredentials().isPublicKeyAuthentication()) {
-                config.setMantaKeyId(new MantaPublicKeyAuthentication(this).authenticate(host, keychain, prompt, cancel));
+                config.setMantaKeyId(new MantaPublicKeyAuthentication(this).authenticate(host, prompt, cancel));
             }
             else {
                 config.setPassword(host.getCredentials().getPassword());
@@ -95,6 +95,9 @@ public class MantaSession extends HttpSession<MantaClient> {
             config.reload();
             // Instantiation of client does not validate credentials. List the home path to test the connection
             client.isDirectoryEmpty(new MantaHomeFinderFeature(this).find().getAbsolute());
+        }
+        catch(ConfigurationException e) {
+            throw new BackgroundException(e.getRawMessage(), e);
         }
         catch(MantaException e) {
             throw new MantaExceptionMappingService().map(e);

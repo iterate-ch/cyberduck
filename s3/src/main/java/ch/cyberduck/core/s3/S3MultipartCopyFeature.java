@@ -23,8 +23,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.threading.DefaultThreadPool;
 import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.ThreadPoolFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -52,7 +52,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
         = new S3PathContainerService();
 
     private final ThreadPool pool
-        = new DefaultThreadPool("multipart", PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
+        = ThreadPoolFactory.get("multipart", PreferencesFactory.get().getInteger("s3.upload.multipart.concurrency"));
 
     /**
      * A split smaller than 5M is not allowed

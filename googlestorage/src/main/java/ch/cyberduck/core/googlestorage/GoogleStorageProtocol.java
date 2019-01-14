@@ -71,11 +71,6 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String getDefaultHostname() {
-        return "storage.googleapis.com";
-    }
-
-    @Override
     public Set<Location.Name> getRegions() {
         return new HashSet<Location.Name>(Arrays.asList(
                 new S3LocationFeature.S3Region("US"), new S3LocationFeature.S3Region("EU")

@@ -1,15 +1,7 @@
 package ch.cyberduck.core.shared;
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -20,30 +12,16 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class DefaultHomeFinderServiceTest {
+public class DefaultHomeFinderServiceTest extends AbstractFTPTest {
 
     @Test
     public void testFind() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DefaultHomeFinderService(session).find());
-        session.close();
     }
 
     @Test
     public void testFindDefaultDirectory() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        host.setDefaultPath("/test.d");
-        final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.getHost().setDefaultPath("/test.d");
         assertEquals(new Path("/test.d", EnumSet.of(Path.Type.directory)), new DefaultHomeFinderService(session).find());
-        session.close();
     }
 }

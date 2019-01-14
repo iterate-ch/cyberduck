@@ -15,6 +15,8 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.preferences.PreferencesFactory;
+
 public class DispatchThreadPool extends ExecutorServiceThreadPool implements ThreadPool {
 
     public DispatchThreadPool() {
@@ -22,6 +24,7 @@ public class DispatchThreadPool extends ExecutorServiceThreadPool implements Thr
     }
 
     public DispatchThreadPool(final String prefix, final int size, final Priority priority, final Thread.UncaughtExceptionHandler handler) {
-        super(new DispatchExecutorService());
+        super(PreferencesFactory.get().getInteger("threading.pool.size.max") == size ? new DispatchExecutorService() :
+            DefaultThreadPool.createExecutor(prefix, size, priority, handler));
     }
 }

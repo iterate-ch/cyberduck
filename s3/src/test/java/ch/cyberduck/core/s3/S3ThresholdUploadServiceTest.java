@@ -15,12 +15,7 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
@@ -29,7 +24,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -48,39 +42,24 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class S3ThresholdUploadServiceTest {
+public class S3ThresholdUploadServiceTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testUploadInvalidContainer() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3ThresholdUploadService m = new S3ThresholdUploadService(session,
-                5 * 1024L
+            5 * 1024L
         );
         final Path container = new Path("nosuchcontainer.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().length(5 * 1024L);
         m.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), status, null);
     }
 
     @Test
     public void testUploadSinglePartEuCentral() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session,
-                5 * 1024L
+            5 * 1024L
         );
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = UUID.randomUUID().toString();
@@ -93,7 +72,7 @@ public class S3ThresholdUploadServiceTest {
         status.setMime("text/plain");
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledLoginCallback());
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));
@@ -110,15 +89,8 @@ public class S3ThresholdUploadServiceTest {
 
     @Test
     public void testUploadSinglePartUsEast() throws Exception {
-        final S3Session session = new S3Session(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
-                        new Credentials(
-                                System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
-                        )));
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final S3ThresholdUploadService service = new S3ThresholdUploadService(session,
-                5 * 1024L
+            5 * 1024L
 
         );
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -132,7 +104,7 @@ public class S3ThresholdUploadServiceTest {
         status.setMime("text/plain");
         status.setStorageClass(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         service.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-                new DisabledStreamListener(), status, new DisabledLoginCallback());
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertEquals((long) random.getBytes().length, status.getOffset(), 0L);
         assertTrue(status.isComplete());
         assertTrue(new S3FindFeature(session).find(test));

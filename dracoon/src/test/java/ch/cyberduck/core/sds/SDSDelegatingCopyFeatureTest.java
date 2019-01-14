@@ -26,6 +26,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -66,7 +67,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         new SDSTouchFeature(session, nodeid).touch(copy, new TransferStatus());
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(test, copy));
-        new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
+        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback()).attributes().getVersionId());
         assertTrue(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(copy));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -81,7 +82,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path copy = new Path(new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus()), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertFalse(feature.isSupported(test, copy));
-        new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
+        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback()).attributes().getVersionId());
         assertTrue(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(copy));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -102,7 +103,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         new SDSTouchFeature(session, nodeid).touch(copy, new TransferStatus());
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(test, copy));
-        new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback()).attributes().getVersionId());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new SDSListService(session, nodeid).list(targetFolder, new DisabledListProgressListener());
         assertTrue(find.find(copy));
@@ -121,7 +122,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path copy = new Path(folder, test.getName(), EnumSet.of(Path.Type.file));
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertFalse(feature.isSupported(test, copy));
-        new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback()).attributes().getVersionId());
         final Find find = new DefaultFindFeature(session);
         final AttributedList<Path> files = new SDSListService(session, nodeid).list(folder, new DisabledListProgressListener());
         assertTrue(find.find(copy));
@@ -141,6 +142,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(directory, target));
         final Path copy = new SDSDelegatingCopyFeature(session, nodeid, feature).copy(directory, target, new TransferStatus(), new DisabledConnectionCallback());
+        assertNotNull(copy.attributes().getVersionId());
         assertTrue(new SDSFindFeature(nodeid).find(file));
         assertTrue(new SDSFindFeature(nodeid).find(target));
         assertTrue(new SDSFindFeature(nodeid).find(copy));
@@ -158,7 +160,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path target = new SDSTouchFeature(session, nodeid).touch(new Path(room2, source.getName(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(source, target));
-        new SDSDelegatingCopyFeature(session, nodeid, feature).copy(source, target, new TransferStatus(), new DisabledConnectionCallback());
+        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(source, target, new TransferStatus(), new DisabledConnectionCallback()).attributes().getVersionId());
         assertTrue(new SDSFindFeature(nodeid).find(source));
         assertTrue(new SDSFindFeature(nodeid).find(target));
         new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room1, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -166,7 +168,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testCopyFromEncryptedDataRoom() throws Exception {
-        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
@@ -194,6 +196,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
                 return new VaultCredentials("ahbic3Ae");
             }
         });
+        assertNotNull(copy.attributes().getVersionId());
+        assertEquals(copy.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(copy).getVersionId());
         assertFalse(feature.isSupported(test, target));
         assertTrue(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(copy));
@@ -217,7 +221,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testCopyToEncryptedDataRoom() throws Exception {
-        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
@@ -232,7 +236,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
-        new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, target, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, target, new TransferStatus().length(content.length), new DisabledConnectionCallback()).attributes().getVersionId());
         assertFalse(feature.isSupported(test, target));
         assertTrue(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(target));
@@ -256,9 +260,9 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testCopyFileWithRenameBetweenEncryptedDataRooms() throws Exception {
-        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
-        final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -272,7 +276,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
-        new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, target, new TransferStatus().length(content.length), new ConnectionCallback() {
+        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, target, new TransferStatus().length(content.length), new ConnectionCallback() {
             @Override
             public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) {
                 //
@@ -282,7 +286,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("ahbic3Ae");
             }
-        });
+        }).attributes().getVersionId());
         assertFalse(feature.isSupported(test, target));
         assertTrue(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(target));
@@ -306,9 +310,10 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testCopyFileSameNameBetweenEncryptedDataRooms() throws Exception {
-        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
-        final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.vault));
+        final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume),
+            new PathAttributes().withCustom(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(true)));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -323,7 +328,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
         final Path target = new Path(room2, test.getName(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
         final SDSCopyFeature feature = new SDSCopyFeature(session, nodeid);
         assertTrue(feature.isSupported(test, target));
-        new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, target, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        assertNotNull(new SDSDelegatingCopyFeature(session, nodeid, feature).copy(test, target, new TransferStatus().length(content.length), new DisabledConnectionCallback())
+            .attributes().getVersionId());
         assertTrue(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(target));
         final byte[] compare = new byte[content.length];

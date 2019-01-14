@@ -18,13 +18,8 @@ package ch.cyberduck.core.ftp.list;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -34,14 +29,11 @@ import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
 import ch.cyberduck.core.ftp.FTPDirectoryFeature;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
-import ch.cyberduck.core.ftp.FTPUnixPermissionFeature;
+import ch.cyberduck.core.ftp.FTPTouchFeature;
 import ch.cyberduck.core.ftp.FTPWorkdirService;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -58,22 +50,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class FTPListServiceTest {
+public class FTPListServiceTest extends AbstractFTPTest {
 
     @Test
     public void testList() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final ListService service = new FTPListService(session, null, TimeZone.getDefault());
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(file, new TransferStatus());
+        new FTPTouchFeature(session).touch(file, new TransferStatus());
         final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
-        new FTPUnixPermissionFeature(session).setUnixPermission(file, permission);
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
             @Override
             public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
@@ -81,28 +66,18 @@ public class FTPListServiceTest {
             }
         });
         assertTrue(list.contains(file));
-        assertEquals(permission, list.get(file).attributes().getPermission());
         new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testListExtended() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         service.remove(FTPListService.Command.list);
         service.remove(FTPListService.Command.stat);
         service.remove(FTPListService.Command.mlsd);
         final Path directory = new FTPWorkdirService(session).find();
         final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        session.getFeature(Touch.class).touch(file, new TransferStatus());
-        final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
-        new FTPUnixPermissionFeature(session).setUnixPermission(file, permission);
+        new FTPTouchFeature(session).touch(file, new TransferStatus());
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
             @Override
             public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
@@ -110,39 +85,11 @@ public class FTPListServiceTest {
             }
         });
         assertTrue(list.contains(file));
-        assertEquals(permission, list.get(file).attributes().getPermission());
         new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
-    }
-
-    @Test
-    public void testListEmptyDirectoryStat() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
-        final FTPListService list = new FTPListService(session, null, TimeZone.getDefault());
-        list.remove(FTPListService.Command.list);
-        list.remove(FTPListService.Command.lista);
-        list.remove(FTPListService.Command.mlsd);
-        final Path home = new FTPWorkdirService(session).find();
-        final Path directory = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new FTPDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
-        assertTrue(list.list(directory, new DisabledListProgressListener()).isEmpty());
-        new FTPDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testListEmptyDirectoryList() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPListService list = new FTPListService(session, null, TimeZone.getDefault());
         list.remove(FTPListService.Command.stat);
         list.remove(FTPListService.Command.lista);
@@ -152,17 +99,10 @@ public class FTPListServiceTest {
         new FTPDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
         assertTrue(list.list(directory, new DisabledListProgressListener()).isEmpty());
         new FTPDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test(expected = ConnectionTimeoutException.class)
     public void testListIOFailureStat() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         service.remove(FTPListService.Command.lista);
         service.remove(FTPListService.Command.mlsd);
@@ -188,12 +128,6 @@ public class FTPListServiceTest {
 
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path f = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final FTPListService service = new FTPListService(session, null, TimeZone.getDefault());
         service.list(f, new DisabledListProgressListener());

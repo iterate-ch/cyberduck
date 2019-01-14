@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -33,17 +32,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class DAVQuotaFeatureTest {
+public class DAVQuotaFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testGet() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Quota.Space quota = new DAVQuotaFeature(session).get();
         assertNotNull(quota);
         assertEquals(Long.MAX_VALUE, quota.available, 0L);
@@ -53,11 +45,11 @@ public class DAVQuotaFeatureTest {
     @Test
     public void testGetRepository() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"), null
+            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
         final DAVSession session = new DAVSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Quota.Space quota = new DAVQuotaFeature(session).get();
         assertNotNull(quota);
         assertEquals(Long.MAX_VALUE, quota.available, 0L);

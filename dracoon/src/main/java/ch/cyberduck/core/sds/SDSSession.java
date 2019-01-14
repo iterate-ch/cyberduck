@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.ExpiringObjectHolder;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -80,7 +79,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     protected OAuth2RequestInterceptor authorizationService;
 
     private final ExpiringObjectHolder<UserAccountWrapper> userAccount
-        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.useracount.ttl"));
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPair
         = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
@@ -137,17 +136,21 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
         final String login = host.getCredentials().getUsername();
         final String password = host.getCredentials().getPassword();
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
-                authorizationService.setTokens(authorizationService.authorize(host, keychain, controller, cancel));
+                authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
                 break;
             case radius:
-                final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    LocaleFactory.localizedString("Multi-Factor Authentication", "S3"), new LoginOptions(host.getProtocol()).user(false).keychain(false)
+                final Credentials additional = controller.prompt(host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                    LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                    new LoginOptions()
+                        .icon(host.getProtocol().disk())
+                        .user(false)
+                        .keychain(false)
                 );
                 // Save tokens for 401 error response when expired
                 retryHandler.setTokens(login, password, this.login(controller, new LoginRequest()
@@ -191,8 +194,12 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             }
         }
         catch(PartialLoginFailureException e) {
-            final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(), LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                e.getDetail(), new LoginOptions(host.getProtocol()).user(false).keychain(false)
+            final Credentials additional = controller.prompt(host, host.getCredentials().getUsername(),
+                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), e.getDetail(),
+                new LoginOptions()
+                    .icon(host.getProtocol().disk())
+                    .user(false)
+                    .keychain(false)
             );
             return this.login(controller, new LoginRequest()
                 .authType(LoginRequest.AuthTypeEnum.fromValue(host.getProtocol().getAuthorization()))
@@ -201,25 +208,27 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
     }
 
-    public UserAccountWrapper userAccount() {
+    public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
                 userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null)));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user info. %s", e.getMessage()));
+                throw new SDSExceptionMappingService().map(e);
             }
         }
         return this.userAccount.get();
     }
 
-    public UserKeyPairContainer keyPair() {
+    public UserKeyPairContainer keyPair() throws BackgroundException {
         if(keyPair.get() == null) {
             try {
                 keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
+                throw new SDSExceptionMappingService().map(e);
             }
         }
         return this.keyPair.get();

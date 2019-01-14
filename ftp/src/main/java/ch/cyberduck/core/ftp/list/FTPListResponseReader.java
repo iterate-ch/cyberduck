@@ -21,7 +21,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.ftp.parser.FTPExtendedFile;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +28,6 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.List;
@@ -50,8 +48,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
     }
 
     @Override
-    public AttributedList<Path> read(final Path directory, final List<String> replies, final ListProgressListener listener)
-            throws IOException, FTPInvalidListException, ConnectionCanceledException {
+    public AttributedList<Path> read(final Path directory, final List<String> replies, final ListProgressListener listener) throws FTPInvalidListException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // At least one entry successfully parsed
         boolean success = false;
@@ -154,7 +151,9 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                 permission.setSetgid(((FTPExtendedFile) f).isSetgid());
                 permission.setSticky(((FTPExtendedFile) f).isSticky());
             }
-            parsed.attributes().setPermission(permission);
+            if(!Permission.EMPTY.equals(permission)) {
+                parsed.attributes().setPermission(permission);
+            }
             final Calendar timestamp = f.getTimestamp();
             if(timestamp != null) {
                 parsed.attributes().setModificationDate(timestamp.getTimeInMillis());

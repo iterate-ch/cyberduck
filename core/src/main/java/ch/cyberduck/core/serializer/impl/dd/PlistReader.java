@@ -30,6 +30,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 
 import com.dd.plist.NSArray;
@@ -44,7 +45,7 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
     @Override
     public Collection<S> readCollection(final Local file) throws AccessDeniedException {
         final Collection<S> c = new Collection<S>();
-        final NSArray list = (NSArray) this.parse(file);
+        final NSArray list = (NSArray) this.parse(file.getInputStream());
         if(null == list) {
             log.error(String.format("Invalid bookmark file %s", file));
             return c;
@@ -76,20 +77,24 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
         if(!file.isFile()) {
             throw new LocalAccessDeniedException(file.getAbsolute());
         }
-        final NSDictionary dict = (NSDictionary) this.parse(file);
-        if(null == dict) {
+        final S deserialized = this.read(file.getInputStream());
+        if(null == deserialized) {
             log.error(String.format("Invalid bookmark file %s", file));
             return null;
         }
+        return deserialized;
+    }
+
+    public S read(final InputStream in) throws AccessDeniedException {
+        final NSDictionary dict = (NSDictionary) this.parse(in);
         return this.deserialize(dict);
     }
 
-    private NSObject parse(final Local file) throws AccessDeniedException {
+    private NSObject parse(final InputStream in) {
         try {
-            return XMLPropertyListParser.parse(file.getInputStream());
+            return XMLPropertyListParser.parse(in);
         }
         catch(ParserConfigurationException | IOException | SAXException | ParseException | PropertyListFormatException e) {
-            log.error(String.format("Invalid bookmark file %s", file));
             return null;
         }
     }

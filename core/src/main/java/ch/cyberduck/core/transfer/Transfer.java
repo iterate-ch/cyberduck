@@ -31,6 +31,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -42,6 +43,8 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -64,6 +67,8 @@ public abstract class Transfer implements Serializable {
      * The number bytes already transferred of the files in the <code>queue</code> or null if unknown
      */
     private AtomicLong transferred;
+
+    private final Map<Local, Object> locks = new HashMap<>();
 
     public abstract Type getType();
 
@@ -273,7 +278,7 @@ public abstract class Transfer implements Serializable {
      * @param listener    Progress listener
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
-    public abstract TransferPathFilter filter(Session<?> source, Session<?> destination, TransferAction action, ProgressListener listener);
+    public abstract TransferPathFilter filter(Session<?> source, final Session<?> destination, TransferAction action, ProgressListener listener);
 
     /**
      * @param source          Connection to source server of transfer. May be null.
@@ -284,21 +289,19 @@ public abstract class Transfer implements Serializable {
      * @param listener        Listener
      * @return Duplicate file strategy from preferences or user selection
      */
-    public abstract TransferAction action(Session<?> source, Session<?> destination, boolean resumeRequested, boolean reloadRequested,
+    public abstract TransferAction action(Session<?> source, final Session<?> destination, boolean resumeRequested, boolean reloadRequested,
                                           TransferPrompt prompt, ListProgressListener listener) throws BackgroundException;
 
     /**
      * Returns the children of this path filtering it with the default regex filter
      *
-     * @param source      Connection to source server of transfer. May be null.
-     * @param destination Connection to target server of transfer
-     * @param directory   The directory to list the children
-     * @param local       Local directory
-     * @param listener    Listener
+     * @param session   Connection to source server of transfer. May be null.
+     * @param directory The directory to list the children
+     * @param local     Local directory
+     * @param listener  Listener
      * @return A list of child items
      */
-    public abstract List<TransferItem> list(Session<?> source, Session<?> destination, Path directory, Local local,
-                                            ListProgressListener listener) throws BackgroundException;
+    public abstract List<TransferItem> list(Session<?> session, Path directory, Local local, ListProgressListener listener) throws BackgroundException;
 
     /**
      * @param source      Connection to source server of transfer. May be null.
@@ -307,7 +310,15 @@ public abstract class Transfer implements Serializable {
      * @param callback    Prompt
      */
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        //
+        for(TransferItem item : roots) {
+            final Local directory = item.local.getParent();
+            try {
+                locks.put(directory, directory.lock(true));
+            }
+            catch(AccessDeniedException e) {
+                // Ignore no lock support
+            }
+        }
     }
 
     /**
@@ -317,7 +328,12 @@ public abstract class Transfer implements Serializable {
      * @param callback    Prompt
      */
     public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        //
+        for(Iterator<Map.Entry<Local, Object>> iter = locks.entrySet().iterator(); iter.hasNext(); ) {
+            final Map.Entry<Local, Object> entry = iter.next();
+            final Local directory = entry.getKey().getParent();
+            directory.release(entry.getValue());
+            iter.remove();
+        }
     }
 
     /**
@@ -337,8 +353,8 @@ public abstract class Transfer implements Serializable {
      */
     public abstract Path transfer(Session<?> source, Session<?> destination, Path file, Local local,
                                   TransferOptions options, TransferStatus status,
-                                  ConnectionCallback connectionCallback,
-                                  final PasswordCallback passwordCallback, ProgressListener progressListener,
+                                  ConnectionCallback connectionCallback, PasswordCallback passwordCallback,
+                                  ProgressListener progressListener,
                                   StreamListener streamListener) throws BackgroundException;
 
     public void start() {

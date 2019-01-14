@@ -80,14 +80,12 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         if(null != node.getCntUploadShares()) {
             custom.put(SDSAttributesFinderFeature.KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
         }
-        if(node.getIsEncrypted()) {
-            custom.put(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(true));
-        }
+        custom.put(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(node.getIsEncrypted()));
         attributes.setCustom(custom);
         return attributes;
     }
 
-    private Permission toPermission(final Node node) {
+    private Permission toPermission(final Node node) throws BackgroundException {
         final Permission permission = new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none);
         if(node.getIsEncrypted() && node.getType() == Node.TypeEnum.FILE) {
             if(null != session.keyPair()) {
@@ -110,7 +108,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     private Acl toAcl(final Node node) {
         final Acl acl = new Acl();
-        final Acl.User user = new Acl.CanonicalUser(String.valueOf(session.userAccount().getId()));
+        final Acl.User user = new Acl.CanonicalUser();
         if(node.getPermissions().getManage()) {
             acl.addAll(user, SDSPermissionsFeature.MANAGE_ROLE);
         }

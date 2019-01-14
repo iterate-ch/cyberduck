@@ -24,7 +24,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,7 +62,7 @@ public class SpectraUploadFeature extends HttpUploadFeature<StorageObject, Messa
         final List<TransferStatus> chunks = bulk.query(Transfer.Type.upload, file, status);
         StorageObject stored = null;
         for(TransferStatus chunk : chunks) {
-            chunk.setChecksum(new MD5ChecksumCompute().compute(local.getInputStream(), chunk));
+            chunk.setChecksum(ChecksumComputeFactory.get(HashAlgorithm.md5).compute(local.getInputStream(), chunk));
             stored = super.upload(file, local, throttle, listener, chunk, callback);
         }
         return stored;

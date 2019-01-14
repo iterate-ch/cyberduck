@@ -19,7 +19,6 @@ import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -63,7 +62,7 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
         this.session = session;
     }
 
-    public String authenticate(final Host bookmark, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public String authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
         final Local identity = credentials.getIdentity();
         final KeyFormat format = this.detectKeyFormat(identity);
@@ -80,40 +79,36 @@ public class MantaPublicKeyAuthentication implements AuthenticationProvider<Stri
             new PasswordFinder() {
                 @Override
                 public char[] reqPassword(Resource<?> resource) {
-                    String password = keychain.findPrivateKeyPassphrase(bookmark);
-                    if(StringUtils.isEmpty(password)) {
+                    if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {
                         try {
                             // Use password prompt
-                            final Credentials passphrase = prompt.prompt(bookmark,
+                            final Credentials input = prompt.prompt(bookmark,
                                 LocaleFactory.localizedString("Private key password protected", "Credentials"),
                                 String.format("%s (%s)",
                                     LocaleFactory.localizedString("Enter the passphrase for the private key file", "Credentials"),
-                                    identity.getAbbreviatedPath()), new LoginOptions(bookmark.getProtocol())
-                                    .user(false).password(true).publickey(false)
+                                    identity.getAbbreviatedPath()),
+                                new LoginOptions()
+                                    .icon(bookmark.getProtocol().disk())
+                                    .user(false).password(true)
                             );
-                            if(passphrase.isSaved()) {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Save passphrase for %s", resource));
-                                }
-                                keychain.addPassword(bookmark.getHostname(), identity.getAbbreviatedPath(), passphrase.getPassword());
-                            }
-                            password = passphrase.getPassword();
+                            credentials.setSaved(input.isSaved());
+                            credentials.setIdentityPassphrase(input.getPassword());
                         }
-                        catch(LoginCanceledException ignored) {
+                        catch(LoginCanceledException e) {
                             // Return null if user cancels
                             return StringUtils.EMPTY.toCharArray();
                         }
                     }
-                    config.setPassword(password);
-                    return password.toCharArray();
+                    config.setPassword(credentials.getIdentityPassphrase());
+                    return credentials.getIdentityPassphrase().toCharArray();
                 }
 
                 @Override
                 public boolean shouldRetry(Resource<?> resource) {
                     return false;
                 }
-            });
-
+            }
+        );
         return this.computeFingerprint(provider);
     }
 

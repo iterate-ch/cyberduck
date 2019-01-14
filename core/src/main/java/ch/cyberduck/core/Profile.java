@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -296,21 +295,12 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
-    public Scheme[] getSchemes() {
+    public String[] getSchemes() {
         final List<String> values = this.list("Schemes");
         if(values.isEmpty()) {
             return parent.getSchemes();
         }
-        final List<Scheme> schemes = new ArrayList<>();
-        for(String s : values) {
-            try {
-                schemes.add(Scheme.valueOf(s));
-            }
-            catch(IllegalArgumentException e) {
-                log.warn(String.format("Unknown scheme %s", s));
-            }
-        }
-        return schemes.toArray(new Scheme[schemes.size()]);
+        return values.toArray(new String[values.size()]);
     }
 
     @Override
@@ -379,6 +369,11 @@ public class Profile implements Protocol, Serializable {
             return parent.isTokenConfigurable();
         }
         return this.bool("Token Configurable");
+    }
+
+    @Override
+    public boolean isOAuthConfigurable() {
+        return StringUtils.isNotBlank(this.getOAuthClientId());
     }
 
     @Override
@@ -546,6 +541,8 @@ public class Profile implements Protocol, Serializable {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Profile{");
         sb.append("parent=").append(parent);
+        sb.append(", vendor=").append(this.value("Vendor"));
+        sb.append(", description=").append(this.value("Description"));
         sb.append(", image=").append(disk);
         sb.append('}');
         return sb.toString();

@@ -19,7 +19,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
@@ -28,8 +27,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Comparator;
 
 public class DriveFileidProvider implements IdProvider {
 
@@ -54,10 +51,10 @@ public class DriveFileidProvider implements IdProvider {
         }
         if(cache.isCached(file.getParent())) {
             final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new SimplePathPredicate(file));
+            final Path found = list.find(new IgnoreTrashedPathPredicate(file));
             if(null != found) {
                 if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return found.attributes().getVersionId();
+                    return this.set(file, found.attributes().getVersionId());
                 }
             }
         }
@@ -68,24 +65,39 @@ public class DriveFileidProvider implements IdProvider {
             if(null == found) {
                 throw new NotfoundException(file.getAbsolute());
             }
-            return found.attributes().getVersionId();
+            return this.set(file, found.attributes().getVersionId());
         }
         final AttributedList<Path> list = new FileidDriveListService(session, this, file).list(file.getParent(), new DisabledListProgressListener());
-        final Path found = list.filter(new Comparator<Path>() {
-            @Override
-            public int compare(final Path p1, final Path p2) {
-                return -Long.compare(p1.attributes().getModificationDate(), p2.attributes().getModificationDate());
-            }
-        }, new NullFilter<>()).find(new SimplePathPredicate(file));
+        final Path found = list.find(new IgnoreTrashedPathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
         }
-        return found.attributes().getVersionId();
+        return this.set(file, found.attributes().getVersionId());
+    }
+
+    protected String set(final Path file, final String id) {
+        file.attributes().setVersionId(id);
+        return id;
     }
 
     @Override
     public DriveFileidProvider withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
+    }
+
+    public static final class IgnoreTrashedPathPredicate extends SimplePathPredicate {
+        public IgnoreTrashedPathPredicate(final Path file) {
+            super(file);
+        }
+
+        @Override
+        public boolean test(final Path test) {
+            if(test.attributes().isDuplicate()) {
+                // Ignore trashed files
+                return false;
+            }
+            return super.test(test);
+        }
     }
 }

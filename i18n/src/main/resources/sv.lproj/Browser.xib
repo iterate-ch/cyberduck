@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -322,7 +322,7 @@
                         <action selector="infoButtonClicked:" target="-1" id="163"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Quick Look" image="NSQuickLookTemplate" id="69">
+                <menuItem title="Överblick" image="NSQuickLookTemplate" id="69">
                     <attributedString key="attributedTitle"/>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -332,7 +332,7 @@
                 <menuItem title="Redigera med" id="70">
                     <menu key="submenu" title="Redigera med" id="71"/>
                 </menuItem>
-                <menuItem title="Ändra namn…" id="72">
+                <menuItem title="Byt namn…" id="72">
                     <connections>
                         <action selector="renameFileButtonClicked:" target="-1" id="176"/>
                     </connections>
@@ -363,7 +363,7 @@
                 <menuItem isSeparatorItem="YES" id="78">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Skicka…" keyEquivalent="" id="79">
+                <menuItem title="Överför…" keyEquivalent="" id="79">
                     <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                     <connections>
                         <action selector="uploadButtonClicked:" target="-1" id="174"/>
@@ -379,7 +379,7 @@
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="6n9-Af-09P">
+                <menuItem title="Nytt krypterat vault…" keyEquivalent="N" id="6n9-Af-09P">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
@@ -390,7 +390,7 @@
                         <action selector="createFileButtonClicked:" target="-1" id="173"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Symbolic Link…" id="83">
+                <menuItem title="Ny symbolisk länk…" id="83">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="createSymlinkButtonClicked:" target="-1" id="184"/>
@@ -436,7 +436,7 @@ CA
                 <menuItem isSeparatorItem="YES" id="96">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Ny fillista…" id="97">
+                <menuItem title="Nytt fönster" id="97">
                     <connections>
                         <action selector="newBrowserButtonClicked:" target="-1" id="179"/>
                     </connections>
@@ -478,30 +478,30 @@ DQ
                         <action selector="editBookmarkButtonClicked:" target="-1" id="171"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Duplicate Bookmark" id="105">
+                <menuItem title="Duplicera bokmärke" id="105">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="duplicateBookmarkButtonClicked:" target="-1" id="183"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="106"/>
-                <menuItem title="Sort By" id="107">
+                <menuItem title="Sortera efter" id="107">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Sort By" id="108">
+                    <menu key="submenu" title="Sortera efter" id="108">
                         <items>
-                            <menuItem title="Nickname" keyEquivalent="1" id="109">
+                            <menuItem title="Smeknamn" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Hostname" keyEquivalent="2" id="110">
+                            <menuItem title="Värd" keyEquivalent="2" id="110">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByHostname:" target="-1" id="187"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Protocol" keyEquivalent="3" id="111">
+                            <menuItem title="Protokoll" keyEquivalent="3" id="111">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByProtocol:" target="-1" id="188"/>
@@ -531,7 +531,7 @@ DQ
     </objects>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>
-        <image name="NSBonjour" width="32" height="32"/>
+        <image name="NSBonjour" width="128" height="128"/>
         <image name="NSQuickLookTemplate" width="19" height="12"/>
         <image name="NSRemoveTemplate" width="11" height="11"/>
         <image name="bookmarks" width="16" height="16"/>

@@ -25,7 +25,6 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
@@ -57,7 +56,6 @@ import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
 public class STSCredentialsConfigurator {
     private static final Logger log = Logger.getLogger(STSCredentialsConfigurator.class);
 
-    private final Preferences preferences = PreferencesFactory.get();
     private final PasswordCallback prompt;
 
     public STSCredentialsConfigurator(final PasswordCallback prompt) {
@@ -74,7 +72,7 @@ public class STSCredentialsConfigurator {
         }
         final File file = AwsProfileFileLocationProvider.DEFAULT_CREDENTIALS_LOCATION_PROVIDER.getLocation();
         if(null == file) {
-            log.warn("Missing configuration file ~/.aws/ccredentials. Skip auto configuration");
+            log.warn("Missing configuration file ~/.aws/credentials. Skip auto configuration");
             return host.getCredentials();
         }
         // Iterating all profiles on our own because AWSProfileCredentialsConfigurator does not support MFA tokens
@@ -117,6 +115,15 @@ public class STSCredentialsConfigurator {
                         sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken());
                     // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
                     // Role using the long lived AWS credentials
+                    final Credentials input = prompt.prompt(
+                        host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                        String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                            basicProfile.getProperties().get("mfa_serial")),
+                        new LoginOptions(host.getProtocol())
+                            .password(true)
+                            .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                            .keychain(false)
+                    );
                     final AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
                         .withRoleArn(basicProfile.getRoleArn())
                         // Specify this value if the IAM user has a policy that requires MFA authentication
@@ -127,17 +134,9 @@ public class STSCredentialsConfigurator {
                             // Specify this value if the trust policy of the role being assumed includes a condition that requires MFA authentication.
                             // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
                             // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
-                            prompt.prompt(
-                                host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                                String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                                    basicProfile.getProperties().get("mfa_serial")),
-                                new LoginOptions(host.getProtocol())
-                                    .password(true)
-                                    .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                                    .keychain(false)
-                            ).getPassword() : null
+                            input.getPassword() : null
                         )
-                        .withRoleSessionName(String.format("%s-%s", preferences.getProperty("application.name"), new AsciiRandomStringService().random()));
+                        .withRoleSessionName(new AsciiRandomStringService().random());
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Request %s from %s", assumeRoleRequest, service));
                     }

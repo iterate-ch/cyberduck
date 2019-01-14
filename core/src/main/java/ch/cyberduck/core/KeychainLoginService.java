@@ -31,16 +31,15 @@ import java.text.MessageFormat;
 public class KeychainLoginService implements LoginService {
     private static final Logger log = Logger.getLogger(KeychainLoginService.class);
 
-    private final LoginCallback callback;
     private final HostPasswordStore keychain;
 
-    public KeychainLoginService(final LoginCallback prompt, final HostPasswordStore keychain) {
-        this.callback = prompt;
+    public KeychainLoginService(final HostPasswordStore keychain) {
         this.keychain = keychain;
     }
 
     @Override
-    public void validate(final Host bookmark, final String message, final LoginOptions options) throws LoginCanceledException, LoginFailureException {
+    public void validate(final Host bookmark, final String message, final LoginCallback prompt,
+                         final LoginOptions options) throws LoginCanceledException, LoginFailureException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Validate login credentials for %s", bookmark));
         }
@@ -48,7 +47,7 @@ public class KeychainLoginService implements LoginService {
         if(credentials.isPublicKeyAuthentication()) {
             if(!credentials.getIdentity().attributes().getPermission().isReadable()) {
                 log.warn(String.format("Prompt to select identity file not readable %s", credentials.getIdentity()));
-                credentials.setIdentity(callback.select(credentials.getIdentity()));
+                credentials.setIdentity(prompt.select(credentials.getIdentity()));
             }
         }
         if(options.keychain) {
@@ -78,34 +77,71 @@ public class KeychainLoginService implements LoginService {
                     }
                 }
             }
+            if(options.publickey) {
+                final String passphrase = keychain.findPrivateKeyPassphrase(bookmark);
+                if(StringUtils.isNotBlank(passphrase)) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Fetched private key passphrase from keychain for %s", bookmark));
+                    }
+                    // No need to reinsert found token to the keychain.
+                    credentials.setSaved(false);
+                    credentials.setIdentityPassphrase(passphrase);
+                }
+            }
+            if(options.oauth) {
+                final OAuthTokens tokens = keychain.findOAuthTokens(bookmark);
+                if(tokens.validate()) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Fetched OAuth token from keychain for %s", bookmark));
+                    }
+                    // No need to reinsert found token to the keychain.
+                    credentials.setSaved(false);
+                    credentials.setOauth(tokens);
+                }
+            }
         }
         if(!credentials.validate(bookmark.getProtocol(), options)) {
-            if(options.password) {
-                final StringAppender appender = new StringAppender();
-                appender.append(message);
-                appender.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
-                final Credentials prompt = callback.prompt(bookmark, credentials.getUsername(),
-                    String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
-                    appender.toString(),
-                    options);
-                credentials.setSaved(prompt.isSaved());
-                credentials.setUsername(prompt.getUsername());
-                credentials.setPassword(prompt.getPassword());
-                credentials.setIdentity(prompt.getIdentity());
-            }
-            if(options.token) {
-                final Credentials prompt = callback.prompt(bookmark,
-                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                    LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"),
-                    options);
-                credentials.setSaved(prompt.isSaved());
-                credentials.setToken(prompt.getPassword());
-            }
+            final StringAppender details = new StringAppender();
+            details.append(message);
+            details.append(LocaleFactory.localizedString("No login credentials could be found in the Keychain", "Credentials"));
+            this.prompt(bookmark, details.toString(), prompt, options);
+        }
+    }
+
+    /**
+     * Prompt for credentials if not found in keychain
+     *
+     * @param bookmark Host configuration
+     * @param message  Message in prompt
+     * @param prompt   Login prompt
+     * @param options  Available login options for protocol
+     * @throws LoginCanceledException Prompt canceled by user
+     */
+    public void prompt(final Host bookmark, final String message, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException {
+        final Credentials credentials = bookmark.getCredentials();
+        if(options.password) {
+            final Credentials input = prompt.prompt(bookmark, credentials.getUsername(),
+                String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
+                message,
+                options);
+            credentials.setSaved(input.isSaved());
+            credentials.setUsername(input.getUsername());
+            credentials.setPassword(input.getPassword());
+            credentials.setIdentity(input.getIdentity());
+        }
+        if(options.token) {
+            final Credentials input = prompt.prompt(bookmark,
+                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                message,
+                options);
+            credentials.setSaved(input.isSaved());
+            credentials.setToken(input.getPassword());
         }
     }
 
     @Override
-    public boolean authenticate(final Proxy proxy, final Session session, final Cache<Path> cache, final ProgressListener listener, final CancelCallback cancel) throws BackgroundException {
+    public boolean authenticate(final Proxy proxy, final Session session, final ProgressListener listener,
+                                final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
         final Credentials credentials = bookmark.getCredentials();
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
@@ -114,7 +150,7 @@ public class KeychainLoginService implements LoginService {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", bookmark));
             }
-            session.login(proxy, keychain, callback, cancel);
+            session.login(proxy, prompt, cancel);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Login successful for session %s", session));
             }
@@ -133,7 +169,7 @@ public class KeychainLoginService implements LoginService {
             final LoginOptions options = new LoginOptions(bookmark.getProtocol());
             if(options.user && options.password) {
                 // Default login prompt with username and password input
-                final Credentials input = callback.prompt(bookmark, credentials.getUsername(),
+                final Credentials input = prompt.prompt(bookmark, credentials.getUsername(),
                     LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
                 credentials.setUsername(input.getUsername());
                 credentials.setPassword(input.getPassword());
@@ -148,29 +184,13 @@ public class KeychainLoginService implements LoginService {
                 return false;
             }
             else {
-                // Password prompt
-                if(options.password) {
-                    final Credentials input = callback.prompt(bookmark,
-                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
-                    if(input.isPasswordAuthentication()) {
-                        credentials.setPassword(input.getPassword());
-                        credentials.setSaved(input.isSaved());
-                    }
-                    // Retry
-                    return false;
-                }
-                else if(options.token) {
-                    final Credentials input = callback.prompt(bookmark,
-                        LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
-                    if(input.isPasswordAuthentication()) {
-                        credentials.setToken(input.getPassword());
-                        credentials.setSaved(input.isSaved());
-                    }
-                    // Retry
-                    return false;
-                }
+                final StringAppender details = new StringAppender();
+                details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
+                details.append(e.getDetail());
+                this.prompt(bookmark, details.toString(), prompt, options);
+                // Retry
+                return false;
             }
-            throw e;
         }
     }
 }

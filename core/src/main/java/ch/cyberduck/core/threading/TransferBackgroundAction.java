@@ -125,7 +125,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        super(controller, source, destination, new ConcurrentTransferWorker(source, destination, transfer, options, meter, prompt, error, callback, password, progress, stream,
+        super(controller, new ConcurrentTransferWorker(source, destination, transfer, options, meter, prompt, error, callback, password, progress, stream,
             NotificationServiceFactory.get()));
         this.options = options;
         this.meter = meter;

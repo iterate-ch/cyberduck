@@ -19,6 +19,7 @@ package ch.cyberduck.core.sparkle;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -85,4 +86,9 @@ public abstract class Updater extends NSObject {
     public abstract void setAutomaticallyChecksForUpdates(boolean automaticallyChecks);
 
     public abstract void setAutomaticallyDownloadsUpdates(boolean automaticallyDownloadsUpdates);
+
+    public abstract boolean validateMenuItem(NSMenuItem menuItem);
+
+    public abstract boolean updateInProgress();
+
 }

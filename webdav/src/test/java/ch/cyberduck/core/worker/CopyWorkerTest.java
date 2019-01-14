@@ -16,25 +16,18 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.dav.AbstractDAVTest;
 import ch.cyberduck.core.dav.DAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVFindFeature;
-import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -50,17 +43,11 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class CopyWorkerTest {
+public class CopyWorkerTest extends AbstractDAVTest {
 
     @Test
     public void testCopyFile() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+
         final Path home = new DefaultHomeFinderService(session).find();
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -77,13 +64,7 @@ public class CopyWorkerTest {
 
     @Test
     public void testCopyFileToDirectory() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+
         final Path home = new DefaultHomeFinderService(session).find();
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session)),
@@ -104,13 +85,7 @@ public class CopyWorkerTest {
 
     @Test
     public void testCopyDirectory() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final DAVSession session = new DAVSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+
         final Path home = new DefaultHomeFinderService(session).find();
         final Path folder = new DAVDirectoryFeature(session).mkdir(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path sourceFile = new DefaultTouchFeature<>(new DAVUploadFeature(new DAVWriteFeature(session)),

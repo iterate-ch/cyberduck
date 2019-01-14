@@ -46,7 +46,7 @@ public class HPTru64ParserTest {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "drwxr-xr-x   7 ToysPKG  advertise   8192 Jun 24 11:58 Private Label Mock"
+            "drwxr-xr-x   7 ToysPKG  advertise   8192 Jun 24 11:58 Private Label Mock"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "Private Label Mock");
@@ -58,7 +58,7 @@ public class HPTru64ParserTest {
         assertEquals(24, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--   1 ToysPKG  advertise24809879 Jun 25 10:54 TRU-Warning Guide Master CD.sitx"
+            "-rw-r--r--   1 ToysPKG  advertise24809879 Jun 25 10:54 TRU-Warning Guide Master CD.sitx"
         );
         assertNull(parsed);
     }

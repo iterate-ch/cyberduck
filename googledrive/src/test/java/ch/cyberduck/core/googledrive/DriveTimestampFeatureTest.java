@@ -44,6 +44,7 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session, fileid).setTimestamp(test, modified);
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
+        assertEquals(modified, new DriveAttributesFinderFeature(session, fileid).find(test).getModificationDate());
         assertEquals(Collections.singletonMap("test", "t"), new DriveMetadataFeature(session, fileid).getMetadata(test));
         new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -57,6 +58,7 @@ public class DriveTimestampFeatureTest extends AbstractDriveTest {
         final long modified = System.currentTimeMillis();
         new DriveTimestampFeature(session, fileid).setTimestamp(test, modified);
         assertEquals(modified, new DefaultAttributesFinderFeature(session).find(test).getModificationDate());
+        assertEquals(modified, new DriveAttributesFinderFeature(session, fileid).find(test).getModificationDate());
         new DriveDeleteFeature(session, fileid).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

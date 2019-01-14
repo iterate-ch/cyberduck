@@ -15,7 +15,9 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -43,4 +45,5 @@ public interface Bulk<R> {
     void post(Transfer.Type type, Map<TransferItem, TransferStatus> files, ConnectionCallback callback) throws BackgroundException;
 
     Bulk<R> withDelete(Delete delete);
+    Bulk<R> withCache(Cache<Path> cache);
 }

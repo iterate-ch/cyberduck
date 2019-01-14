@@ -40,6 +40,7 @@ import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.notification.NotificationCenter;
 import ch.cyberduck.core.proxy.SystemConfigurationProxy;
 import ch.cyberduck.core.resources.NSImageIconCache;
+import ch.cyberduck.core.sparkle.Sandbox;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
@@ -84,7 +85,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
         this.setDefault("factory.iconcache.class", NSImageIconCache.class.getName());
         this.setDefault("factory.workingdirectory.class", FileManagerWorkingDirectoryFinder.class.getName());
-        if(null == Updater.getFeed()) {
+        if(Sandbox.get().isSandboxed()) {
             // Only enable security bookmarks for Mac App Store when running in sandboxed environment
             this.setDefault("factory.bookmarkresolver.class", SecurityScopedFilesystemBookmarkResolver.class.getName());
         }

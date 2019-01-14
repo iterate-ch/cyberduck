@@ -24,8 +24,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.log4j.Logger;
 
 public class CommandLineUriParser {
+    private static final Logger log = Logger.getLogger(CommandLineUriParser.class);
 
     private final CommandLine input;
     private final ProtocolFactory factory;
@@ -53,6 +55,9 @@ public class CommandLineUriParser {
         }
         if(input.hasOption(TerminalOptionsBuilder.Params.udt.name())) {
             host.setTransfer(Host.TransferType.udt);
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Parsed %s as %s", uri, host));
         }
         return host;
     }

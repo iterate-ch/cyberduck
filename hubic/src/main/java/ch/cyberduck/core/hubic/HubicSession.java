@@ -18,8 +18,8 @@ package ch.cyberduck.core.hubic;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
@@ -63,8 +63,8 @@ public class HubicSession extends SwiftSession {
     }
 
     @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        final OAuth2RequestInterceptor.Tokens tokens = authorizationService.authorize(host, keychain, prompt, cancel);
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final OAuthTokens tokens = authorizationService.authorize(host, prompt, cancel);
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Attempt authentication with %s", tokens));

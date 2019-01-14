@@ -23,13 +23,11 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.date.InvalidDateException;
 import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -47,8 +45,7 @@ public class FTPMlsdListResponseReader implements FTPDataResponseReader {
     }
 
     @Override
-    public AttributedList<Path> read(final Path directory, final List<String> replies, final ListProgressListener listener)
-        throws IOException, FTPInvalidListException, ConnectionCanceledException {
+    public AttributedList<Path> read(final Path directory, final List<String> replies, final ListProgressListener listener) throws FTPInvalidListException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // At least one entry successfully parsed
         boolean success = false;

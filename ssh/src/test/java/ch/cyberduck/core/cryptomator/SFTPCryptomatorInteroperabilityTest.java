@@ -42,10 +42,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.text.RandomStringGenerator;
-import org.apache.sshd.SshServer;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
+import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.apache.sshd.server.sftp.SftpSubsystem;
+import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory;
 import org.cryptomator.cryptofs.CryptoFileSystem;
 import org.cryptomator.cryptofs.CryptoFileSystemProperties;
 import org.cryptomator.cryptofs.CryptoFileSystemProvider;
@@ -78,12 +78,12 @@ public class SFTPCryptomatorInteroperabilityTest {
         server.setPort(PORT_NUMBER);
         server.setPasswordAuthenticator((username, password, session) -> true);
         server.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
-        server.setSubsystemFactories(Collections.singletonList(new SftpSubsystem.Factory()));
+        server.setSubsystemFactories(Collections.singletonList(new SftpSubsystemFactory()));
         final java.nio.file.Path tempDir = Files.createTempDirectory(String.format("%s-", this.getClass().getName()));
         final java.nio.file.Path vault = tempDir.resolve("vault");
         passphrase = new AlphanumericRandomStringService().random();
         cryptoFileSystem = new CryptoFileSystemProvider().newFileSystem(CryptoFileSystemUris.createUri(vault), CryptoFileSystemProperties.cryptoFileSystemProperties().withPassphrase(passphrase).build());
-        server.setFileSystemFactory(new VirtualFileSystemFactory(cryptoFileSystem.getPathToVault().getParent().toAbsolutePath().toString()));
+        server.setFileSystemFactory(new VirtualFileSystemFactory(cryptoFileSystem.getPathToVault().getParent().toAbsolutePath()));
         server.start();
     }
 
@@ -111,7 +111,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         final Host host = new Host(new SFTPProtocol(), "localhost", PORT_NUMBER, new Credentials("empty", "empty"));
         final SFTPSession session = new SFTPSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault).load(session, new DisabledPasswordCallback() {
@@ -126,7 +126,6 @@ public class SFTPCryptomatorInteroperabilityTest {
         final byte[] readContent = new byte[content.length];
         IOUtils.readFully(read, readContent);
         assertArrayEquals(content, readContent);
-        session.close();
     }
 
     /**
@@ -146,7 +145,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         final Host host = new Host(new SFTPProtocol(), "localhost", PORT_NUMBER, new Credentials("empty", "empty"));
         final SFTPSession session = new SFTPSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault).load(session, new DisabledPasswordCallback() {
@@ -161,6 +160,5 @@ public class SFTPCryptomatorInteroperabilityTest {
         final byte[] readContent = new byte[content.length];
         IOUtils.readFully(read, readContent);
         assertArrayEquals(content, readContent);
-        session.close();
     }
 }

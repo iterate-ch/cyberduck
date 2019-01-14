@@ -115,18 +115,14 @@
 
         <mkdir dir="${build}/update"/>
 
-        <replace dir="${build}/update" summary="true" encoding="UTF-8">
-            <include name="changelog.rss"/>
-            <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
-            <replacefilter token="${ARCHIVE}"
-                           value="https://update.cyberduck.io/windows/${sparkle.feed}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
-            <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
-            <replacefilter token="${FULLVERSION}" value="${normalized.version}.${revision}"/>
-            <replacefilter token="${REVISION}" value="${revision}"/>
-            <replacefilter token="${VERSION}" value="${version}"/>
-            <replacefilter token="${DSASIGNATURE}" value="unsupported"/>
-            <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
-        </replace>
+        <echo message="Calculating DSA signature..."/>
+        <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
+            <arg value="-o"/>
+            <arg value="pipefail"/>
+            <arg value="-c"/>
+            <arg value="openssl dgst -sha1 -binary '${build.deploy}/Cyberduck-Installer-${version}.${revision}.exe' | openssl dgst -dss1 -sign '${www.update}/private.pem' | openssl enc -base64"/>
+        </exec>
+        <echo message="DSASIGNATURE=${signature.dsa}"/>
 
         <!-- prepare WinSparkle stuff -->
         <xmltask source="${www.update}/changelog.rss" destbuffer="minversion">
@@ -152,7 +148,7 @@
             <replacefilter token="${FULLVERSION}" value="${normalized.version}.${revision}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
-            <replacefilter token="${DSASIGNATURE}" value="unsupported"/>
+            <replacefilter token="${DSASIGNATURE}" value="${signature.dsa}"/>
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>
 

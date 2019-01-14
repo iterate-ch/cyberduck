@@ -1,9 +1,11 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.threading.RegistryBackgroundAction;
 
 import org.junit.Test;
 
@@ -23,19 +25,20 @@ public class AbstractControllerTest {
                 runnable.run();
             }
         };
-        final AbstractBackgroundAction<Object> action = new AbstractBackgroundAction<Object>() {
+        final AbstractBackgroundAction<Object> action = new RegistryBackgroundAction<Object>(controller, SessionPool.DISCONNECTED) {
             @Override
             public void init() {
                 assertEquals("main", Thread.currentThread().getName());
             }
 
             @Override
-            public Object run() throws BackgroundException {
+            public Object run(final Session<?> session) throws BackgroundException {
                 return null;
             }
 
             @Override
             public void cleanup() {
+                super.cleanup();
                 assertFalse(controller.getRegistry().contains(this));
             }
 

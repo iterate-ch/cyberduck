@@ -20,7 +20,6 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -243,7 +242,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             if(client.login(host.getCredentials().getUsername(), host.getCredentials().getPassword())) {
                 if(host.getProtocol().isSecure()) {

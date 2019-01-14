@@ -75,6 +75,7 @@ public class TransferDictionary {
             log.warn("Invalid host in transfer");
             return null;
         }
+        host.setWorkdir(null);
         final List<T> itemsObj = dict.listForKey("Items");
         final List<TransferItem> roots = new ArrayList<TransferItem>();
         if(itemsObj != null) {
@@ -99,13 +100,13 @@ public class TransferDictionary {
                 final TransferItem item = new TransferItem(remote);
                 // Legacy
                 final String localObjDeprecated
-                        = deserializer.create(rootDict).stringForKey("Local");
+                    = deserializer.create(rootDict).stringForKey("Local");
                 if(localObjDeprecated != null) {
                     Local local = LocalFactory.get(localObjDeprecated);
                     item.setLocal(local);
                 }
                 final Object localObj
-                        = deserializer.create(rootDict).objectForKey("Local Dictionary");
+                    = deserializer.create(rootDict).objectForKey("Local Dictionary");
                 if(localObj != null) {
                     Local local = new LocalDictionary(deserializer).deserialize(localObj);
                     if(null == local) {
@@ -166,7 +167,7 @@ public class TransferDictionary {
                 }
                 else {
                     transfer = new SyncTransfer(host, roots.iterator().next(),
-                            TransferAction.forName(actionObj));
+                        TransferAction.forName(actionObj));
                 }
                 break;
             case copy:

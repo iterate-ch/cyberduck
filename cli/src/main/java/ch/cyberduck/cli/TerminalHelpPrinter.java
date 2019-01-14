@@ -18,6 +18,7 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.BundledProtocolPredicate;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Protocol;
@@ -34,6 +35,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 
 public final class TerminalHelpPrinter {
 
@@ -59,18 +61,18 @@ public final class TerminalHelpPrinter {
                 case googlestorage:
                 case swift:
                 case azure:
-                    protocols.append("\t").append(String.format("%s://<container>/<key>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
+                    protocols.append("\t").append(String.format("%s://<container>/<key>", getScheme(p)));
                     break;
                 default:
                     if(p.isHostnameConfigurable()) {
-                        protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
+                        protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", getScheme(p)));
                     }
                     else {
                         // case file:
                         // case googledrive:
                         // case dropbox:
                         // case onedrive:
-                        protocols.append("\t").append(String.format("%s://<folder>/<file>", p.isBundled() ? p.getIdentifier() : p.getProvider()));
+                        protocols.append("\t").append(String.format("%s://<folder>/<file>", getScheme(p)));
                     }
                     break;
             }
@@ -103,4 +105,27 @@ public final class TerminalHelpPrinter {
         formatter.printHelp("duck [options...]", header.toString(), options, footer.toString());
     }
 
+    protected static String getScheme(final Protocol protocol) {
+        if(new BundledProtocolPredicate().test(protocol)) {
+            for(String scheme :
+                protocol.getSchemes()) {
+                // Return first custom scheme registered
+                return scheme;
+            }
+            // Return default name
+            return protocol.getIdentifier();
+        }
+        // Find parent protocol definition for profile
+        final Protocol standard = ProtocolFactory.get().forName(protocol.getIdentifier());
+        if(Arrays.equals(protocol.getSchemes(), standard.getSchemes())) {
+            // No custom scheme set in profile
+            return protocol.getProvider();
+        }
+        for(String scheme : protocol.getSchemes()) {
+            // First custom scheme in profile
+            return scheme;
+        }
+        // Default vendor string of third party profile
+        return protocol.getProvider();
+    }
 }

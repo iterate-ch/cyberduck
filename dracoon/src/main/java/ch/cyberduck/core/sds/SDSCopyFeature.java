@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
@@ -55,7 +54,7 @@ public class SDSCopyFeature implements Copy {
                     .addNodeIdsItem(Long.parseLong(nodeid.getFileid(source, new DisabledListProgressListener())))
                     .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), StringUtils.EMPTY, null);
             return new Path(target.getParent(), target.getName(), target.getType(),
-                new PathAttributes(target.attributes()).withVersionId(String.valueOf(node.getId())));
+                new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Cannot copy {0}", e, source);
@@ -73,7 +72,8 @@ public class SDSCopyFeature implements Copy {
             // Rooms cannot be copied
             return false;
         }
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^ containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+        if(Boolean.valueOf(containerService.getContainer(source).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))
+            ^ Boolean.valueOf(containerService.getContainer(target).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))) {
             // If source xor target is encrypted data room we cannot use server side copy
             return false;
         }

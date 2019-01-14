@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -351,11 +352,6 @@ public class PathAttributes extends Attributes implements Serializable {
         return this;
     }
 
-    public PathAttributes withVersionId(final VersionId versionId) {
-        this.setVersionId(versionId.id);
-        return this;
-    }
-
     public String getDirectoryId() {
         return directoryId;
     }
@@ -462,6 +458,12 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public void setCustom(final Map<String, String> custom) {
         this.custom = custom;
+    }
+
+    public PathAttributes withCustom(final String key, final String value) {
+        custom = new HashMap<>(custom);
+        custom.put(key, value);
+        return this;
     }
 
     @Override

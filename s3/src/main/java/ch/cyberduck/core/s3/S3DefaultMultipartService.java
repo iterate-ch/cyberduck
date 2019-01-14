@@ -56,9 +56,9 @@ public class S3DefaultMultipartService implements S3MultipartService {
     }
 
     @Override
-    public List<MultipartUpload> find(final Path file) throws BackgroundException {
+    public List<MultipartUpload> find(final Path directory) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Finding multipart uploads for %s", file));
+            log.debug(String.format("Finding multipart uploads for %s", directory));
         }
         final List<MultipartUpload> uploads = new ArrayList<MultipartUpload>();
         // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
@@ -70,11 +70,11 @@ public class S3DefaultMultipartService implements S3MultipartService {
             final MultipartUploadChunk chunk;
             try {
                 chunk = session.getClient().multipartListUploadsChunked(
-                        containerService.getContainer(file).getName(), containerService.getKey(file),
+                        containerService.getContainer(directory).getName(), containerService.getKey(directory),
                         null, nextKeyMarker, nextUploadIdMarker, null, true);
             }
             catch(S3ServiceException e) {
-                final BackgroundException failure = new S3ExceptionMappingService().map("Upload {0} failed", e, file);
+                final BackgroundException failure = new S3ExceptionMappingService().map("Upload {0} failed", e, directory);
                 if(failure instanceof NotfoundException) {
                     return Collections.emptyList();
                 }
@@ -85,7 +85,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
             }
             uploads.addAll(Arrays.asList(chunk.getUploads()));
             if(log.isInfoEnabled()) {
-                log.info(String.format("Found %d previous multipart uploads for %s", uploads.size(), file));
+                log.info(String.format("Found %d previous multipart uploads for %s", uploads.size(), directory));
             }
             // Sort with newest upload first in list
             Collections.sort(uploads, new Comparator<MultipartUpload>() {
@@ -100,7 +100,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
         while(nextUploadIdMarker != null);
         for(MultipartUpload upload : uploads) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Found multipart upload %s for %s", upload, file));
+                log.info(String.format("Found multipart upload %s for %s", upload, directory));
             }
         }
         return uploads;

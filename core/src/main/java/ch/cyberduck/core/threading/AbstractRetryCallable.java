@@ -26,6 +26,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.concurrent.Callable;
 
 public abstract class AbstractRetryCallable<T> implements Callable<T> {
@@ -64,19 +65,30 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
      * @return Increment counter and return true if retry attempt should be made for a failed transfer
      */
     public boolean retry(final BackgroundException failure, final ProgressListener progress, final BackgroundActionState cancel) {
-        if(++count > retry) {
-            log.warn(String.format("Cancel retry for failure %s", failure));
-            return false;
-        }
         int delay;
         final FailureDiagnostics<BackgroundException> diagnostics = new DefaultFailureDiagnostics();
         switch(diagnostics.determine(failure)) {
             case network:
+                if(++count > retry) {
+                    log.warn(String.format("Cancel retry for failure %s", failure));
+                    return false;
+                }
                 delay = backoff;
                 break;
             case application:
                 if(failure instanceof RetriableAccessDeniedException) {
-                    delay = (int) ((RetriableAccessDeniedException) failure).getRetry().getSeconds();
+                    final Duration duration = ((RetriableAccessDeniedException) failure).getRetry();
+                    if(duration != null) {
+                        // Explicitly retry
+                        delay = (int) duration.getSeconds();
+                    }
+                    else {
+                        if(++count > retry) {
+                            log.warn(String.format("Cancel retry for failure %s", failure));
+                            return false;
+                        }
+                        delay = PreferencesFactory.get().getInteger("connection.retry.delay");
+                    }
                 }
                 else {
                     log.warn(String.format("No retry for failure %s", failure));

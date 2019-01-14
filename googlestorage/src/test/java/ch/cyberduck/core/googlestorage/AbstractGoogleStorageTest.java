@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
@@ -42,7 +41,8 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractGoogleStorageTest {
+public class
+AbstractGoogleStorageTest {
 
     protected GoogleStorageSession session;
 
@@ -55,29 +55,30 @@ public class AbstractGoogleStorageTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new GoogleStorageProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-                new Local("../profiles/default/Google Cloud Storage.cyberduckprofile"));
+            this.getClass().getResourceAsStream("/Google Cloud Storage.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("google.projectid"), null
         ));
         session = new GoogleStorageSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
-        new LoginConnectionService(new DisabledLoginCallback() {
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 fail(reason);
                 return null;
             }
         }, new DisabledHostKeyCallback(),
-                new DisabledPasswordStore() {
-                    @Override
-                    public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-                        if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
-                            return System.getProperties().getProperty("google.accesstoken");
-                        }
-                        if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
-                            return System.getProperties().getProperty("google.refreshtoken");
-                        }
-                        return null;
+            new DisabledPasswordStore() {
+                @Override
+                public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
+                    if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Access Token")) {
+                        return System.getProperties().getProperty("google.accesstoken");
                     }
-                }, new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+                    if(user.equals("Google Cloud Storage (api-project-408246103372) OAuth2 Refresh Token")) {
+                        return System.getProperties().getProperty("google.refreshtoken");
+                    }
+                    return null;
+                }
+            }, new DisabledProgressListener());
+        login.check(session, PathCache.empty(), new DisabledCancelCallback());
     }
 }

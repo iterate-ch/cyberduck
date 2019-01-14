@@ -125,6 +125,10 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.options = options;
     }
 
+    public Host getBookmark() {
+        return bookmark;
+    }
+
     public void setProtocolPopup(final NSPopUpButton button) {
         this.protocolPopup = button;
         this.protocolPopup.setEnabled(true);

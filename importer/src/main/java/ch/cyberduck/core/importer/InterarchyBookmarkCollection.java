@@ -43,6 +43,11 @@ public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
+    public String getName() {
+        return "Interarchy";
+    }
+
+    @Override
     public Local getFile() {
         return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.interarchy.location"));
     }

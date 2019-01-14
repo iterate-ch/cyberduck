@@ -18,7 +18,6 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.proxy.Proxy;
 
@@ -33,7 +32,7 @@ public class LocalHomeFinderFeatureTest {
     public void testFind() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(new LocalHomeFinderFeature(session).find().getAbsolute().endsWith(
                 System.getProperty("user.home").replaceAll("\\\\", "/")));
         session.close();
@@ -43,7 +42,7 @@ public class LocalHomeFinderFeatureTest {
     public void testWindowsHome() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertEquals("/C:/Users/Default", new LocalHomeFinderFeature(session).toPath("C:\\Users\\Default").getAbsolute());
         session.close();
     }

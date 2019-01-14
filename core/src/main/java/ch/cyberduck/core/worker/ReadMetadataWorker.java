@@ -47,32 +47,28 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
     @Override
     public Map<String, String> run(final Session<?> session) throws BackgroundException {
         final Metadata feature = session.getFeature(Metadata.class);
-
-        // Map for File > Metadata Set
-        Map<Path, Map<String, String>> fullMetadata = new HashMap<>();
         // Map for metadata entry key > File & Metadata Values
-        Map<String, Map<Path, String>> graphMetadata = new HashMap<>();
-
-        for(Path file : files) {
+        final Map<String, Map<Path, String>> graphMetadata = new HashMap<>();
+        for(Path next : files) {
             // Read online metadata
-            final Map<String, String> metadata = feature.getMetadata(file);
-            file.attributes().setMetadata(metadata);
-            fullMetadata.put(file, new HashMap<>(metadata));
+            if(Collections.<String, String>emptyMap() == next.attributes().getMetadata()) {
+                final Map<String, String> metadata = feature.getMetadata(next);
+                next.attributes().setMetadata(metadata);
+            }
             // take every entry of current metadata and store it in metaGraph
-            for(Map.Entry<String, String> entry : metadata.entrySet()) {
+            for(Map.Entry<String, String> entry : next.attributes().getMetadata().entrySet()) {
                 if(graphMetadata.containsKey(entry.getKey())) {
                     // if existing, get map, put value
-                    graphMetadata.get(entry.getKey()).put(file, entry.getValue());
+                    graphMetadata.get(entry.getKey()).put(next, entry.getValue());
                 }
                 else {
                     // if not existent create hashmap and put it back
                     Map<Path, String> map = new HashMap<>();
                     graphMetadata.put(entry.getKey(), map);
-                    map.put(file, entry.getValue());
+                    map.put(next, entry.getValue());
                 }
             }
         }
-
         // Store result metadata in hashmap
         Map<String, String> metadata = new HashMap<>();
         for(Map.Entry<String, Map<Path, String>> entry : graphMetadata.entrySet()) {
@@ -81,7 +77,7 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
             }
             else {
                 // single use of streams, reason: distinct is easier in Streams than it would be writing it manually
-                Supplier<Stream<String>> valueSupplier = () -> entry.getValue().entrySet().stream().map(y -> y.getValue()).distinct();
+                Supplier<Stream<String>> valueSupplier = () -> entry.getValue().values().stream().distinct();
                 // Check count against 1, if it is use that value, otherwise use null
                 String value = valueSupplier.get().count() == 1 ? valueSupplier.get().findAny().get() : null;
                 // store it

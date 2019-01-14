@@ -17,17 +17,11 @@ package ch.cyberduck.core.sftp;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -39,59 +33,33 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
-public class SFTPUnixPermissionFeatureTest {
+public class SFTPUnixPermissionFeatureTest extends AbstractSFTPTest {
 
     @Test
     @Ignore
     public void testSetUnixOwner() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", EnumSet.of(Path.Type.file));
         new SFTPUnixPermissionFeature(session).setUnixOwner(test, "80");
         assertEquals("80", new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getOwner());
-        session.close();
     }
 
     @Test
     @Ignore
     public void testSetUnixGroup() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         final long modified = System.currentTimeMillis();
         final Path test = new Path(home, "test", EnumSet.of(Path.Type.file));
         new SFTPUnixPermissionFeature(session).setUnixGroup(test, "80");
         assertEquals("80", new SFTPListService(session).list(home, new DisabledListProgressListener()).get(test).attributes().getGroup());
-        session.close();
     }
 
     @Test
     public void testSetUnixPermission() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path home = new SFTPHomeDirectoryService(session).find();
         {
             final Path file = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -107,39 +75,32 @@ public class SFTPUnixPermissionFeatureTest {
             assertEquals("666", new SFTPListService(session).list(home, new DisabledListProgressListener()).get(directory).attributes().getPermission().getMode());
             new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
-        session.close();
     }
 
     @Test
+    @Ignore
     public void testRetainStickyBits() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SFTPTouchFeature(session).touch(test, new TransferStatus());
         final SFTPUnixPermissionFeature feature = new SFTPUnixPermissionFeature(session);
         feature.setUnixPermission(test,
-                new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
-                        true, false, false));
+            new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
+                true, false, false));
         assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
-                true, false, false), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
-                test).attributes().getPermission());
+            true, false, false), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
+            test).attributes().getPermission());
         feature.setUnixPermission(test,
-                new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
-                        false, true, false));
+            new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
+                false, true, false));
         assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
-                false, true, false), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
-                test).attributes().getPermission());
+            false, true, false), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
+            test).attributes().getPermission());
         feature.setUnixPermission(test,
-                new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
-                        false, false, true));
+            new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
+                false, false, true));
         assertEquals(new Permission(Permission.Action.all, Permission.Action.read, Permission.Action.read,
-                false, false, true), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
-                test).attributes().getPermission());
+            false, false, true), new SFTPListService(session).list(test.getParent(), new DisabledListProgressListener()).get(
+            test).attributes().getPermission());
         new SFTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

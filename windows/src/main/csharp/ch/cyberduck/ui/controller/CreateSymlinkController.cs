@@ -70,7 +70,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 private readonly IList<Path> _files;
                 private readonly Path _symlink;
 
-                public InnerCreateSymlinkWorker(BrowserController controller, Path selected, Path symlink) : base(symlink, selected)
+                public InnerCreateSymlinkWorker(BrowserController controller, Path selected, Path symlink) : base(symlink, selected.getName())
                 {
                     _controller = controller;
                     _symlink = symlink;

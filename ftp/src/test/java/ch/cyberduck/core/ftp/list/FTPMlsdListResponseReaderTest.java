@@ -17,11 +17,8 @@ package ch.cyberduck.core.ftp.list;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.ftp.FTPProtocol;
-import ch.cyberduck.core.ftp.FTPSession;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -41,7 +38,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test
     public void testMlsd() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));
 
@@ -68,7 +64,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test
     public void testParsePermissions() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));
 
@@ -86,7 +81,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test(expected = FTPInvalidListException.class)
     public void testMlsdCdir1() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));
 
@@ -98,7 +92,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test(expected = FTPInvalidListException.class)
     public void testMlsdCdir2() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));
 
@@ -110,9 +103,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test(expected = FTPInvalidListException.class)
     public void testMlsdPdir() throws Exception {
-        final AttributedList<Path> children = new AttributedList<Path>();
-
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));
 
@@ -124,7 +114,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test
     public void testSkipParentDir() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));
 
@@ -141,7 +130,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test
     public void testSize() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));
 
@@ -157,7 +145,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test
     public void testTimestamp() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));
 
@@ -190,7 +177,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test(expected = FTPInvalidListException.class)
     public void testBrokenMlsd() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/Dummies_Infoblaetter", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
@@ -200,7 +186,6 @@ public class FTPMlsdListResponseReaderTest {
     }
 
     public void testDir() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/Dummies_Infoblaetter", EnumSet.of(Path.Type.directory));
         {
@@ -227,7 +212,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test
     public void testParseMlsdMode664() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
@@ -242,7 +226,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test
     public void testParseMlsdMode775() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
@@ -257,7 +240,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test
     public void testParseMlsdSymbolic() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path(
             "/www", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
@@ -274,7 +256,6 @@ public class FTPMlsdListResponseReaderTest {
     @Test
     @Ignore
     public void testParseSlashInFilename() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path("/www", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
             "type=dir;modify=20140315210350; Gozo 2013/2014",
@@ -289,7 +270,6 @@ public class FTPMlsdListResponseReaderTest {
 
     @Test(expected = FTPInvalidListException.class)
     public void test8053() throws Exception {
-        final FTPSession s = new FTPSession(new Host(new FTPProtocol(), "localhost"));
         Path path = new Path("/", EnumSet.of(Path.Type.directory));
         String[] replies = new String[]{
             "type=OS.unix=slink:;size=11;modify=20140506165021;UNIX.mode=0777;UNIX.uid=1144;UNIX.gid=1144;unique=fd51g2dc0020; www"

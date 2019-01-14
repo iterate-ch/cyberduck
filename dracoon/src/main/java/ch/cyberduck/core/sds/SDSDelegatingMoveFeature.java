@@ -54,8 +54,7 @@ public class SDSDelegatingMoveFeature implements Move {
                 return proxy.move(source, target, status, callback, connectionCallback);
             }
         }
-        if(nodeid.isEncrypted(source) ^
-            nodeid.isEncrypted(target)) {
+        if(nodeid.isEncrypted(source) ^ nodeid.isEncrypted(target)) {
             // Moving into or from an encrypted room
             final Copy copy = session.getFeature(Copy.class);
             if(log.isDebugEnabled()) {
@@ -76,8 +75,8 @@ public class SDSDelegatingMoveFeature implements Move {
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^
-            containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+        if(Boolean.valueOf(containerService.getContainer(source).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))
+            ^ Boolean.valueOf(containerService.getContainer(target).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))) {
             return session.getFeature(Copy.class).isRecursive(source, target);
         }
         return proxy.isRecursive(source, target);
@@ -85,8 +84,8 @@ public class SDSDelegatingMoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        if(containerService.getContainer(source).getType().contains(Path.Type.vault) ^
-            containerService.getContainer(target).getType().contains(Path.Type.vault)) {
+        if(Boolean.valueOf(containerService.getContainer(source).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))
+            ^ Boolean.valueOf(containerService.getContainer(target).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))) {
             return session.getFeature(Copy.class).isSupported(source, target);
         }
         return proxy.isSupported(source, target);

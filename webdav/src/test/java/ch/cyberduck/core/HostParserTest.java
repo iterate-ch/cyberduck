@@ -60,9 +60,9 @@ public class HostParserTest {
         Host h = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol()).get(url);
         assertEquals("hostname", h.getHostname());
         assertNotNull(h.getCredentials().getUsername());
-        assertTrue(h.getCredentials().getUsername().equals("user"));
+        assertEquals("user", h.getCredentials().getUsername());
         assertNull(h.getCredentials().getPassword());
-        assertTrue(h.getDefaultPath().equals("/path/to/file"));
+        assertEquals("/path/to/file", h.getDefaultPath());
     }
 
     @Test

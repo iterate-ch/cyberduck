@@ -16,9 +16,8 @@ package ch.cyberduck.core;
  */
 
 import java.util.EnumSet;
-import java.util.function.Predicate;
 
-public class DefaultProtocolPredicate implements Predicate<Protocol> {
+public class DefaultProtocolPredicate extends BundledProtocolPredicate {
     private final EnumSet<Protocol.Type> types;
 
     public DefaultProtocolPredicate(final EnumSet<Protocol.Type> types) {
@@ -28,7 +27,7 @@ public class DefaultProtocolPredicate implements Predicate<Protocol> {
     @Override
     public boolean test(final Protocol protocol) {
         if(types.contains(protocol.getType())) {
-            return protocol.isEnabled() && protocol.isBundled();
+            return super.test(protocol);
         }
         return false;
     }

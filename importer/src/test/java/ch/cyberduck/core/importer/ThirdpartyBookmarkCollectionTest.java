@@ -9,6 +9,7 @@ import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.RandomStringGenerator;
 import org.junit.Test;
 
@@ -28,6 +29,11 @@ public class ThirdpartyBookmarkCollectionTest {
         IOUtils.write(new RandomStringGenerator.Builder().build().generate(1000), source.getOutputStream(false), Charset.defaultCharset());
         final AtomicBoolean r = new AtomicBoolean();
         final ThirdpartyBookmarkCollection c = new ThirdpartyBookmarkCollection() {
+            @Override
+            public String getName() {
+                return StringUtils.EMPTY;
+            }
+
             @Override
             public Local getFile() {
                 return source;

@@ -15,25 +15,20 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Map;
-
-import com.dracoon.sdk.crypto.Crypto;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
@@ -47,27 +42,34 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     @Override
     public Void pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            switch(type) {
-                case download:
-                    break;
-                default:
-                    for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                        if(nodeid.isEncrypted(entry.getKey().remote)) {
-                            final TransferStatus status = entry.getValue();
-                            final FileKey fileKey = TripleCryptConverter.toSwaggerFileKey(Crypto.generateFileKey());
-                            final ObjectWriter writer = session.getClient().getJSON().getContext(null).writerFor(FileKey.class);
-                            final ByteArrayOutputStream out = new ByteArrayOutputStream();
-                            writer.writeValue(out, fileKey);
-                            status.setFilekey(ByteBuffer.wrap(out.toByteArray()));
-                        }
+        switch(type) {
+            case download:
+                break;
+            default: {
+                final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);
+                for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+                    final Path container = new PathContainerService().getContainer(entry.getKey().remote);
+                    if(rooms.get(container)) {
+                        final TransferStatus status = entry.getValue();
+                        nodeid.setFileKey(status);
                     }
+                }
             }
-            return null;
         }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+        return null;
+    }
+
+    private Map<Path, Boolean> getRoomEncryptionStatus(final Map<TransferItem, TransferStatus> files) throws BackgroundException {
+        final Map<Path, Boolean> rooms = new HashMap<>();
+        for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+            // Get top level room
+            final Path container = new PathContainerService().getContainer(entry.getKey().remote);
+            if(rooms.containsKey(container)) {
+                continue;
+            }
+            rooms.put(container, nodeid.isEncrypted(entry.getKey().remote));
         }
+        return rooms;
     }
 
     @Override
@@ -79,9 +81,11 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                 if(PreferencesFactory.get().getBoolean("sds.encryption.missingkeys.upload")) {
                     if(session.userAccount().isEncryptionEnabled()) {
                         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
-                        for(TransferItem file : files.keySet()) {
-                            if(nodeid.isEncrypted(file.remote)) {
-                                background.operate(callback, file.remote);
+                        final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);
+                        for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+                            final Path container = new PathContainerService().getContainer(entry.getKey().remote);
+                            if(rooms.get(container)) {
+                                background.operate(callback, entry.getKey().remote);
                             }
                         }
                     }
@@ -91,6 +95,12 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
 
     @Override
     public Bulk<Void> withDelete(final Delete delete) {
+        return this;
+    }
+
+    @Override
+    public Bulk<Void> withCache(final Cache<Path> cache) {
+        nodeid.withCache(cache);
         return this;
     }
 }

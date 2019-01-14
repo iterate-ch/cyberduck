@@ -39,5 +39,9 @@
         <array>
             <string>us-west-1</string>
         </array>
+        <key>Schemes</key>
+        <array>
+            <string>wasabi</string>
+        </array>
     </dict>
 </plist>

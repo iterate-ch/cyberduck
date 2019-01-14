@@ -21,7 +21,6 @@ import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -128,7 +127,7 @@ public class IRODSSession extends SSLSession<IRODSFileSystemAO> {
     }
 
     @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final IRODSAccount account = client.getIRODSAccount();
             final Credentials credentials = host.getCredentials();

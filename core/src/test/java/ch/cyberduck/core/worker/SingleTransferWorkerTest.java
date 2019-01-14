@@ -58,7 +58,6 @@ public class SingleTransferWorkerTest {
                 return true;
             }
         };
-        final Cache<TransferItem> cache = new TransferItemCache(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
@@ -70,17 +69,17 @@ public class SingleTransferWorkerTest {
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol()));
-        new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), cache) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
-                    assertTrue(cache.isCached(new TransferItem(root, local)));
+                    assertTrue(this.getCache().isCached(new TransferItem(root, local)));
                 }
                 super.transfer(new TransferItem(item.remote, new NullLocal("l") {
                     @Override
@@ -90,11 +89,12 @@ public class SingleTransferWorkerTest {
                         return l;
                     }
                 }), action);
-                assertFalse(cache.isCached(new TransferItem(child, local)));
+                assertFalse(this.getCache().isCached(new TransferItem(child, local)));
                 return null;
             }
-        }.run(session, session);
-        assertFalse(cache.isCached(new TransferItem(child, local)));
+        };
+        worker.run();
+        assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
     }
 
     @Test
@@ -119,7 +119,6 @@ public class SingleTransferWorkerTest {
                 return true;
             }
         };
-        final Cache<TransferItem> cache = new TransferItemCache(Integer.MAX_VALUE);
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
@@ -141,32 +140,32 @@ public class SingleTransferWorkerTest {
                 return new AttributedList<Path>(Collections.singletonList(new Path("/t", EnumSet.of(Path.Type.directory))));
             }
         };
-        new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+        final SingleTransferWorker worker = new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), cache) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
-                    assertTrue(cache.isCached(new TransferItem(root, local)));
+                    assertTrue(this.getCache().isCached(new TransferItem(root, local)));
                 }
                 super.transfer(item, action);
-                assertFalse(cache.isCached(new TransferItem(child, local)));
+                assertFalse(this.getCache().isCached(new TransferItem(child, local)));
                 return null;
             }
-        }.run(session, session);
-        assertFalse(cache.isCached(new TransferItem(child, local)));
-        assertTrue(cache.isEmpty());
+        };
+        worker.run();
+        assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
+        assertTrue(worker.getCache().isEmpty());
     }
 
     @Test
     public void testDownloadPrepareOverride() throws Exception {
         final Path child = new Path("/t/c", EnumSet.of(Path.Type.file));
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
-        final Cache<TransferItem> cache = new TransferItemCache(Integer.MAX_VALUE);
         final NullLocal local = new NullLocal("l") {
             @Override
             public boolean exists() {
@@ -227,22 +226,22 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), cache) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
-                    assertTrue(cache.isCached(new TransferItem(root, local)));
+                    assertTrue(this.getCache().isCached(new TransferItem(root, local)));
                 }
                 super.transfer(new TransferItem(item.remote, new NullLocal("l")), action);
                 if(item.remote.equals(root)) {
-                    assertFalse(cache.isCached(new TransferItem(root, local)));
+                    assertFalse(this.getCache().isCached(new TransferItem(root, local)));
                 }
                 return null;
             }
         };
-        worker.run(session, session);
-        assertFalse(cache.isCached(new TransferItem(child, local)));
-        assertTrue(cache.isEmpty());
+        worker.run();
+        assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
+        assertTrue(worker.getCache().isEmpty());
     }
 
     @Test(expected = NotfoundException.class)
@@ -271,14 +270,14 @@ public class SingleTransferWorkerTest {
                     return TransferAction.overwrite;
                 }
             }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty()) {
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
                 @Override
                 public Future<TransferStatus> transfer(final TransferItem file, final TransferAction action) throws BackgroundException {
                     // Expected not found
                     fail();
                     return null;
                 }
-            }.run(session, session);
+            }.run();
         }
         catch(NotfoundException e) {
             // Expected

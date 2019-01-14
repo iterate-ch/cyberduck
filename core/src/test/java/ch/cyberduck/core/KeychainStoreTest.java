@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -34,14 +35,29 @@ import static org.junit.Assert.assertNotNull;
 @Ignore
 public class KeychainStoreTest {
 
+    private KeyStore keychain;
+
+    @Before
+    public void initBC() throws Exception {
+        keychain = KeyStore.getInstance("KeychainStore", "Apple");
+        keychain.load(null, null);
+    }
+
     @Test
     public void testGetAliasesForIssuerDN() throws Exception {
         final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
-                KeyStore.getInstance("KeychainStore", "Apple")).init();
+            keychain).init();
         final String[] aliases = m.getClientAliases("RSA", new Principal[]{
-                new X500Principal("C=US, O=Apple Inc., OU=Apple Certification Authority, CN=Developer ID Certification Authority")
+            new X500Principal("C=US, O=Apple Inc., OU=Apple Certification Authority, CN=Developer ID Certification Authority")
         });
         assertNotNull(aliases);
         assertFalse(Arrays.asList(aliases).isEmpty());
+    }
+
+    @Test
+    public void testLoadPrivateKeyFromKeychain() throws Exception {
+        final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
+            keychain).init();
+        assertNotNull(m.getPrivateKey("myClient"));
     }
 }

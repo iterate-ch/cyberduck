@@ -71,7 +71,7 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
 
     @Override
     public synchronized void stop(final BackgroundAction action) {
-        running.remove(action);
+        this.remove(action);
     }
 
     @Override
@@ -101,6 +101,7 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
         if(log.isDebugEnabled()) {
             log.debug(String.format("Remove action %s", action));
         }
+        running.remove(action);
         if(super.remove(action)) {
             ((BackgroundAction) action).removeListener(this);
         }

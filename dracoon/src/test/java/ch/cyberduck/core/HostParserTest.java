@@ -34,7 +34,7 @@ public class HostParserTest {
     @Test
     public void testParseUsernameFromUrlEvent() throws Exception {
         final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
-            new Local("../profiles/default/DRACOON (Email Address).cyberduckprofile"));
+            this.getClass().getResourceAsStream("/DRACOON (Email Address).cyberduckprofile"));
         assertEquals(0, new Host(new SDSProtocol(), "duck.ssp-europe.eu", 443, "/cyberduck-test/key", new Credentials(
             System.getProperties().getProperty("sds.user")
         ))

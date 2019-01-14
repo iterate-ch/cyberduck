@@ -24,7 +24,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -32,6 +31,9 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVAttributesFinderFeature;
+import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVListService;
+import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ListCanceledException;
@@ -57,9 +59,18 @@ import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.NTCredentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.auth.win.WindowsCredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
+import org.apache.http.impl.client.WinHttpClients;
 import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
@@ -80,6 +91,11 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     private final Preferences preferences
         = PreferencesFactory.get();
+
+    /**
+     * Detected Microsoft IIS
+     */
+    private boolean iis;
 
     public DAVSession(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -127,11 +143,42 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        client.setCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
-            // Windows credentials. Provide empty string for NTLM domain by default.
-            preferences.getProperty("webdav.ntlm.workstation"),
-            preferences.getProperty("webdav.ntlm.domain"));
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final CredentialsProvider provider = new BasicCredentialsProvider();
+        if(preferences.getBoolean("webdav.ntlm.windows.authentication.enable") && WinHttpClients.isWinAuthAvailable()) {
+            provider.setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
+                new WindowsCredentialsProvider(new BasicCredentialsProvider()).getCredentials(
+                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM))
+            );
+            provider.setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
+                new WindowsCredentialsProvider(new SystemDefaultCredentialsProvider()).getCredentials(
+                    new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO))
+            );
+        }
+        else {
+            provider.setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.NTLM),
+                new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                    preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
+            );
+            provider.setCredentials(
+                new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.SPNEGO),
+                new NTCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword(),
+                    preferences.getProperty("webdav.ntlm.workstation"), preferences.getProperty("webdav.ntlm.domain"))
+            );
+        }
+        provider.setCredentials(
+            new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
+            new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        provider.setCredentials(
+            new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.DIGEST),
+            new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        provider.setCredentials(
+            new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.KERBEROS),
+            new UsernamePasswordCredentials(host.getCredentials().getUsername(), host.getCredentials().getPassword()));
+        client.setCredentials(provider);
         if(preferences.getBoolean("webdav.basic.preemptive")) {
             switch(proxy.getType()) {
                 case DIRECT:
@@ -157,7 +204,24 @@ public class DAVSession extends HttpSession<DAVClient> {
         try {
             final Path home = new DefaultHomeFinderService(this).find();
             try {
-                client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new VoidResponseHandler());
+                client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new ValidatingResponseHandler<Void>() {
+                    @Override
+                    public Void handleResponse(final HttpResponse response) throws IOException {
+                        for(Header h : response.getAllHeaders()) {
+                            if(HttpHeaders.SERVER.equals(h.getName())) {
+                                iis = StringUtils.contains(h.getValue(), "Microsoft-IIS");
+                                if(iis) {
+                                    if(log.isDebugEnabled()) {
+                                        log.debug("Microsoft-IIS backend detected - use IIS WebDAV features");
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                        this.validateResponse(response);
+                        return null;
+                    }
+                });
             }
             catch(SardineException e) {
                 switch(e.getStatusCode()) {
@@ -265,7 +329,8 @@ public class DAVSession extends HttpSession<DAVClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new DAVListService(this);
+            return iis ? (T) new MicrosoftIISDAVListService(this, new MicrosoftIISDAVAttributesFinderFeature(this)) :
+                (T) new DAVListService(this, new DAVAttributesFinderFeature(this));
         }
         if(type == Directory.class) {
             return (T) new DAVDirectoryFeature(this);
@@ -298,10 +363,10 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVFindFeature(this);
         }
         if(type == AttributesFinder.class) {
-            return (T) new DAVAttributesFinderFeature(this);
+            return iis ? (T) new MicrosoftIISDAVAttributesFinderFeature(this) : (T) new DAVAttributesFinderFeature(this);
         }
         if(type == Timestamp.class) {
-            return (T) new DAVTimestampFeature(this);
+            return iis ? (T) new MicrosoftIISDAVTimestampFeature(this) : (T) new DAVTimestampFeature(this);
         }
         if(type == Quota.class) {
             return (T) new DAVQuotaFeature(this);

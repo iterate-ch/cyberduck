@@ -57,6 +57,7 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
 using ch.cyberduck.core.urlhandler;
+using ch.cyberduck.core.pool;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.TaskDialog;
@@ -134,13 +135,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             StructureMapBootstrapper.Bootstrap();
             PreferencesFactory.set(new ApplicationPreferences());
-            ProtocolFactory.get().register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
-                new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
-                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
-                new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(),
-                new MantaProtocol(),
-                new SDSProtocol());
-
             if (!(Debugger.IsAttached || Utils.IsRunningAsUWP))
             {
                 // Add the event handler for handling UI thread exceptions to the event.
@@ -155,6 +149,13 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             //make sure that a language change takes effect after a restart only
             StartupLanguage = PreferencesFactory.get().getProperty("application.language");
+            ProtocolFactory.get().register(new FTPProtocol(), new FTPTLSProtocol(), new SFTPProtocol(), new DAVProtocol(),
+                new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
+                new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
+                new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(),
+                new MantaProtocol(),
+                new SDSProtocol());
+            ProtocolFactory.get().loadDefaultProfiles();
         }
 
         /// <summary>
@@ -579,7 +580,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (BrowserController c in Browsers)
                 {
-                    if (c.isIdle() && !c.IsMounted())
+                    if (SessionPool.DISCONNECTED == c.Session)
                     {
                         c.Invoke(c.View.BringToFront);
 

@@ -167,11 +167,10 @@ public abstract class Session<C> implements TranscriptListener {
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
      *
-     * @param keychain Password store
-     * @param prompt   Prompt
-     * @param cancel   Cancel callback
+     * @param prompt Prompt
+     * @param cancel Cancel callback
      */
-    public abstract void login(Proxy proxy, HostPasswordStore keychain, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
+    public abstract void login(Proxy proxy, LoginCallback prompt, CancelCallback cancel) throws BackgroundException;
 
     /**
      * Logout and close client connection

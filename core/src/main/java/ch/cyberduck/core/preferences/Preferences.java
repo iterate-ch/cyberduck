@@ -120,6 +120,8 @@ public abstract class Preferences implements Locales {
         // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
         final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
+        // Add missing factory. http://bouncy-castle.1462172.n4.nabble.com/Keychain-issue-as-of-version-1-53-follow-up-tc4659509.html
+        provider.put("Alg.Alias.SecretKeyFactory.PBE", "PBEWITHSHAAND3-KEYTRIPLEDES-CBC");
         if(log.isInfoEnabled()) {
             log.info(String.format("Install provider %s at position %d", provider, position));
         }
@@ -339,7 +341,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("browser.font.size", String.valueOf(12f));
 
         this.setDefault("browser.view.autoexpand", String.valueOf(true));
-        this.setDefault("browser.view.autoexpand.useDelay", String.valueOf(true));
+        this.setDefault("browser.view.autoexpand.delay.enable", String.valueOf(true));
         this.setDefault("browser.view.autoexpand.delay", "1.0"); // in seconds
 
         this.setDefault("browser.hidden.regex", "\\..*");
@@ -506,7 +508,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("queue.download.permissions.folder.default", String.valueOf(755));
 
         this.setDefault("queue.download.timestamp.change", String.valueOf(true));
-        this.setDefault("queue.download.checksum", String.valueOf(true));
+        this.setDefault("queue.download.checksum.calculate", String.valueOf(true));
 
         this.setDefault("queue.download.skip.enable", String.valueOf(true));
         this.setDefault("queue.download.skip.regex.default",
@@ -660,8 +662,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("ftp.timezone.auto", String.valueOf(false));
         this.setDefault("ftp.timezone.default", TimeZone.getDefault().getID());
 
-        this.setDefault("ftp.symlink.absolute", String.valueOf(false));
-
         /*
           Authentication header version
          */
@@ -692,8 +692,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("s3.url.expire.seconds", String.valueOf(24 * 60 * 60));
 
         this.setDefault("s3.listing.chunksize", String.valueOf(1000));
-
-        this.setDefault("s3.upload.md5", String.valueOf(true));
+        this.setDefault("s3.listing.concurrency", String.valueOf(25));
 
         this.setDefault("s3.upload.multipart", String.valueOf(true));
         this.setDefault("s3.upload.multipart.concurrency", String.valueOf(10));
@@ -749,15 +748,12 @@ public abstract class Preferences implements Locales {
 //        this.setDefault("openstack.authentication.context", "/v1.0");
         // Keystone authentication
         this.setDefault("openstack.authentication.context", "/v2.0/tokens");
-        this.setDefault("openstack.upload.metadata.md5", String.valueOf(false));
         this.setDefault("openstack.metadata.default", StringUtils.EMPTY);
         this.setDefault("openstack.list.container.limit", String.valueOf(100));
         this.setDefault("openstack.list.object.limit", String.valueOf(10000));
         this.setDefault("openstack.account.preload", String.valueOf(true));
         this.setDefault("openstack.cdn.preload", String.valueOf(true));
         this.setDefault("openstack.container.size.preload", String.valueOf(true));
-
-        this.setDefault("openstack.upload.md5", String.valueOf(true));
 
         this.setDefault("openstack.upload.largeobject", String.valueOf(true));
         this.setDefault("openstack.upload.largeobject.concurrency", String.valueOf(5));
@@ -796,14 +792,22 @@ public abstract class Preferences implements Locales {
         // Run missing file keys in bulk feature after upload
         this.setDefault("sds.encryption.missingkeys.upload", String.valueOf(true));
         this.setDefault("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
-        this.setDefault("sds.encryption.keys.ttl", String.valueOf(60000)); // 1 minute
+        this.setDefault("sds.encryption.keys.ttl", String.valueOf(3600000)); // 1 hour
+        this.setDefault("sds.useracount.ttl", String.valueOf(3600000)); // 1 hour
         this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
+
+        this.setDefault("spectra.retry.delay", String.valueOf(60)); // 1 minute
 
         /*
           NTLM Windows Domain
          */
         this.setDefault("webdav.ntlm.domain", StringUtils.EMPTY);
         this.setDefault("webdav.ntlm.workstation", StringUtils.EMPTY);
+
+        /**
+         * Enable Integrated Windows Authentication (IWA) for target server authentication
+         */
+        this.setDefault("webdav.ntlm.windows.authentication.enable", String.valueOf(false));
 
         /*
           Enable preemptive authentication if valid credentials are found
@@ -819,7 +823,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("webdav.redirect.PUT.follow", String.valueOf(false));
         this.setDefault("webdav.redirect.PROPFIND.follow", String.valueOf(true));
 
-        this.setDefault("webdav.upload.md5", String.valueOf(false));
         this.setDefault("webdav.metadata.default", StringUtils.EMPTY);
 
         this.setDefault("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
@@ -938,7 +941,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("connection.proxy.enable", String.valueOf(true));
         this.setDefault("connection.proxy.ntlm.domain", StringUtils.EMPTY);
         /*
-          Integrated Windows Authentication
+          Integrated Windows Authentication (IWA)
          */
         this.setDefault("connection.proxy.windows.authentication.enable", String.valueOf(false));
 
@@ -1016,8 +1019,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("ssh.algorithm.mac.blacklist", StringUtils.EMPTY);
         this.setDefault("ssh.algorithm.kex.blacklist", StringUtils.EMPTY);
         this.setDefault("ssh.algorithm.signature.blacklist", StringUtils.EMPTY);
-
-        this.setDefault("sftp.symlink.absolute", String.valueOf(false));
 
         this.setDefault("sftp.read.maxunconfirmed", String.valueOf(64));
         this.setDefault("sftp.write.maxunconfirmed", String.valueOf(64));

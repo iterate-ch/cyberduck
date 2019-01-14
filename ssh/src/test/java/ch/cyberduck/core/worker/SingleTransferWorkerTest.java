@@ -22,13 +22,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.TransferItemCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
@@ -36,6 +34,7 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.sftp.AbstractSFTPTest;
 import ch.cyberduck.core.sftp.SFTPAttributesFinderFeature;
 import ch.cyberduck.core.sftp.SFTPDeleteFeature;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
@@ -71,18 +70,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SingleTransferWorkerTest {
+public class SingleTransferWorkerTest extends AbstractSFTPTest {
 
     @Test
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[62768];
+        final byte[] content = new byte[98305];
         new Random().nextBytes(content);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
+            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final AtomicBoolean failed = new AtomicBoolean();
         final SFTPSession session = new SFTPSession(host) {
@@ -124,7 +123,7 @@ public class SingleTransferWorkerTest {
             }
         };
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new Path(new SFTPHomeDirectoryService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
         final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
@@ -134,13 +133,13 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService(), TransferItemCache.empty()) {
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run(session, session));
+        }.run());
         local.delete();
-        assertEquals(62768L, counter.getSent(), 0L);
+        assertEquals(98305L, counter.getSent(), 0L);
         assertTrue(failed.get());
-        assertEquals(62768L, new SFTPAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(98305L, new SFTPAttributesFinderFeature(session).find(test).getSize());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

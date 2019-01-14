@@ -19,11 +19,11 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
@@ -70,7 +70,7 @@ public class SpectraReadFeatureTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
             new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, "nosuchname", EnumSet.of(Path.Type.file));
@@ -91,7 +91,7 @@ public class SpectraReadFeatureTest {
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
             new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final byte[] content = new RandomStringGenerator.Builder().build().generate(1000).getBytes();
@@ -139,7 +139,7 @@ public class SpectraReadFeatureTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)), "SPECTRA-67", EnumSet.of(Path.Type.directory));
         final HashMap<TransferItem, TransferStatus> files = new HashMap<>();
         for(int i = 1; i < 100; i++) {
@@ -150,10 +150,15 @@ public class SpectraReadFeatureTest {
         assertNotNull(uuid);
         assertFalse(uuid.isEmpty());
         assertEquals(1, uuid.size());
-        for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-            final InputStream in = new SpectraReadFeature(session).read(entry.getKey().remote, entry.getValue(), new DisabledConnectionCallback());
-            assertNotNull(in);
-            IOUtils.closeQuietly(in);
+        try {
+            for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
+                final InputStream in = new SpectraReadFeature(session).read(entry.getKey().remote, entry.getValue(), new DisabledConnectionCallback());
+                assertNotNull(in);
+                IOUtils.closeQuietly(in);
+            }
+        }
+        catch(RetriableAccessDeniedException e) {
+            // ignore as the files are not in the cache - next time they might be there
         }
         session.close();
     }

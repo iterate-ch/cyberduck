@@ -15,7 +15,6 @@ package ch.cyberduck.core.nio;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -32,7 +31,7 @@ public class LocalProtocolTest {
     @Test
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new LocalProtocol())));
-        final Profile profile = new ProfilePlistReader(factory).read(new Local("../profiles/default/File.cyberduckprofile"));
+        final Profile profile = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/File.cyberduckprofile"));
         assertFalse(profile.isHostnameConfigurable());
         assertFalse(profile.isUsernameConfigurable());
         assertFalse(profile.isPasswordConfigurable());

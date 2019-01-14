@@ -51,7 +51,7 @@ static NSTableColumn *localSelectionColumn;
 		return;
 	}
 	if(NSLeftMouseDragged == [[[NSApplication sharedApplication] currentEvent] type]) {
-		if([[NSUserDefaults standardUserDefaults] boolForKey:@"browser.view.autoexpand.useDelay"]) {
+		if([[NSUserDefaults standardUserDefaults] boolForKey:@"browser.view.autoexpand.delay.enable"]) {
 			if(nil == autoexpand_timer) {
 				autoexpand_timer = [[NSTimer scheduledTimerWithTimeInterval:[[NSUserDefaults standardUserDefaults] floatForKey:@"browser.view.autoexpand.delay"]
 																target:self

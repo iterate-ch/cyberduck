@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
@@ -53,7 +52,7 @@ public class OneDriveBusinessContextLoginTest {
     public void testLogin() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OneDriveProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/default/Microsoft SharePoint.cyberduckprofile"));
+            this.getClass().getResourceAsStream("/Microsoft SharePoint.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
         final OneDriveSession session = new OneDriveSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {

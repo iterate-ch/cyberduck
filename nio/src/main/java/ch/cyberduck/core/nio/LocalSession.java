@@ -17,7 +17,6 @@ package ch.cyberduck.core.nio;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LoginCallback;
@@ -103,12 +102,12 @@ public class LocalSession extends Session<FileSystem> {
     }
 
     @Override
-    protected FileSystem connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    protected FileSystem connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
         return FileSystems.getDefault();
     }
 
     @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Path home = new LocalHomeFinderFeature(this).find();
         try {
             lock = LocalFactory.get(this.toPath(home).toString()).lock(true);

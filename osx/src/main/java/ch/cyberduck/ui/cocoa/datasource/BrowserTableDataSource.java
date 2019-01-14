@@ -192,8 +192,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         if(identifier.equals(BrowserColumn.filename.name())) {
             if(StringUtils.isNotBlank(value.toString()) && !item.getName().equals(value.toString())) {
-                final Path renamed = new Path(
-                    item.getParent(), value.toString(), item.getType());
+                final Path renamed = new Path(item.getParent(), value.toString(), item.getType(), item.attributes());
                 new MoveController(controller).rename(item, renamed);
             }
         }
@@ -387,32 +386,23 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(pasteboard.isEmpty()) {
                     continue;
                 }
+                final Map<Path, Path> files = new HashMap<Path, Path>();
+                for(Path next : pasteboard) {
+                    final Path renamed = new Path(destination, next.getName(), next.getType(), next.attributes().withVersionId(null));
+                    files.put(next, renamed);
+                }
                 if(pasteboard.getBookmark().compareTo(controller.getSession().getHost()) != 0) {
                     // Drag to browser windows with different session or explicit copy requested by user.
-                    final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path file : pasteboard) {
-                        files.put(file, new Path(destination, file.getName(), file.getType()));
-                    }
                     final Host target = controller.getSession().getHost();
                     controller.transfer(new CopyTransfer(pasteboard.getBookmark(), target, files),
                         new ArrayList<Path>(files.values()), false);
                 }
                 else if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                     // The file should be copied
-                    final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path next : pasteboard) {
-                        Path renamed = new Path(destination, next.getName(), next.getType());
-                        files.put(next, renamed);
-                    }
                     new CopyController(controller).copy(files);
                 }
                 else {
                     // The file should be renamed
-                    final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path next : pasteboard) {
-                        final Path renamed = new Path(destination, next.getName(), next.getType());
-                        files.put(next, renamed);
-                    }
                     new MoveController(controller).rename(files);
                 }
                 pasteboard.clear();

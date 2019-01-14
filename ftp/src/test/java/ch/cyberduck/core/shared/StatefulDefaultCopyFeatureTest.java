@@ -19,8 +19,8 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -32,18 +32,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class StatefulDefaultCopyFeatureTest {
+public class StatefulDefaultCopyFeatureTest extends AbstractFTPTest {
 
     @Test
     public void testSupported() throws Exception {
-        final Host host = new Host(new FTPTLSProtocol(), "test.cyberduck.ch", new Credentials(
-                System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
-        ));
-        final FTPSession session = new FTPSession(host);
         final Path source = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertFalse(new DefaultCopyFeature(session).isSupported(source, target));
         assertFalse(new DefaultCopyFeature(session).withTarget(session).isSupported(source, target));
-        assertTrue(new DefaultCopyFeature(session).withTarget(new FTPSession(host)).isSupported(source, target));
+        assertTrue(new DefaultCopyFeature(session).withTarget(new FTPSession(new Host(session.getHost()).withCredentials(new Credentials("test", "test")))).isSupported(source, target));
     }
 }

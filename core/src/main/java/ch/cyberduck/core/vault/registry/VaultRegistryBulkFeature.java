@@ -15,7 +15,9 @@ package ch.cyberduck.core.vault.registry;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
@@ -25,6 +27,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class VaultRegistryBulkFeature<R> implements Bulk<R> {
@@ -40,10 +43,9 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public R pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        for(TransferItem file : files.keySet()) {
-            return (R) registry.find(session, file.remote).getFeature(session, Bulk.class, proxy).pre(type, files, callback);
+        for(Map.Entry<TransferItem, TransferStatus> file : files.entrySet()) {
+            registry.find(session, file.getKey().remote).getFeature(session, Bulk.class, proxy).pre(type, Collections.singletonMap(file.getKey(), file.getValue()), callback);
         }
         return proxy.pre(type, files, callback);
     }
@@ -55,9 +57,15 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
     }
 
     @Override
+    public Bulk<R> withCache(final Cache<Path> cache) {
+        proxy.withCache(cache);
+        return this;
+    }
+
+    @Override
     public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        for(TransferItem file : files.keySet()) {
-            registry.find(session, file.remote).getFeature(session, Bulk.class, proxy).post(type, files, callback);
+        for(Map.Entry<TransferItem, TransferStatus> file : files.entrySet()) {
+            registry.find(session, file.getKey().remote).getFeature(session, Bulk.class, proxy).post(type, Collections.singletonMap(file.getKey(), file.getValue()), callback);
         }
     }
 

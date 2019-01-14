@@ -52,9 +52,9 @@ public class DropboxUrlProvider implements UrlProvider {
                 final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 expiry.add(Calendar.HOUR, 4);
                 list.add(new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.http,
-                        MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3"))
-                                + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                                UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
+                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3"))
+                        + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                        UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
                 ));
             }
             catch(DbxException e) {

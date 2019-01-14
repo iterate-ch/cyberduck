@@ -21,7 +21,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordCallback;
@@ -98,7 +97,7 @@ public class SwiftSession extends HttpSession<Client> {
     }
 
     @Override
-    public void login(final Proxy proxy, final HostPasswordStore keychain, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final Set<? extends AuthenticationRequest> options = new SwiftAuthenticationService().getRequest(host, prompt);
             for(Iterator<? extends AuthenticationRequest> iter = options.iterator(); iter.hasNext(); ) {

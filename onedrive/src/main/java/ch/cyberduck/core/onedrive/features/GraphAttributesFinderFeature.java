@@ -47,7 +47,6 @@ public class GraphAttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
-
         final OneDriveItem item = session.toItem(file);
         try {
             final OneDriveItem.Metadata metadata = item.getMetadata();

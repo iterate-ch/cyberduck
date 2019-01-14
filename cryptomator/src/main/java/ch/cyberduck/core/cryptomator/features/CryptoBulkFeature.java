@@ -15,12 +15,14 @@ package ch.cyberduck.core.cryptomator.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.cryptomator.CryptoPathCache;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -104,6 +106,13 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
 
     @Override
     public Bulk<R> withDelete(final Delete delete) {
+        delegate.withDelete(new CryptoDeleteFeature(session, delete, cryptomator));
+        return this;
+    }
+
+    @Override
+    public Bulk<R> withCache(final Cache<Path> cache) {
+        delegate.withCache(new CryptoPathCache(cache));
         return this;
     }
 

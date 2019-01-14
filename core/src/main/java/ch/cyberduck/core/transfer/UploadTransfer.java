@@ -116,13 +116,13 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public List<TransferItem> list(final Session<?> source, final Session<?> destination, final Path remote,
+    public List<TransferItem> list(final Session<?> session, final Path remote,
                                    final Local directory, final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
         if(directory.isSymbolicLink()) {
-            final Symlink symlink = source.getFeature(Symlink.class);
+            final Symlink symlink = session.getFeature(Symlink.class);
             if(new UploadSymlinkResolver(symlink, roots).resolve(directory)) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Do not list children for symbolic link %s", directory));
@@ -190,12 +190,12 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.callback)) {
             for(TransferItem upload : roots) {
-                final Upload write = source.getFeature(Upload.class);
+                final Upload<?> write = source.getFeature(Upload.class);
                 final Write.Append append = write.append(upload.remote, upload.local.attributes().getSize(), cache);
                 if(append.override || append.append) {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
-                        if(this.list(source, source, upload.remote, upload.local, listener).isEmpty()) {
+                        if(this.list(source, upload.remote, upload.local, listener).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
@@ -212,17 +212,19 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        final Bulk feature = source.getFeature(Bulk.class);
-        final Object id = feature.pre(Type.upload, files, callback);
+        final Bulk<?> feature = source.getFeature(Bulk.class);
+        final Object id = feature.withCache(cache).pre(Type.upload, files, callback);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
         }
+        super.pre(source, destination, files, callback);
     }
 
     @Override
     public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        final Bulk feature = source.getFeature(Bulk.class);
+        final Bulk<?> feature = source.getFeature(Bulk.class);
         feature.post(Type.upload, files, callback);
+        super.post(source, destination, files, callback);
     }
 
     @Override

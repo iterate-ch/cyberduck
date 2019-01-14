@@ -55,9 +55,8 @@ public class DriveMoveFeatureTest extends AbstractDriveTest {
 
     @Test
     public void testMoveToExistingFile() throws Exception {
-        final Path folder = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
-        new DriveDirectoryFeature(session, fileid).mkdir(folder, null, new TransferStatus());
+        final Path folder = new DriveDirectoryFeature(session, fileid).mkdir(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path test = new DriveTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path temp = new DriveTouchFeature(session, fileid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new DriveMoveFeature(session, fileid).move(temp, test, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());

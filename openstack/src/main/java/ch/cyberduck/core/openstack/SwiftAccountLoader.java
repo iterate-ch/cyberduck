@@ -15,15 +15,18 @@ package ch.cyberduck.core.openstack;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.OneTimeSchedulerFeature;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,6 +53,20 @@ public class SwiftAccountLoader extends OneTimeSchedulerFeature<Map<Region, Acco
                 final AccountInfo info = session.getClient().getAccountInfo(region);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Signing key is %s", info.getTempUrlKey()));
+                }
+                if(StringUtils.isBlank(info.getTempUrlKey())) {
+                    // Update account info setting temporary URL key
+                    try {
+                        final String key = new AsciiRandomStringService().random();
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Set acccount temp URL key to %s", key));
+                        }
+                        session.getClient().updateAccountMetadata(region, Collections.singletonMap("X-Account-Meta-Temp-URL-Key", key));
+                        info.setTempUrlKey(key);
+                    }
+                    catch(GenericException e) {
+                        log.warn(String.format("Ignore failure %s updating account metadata", e));
+                    }
                 }
                 accounts.put(region, info);
             }

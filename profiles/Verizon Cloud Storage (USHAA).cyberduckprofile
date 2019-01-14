@@ -6,6 +6,10 @@
         <string>s3</string>
         <key>Vendor</key>
         <string>verizoncloudstorage-ushaa</string>
+        <key>Schemes</key>
+        <array>
+            <string>verizon</string>
+        </array>
         <key>Description</key>
         <string>Verizon Cloud Storage (3 Data Center Spread, USA)</string>
         <key>Default Hostname</key>

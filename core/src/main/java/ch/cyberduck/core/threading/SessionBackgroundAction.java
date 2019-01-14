@@ -19,14 +19,15 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.KeychainLoginService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -137,17 +138,13 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                 final Host bookmark = pool.getHost();
                 try {
                     // Prompt for new credentials
-                    final LoginOptions options = new LoginOptions(bookmark.getProtocol());
-                    if(options.password) {
-                        bookmark.setCredentials(login.prompt(bookmark, bookmark.getCredentials().getUsername(),
-                            LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
-                    }
-                    if(options.token) {
-                        bookmark.setCredentials(login.prompt(bookmark,
-                            LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options));
-                    }
+                    final KeychainLoginService service = new KeychainLoginService(PasswordStoreFactory.get());
+                    final StringAppender details = new StringAppender();
+                    details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
+                    details.append(e.getDetail());
+                    service.prompt(bookmark, details.toString(), login, new LoginOptions(bookmark.getProtocol()));
                     // Try to authenticate again
-                    session.login(ProxyFactory.get().find(bookmark), new DisabledPasswordStore(), login, new CancelCallback() {
+                    service.authenticate(ProxyFactory.get().find(bookmark), session, progress, login, new CancelCallback() {
                         @Override
                         public void verify() throws ConnectionCanceledException {
                             if(SessionBackgroundAction.this.isCanceled()) {

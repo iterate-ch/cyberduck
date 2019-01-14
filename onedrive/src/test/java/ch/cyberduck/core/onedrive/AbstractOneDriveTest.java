@@ -15,23 +15,15 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DefaultX509TrustManager;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostPasswordStore;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.junit.After;
-import org.junit.Before;
-
-import java.util.Collections;
-import java.util.HashSet;
-
-import static org.junit.Assert.fail;
+import java.io.InputStream;
 
 public abstract class AbstractOneDriveTest extends AbstractGraphTest {
     protected OneDriveSession session;
@@ -42,8 +34,8 @@ public abstract class AbstractOneDriveTest extends AbstractGraphTest {
     }
 
     @Override
-    protected Local profile() {
-        return new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile");
+    protected InputStream profile() {
+        return this.getClass().getResourceAsStream("/Microsoft OneDrive.cyberduckprofile");
     }
 
     @Override

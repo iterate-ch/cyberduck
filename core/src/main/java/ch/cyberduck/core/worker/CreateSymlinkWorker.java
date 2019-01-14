@@ -20,35 +20,24 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.text.MessageFormat;
 
 public class CreateSymlinkWorker extends Worker<Path> {
 
-    private final Preferences preferences = PreferencesFactory.get();
-
     private final Path link;
-    private final Path selected;
+    private final String target;
 
-    public CreateSymlinkWorker(final Path link, final Path selected) {
+    public CreateSymlinkWorker(final Path link, final String target) {
         this.link = link;
-        this.selected = selected;
+        this.target = target;
     }
 
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
-        // Symlink pointing to existing file
+        // Symlink pointing to existing target file
         final Symlink feature = session.getFeature(Symlink.class);
-        if(preferences.getBoolean(String.format("%s.symlink.absolute", session.getHost().getProtocol().getScheme().name()))) {
-            // Use absolute symlink targets
-            feature.symlink(link, selected.getAbsolute());
-        }
-        else {
-            // Use relative symlink targets
-            feature.symlink(link, selected.getName());
-        }
+        feature.symlink(link, target);
         return link;
     }
 

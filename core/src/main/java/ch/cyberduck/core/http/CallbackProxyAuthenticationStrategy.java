@@ -97,37 +97,41 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
     public Queue<AuthOption> select(final Map<String, Header> challenges, final HttpHost authhost, final HttpResponse response, final HttpContext context) throws MalformedChallengeException {
         final HttpClientContext clientContext = HttpClientContext.adapt(context);
         final Queue<AuthOption> options = new LinkedList<AuthOption>();
-        final Lookup<AuthSchemeProvider> registry = clientContext.getAuthSchemeRegistry();
-        if(registry == null) {
-            return options;
-        }
         final RequestConfig config = clientContext.getRequestConfig();
         Collection<String> authPrefs = config.getProxyPreferredAuthSchemes();
         if(authPrefs == null) {
             authPrefs = DEFAULT_SCHEME_PRIORITY;
         }
-
         // if available try to authenticate with Integrated Windows Authentication
         if(preferences.getBoolean("connection.proxy.windows.authentication.enable")) {
             if(WinHttpClients.isWinAuthAvailable()) {
                 for(String s : IWA_SCHEME_PRIORITY) {
                     final Header challenge = challenges.get(s.toLowerCase(Locale.ROOT));
                     if(challenge != null) {
-                        final AuthSchemeProvider provider = registry.lookup(s);
-                        if(provider != null) {
-                            final AuthScheme authScheme = provider.create(context);
-                            authScheme.processChallenge(challenge);
-                            final AuthScope authScope = new AuthScope(
-                                authhost.getHostName(),
-                                authhost.getPort(),
-                                authScheme.getRealm(),
-                                authScheme.getSchemeName());
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Add authentication options for scheme %s", authPrefs));
-                            }
-                            options.add(new AuthOption(authScheme, new WindowsCredentialsProvider(
-                                null == clientContext.getCredentialsProvider() ? new BasicCredentialsProvider() : clientContext.getCredentialsProvider()).getCredentials(authScope)));
+                        final AuthSchemeProvider provider;
+                        switch(s) {
+                            case AuthSchemes.SPNEGO:
+                                provider = new BackportWindowsNegotiateSchemeFactory(null);
+                                break;
+                            default:
+                                provider = new BackportWindowsNTLMSchemeFactory(null);
+                                break;
                         }
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Use provider %s for challenge %s", provider, challenge));
+                        }
+                        final AuthScheme authScheme = provider.create(context);
+                        authScheme.processChallenge(challenge);
+                        final AuthScope authScope = new AuthScope(
+                            authhost.getHostName(),
+                            authhost.getPort(),
+                            authScheme.getRealm(),
+                            authScheme.getSchemeName());
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Add authentication options for scheme %s", authPrefs));
+                        }
+                        options.add(new AuthOption(authScheme, new WindowsCredentialsProvider(
+                            null == clientContext.getCredentialsProvider() ? new BasicCredentialsProvider() : clientContext.getCredentialsProvider()).getCredentials(authScope)));
                     }
                 }
                 if(!options.isEmpty()) {
@@ -135,7 +139,6 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                 }
             }
         }
-
         Credentials credentials = keychain.getCredentials(authhost.toURI());
         if(StringUtils.isEmpty(credentials.getPassword())) {
             try {
@@ -145,7 +148,7 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                     MessageFormat.format(LocaleFactory.localizedString(
                         "Login {0} with username and password", "Credentials"), authhost.getHostName()),
                     new LoginOptions()
-                        .icon(bookmark.getProtocol().icon())
+                        .icon(bookmark.getProtocol().disk())
                         .usernamePlaceholder(LocaleFactory.localizedString("Username", "Credentials"))
                         .passwordPlaceholder(LocaleFactory.localizedString("Password", "Credentials"))
                         .user(true).password(true)
@@ -158,6 +161,11 @@ public class CallbackProxyAuthenticationStrategy extends ProxyAuthenticationStra
                 // Ignore dismiss of prompt
                 throw new MalformedChallengeException(ignored.getMessage(), ignored);
             }
+        }
+        final Lookup<AuthSchemeProvider> registry = clientContext.getAuthSchemeRegistry();
+        if(registry == null) {
+            log.warn("Missing authentication scheme registry in client context");
+            return options;
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Authentication schemes in the order of preference: %s", authPrefs));

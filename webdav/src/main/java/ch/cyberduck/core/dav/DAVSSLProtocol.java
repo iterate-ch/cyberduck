@@ -54,8 +54,8 @@ public class DAVSSLProtocol extends AbstractProtocol {
     }
 
     @Override
-    public Scheme[] getSchemes() {
-        return new Scheme[]{Scheme.davs, Scheme.https};
+    public String[] getSchemes() {
+        return new String[]{Scheme.davs.name(), Scheme.https.name()};
     }
 
     @Override

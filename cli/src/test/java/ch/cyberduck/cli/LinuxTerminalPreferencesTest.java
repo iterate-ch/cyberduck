@@ -16,7 +16,6 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.UnsecureHostPasswordStore;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
 
@@ -25,9 +24,12 @@ import static org.junit.Assert.assertEquals;
 public class LinuxTerminalPreferencesTest {
 
     @Test
-    public void setDefaults() {
+    public void setDefaults() throws Exception {
         final LinuxTerminalPreferences prefs = new LinuxTerminalPreferences();
-        PreferencesFactory.set(prefs);
+        prefs.load();
+        prefs.setLogging();
+        prefs.setFactories();
+        prefs.setDefaults();
         assertEquals("NativePRNGNonBlocking", prefs.getProperty("connection.ssl.securerandom.algorithm"));
         assertEquals(UnsecureHostPasswordStore.class.getName(), prefs.getProperty("factory.passwordstore.class"));
     }

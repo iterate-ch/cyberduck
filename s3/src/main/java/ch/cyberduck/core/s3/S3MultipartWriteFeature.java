@@ -6,6 +6,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -13,11 +14,8 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
-import ch.cyberduck.core.io.DisabledChecksumCompute;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -46,8 +44,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
-public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPart>> {
+public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
 
     private final Preferences preferences
@@ -71,7 +70,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
     }
 
     @Override
-    public HttpResponseOutputStream<List<MultipartPart>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final S3Object object = new S3WriteFeature(session, new S3DisabledMultipartService())
             .getDetails(file, status);
         // ID for the initiated multipart upload.
@@ -88,11 +87,11 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
         }
         final MultipartOutputStream proxy = new MultipartOutputStream(multipart, file, status);
-        return new HttpResponseOutputStream<List<MultipartPart>>(new MemorySegementingOutputStream(proxy,
+        return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
             preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
             @Override
-            public List<MultipartPart> getStatus() throws BackgroundException {
-                return proxy.getCompleted();
+            public VersionId getStatus() throws BackgroundException {
+                return proxy.getVersionId();
             }
         };
     }
@@ -127,6 +126,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
+        private final AtomicReference<VersionId> versionId = new AtomicReference();
         private int partNumber;
 
         public MultipartOutputStream(final MultipartUpload multipart, final Path file, final TransferStatus status) {
@@ -135,8 +135,8 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
             this.overall = status;
         }
 
-        public List<MultipartPart> getCompleted() {
-            return completed;
+        public VersionId getVersionId() {
+            return versionId.get();
         }
 
         @Override
@@ -197,7 +197,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                 if(completed.isEmpty()) {
                     log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
                     session.getClient().multipartAbortUpload(multipart);
-                    new S3TouchFeature(session).touch(file, new TransferStatus());
+                    versionId.set(new VersionId(new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId()));
                 }
                 else {
                     final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
@@ -205,6 +205,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                         log.debug(String.format("Completed multipart upload for %s with checksum %s",
                             complete.getObjectKey(), complete.getEtag()));
                     }
+                    versionId.set(new VersionId(complete.getVersionId()));
                     if(file.getType().contains(Path.Type.encrypted)) {
                         log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                     }
@@ -214,7 +215,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
                             concat.append(part.getEtag());
                         }
                         final String expected = String.format("%s-%d",
-                            new MD5ChecksumCompute().compute(concat.toString(), new TransferStatus()), completed.size());
+                            ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
                         final String reference;
                         if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
                             reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
@@ -254,10 +255,5 @@ public class S3MultipartWriteFeature implements MultipartWrite<List<MultipartPar
             sb.append('}');
             return sb.toString();
         }
-    }
-
-    @Override
-    public ChecksumCompute checksum(final Path file) {
-        return new DisabledChecksumCompute();
     }
 }

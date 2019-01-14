@@ -31,9 +31,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
-import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.local.ApplicationFinder;
-import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -59,16 +56,6 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     public ThirdpartyBookmarkCollection(final PasswordStore keychain) {
         this.keychain = keychain;
-    }
-
-    @Override
-    public String getName() {
-        final ApplicationFinder finder = ApplicationFinderFactory.get();
-        final Application application = finder.getDescription(this.getBundleIdentifier());
-        if(!finder.isInstalled(application)) {
-            return LocaleFactory.localizedString("Unknown");
-        }
-        return application.getName();
     }
 
     @Override

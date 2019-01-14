@@ -18,7 +18,20 @@ package ch.cyberduck.core.udt;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Header;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -97,7 +110,7 @@ public class UDTProxyConfiguratorTest {
         proxy.configure(tunneled);
         try {
             assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-            tunneled.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()
+            tunneled.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()
             );
         }
         catch(BackgroundException e) {
@@ -151,7 +164,7 @@ public class UDTProxyConfiguratorTest {
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        tunneled.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()
+        tunneled.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()
         );
     }
 
@@ -212,7 +225,7 @@ public class UDTProxyConfiguratorTest {
         final S3Session tunneled = new S3Session(host);
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        tunneled.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()
+        tunneled.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()
         );
         tunneled.close();
     }
@@ -231,7 +244,7 @@ public class UDTProxyConfiguratorTest {
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(tunneled.isConnected());
-        tunneled.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()
+        tunneled.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()
         );
 
         final TransferStatus status = new TransferStatus();
@@ -287,7 +300,7 @@ public class UDTProxyConfiguratorTest {
         proxy.configure(tunneled);
         assertNotNull(tunneled.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         assertTrue(tunneled.isConnected());
-        tunneled.login(Proxy.DIRECT, new DisabledPasswordStore(), new DisabledLoginCallback(), new DisabledCancelCallback()
+        tunneled.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback()
         );
 
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));

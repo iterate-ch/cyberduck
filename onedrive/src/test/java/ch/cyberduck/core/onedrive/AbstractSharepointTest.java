@@ -18,11 +18,12 @@ package ch.cyberduck.core.onedrive;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+
+import java.io.InputStream;
 
 public abstract class AbstractSharepointTest extends AbstractGraphTest {
     protected SharepointSession session;
@@ -33,8 +34,8 @@ public abstract class AbstractSharepointTest extends AbstractGraphTest {
     }
 
     @Override
-    protected Local profile() {
-        return new Local("../profiles/default/Microsoft SharePoint.cyberduckprofile");
+    protected InputStream profile() {
+        return this.getClass().getResourceAsStream("/Microsoft SharePoint.cyberduckprofile");
     }
 
     @Override

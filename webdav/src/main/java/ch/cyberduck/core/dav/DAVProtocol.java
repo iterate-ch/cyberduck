@@ -47,8 +47,8 @@ public class DAVProtocol extends AbstractProtocol {
     }
 
     @Override
-    public Scheme[] getSchemes() {
-        return new Scheme[]{Scheme.dav, Scheme.http};
+    public String[] getSchemes() {
+        return new String[]{Scheme.dav.name(), Scheme.http.name()};
     }
 
     @Override

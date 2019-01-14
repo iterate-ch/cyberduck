@@ -148,7 +148,7 @@ public class CopyTransfer extends Transfer {
                     // Found remote file
                     if(upload.remote.isDirectory()) {
                         // List files in target directory
-                        if(this.list(destination, destination, copy, null, listener).isEmpty()) {
+                        if(this.list(destination, copy, null, listener).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
@@ -175,12 +175,12 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public List<TransferItem> list(final Session<?> source, final Session<?> destination, final Path directory, final Local local,
+    public List<TransferItem> list(final Session<?> session, final Path directory, final Local local,
                                    final ListProgressListener listener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("List children for %s", directory));
         }
-        final AttributedList<Path> list = source.getFeature(ListService.class).list(directory, listener).filter(comparator, filter);
+        final AttributedList<Path> list = session.getFeature(ListService.class).list(directory, listener).filter(comparator, filter);
         final Path copy = mapping.get(directory);
         for(Path p : list) {
             mapping.put(p, new Path(copy, p.getName(), p.getType(), p.attributes()));
@@ -194,14 +194,14 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        final Bulk download = source.getFeature(Bulk.class);
+        final Bulk<?> download = source.getFeature(Bulk.class);
         {
             final Object id = download.pre(Type.download, files, callback);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Obtained bulk id %s for transfer %s", id, this));
             }
         }
-        final Bulk upload = destination.getFeature(Bulk.class);
+        final Bulk<?> upload = destination.getFeature(Bulk.class);
         {
             final Map<TransferItem, TransferStatus> targets = new HashMap<>();
             for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
@@ -216,11 +216,11 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        final Bulk download = source.getFeature(Bulk.class);
+        final Bulk<?> download = source.getFeature(Bulk.class);
         {
             download.post(Type.download, files, callback);
         }
-        final Bulk upload = destination.getFeature(Bulk.class);
+        final Bulk<?> upload = destination.getFeature(Bulk.class);
         {
             final Map<TransferItem, TransferStatus> targets = new HashMap<>();
             for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {

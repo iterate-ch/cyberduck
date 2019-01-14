@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.EnumSet;
 
+import net.schmizz.sshj.sftp.FileAttributes;
 import net.schmizz.sshj.sftp.FileMode;
 import net.schmizz.sshj.sftp.RemoteDirectory;
 import net.schmizz.sshj.sftp.RemoteResourceFilter;
@@ -97,6 +98,7 @@ public class SFTPListService implements ListService {
         if(file.isSymbolicLink()) {
             final Path target;
             Path.Type type;
+            PathAttributes attr;
             try {
                 final String link = session.sftp().readLink(file.getAbsolute());
                 if(link.startsWith(String.valueOf(Path.DELIMITER))) {
@@ -106,12 +108,14 @@ public class SFTPListService implements ListService {
                     target = new Path(PathNormalizer.normalize(String.format("%s/%s", file.getParent().getAbsolute(), link)), EnumSet.of(Path.Type.file));
                 }
                 try {
-                    if(session.sftp().stat(target.getAbsolute()).getType().equals(FileMode.Type.DIRECTORY)) {
+                    final FileAttributes stat = session.sftp().stat(target.getAbsolute());
+                    if(stat.getType().equals(FileMode.Type.DIRECTORY)) {
                         type = Path.Type.directory;
                     }
                     else {
                         type = Path.Type.file;
                     }
+                    attr = attributes.toAttributes(stat);
                 }
                 catch(SFTPException e) {
                     final BackgroundException reason = new SFTPExceptionMappingService().map(e);
@@ -129,9 +133,11 @@ public class SFTPListService implements ListService {
                         throw reason;
                     }
                     type = Path.Type.file;
+                    attr = PathAttributes.EMPTY;
                 }
                 file.setType(EnumSet.of(Path.Type.symboliclink, type));
                 target.setType(EnumSet.of(type));
+                target.setAttributes(attr);
                 file.setSymlinkTarget(target);
             }
             catch(IOException e) {

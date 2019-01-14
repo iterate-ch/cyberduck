@@ -23,6 +23,8 @@
         <string>iterate GmbH</string>
         <key>Bundled</key>
         <true/>
+        <key>Default Hostname</key>
+        <string>storage.googleapis.com</string>
         <key>OAuth Authorization Url</key>
         <string>https://accounts.google.com/o/oauth2/auth</string>
         <key>OAuth Token Url</key>

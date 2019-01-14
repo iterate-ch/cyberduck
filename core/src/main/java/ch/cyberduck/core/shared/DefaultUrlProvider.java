@@ -43,6 +43,9 @@ public class DefaultUrlProvider implements UrlProvider {
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
+        if(file.attributes().getLink() != null) {
+            list.add(file.attributes().getLink());
+        }
         list.add(new DescriptiveUrl(URI.create(String.format("%s%s",
             new HostUrlProvider().withUsername(false).get(host), URIEncoder.encode(file.getAbsolute()))),
             DescriptiveUrl.Type.provider,

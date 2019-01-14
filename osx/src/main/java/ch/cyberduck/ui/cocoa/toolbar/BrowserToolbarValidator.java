@@ -62,7 +62,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         final String identifier = item.itemIdentifier();
         switch(valueOf(identifier)) {
             case disconnect:
-                if(controller.isActivityRunning()) {
+                if(!controller.isIdle()) {
                     item.setLabel(stop.label());
                     item.setPaletteLabel(stop.label());
                     item.setToolTip(stop.tooltip());
@@ -308,10 +308,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(disconnect.action())) {
             if(this.isBrowser()) {
-                if(!controller.isConnected()) {
-                    return controller.isActivityRunning();
-                }
-                return controller.isConnected();
+                return !controller.isIdle();
             }
             return false;
         }

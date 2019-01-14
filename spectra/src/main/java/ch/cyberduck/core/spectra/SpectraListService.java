@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.s3.S3ListService;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class SpectraListService extends S3ListService {
 
@@ -51,7 +52,7 @@ public class SpectraListService extends S3ListService {
                 if(p.isFile()) {
                     if(p.attributes().isDuplicate()) {
                         if(p.attributes().getRevision() == 1) {
-                            final HashMap<String, String> custom = new HashMap<>(p.attributes().getCustom());
+                            final Map<String, String> custom = new HashMap<>(p.attributes().getCustom());
                             custom.put(SpectraVersioningFeature.KEY_REVERTABLE, Boolean.TRUE.toString());
                             p.attributes().setCustom(custom);
                         }

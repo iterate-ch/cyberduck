@@ -15,7 +15,6 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
@@ -38,7 +37,7 @@ public class OneDriveProtocolTest {
     public void testDefaultProfile() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new OneDriveProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            new Local("../profiles/default/Microsoft OneDrive.cyberduckprofile"));
+            this.getClass().getResourceAsStream("/Microsoft OneDrive.cyberduckprofile"));
         assertFalse(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
         assertTrue(profile.isUsernameConfigurable());

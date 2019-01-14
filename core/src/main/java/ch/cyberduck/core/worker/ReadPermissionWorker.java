@@ -55,12 +55,15 @@ public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            permissions.add(feature.getUnixPermission(next));
+            if(Permission.EMPTY == next.attributes().getPermission()) {
+                next.attributes().setPermission(feature.getUnixPermission(next));
+            }
+            permissions.add(next.attributes().getPermission());
         }
 
         final PermissionOverwrite overwrite = new PermissionOverwrite();
+        final Supplier<Stream<Permission>> supplier = permissions::stream;
 
-        Supplier<Stream<Permission>> supplier = permissions::stream;
         overwrite.user.read = resolveOverwrite(map(supplier, Permission::getUser, Permission.Action.read));
         overwrite.user.write = resolveOverwrite(map(supplier, Permission::getUser, Permission.Action.write));
         overwrite.user.execute = resolveOverwrite(map(supplier, Permission::getUser, Permission.Action.execute));

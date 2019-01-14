@@ -1,20 +1,18 @@
 package ch.cyberduck.core.dav;
 
 /*
- * Copyright (c) 2002-2014 David Kocher. All rights reserved.
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
 import ch.cyberduck.core.Path;
@@ -51,7 +49,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
 
     private final DAVSession session;
 
-    private final RFC1123DateFormatter dateParser
+    private final RFC1123DateFormatter rfc1123
         = new RFC1123DateFormatter();
 
     public DAVAttributesFinderFeature(DAVSession session) {
@@ -65,13 +63,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
         }
         try {
             try {
-                final List<DavResource> status = session.getClient().list(new DAVPathEncoder().encode(file), 1,
-                    Stream.of(
-                        DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
-                        DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
-                        collect(Collectors.toSet())
-                );
-                for(final DavResource resource : status) {
+                for(final DavResource resource : this.list(file)) {
                     if(resource.isDirectory()) {
                         if(!file.getType().contains(Path.Type.directory)) {
                             throw new NotfoundException(String.format("Path %s is directory", file.getAbsolute()));
@@ -97,7 +89,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                         new HttpHead(new DAVPathEncoder().encode(file)), new HeadersResponseHandler());
                     final PathAttributes attributes = new PathAttributes();
                     try {
-                        attributes.setModificationDate(dateParser.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
+                        attributes.setModificationDate(rfc1123.parse(headers.get(HttpHeaders.LAST_MODIFIED)).getTime());
                     }
                     catch(InvalidDateException p) {
                         log.warn(String.format("%s is not RFC 1123 format %s", headers.get(HttpHeaders.LAST_MODIFIED), p.getMessage()));
@@ -126,6 +118,15 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
         }
     }
 
+    protected List<DavResource> list(final Path file) throws IOException {
+        return session.getClient().list(new DAVPathEncoder().encode(file), 1,
+            Stream.of(
+                DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
+                DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
+                collect(Collectors.toSet())
+        );
+    }
+
     protected PathAttributes toAttributes(final DavResource resource) {
         final PathAttributes attributes = new PathAttributes();
         final Map<QName, String> properties = resource.getCustomPropsNS();
@@ -136,11 +137,11 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                     if(properties.containsKey(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE)) {
                         final String svalue = properties.get(DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
                         if(StringUtils.isNotBlank(svalue)) {
-                            final Date server = new RFC1123DateFormatter().parse(svalue);
+                            final Date server = rfc1123.parse(svalue);
                             if(server.equals(resource.getModified())) {
                                 // file not touched with a different client
                                 attributes.setModificationDate(
-                                    new RFC1123DateFormatter().parse(value).getTime());
+                                    rfc1123.parse(value).getTime());
                             }
                             else {
                                 // file touched with a different client, use default modified date from server
@@ -160,7 +161,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
                     }
                     else {
                         attributes.setModificationDate(
-                            new RFC1123DateFormatter().parse(value).getTime());
+                            rfc1123.parse(value).getTime());
                     }
                 }
                 catch(InvalidDateException e) {
