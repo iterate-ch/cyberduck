@@ -86,7 +86,9 @@ public class S3MoveFeature implements Move {
         else {
             try {
                 copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.length(source.attributes().getSize()), connectionCallback);
-                delete.delete(Collections.singletonList(source), connectionCallback, callback);
+                // Copy source path and nullify version id to add a delete marker
+                delete.delete(Collections.singletonList(new Path(source).withAttributes(source.attributes().withVersionId(null))),
+                    connectionCallback, callback);
             }
             catch(NotfoundException e) {
                 if(source.getType().contains(Path.Type.placeholder)) {
