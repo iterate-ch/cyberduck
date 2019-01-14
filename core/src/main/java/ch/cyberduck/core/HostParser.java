@@ -112,7 +112,7 @@ public final class HostParser {
             }
 
             if(uriType == URITypes.Authority && !host.getProtocol().isHostnameConfigurable()) {
-                if (userInfoResult == null) {
+                if(userInfoResult == null) {
                     reader.skip(-1);
                 }
             }
@@ -318,6 +318,12 @@ public final class HostParser {
             }
         }
         reader.skip(tracker - reader.position);
+        if(host.getProtocol().isAnonymousConfigurable()) {
+            host.getCredentials().setUsername(preferences.getProperty("connection.login.anon.name"));
+        }
+        else {
+            host.getCredentials().setUsername(preferences.getProperty("connection.login.name"));
+        }
         if(atSignFlag) {
             if(userBuilder.length() > 0) {
                 if(host.getProtocol().isUsernameConfigurable()) {
