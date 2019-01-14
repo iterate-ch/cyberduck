@@ -18,6 +18,8 @@
         <string>Rackspace Cloud Files (UK)</string>
         <key>Default Hostname</key>
         <string>lon.identity.api.rackspacecloud.com</string>
+        <key>Hostname Configurable</key>
+        <false/>
         <key>Default Port</key>
         <string>443</string>
         <key>Username Placeholder</key>
