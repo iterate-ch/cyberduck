@@ -84,13 +84,15 @@ public final class HostParser {
         final StringReader reader = new StringReader(url);
 
         Value<String> schemeValue = new Value<>();
-        if(!parseScheme(reader, schemeValue)) {
-            // TODO: Error out. Scheme was invalid.
-        }
-
-        Protocol protocol = factory.forName(schemeValue.getValue());
-        if(null == protocol) {
+        Protocol protocol;
+        if(!parseScheme(reader, schemeValue) || null == schemeValue.getValue()) {
             protocol = defaultScheme;
+        }
+        else {
+            protocol = factory.forName(schemeValue.getValue());
+            if(null == protocol) {
+                protocol = defaultScheme;
+            }
         }
 
         final Host host = new Host(protocol);
@@ -144,6 +146,7 @@ public final class HostParser {
 
     static boolean parseScheme(final StringReader reader, final Value<String> scheme) {
         final StringBuilder stringBuilder = new StringBuilder();
+        int tracker = reader.position;
         while(!reader.endOfString()) {
             final char c = (char) reader.read();
             if(Character.isAlphabetic(c)
@@ -152,20 +155,21 @@ public final class HostParser {
                 stringBuilder.append(c);
             }
             else if(c == ':') {
-                scheme.setValue(stringBuilder.toString());
-                return true; // valid. Break to return stringbuilder
+                tracker = reader.position;
+                break;
             }
             else {
                 if(c == ' ' && stringBuilder.length() == 0) {
                     continue;
                 }
                 // Invalid character inside scheme.
-                // TODO: Error out.
+                reader.skip(tracker - reader.position);
                 return false;
             }
         }
-        // TODO: EOF, should this be considered safe? ("scheme" instead of "scheme:")
-        return false;
+        reader.skip(tracker - reader.position);
+        scheme.setValue(stringBuilder.toString());
+        return true; // valid. Break to return stringbuilder
     }
 
     static boolean parseAuthority(final StringReader reader, final Host host) {
@@ -184,6 +188,7 @@ public final class HostParser {
             final char c = (char) reader.read();
 
             if('/' == c) {
+                reader.skip(-1);
                 break;
             }
             else if('%' == c) {
@@ -229,6 +234,7 @@ public final class HostParser {
 
     static boolean parsePort(final StringReader reader, final Host host) {
         int port = 0;
+        int tracker = reader.position;
         while(!reader.endOfString()) {
             final char c = (char) reader.read();
 
@@ -242,6 +248,7 @@ public final class HostParser {
                 break;
             }
             else {
+                reader.skip(tracker - reader.position);
                 return false;
             }
         }
@@ -324,6 +331,7 @@ public final class HostParser {
         else {
             host.getCredentials().setUsername(preferences.getProperty("connection.login.name"));
         }
+        host.getCredentials().setPassword(null);
         if(atSignFlag) {
             if(userBuilder.length() > 0) {
                 if(host.getProtocol().isUsernameConfigurable()) {
@@ -430,15 +438,19 @@ public final class HostParser {
         return isUnreservedCharacter(c) || isSubDelimsCharacter(c) || c == ':';
     }
 
-    private static char readPercentCharacter(final StringReader reader) {
+    private static String readPercentCharacter(final StringReader reader) {
         final StringBuilder string = new StringBuilder();
         for(int i = 0; i < 2 && !reader.endOfString(); i++) {
+            final char c = (char) reader.read();
+            if(c == '%') {
+                return "%%";
+            }
             string.append((char) reader.read());
         }
         if(string.length() != 2) {
-            return Character.MIN_VALUE;
+            return Character.toString(Character.MIN_VALUE);
         }
-        return (char) Integer.parseUnsignedInt(string.toString(), 16);
+        return Character.toString((char) Integer.parseUnsignedInt(string.toString(), 16));
     }
 
     private static final Pattern IPV6_STD_PATTERN = Pattern.compile(
