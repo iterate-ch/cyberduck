@@ -45,6 +45,7 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(),
                 new Delete.DisabledCallback());
         // Trashed
+        test.attributes().setVersionId(null);
         assertFalse(new DriveFindFeature(session, fileid).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultAttributesFinderFeature(session).find(test).isDuplicate());
