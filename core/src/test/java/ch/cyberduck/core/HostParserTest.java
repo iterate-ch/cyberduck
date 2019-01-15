@@ -258,7 +258,12 @@ public class HostParserTest {
 
     @Test
     public void testParseRootless() {
-        final Host host = new Host(new TestProtocol());
+        final Host host = new Host(new TestProtocol() {
+            @Override
+            public boolean isHostnameConfigurable() {
+                return false;
+            }
+        });
         final String path = "path/sub/directory";
         final HostParser.StringReader reader = new HostParser.StringReader(path);
 
@@ -268,7 +273,12 @@ public class HostParserTest {
 
     @Test
     public void testParseRootlessWithUser() {
-        final Host host = new Host(new TestProtocol());
+        final Host host = new Host(new TestProtocol() {
+            @Override
+            public boolean isHostnameConfigurable() {
+                return false;
+            }
+        });
         final String path = "user@path/sub/directory";
         final HostParser.StringReader reader = new HostParser.StringReader(path);
 

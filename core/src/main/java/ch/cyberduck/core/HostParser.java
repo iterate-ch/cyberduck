@@ -24,11 +24,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.PrimitiveIterator;
 import java.util.regex.Pattern;
 
 public final class HostParser {
@@ -107,23 +102,13 @@ public final class HostParser {
             return host;
         }
 
-        if(uriType == URITypes.Authority || uriType == URITypes.Rootless) {
-            final Boolean userInfoResult = parseUserInfo(reader, host);
-            if(Boolean.FALSE.equals(userInfoResult)) {
+        if(uriType == URITypes.Authority) {
+            if(!parseAuthority(reader, host)) {
                 // TODO: Error out.
             }
-
-            if(uriType == URITypes.Authority && !host.getProtocol().isHostnameConfigurable()) {
-                if(userInfoResult == null) {
-                    reader.skip(-1);
-                }
-            }
-            else {
-                if(!parseHostname(reader, host)) {
-                    // TODO: Error out.
-                }
-            }
-            if(!parsePath(reader, host)) {
+        }
+        else if(uriType == URITypes.Rootless) {
+            if(!parseRootless(reader, host)) {
                 // TODO: Error out.
             }
         }
@@ -173,10 +158,31 @@ public final class HostParser {
     }
 
     static boolean parseAuthority(final StringReader reader, final Host host) {
-        if(Boolean.FALSE.equals(parseUserInfo(reader, host))) {
-            return false;
+        final Boolean userInfoResult = parseUserInfo(reader, host);
+        if(Boolean.FALSE.equals(userInfoResult)) {
+            // TODO: Error out.
         }
-        return parseHostname(reader, host);
+
+        boolean assumeRoot = false;
+        if(host.getProtocol().isHostnameConfigurable()) {
+            if(!parseHostname(reader, host)) {
+                // TODO: Error out.
+            }
+        }
+        else {
+            if(userInfoResult == null) {
+                reader.skip(-1);
+            }
+            else {
+                assumeRoot = true;
+            }
+        }
+
+        if(!parsePath(reader, host, assumeRoot)) {
+            // TODO: Error out.
+        }
+
+        return true;
     }
 
     static boolean parseHostname(final StringReader reader, final Host host) {
@@ -214,6 +220,10 @@ public final class HostParser {
                 }
                 else if(c == ']' && bracketFlag) {
                     bracketFlag = false;
+                }
+                else if((c == ']' && !bracketFlag) || (c == '[' && bracketFlag)) {
+                    // [fe80:[]:xyz]
+                    return false; // this is not supported
                 }
                 else {
                     buffer.append(c);
@@ -272,17 +282,31 @@ public final class HostParser {
     }
 
     static boolean parseAbsolute(final StringReader reader, final Host host) {
-        return parsePath(reader, host);
+        return parsePath(reader, host, true);
     }
 
     static boolean parseRootless(final StringReader reader, final Host host) {
         // This is not RFC-compliant.
         // * Rootless-path must not include authentication information.
 
-        if(Boolean.FALSE.equals(parseUserInfo(reader, host))) {
-            return false;
+        final Boolean userInfoResult = parseUserInfo(reader, host);
+        if(Boolean.FALSE.equals(userInfoResult)) {
+            // TODO: Error out.
         }
-        return parsePath(reader, host);
+
+        if(userInfoResult == null) {
+            reader.skip(-1);
+        }
+
+        if(host.getProtocol().isHostnameConfigurable() && StringUtils.isWhitespace(host.getHostname())) {
+            // This is not RFC-compliant.
+            // We assume for hostconfigurable-empty-hostnames a hostname on first path segment
+            if(!parseHostname(reader, host)) {
+                // TODO: Error out.
+            }
+        }
+
+        return parsePath(reader, host, false);
     }
 
     static Boolean parseUserInfo(final StringReader reader, final Host host) {
@@ -366,8 +390,18 @@ public final class HostParser {
         return null;
     }
 
-    static boolean parsePath(final StringReader reader, final Host host) {
+    static boolean parsePath(final StringReader reader, final Host host, final boolean assumeRoot) {
         final StringBuilder pathBuilder = new StringBuilder();
+
+        if(assumeRoot) {
+            if(reader.peek() == '/') {
+                pathBuilder.append((char) reader.read());
+            }
+            else {
+                pathBuilder.append('/');
+            }
+        }
+
         while(!reader.endOfString()) {
             final char c = (char) reader.read();
 
