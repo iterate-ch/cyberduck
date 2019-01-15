@@ -75,7 +75,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
             log.error(String.format("Cannot read known hosts file %s", file), e);
         }
         catch(AccessDeniedException e) {
-            log.error(String.format("Cannot read known hosts file %s", file));
+            log.warn(String.format("Failure reading %s", file));
         }
         finally {
             IOUtils.closeQuietly(in);
