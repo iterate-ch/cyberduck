@@ -68,7 +68,7 @@ public class STSCredentialsConfigurator {
         this.prompt = prompt;
     }
 
-    public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException, AccessDeniedException {
+    public Credentials configure(final Host host) throws LoginFailureException, LoginCanceledException {
         final Credentials credentials = new Credentials(host.getCredentials());
         // Find matching profile name or AWS access key in ~/.aws/credentials
         final Local file = LocalFactory.get(LocalFactory.get(LocalFactory.get(), ".aws"), "credentials");
@@ -82,8 +82,15 @@ public class STSCredentialsConfigurator {
             return host.getCredentials();
         }
         // Iterating all profiles on our own because AWSProfileCredentialsConfigurator does not support MFA tokens
-        final Map<String, Map<String, String>> allProfileProperties = new ProfilesConfigFileLoaderHelper()
-            .parseProfileProperties(new Scanner(file.getInputStream(), StandardCharsets.UTF_8.name()));
+        final Map<String, Map<String, String>> allProfileProperties;
+        try {
+            allProfileProperties = new ProfilesConfigFileLoaderHelper()
+                .parseProfileProperties(new Scanner(file.getInputStream(), StandardCharsets.UTF_8.name()));
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure reading %s", file), e);
+            return credentials;
+        }
         // Convert the loaded property map to credential objects
         final Map<String, BasicProfile> profilesByName = new LinkedHashMap<String, BasicProfile>();
         for(Map.Entry<String, Map<String, String>> entry : allProfileProperties.entrySet()) {
