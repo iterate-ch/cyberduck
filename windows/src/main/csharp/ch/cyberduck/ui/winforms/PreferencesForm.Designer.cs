@@ -210,6 +210,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel16 = new System.Windows.Forms.TableLayoutPanel();
             this.preserveModificationUploadCheckbox = new System.Windows.Forms.CheckBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel26 = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox16 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel31 = new System.Windows.Forms.TableLayoutPanel();
+            this.verifyChecksumDownloadCheckbox = new System.Windows.Forms.CheckBox();
+            this.groupBox17 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel32 = new System.Windows.Forms.TableLayoutPanel();
+            this.verifyChecksumUploadCheckbox = new System.Windows.Forms.CheckBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel17 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
@@ -239,14 +247,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cryptomatorButton = new System.Windows.Forms.ToolStripButton();
             this.updateButton = new System.Windows.Forms.ToolStripButton();
             this.languageButton = new System.Windows.Forms.ToolStripButton();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel26 = new System.Windows.Forms.TableLayoutPanel();
-            this.groupBox16 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel31 = new System.Windows.Forms.TableLayoutPanel();
-            this.verifyChecksumDownloadCheckbox = new System.Windows.Forms.CheckBox();
-            this.groupBox17 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel32 = new System.Windows.Forms.TableLayoutPanel();
-            this.verifyChecksumUploadCheckbox = new System.Windows.Forms.CheckBox();
             this.panelManager.SuspendLayout();
             this.managedGeneralPanel.SuspendLayout();
             this.tableLayoutPanelGeneral.SuspendLayout();
@@ -325,6 +325,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel15.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.tableLayoutPanel16.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.tableLayoutPanel26.SuspendLayout();
+            this.groupBox16.SuspendLayout();
+            this.tableLayoutPanel31.SuspendLayout();
+            this.groupBox17.SuspendLayout();
+            this.tableLayoutPanel32.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tableLayoutPanel17.SuspendLayout();
             this.groupBox11.SuspendLayout();
@@ -336,12 +342,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox15.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.toolStrip.SuspendLayout();
-            this.tabPage5.SuspendLayout();
-            this.tableLayoutPanel26.SuspendLayout();
-            this.groupBox16.SuspendLayout();
-            this.tableLayoutPanel31.SuspendLayout();
-            this.groupBox17.SuspendLayout();
-            this.tableLayoutPanel32.SuspendLayout();
             this.SuspendLayout();
             // 
             // iconList
@@ -2452,8 +2452,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.chmodUploadTypeCombobox.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.chmodUploadTypeCombobox.FormattingEnabled = true;
             this.chmodUploadTypeCombobox.Location = new System.Drawing.Point(157, 56);
+            this.chmodUploadTypeCombobox.MinimumSize = new System.Drawing.Size(150, 0);
             this.chmodUploadTypeCombobox.Name = "chmodUploadTypeCombobox";
-            this.chmodUploadTypeCombobox.Size = new System.Drawing.Size(1, 20);
+            this.chmodUploadTypeCombobox.Size = new System.Drawing.Size(150, 20);
             this.chmodUploadTypeCombobox.TabIndex = 3;
             this.chmodUploadTypeCombobox.SelectionChangeCommitted += new System.EventHandler(this.chmodUploadTypeCombobox_SelectionChangeCommitted);
             // 
@@ -2736,6 +2737,109 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.preserveModificationUploadCheckbox.Text = "Preserve modification date";
             this.preserveModificationUploadCheckbox.UseVisualStyleBackColor = true;
             this.preserveModificationUploadCheckbox.CheckedChanged += new System.EventHandler(this.preserveModificationUploadCheckbox_CheckedChanged);
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.tableLayoutPanel26);
+            this.tabPage5.Location = new System.Drawing.Point(4, 27);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Size = new System.Drawing.Size(646, 448);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Checksum";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel26
+            // 
+            this.tableLayoutPanel26.AutoSize = true;
+            this.tableLayoutPanel26.ColumnCount = 1;
+            this.tableLayoutPanel26.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel26.Controls.Add(this.groupBox16, 0, 0);
+            this.tableLayoutPanel26.Controls.Add(this.groupBox17, 0, 1);
+            this.tableLayoutPanel26.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel26.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel26.Name = "tableLayoutPanel26";
+            this.tableLayoutPanel26.RowCount = 3;
+            this.tableLayoutPanel26.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel26.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel26.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel26.Size = new System.Drawing.Size(646, 448);
+            this.tableLayoutPanel26.TabIndex = 3;
+            // 
+            // groupBox16
+            // 
+            this.groupBox16.AutoSize = true;
+            this.groupBox16.Controls.Add(this.tableLayoutPanel31);
+            this.groupBox16.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox16.Location = new System.Drawing.Point(3, 3);
+            this.groupBox16.Name = "groupBox16";
+            this.groupBox16.Size = new System.Drawing.Size(640, 57);
+            this.groupBox16.TabIndex = 0;
+            this.groupBox16.TabStop = false;
+            this.groupBox16.Text = "Downloads";
+            // 
+            // tableLayoutPanel31
+            // 
+            this.tableLayoutPanel31.AutoSize = true;
+            this.tableLayoutPanel31.ColumnCount = 1;
+            this.tableLayoutPanel31.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel31.Controls.Add(this.verifyChecksumDownloadCheckbox, 0, 0);
+            this.tableLayoutPanel31.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel31.Location = new System.Drawing.Point(3, 19);
+            this.tableLayoutPanel31.Name = "tableLayoutPanel31";
+            this.tableLayoutPanel31.Padding = new System.Windows.Forms.Padding(5);
+            this.tableLayoutPanel31.RowCount = 1;
+            this.tableLayoutPanel31.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel31.Size = new System.Drawing.Size(634, 35);
+            this.tableLayoutPanel31.TabIndex = 1;
+            // 
+            // verifyChecksumDownloadCheckbox
+            // 
+            this.verifyChecksumDownloadCheckbox.AutoSize = true;
+            this.verifyChecksumDownloadCheckbox.Location = new System.Drawing.Point(8, 8);
+            this.verifyChecksumDownloadCheckbox.Name = "verifyChecksumDownloadCheckbox";
+            this.verifyChecksumDownloadCheckbox.Size = new System.Drawing.Size(112, 19);
+            this.verifyChecksumDownloadCheckbox.TabIndex = 0;
+            this.verifyChecksumDownloadCheckbox.Text = "Verify checksum";
+            this.verifyChecksumDownloadCheckbox.UseVisualStyleBackColor = true;
+            this.verifyChecksumDownloadCheckbox.CheckedChanged += new System.EventHandler(this.verifyChecksumDownloadCheckbox_CheckedChanged);
+            // 
+            // groupBox17
+            // 
+            this.groupBox17.AutoSize = true;
+            this.groupBox17.Controls.Add(this.tableLayoutPanel32);
+            this.groupBox17.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox17.Location = new System.Drawing.Point(3, 66);
+            this.groupBox17.Name = "groupBox17";
+            this.groupBox17.Size = new System.Drawing.Size(640, 57);
+            this.groupBox17.TabIndex = 1;
+            this.groupBox17.TabStop = false;
+            this.groupBox17.Text = "Uploads";
+            // 
+            // tableLayoutPanel32
+            // 
+            this.tableLayoutPanel32.AutoSize = true;
+            this.tableLayoutPanel32.ColumnCount = 1;
+            this.tableLayoutPanel32.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel32.Controls.Add(this.verifyChecksumUploadCheckbox, 0, 0);
+            this.tableLayoutPanel32.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel32.Location = new System.Drawing.Point(3, 19);
+            this.tableLayoutPanel32.Name = "tableLayoutPanel32";
+            this.tableLayoutPanel32.Padding = new System.Windows.Forms.Padding(5);
+            this.tableLayoutPanel32.RowCount = 1;
+            this.tableLayoutPanel32.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel32.Size = new System.Drawing.Size(634, 35);
+            this.tableLayoutPanel32.TabIndex = 1;
+            // 
+            // verifyChecksumUploadCheckbox
+            // 
+            this.verifyChecksumUploadCheckbox.AutoSize = true;
+            this.verifyChecksumUploadCheckbox.Location = new System.Drawing.Point(8, 8);
+            this.verifyChecksumUploadCheckbox.Name = "verifyChecksumUploadCheckbox";
+            this.verifyChecksumUploadCheckbox.Size = new System.Drawing.Size(112, 19);
+            this.verifyChecksumUploadCheckbox.TabIndex = 0;
+            this.verifyChecksumUploadCheckbox.Text = "Verify checksum";
+            this.verifyChecksumUploadCheckbox.UseVisualStyleBackColor = true;
+            this.verifyChecksumUploadCheckbox.CheckedChanged += new System.EventHandler(this.verifyChecksumUploadCheckbox_CheckedChanged);
             // 
             // tabPage4
             // 
@@ -3114,109 +3218,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.languageButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.languageButton.Click += new System.EventHandler(this.languageButton_Click);
             // 
-            // tabPage5
-            // 
-            this.tabPage5.Controls.Add(this.tableLayoutPanel26);
-            this.tabPage5.Location = new System.Drawing.Point(4, 27);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(646, 448);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "Checksum";
-            this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // tableLayoutPanel26
-            // 
-            this.tableLayoutPanel26.AutoSize = true;
-            this.tableLayoutPanel26.ColumnCount = 1;
-            this.tableLayoutPanel26.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel26.Controls.Add(this.groupBox16, 0, 0);
-            this.tableLayoutPanel26.Controls.Add(this.groupBox17, 0, 1);
-            this.tableLayoutPanel26.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel26.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel26.Name = "tableLayoutPanel26";
-            this.tableLayoutPanel26.RowCount = 3;
-            this.tableLayoutPanel26.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel26.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel26.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel26.Size = new System.Drawing.Size(646, 448);
-            this.tableLayoutPanel26.TabIndex = 3;
-            // 
-            // groupBox16
-            // 
-            this.groupBox16.AutoSize = true;
-            this.groupBox16.Controls.Add(this.tableLayoutPanel31);
-            this.groupBox16.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox16.Location = new System.Drawing.Point(3, 3);
-            this.groupBox16.Name = "groupBox16";
-            this.groupBox16.Size = new System.Drawing.Size(640, 57);
-            this.groupBox16.TabIndex = 0;
-            this.groupBox16.TabStop = false;
-            this.groupBox16.Text = "Downloads";
-            // 
-            // tableLayoutPanel31
-            // 
-            this.tableLayoutPanel31.AutoSize = true;
-            this.tableLayoutPanel31.ColumnCount = 1;
-            this.tableLayoutPanel31.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel31.Controls.Add(this.verifyChecksumDownloadCheckbox, 0, 0);
-            this.tableLayoutPanel31.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel31.Location = new System.Drawing.Point(3, 19);
-            this.tableLayoutPanel31.Name = "tableLayoutPanel31";
-            this.tableLayoutPanel31.Padding = new System.Windows.Forms.Padding(5);
-            this.tableLayoutPanel31.RowCount = 1;
-            this.tableLayoutPanel31.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel31.Size = new System.Drawing.Size(634, 35);
-            this.tableLayoutPanel31.TabIndex = 1;
-            // 
-            // verifyChecksumDownloadCheckbox
-            // 
-            this.verifyChecksumDownloadCheckbox.AutoSize = true;
-            this.verifyChecksumDownloadCheckbox.Location = new System.Drawing.Point(8, 8);
-            this.verifyChecksumDownloadCheckbox.Name = "verifyChecksumDownloadCheckbox";
-            this.verifyChecksumDownloadCheckbox.Size = new System.Drawing.Size(112, 19);
-            this.verifyChecksumDownloadCheckbox.TabIndex = 0;
-            this.verifyChecksumDownloadCheckbox.Text = "Verify checksum";
-            this.verifyChecksumDownloadCheckbox.UseVisualStyleBackColor = true;
-            this.verifyChecksumDownloadCheckbox.CheckedChanged += new System.EventHandler(this.verifyChecksumDownloadCheckbox_CheckedChanged);
-            // 
-            // groupBox17
-            // 
-            this.groupBox17.AutoSize = true;
-            this.groupBox17.Controls.Add(this.tableLayoutPanel32);
-            this.groupBox17.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox17.Location = new System.Drawing.Point(3, 66);
-            this.groupBox17.Name = "groupBox17";
-            this.groupBox17.Size = new System.Drawing.Size(640, 57);
-            this.groupBox17.TabIndex = 1;
-            this.groupBox17.TabStop = false;
-            this.groupBox17.Text = "Uploads";
-            // 
-            // tableLayoutPanel32
-            // 
-            this.tableLayoutPanel32.AutoSize = true;
-            this.tableLayoutPanel32.ColumnCount = 1;
-            this.tableLayoutPanel32.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel32.Controls.Add(this.verifyChecksumUploadCheckbox, 0, 0);
-            this.tableLayoutPanel32.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel32.Location = new System.Drawing.Point(3, 19);
-            this.tableLayoutPanel32.Name = "tableLayoutPanel32";
-            this.tableLayoutPanel32.Padding = new System.Windows.Forms.Padding(5);
-            this.tableLayoutPanel32.RowCount = 1;
-            this.tableLayoutPanel32.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel32.Size = new System.Drawing.Size(634, 35);
-            this.tableLayoutPanel32.TabIndex = 1;
-            // 
-            // verifyChecksumUploadCheckbox
-            // 
-            this.verifyChecksumUploadCheckbox.AutoSize = true;
-            this.verifyChecksumUploadCheckbox.Location = new System.Drawing.Point(8, 8);
-            this.verifyChecksumUploadCheckbox.Name = "verifyChecksumUploadCheckbox";
-            this.verifyChecksumUploadCheckbox.Size = new System.Drawing.Size(112, 19);
-            this.verifyChecksumUploadCheckbox.TabIndex = 0;
-            this.verifyChecksumUploadCheckbox.Text = "Verify checksum";
-            this.verifyChecksumUploadCheckbox.UseVisualStyleBackColor = true;
-            this.verifyChecksumUploadCheckbox.CheckedChanged += new System.EventHandler(this.verifyChecksumUploadCheckbox_CheckedChanged);
-            // 
             // PreferencesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -3375,6 +3376,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox10.PerformLayout();
             this.tableLayoutPanel16.ResumeLayout(false);
             this.tableLayoutPanel16.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
+            this.tableLayoutPanel26.ResumeLayout(false);
+            this.tableLayoutPanel26.PerformLayout();
+            this.groupBox16.ResumeLayout(false);
+            this.groupBox16.PerformLayout();
+            this.tableLayoutPanel31.ResumeLayout(false);
+            this.tableLayoutPanel31.PerformLayout();
+            this.groupBox17.ResumeLayout(false);
+            this.groupBox17.PerformLayout();
+            this.tableLayoutPanel32.ResumeLayout(false);
+            this.tableLayoutPanel32.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             this.tableLayoutPanel17.ResumeLayout(false);
@@ -3396,18 +3409,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.flowLayoutPanel1.PerformLayout();
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
-            this.tabPage5.ResumeLayout(false);
-            this.tabPage5.PerformLayout();
-            this.tableLayoutPanel26.ResumeLayout(false);
-            this.tableLayoutPanel26.PerformLayout();
-            this.groupBox16.ResumeLayout(false);
-            this.groupBox16.PerformLayout();
-            this.tableLayoutPanel31.ResumeLayout(false);
-            this.tableLayoutPanel31.PerformLayout();
-            this.groupBox17.ResumeLayout(false);
-            this.groupBox17.PerformLayout();
-            this.tableLayoutPanel32.ResumeLayout(false);
-            this.tableLayoutPanel32.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

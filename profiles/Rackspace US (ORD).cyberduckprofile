@@ -18,6 +18,8 @@
     <string>Rackspace Cloud Files (ORD)</string>
 	<key>Default Hostname</key>
 	<string>identity.api.rackspacecloud.com</string>
+    <key>Hostname Configurable</key>
+    <false/>
 	<key>Default Port</key>
 	<string>443</string>
 	<key>Username Placeholder</key>

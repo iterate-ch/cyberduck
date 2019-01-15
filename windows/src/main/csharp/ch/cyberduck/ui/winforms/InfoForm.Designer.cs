@@ -1511,9 +1511,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.metadataAnimation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.metadataAnimation.Image = ((System.Drawing.Image)(resources.GetObject("metadataAnimation.Image")));
-            this.metadataAnimation.Location = new System.Drawing.Point(61, 13);
+            this.metadataAnimation.Location = new System.Drawing.Point(469, 13);
             this.metadataAnimation.Name = "metadataAnimation";
-            this.metadataAnimation.Size = new System.Drawing.Size(1, 18);
+            this.metadataAnimation.Size = new System.Drawing.Size(18, 18);
             this.metadataAnimation.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.metadataAnimation.TabIndex = 31;
             this.metadataAnimation.TabStop = false;
