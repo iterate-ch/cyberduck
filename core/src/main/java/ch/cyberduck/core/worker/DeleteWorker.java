@@ -18,6 +18,7 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.ui.browser.PathReloadFinder;
 
 import org.apache.log4j.Logger;
 
@@ -50,16 +52,18 @@ public class DeleteWorker extends Worker<List<Path>> {
      */
     private final List<Path> files;
     private final LoginCallback prompt;
+    private final Cache<Path> cache;
     private final ProgressListener listener;
     private final Filter<Path> filter;
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener) {
-        this(prompt, files, new NullFilter<Path>(), listener);
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener) {
+        this(prompt, files, cache, new NullFilter<Path>(), listener);
     }
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Filter<Path> filter, final ProgressListener listener) {
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final Filter<Path> filter, final ProgressListener listener) {
         this.files = files;
         this.prompt = prompt;
+        this.cache = cache;
         this.listener = listener;
         this.filter = filter;
     }
@@ -117,6 +121,13 @@ public class DeleteWorker extends Worker<List<Path>> {
             recursive.add(file);
         }
         return recursive;
+    }
+
+    @Override
+    public void cleanup(final List<Path> deleted) {
+        for(Path folder : new PathReloadFinder().find(deleted)) {
+            cache.invalidate(folder);
+        }
     }
 
     @Override

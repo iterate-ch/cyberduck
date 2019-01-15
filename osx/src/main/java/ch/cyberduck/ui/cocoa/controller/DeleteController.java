@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
@@ -60,10 +59,10 @@ public class DeleteController extends ProxyController {
             alertText.append("\n").append(Character.toString('\u2022')).append(" " + "…");
         }
         final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete"), //title
-                alertText.toString(),
-                LocaleFactory.localizedString("Delete"), // defaultbutton
-                LocaleFactory.localizedString("Cancel"), //alternative button
-                null //other button
+            alertText.toString(),
+            LocaleFactory.localizedString("Delete"), // defaultbutton
+            LocaleFactory.localizedString("Cancel"), //alternative button
+            null //other button
         );
         parent.alert(alert, new SheetCallback() {
             @Override
@@ -76,15 +75,15 @@ public class DeleteController extends ProxyController {
     }
 
     private void run(final List<Path> files) {
-        final Cache<Path> cache = parent.getCache();
         parent.background(new WorkerBackgroundAction<List<Path>>(parent, parent.getSession(),
-            new DeleteWorker(LoginCallbackFactory.get(parent), files, parent) {
-                            @Override
-                            public void cleanup(final List<Path> deleted) {
-                                parent.reload(parent.workdir(), files, Collections.emptyList());
-                            }
-                        }
-                )
+            new DeleteWorker(LoginCallbackFactory.get(parent), files, parent.getCache(), parent) {
+                    @Override
+                    public void cleanup(final List<Path> deleted) {
+                        super.cleanup(deleted);
+                        parent.reload(parent.workdir(), files, Collections.emptyList());
+                    }
+                }
+            )
         );
     }
 }
