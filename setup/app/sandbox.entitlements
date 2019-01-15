@@ -31,5 +31,10 @@
         <true/>
         <key>com.apple.security.automation.apple-events</key>
         <true/>
+        <key>com.apple.security.temporary-exception.files.home-relative-path.read-write</key>
+        <array>
+            <string>/.ssh/</string>
+            <string>/.aws/</string>
+        </array>
     </dict>
 </plist>
