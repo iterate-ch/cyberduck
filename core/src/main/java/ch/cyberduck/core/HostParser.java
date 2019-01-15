@@ -192,7 +192,12 @@ public final class HostParser {
                 break;
             }
             else if('%' == c) {
-                buffer.append(readPercentCharacter(reader));
+                if(bracketFlag) {
+                    buffer.append(c);
+                }
+                else {
+                    buffer.append(readPercentCharacter(reader));
+                }
             }
             else if(':' == c) {
                 if(bracketFlag) {
@@ -210,7 +215,9 @@ public final class HostParser {
                 else if(c == ']' && bracketFlag) {
                     bracketFlag = false;
                 }
-                buffer.append(c);
+                else {
+                    buffer.append(c);
+                }
             }
         }
 
