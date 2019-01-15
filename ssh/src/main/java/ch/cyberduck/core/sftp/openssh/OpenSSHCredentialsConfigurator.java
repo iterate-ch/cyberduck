@@ -31,16 +31,13 @@ import org.apache.log4j.Logger;
 public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     private static final Logger log = Logger.getLogger(OpenSSHCredentialsConfigurator.class);
 
-    private static final Local file
-        = LocalFactory.get(Local.HOME, ".ssh/config");
-
     private final OpenSshConfig configuration;
 
     private final Preferences preferences
         = PreferencesFactory.get();
 
     public OpenSSHCredentialsConfigurator() {
-        this(new OpenSshConfig(file));
+        this(new OpenSshConfig(LocalFactory.get(LocalFactory.get(LocalFactory.get(), ".ssh"), "config")));
     }
 
     public OpenSSHCredentialsConfigurator(final OpenSshConfig configuration) {
@@ -56,7 +53,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
             if(StringUtils.isNotBlank(entry.getUser())) {
                 if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Using username %s from %s", entry, file));
+                        log.info(String.format("Using username %s from %s", entry, configuration));
                     }
                     credentials.setUsername(entry.getUser());
                 }
@@ -64,7 +61,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
             if(!credentials.isPublicKeyAuthentication()) {
                 if(null != entry.getIdentityFile()) {
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Using identity %s from %s", entry, file));
+                        log.info(String.format("Using identity %s from %s", entry, configuration));
                     }
                     credentials.setIdentity(entry.getIdentityFile());
                 }
@@ -74,7 +71,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
                         final Local rsa = LocalFactory.get(preferences.getProperty("ssh.authentication.publickey.default.rsa"));
                         if(rsa.exists()) {
                             if(log.isInfoEnabled()) {
-                                log.info(String.format("Using RSA default host key %s from %s", rsa, file));
+                                log.info(String.format("Using RSA default host key %s from %s", rsa, configuration));
                             }
                             credentials.setIdentity(rsa);
                         }
@@ -82,7 +79,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
                             final Local dsa = LocalFactory.get(preferences.getProperty("ssh.authentication.publickey.default.dsa"));
                             if(dsa.exists()) {
                                 if(log.isInfoEnabled()) {
-                                    log.info(String.format("Using DSA default host key %s from %s", dsa, file));
+                                    log.info(String.format("Using DSA default host key %s from %s", dsa, configuration));
                                 }
                                 credentials.setIdentity(dsa);
                             }
