@@ -212,7 +212,7 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>run-ant-target</id>
+                                <id>run-ant-build-target</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>run</goal>
@@ -223,10 +223,23 @@
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="git.revision" value="${git.revision}" />
-                                        <!-- 'Release' or 'Mac App Store' -->
-                                        <property name="xcode.configuration" value="${xcode.configuration}" />
-                                        <property name="sparkle.feed" value="${sparkle.feed}" />
                                         <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>run-ant-sign-target</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}" />
+                                        <property name="version" value="${project.version}" />
+                                        <property name="revision" value="${git.commitsCount}" />
+                                        <property name="skipSign" value="${skipSign}"/>
+                                        <ant antfile="${project.basedir}/build.xml" target="sign" dir="." />
                                     </tasks>
                                 </configuration>
                             </execution>
@@ -286,10 +299,6 @@
                                         <property name="home" value="${main.basedir}" />
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
-                                        <property name="installer.certificate" value="${installer.certificate}"/>
-                                        <property name="codesign.certificate" value="${codesign.certificate}"/>
-                                        <property name="codesign.arg" value="${codesign.arg}"/>
-                                        <property name="skipSign" value="${skipSign}"/>
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
                                     </tasks>
                                 </configuration>
