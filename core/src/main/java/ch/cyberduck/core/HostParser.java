@@ -445,7 +445,7 @@ public final class HostParser {
             if(c == '%') {
                 return "%%";
             }
-            string.append((char) reader.read());
+            string.append(c);
         }
         if(string.length() != 2) {
             return Character.toString(Character.MIN_VALUE);
