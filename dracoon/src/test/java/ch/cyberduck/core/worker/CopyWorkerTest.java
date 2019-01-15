@@ -45,7 +45,7 @@ public class CopyWorkerTest extends AbstractSDSTest {
     public void testCopyFile() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path source = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(source, new TransferStatus());
@@ -54,14 +54,14 @@ public class CopyWorkerTest extends AbstractSDSTest {
         worker.run(session);
         assertTrue(new SDSFindFeature(nodeid).find(source));
         assertTrue(new SDSFindFeature(nodeid).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), PathCache.empty(), new DisabledProgressListener()).run(session);
     }
 
     @Test
     public void testCopyFileToDirectory() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path sourceFile = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(sourceFile, new TransferStatus());
         assertTrue(new SDSFindFeature(nodeid).find(sourceFile));
@@ -74,14 +74,14 @@ public class CopyWorkerTest extends AbstractSDSTest {
         worker.run(session);
         assertTrue(new SDSFindFeature(nodeid).find(sourceFile));
         assertTrue(new SDSFindFeature(nodeid).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), PathCache.empty(), new DisabledProgressListener()).run(session);
     }
 
     @Test
     public void testCopyDirectory() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path sourceFile = new SDSTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new SDSFindFeature(nodeid).find(folder));
@@ -94,6 +94,6 @@ public class CopyWorkerTest extends AbstractSDSTest {
         assertTrue(new SDSFindFeature(nodeid).find(targetFile));
         assertTrue(new SDSFindFeature(nodeid).find(folder));
         assertTrue(new SDSFindFeature(nodeid).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(room), PathCache.empty(), new DisabledProgressListener()).run(session);
     }
 }
