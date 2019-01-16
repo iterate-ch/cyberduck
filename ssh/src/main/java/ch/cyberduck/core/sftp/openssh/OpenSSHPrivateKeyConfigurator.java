@@ -36,13 +36,10 @@ import net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil;
 public class OpenSSHPrivateKeyConfigurator {
     private static final Logger log = Logger.getLogger(OpenSSHPrivateKeyConfigurator.class);
 
-    public static final Local OPENSSH_CONFIGURATION_DIRECTORY
-            = LocalFactory.get(Local.HOME, ".ssh");
-
     private final Local directory;
 
     public OpenSSHPrivateKeyConfigurator() {
-        this(OPENSSH_CONFIGURATION_DIRECTORY);
+        this(LocalFactory.get(LocalFactory.get(), ".ssh"));
     }
 
     public OpenSSHPrivateKeyConfigurator(final Local directory) {
@@ -66,7 +63,7 @@ public class OpenSSHPrivateKeyConfigurator {
                 final KeyFormat format;
                 try {
                     format = KeyProviderUtil.detectKeyFileFormat(
-                            new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")), true);
+                        new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")), true);
                 }
                 catch(AccessDeniedException | IOException e) {
                     log.debug(String.format("Ignore file %s with unknown format. %s", file, e.getMessage()));

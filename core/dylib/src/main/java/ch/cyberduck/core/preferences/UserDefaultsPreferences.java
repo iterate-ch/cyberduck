@@ -31,6 +31,7 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.sparkle.Sandbox;
 import ch.cyberduck.core.sparkle.Updater;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +43,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.sun.jna.platform.linux.LibC;
+import com.sun.jna.platform.mac.SystemB;
 
 /**
  * Concrete subclass using the Cocoa Preferences classes. The NSUserDefaults class is thread-safe.
@@ -163,6 +167,10 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         super.setDefaults();
 
         this.setDefault("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
+        if(Sandbox.get().isSandboxed()) {
+            // Set actual home directory outside of sandbox
+            this.setDefault("local.user.home", SystemB.INSTANCE.getpwuid(LibC.INSTANCE.getuid()).pw_dir);
+        }
 
         if(null != bundle) {
             if(bundle.objectForInfoDictionaryKey("CFBundleName") != null) {

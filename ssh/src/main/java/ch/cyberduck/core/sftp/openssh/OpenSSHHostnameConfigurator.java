@@ -19,7 +19,6 @@ package ch.cyberduck.core.sftp.openssh;
  */
 
 import ch.cyberduck.core.HostnameConfigurator;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.sftp.openssh.config.transport.OpenSshConfig;
 
@@ -29,13 +28,10 @@ import org.apache.log4j.Logger;
 public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
     private static final Logger log = Logger.getLogger(OpenSSHHostnameConfigurator.class);
 
-    private static final Local file
-            = LocalFactory.get(Local.HOME, ".ssh/config");
-
     private final OpenSshConfig configuration;
 
     public OpenSSHHostnameConfigurator() {
-        this(new OpenSshConfig(file));
+        this(new OpenSshConfig(LocalFactory.get(LocalFactory.get(LocalFactory.get(), ".ssh"), "config")));
     }
 
     public OpenSSHHostnameConfigurator(final OpenSshConfig configuration) {
@@ -55,7 +51,7 @@ public class OpenSSHHostnameConfigurator implements HostnameConfigurator {
             return alias;
         }
         if(log.isInfoEnabled()) {
-            log.info(String.format("Using hostname alias %s from %s", alias, file));
+            log.info(String.format("Using hostname alias %s from %s", alias, configuration));
         }
         return hostname;
     }
