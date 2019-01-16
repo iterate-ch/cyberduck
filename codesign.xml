@@ -113,7 +113,7 @@
     <target name="verify-signature">
         <echo message="Print codesign requirement for ${bundle}..."/>
         <exec executable="/usr/bin/codesign" failonerror="true">
-            <arg line="--verbose=4 --deep --strict '${bundle}'"/>
+            <arg line="--verbose=4 --deep --strict --test-requirement='certificate leaf[subject.OU] = 'G69SCX94XU'' '${bundle}'"/>
         </exec>
     </target>
 
