@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.9.1
+- [Bugfix] Fix code signature designated requirement issue (Mac App Store)
+
 6.9.0
 - [Localize] Estonian Localization
 - [Feature] Default connection profile for Microsoft Sharepoint Online (#10115)
