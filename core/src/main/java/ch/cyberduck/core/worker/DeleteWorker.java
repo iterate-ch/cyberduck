@@ -20,6 +20,7 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -77,7 +78,7 @@ public class DeleteWorker extends Worker<List<Path>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            recursive.addAll(this.compile(delete, list, new WorkerListProgressListener(this, listener), file));
+            recursive.addAll(this.compile(session.getHost(), delete, list, new WorkerListProgressListener(this, listener), file));
         }
         delete.delete(recursive, prompt, new Delete.Callback() {
             @Override
@@ -89,15 +90,20 @@ public class DeleteWorker extends Worker<List<Path>> {
         return recursive;
     }
 
-    protected Set<Path> compile(final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
+    protected Set<Path> compile(final Host host, final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
         // Compile recursive list
         final Set<Path> recursive = new LinkedHashSet<>();
         if(file.isFile() || file.isSymbolicLink()) {
             final Path copy = new Path(file);
-            if(!file.attributes().isDuplicate()) {
-                // Add delete marker
-                log.debug(String.format("Nullify version to add delete marker for %s", file));
-                copy.attributes().setVersionId(null);
+            switch(host.getProtocol().getType()) {
+                case s3:
+                    if(!file.attributes().isDuplicate()) {
+                        if(!file.getType().contains(Path.Type.upload)) {
+                            // Add delete marker
+                            log.debug(String.format("Nullify version to add delete marker for %s", file));
+                            copy.attributes().setVersionId(null);
+                        }
+                    }
             }
             recursive.add(copy);
         }
@@ -114,7 +120,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                     }
                     final Path copy = new Path(child);
                     copy.attributes().setVersionId(null);
-                    recursive.addAll(this.compile(delete, list, listener, copy));
+                    recursive.addAll(this.compile(host, delete, list, listener, copy));
                 }
             }
             // Add parent after children
