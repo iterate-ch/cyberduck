@@ -138,7 +138,7 @@
         <dependency>
             <groupId>org.conscrypt</groupId>
             <artifactId>conscrypt-openjdk-uber</artifactId>
-            <version>1.1.2</version>
+            <version>1.4.2</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
