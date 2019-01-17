@@ -49,7 +49,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     public S3DefaultMultipartService(final S3Session session) {
         this.session = session;
@@ -70,8 +70,8 @@ public class S3DefaultMultipartService implements S3MultipartService {
             final MultipartUploadChunk chunk;
             try {
                 chunk = session.getClient().multipartListUploadsChunked(
-                        containerService.getContainer(directory).getName(), containerService.getKey(directory),
-                        null, nextKeyMarker, nextUploadIdMarker, null, true);
+                    containerService.getContainer(directory).getName(), containerService.getKey(directory),
+                    null, nextKeyMarker, nextUploadIdMarker, null, true);
             }
             catch(S3ServiceException e) {
                 final BackgroundException failure = new S3ExceptionMappingService().map("Upload {0} failed", e, directory);
@@ -98,8 +98,8 @@ public class S3DefaultMultipartService implements S3MultipartService {
             nextUploadIdMarker = chunk.getPriorLastIdMarker();
         }
         while(nextUploadIdMarker != null);
-        for(MultipartUpload upload : uploads) {
-            if(log.isInfoEnabled()) {
+        if(log.isInfoEnabled()) {
+            for(MultipartUpload upload : uploads) {
                 log.info(String.format("Found multipart upload %s for %s", upload, directory));
             }
         }
@@ -131,7 +131,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
         catch(S3ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot delete {0}", e,
                 new Path(new Path(PathNormalizer.normalize(upload.getBucketName()), EnumSet.of(Path.Type.directory)),
-                            upload.getObjectKey(), EnumSet.of(Path.Type.file)));
+                    upload.getObjectKey(), EnumSet.of(Path.Type.file)));
         }
     }
 }

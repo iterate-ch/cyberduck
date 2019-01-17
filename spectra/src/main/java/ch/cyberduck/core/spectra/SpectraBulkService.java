@@ -58,6 +58,7 @@ import java.util.UUID;
 
 import com.spectralogic.ds3client.Ds3Client;
 import com.spectralogic.ds3client.commands.spectrads3.CancelAllActiveJobsSpectraS3Request;
+import com.spectralogic.ds3client.commands.spectrads3.CancelJobSpectraS3Request;
 import com.spectralogic.ds3client.commands.spectrads3.GetBulkJobSpectraS3Request;
 import com.spectralogic.ds3client.commands.spectrads3.GetBulkJobSpectraS3Response;
 import com.spectralogic.ds3client.commands.spectrads3.GetJobChunksReadyForClientProcessingSpectraS3Request;
@@ -199,6 +200,26 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             }
         }
         return counters;
+    }
+
+    public void cancel(final Transfer.Type type, final Path file, final TransferStatus status) throws BackgroundException {
+        try {
+            if(!status.getParameters().containsKey(REQUEST_PARAMETER_JOBID_IDENTIFIER)) {
+                throw new NotfoundException(String.format("Missing job id parameter in status for %s", file.getName()));
+            }
+            final String job = status.getParameters().get(REQUEST_PARAMETER_JOBID_IDENTIFIER);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Cancel job %s", job));
+            }
+            final Ds3Client client = new SpectraClientBuilder().wrap(session.getClient(), session.getHost());
+            client.cancelJobSpectraS3(new CancelJobSpectraS3Request(job));
+        }
+        catch(FailedRequestException e) {
+            throw new SpectraExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     /**

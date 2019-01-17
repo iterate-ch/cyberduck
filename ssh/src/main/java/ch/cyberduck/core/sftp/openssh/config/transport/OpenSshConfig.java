@@ -139,6 +139,7 @@ public class OpenSshConfig {
                 }
             }
             catch(AccessDeniedException | IOException none) {
+                log.warn(String.format("Failure reading %s", configuration));
                 hosts = Collections.emptyMap();
             }
             lastModified = mtime;

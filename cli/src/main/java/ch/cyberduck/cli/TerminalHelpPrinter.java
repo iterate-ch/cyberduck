@@ -29,6 +29,8 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -36,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Collections;
 
 public final class TerminalHelpPrinter {
 
@@ -50,40 +53,56 @@ public final class TerminalHelpPrinter {
     public static void print(final Options options, final HelpFormatter formatter) {
         formatter.setSyntaxPrefix("Usage:");
         final StringBuilder protocols = new StringBuilder(StringUtils.LF);
-        protocols.append("Supported protocols");
-        protocols.append(StringUtils.LF);
+        protocols.append("Supported protocols").append(StringUtils.LF);
         for(Protocol p : ProtocolFactory.get().find()) {
-            protocols.append(p.getDescription());
-            protocols.append(StringUtils.LF);
+            protocols.append(String.format("  %s\n", p.getDescription()));
             switch(p.getType()) {
                 case b2:
                 case s3:
                 case googlestorage:
                 case swift:
                 case azure:
-                    protocols.append("\t").append(String.format("%s://<container>/<key>", getScheme(p)));
+                    protocols.append(String.format("    %s://<container>/<key>", getScheme(p)));
                     break;
                 default:
                     if(p.isHostnameConfigurable()) {
-                        protocols.append("\t").append(String.format("%s://<hostname>/<folder>/<file>", getScheme(p)));
+                        protocols.append(String.format("    %s://<hostname>/<folder>/<file>", getScheme(p)));
                     }
                     else {
                         // case file:
                         // case googledrive:
                         // case dropbox:
                         // case onedrive:
-                        protocols.append("\t").append(String.format("%s://<folder>/<file>", getScheme(p)));
+                        protocols.append(String.format("    %s://<folder>/<file>", getScheme(p)));
                     }
                     break;
             }
             protocols.append(StringUtils.LF);
         }
+
+        final StringBuilder transferActions = new StringBuilder("Transfer actions for existing files:").append(StringUtils.LF);
+        transferActions.append("  Options for downloads and uploads:").append(StringUtils.LF);
+        for(TransferAction a : TransferAction.forTransfer(Transfer.Type.download)) {
+            appendTransferAction(a, transferActions);
+        }
+        for(TransferAction a : Collections.singletonList(TransferAction.cancel)) {
+            appendTransferAction(a, transferActions);
+        }
+        transferActions.append("  Options for synchronize:").append(StringUtils.LF);
+        for(TransferAction a : TransferAction.forTransfer(Transfer.Type.sync)) {
+            appendTransferAction(a, transferActions);
+        }
+        for(TransferAction a : Collections.singletonList(TransferAction.cancel)) {
+            appendTransferAction(a, transferActions);
+        }
+
         final StringBuilder header = new StringBuilder(StringUtils.LF);
         header.append("\t");
         header.append("URLs must be fully qualified. Paths can either denote "
             + "a remote file (ftps://user@example.net/resource) or folder (ftps://user@example.net/directory/) "
             + "with a trailing slash. You can reference files relative to your home directory with /~ (ftps://user@example.net/~/).");
-        header.append(protocols.toString());
+        header.append(protocols).append(StringUtils.LF);
+        header.append(transferActions);
         final Preferences preferences = PreferencesFactory.get();
         final Local profiles = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
             PreferencesFactory.get().getProperty("profiles.folder.name"));
@@ -103,6 +122,11 @@ public final class TerminalHelpPrinter {
             footer.append("Not registered. Purchase a donation key to support the development of this software.");
         }
         formatter.printHelp("duck [options...]", header.toString(), options, footer.toString());
+    }
+
+    private static void appendTransferAction(final TransferAction action, final StringBuilder builder) {
+        builder.append(String.format("  %s  %s (%s)\n",
+            StringUtils.leftPad(action.getTitle(), 16), action.getDescription(), action.name()));
     }
 
     protected static String getScheme(final Protocol protocol) {

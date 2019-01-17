@@ -41,6 +41,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Paths;
 
 public class FinderLocal extends Local {
     private static final Logger log = Logger.getLogger(FinderLocal.class);
@@ -122,6 +125,21 @@ public class FinderLocal extends Local {
             }
         }
         return super.getVolume();
+    }
+
+    @Override
+    public boolean exists(final LinkOption... options) {
+        NSURL resolved = null;
+        try {
+            resolved = this.lock(false);
+            return Files.exists(Paths.get(resolved.path()));
+        }
+        catch(AccessDeniedException e) {
+            return super.exists(options);
+        }
+        finally {
+            this.release(resolved);
+        }
     }
 
     @Override

@@ -83,7 +83,7 @@ public class MoveWorkerTest extends AbstractS3Test {
                 new Acl.GroupUser("http://acs.amazonaws.com/groups/global/AllUsers"), new Acl.Role(Acl.Role.READ)
             )
         ));
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(target), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(target), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
     }
 
@@ -122,7 +122,7 @@ public class MoveWorkerTest extends AbstractS3Test {
             assertFalse(new S3FindFeature(session).find(entry.getKey()));
             assertTrue(new S3FindFeature(session).find(entry.getValue()));
         }
-        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(targetDirectory), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Collections.singletonList(targetDirectory), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
     }
 }

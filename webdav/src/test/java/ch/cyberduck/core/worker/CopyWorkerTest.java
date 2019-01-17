@@ -58,7 +58,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         worker.run(session);
         assertTrue(new DAVFindFeature(session).find(source));
         assertTrue(new DAVFindFeature(session).find(target));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
     }
 
@@ -79,7 +79,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         worker.run(session);
         assertTrue(new DAVFindFeature(session).find(sourceFile));
         assertTrue(new DAVFindFeature(session).find(targetFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
     }
 
@@ -100,7 +100,7 @@ public class CopyWorkerTest extends AbstractDAVTest {
         assertTrue(new DAVFindFeature(session).find(targetFile));
         assertTrue(new DAVFindFeature(session).find(folder));
         assertTrue(new DAVFindFeature(session).find(sourceFile));
-        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFile), new DisabledProgressListener()).run(session);
+        new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFile), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
     }
 }

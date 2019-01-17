@@ -18,7 +18,9 @@ package ch.cyberduck.core.worker;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
@@ -30,6 +32,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.ui.browser.PathReloadFinder;
 
 import org.apache.log4j.Logger;
 
@@ -50,16 +53,18 @@ public class DeleteWorker extends Worker<List<Path>> {
      */
     private final List<Path> files;
     private final LoginCallback prompt;
+    private final Cache<Path> cache;
     private final ProgressListener listener;
     private final Filter<Path> filter;
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final ProgressListener listener) {
-        this(prompt, files, new NullFilter<Path>(), listener);
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final ProgressListener listener) {
+        this(prompt, files, cache, new NullFilter<Path>(), listener);
     }
 
-    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Filter<Path> filter, final ProgressListener listener) {
+    public DeleteWorker(final LoginCallback prompt, final List<Path> files, final Cache<Path> cache, final Filter<Path> filter, final ProgressListener listener) {
         this.files = files;
         this.prompt = prompt;
+        this.cache = cache;
         this.listener = listener;
         this.filter = filter;
     }
@@ -73,7 +78,7 @@ public class DeleteWorker extends Worker<List<Path>> {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            recursive.addAll(this.compile(delete, list, new WorkerListProgressListener(this, listener), file));
+            recursive.addAll(this.compile(session.getHost(), delete, list, new WorkerListProgressListener(this, listener), file));
         }
         delete.delete(recursive, prompt, new Delete.Callback() {
             @Override
@@ -85,15 +90,20 @@ public class DeleteWorker extends Worker<List<Path>> {
         return recursive;
     }
 
-    protected Set<Path> compile(final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
+    protected Set<Path> compile(final Host host, final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
         // Compile recursive list
         final Set<Path> recursive = new LinkedHashSet<>();
         if(file.isFile() || file.isSymbolicLink()) {
             final Path copy = new Path(file);
-            if(!file.attributes().isDuplicate()) {
-                // Add delete marker
-                log.debug(String.format("Nullify version to add delete marker for %s", file));
-                copy.attributes().setVersionId(null);
+            switch(host.getProtocol().getType()) {
+                case s3:
+                    if(!file.attributes().isDuplicate()) {
+                        if(!file.getType().contains(Path.Type.upload)) {
+                            // Add delete marker
+                            log.debug(String.format("Nullify version to add delete marker for %s", file));
+                            copy.attributes().setVersionId(null);
+                        }
+                    }
             }
             recursive.add(copy);
         }
@@ -110,13 +120,20 @@ public class DeleteWorker extends Worker<List<Path>> {
                     }
                     final Path copy = new Path(child);
                     copy.attributes().setVersionId(null);
-                    recursive.addAll(this.compile(delete, list, listener, copy));
+                    recursive.addAll(this.compile(host, delete, list, listener, copy));
                 }
             }
             // Add parent after children
             recursive.add(file);
         }
         return recursive;
+    }
+
+    @Override
+    public void cleanup(final List<Path> deleted) {
+        for(Path folder : new PathReloadFinder().find(deleted)) {
+            cache.invalidate(folder);
+        }
     }
 
     @Override

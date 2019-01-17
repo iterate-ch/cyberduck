@@ -30,6 +30,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
@@ -78,7 +79,7 @@ import static org.junit.Assert.assertTrue;
 @Category(IntegrationTest.class)
 public class SingleTransferWorkerTest {
 
-    @Test
+    @Test(expected = ConflictException.class)
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = new byte[98305];

@@ -77,9 +77,9 @@ import ch.cyberduck.fs.FilesystemWorker;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
@@ -101,14 +101,7 @@ public class Terminal {
     private final TranscriptListener transcript;
 
     private final ProtocolFactory protocols = ProtocolFactory.get();
-
-    private enum Exit {
-        success,
-        failure
-    }
-
     private final CommandLine input;
-
     private final Options options;
 
     public Terminal(final TerminalPreferences defaults, final Options options, final CommandLine input) {
@@ -166,7 +159,7 @@ public class Terminal {
         final Options options = TerminalOptionsBuilder.options();
         final Console console = new Console();
         try {
-            final CommandLineParser parser = new PosixParser();
+            final CommandLineParser parser = new DefaultParser();
             final CommandLine input = parser.parse(options, args);
             final Terminal terminal = new Terminal(defaults, options, input);
             switch(terminal.execute()) {
@@ -417,10 +410,10 @@ public class Terminal {
         }
         final DeleteWorker worker;
         if(StringUtils.containsAny(remote.getName(), '*')) {
-            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, new DownloadGlobFilter(remote.getName()), progress);
+            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, new DownloadGlobFilter(remote.getName()), progress);
         }
         else {
-            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, progress);
+            worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
         final SessionBackgroundAction<List<Path>> action = new TerminalBackgroundAction<List<Path>>(controller, session, worker);
         if(!this.execute(action)) {
@@ -500,5 +493,10 @@ public class Terminal {
         catch(InterruptedException | ExecutionException e) {
             return false;
         }
+    }
+
+    private enum Exit {
+        success,
+        failure
     }
 }
