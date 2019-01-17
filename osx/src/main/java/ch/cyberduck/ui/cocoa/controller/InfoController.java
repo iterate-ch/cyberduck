@@ -87,6 +87,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -447,35 +448,19 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    protected List<NSView> getPanels() {
-        List<NSView> views = new ArrayList<NSView>();
-        views.add(panelGeneral);
+    protected Map<Label, NSView> getPanels() {
+        final Map<Label, NSView> views = new LinkedHashMap<>();
+        views.put(new Label(InfoToolbarItem.info.name(), LocaleFactory.localizedString(InfoToolbarItem.info.name(), "Info")), panelGeneral);
         if(session.getFeature(AclPermission.class) != null) {
-            views.add(panelAcl);
+            views.put(new Label(InfoToolbarItem.acl.name(), LocaleFactory.localizedString(InfoToolbarItem.acl.name(), "Info")), panelAcl);
         }
         else {
-            views.add(panelPermissions);
+            views.put(new Label(InfoToolbarItem.permissions.name(), LocaleFactory.localizedString(InfoToolbarItem.permissions.name(), "Info")), panelPermissions);
         }
-        views.add(panelMetadata);
-        views.add(panelDistribution);
-        views.add(panelCloud);
+        views.put(new Label(InfoToolbarItem.metadata.name(), LocaleFactory.localizedString(InfoToolbarItem.metadata.name(), "Info")), panelMetadata);
+        views.put(new Label(InfoToolbarItem.distribution.name(), LocaleFactory.localizedString(InfoToolbarItem.distribution.name(), "Info")), panelDistribution);
+        views.put(new Label(InfoToolbarItem.s3.name(), LocaleFactory.localizedString(InfoToolbarItem.s3.name(), "Info")), panelCloud);
         return views;
-    }
-
-    @Override
-    protected List<String> getPanelIdentifiers() {
-        List<String> identifiers = new ArrayList<String>();
-        identifiers.add(InfoToolbarItem.info.name());
-        if(session.getFeature(AclPermission.class) != null) {
-            identifiers.add(InfoToolbarItem.acl.name());
-        }
-        else {
-            identifiers.add(InfoToolbarItem.permissions.name());
-        }
-        identifiers.add(InfoToolbarItem.metadata.name());
-        identifiers.add(InfoToolbarItem.distribution.name());
-        identifiers.add(InfoToolbarItem.s3.name());
-        return identifiers;
     }
 
     private String getName() {
