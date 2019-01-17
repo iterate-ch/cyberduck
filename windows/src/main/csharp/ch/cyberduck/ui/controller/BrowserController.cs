@@ -27,6 +27,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.editor;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.pasteboard;
@@ -770,8 +771,15 @@ namespace Ch.Cyberduck.Ui.Controller
                     Host destination = (Host) e.DropTargetItem.RowObject;
                     foreach (string file in data.GetFileDropList())
                     {
-                        _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination),
-                            HostReaderFactory.get().read(LocalFactory.get(file)));
+                        try
+                        {
+                            _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination),
+                                HostReaderFactory.get().read(LocalFactory.get(file)));
+                        }
+                        catch (AccessDeniedException ex)
+                        {
+                            Log.error($"Failure reading bookmark from {file}. {ex.getMessage()}");
+                        }
                     }
                 }
                 if (e.DropTargetLocation == DropTargetLocation.BelowItem)
@@ -779,15 +787,29 @@ namespace Ch.Cyberduck.Ui.Controller
                     Host destination = (Host) e.DropTargetItem.RowObject;
                     foreach (string file in data.GetFileDropList())
                     {
-                        _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination) + 1,
-                            HostReaderFactory.get().read(LocalFactory.get(file)));
+                        try
+                        {
+                            _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination) + 1,
+                                HostReaderFactory.get().read(LocalFactory.get(file)));
+                        }
+                        catch (AccessDeniedException ex)
+                        {
+                            Log.error($"Failure reading bookmark from {file}. {ex.getMessage()}");
+                        }
                     }
                 }
                 if (e.DropTargetLocation == DropTargetLocation.Background)
                 {
                     foreach (string file in data.GetFileDropList())
                     {
-                        _bookmarkModel.Source.add(HostReaderFactory.get().read(LocalFactory.get(file)));
+                        try
+                        {
+                            _bookmarkModel.Source.add(HostReaderFactory.get().read(LocalFactory.get(file)));
+                        }
+                        catch (AccessDeniedException ex)
+                        {
+                            Log.error($"Failure reading bookmark from {file}. {ex.getMessage()}");
+                        }
                     }
                 }
             }
