@@ -76,8 +76,7 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
         }
         NSDictionary dict = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == dict) {
-            log.error(String.format("Invalid bookmark file %s", file));
-            return null;
+            throw new AccessDeniedException(String.format("Failure parsing file %s", file.getName()));
         }
         return this.deserialize(dict);
     }
