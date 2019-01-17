@@ -432,10 +432,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Local f = LocalFactory.get(bookmarkPath);
             Host bookmark = (Host)HostReaderFactory.get().read(f);
-            if (null == bookmark)
-            {
-                return;
-            }
             NewBrowser().Mount(bookmark);
         }
 

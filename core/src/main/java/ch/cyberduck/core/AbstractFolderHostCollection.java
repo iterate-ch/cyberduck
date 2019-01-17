@@ -143,12 +143,13 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
                 }
             );
-            for(Local next : bookmarks) {
-                final Host bookmark = reader.read(next);
-                if(null == bookmark) {
-                    continue;
+            for(Local f : bookmarks) {
+                try {
+                    this.add(reader.read(f));
                 }
-                this.add(bookmark);
+                catch(AccessDeniedException e) {
+                    log.error(String.format("Failure reading bookmark from %s. %s", f, e.getMessage()));
+                }
             }
             // Sort using previously built index
             this.sort();
