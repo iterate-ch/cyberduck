@@ -21,7 +21,9 @@ package ch.cyberduck.cli;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,192 +37,125 @@ public final class TerminalOptionsBuilder {
 
     public static Options options() {
         final Options options = new Options();
-        options.addOption(OptionBuilder
-            .withDescription("Username")
-            .withLongOpt(Params.username.name())
-            .hasArg(true).withArgName("username or access key")
-            .isRequired(false)
-            .create('u'));
-        options.addOption(OptionBuilder
-            .withDescription("Password")
-            .withLongOpt(Params.password.name())
-            .hasArg(true).withArgName("password or secret key")
-            .isRequired(false)
-            .create('p'));
-        options.addOption(OptionBuilder
-            .withDescription("Use connection profile")
-            .withLongOpt(Params.profile.name())
-            .hasArg(true).withArgName("profile")
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("Selects a file from which the identity (private key) for public key authentication is read")
-            .withLongOpt(Params.identity.name())
-            .hasArg(true).withArgName("private key file")
-            .isRequired(false)
-            .create('i'));
-        options.addOption(OptionBuilder
-            .withDescription("Download file or folder. Denote a folder with a trailing '/'")
-            .withLongOpt(TerminalAction.download.name())
-            .hasArgs(2).withArgName("url> <[file]").withValueSeparator(' ')
-            .isRequired(false)
-            .create('d'));
-        options.addOption(OptionBuilder
-            .withDescription("Upload file or folder recursively")
-            .withLongOpt(TerminalAction.upload.name())
-            .hasArgs(2).withArgName("url> <file").withValueSeparator(' ')
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("Set explicit permission from octal mode value for uploaded file")
-            .withLongOpt(Params.chmod.name())
-            .hasArgs(1).withArgName("<mode>").withValueSeparator(' ')
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("Copy between servers")
-            .withLongOpt(TerminalAction.copy.name())
-            .hasArgs(2).withArgName("url> <url").withValueSeparator(' ')
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("Synchronize folders")
-            .withLongOpt(TerminalAction.synchronize.name())
-            .hasArgs(2).withArgName("url> <directory").withValueSeparator(' ')
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("Edit file in external editor")
-            .withLongOpt(TerminalAction.edit.name())
-            .hasArgs(1).withArgName("url")
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("External editor application")
-            .withLongOpt(Params.application.name())
-            .hasArgs(1).withArgName("path")
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("List files in remote folder")
-            .withLongOpt(TerminalAction.list.name())
-            .hasArg(true).withArgName("url")
-            .isRequired(false)
-            .create("l"));
-        options.addOption(OptionBuilder
-            .withDescription("Delete")
-            .withLongOpt(TerminalAction.delete.name())
-            .hasArg(true).withArgName("url")
-            .isRequired(false)
-            .create("D"));
-        options.addOption(OptionBuilder
-            .withDescription("Make directory")
-            .withLongOpt(TerminalAction.mkdir.name())
-            .hasArg(true).withArgName("url")
-            .isRequired(false)
-            .create("c"));
-        options.addOption(OptionBuilder
-            .withDescription("Long list format with modification date and permission mask")
-            .withLongOpt(Params.longlist.name())
-            .hasArg(true).withArgName("url")
-            .isRequired(false)
-            .create('L'));
-        options.addOption(OptionBuilder
-            .withDescription("Location of bucket or container")
-            .withLongOpt(Params.region.name())
-            .hasArg(true).withArgName("location")
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("Preserve permissions and modification date for transferred files")
-            .withLongOpt(Params.preserve.name())
-            .hasArg(false)
-            .isRequired(false)
-            .create('P'));
-        options.addOption(OptionBuilder
-            .withDescription("Retry failed connection attempts")
-            .withLongOpt(Params.retry.name())
-            .hasOptionalArg().withArgName("count")
-            .isRequired(false)
-            .create('r'));
-        options.addOption(OptionBuilder
-            .withDescription("Use UDT protocol if applicable")
-            .withLongOpt(Params.udt.name())
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("Number of concurrent connections to use for transfers")
-            .withLongOpt(Params.parallel.name())
-            .hasOptionalArg().withArgName("connections")
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("Throttle bandwidth")
-            .withLongOpt(Params.throttle.name())
-            .hasArg(true).withArgName("bytes per second")
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("Skip verifying checksum")
-            .withLongOpt(Params.nochecksum.name())
-            .isRequired(false)
-            .create());
-        options.addOption(OptionBuilder
-            .withDescription("Do not save passwords in keychain")
-            .withLongOpt(Params.nokeychain.name())
-            .isRequired(false)
-            .create());
-        final StringBuilder b = new StringBuilder().append(StringUtils.LF);
-        b.append("Options for downloads and uploads:").append(StringUtils.LF);
-        for(TransferAction a : TransferAction.forTransfer(Transfer.Type.download)) {
-            b.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
-        }
-        for(TransferAction a : Collections.singletonList(TransferAction.cancel)) {
-            b.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
-        }
-        b.append("Options for synchronize:").append(StringUtils.LF);
-        for(TransferAction a : TransferAction.forTransfer(Transfer.Type.sync)) {
-            b.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
-        }
-        for(TransferAction a : Collections.singletonList(TransferAction.cancel)) {
-            b.append("\t").append(a.getTitle()).append("\t").append(a.getDescription()).append(String.format(" (%s)", a.name())).append(StringUtils.LF);
-        }
-        options.addOption(OptionBuilder
-            .withDescription(String.format("Transfer action for existing files%s", b.toString()))
-            .withLongOpt(Params.existing.name())
-            .hasArg(true).withArgName("action")
-            .isRequired(false)
-            .create('e'));
-        options.addOption(OptionBuilder
-            .withDescription("Print transcript")
-            .withLongOpt(Params.verbose.name())
-            .hasArg(false)
-            .isRequired(false)
-            .create('v'));
-        options.addOption(OptionBuilder
-            .withDescription("Suppress progress messages")
-            .withLongOpt(Params.quiet.name())
-            .hasArg(false)
-            .isRequired(false)
-            .create('q'));
-        options.addOption(OptionBuilder
-            .withDescription("Assume yes for all prompts")
-            .withLongOpt(Params.assumeyes.name())
-            .hasArg(false)
-            .isRequired(false)
-            .create('y'));
-        options.addOption(OptionBuilder
-            .withDescription("Show version number and quit")
-            .withLongOpt(TerminalAction.version.name())
-            .hasArg(false)
-            .isRequired(false)
-            .create('V'));
-        options.addOption(OptionBuilder
-            .withDescription("Print this help")
-            .withLongOpt(TerminalAction.help.name())
-            .hasArg(false)
-            .isRequired(false)
-            .create("h"));
+
+        final OptionGroup actionGroup = new OptionGroup();
+        actionGroup.addOption(Option.builder()
+            .longOpt(TerminalAction.upload.name())
+            .desc("Upload file or folder recursively")
+            .hasArgs().numberOfArgs(2).argName("url> <file").build());
+        actionGroup.addOption(Option.builder("d")
+            .longOpt(TerminalAction.download.name())
+            .desc("Download file or folder. Denote a folder with a trailing '/'")
+            .hasArgs().numberOfArgs(2).argName("url> <file").build());
+        actionGroup.addOption(Option.builder()
+            .longOpt(TerminalAction.copy.name())
+            .desc("Copy between servers")
+            .hasArgs().numberOfArgs(2).argName("url> <url").build());
+        actionGroup.addOption(Option.builder("l")
+            .longOpt(TerminalAction.list.name())
+            .desc("List files in remote folder")
+            .hasArg().argName("url").build());
+        actionGroup.addOption(Option.builder("L")
+            .longOpt(TerminalAction.longlist.name())
+            .desc("Long list format with modification date and permission mask")
+            .hasArg().argName("url").build());
+        actionGroup.addOption(Option.builder("D")
+            .longOpt(TerminalAction.delete.name())
+            .desc("Delete")
+            .hasArg().argName("url").build());
+        actionGroup.addOption(Option.builder("c")
+            .longOpt(TerminalAction.mkdir.name())
+            .desc("Make directory")
+            .hasArg().argName("url").build());
+        actionGroup.addOption(Option.builder()
+            .longOpt(TerminalAction.synchronize.name())
+            .desc("Synchronize folders")
+            .hasArgs().numberOfArgs(2).argName("url> <directory").build());
+        actionGroup.addOption(Option.builder()
+            .longOpt(TerminalAction.edit.name())
+            .desc("Edit file in external editor")
+            .hasArg().argName("url").build());
+        actionGroup.addOption(Option.builder("V")
+            .longOpt(TerminalAction.version.name())
+            .desc("Show version number and quit.").build());
+        actionGroup.addOption(Option.builder("h")
+            .longOpt(TerminalAction.help.name())
+            .desc("Print this help").build());
+
+        actionGroup.setRequired(true);
+        options.addOptionGroup(actionGroup);
+
+        options.addOption(Option.builder("u")
+            .longOpt(Params.username.name())
+            .desc("Username")
+            .hasArg().argName("username or access key").build());
+        options.addOption(Option.builder("p")
+            .longOpt(Params.password.name())
+            .desc("Password")
+            .hasArg().argName("password or secret key").build());
+        options.addOption(Option.builder()
+            .longOpt(Params.profile.name())
+            .desc("Use connection profile")
+            .hasArg().argName("profile").build());
+        options.addOption(Option.builder("i")
+            .longOpt(Params.identity.name())
+            .desc("Selects a file from which the identity (private key) for public key authentication is read.")
+            .hasArg().argName("private key file").build());
+
+        options.addOption(Option.builder()
+            .longOpt(Params.chmod.name())
+            .desc("Set explicit permission from octal mode value for uploaded file")
+            .hasArg().argName("mode").build());
+
+        options.addOption(Option.builder()
+            .longOpt(Params.application.name())
+            .desc("External editor application")
+            .hasArg().argName("path").build());
+
+        options.addOption(Option.builder()
+            .longOpt(Params.region.name())
+            .desc("Location of bucket or container")
+            .hasArg().argName("location").build());
+
+        options.addOption(Option.builder("P")
+            .longOpt(Params.preserve.name())
+            .desc("Preserve permissions and modificatin date for transferred files").build());
+        options.addOption(Option.builder("r")
+            .longOpt(Params.retry.name())
+            .desc("Retry failed connection attempts")
+            .optionalArg(true).argName("count").build());
+        options.addOption(Option.builder()
+            .longOpt(Params.udt.name())
+            .desc("Use UDT protocol if applicable").build());
+        options.addOption(Option.builder()
+            .longOpt(Params.parallel.name())
+            .desc("Number of concurrent connections to use for transfers")
+            .hasArg().optionalArg(true).argName("connections").build());
+        options.addOption(Option.builder()
+            .longOpt(Params.throttle.name())
+            .desc("Throttle bandwidth")
+            .hasArg().argName("bytes per second").build());
+        options.addOption(Option.builder()
+            .longOpt(Params.nochecksum.name())
+            .desc("Skip verifying checksum").build());
+        options.addOption(Option.builder()
+            .longOpt(Params.nokeychain.name())
+            .desc("Do not save passwords in keychain").build());
+
+        options.addOption(Option.builder("e")
+            .longOpt(Params.existing.name())
+            .desc("Transfer action for existing files (see above)")
+            .hasArg().argName("action").build());
+        options.addOption(Option.builder("v")
+            .longOpt(Params.verbose.name())
+            .desc("Print transcript").build());
+        options.addOption(Option.builder("q")
+            .longOpt(Params.quiet.name())
+            .desc("Suppress progress messages").build());
+        options.addOption(Option.builder("y")
+            .longOpt(Params.assumeyes.name())
+            .desc("Assume yes for all prompts").build());
+
         return options;
     }
 
