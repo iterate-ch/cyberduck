@@ -29,7 +29,6 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
-import ch.cyberduck.core.sds.io.swagger.client.StringUtil;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 

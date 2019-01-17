@@ -18,16 +18,9 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
-
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Collections;
 
 public final class TerminalOptionsBuilder {
 
