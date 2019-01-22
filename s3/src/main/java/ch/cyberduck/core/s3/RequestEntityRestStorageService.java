@@ -41,6 +41,7 @@ import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
+import org.jets3t.service.security.ProviderCredentials;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
     public RequestEntityRestStorageService(final S3Session session,
                                            final Jets3tProperties properties,
                                            final HttpClientBuilder configuration) {
-        super(null, new PreferencesUseragentProvider().get(), null, properties);
+        super(new NullProviderCredentials(), new PreferencesUseragentProvider().get(), null, properties);
         this.session = session;
         configuration.disableContentCompression();
         configuration.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("http.connections.retry")));
@@ -240,5 +241,21 @@ public class RequestEntityRestStorageService extends RestS3Service {
             return true;
         }
         return false;
+    }
+
+    private static final class NullProviderCredentials extends ProviderCredentials {
+        public NullProviderCredentials() {
+            super(null, null);
+        }
+
+        @Override
+        protected String getTypeName() {
+            return StringUtils.EMPTY;
+        }
+
+        @Override
+        protected String getVersionPrefix() {
+            return StringUtils.EMPTY;
+        }
     }
 }
