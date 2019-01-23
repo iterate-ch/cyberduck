@@ -164,7 +164,7 @@ public class FinderLocal extends Local {
     public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
         final NSURL resolved;
         try {
-            resolved = this.lock(false);
+            resolved = this.lock(true);
             final AttributedList<Local> list = super.list(resolved.path(), filter);
             this.release(resolved);
             return list;
