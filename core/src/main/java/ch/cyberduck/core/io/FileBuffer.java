@@ -106,8 +106,9 @@ public class FileBuffer implements Buffer {
         this.length = 0L;
         if(temporary.exists()) {
             try {
-                final RandomAccessFile file = random();
-                file.close();
+                if(file != null) {
+                    file.close();
+                }
             }
             catch(IOException e) {
                 log.error(String.format("Failure closing buffer %s", this));

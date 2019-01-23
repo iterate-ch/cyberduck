@@ -24,6 +24,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Location;
 
 import org.junit.Test;
@@ -53,9 +54,9 @@ public class ProfilePlistReaderTest {
         assertNotNull(profile);
     }
 
-    @Test
+    @Test(expected = AccessDeniedException.class)
     public void testDeserializeUnknownProtocol() throws Exception {
-        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
             @Override
             public Type getType() {
                 return Type.dav;
@@ -68,7 +69,6 @@ public class ProfilePlistReaderTest {
         }))).read(
             new Local("src/test/resources/Unknown.cyberduckprofile")
         );
-        assertNull(profile);
     }
 
     @Test

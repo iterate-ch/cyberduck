@@ -70,6 +70,7 @@ using Microsoft.WindowsAPICodePack.Taskbar;
 using org.apache.log4j;
 using StructureMap;
 using Windows.Services.Store;
+using ch.cyberduck.core.exception;
 using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
@@ -431,12 +432,15 @@ namespace Ch.Cyberduck.Ui.Controller
         void ICyberduck.RegisterBookmark(string bookmarkPath)
         {
             Local f = LocalFactory.get(bookmarkPath);
-            Host bookmark = (Host)HostReaderFactory.get().read(f);
-            if (null == bookmark)
+            try
             {
-                return;
+                Host bookmark = (Host)HostReaderFactory.get().read(f);
+                NewBrowser().Mount(bookmark);
             }
-            NewBrowser().Mount(bookmark);
+            catch (AccessDeniedException ex)
+            {
+                Logger.error($"Failure reading bookmark from {f}. {ex.getMessage()}");
+            }
         }
 
         void ICyberduck.RegisterProfile(string profilePath)

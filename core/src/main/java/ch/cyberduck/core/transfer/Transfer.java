@@ -311,12 +311,19 @@ public abstract class Transfer implements Serializable {
      */
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(TransferItem item : roots) {
-            final Local directory = item.local.getParent();
-            try {
-                locks.put(directory, directory.lock(true));
-            }
-            catch(AccessDeniedException e) {
-                // Ignore no lock support
+            switch(this.getType()) {
+                case download:
+                    final Local directory = item.local.getParent();
+                    try {
+                        locks.put(directory, directory.lock(true));
+                    }
+                    catch(AccessDeniedException e) {
+                        // Ignore no lock support
+                    }
+                    break;
+                case upload:
+                    locks.put(item.local, item.local.lock(true));
+                    break;
             }
         }
     }
@@ -330,8 +337,15 @@ public abstract class Transfer implements Serializable {
     public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(Iterator<Map.Entry<Local, Object>> iter = locks.entrySet().iterator(); iter.hasNext(); ) {
             final Map.Entry<Local, Object> entry = iter.next();
-            final Local directory = entry.getKey().getParent();
-            directory.release(entry.getValue());
+            switch(this.getType()) {
+                case download:
+                    final Local directory = entry.getKey().getParent();
+                    directory.release(entry.getValue());
+                    break;
+                case upload:
+                    entry.getKey().release(entry.getValue());
+                    break;
+            }
             iter.remove();
         }
     }

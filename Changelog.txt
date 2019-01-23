@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+6.9.2
+- [Bugfix] Failure using RSA/ECDSA private in new OpenSSH format (#10552)
+
 6.9.1
 - [Bugfix] Fix code signature designated requirement issue (Mac App Store)
 

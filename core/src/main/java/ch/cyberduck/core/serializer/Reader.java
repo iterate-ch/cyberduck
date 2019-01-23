@@ -35,7 +35,7 @@ public interface Reader<S extends Serializable> {
      * Read the serialized item from the given file
      *
      * @param file A valid dictionary
-     * @return Deserialized item. Null if the file cannot be deserialized
+     * @return Deserialized item
      * @throws AccessDeniedException If the file is not readable
      */
     S read(Local file) throws AccessDeniedException;

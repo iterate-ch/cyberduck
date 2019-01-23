@@ -181,16 +181,18 @@ public class FolderTransferCollection extends Collection<Transfer> {
                     }
                 }
             );
-            for(Local next : transfers) {
-                final Transfer transfer = reader.read(next);
-                if(null == transfer) {
-                    continue;
+            for(Local f : transfers) {
+                try {
+                    final Transfer transfer = reader.read(f);
+                    // Legacy support.
+                    if(!this.getFile(transfer).equals(f)) {
+                        this.rename(f, transfer);
+                    }
+                    this.add(transfer);
                 }
-                // Legacy support.
-                if(!this.getFile(transfer).equals(next)) {
-                    this.rename(next, transfer);
+                catch(AccessDeniedException e) {
+                    log.error(String.format("Failure reading transfer from %s. %s", f, e.getMessage()));
                 }
-                this.add(transfer);
             }
             // Sort using previously built index
             this.sort();

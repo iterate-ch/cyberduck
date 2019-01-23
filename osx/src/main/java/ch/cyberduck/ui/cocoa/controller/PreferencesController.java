@@ -57,11 +57,11 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -81,29 +81,29 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSView panelGeneral;
+    protected NSView panelGeneral;
     @Outlet
-    private NSView panelEditor;
+    protected NSView panelEditor;
     @Outlet
-    private NSView panelBrowser;
+    protected NSView panelBrowser;
     @Outlet
-    private NSView panelTransfer;
+    protected NSView panelTransfer;
     @Outlet
-    private NSView panelFTP;
+    protected NSView panelFTP;
     @Outlet
-    private NSView panelSFTP;
+    protected NSView panelSFTP;
     @Outlet
-    private NSView panelS3;
+    protected NSView panelS3;
     @Outlet
-    private NSView panelBandwidth;
+    protected NSView panelBandwidth;
     @Outlet
-    private NSView panelAdvanced;
+    protected NSView panelAdvanced;
     @Outlet
-    private NSView panelUpdate;
+    protected NSView panelUpdate;
     @Outlet
-    private NSView panelLanguage;
+    protected NSView panelLanguage;
     @Outlet
-    private NSView panelCryptomator;
+    protected NSView panelCryptomator;
 
     public void setPanelUpdate(NSView v) {
         this.panelUpdate = v;
@@ -163,84 +163,57 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Override
-    protected List<NSView> getPanels() {
-        final List<String> identifiers = this.getPanelIdentifiers();
-        final List<NSView> views = new ArrayList<NSView>();
-        if(identifiers.contains(PreferencesToolbarItem.general.name())) {
-            views.add(panelGeneral);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.browser.name())) {
-            views.add(panelBrowser);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.queue.name())) {
-            views.add(panelTransfer);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.pencil.name())) {
-            views.add(panelEditor);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.ftp.name())) {
-            views.add(panelFTP);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.sftp.name())) {
-            views.add(panelSFTP);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.s3.name())) {
-            views.add(panelS3);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.bandwidth.name())) {
-            views.add(panelBandwidth);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.connection.name())) {
-            views.add(panelAdvanced);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.cryptomator.name())) {
-            views.add(panelCryptomator);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.update.name())) {
-            if(null != Updater.getFeed()) {
-                views.add(panelUpdate);
-            }
-        }
-        if(identifiers.contains(PreferencesToolbarItem.language.name())) {
-            views.add(panelLanguage);
-        }
-        return views;
-    }
-
-    @Override
-    protected List<String> getPanelIdentifiers() {
-        final List<String> views = new ArrayList<>(Arrays.asList(
-            PreferencesToolbarItem.general.name(),
-            PreferencesToolbarItem.browser.name(),
-            PreferencesToolbarItem.queue.name(),
-            PreferencesToolbarItem.pencil.name(),
-            PreferencesToolbarItem.ftp.name(),
-            PreferencesToolbarItem.sftp.name(),
-            PreferencesToolbarItem.s3.name(),
-            PreferencesToolbarItem.bandwidth.name(),
-            PreferencesToolbarItem.connection.name(),
-            PreferencesToolbarItem.cryptomator.name())
-        );
+    protected Map<Label, NSView> getPanels() {
+        final Map<Label, NSView> views = new LinkedHashMap<>();
+        views.put(new Label(PreferencesToolbarItem.general.name(), PreferencesToolbarItem.general.label()), panelGeneral);
+        views.put(new Label(PreferencesToolbarItem.browser.name(), PreferencesToolbarItem.browser.label()), panelBrowser);
+        views.put(new Label(PreferencesToolbarItem.transfers.name(), PreferencesToolbarItem.transfers.label()), panelTransfer);
+        views.put(new Label(PreferencesToolbarItem.editor.name(), PreferencesToolbarItem.editor.label()), panelEditor);
+        views.put(new Label(PreferencesToolbarItem.ftp.name(), PreferencesToolbarItem.ftp.label()), panelFTP);
+        views.put(new Label(PreferencesToolbarItem.sftp.name(), PreferencesToolbarItem.sftp.label()), panelSFTP);
+        views.put(new Label(PreferencesToolbarItem.s3.name(), PreferencesToolbarItem.s3.label()), panelS3);
+        views.put(new Label(PreferencesToolbarItem.bandwidth.name(), PreferencesToolbarItem.bandwidth.label()), panelBandwidth);
+        views.put(new Label(PreferencesToolbarItem.connection.name(), PreferencesToolbarItem.connection.label()), panelAdvanced);
+        views.put(new Label(PreferencesToolbarItem.cryptomator.name(), PreferencesToolbarItem.cryptomator.label()), panelCryptomator);
         if(null != Updater.getFeed()) {
-            views.add(PreferencesToolbarItem.update.name());
+            views.put(new Label(PreferencesToolbarItem.update.name(), PreferencesToolbarItem.update.label()), panelUpdate);
         }
-        views.add(PreferencesToolbarItem.language.name());
+        views.put(new Label(PreferencesToolbarItem.language.name(), PreferencesToolbarItem.language.label()), panelLanguage);
         return views;
     }
 
     protected enum PreferencesToolbarItem {
         general,
         browser,
-        queue,
-        pencil,
-        ftp,
-        sftp,
-        s3,
+        transfers,
+        editor,
+        ftp {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.upperCase(this.name()), "Preferences");
+            }
+        },
+        sftp {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.upperCase(this.name()), "Preferences");
+            }
+        },
+        s3 {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.upperCase(this.name()), "Preferences");
+            }
+        },
         bandwidth,
         connection,
         cryptomator,
         update,
-        language
+        language;
+
+        public String label() {
+            return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Preferences");
+        }
     }
 
     @Override
@@ -255,13 +228,13 @@ public class PreferencesController extends ToolbarWindowController {
         switch(item) {
             case general:
                 break;
-            case queue:
+            case transfers:
                 this.chmodDownloadTypePopupChanged(this.chmodDownloadTypePopup);
                 this.chmodUploadTypePopupChanged(this.chmodUploadTypePopup);
                 break;
             case browser:
                 break;
-            case pencil:
+            case editor:
                 this.updateEditorCombobox();
                 break;
             case ftp:
