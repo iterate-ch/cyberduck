@@ -57,6 +57,9 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
     @Override
     public Acl getPermission(final Path file) throws BackgroundException {
         try {
+            if(file.getType().contains(Path.Type.upload)) {
+                return Acl.EMPTY;
+            }
             if(containerService.isContainer(file)) {
                 // This method can be performed by anonymous services, but can only succeed if the
                 // bucket's existing ACL already allows write access by the anonymous user.
