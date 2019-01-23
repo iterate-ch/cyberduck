@@ -311,19 +311,19 @@ public abstract class Transfer implements Serializable {
      */
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(TransferItem item : roots) {
-            switch(this.getType()) {
-                case download:
-                    final Local directory = item.local.getParent();
-                    try {
+            try {
+                switch(this.getType()) {
+                    case download:
+                        final Local directory = item.local.getParent();
                         locks.put(directory, directory.lock(true));
-                    }
-                    catch(AccessDeniedException e) {
-                        // Ignore no lock support
-                    }
-                    break;
-                case upload:
-                    locks.put(item.local, item.local.lock(true));
-                    break;
+                        break;
+                    case upload:
+                        locks.put(item.local, item.local.lock(true));
+                        break;
+                }
+            }
+            catch(AccessDeniedException e) {
+                // Ignore no lock support
             }
         }
     }
