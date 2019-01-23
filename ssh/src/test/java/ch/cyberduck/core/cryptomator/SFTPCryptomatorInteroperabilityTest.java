@@ -49,7 +49,6 @@ import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory;
 import org.cryptomator.cryptofs.CryptoFileSystem;
 import org.cryptomator.cryptofs.CryptoFileSystemProperties;
 import org.cryptomator.cryptofs.CryptoFileSystemProvider;
-import org.cryptomator.cryptofs.CryptoFileSystemUris;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,8 +80,9 @@ public class SFTPCryptomatorInteroperabilityTest {
         server.setSubsystemFactories(Collections.singletonList(new SftpSubsystemFactory()));
         final java.nio.file.Path tempDir = Files.createTempDirectory(String.format("%s-", this.getClass().getName()));
         final java.nio.file.Path vault = tempDir.resolve("vault");
+        Files.createDirectory(vault);
         passphrase = new AlphanumericRandomStringService().random();
-        cryptoFileSystem = new CryptoFileSystemProvider().newFileSystem(CryptoFileSystemUris.createUri(vault), CryptoFileSystemProperties.cryptoFileSystemProperties().withPassphrase(passphrase).build());
+        cryptoFileSystem = CryptoFileSystemProvider.newFileSystem(vault, CryptoFileSystemProperties.cryptoFileSystemProperties().withPassphrase(passphrase).build());
         server.setFileSystemFactory(new VirtualFileSystemFactory(cryptoFileSystem.getPathToVault().getParent().toAbsolutePath()));
         server.start();
     }
