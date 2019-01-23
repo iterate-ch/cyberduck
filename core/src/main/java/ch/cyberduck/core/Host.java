@@ -314,7 +314,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param defaultpath The path to change the working directory to upon connecting
      */
     public void setDefaultPath(final String defaultpath) {
-        this.defaultpath = StringUtils.isBlank(defaultpath) ? null : StringUtils.trim(defaultpath);
+        this.defaultpath = defaultpath;
     }
 
     public Path getWorkdir() {
