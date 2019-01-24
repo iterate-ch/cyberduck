@@ -20,8 +20,6 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.LocaleFactory;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -206,7 +204,7 @@ public abstract class TransferAction {
 
         @Override
         public String getDescription() {
-            return StringUtils.EMPTY;
+            return LocaleFactory.localizedString("Cancel", "Localizable");
         }
     };
 
