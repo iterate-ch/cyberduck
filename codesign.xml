@@ -111,22 +111,31 @@
     </target>
 
     <target name="verify-signature">
-        <echo message="Print codesign requirement for ${bundle}..."/>
-        <exec executable="/usr/bin/codesign" failonerror="true">
-            <arg line="--verbose=4 --deep --strict '${bundle}'"/>
-        </exec>
+        <echo message="Verify code signature of ${bundle}..."/>
+        <apply executable="/usr/bin/codesign" failonerror="true"
+               type="both" parallel="false" spawn="false" force="true" verbose="true">
+            <arg line="--verbose=4 --deep --strict"/>
+            <file name="${bundle}"/>
+            <srcfile/>
+        </apply>
     </target>
 
     <target name="verify-spctl">
         <echo message="Print system policy verification for ${bundle}..."/>
-        <exec executable="/usr/sbin/spctl" failonerror="true">
-            <arg line="-v --assess --type execute --raw '${bundle}'"/>
-        </exec>
+        <apply executable="/usr/sbin/spctl" failonerror="true"
+               type="both" parallel="false" spawn="false" force="true" verbose="true">
+            <arg line="-v --assess --type execute --raw"/>
+            <file name="${bundle}"/>
+            <srcfile/>
+        </apply>
     </target>
 
     <target name="dotclean">
-        <exec executable="/usr/sbin/dot_clean" failonerror="true">
-            <arg line="-m --keep=native '${bundle}'"/>
-        </exec>
+        <apply executable="/usr/sbin/dot_clean" failonerror="true"
+               type="both" parallel="false" spawn="false" force="true" verbose="true">
+            <arg line="-m --keep=native"/>
+            <file name="${bundle}"/>
+            <srcfile/>
+        </apply>
     </target>
 </project>
