@@ -19,8 +19,9 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.BundledProtocolPredicate;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.DefaultProtocolPredicate;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.ProfileProtocolPredicate;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.aquaticprime.DisabledLicenseVerifierCallback;
@@ -29,8 +30,6 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
-import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.TransferAction;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -38,7 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.EnumSet;
 
 public final class TerminalHelpPrinter {
 
@@ -52,65 +51,46 @@ public final class TerminalHelpPrinter {
 
     public static void print(final Options options, final HelpFormatter formatter) {
         formatter.setSyntaxPrefix("Usage:");
-        final StringBuilder protocols = new StringBuilder(StringUtils.LF);
-        protocols.append("Supported protocols").append(StringUtils.LF);
-        for(Protocol p : ProtocolFactory.get().find()) {
-            protocols.append(String.format("  %s\n", p.getDescription()));
-            switch(p.getType()) {
-                case b2:
-                case s3:
-                case googlestorage:
-                case swift:
-                case azure:
-                case onedrive:
-                    protocols.append(String.format("    %s://<container>/<key>", getScheme(p)));
-                    break;
-                default:
-                    if(p.isHostnameConfigurable()) {
-                        protocols.append(String.format("    %s://<hostname>/<folder>/<file>", getScheme(p)));
-                    }
-                    else {
-                        // case file:
-                        // case googledrive:
-                        // case dropbox:
-                        // case onedrive:
-                        protocols.append(String.format("    %s://<folder>/<file>", getScheme(p)));
-                    }
-                    break;
-            }
-            protocols.append(StringUtils.LF);
-        }
-
-        final StringBuilder transferActions = new StringBuilder("Transfer actions for existing files:").append(StringUtils.LF);
-        transferActions.append("  Options for downloads and uploads:").append(StringUtils.LF);
-        for(TransferAction a : TransferAction.forTransfer(Transfer.Type.download)) {
-            appendTransferAction(a, transferActions);
-        }
-        for(TransferAction a : Collections.singletonList(TransferAction.cancel)) {
-            appendTransferAction(a, transferActions);
-        }
-        transferActions.append("  Options for synchronize:").append(StringUtils.LF);
-        for(TransferAction a : TransferAction.forTransfer(Transfer.Type.sync)) {
-            appendTransferAction(a, transferActions);
-        }
-        for(TransferAction a : Collections.singletonList(TransferAction.cancel)) {
-            appendTransferAction(a, transferActions);
-        }
-
-        final StringBuilder header = new StringBuilder(StringUtils.LF);
-        header.append("\t");
-        header.append("URLs must be fully qualified. Paths can either denote "
-            + "a remote file (ftps://user@example.net/resource) or folder (ftps://user@example.net/directory/) "
-            + "with a trailing slash. You can reference files relative to your home directory with /~ (ftps://user@example.net/~/).");
-        header.append(protocols).append(StringUtils.LF);
-        header.append(transferActions);
         final Preferences preferences = PreferencesFactory.get();
-        final Local profiles = LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
-            PreferencesFactory.get().getProperty("profiles.folder.name"));
-        header.append(StringUtils.LF);
-        header.append(String.format("You can install additional connection profiles in %s",
-            profiles.getAbbreviatedPath()));
-        header.append(StringUtils.LF);
+        final StringBuilder builder = new StringBuilder()
+            .append("Default protocols")
+            .append(StringUtils.LF);
+
+        final ProtocolFactory protocols = ProtocolFactory.get();
+        for(Protocol p : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.ftp, Protocol.Type.sftp, Protocol.Type.dav)))) {
+            append(p, builder);
+        }
+        builder.append(StringUtils.LF);
+        for(Protocol p : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2, Protocol.Type.googlestorage)))) {
+            append(p, builder);
+        }
+        builder.append(StringUtils.LF);
+        for(Protocol p : protocols.find(new DefaultProtocolPredicate(
+            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.dracoon)))) {
+            append(p, builder);
+        }
+        builder.append("Local Disk");
+        builder.append(StringUtils.LF);
+        for(Protocol p : protocols.find(new DefaultProtocolPredicate(EnumSet.of(Protocol.Type.file)))) {
+            append(p, builder);
+        }
+        builder.append(StringUtils.LF);
+        builder.append(String.format("Third party connection profiles. Install additional connection profiles in %s",
+            LocalFactory.get(SupportDirectoryFinderFactory.get().find(),
+                PreferencesFactory.get().getProperty("profiles.folder.name")).getAbbreviatedPath()));
+        builder.append(StringUtils.LF);
+        for(Protocol p : protocols.find(new ProfileProtocolPredicate())) {
+            append(p, builder);
+        }
+        final StringBuilder header = new StringBuilder(StringUtils.LF)
+            .append("\t")
+            .append("URLs must be fully qualified. Paths can either denote "
+                + "a remote file (ftps://user@example.net/resource) or folder (ftps://user@example.net/directory/) "
+                + "with a trailing slash. You can reference files relative to your home directory with /~ (ftps://user@example.net/~/).")
+            .append(StringUtils.LF)
+            .append(builder)
+            .append(StringUtils.LF)
+            .append(StringUtils.LF);
         final StringBuilder footer = new StringBuilder(StringUtils.LF);
         footer.append(String.format("Cyberduck is libre software licenced under the GPL. For general help about using Cyberduck, please refer to %s and the wiki at %s. For bug reports or feature requests open a ticket at %s.",
             preferences.getProperty("website.cli"), preferences.getProperty("website.help"), MessageFormat.format(preferences.getProperty("website.bug"), preferences.getProperty("application.version"))));
@@ -125,12 +105,35 @@ public final class TerminalHelpPrinter {
         formatter.printHelp("duck [options...]", header.toString(), options, footer.toString());
     }
 
-    private static void appendTransferAction(final TransferAction action, final StringBuilder builder) {
-        builder.append(String.format("  %s  %s (%s)\n",
-            StringUtils.leftPad(action.getTitle(), 16), action.getDescription(), action.name()));
+    private static void append(final Protocol protocol, final StringBuilder builder) {
+        final String url;
+        switch(protocol.getType()) {
+            case b2:
+            case s3:
+            case googlestorage:
+            case swift:
+            case azure:
+                url = String.format("%s://<container>/<key>", getScheme(protocol));
+                break;
+            default:
+                if(protocol.isHostnameConfigurable()) {
+                    url = String.format("%s://<hostname>/<folder>/<file>", getScheme(protocol));
+                }
+                else {
+                    // case file:
+                    // case googledrive:
+                    // case dropbox:
+                    // case onedrive:
+                    url = String.format("%s://<folder>/<file>", getScheme(protocol));
+                }
+                break;
+        }
+        builder
+            .append(String.format("%s %s", StringUtils.leftPad(protocol.getDescription(), 50), url))
+            .append(StringUtils.LF);
     }
 
-    protected static String getScheme(final Protocol protocol) {
+    private static String getScheme(final Protocol protocol) {
         if(new BundledProtocolPredicate().test(protocol)) {
             for(String scheme :
                 protocol.getSchemes()) {

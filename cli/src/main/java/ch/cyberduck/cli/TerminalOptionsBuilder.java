@@ -18,9 +18,15 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Collections;
 
 public final class TerminalOptionsBuilder {
 
@@ -135,9 +141,25 @@ public final class TerminalOptionsBuilder {
             .longOpt(Params.nokeychain.name())
             .desc("Do not save passwords in keychain").build());
 
+        final StringBuilder actions = new StringBuilder("Transfer actions for existing files").append(StringUtils.LF);
+        actions.append("Downloads and uploads:").append(StringUtils.LF);
+        for(TransferAction a : TransferAction.forTransfer(Transfer.Type.download)) {
+            append(actions, a);
+        }
+        for(TransferAction a : Collections.singletonList(TransferAction.cancel)) {
+            append(actions, a);
+        }
+        actions.append("Synchronize:").append(StringUtils.LF);
+        for(TransferAction a : TransferAction.forTransfer(Transfer.Type.sync)) {
+            append(actions, a);
+        }
+        for(TransferAction a : Collections.singletonList(TransferAction.cancel)) {
+            append(actions, a);
+        }
+
         options.addOption(Option.builder("e")
             .longOpt(Params.existing.name())
-            .desc("Transfer action for existing files (see above)")
+            .desc(actions.toString())
             .hasArg().argName("action").build());
         options.addOption(Option.builder("v")
             .longOpt(Params.verbose.name())
@@ -150,6 +172,11 @@ public final class TerminalOptionsBuilder {
             .desc("Assume yes for all prompts").build());
 
         return options;
+    }
+
+    private static void append(final StringBuilder builder, final TransferAction action) {
+        builder.append(String.format("  %s  %s (%s)\n",
+            StringUtils.leftPad(action.name(), 16), action.getTitle(), action.getDescription()));
     }
 
     public enum Params {
