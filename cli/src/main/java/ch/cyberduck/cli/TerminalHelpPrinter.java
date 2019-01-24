@@ -133,7 +133,7 @@ public final class TerminalHelpPrinter {
             .append(StringUtils.LF);
     }
 
-    private static String getScheme(final Protocol protocol) {
+    protected static String getScheme(final Protocol protocol) {
         if(new BundledProtocolPredicate().test(protocol)) {
             for(String scheme :
                 protocol.getSchemes()) {
