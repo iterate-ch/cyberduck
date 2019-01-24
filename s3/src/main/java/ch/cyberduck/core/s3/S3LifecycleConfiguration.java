@@ -77,6 +77,9 @@ public class S3LifecycleConfiguration implements Lifecycle {
         if(container.isRoot()) {
             return LifecycleConfiguration.empty();
         }
+        if(file.getType().contains(Path.Type.upload)) {
+            return LifecycleConfiguration.empty();
+        }
         try {
             final LifecycleConfig status = session.getClient().getLifecycleConfig(container.getName());
             if(null != status) {

@@ -60,6 +60,9 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
+        if(file.getType().contains(Path.Type.upload)) {
+            return PathAttributes.EMPTY;
+        }
         if(containerService.isContainer(file)) {
             final PathAttributes attributes = new PathAttributes();
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());

@@ -53,6 +53,9 @@ public class S3LoggingFeature implements Logging {
         if(bucket.isRoot()) {
             return LoggingConfiguration.empty();
         }
+        if(file.getType().contains(Path.Type.upload)) {
+            return LoggingConfiguration.empty();
+        }
         try {
             final StorageBucketLoggingStatus status
                     = session.getClient().getBucketLoggingStatusImpl(bucket.getName());
