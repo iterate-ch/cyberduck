@@ -22,6 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AlertCallback;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 
 public class TerminalAlertCallback implements AlertCallback {
 
@@ -29,10 +30,15 @@ public class TerminalAlertCallback implements AlertCallback {
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        final StringAppender appender = new StringAppender();
-        appender.append(failure.getMessage());
-        appender.append(failure.getDetail());
-        console.printf("%n%s%n", appender.toString());
+        switch(new DefaultFailureDiagnostics().determine(failure)) {
+            case cancel:
+                return false;
+            default:
+                final StringAppender appender = new StringAppender();
+                appender.append(failure.getMessage());
+                appender.append(failure.getDetail());
+                console.printf("%n%s%n", appender.toString());
+        }
         // Never repeat
         return false;
     }
