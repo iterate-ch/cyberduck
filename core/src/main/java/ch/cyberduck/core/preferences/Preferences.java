@@ -405,19 +405,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("browser.filesize.decimal", String.valueOf(false));
         this.setDefault("browser.date.natural", String.valueOf(true));
 
-        this.setDefault("browser.delete.concurrency", String.valueOf(10));
-
-
-        this.setDefault("info.toggle.permission", String.valueOf(1));
-        this.setDefault("info.toggle.distribution", String.valueOf(0));
-        this.setDefault("info.toggle.s3", String.valueOf(0));
-
-        this.setDefault("connection.toggle.options", String.valueOf(0));
-        this.setDefault("bookmark.toggle.options", String.valueOf(0));
-
-        this.setDefault("alert.toggle.transcript", String.valueOf(0));
-
-        this.setDefault("transfer.toggle.details", String.valueOf(1));
+        this.setDefault("bookmark.toggle.options", String.valueOf(false));
+        this.setDefault("transfer.toggle.details", String.valueOf(true));
 
         /*
           Default editor

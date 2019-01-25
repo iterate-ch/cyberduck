@@ -51,8 +51,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override bool Singleton => true;
 
-        protected override string ToggleProperty => "connection.toggle.options";
-
         public static ConnectionController Instance(WindowController parent)
         {
             ConnectionController c;
