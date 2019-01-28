@@ -41,6 +41,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
 
         public bool alert(Host host, BackgroundException failure, StringBuilder log)
         {
+            FailureDiagnostics.Type type = _diagnostics.determine(failure);
+            if (type == FailureDiagnostics.Type.cancel)
+            {
+                return false;
+            }
             _notification.alert(host, failure, log);
             bool r = false;
             _controller.Invoke(delegate
@@ -51,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Threading
                     string detail = failure.getDetail() ?? LocaleFactory.localizedString("Unknown");
                     string expanded = log.length() > 0 ? log.toString() : null;
                     string commandButtons;
-                    if (_diagnostics.determine(failure) == FailureDiagnostics.Type.network)
+                    if (type == FailureDiagnostics.Type.network)
                     {
                         commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Try Again", "Alert"),
                                                        LocaleFactory.localizedString("Network Diagnostics", "Alert"));

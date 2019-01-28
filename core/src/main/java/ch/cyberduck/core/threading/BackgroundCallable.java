@@ -17,7 +17,6 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
@@ -93,13 +92,6 @@ public class BackgroundCallable<T> implements Callable<T> {
                 log.debug(String.format("Call background action %s", action));
             }
             return action.call();
-        }
-        catch(ConnectionCanceledException e) {
-            this.failure(client, e);
-            // Do not report as failed
-            log.warn(String.format("Connection canceled for background task %s", action));
-            // Canceled action yields no result
-            return null;
         }
         catch(BackgroundException e) {
             this.failure(client, e);

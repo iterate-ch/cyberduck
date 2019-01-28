@@ -23,6 +23,7 @@ import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.notification.NotificationAlertCallback;
 import ch.cyberduck.core.threading.AlertCallback;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.ui.cocoa.controller.BackgroundExceptionAlertController;
 
 public class PromptAlertCallback implements AlertCallback {
@@ -36,18 +37,22 @@ public class PromptAlertCallback implements AlertCallback {
 
     @Override
     public boolean alert(final Host host, final BackgroundException failure, final StringBuilder transcript) {
-        // Send notification
-        notification.alert(host, failure, transcript);
-        // Run prompt
-        final AlertController alert = new BackgroundExceptionAlertController(failure, host);
-        switch(alert.beginSheet(parent)) {
-            case SheetCallback.ALTERNATE_OPTION:
-                ReachabilityFactory.get().diagnose(host);
-                break;
-            case SheetCallback.DEFAULT_OPTION:
-                return true;
+        switch(new DefaultFailureDiagnostics().determine(failure)) {
+            case cancel:
+                return false;
+            default:
+                // Send notification
+                notification.alert(host, failure, transcript);
+                // Run prompt
+                final AlertController alert = new BackgroundExceptionAlertController(failure, host);
+                switch(alert.beginSheet(parent)) {
+                    case SheetCallback.ALTERNATE_OPTION:
+                        ReachabilityFactory.get().diagnose(host);
+                        break;
+                    case SheetCallback.DEFAULT_OPTION:
+                        return true;
+                }
+                return false;
         }
-        return false;
     }
-
 }
