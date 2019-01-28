@@ -380,7 +380,7 @@
                             <textField verticalHuggingPriority="750" id="69">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="When using small icons, only the nickname of the bookmark is displayed in the bookmark drawer." id="70">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="При выборе маленьких иконок, будут отображены короткие имена закладок." id="70">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -674,7 +674,7 @@
                                     <textField verticalHuggingPriority="750" id="139">
                                         <rect key="frame" x="9" y="278" width="153" height="17"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Передаваемые файлы:" id="140">
+                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="Передавать файлы" id="140">
                                             <font key="font" metaFont="system"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1021,7 +1021,7 @@
                                     <button id="228">
                                         <rect key="frame" x="10" y="200" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Preserve modification date" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
+                                        <buttonCell key="cell" type="check" title="Не менять дату изменения файлов" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="229">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1029,7 +1029,7 @@
                                     <button id="230">
                                         <rect key="frame" x="10" y="257" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <buttonCell key="cell" type="check" title="Preserve modification date" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
+                                        <buttonCell key="cell" type="check" title="Не менять дату изменения файлов" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="231">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1091,7 +1091,7 @@
                                     <textField verticalHuggingPriority="750" id="Pdu-UD-1af">
                                         <rect key="frame" x="9" y="282" width="516" height="14"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Downloads" id="jMp-5G-M0R">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Загрузки" id="jMp-5G-M0R">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1104,7 +1104,7 @@
                                     <textField verticalHuggingPriority="750" id="oCu-3p-Hmv">
                                         <rect key="frame" x="9" y="225" width="443" height="14"/>
                                         <autoresizingMask key="autoresizingMask"/>
-                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Uploads" id="OF7-e3-pIZ">
+                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Закачки" id="OF7-e3-pIZ">
                                             <font key="font" metaFont="smallSystemBold"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
