@@ -198,7 +198,7 @@
                     <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="sWf-jk-HWp">
                         <rect key="frame" x="18" y="295" width="171" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Client Certificate:" id="fjp-B7-iXe">
+                        <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="right" title="Certyfikat Klienta:" id="fjp-B7-iXe">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
