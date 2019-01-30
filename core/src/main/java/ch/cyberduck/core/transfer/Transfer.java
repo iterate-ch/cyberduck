@@ -31,7 +31,6 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
@@ -311,19 +310,14 @@ public abstract class Transfer implements Serializable {
      */
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(TransferItem item : roots) {
-            try {
-                switch(this.getType()) {
-                    case download:
-                        final Local directory = item.local.getParent();
-                        locks.put(directory, directory.lock(true));
-                        break;
-                    case upload:
-                        locks.put(item.local, item.local.lock(true));
-                        break;
-                }
-            }
-            catch(AccessDeniedException e) {
-                // Ignore no lock support
+            switch(this.getType()) {
+                case download:
+                    final Local directory = item.local.getParent();
+                    locks.put(directory, directory.lock(true));
+                    break;
+                case upload:
+                    locks.put(item.local, item.local.lock(true));
+                    break;
             }
         }
     }

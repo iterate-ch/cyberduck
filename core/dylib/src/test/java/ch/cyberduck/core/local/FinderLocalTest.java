@@ -192,10 +192,10 @@ public class FinderLocalTest {
         l.delete();
     }
 
-    @Test(expected = LocalAccessDeniedException.class)
+    @Test
     public void testLockNoSuchFile() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        l.lock(false);
+        assertNull(l.lock(false));
     }
 
     @Test
