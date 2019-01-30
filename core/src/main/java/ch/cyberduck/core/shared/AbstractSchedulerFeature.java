@@ -45,10 +45,11 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
                 this.operate(callback, null);
             }
             catch(ConnectionCanceledException e) {
+                log.warn("Failure processing scheduled task. %s", e);
                 this.shutdown();
             }
-            catch(BackgroundException e) {
-                log.warn(String.format("Failure processing missing file keys. %s", e.getDetail()));
+            catch(Exception e) {
+                log.warn("Failure processing scheduled task. %s", e);
             }
         }, period, TimeUnit.MILLISECONDS);
         return null;
@@ -56,6 +57,9 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
 
     @Override
     public void shutdown() {
+        if(log.isDebugEnabled()) {
+            log.debug("Shutting down scheduler thread pool");
+        }
         scheduler.shutdown();
     }
 }
