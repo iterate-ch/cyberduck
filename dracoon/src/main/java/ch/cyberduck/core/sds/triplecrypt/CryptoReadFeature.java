@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds.triplecrypt;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -35,7 +34,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import com.dracoon.sdk.crypto.Crypto;
@@ -82,9 +80,6 @@ public class CryptoReadFeature implements Read {
         }
         catch(CryptoException e) {
             throw new CryptoExceptionMappingService().map("Download {0} failed", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 
