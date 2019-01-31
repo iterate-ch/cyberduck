@@ -261,9 +261,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
         Collections.sort(this, new Comparator<Transfer>() {
             @Override
             public int compare(Transfer o1, Transfer o2) {
-                return Integer.valueOf(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid()))).compareTo(
-                    preferences.getInteger(String.format("%s%s", prefix, o2.getUuid()))
-                );
+                return Integer.compare(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid())), preferences.getInteger(String.format("%s%s", prefix, o2.getUuid())));
             }
         });
     }

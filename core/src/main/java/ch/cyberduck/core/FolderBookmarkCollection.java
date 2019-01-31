@@ -155,9 +155,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         Collections.sort(this, new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
-                return Integer.valueOf(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid()))).compareTo(
-                        preferences.getInteger(String.format("%s%s", prefix, o2.getUuid()))
-                );
+                return Integer.compare(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid())), preferences.getInteger(String.format("%s%s", prefix, o2.getUuid())));
             }
         });
     }
