@@ -172,10 +172,6 @@ public class HostParserTest {
     @Test
     public void testParseIpv6() throws Exception {
         final HostParser parser = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVProtocol())));
-        assertEquals("fc01:2:3:4:5::1", parser.get("http://fc01:2:3:4:5::1/~/sandbox").getHostname());
-        assertEquals(80, parser.get("http://fc01:2:3:4:5::1/~/sandbox").getPort());
-        assertEquals("user", parser.get("http://user@fc01:2:3:4:5::1/~/sandbox").getCredentials().getUsername());
-        assertEquals("/~/sandbox", parser.get("http://fc01:2:3:4:5::1/~/sandbox").getDefaultPath());
         assertEquals("fc01:2:3:4:5::1", parser.get("http://[fc01:2:3:4:5::1]:2121").getHostname());
         assertEquals(2121, parser.get("http://[fc01:2:3:4:5::1]:2121").getPort());
         assertEquals("user", parser.get("http://user@[fc01:2:3:4:5::1]:2121").getCredentials().getUsername());
@@ -187,7 +183,7 @@ public class HostParserTest {
     @Test
     public void testParseIpv6LinkLocalZoneIndex() throws Exception {
         final HostParser parser = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVProtocol())));
-        assertEquals("fe80::c62c:3ff:fe0b:8670%en0", parser.get("http://fe80::c62c:3ff:fe0b:8670%en0/~/sandbox").getHostname());
+        assertEquals("fe80::c62c:3ff:fe0b:8670%en0", parser.get("http://[fe80::c62c:3ff:fe0b:8670%en0]/~/sandbox").getHostname());
     }
 
     private static class TestDAVProtocol extends DAVProtocol {

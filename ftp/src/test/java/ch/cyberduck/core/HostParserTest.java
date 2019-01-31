@@ -105,11 +105,6 @@ public class HostParserTest {
     @Test
     public void testParseIpv6() throws Exception {
         final HostParser parser = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol())));
-        assertEquals("fc01:2:3:4:5::1", parser.get("ftp://fc01:2:3:4:5::1/~/sandbox").getHostname());
-        assertEquals(Protocol.Type.ftp, parser.get("ftp://fc01:2:3:4:5::1/~/sandbox").getProtocol().getType());
-        assertEquals(21, parser.get("ftp://fc01:2:3:4:5::1/~/sandbox").getPort());
-        assertEquals("user", parser.get("ftp://user@fc01:2:3:4:5::1/~/sandbox").getCredentials().getUsername());
-        assertEquals("/~/sandbox", parser.get("ftp://fc01:2:3:4:5::1/~/sandbox").getDefaultPath());
         assertEquals("fc01:2:3:4:5::1", parser.get("ftp://[fc01:2:3:4:5::1]:2121").getHostname());
         assertEquals(2121, parser.get("ftp://[fc01:2:3:4:5::1]:2121").getPort());
         assertEquals("user", parser.get("ftp://user@[fc01:2:3:4:5::1]:2121").getCredentials().getUsername());
@@ -120,7 +115,7 @@ public class HostParserTest {
 
     @Test
     public void testParseIpv6LinkLocalZoneIndex() throws Exception {
-        assertEquals("fe80::c62c:3ff:fe0b:8670%en0", new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("ftp://fe80::c62c:3ff:fe0b:8670%en0/~/sandbox").getHostname());
+        assertEquals("fe80::c62c:3ff:fe0b:8670%en0", new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("ftp://[fe80::c62c:3ff:fe0b:8670%en0]/~/sandbox").getHostname());
     }
 
     private static class TestFTPProtocol extends FTPProtocol {
