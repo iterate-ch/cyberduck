@@ -32,12 +32,12 @@ public class PathAttributesTest {
 
     @Test
     public void testEquals() {
-        assertTrue(new PathAttributes().equals(new PathAttributes()));
+        assertEquals(new PathAttributes(), new PathAttributes());
         final PathAttributes r1 = new PathAttributes();
         r1.setRegion("r1");
         final PathAttributes r2 = new PathAttributes();
         r2.setRegion("r2");
-        assertFalse(r1.equals(r2));
+        assertNotEquals(r1, r2);
     }
 
     @Test

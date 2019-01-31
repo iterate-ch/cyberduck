@@ -13,10 +13,10 @@ public class DistributionTest {
     @Test
     public void testEquals() {
         assertEquals(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false), new Distribution(URI.create("o"), Distribution.DOWNLOAD, false));
-        assertFalse(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false).equals(new Distribution(URI.create("o"), Distribution.STREAMING, false)));
-        assertFalse(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false).equals(new Distribution(URI.create("o"), Distribution.CUSTOM, false)));
-        assertFalse(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false).equals(new Distribution(URI.create("o"), Distribution.WEBSITE, false)));
-        assertFalse(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false).equals(new Distribution(URI.create("o"), Distribution.WEBSITE_CDN, false)));
+        assertNotEquals(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false), new Distribution(URI.create("o"), Distribution.STREAMING, false));
+        assertNotEquals(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false), new Distribution(URI.create("o"), Distribution.CUSTOM, false));
+        assertNotEquals(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false), new Distribution(URI.create("o"), Distribution.WEBSITE, false));
+        assertNotEquals(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false), new Distribution(URI.create("o"), Distribution.WEBSITE_CDN, false));
     }
 
     @Test

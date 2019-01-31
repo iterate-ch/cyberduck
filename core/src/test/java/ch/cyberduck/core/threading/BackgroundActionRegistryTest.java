@@ -92,7 +92,7 @@ public class BackgroundActionRegistryTest {
             }
         }).start();
         lock.await(1, TimeUnit.SECONDS);
-        assertTrue(r.size() == 1);
+        assertEquals(1, r.size());
         r.remove(action);
         assertTrue(r.isEmpty());
     }

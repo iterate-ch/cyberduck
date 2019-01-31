@@ -13,7 +13,7 @@ public class CredentialsTest {
     public void testEquals() {
         assertEquals(new Credentials("a", "b"), new Credentials("a", "b"));
         assertNotSame(new Credentials("a", "b"), new Credentials("a", "c"));
-        assertFalse(new Credentials("a", "b").equals(new Credentials("a", "c")));
+        assertNotEquals(new Credentials("a", "b"), new Credentials("a", "c"));
     }
 
     @Test
@@ -46,11 +46,11 @@ public class CredentialsTest {
         Credentials c = new Credentials();
         assertEquals("", c.getPassword());
         c.setPassword(null);
-        assertEquals(null, c.getPassword());
+        assertNull(c.getPassword());
         c.setPassword("n");
         assertEquals("n", c.getPassword());
         c.setPassword(null);
-        assertEquals(null, c.getPassword());
+        assertNull(c.getPassword());
     }
 
     @Test

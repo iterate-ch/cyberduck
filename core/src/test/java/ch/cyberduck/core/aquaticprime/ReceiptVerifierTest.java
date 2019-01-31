@@ -21,6 +21,6 @@ public class ReceiptVerifierTest {
     public void testVerifyFailure() {
         ReceiptVerifier r = new ReceiptVerifier(new Local("src/test/resources/Info.plist"));
         assertFalse(r.verify(new DisabledLicenseVerifierCallback()));
-        assertEquals(null, r.getGuid());
+        assertNull(r.getGuid());
     }
 }

@@ -20,13 +20,14 @@ package ch.cyberduck.core.idna;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class PunycodeConverterTest {
 
     @Test
     public void testConvert() {
         assertEquals("host.localdomain", new PunycodeConverter().convert("host.localdomain"));
-        assertEquals(null, new PunycodeConverter().convert(null));
+        assertNull(new PunycodeConverter().convert(null));
         assertEquals("", new PunycodeConverter().convert(""));
         assertEquals("xn--4ca", new PunycodeConverter().convert("ä"));
     }

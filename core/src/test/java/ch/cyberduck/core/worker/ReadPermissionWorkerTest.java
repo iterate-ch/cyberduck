@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class ReadPermissionWorkerTest {
 
@@ -96,9 +97,9 @@ public class ReadPermissionWorkerTest {
 
         assertEquals(Boolean.TRUE, overwrite.group.read);
         assertEquals(Boolean.TRUE, overwrite.group.write);
-        assertEquals(null, overwrite.group.execute);
+        assertNull(overwrite.group.execute);
 
-        assertEquals(null, overwrite.other.read);
+        assertNull(overwrite.other.read);
         assertEquals(Boolean.FALSE, overwrite.other.write);
         assertEquals(Boolean.FALSE, overwrite.other.execute);
 

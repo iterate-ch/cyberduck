@@ -17,8 +17,7 @@ import java.nio.charset.Charset;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ThirdpartyBookmarkCollectionTest {
 
@@ -52,7 +51,7 @@ public class ThirdpartyBookmarkCollectionTest {
         };
         c.load();
         assertTrue(r.get());
-        assertTrue(c.iterator().next().compareTo(new Host(new TestProtocol())) == 0);
+        assertEquals(0, c.iterator().next().compareTo(new Host(new TestProtocol())));
         r.set(false);
         PreferencesFactory.get().setProperty(c.getConfiguration(), true);
         c.load();

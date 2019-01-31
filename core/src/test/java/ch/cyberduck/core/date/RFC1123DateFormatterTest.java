@@ -5,12 +5,13 @@ import org.junit.Test;
 import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class RFC1123DateFormatterTest {
 
     @Test(expected = InvalidDateException.class)
     public void testNull() throws Exception {
-        assertEquals(null, new RFC1123DateFormatter().parse(null));
+        assertNull(new RFC1123DateFormatter().parse(null));
     }
 
     @Test

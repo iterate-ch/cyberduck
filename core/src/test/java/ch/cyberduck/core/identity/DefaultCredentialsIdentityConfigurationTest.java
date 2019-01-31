@@ -9,6 +9,7 @@ import ch.cyberduck.core.TestProtocol;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class DefaultCredentialsIdentityConfigurationTest {
 
@@ -28,6 +29,6 @@ public class DefaultCredentialsIdentityConfigurationTest {
                 });
         assertEquals(new Credentials("u", "p"), configuration.getCredentials("u"));
         bookmark.getCredentials().setUsername("a");
-        assertEquals(null, configuration.getCredentials("u"));
+        assertNull(configuration.getCredentials("u"));
     }
 }
