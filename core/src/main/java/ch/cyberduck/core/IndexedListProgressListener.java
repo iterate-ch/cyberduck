@@ -37,9 +37,7 @@ public abstract class IndexedListProgressListener implements ListProgressListene
             if(list.size() == before) {
                 i++;
             }
-            else {
-                // current item has been removed
-            }
+            // Else current item has been removed
         }
         index = list.size();
     }
