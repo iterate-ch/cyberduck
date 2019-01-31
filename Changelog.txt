@@ -3,6 +3,7 @@ https://cyberduck.io/
 
 6.9.2
 - [Bugfix] Failure using RSA/ECDSA private in new OpenSSH format (#10552)
+- [Bugfix] Prompt to select parent folder for file dragged to upload (Mac App Store) (#10580)
 
 6.9.1
 - [Bugfix] Fix code signature designated requirement issue (Mac App Store)
