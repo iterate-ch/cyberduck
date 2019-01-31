@@ -83,7 +83,7 @@ public class TouchWorker extends Worker<Path> {
             return false;
         }
         final TouchWorker that = (TouchWorker) o;
-        return !(!Objects.equals(file, that.file));
+        return Objects.equals(file, that.file);
 
     }
 

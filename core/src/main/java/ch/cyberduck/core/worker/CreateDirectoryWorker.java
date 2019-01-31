@@ -85,7 +85,7 @@ public class CreateDirectoryWorker extends Worker<Path> {
         if(!Objects.equals(folder, that.folder)) {
             return false;
         }
-        return !(!Objects.equals(region, that.region));
+        return Objects.equals(region, that.region);
 
     }
 
