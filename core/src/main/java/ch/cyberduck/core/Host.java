@@ -46,7 +46,7 @@ public class Host implements Serializable, Comparable<Host> {
      *
      * @see Protocol#getDefaultPort()
      */
-    private Integer port = -1;
+    private Integer port;
     /**
      * The fully qualified hostname
      */

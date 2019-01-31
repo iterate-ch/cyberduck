@@ -73,7 +73,7 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
 
     private static class EPLFEntryParserContext {
         private final Map<String, String> facts;
-        private FTPFile file = null;
+        private FTPFile file;
 
         public EPLFEntryParserContext(FTPFile f) {
             super();

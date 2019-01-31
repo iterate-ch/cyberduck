@@ -165,7 +165,7 @@ public final class ISO8601DateParser {
                     throw new InvalidDateException("Missing hour field");
                 }
                 int tzhour = Integer.parseInt(st.nextToken());
-                int tzmin = 0;
+                int tzmin;
                 if(check(st, ":") && (st.hasMoreTokens())) {
                     tzmin = Integer.parseInt(st.nextToken());
                 }
