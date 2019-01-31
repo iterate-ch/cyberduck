@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 public class OpenSSHCredentialsConfiguratorTest {
 
     @Test
-    public void testNoConfigure() throws Exception {
+    public void testNoConfigure() {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
             new OpenSshConfig(
                 new Local("src/main/test/resources", "openssh/config")));

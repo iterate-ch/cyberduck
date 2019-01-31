@@ -11,7 +11,6 @@ import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.AbstractS3Test;
@@ -127,7 +126,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
         final AtomicBoolean set = new AtomicBoolean();
         final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, Collections.emptyMap()) {
             @Override
-            protected UpdateStreamingDistributionResult updateStreamingDistribution(final Path container, final Distribution distribution) throws ConnectionCanceledException {
+            protected UpdateStreamingDistributionResult updateStreamingDistribution(final Path container, final Distribution distribution) {
                 fail();
                 return null;
             }
@@ -149,7 +148,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
         final AtomicBoolean set = new AtomicBoolean();
         final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, Collections.emptyMap()) {
             @Override
-            protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution) throws ConnectionCanceledException {
+            protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution) {
                 fail();
                 return null;
             }

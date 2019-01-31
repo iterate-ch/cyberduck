@@ -13,7 +13,7 @@ import java.util.List;
 public class QuartzQuickLookTest {
 
     @Test
-    public void testSelect() throws Exception {
+    public void testSelect() {
         QuickLook q = new QuartzQuickLook();
         final List<Local> files = new ArrayList<Local>();
         files.add(new NullLocal("f"));

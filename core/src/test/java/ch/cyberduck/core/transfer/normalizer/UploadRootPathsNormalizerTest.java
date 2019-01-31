@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 public class UploadRootPathsNormalizerTest {
 
     @Test
-    public void testNormalize() throws Exception {
+    public void testNormalize() {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
@@ -38,7 +38,7 @@ public class UploadRootPathsNormalizerTest {
     }
 
     @Test
-    public void testNormalizeLargeSet() throws Exception {
+    public void testNormalizeLargeSet() {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         for(int i = 0; i < 1000; i++) {
@@ -50,7 +50,7 @@ public class UploadRootPathsNormalizerTest {
     }
 
     @Test
-    public void testNameClash() throws Exception {
+    public void testNameClash() {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal("/f/a")));

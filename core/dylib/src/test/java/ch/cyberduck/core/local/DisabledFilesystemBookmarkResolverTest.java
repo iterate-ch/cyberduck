@@ -23,12 +23,12 @@ import org.junit.Test;
 public class DisabledFilesystemBookmarkResolverTest {
 
     @Test(expected = LocalAccessDeniedException.class)
-    public void testResolve() throws Exception {
+    public void testResolve() {
         new DisabledFilesystemBookmarkResolver().resolve(new NullLocal("/t"), false);
     }
 
     @Test(expected = LocalAccessDeniedException.class)
-    public void testCreate() throws Exception {
+    public void testCreate() {
         new DisabledFilesystemBookmarkResolver().create(new NullLocal("/t"));
     }
 }

@@ -35,47 +35,47 @@ public class LocalTest {
     }
 
     @Test
-    public void testGetParent() throws Exception {
+    public void testGetParent() {
         assertNotNull(new TestLocal(System.getProperty("java.io.tmpdir")).getParent());
         final TestLocal root = new TestLocal("/");
         assertSame(root, root.getParent());
     }
 
     @Test
-    public void testEqual() throws Exception {
+    public void testEqual() {
         assertEquals(new TestLocal("/p/1"), new TestLocal("/p/1"));
         assertNotEquals(new TestLocal("/p/1"), new TestLocal("/p/2"));
         assertEquals(new TestLocal("/p/1"), new TestLocal("/P/1"));
     }
 
     @Test
-    public void testHashCode() throws Exception {
+    public void testHashCode() {
         assertEquals(new TestLocal("/p/1").hashCode(), new TestLocal("/P/1").hashCode());
     }
 
     @Test
-    public void testAttributes() throws Exception {
+    public void testAttributes() {
         final TestLocal l = new TestLocal("/p/1");
         assertNotNull(l.attributes());
         assertEquals(l.attributes(), l.attributes());
     }
 
     @Test
-    public void testIsDirectory() throws Exception {
+    public void testIsDirectory() {
         assertTrue(new TestLocal("../profiles").isDirectory());
         TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID().toString());
         assertFalse(l.isDirectory());
     }
 
     @Test
-    public void testIsFile() throws Exception {
+    public void testIsFile() {
         assertTrue(new Local("../profiles/pom.xml").isFile());
         TestLocal l = new TestLocal(System.getProperty("java.io.tmpdir") + "/" + UUID.randomUUID().toString());
         assertFalse(l.isFile());
     }
 
     @Test
-    public void testDelimiter() throws Exception {
+    public void testDelimiter() {
         Local l = new WindowsLocal("G:\\");
         assertEquals("G:\\", l.getAbsolute());
         assertEquals("", l.getName());
@@ -94,7 +94,7 @@ public class LocalTest {
     }
 
     @Test
-    public void testIsChild() throws Exception {
+    public void testIsChild() {
         TestLocal l1 = new TestLocal("/");
         TestLocal l2 = new TestLocal("/");
         assertFalse(l1.isChild(l2));

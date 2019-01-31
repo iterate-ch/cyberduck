@@ -91,7 +91,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
         final Path container = new Path("unknown.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertFalse(configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
             }
         }).isEnabled());
@@ -114,7 +114,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
         // Create
         final DisabledLoginCallback login = new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
             }
         };

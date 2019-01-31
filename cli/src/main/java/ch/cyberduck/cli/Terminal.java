@@ -403,7 +403,7 @@ public class Terminal {
         return Exit.success;
     }
 
-    protected Exit delete(final SessionPool session, final Path remote) throws BackgroundException {
+    protected Exit delete(final SessionPool session, final Path remote) {
         final List<Path> files = new ArrayList<Path>();
         for(TransferItem i : new DeletePathFinder().find(input, TerminalAction.delete, remote)) {
             files.add(i.remote);

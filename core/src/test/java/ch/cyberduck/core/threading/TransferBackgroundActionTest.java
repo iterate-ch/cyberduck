@@ -209,7 +209,7 @@ public class TransferBackgroundActionTest {
     }
 
     @Test
-    public void testResumeOnRetryWithException() throws Exception {
+    public void testResumeOnRetryWithException() {
         final AtomicBoolean alert = new AtomicBoolean();
         final AbstractController controller = new AbstractController() {
             @Override

@@ -63,7 +63,7 @@ public class FolderBookmarkCollectionTest {
     }
 
     @Test
-    public void testIndex() throws Exception {
+    public void testIndex() {
         FolderBookmarkCollection c = new FolderBookmarkCollection(new NullLocal("", "f")) {
             @Override
             protected void save(Host bookmark) {
@@ -84,7 +84,7 @@ public class FolderBookmarkCollectionTest {
     }
 
     @Test
-    public void testMove() throws Exception {
+    public void testMove() {
         FolderBookmarkCollection f = new FolderBookmarkCollection(new NullLocal("", "f"));
         final Host a = new Host(new TestProtocol(), "a");
         final Host b = new Host(new TestProtocol(), "b");
