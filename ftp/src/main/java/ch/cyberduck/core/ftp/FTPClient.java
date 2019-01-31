@@ -309,11 +309,7 @@ public class FTPClient extends FTPSClient {
                         key = l.substring(1);
                     }
                     key = key.toUpperCase(Locale.ROOT);
-                    Set<String> entries = features.get(key);
-                    if(entries == null) {
-                        entries = new HashSet<String>();
-                        features.put(key, entries);
-                    }
+                    Set<String> entries = features.computeIfAbsent(key, k -> new HashSet<String>());
                     entries.add(value);
                 }
             }
