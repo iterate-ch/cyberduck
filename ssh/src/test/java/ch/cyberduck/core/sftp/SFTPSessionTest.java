@@ -177,12 +177,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
             new DisabledProgressListener());
-        try {
-            login.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        }
-        catch(LoginCanceledException e) {
-            throw e;
-        }
+        login.connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)

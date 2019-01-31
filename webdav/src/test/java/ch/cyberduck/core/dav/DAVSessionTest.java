@@ -341,12 +341,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             new DisabledHostKeyCallback(),
             new DisabledPasswordStore(),
             new DisabledProgressListener());
-        try {
-            c.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        }
-        catch(InteroperabilityException e) {
-            throw e;
-        }
+        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test(expected = InteroperabilityException.class)

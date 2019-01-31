@@ -73,12 +73,7 @@ public class FinderLocalTest {
     public void testListNotFound() throws Exception {
         final String name = UUID.randomUUID().toString();
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
-        try {
-            l.list();
-        }
-        catch(LocalAccessDeniedException e) {
-            throw e;
-        }
+        l.list();
     }
 
     @Test
