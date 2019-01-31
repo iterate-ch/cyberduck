@@ -547,31 +547,4 @@ public final class HostParser {
         Rootless,
         Undefined
     }
-
-    final static class URIComponent {
-        private final String value;
-        private final URIComponents uriComponent;
-
-        URIComponent(final String value, final URIComponents uriComponent) {
-            this.value = value;
-            this.uriComponent = uriComponent;
-        }
-
-        public URIComponents getUriComponent() {
-            return uriComponent;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
-
-    enum URIComponents {
-        Scheme,
-        UserInformation,
-        PasswordInformation,
-        Target,
-        Port,
-        Path
-    }
 }
