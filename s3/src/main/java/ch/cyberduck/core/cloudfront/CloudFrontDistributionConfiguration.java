@@ -50,7 +50,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -272,9 +271,6 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 }
                 catch(AmazonClientException e) {
                     throw new AmazonServiceExceptionMappingService().map("Cannot write CDN configuration", e);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e);
                 }
                 return null;
             }
