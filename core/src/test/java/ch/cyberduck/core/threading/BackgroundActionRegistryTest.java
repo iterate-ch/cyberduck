@@ -18,8 +18,6 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;

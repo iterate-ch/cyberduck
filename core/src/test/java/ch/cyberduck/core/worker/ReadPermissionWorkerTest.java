@@ -24,7 +24,6 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.PermissionOverwrite;
 import ch.cyberduck.core.TestPermissionAttributes;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 

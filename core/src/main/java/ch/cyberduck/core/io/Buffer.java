@@ -16,7 +16,6 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 
 import java.io.IOException;
 

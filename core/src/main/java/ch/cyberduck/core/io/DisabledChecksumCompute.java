@@ -15,7 +15,6 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;

@@ -18,7 +18,6 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.cli.CommandLine;

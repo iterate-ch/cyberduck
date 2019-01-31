@@ -9,7 +9,6 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.pool.StatelessSessionPool;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 

@@ -17,7 +17,6 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 
 import java.util.Collections;

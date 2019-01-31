@@ -15,7 +15,6 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.CancelCallback;
 
 public class TestLoginConnectionService extends LoginConnectionService {

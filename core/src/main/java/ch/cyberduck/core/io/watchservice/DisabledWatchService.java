@@ -18,7 +18,6 @@ package ch.cyberduck.core.io.watchservice;
  * feedback@cyberduck.io
  */
 
-import java.io.IOException;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.Watchable;

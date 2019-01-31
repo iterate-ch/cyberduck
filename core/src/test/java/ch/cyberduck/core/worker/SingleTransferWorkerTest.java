@@ -1,7 +1,6 @@
 package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;

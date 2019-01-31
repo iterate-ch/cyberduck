@@ -18,7 +18,6 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.io
  */
 
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 

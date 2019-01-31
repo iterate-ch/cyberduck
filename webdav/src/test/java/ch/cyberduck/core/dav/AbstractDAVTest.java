@@ -16,7 +16,6 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.local.FlatTemporaryFileService;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;

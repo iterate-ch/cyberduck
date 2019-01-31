@@ -20,7 +20,6 @@ package ch.cyberduck.fs;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 
 public interface Filesystem {
 

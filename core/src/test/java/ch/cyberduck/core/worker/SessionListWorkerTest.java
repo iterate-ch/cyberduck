@@ -16,7 +16,6 @@ import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.pool.StatelessSessionPool;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;

@@ -18,7 +18,6 @@ package ch.cyberduck.core.identity;
  */
 
 import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.exception.BackgroundException;
 
 public abstract class AbstractIdentityConfiguration implements IdentityConfiguration {
 

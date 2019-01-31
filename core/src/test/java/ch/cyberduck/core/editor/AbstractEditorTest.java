@@ -28,7 +28,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestLoginConnectionService;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
@@ -44,7 +43,6 @@ import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.EnumSet;

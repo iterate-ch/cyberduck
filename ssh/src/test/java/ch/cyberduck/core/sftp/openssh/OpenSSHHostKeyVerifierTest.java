@@ -2,7 +2,6 @@ package ch.cyberduck.core.sftp.openssh;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.junit.Test;
 

@@ -1,8 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
-
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.StringUtils;

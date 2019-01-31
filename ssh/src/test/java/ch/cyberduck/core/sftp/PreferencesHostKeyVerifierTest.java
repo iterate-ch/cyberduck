@@ -1,7 +1,5 @@
 package ch.cyberduck.core.sftp;
 
-import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;

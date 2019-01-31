@@ -18,9 +18,6 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-
 import java.security.PublicKey;
 
 public class DisabledHostKeyCallback implements HostKeyCallback {

@@ -15,12 +15,9 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.watchservice.DisabledWatchService;
 
 import org.junit.Test;
-
-import java.io.IOException;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
