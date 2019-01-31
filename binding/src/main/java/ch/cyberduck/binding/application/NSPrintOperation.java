@@ -72,7 +72,7 @@ public abstract class NSPrintOperation extends NSObject {
          * Original signature : <code>+(NSPrintOperation*)printOperationWithView:(NSView*) printInfo:(NSPrintInfo*)</code><br>
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:90</i>
          */
-        public abstract NSPrintOperation printOperationWithView_printInfo(NSView view, NSPrintInfo printInfo);
+        NSPrintOperation printOperationWithView_printInfo(NSView view, NSPrintInfo printInfo);
         /**
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:91</i><br>
          * Conversion Error : /// Original signature : <code>+(NSPrintOperation*)PDFOperationWithView:(NSView*) insideRect:() toData:(NSMutableData*) printInfo:(NSPrintInfo*)</code><br>
@@ -98,7 +98,7 @@ public abstract class NSPrintOperation extends NSObject {
          * Original signature : <code>+(NSPrintOperation*)printOperationWithView:(NSView*)</code><br>
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:98</i>
          */
-        public abstract NSPrintOperation printOperationWithView(NSView view);
+        NSPrintOperation printOperationWithView(NSView view);
         /**
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:99</i><br>
          * Conversion Error : /// Original signature : <code>+(NSPrintOperation*)PDFOperationWithView:(NSView*) insideRect:() toData:(NSMutableData*)</code><br>
@@ -114,16 +114,16 @@ public abstract class NSPrintOperation extends NSObject {
          * Original signature : <code>+(NSPrintOperation*)currentOperation</code><br>
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:104</i>
          */
-        public abstract NSPrintOperation currentOperation();
+        NSPrintOperation currentOperation();
 
         /**
          * Original signature : <code>+(void)setCurrentOperation:(NSPrintOperation*)</code><br>
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:105</i>
          */
-        public abstract void setCurrentOperation(NSPrintOperation operation);
+        void setCurrentOperation(NSPrintOperation operation);
 
         /// <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h</i>
-        public abstract NSPrintOperation alloc();
+        NSPrintOperation alloc();
     }
 
     /**

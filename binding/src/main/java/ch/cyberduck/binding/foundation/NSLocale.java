@@ -27,84 +27,84 @@ public abstract class NSLocale extends NSObject {
     public interface _Class extends ObjCClass {
         /// <i>native declaration : NSLocale.h</i>
 
-        public abstract NSLocale alloc();
+        NSLocale alloc();
 
         /**
          * Original signature : <code>NSArray* availableLocaleIdentifiers()</code><br>
          * From category NSLocale<br>
          * <i>from NSLocaleGeneralInfo native declaration : /System/Library/Frameworks/framework/Headers/NSLocale.h:40</i>
          */
-        public abstract NSArray availableLocaleIdentifiers();
+        NSArray availableLocaleIdentifiers();
 
         /**
          * Original signature : <code>NSArray* ISOLanguageCodes()</code><br>
          * From category NSLocale<br>
          * <i>from NSLocaleGeneralInfo native declaration : /System/Library/Frameworks/framework/Headers/NSLocale.h:41</i>
          */
-        public abstract NSArray ISOLanguageCodes();
+        NSArray ISOLanguageCodes();
 
         /**
          * Original signature : <code>NSArray* ISOCountryCodes()</code><br>
          * From category NSLocale<br>
          * <i>from NSLocaleGeneralInfo native declaration : /System/Library/Frameworks/framework/Headers/NSLocale.h:42</i>
          */
-        public abstract NSArray ISOCountryCodes();
+        NSArray ISOCountryCodes();
 
         /**
          * Original signature : <code>NSArray* ISOCurrencyCodes()</code><br>
          * From category NSLocale<br>
          * <i>from NSLocaleGeneralInfo native declaration : /System/Library/Frameworks/framework/Headers/NSLocale.h:43</i>
          */
-        public abstract NSArray ISOCurrencyCodes();
+        NSArray ISOCurrencyCodes();
 
         /**
          * Original signature : <code>NSArray* commonISOCurrencyCodes()</code><br>
          * From category NSLocale<br>
          * <i>from NSLocaleGeneralInfo native declaration : /System/Library/Frameworks/framework/Headers/NSLocale.h:44</i>
          */
-        public abstract NSArray commonISOCurrencyCodes();
+        NSArray commonISOCurrencyCodes();
 
         /**
          * Original signature : <code>NSArray* preferredLanguages()</code><br>
          * From category NSLocale<br>
          * <i>from NSLocaleGeneralInfo native declaration : /System/Library/Frameworks/framework/Headers/NSLocale.h:45</i>
          */
-        public abstract NSArray preferredLanguages();
+        NSArray preferredLanguages();
 
         /**
          * Original signature : <code>NSDictionary* componentsFromLocaleIdentifier(NSString*)</code><br>
          * From category NSLocale<br>
          * <i>from NSLocaleGeneralInfo native declaration : /System/Library/Frameworks/framework/Headers/NSLocale.h:47</i>
          */
-        public abstract NSDictionary componentsFromLocaleIdentifier(String string);
+        NSDictionary componentsFromLocaleIdentifier(String string);
 
         /**
          * Original signature : <code>NSString* localeIdentifierFromComponents(NSDictionary*)</code><br>
          * From category NSLocale<br>
          * <i>from NSLocaleGeneralInfo native declaration : /System/Library/Frameworks/framework/Headers/NSLocale.h:48</i>
          */
-        public abstract String localeIdentifierFromComponents(NSDictionary dict);
+        String localeIdentifierFromComponents(NSDictionary dict);
 
         /**
          * Original signature : <code>NSString* canonicalLocaleIdentifierFromString(NSString*)</code><br>
          * From category NSLocale<br>
          * <i>from NSLocaleGeneralInfo native declaration : /System/Library/Frameworks/framework/Headers/NSLocale.h:50</i>
          */
-        public abstract String canonicalLocaleIdentifierFromString(String string);
+        String canonicalLocaleIdentifierFromString(String string);
 
         /**
          * Original signature : <code>systemLocale()</code><br>
          * From category NSLocale<br>
          * <i>from NSLocaleCreation native declaration : /System/Library/Frameworks/framework/Headers/NSLocale.h:30</i>
          */
-        public abstract NSLocale systemLocale();
+        NSLocale systemLocale();
 
         /**
          * Original signature : <code>currentLocale()</code><br>
          * From category NSLocale<br>
          * <i>from NSLocaleCreation native declaration : /System/Library/Frameworks/framework/Headers/NSLocale.h:31</i>
          */
-        public abstract NSLocale currentLocale();
+        NSLocale currentLocale();
     }
 
     /**

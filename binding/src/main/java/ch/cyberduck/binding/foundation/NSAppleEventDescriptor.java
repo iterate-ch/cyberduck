@@ -37,7 +37,7 @@ public abstract class NSAppleEventDescriptor extends NSObject {
          * Original signature : <code>+(NSAppleEventDescriptor*)nullDescriptor</code><br>
          * <i>native declaration : line 18</i>
          */
-        public abstract NSAppleEventDescriptor nullDescriptor();
+        NSAppleEventDescriptor nullDescriptor();
         /**
          * <i>native declaration : line 22</i><br>
          * Conversion Error : /// Original signature : <code>+(NSAppleEventDescriptor*)descriptorWithDescriptorType:() bytes:(const void*) length:(NSUInteger)</code><br>
@@ -52,7 +52,7 @@ public abstract class NSAppleEventDescriptor extends NSObject {
          * Original signature : <code>+(NSAppleEventDescriptor*)descriptorWithBoolean:(Boolean)</code><br>
          * <i>native declaration : line 28</i>
          */
-        public abstract NSAppleEventDescriptor descriptorWithBoolean(boolean boolean_);
+        NSAppleEventDescriptor descriptorWithBoolean(boolean boolean_);
         /**
          * <i>native declaration : line 29</i><br>
          * Conversion Error : /// Original signature : <code>+(NSAppleEventDescriptor*)descriptorWithEnumCode:()</code><br>
@@ -62,7 +62,7 @@ public abstract class NSAppleEventDescriptor extends NSObject {
          * Original signature : <code>+(NSAppleEventDescriptor*)descriptorWithInt32:(SInt32)</code><br>
          * <i>native declaration : line 30</i>
          */
-        public abstract NSAppleEventDescriptor descriptorWithInt32(int signedInt);
+        NSAppleEventDescriptor descriptorWithInt32(int signedInt);
         /**
          * <i>native declaration : line 31</i><br>
          * Conversion Error : /// Original signature : <code>+(NSAppleEventDescriptor*)descriptorWithTypeCode:()</code><br>
@@ -72,7 +72,7 @@ public abstract class NSAppleEventDescriptor extends NSObject {
          * Original signature : <code>+(NSAppleEventDescriptor*)descriptorWithString:(NSString*)</code><br>
          * <i>native declaration : line 36</i>
          */
-        public abstract NSAppleEventDescriptor descriptorWithString(String string);
+        NSAppleEventDescriptor descriptorWithString(String string);
         /**
          * <i>native declaration : line 40</i><br>
          * Conversion Error : /**<br>
@@ -85,15 +85,15 @@ public abstract class NSAppleEventDescriptor extends NSObject {
          * Original signature : <code>+(NSAppleEventDescriptor*)listDescriptor</code><br>
          * <i>native declaration : line 41</i>
          */
-        public abstract NSAppleEventDescriptor listDescriptor();
+        NSAppleEventDescriptor listDescriptor();
 
         /**
          * Original signature : <code>+(NSAppleEventDescriptor*)recordDescriptor</code><br>
          * <i>native declaration : line 42</i>
          */
-        public abstract NSAppleEventDescriptor recordDescriptor();
+        NSAppleEventDescriptor recordDescriptor();
 
-        public abstract NSAppleEventDescriptor alloc();
+        NSAppleEventDescriptor alloc();
     }
 
     /**

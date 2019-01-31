@@ -36,19 +36,19 @@ public abstract class NSPrintInfo extends NSObject {
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/AppKitDefines.h</i><br>
      * enum values
      */
-    public static interface NSPrintingOrientation {
-        public static final int NSPortraitOrientation = 0;
-        public static final int NSLandscapeOrientation = 1;
+    public interface NSPrintingOrientation {
+        int NSPortraitOrientation = 0;
+        int NSLandscapeOrientation = 1;
     }
 
     /**
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/AppKitDefines.h</i><br>
      * enum values
      */
-    public static interface NSPrintingPaginationMode {
-        public static final int NSAutoPagination = 0;
-        public static final int NSFitPagination = 1;
-        public static final int NSClipPagination = 2;
+    public interface NSPrintingPaginationMode {
+        int NSAutoPagination = 0;
+        int NSFitPagination = 1;
+        int NSClipPagination = 2;
     }
 
     public interface _Class extends ObjCClass {
@@ -57,37 +57,37 @@ public abstract class NSPrintInfo extends NSObject {
          * Original signature : <code>+(void)setSharedPrintInfo:(NSPrintInfo*)</code><br>
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:66</i>
          */
-        public abstract void setSharedPrintInfo(NSPrintInfo printInfo);
+        void setSharedPrintInfo(NSPrintInfo printInfo);
 
         /**
          * Original signature : <code>+(NSPrintInfo*)sharedPrintInfo</code><br>
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:67</i>
          */
-        public abstract NSPrintInfo sharedPrintInfo();
+        NSPrintInfo sharedPrintInfo();
 
         /**
          * Return the default printer, if one has been selected by the user, nil otherwise.<br>
          * Original signature : <code>+(NSPrinter*)defaultPrinter</code><br>
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:127</i>
          */
-        public abstract com.sun.jna.Pointer defaultPrinter();
+        com.sun.jna.Pointer defaultPrinter();
 
         /**
          * A method that was deprecated in Mac OS 10.2.  +[NSPrintInfo setDefaultPrinter:] does nothing.<br>
          * Original signature : <code>+(void)setDefaultPrinter:(NSPrinter*)</code><br>
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:130</i>
          */
-        public abstract void setDefaultPrinter(com.sun.jna.Pointer printer);
+        void setDefaultPrinter(com.sun.jna.Pointer printer);
 
         /**
          * A method that was deprecated in Mac OS 10.2.  NSPrintInfo's implementation of this method recognizes only a small fixed set of paper names, and does not take the details of any particular printer into account.  You should use -[NSPrinter pageSizeForPaper:] instead.<br>
          * Original signature : <code>+(id)sizeForPaperName:(NSString*)</code><br>
          * <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h:133</i>
          */
-        public abstract NSObject sizeForPaperName(String name);
+        NSObject sizeForPaperName(String name);
 
         /// <i>native declaration : /System/Library/Frameworks/framework/Headers/AppKitDefines.h</i>
-        public abstract NSPrintInfo alloc();
+        NSPrintInfo alloc();
     }
 
     /**

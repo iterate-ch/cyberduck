@@ -54,7 +54,7 @@ public abstract class NSOutlineView extends NSTableView {
         NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items);
     }
 
-    public static interface Delegate {
+    public interface Delegate {
         void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSObject item);
 
         boolean outlineView_shouldExpandItem(NSOutlineView view, NSObject item);

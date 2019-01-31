@@ -31,7 +31,7 @@ public abstract class NSAppleScript extends NSObject {
     private static final _Class CLASS = Rococoa.createClass("NSAppleScript", _Class.class);
 
     public interface _Class extends ObjCClass {
-        public abstract NSAppleScript alloc();
+        NSAppleScript alloc();
     }
 
     /**

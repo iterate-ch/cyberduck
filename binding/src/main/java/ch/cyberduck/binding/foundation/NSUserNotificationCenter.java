@@ -39,7 +39,7 @@ public abstract class NSUserNotificationCenter extends NSObject {
          * Original signature : <code>+(NSUserNotificationCenter*)defaultUserNotificationCenter</code><br>
          * <i>native declaration : line 8</i>
          */
-        public abstract NSUserNotificationCenter defaultUserNotificationCenter();
+        NSUserNotificationCenter defaultUserNotificationCenter();
     }
 
     // Add a notification to the center for scheduling.

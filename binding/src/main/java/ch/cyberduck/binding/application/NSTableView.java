@@ -70,7 +70,7 @@ public abstract class NSTableView extends NSControl {
     public interface DataSource {
         NSInteger numberOfRowsInTableView(NSTableView view);
 
-        public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row);
+        NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row);
 
         void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value, NSTableColumn tableColumn, NSInteger row);
 
@@ -83,7 +83,7 @@ public abstract class NSTableView extends NSControl {
         NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes);
     }
 
-    public static interface Delegate {
+    public interface Delegate {
         void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSInteger row);
     }
 
