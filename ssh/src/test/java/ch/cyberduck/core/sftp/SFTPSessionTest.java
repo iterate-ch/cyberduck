@@ -18,7 +18,6 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
@@ -215,13 +214,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Local select(final Local identity) throws LoginCanceledException {
-                try {
-                    return new NullLocal("k");
-                }
-                catch(LocalAccessDeniedException e) {
-                    fail();
-                    throw new LoginCanceledException(e);
-                }
+                return new NullLocal("k");
             }
 
             @Override
