@@ -28,7 +28,6 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.PermissionOverwrite;
 import ch.cyberduck.core.TestPermissionAttributes;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 
@@ -139,17 +138,19 @@ public class WritePermissionWorkerTest {
 
                         @Override
                         public void setUnixPermission(final Path file, final Permission permission) {
-                            if(file.getName().equals("a")) {
-                                assertEquals(new Permission(644), permission);
-                            }
-                            else if(file.getName().equals("d")) {
-                                assertEquals(new Permission(544), permission);
-                            }
-                            else if(file.getName().equals("f")) {
-                                assertEquals(new Permission(644), permission);
-                            }
-                            else {
-                                fail();
+                            switch(file.getName()) {
+                                case "a":
+                                    assertEquals(new Permission(644), permission);
+                                    break;
+                                case "d":
+                                    assertEquals(new Permission(544), permission);
+                                    break;
+                                case "f":
+                                    assertEquals(new Permission(644), permission);
+                                    break;
+                                default:
+                                    fail();
+                                    break;
                             }
                         }
                     };

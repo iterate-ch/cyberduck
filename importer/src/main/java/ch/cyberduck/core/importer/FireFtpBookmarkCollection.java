@@ -131,66 +131,68 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                 continue;
             }
             String value = scanner.next().replaceAll("\"", StringUtils.EMPTY);
-            if("host".equals(name)) {
-                current.setHostname(value);
-            }
-            else if("port".equals(name)) {
-                try {
-                    current.setPort(Integer.parseInt(value));
-                }
-                catch(NumberFormatException e) {
-                    log.warn("Invalid Port:" + e.getMessage());
-                }
-            }
-            else if("remotedir".equals(name)) {
-                current.setDefaultPath(value);
-            }
-            else if("webhost".equals(name)) {
-                current.setWebURL(value);
-            }
-            else if("encoding".equals(name)) {
-                current.setEncoding(value);
-            }
-            else if("notes".equals(name)) {
-                current.setComment(value);
-            }
-            else if("account".equals(name)) {
-                current.setNickname(value);
-            }
-            else if("privatekey".equals(name)) {
-                current.getCredentials().setIdentity(LocalFactory.get(value));
-            }
-            else if("pasvmode".equals(name)) {
-                if(Boolean.TRUE.toString().equals(value)) {
-                    current.setFTPConnectMode(FTPConnectMode.passive);
-                }
-                if(Boolean.FALSE.toString().equals(value)) {
-                    current.setFTPConnectMode(FTPConnectMode.active);
-                }
-            }
-            else if("login".equals(name)) {
-                current.getCredentials().setUsername(value);
-            }
-            else if("password".equals(name)) {
-                current.getCredentials().setPassword(value);
-            }
-            else if("anonymous".equals(name)) {
-                if(Boolean.TRUE.toString().equals(value)) {
-                    current.getCredentials().setUsername(
+            switch(name) {
+                case "host":
+                    current.setHostname(value);
+                    break;
+                case "port":
+                    try {
+                        current.setPort(Integer.parseInt(value));
+                    }
+                    catch(NumberFormatException e) {
+                        log.warn("Invalid Port:" + e.getMessage());
+                    }
+                    break;
+                case "remotedir":
+                    current.setDefaultPath(value);
+                    break;
+                case "webhost":
+                    current.setWebURL(value);
+                    break;
+                case "encoding":
+                    current.setEncoding(value);
+                    break;
+                case "notes":
+                    current.setComment(value);
+                    break;
+                case "account":
+                    current.setNickname(value);
+                    break;
+                case "privatekey":
+                    current.getCredentials().setIdentity(LocalFactory.get(value));
+                    break;
+                case "pasvmode":
+                    if(Boolean.TRUE.toString().equals(value)) {
+                        current.setFTPConnectMode(FTPConnectMode.passive);
+                    }
+                    if(Boolean.FALSE.toString().equals(value)) {
+                        current.setFTPConnectMode(FTPConnectMode.active);
+                    }
+                    break;
+                case "login":
+                    current.getCredentials().setUsername(value);
+                    break;
+                case "password":
+                    current.getCredentials().setPassword(value);
+                    break;
+                case "anonymous":
+                    if(Boolean.TRUE.toString().equals(value)) {
+                        current.getCredentials().setUsername(
                             PreferencesFactory.get().getProperty("connection.login.anon.name"));
-                }
-            }
-            else if("security".equals(name)) {
-                if("authtls".equals(value)) {
-                    current.setProtocol(protocols.forScheme(Scheme.ftps));
-                    // Reset port to default
-                    current.setPort(-1);
-                }
-                if("sftp".equals(value)) {
-                    current.setProtocol(protocols.forScheme(Scheme.sftp));
-                    // Reset port to default
-                    current.setPort(-1);
-                }
+                    }
+                    break;
+                case "security":
+                    if("authtls".equals(value)) {
+                        current.setProtocol(protocols.forScheme(Scheme.ftps));
+                        // Reset port to default
+                        current.setPort(-1);
+                    }
+                    if("sftp".equals(value)) {
+                        current.setProtocol(protocols.forScheme(Scheme.sftp));
+                        // Reset port to default
+                        current.setPort(-1);
+                    }
+                    break;
             }
         }
         this.add(current);

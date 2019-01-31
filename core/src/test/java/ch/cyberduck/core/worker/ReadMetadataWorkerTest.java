@@ -5,7 +5,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Metadata;
 
 import org.junit.Test;
@@ -82,17 +81,16 @@ public class ReadMetadataWorkerTest {
 
                         @Override
                         public Map<String, String> getMetadata(final Path file) {
-                            if(file.getName().equals("a")) {
-                                return Collections.singletonMap("key1", "value1");
-                            }
-                            else if(file.getName().equals("b")) {
-                                return Collections.singletonMap("key2", "value2");
-                            }
-                            else if(file.getName().equals("c")) {
-                                return Collections.singletonMap("key2", "value2");
-                            }
-                            else {
-                                fail();
+                            switch(file.getName()) {
+                                case "a":
+                                    return Collections.singletonMap("key1", "value1");
+                                case "b":
+                                    return Collections.singletonMap("key2", "value2");
+                                case "c":
+                                    return Collections.singletonMap("key2", "value2");
+                                default:
+                                    fail();
+                                    break;
                             }
                             throw new UnsupportedOperationException();
                         }
@@ -138,24 +136,23 @@ public class ReadMetadataWorkerTest {
                         @Override
                         public Map<String, String> getMetadata(final Path file) {
                             final HashMap<String, String> map = new HashMap<String, String>();
-                            if(file.getName().equals("a")) {
-                                map.put("key1", "v1");
-                                map.put("key2", "v");
-                                map.put("key3", "v");
-                                return map;
-                            }
-                            else if(file.getName().equals("b")) {
-                                map.put("key2", "v");
-                                map.put("key3", "v");
-                                return map;
-                            }
-                            else if(file.getName().equals("c")) {
-                                map.put("key2", "v2");
-                                map.put("key3", "v");
-                                return map;
-                            }
-                            else {
-                                fail();
+                            switch(file.getName()) {
+                                case "a":
+                                    map.put("key1", "v1");
+                                    map.put("key2", "v");
+                                    map.put("key3", "v");
+                                    return map;
+                                case "b":
+                                    map.put("key2", "v");
+                                    map.put("key3", "v");
+                                    return map;
+                                case "c":
+                                    map.put("key2", "v2");
+                                    map.put("key3", "v");
+                                    return map;
+                                default:
+                                    fail();
+                                    break;
                             }
                             return map;
                         }

@@ -136,42 +136,44 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             return false;
         }
         String value = scanner.next().replaceAll("\"", StringUtils.EMPTY);
-        if("conntype".equals(name)) {
-            try {
-                switch(Integer.parseInt(value)) {
-                    case 4:
-                        current.setProtocol(protocols.forScheme(Scheme.sftp));
-                        break;
-                    case 5:
-                        current.setProtocol(protocols.forScheme(Scheme.ftps));
-                        break;
+        switch(name) {
+            case "conntype":
+                try {
+                    switch(Integer.parseInt(value)) {
+                        case 4:
+                            current.setProtocol(protocols.forScheme(Scheme.sftp));
+                            break;
+                        case 5:
+                            current.setProtocol(protocols.forScheme(Scheme.ftps));
+                            break;
+                    }
+                    // Reset port to default
+                    current.setPort(-1);
                 }
-                // Reset port to default
-                current.setPort(-1);
-            }
-            catch(NumberFormatException e) {
-                log.warn("Unknown Protocol:" + e.getMessage());
-            }
-        }
-        else if("host".equals(name)) {
-            current.setHostname(value);
-        }
-        else if("port".equals(name)) {
-            try {
-                current.setPort(Integer.parseInt(value));
-            }
-            catch(NumberFormatException e) {
-                log.warn("Invalid Port:" + e.getMessage());
-            }
-        }
-        else if("dir".equals(name)) {
-            current.setDefaultPath(value);
-        }
-        else if("comment".equals(name)) {
-            current.setComment(value);
-        }
-        else if("uid".equals(name)) {
-            current.getCredentials().setUsername(value);
+                catch(NumberFormatException e) {
+                    log.warn("Unknown Protocol:" + e.getMessage());
+                }
+                break;
+            case "host":
+                current.setHostname(value);
+                break;
+            case "port":
+                try {
+                    current.setPort(Integer.parseInt(value));
+                }
+                catch(NumberFormatException e) {
+                    log.warn("Invalid Port:" + e.getMessage());
+                }
+                break;
+            case "dir":
+                current.setDefaultPath(value);
+                break;
+            case "comment":
+                current.setComment(value);
+                break;
+            case "uid":
+                current.getCredentials().setUsername(value);
+                break;
         }
         return true;
     }

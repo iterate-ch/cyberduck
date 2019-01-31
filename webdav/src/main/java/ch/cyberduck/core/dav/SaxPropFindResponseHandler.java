@@ -18,7 +18,6 @@ package ch.cyberduck.core.dav;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -83,24 +82,26 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
 
         @Override
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
-            if(localName.equals("response")) {
-                response = new Response();
-                multistatus.getResponse().add(response);
-            }
-            else if(localName.equals("propstat")) {
-                propstat = new Propstat();
-                response.getPropstat().add(propstat);
-            }
-            else if(localName.equals("prop")) {
-                prop = new Prop();
-                propstat.setProp(prop);
-            }
-            else if(localName.equals("resourcetype")) {
-                type = new Resourcetype();
-                prop.setResourcetype(type);
-            }
-            else if(localName.equals("collection")) {
-                type.setCollection(new Collection());
+            switch(localName) {
+                case "response":
+                    response = new Response();
+                    multistatus.getResponse().add(response);
+                    break;
+                case "propstat":
+                    propstat = new Propstat();
+                    response.getPropstat().add(propstat);
+                    break;
+                case "prop":
+                    prop = new Prop();
+                    propstat.setProp(prop);
+                    break;
+                case "resourcetype":
+                    type = new Resourcetype();
+                    prop.setResourcetype(type);
+                    break;
+                case "collection":
+                    type.setCollection(new Collection());
+                    break;
             }
             data = new StringBuilder();
         }
