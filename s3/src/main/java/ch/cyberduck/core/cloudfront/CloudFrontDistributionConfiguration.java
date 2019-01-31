@@ -62,6 +62,7 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cloudfront.AmazonCloudFront;
 import com.amazonaws.services.cloudfront.AmazonCloudFrontClientBuilder;
 import com.amazonaws.services.cloudfront.model.*;
@@ -118,7 +119,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             .passwordPlaceholder(LocaleFactory.localizedString("Secret Access Key", "S3"));
         try {
             final LoginService login = new KeychainLoginService(PasswordStoreFactory.get());
-            login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), prompt, options);
+            login.validate(bookmark, LocaleFactory.localizedString("Amazon CloudFront", "S3"), prompt, options);
             return run.call();
         }
         catch(LoginFailureException failure) {
@@ -723,9 +724,20 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     private AmazonCloudFront client(final Path container) throws BackgroundException {
-        return AmazonCloudFrontClientBuilder.standard()
+        final AmazonCloudFrontClientBuilder builder = AmazonCloudFrontClientBuilder.standard()
             .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(bookmark.getCredentials()))
-            .withClientConfiguration(configuration)
-            .withRegion(locationFeature.getLocation(container).getIdentifier()).build();
+            .withClientConfiguration(configuration);
+        final Location.Name region = this.getRegion(container);
+        if(Location.unknown.equals(region)) {
+            builder.withRegion(Regions.DEFAULT_REGION);
+        }
+        else {
+            builder.withRegion(region.getIdentifier());
+        }
+        return builder.build();
+    }
+
+    protected Location.Name getRegion(final Path container) throws BackgroundException {
+        return locationFeature.getLocation(container);
     }
 }

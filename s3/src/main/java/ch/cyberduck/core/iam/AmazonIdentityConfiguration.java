@@ -205,9 +205,10 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
     }
 
     private AmazonIdentityManagement client() {
-        return AmazonIdentityManagementClientBuilder.standard()
+        final AmazonIdentityManagementClientBuilder builder = AmazonIdentityManagementClientBuilder.standard()
             .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(bookmark.getCredentials()))
             .withClientConfiguration(configuration)
-            .withRegion(Regions.DEFAULT_REGION).build();
+            .withRegion(Regions.DEFAULT_REGION);
+        return builder.build();
     }
 }

@@ -113,4 +113,9 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
         }
         return url;
     }
+
+    @Override
+    protected Location.Name getRegion(final Path container) {
+        return Location.unknown;
+    }
 }

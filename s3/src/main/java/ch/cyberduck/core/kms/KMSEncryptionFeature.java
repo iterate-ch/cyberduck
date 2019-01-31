@@ -51,6 +51,7 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.AliasListEntry;
@@ -180,10 +181,17 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     }
 
     private AWSKMS client(final Path container) throws BackgroundException {
-        return AWSKMSClientBuilder.standard()
+        final AWSKMSClientBuilder builder = AWSKMSClientBuilder.standard()
             .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(bookmark.getCredentials()))
-            .withClientConfiguration(configuration)
-            .withRegion(locationFeature.getLocation(container).getIdentifier()).build();
+            .withClientConfiguration(configuration);
+        final Location.Name region = locationFeature.getLocation(container);
+        if(Location.unknown.equals(region)) {
+            builder.withRegion(Regions.DEFAULT_REGION);
+        }
+        else {
+            builder.withRegion(region.getIdentifier());
+        }
+        return builder.build();
     }
 
     /**
