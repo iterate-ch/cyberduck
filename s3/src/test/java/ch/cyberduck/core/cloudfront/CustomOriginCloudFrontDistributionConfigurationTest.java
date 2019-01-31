@@ -1,8 +1,10 @@
 package ch.cyberduck.core.cloudfront;
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cdn.Distribution;
@@ -87,17 +89,19 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
             }
         }, new DefaultX509KeyManager());
         final Path container = new Path("unknown.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertFalse(configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback()).isEnabled());
+        assertFalse(configuration.read(container, Distribution.CUSTOM, new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
+            }
+        }).isEnabled());
     }
 
     @Test
-    @Ignore
     public void testWriteReadUpdate() throws Exception {
         final Host origin = new Host(new TestProtocol(), String.format("%s.localdomain", UUID.randomUUID().toString()));
         origin.setWebURL("http://example.net");
         origin.setDefaultPath("public_html");
-        origin.getCdnCredentials().setUsername(System.getProperties().getProperty("s3.key"));
-        origin.getCdnCredentials().setPassword(System.getProperties().getProperty("s3.secret"));
         final CustomOriginCloudFrontDistributionConfiguration configuration
             = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager() {
             @Override
@@ -108,9 +112,15 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
         final Path file = new Path("/public_html", EnumSet.of(Path.Type.directory));
         final Distribution writeDistributionConfiguration = new Distribution(Distribution.CUSTOM, false);
         // Create
-        configuration.write(file, writeDistributionConfiguration, new DisabledLoginCallback());
+        final DisabledLoginCallback login = new DisabledLoginCallback() {
+            @Override
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                return new Credentials(System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"));
+            }
+        };
+        configuration.write(file, writeDistributionConfiguration, login);
         // Read
-        final Distribution readDistributionConfiguration = configuration.read(file, Distribution.CUSTOM, new DisabledLoginCallback());
+        final Distribution readDistributionConfiguration = configuration.read(file, Distribution.CUSTOM, login);
         assertNotNull(readDistributionConfiguration.getId());
         assertFalse(readDistributionConfiguration.isEnabled());
         assertEquals("http://example.net/public_html", readDistributionConfiguration.getOrigin().toString());
@@ -121,7 +131,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
         assertNull(readDistributionConfiguration.getLoggingContainer());
         readDistributionConfiguration.setEnabled(false);
         // Update
-        configuration.write(file, readDistributionConfiguration, new DisabledLoginCallback());
+        configuration.write(file, readDistributionConfiguration, login);
         configuration.deleteDownloadDistribution(file, readDistributionConfiguration);
     }
 
