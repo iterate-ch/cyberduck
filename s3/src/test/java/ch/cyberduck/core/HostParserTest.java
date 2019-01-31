@@ -12,7 +12,7 @@ public class HostParserTest {
 
     @Test
     public void testParseS3Scheme() throws Exception {
-        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestS3Protocol()))).get("s3://bucketname/key");
+        final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestS3Protocol()))).get("s3:/bucketname/key");
         assertEquals("s3.amazonaws.com", host.getHostname());
         assertEquals(Protocol.Type.s3, host.getProtocol().getType());
         assertEquals("/bucketname/key", host.getDefaultPath());
