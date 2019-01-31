@@ -386,7 +386,7 @@ public class UploadTransferTest {
                         }
                     };
                 }
-                return (T) super._getFeature(type);
+                return super._getFeature(type);
             }
         };
         final AtomicBoolean set = new AtomicBoolean();

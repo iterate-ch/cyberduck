@@ -117,7 +117,7 @@ public class MoveWorkerTest {
                         }
                     };
                 }
-                return (T) super._getFeature(type);
+                return super._getFeature(type);
             }
 
             @Override

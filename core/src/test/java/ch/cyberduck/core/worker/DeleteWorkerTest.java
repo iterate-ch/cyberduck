@@ -48,7 +48,7 @@ public class DeleteWorkerTest {
                         }
                     };
                 }
-                return (T) super._getFeature(type);
+                return super._getFeature(type);
             }
 
             @Override
@@ -93,7 +93,7 @@ public class DeleteWorkerTest {
                         }
                     };
                 }
-                return (T) super._getFeature(type);
+                return super._getFeature(type);
             }
 
             @Override
