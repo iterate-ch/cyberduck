@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.InvalidHostException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -80,14 +81,10 @@ public final class HostParser {
 
         Value<String> schemeValue = new Value<>();
         Protocol protocol;
-        if(!parseScheme(reader, schemeValue) || null == schemeValue.getValue()) {
+        if(!parseScheme(reader, schemeValue)
+            || null == schemeValue.getValue()
+            || (protocol = factory.forName(schemeValue.getValue())) == null) {
             protocol = defaultScheme;
-        }
-        else {
-            protocol = factory.forName(schemeValue.getValue());
-            if(null == protocol) {
-                protocol = defaultScheme;
-            }
         }
 
         final Host host = new Host(protocol);
@@ -96,29 +93,20 @@ public final class HostParser {
         if(uriType == URITypes.Undefined) {
             // scheme:
             if(StringUtils.isBlank(protocol.getDefaultHostname())) {
-                // TODO: Error out. This is not supported.
+                throw new InvalidHostException(String.format("Hostname must not be empty. Got: %s", url));
             }
 
             return host;
         }
 
         if(uriType == URITypes.Authority) {
-            if(!parseAuthority(reader, host)) {
-                // TODO: Error out.
-            }
+            parseAuthority(reader, host);
         }
         else if(uriType == URITypes.Rootless) {
-            if(!parseRootless(reader, host)) {
-                // TODO: Error out.
-            }
+            parseRootless(reader, host);
         }
         else if(uriType == URITypes.Absolute) {
-            if(!parseAbsolute(reader, host)) {
-                // TODO: Error out.
-            }
-        }
-        else {
-            // TODO: Error out.
+            parseAbsolute(reader, host);
         }
 
         return host;
@@ -137,6 +125,13 @@ public final class HostParser {
             if(Character.isAlphabetic(c)
                 || Character.isDigit(c)
                 || URI_SCHEME.indexOf(c) != -1) {
+                if(c == '.') {
+                    // THIS IS VIOLATION OF RFC.
+                    // There can be '.' in URIs.
+                    // This works against "s3.amazonaws.com:443".
+                    reader.skip(tracker - reader.position);
+                    return false;
+                }
                 stringBuilder.append(c);
             }
             else if(c == ':') {
@@ -157,35 +152,27 @@ public final class HostParser {
         return true; // valid. Break to return stringbuilder
     }
 
-    static boolean parseAuthority(final StringReader reader, final Host host) {
-        final Boolean userInfoResult = parseUserInfo(reader, host);
-        if(Boolean.FALSE.equals(userInfoResult)) {
-            // TODO: Error out.
-        }
+    static void parseAuthority(final StringReader reader, final Host host) {
+        final boolean userInfoResult = parseUserInfo(reader, host);
 
         boolean assumeRoot = false;
         if(host.getProtocol().isHostnameConfigurable()) {
-            if(!parseHostname(reader, host)) {
-                // TODO: Error out.
-            }
+            parseHostname(reader, host);
         }
         else {
-            if(userInfoResult == null) {
-                reader.skip(-1);
-            }
-            else {
+            if(userInfoResult) { //
+                // TODO: Backwards rooted
                 assumeRoot = true;
             }
+            else {
+                reader.skip(-1);
+            }
         }
 
-        if(!parsePath(reader, host, assumeRoot)) {
-            // TODO: Error out.
-        }
-
-        return true;
+        parsePath(reader, host, assumeRoot);
     }
 
-    static boolean parseHostname(final StringReader reader, final Host host) {
+    static void parseHostname(final StringReader reader, final Host host) {
         final StringBuilder buffer = new StringBuilder();
 
         boolean isPort = false;
@@ -197,33 +184,33 @@ public final class HostParser {
                 reader.skip(-1);
                 break;
             }
-            else if('%' == c) {
-                if(bracketFlag) {
+            else if(bracketFlag) {
+                if(c == '[') {
+                    throw new InvalidHostException("'[' inside IPv6. This is illegal.");
+                }
+                else if(c == ']') {
+                    bracketFlag = false;
+                }
+                else if(Character.isLetterOrDigit(c) || c == ':' || c == '%') {
                     buffer.append(c);
                 }
                 else {
-                    buffer.append(readPercentCharacter(reader));
-                }
-            }
-            else if(':' == c) {
-                if(bracketFlag) {
-                    buffer.append(c);
-                }
-                else {
-                    isPort = true;
-                    break;
+                    throw new InvalidHostException(String.format("Illegal character inside IPv6: '%s' at %d", c, reader.position));
                 }
             }
             else {
-                if(c == '[' && !bracketFlag) {
+                if(c == ']') {
+                    throw new InvalidHostException("']' outside of IPv6. This is illegal.");
+                }
+                else if(c == '[') {
                     bracketFlag = true;
                 }
-                else if(c == ']' && bracketFlag) {
-                    bracketFlag = false;
+                else if(c == '%') {
+                    buffer.append(readPercentCharacter(reader));
                 }
-                else if((c == ']' && !bracketFlag) || (c == '[' && bracketFlag)) {
-                    // [fe80:[]:xyz]
-                    return false; // this is not supported
+                else if(c == ':') {
+                    isPort = true;
+                    break;
                 }
                 else {
                     buffer.append(c);
@@ -232,26 +219,27 @@ public final class HostParser {
         }
 
         if(bracketFlag) {
-            return false;
+            throw new InvalidHostException("IPv6 bracket not closed.");
         }
 
-        if(host.getProtocol().isHostnameConfigurable()) {
-            if(buffer.length() == 0) {
-                return false;
+        if(buffer.length() == 0) {
+            if(StringUtils.isEmpty(host.getHostname())) {
+                throw new InvalidHostException("Hostname is empty.");
             }
+        }
+        else {
             host.setHostname(buffer.toString());
         }
 
         if(isPort) {
-            return parsePort(reader, host);
+            parsePort(reader, host);
         }
-
-        return true;
     }
 
-    static boolean parsePort(final StringReader reader, final Host host) {
+    static void parsePort(final StringReader reader, final Host host) {
         int port = 0;
         int tracker = reader.position;
+
         while(!reader.endOfString()) {
             final char c = (char) reader.read();
 
@@ -266,50 +254,38 @@ public final class HostParser {
             }
             else {
                 reader.skip(tracker - reader.position);
-                return false;
+                break;
             }
         }
 
         if(port <= 0 || port >= 65536) {
-            return false;
+            throw new InvalidHostException(String.format("Port is outside range 0 < Port < 65536. Got %d", port));
         }
 
         if(host.getProtocol().isPortConfigurable()) {
             host.setPort(port);
         }
-
-        return true;
     }
 
-    static boolean parseAbsolute(final StringReader reader, final Host host) {
-        return parsePath(reader, host, true);
+    static void parseAbsolute(final StringReader reader, final Host host) {
+        parsePath(reader, host, true);
     }
 
-    static boolean parseRootless(final StringReader reader, final Host host) {
+    static void parseRootless(final StringReader reader, final Host host) {
         // This is not RFC-compliant.
         // * Rootless-path must not include authentication information.
-
-        final Boolean userInfoResult = parseUserInfo(reader, host);
-        if(Boolean.FALSE.equals(userInfoResult)) {
-            // TODO: Error out.
-        }
-
-        if(userInfoResult == null) {
-            reader.skip(-1);
-        }
+        final boolean userInfoResult = parseUserInfo(reader, host);
 
         if(host.getProtocol().isHostnameConfigurable() && StringUtils.isWhitespace(host.getHostname())) {
             // This is not RFC-compliant.
             // We assume for hostconfigurable-empty-hostnames a hostname on first path segment
-            if(!parseHostname(reader, host)) {
-                // TODO: Error out.
-            }
+            parseHostname(reader, host);
         }
 
-        return parsePath(reader, host, false);
+        parsePath(reader, host, false);
     }
 
-    static Boolean parseUserInfo(final StringReader reader, final Host host) {
+    static boolean parseUserInfo(final StringReader reader, final Host host) {
         int tracker = reader.position;
         final StringBuilder buffer = new StringBuilder();
         final StringBuilder userBuilder = new StringBuilder();
@@ -320,12 +296,18 @@ public final class HostParser {
             final char c = (char) reader.read();
 
             if('@' == c) {
+                if(atSignFlag) {
+                    buffer.insert(0, c);
+                }
                 atSignFlag = true;
                 final int length = buffer.length();
                 for(int i = 0; i < length; i++) {
-                    final char t = buffer.charAt(i);
+                    char t = buffer.charAt(i);
                     if(t == ' ') {
-                        return false;
+                        throw new InvalidHostException(String.format("Space character in user info part of URL at %d", reader.position));
+                    }
+                    if(t == '%') {
+                        t = (char) Integer.parseInt(buffer.substring(i + 1, i + 3), 16);
                     }
                     if(t == ':' && passwordBuilder == null) {
                         passwordBuilder = new StringBuilder();
@@ -340,21 +322,15 @@ public final class HostParser {
                 }
                 tracker = reader.position;
                 buffer.setLength(0);
-                // found @-sign.
-                // Breaking out. Nothing more to check.
-                break;
-            }
-            else if('%' == c) {
-                buffer.append(readPercentCharacter(reader));
             }
             else if(c == '/') {
                 break;
             }
             else {
-                // TODO: Error on invalid characters. (flag for User information/Authority-Part
                 buffer.append(c);
             }
         }
+
         reader.skip(tracker - reader.position);
         if(host.getProtocol().isAnonymousConfigurable()) {
             host.getCredentials().setUsername(preferences.getProperty("connection.login.anon.name"));
@@ -369,7 +345,7 @@ public final class HostParser {
                     host.getCredentials().setUsername(userBuilder.toString());
                 }
                 else {
-                    // TODO: Log warning.
+                    log.warn("Username specified on protocol which does not support user credentials. Username will be ignored.");
                 }
             }
             userBuilder.setLength(0);
@@ -379,7 +355,7 @@ public final class HostParser {
                         host.getCredentials().setPassword(passwordBuilder.toString());
                     }
                     else {
-                        // TODO: Log warning.
+                        log.warn("Password specified on protocol which does not support user credentials. Password will be ignored.");
                     }
                 }
                 passwordBuilder.setLength(0);
@@ -387,10 +363,10 @@ public final class HostParser {
 
             return true;
         }
-        return null;
+        return false;
     }
 
-    static boolean parsePath(final StringReader reader, final Host host, final boolean assumeRoot) {
+    static void parsePath(final StringReader reader, final Host host, final boolean assumeRoot) {
         final StringBuilder pathBuilder = new StringBuilder();
 
         if(assumeRoot) {
@@ -405,20 +381,12 @@ public final class HostParser {
         while(!reader.endOfString()) {
             final char c = (char) reader.read();
 
-            if(isPChar(c) || c == '/') {
-                pathBuilder.append(c);
-            }
-            else if(c == '%') {
+            if(c == '%') {
                 pathBuilder.append(readPercentCharacter(reader));
             }
-            else if(c == ' ') {
-                // This is a violation of RFC.
-                // There must not be a space inside path
-                pathBuilder.append(c);
-            }
             else {
-                // TODO: Error out. This is not supported.
-                return false;
+                // This is a violation of RFC.
+                pathBuilder.append(c);
             }
         }
 
@@ -427,10 +395,14 @@ public final class HostParser {
                 host.setDefaultPath(pathBuilder.toString());
             }
             else {
-                // TODO: Log warning.
+                if(host.getDefaultPath().startsWith(pathBuilder.toString())) {
+                    host.setDefaultPath(pathBuilder.toString());
+                }
+                else {
+                    host.setDefaultPath(String.format("%s/%s", host.getDefaultPath(), pathBuilder));
+                }
             }
         }
-        return true;
     }
 
     static URITypes findURIType(final StringReader reader) {
