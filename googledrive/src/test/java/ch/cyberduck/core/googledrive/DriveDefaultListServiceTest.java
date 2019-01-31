@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import com.google.api.services.drive.model.File;
@@ -131,6 +132,6 @@ public class DriveDefaultListServiceTest extends AbstractDriveTest {
         session.getClient().files().update(fileid, body).execute();
         new DriveDirectoryFeature(session, provider).mkdir(folder, null, new TransferStatus());
         assertEquals(2, new DriveDefaultListService(session, provider).list(parent, new DisabledListProgressListener()).size());
-        new DriveDeleteFeature(session, provider).delete(Arrays.asList(parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DriveDeleteFeature(session, provider).delete(Collections.singletonList(parent), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

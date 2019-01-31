@@ -12,7 +12,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
@@ -61,7 +60,7 @@ public class DeleteWorkerTest {
                     ));
                 }
                 if(file.equals(new Path("/t/d", EnumSet.of(Path.Type.directory)))) {
-                    return new AttributedList<Path>(Arrays.asList(
+                    return new AttributedList<Path>(Collections.singletonList(
                         new Path("/t/d/b", EnumSet.of(Path.Type.file))
                     ));
                 }
