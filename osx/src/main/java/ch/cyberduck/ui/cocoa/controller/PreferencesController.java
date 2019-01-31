@@ -167,8 +167,8 @@ public class PreferencesController extends ToolbarWindowController {
         final Map<Label, NSView> views = new LinkedHashMap<>();
         views.put(new Label(PreferencesToolbarItem.general.name(), PreferencesToolbarItem.general.label()), panelGeneral);
         views.put(new Label(PreferencesToolbarItem.browser.name(), PreferencesToolbarItem.browser.label()), panelBrowser);
-        views.put(new Label(PreferencesToolbarItem.transfers.name(), PreferencesToolbarItem.transfers.label()), panelTransfer);
-        views.put(new Label(PreferencesToolbarItem.editor.name(), PreferencesToolbarItem.editor.label()), panelEditor);
+        views.put(new Label(PreferencesToolbarItem.queue.name(), PreferencesToolbarItem.queue.label()), panelTransfer);
+        views.put(new Label(PreferencesToolbarItem.pencil.name(), PreferencesToolbarItem.pencil.label()), panelEditor);
         views.put(new Label(PreferencesToolbarItem.ftp.name(), PreferencesToolbarItem.ftp.label()), panelFTP);
         views.put(new Label(PreferencesToolbarItem.sftp.name(), PreferencesToolbarItem.sftp.label()), panelSFTP);
         views.put(new Label(PreferencesToolbarItem.s3.name(), PreferencesToolbarItem.s3.label()), panelS3);
@@ -185,8 +185,8 @@ public class PreferencesController extends ToolbarWindowController {
     protected enum PreferencesToolbarItem {
         general,
         browser,
-        transfers,
-        editor,
+        queue,
+        pencil,
         ftp {
             @Override
             public String label() {
@@ -228,13 +228,13 @@ public class PreferencesController extends ToolbarWindowController {
         switch(item) {
             case general:
                 break;
-            case transfers:
+            case queue:
                 this.chmodDownloadTypePopupChanged(this.chmodDownloadTypePopup);
                 this.chmodUploadTypePopupChanged(this.chmodUploadTypePopup);
                 break;
             case browser:
                 break;
-            case editor:
+            case pencil:
                 this.updateEditorCombobox();
                 break;
             case ftp:
