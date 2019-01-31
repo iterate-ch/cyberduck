@@ -62,7 +62,6 @@ public class AbstractFTPTest {
 
     @After
     public void disconnect() throws Exception {
-        ;
         cache.clear();
     }
 

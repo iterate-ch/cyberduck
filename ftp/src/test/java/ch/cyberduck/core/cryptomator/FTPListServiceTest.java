@@ -63,6 +63,5 @@ public class FTPListServiceTest extends AbstractFTPTest {
             new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new FTPListService(session, null, null), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
         new CryptoDeleteFeature(session, new FTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 }

@@ -74,7 +74,6 @@ public class FTPSessionTest extends AbstractFTPTest {
             throw e;
         }
         assertTrue(session.isConnected());
-        ;
     }
 
     @Test
@@ -187,6 +186,5 @@ public class FTPSessionTest extends AbstractFTPTest {
             new DisabledProgressListener());
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(callback.get());
-        ;
     }
 }

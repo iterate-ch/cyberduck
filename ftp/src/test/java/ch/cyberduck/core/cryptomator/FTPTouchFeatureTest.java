@@ -61,7 +61,6 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
             new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new FTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 
     @Test
@@ -76,6 +75,5 @@ public class FTPTouchFeatureTest extends AbstractFTPTest {
             new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(test, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(test));
         new CryptoDeleteFeature(session, new FTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 }

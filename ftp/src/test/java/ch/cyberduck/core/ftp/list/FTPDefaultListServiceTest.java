@@ -50,7 +50,6 @@ public class FTPDefaultListServiceTest extends AbstractFTPTest {
         new FTPTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(list.list(directory, new DisabledListProgressListener()).contains(file));
         new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 
     @Test
@@ -62,6 +61,5 @@ public class FTPDefaultListServiceTest extends AbstractFTPTest {
         new FTPTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(list.list(directory, new DisabledListProgressListener()).contains(file));
         new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 }

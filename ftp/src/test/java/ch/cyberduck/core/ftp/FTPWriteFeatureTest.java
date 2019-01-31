@@ -66,7 +66,6 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
             assertArrayEquals(reference, buffer);
         }
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 
     @Test

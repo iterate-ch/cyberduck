@@ -79,7 +79,6 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
             assertArrayEquals(content, buffer.toByteArray());
         }
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 
     @Test
@@ -106,7 +105,6 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         System.arraycopy(content, (int) offset, reference, 0, (int) limit);
         assertArrayEquals(reference, download.toByteArray());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 
     @Test
@@ -123,7 +121,6 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         // Make sure subsequent PWD command works
         assertEquals(workdir, new FTPWorkdirService(session).find());
         new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 
     @Test
@@ -146,7 +143,6 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         // Make sure subsequent PWD command works
         assertEquals(workdir, new FTPWorkdirService(session).find());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 
     @Test
@@ -163,6 +159,5 @@ public class FTPReadFeatureTest extends AbstractFTPTest {
         // Read timeout
         in.close();
         new FTPDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 }

@@ -117,6 +117,5 @@ public class DataConnectionActionExecutorTest extends AbstractFTPTest {
         };
         f.data(action, new DisabledProgressListener());
         assertEquals(1, count.get());
-        ;
     }
 }
