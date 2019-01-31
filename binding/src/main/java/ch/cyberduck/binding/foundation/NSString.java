@@ -101,7 +101,7 @@ public abstract class NSString extends NSObject implements NSCopying {
          * Original signature : <code>stringWithCharacters(const unichar*, NSUInteger)</code><br>
          * <i>from NSStringExtensionMethods native declaration : :268</i>
          */
-        NSString stringWithCharacters_length(char characters[], NSUInteger length);
+        NSString stringWithCharacters_length(char[] characters, NSUInteger length);
 
         /**
          * Original signature : <code>stringWithUTF8String(const char*)</code><br>
@@ -623,7 +623,7 @@ public abstract class NSString extends NSObject implements NSCopying {
      * Original signature : <code>initWithCharacters(const unichar*, NSUInteger)</code><br>
      * <i>from NSStringExtensionMethods native declaration : :253</i>
      */
-    public abstract NSString initWithCharacters_length(char characters[], NSUInteger length);
+    public abstract NSString initWithCharacters_length(char[] characters, NSUInteger length);
 
     /**
      * Original signature : <code>initWithUTF8String(const char*)</code><br>
