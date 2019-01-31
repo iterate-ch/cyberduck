@@ -57,7 +57,6 @@ import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.PreferencesX509KeyManager;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
-import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
@@ -72,8 +71,6 @@ import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.DeleteWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
-import ch.cyberduck.fs.FilesystemFactory;
-import ch.cyberduck.fs.FilesystemWorker;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -264,8 +261,6 @@ public class Terminal {
                 case list:
                 case longlist:
                     return this.list(source, remote, input.hasOption(TerminalOptionsBuilder.Params.longlist.name()));
-                case mount:
-                    return this.mount(source);
                 case delete:
                     return this.delete(source, remote);
                 case mkdir:
@@ -376,15 +371,6 @@ public class Terminal {
             input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                 ? new DisabledStreamListener() : new TerminalStreamListener(meter)
         );
-        if(!this.execute(action)) {
-            return Exit.failure;
-        }
-        return Exit.success;
-    }
-
-    protected Exit mount(final SessionPool session) {
-        final SessionBackgroundAction<Path> action = new WorkerBackgroundAction<Path>(
-            controller, session, new FilesystemWorker(FilesystemFactory.get(controller, session.getHost(), cache)));
         if(!this.execute(action)) {
             return Exit.failure;
         }
