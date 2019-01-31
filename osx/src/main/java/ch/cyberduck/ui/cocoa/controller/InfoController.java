@@ -450,16 +450,16 @@ public class InfoController extends ToolbarWindowController {
     @Override
     protected Map<Label, NSView> getPanels() {
         final Map<Label, NSView> views = new LinkedHashMap<>();
-        views.put(new Label(InfoToolbarItem.info.name(), LocaleFactory.localizedString(InfoToolbarItem.info.name(), "Info")), panelGeneral);
+        views.put(new Label(InfoToolbarItem.info.name(), InfoToolbarItem.info.label()), panelGeneral);
         if(session.getFeature(AclPermission.class) != null) {
-            views.put(new Label(InfoToolbarItem.acl.name(), LocaleFactory.localizedString(InfoToolbarItem.acl.name(), "Info")), panelAcl);
+            views.put(new Label(InfoToolbarItem.acl.name(), InfoToolbarItem.acl.label()), panelAcl);
         }
         else {
-            views.put(new Label(InfoToolbarItem.permissions.name(), LocaleFactory.localizedString(InfoToolbarItem.permissions.name(), "Info")), panelPermissions);
+            views.put(new Label(InfoToolbarItem.permissions.name(), InfoToolbarItem.permissions.label()), panelPermissions);
         }
-        views.put(new Label(InfoToolbarItem.metadata.name(), LocaleFactory.localizedString(InfoToolbarItem.metadata.name(), "Info")), panelMetadata);
-        views.put(new Label(InfoToolbarItem.distribution.name(), LocaleFactory.localizedString(InfoToolbarItem.distribution.name(), "Info")), panelDistribution);
-        views.put(new Label(InfoToolbarItem.s3.name(), LocaleFactory.localizedString(InfoToolbarItem.s3.name(), "Info")), panelCloud);
+        views.put(new Label(InfoToolbarItem.metadata.name(), InfoToolbarItem.metadata.label()), panelMetadata);
+        views.put(new Label(InfoToolbarItem.distribution.name(), InfoToolbarItem.distribution.label()), panelDistribution);
+        views.put(new Label(InfoToolbarItem.s3.name(), InfoToolbarItem.s3.label()), panelCloud);
         return views;
     }
 
@@ -2475,11 +2475,35 @@ public class InfoController extends ToolbarWindowController {
         /**
          * General
          */
-        info,
+        info {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize("General"), "Info");
+            }
+        },
         permissions,
-        acl,
-        distribution,
-        s3,
-        metadata
+        acl {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize("Permissions"), "Info");
+            }
+        },
+        distribution {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize("Distribution (CDN)"), "Info");
+            }
+        },
+        s3 {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize("Amazon S3"), "Info");
+            }
+        },
+        metadata;
+
+        public String label() {
+            return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Info");
+        }
     }
 }
