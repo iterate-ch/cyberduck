@@ -162,6 +162,10 @@ public class GoogleStorageSession extends S3Session {
                 Collections.singletonMap("x-goog-project-id", host.getCredentials().getUsername()));
         }
 
+        @Override
+        public boolean isAuthenticatedConnection() {
+            return true;
+        }
     }
 
     @Override
