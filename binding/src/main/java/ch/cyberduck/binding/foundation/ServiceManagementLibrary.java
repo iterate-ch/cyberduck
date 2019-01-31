@@ -30,7 +30,7 @@ public final class ServiceManagementLibrary {
         //
     }
 
-    private static final ServiceManagementFunctions instance = (ServiceManagementFunctions) Native.loadLibrary(
+    private static final ServiceManagementFunctions instance = Native.load(
             "ServiceManagement", ServiceManagementFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
 
     public static boolean SMLoginItemSetEnabled(final String bundleIdentifier, boolean enabled) {
