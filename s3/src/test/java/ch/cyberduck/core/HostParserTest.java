@@ -21,7 +21,9 @@ public class HostParserTest {
     @Test
     public void testParseS3SchemeAccessKey() throws Exception {
         assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
-            .compareTo(new HostParser(new ProtocolFactory(Collections.singleton(new TestS3Protocol()))).get("s3://AWS456@cyberduck-test/key")));
+            .compareTo(new HostParser(new ProtocolFactory(Collections.singleton(new TestS3Protocol()))).get("s3:AWS456@cyberduck-test/key")));
+        assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
+            .compareTo(new HostParser(new ProtocolFactory(Collections.singleton(new TestS3Protocol()))).get("s3://AWS456@/cyberduck-test/key")));
     }
 
     private static class TestS3Protocol extends S3Protocol {
