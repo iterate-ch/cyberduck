@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import com.google.gson.stream.JsonReader;
 
@@ -54,7 +55,7 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
     @Override
     protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         try {
-            final JsonReader reader = new JsonReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
+            final JsonReader reader = new JsonReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
             reader.beginArray();
             String url;
             String user;

@@ -29,6 +29,7 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -51,7 +52,7 @@ public class SwiftWriteFeatureTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         status.setMime("text/plain");
-        final byte[] content = "test".getBytes("UTF-8");
+        final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         status.setLength(content.length);
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");

@@ -74,10 +74,7 @@ public class DefaultCertificateStore implements CertificateStore {
             try {
                 c.checkValidity();
             }
-            catch(CertificateExpiredException e) {
-                return false;
-            }
-            catch(CertificateNotYetValidException e) {
+            catch(CertificateExpiredException | CertificateNotYetValidException e) {
                 return false;
             }
         }

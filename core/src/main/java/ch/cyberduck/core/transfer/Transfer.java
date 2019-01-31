@@ -173,7 +173,7 @@ public abstract class Transfer implements Serializable {
     public abstract Transfer withCache(final Cache<Path> cache);
 
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
+        dict.setStringForKey(this.getType().name(), "Type");
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Items");
         dict.setStringForKey(uuid, "UUID");

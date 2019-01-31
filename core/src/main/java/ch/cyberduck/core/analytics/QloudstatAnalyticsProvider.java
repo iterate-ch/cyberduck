@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     private static final Logger log = Logger.getLogger(QloudstatAnalyticsProvider.class);
@@ -63,12 +64,7 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
             credentials.getUsername(),
             credentials.getPassword());
         final String encoded;
-        try {
-            encoded = this.encode(new String(Base64.encodeBase64(setup.getBytes("UTF-8")), "UTF-8"));
-        }
-        catch(UnsupportedEncodingException e) {
-            return null;
-        }
+        encoded = this.encode(new String(Base64.encodeBase64(setup.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8));
         final String formatted = String.format("%s?setup=%s", target, encoded);
         if(log.isInfoEnabled()) {
             log.info(String.format("Setup URL %s", formatted));

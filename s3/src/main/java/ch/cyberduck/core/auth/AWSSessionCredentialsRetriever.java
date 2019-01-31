@@ -40,7 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 import com.google.gson.stream.JsonReader;
@@ -85,7 +85,7 @@ public class AWSSessionCredentialsRetriever {
 
     protected Credentials parse(final InputStream in) throws BackgroundException {
         try {
-            final JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+            final JsonReader reader = new JsonReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             reader.beginObject();
             String key = null;
             String secret = null;
@@ -111,9 +111,6 @@ public class AWSSessionCredentialsRetriever {
                 credentials.setToken(token);
             }
             return credentials;
-        }
-        catch(UnsupportedEncodingException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
         }
         catch(MalformedJsonException e) {
             throw new InteroperabilityException("Invalid JSON response", e);

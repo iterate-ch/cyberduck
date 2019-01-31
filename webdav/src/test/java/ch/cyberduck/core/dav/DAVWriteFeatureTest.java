@@ -37,6 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -51,7 +52,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
     public void testReadWrite() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = "test".getBytes("UTF-8");
+        final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();

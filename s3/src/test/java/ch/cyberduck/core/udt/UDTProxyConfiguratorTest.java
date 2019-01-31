@@ -76,6 +76,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -194,7 +195,7 @@ public class UDTProxyConfiguratorTest {
 
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = "test".getBytes("UTF-8");
+        final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();

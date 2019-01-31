@@ -52,7 +52,7 @@ public class CryptoOutputStream<Reply> extends StatusOutputStream<Reply> {
     }
 
     @Override
-    public void write(final byte b[]) throws IOException {
+    public void write(final byte[] b) throws IOException {
         write(b, 0, b.length);
     }
 

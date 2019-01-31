@@ -1,6 +1,5 @@
 package ch.cyberduck.ui.comparator;
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 
 import org.junit.Test;

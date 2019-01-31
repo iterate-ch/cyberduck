@@ -103,7 +103,7 @@ public class NTFTPEntryParserTest {
             df.format(parsed.getTimestamp().getTime()));
         assertTrue(parsed.isFile());
         assertEquals("AUTOEXEC.BAK", parsed.getName());
-        assertEquals(5000000000l, parsed.getSize());
+        assertEquals(5000000000L, parsed.getSize());
     }
 
     @Test

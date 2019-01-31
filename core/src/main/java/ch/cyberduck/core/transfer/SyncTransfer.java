@@ -110,7 +110,7 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
+        dict.setStringForKey(this.getType().name(), "Type");
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Items");
         dict.setStringForKey(uuid, "UUID");

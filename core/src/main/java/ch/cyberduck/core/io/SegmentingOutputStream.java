@@ -60,7 +60,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
      * @throws IOException if an error occurs.
      */
     @Override
-    public void write(final byte b[]) throws IOException {
+    public void write(final byte[] b) throws IOException {
         buffer.write(b);
         written += b.length;
         this.checkThreshold(b.length);
@@ -78,7 +78,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
      * @throws IOException if an error occurs.
      */
     @Override
-    public void write(final byte b[], final int off, final int len) throws IOException {
+    public void write(final byte[] b, final int off, final int len) throws IOException {
         buffer.write(b, off, len);
         written += len;
         this.checkThreshold(len);

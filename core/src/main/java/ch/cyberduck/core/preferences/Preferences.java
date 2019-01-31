@@ -427,11 +427,11 @@ public abstract class Preferences implements Locales {
           Default transfer connection handling
          */
         this.setDefault("queue.transfer.type.enabled", String.format("%s %s %s",
-            String.valueOf(Host.TransferType.browser.name()),
-            String.valueOf(Host.TransferType.newconnection.name()),
-            String.valueOf(Host.TransferType.concurrent.name())
+            Host.TransferType.browser.name(),
+            Host.TransferType.newconnection.name(),
+            Host.TransferType.concurrent.name()
         ));
-        this.setDefault("queue.transfer.type", String.valueOf(Host.TransferType.concurrent.name()));
+        this.setDefault("queue.transfer.type", Host.TransferType.concurrent.name());
         /*
           Warning when number of transfers in queue exceeds limit
          */

@@ -17,7 +17,6 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 
 public class DriveSearchListService extends AbstractDriveListService {
 

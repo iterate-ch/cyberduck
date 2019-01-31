@@ -44,6 +44,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.NetworkInterface;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.util.Arrays;
@@ -115,13 +116,13 @@ public class ReceiptVerifier implements LicenseVerifier {
                             if(((ASN1Integer) type).getValue().intValue() == 2) {
                                 final ASN1Encodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
-                                    bundleIdentifier = new String(((DEROctetString) value).getOctets(), "UTF-8");
+                                    bundleIdentifier = new String(((DEROctetString) value).getOctets(), StandardCharsets.UTF_8);
                                 }
                             }
                             else if(((ASN1Integer) type).getValue().intValue() == 3) {
                                 final ASN1Encodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
-                                    bundleVersion = new String(((DEROctetString) value).getOctets(), "UTF-8");
+                                    bundleVersion = new String(((DEROctetString) value).getOctets(), StandardCharsets.UTF_8);
                                 }
                             }
                             else if(((ASN1Integer) type).getValue().intValue() == 4) {

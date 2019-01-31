@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -49,7 +50,7 @@ public class FolderBookmarkCollectionTest {
             "</plist>\n";
         LocalTouchFactory.get().touch(b);
         final OutputStream os = b.getOutputStream(false);
-        os.write(bookmark.getBytes("UTF-8"));
+        os.write(bookmark.getBytes(StandardCharsets.UTF_8));
         os.close();
         assertTrue(source.exists());
         final FolderBookmarkCollection collection = new FolderBookmarkCollection(source);

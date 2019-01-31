@@ -82,10 +82,7 @@ public class NIOEventWatchServiceTest {
                 try {
                     update.await(1L, TimeUnit.SECONDS);
                 }
-                catch(InterruptedException e) {
-                    fail();
-                }
-                catch(BrokenBarrierException e) {
+                catch(InterruptedException | BrokenBarrierException e) {
                     fail();
                 }
                 catch(TimeoutException e) {
@@ -104,10 +101,7 @@ public class NIOEventWatchServiceTest {
                 try {
                     delete.await(1L, TimeUnit.SECONDS);
                 }
-                catch(InterruptedException e) {
-                    fail();
-                }
-                catch(BrokenBarrierException e) {
+                catch(InterruptedException | BrokenBarrierException e) {
                     fail();
                 }
                 catch(TimeoutException e) {

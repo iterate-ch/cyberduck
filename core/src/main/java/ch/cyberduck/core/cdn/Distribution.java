@@ -105,7 +105,7 @@ public class Distribution {
     /**
      * CNAME DNS entires to the CDN hostname
      */
-    private String cnames[];
+    private String[] cnames;
 
     /**
      * Kind of distribution
