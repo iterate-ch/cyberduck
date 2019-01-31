@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class KeychainTest {
 
     @Test
-    public void testFindPassword() throws Exception {
+    public void testFindPassword() {
         final Keychain k = new Keychain();
         assertNull(k.getPassword("cyberduck.ch", "u"));
         assertNull(k.getPassword(Scheme.http, 80, "cyberduck.ch", "u"));

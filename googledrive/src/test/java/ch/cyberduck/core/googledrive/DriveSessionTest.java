@@ -51,7 +51,7 @@ import static org.junit.Assert.*;
 public class DriveSessionTest extends AbstractDriveTest {
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final Host host = new Host(new DriveProtocol(), "test.cyberduck.ch");
         final Session session = new DriveSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.getFeature(Directory.class));

@@ -63,7 +63,7 @@ public class SingleTransferWorker extends AbstractTransferWorker {
     }
 
     @Override
-    protected void release(final Session session, final Connection type, final BackgroundException failure) throws BackgroundException {
+    protected void release(final Session session, final Connection type, final BackgroundException failure) {
         //
     }
 

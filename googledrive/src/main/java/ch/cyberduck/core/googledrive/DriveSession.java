@@ -73,7 +73,7 @@ public class DriveSession extends HttpSession<Drive> {
         this.transport = new ApacheHttpTransport(configuration.build());
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override
-            public void initialize(HttpRequest request) throws IOException {
+            public void initialize(HttpRequest request) {
                 request.setSuppressUserAgentSuffix(true);
                 // OAuth Bearer added in interceptor
             }

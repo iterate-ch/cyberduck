@@ -33,7 +33,7 @@ public class SkipFilterTest {
                 if(type == Find.class) {
                     return (T) new Find() {
                         @Override
-                        public boolean find(Path file) throws BackgroundException {
+                        public boolean find(Path file) {
                             return true;
                         }
                     };
@@ -59,7 +59,7 @@ public class SkipFilterTest {
         });
         f.withAttributes(new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 return file.attributes();
             }
         });
@@ -81,7 +81,7 @@ public class SkipFilterTest {
         });
         f.withAttributes(new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 return file.attributes();
             }
         });

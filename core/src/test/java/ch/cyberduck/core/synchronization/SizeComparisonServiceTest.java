@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 public class SizeComparisonServiceTest {
 
     @Test
-    public void testCompare() throws Exception {
+    public void testCompare() {
         ComparisonService s = new SizeComparisonService();
         assertEquals(Comparison.equal, s.compare(new PathAttributes() {
                                                      @Override

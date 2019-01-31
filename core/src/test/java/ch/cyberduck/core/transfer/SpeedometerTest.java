@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class SpeedometerTest {
 
     @Test
-    public void testProgressRemaining() throws Exception {
+    public void testProgressRemaining() {
         final long start = System.currentTimeMillis();
         Speedometer m = new Speedometer(start, true);
         assertEquals("1 B of 5 B (20%, 1 B/sec, 4 seconds remaining)", m.getProgress(start + 1000L, true, 5L, 1L));
@@ -16,7 +16,7 @@ public class SpeedometerTest {
     }
 
     @Test
-    public void testStopped() throws Exception {
+    public void testStopped() {
         final long start = System.currentTimeMillis();
         Speedometer m = new Speedometer(start, true);
         assertEquals("0 B of 1.0 MB", m.getProgress(true, 1000000L, 0L));
@@ -24,7 +24,7 @@ public class SpeedometerTest {
     }
 
     @Test
-    public void testProgressRemaining2() throws Exception {
+    public void testProgressRemaining2() {
         final long start = System.currentTimeMillis();
         Speedometer m = new Speedometer(start, true);
         assertEquals("500.0 KB (500,000 bytes) of 1.0 MB (50%, 500.0 KB/sec, 1 seconds remaining)",
@@ -34,7 +34,7 @@ public class SpeedometerTest {
     }
 
     @Test
-    public void testProgressRemaining3() throws Exception {
+    public void testProgressRemaining3() {
         final long start = System.currentTimeMillis();
         Speedometer m = new Speedometer(start, true);
         assertEquals("900.0 KB (900,000 bytes) of 1.0 MB (90%, 450.0 KB/sec, 1 seconds remaining)",

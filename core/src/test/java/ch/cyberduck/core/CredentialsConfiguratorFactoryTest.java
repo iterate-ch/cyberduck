@@ -25,7 +25,7 @@ import static org.junit.Assert.assertSame;
 public class CredentialsConfiguratorFactoryTest {
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() {
         final Host host = new Host(new TestProtocol());
         final Credentials credentials = host.getCredentials();
         assertSame(credentials, CredentialsConfiguratorFactory.get(new TestProtocol()).configure(host));

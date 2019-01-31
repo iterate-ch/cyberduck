@@ -24,9 +24,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 public interface Filesystem {
 
-    void mount(Path workdir, Options options) throws BackgroundException;
+    void mount(Path workdir, Options options);
 
-    void unmount() throws BackgroundException;
+    void unmount();
 
     Host getHost();
 

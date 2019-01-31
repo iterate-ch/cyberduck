@@ -47,7 +47,7 @@ public class LoginConnectionServiceTest {
         };
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new HostKeyCallback() {
             @Override
-            public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException {
+            public boolean verify(final String hostname, final int port, final PublicKey key) {
                 assertEquals(Session.State.opening, session.getState());
                 return true;
             }
@@ -92,12 +92,12 @@ public class LoginConnectionServiceTest {
         final AtomicBoolean prompt = new AtomicBoolean();
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
 
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 prompt.set(true);
                 // New password entered
                 return new Credentials(username, "b");
@@ -112,7 +112,7 @@ public class LoginConnectionServiceTest {
         }, new DisabledProgressListener());
         final Session session = new NullSession(new Host(new TestProtocol(), "localhost", new Credentials("user", ""))) {
             @Override
-            public Void connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+            public Void connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
                 connected.set(true);
                 return null;
             }

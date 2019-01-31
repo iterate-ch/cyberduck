@@ -30,12 +30,12 @@ public class DisabledHeadersFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+    public Map<String, String> getMetadata(final Path file) {
         return Collections.emptyMap();
     }
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final Map<String, String> metadata) {
         //
     }
 }

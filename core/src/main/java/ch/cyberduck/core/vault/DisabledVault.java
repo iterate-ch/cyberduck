@@ -38,12 +38,12 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain) throws BackgroundException {
+    public Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain) {
         return null;
     }
 
     @Override
-    public Vault load(final Session<?> session, final PasswordCallback prompt, final PasswordStore keychain) throws BackgroundException {
+    public Vault load(final Session<?> session, final PasswordCallback prompt, final PasswordStore keychain) {
         return this;
     }
 
@@ -58,17 +58,17 @@ public final class DisabledVault implements Vault {
     }
 
     @Override
-    public Path encrypt(final Session<?> session, final Path file) throws BackgroundException {
+    public Path encrypt(final Session<?> session, final Path file) {
         return file;
     }
 
     @Override
-    public Path encrypt(final Session<?> session, final Path file, final boolean metadata) throws BackgroundException {
+    public Path encrypt(final Session<?> session, final Path file, final boolean metadata) {
         return file;
     }
 
     @Override
-    public Path decrypt(final Session<?> session, final Path file) throws BackgroundException {
+    public Path decrypt(final Session<?> session, final Path file) {
         return file;
     }
 

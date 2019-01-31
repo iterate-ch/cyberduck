@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 public class ControllerMainActionTest {
 
     @Test
-    public void testLock() throws Exception {
+    public void testLock() {
         final AbstractController c = new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {

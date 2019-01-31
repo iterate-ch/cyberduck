@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 public class BackgroundCallableTest {
 
     @Test
-    public void testCallReturnValueFailureRetry() throws Exception {
+    public void testCallReturnValueFailureRetry() {
         final Object expected = new Object();
 
         final AbstractBackgroundAction<Object> action = new AbstractBackgroundAction<Object>() {
@@ -64,7 +64,7 @@ public class BackgroundCallableTest {
     }
 
     @Test
-    public void testCallReturnValueFailureRetryDisabled() throws Exception {
+    public void testCallReturnValueFailureRetryDisabled() {
         final Object prepare = new Object();
         final Object run = new Object();
         final Object finish = new Object();
@@ -128,7 +128,7 @@ public class BackgroundCallableTest {
     }
 
     @Test
-    public void testCallReturnValueFailureRetryEnabled() throws Exception {
+    public void testCallReturnValueFailureRetryEnabled() {
         final Object prepare = new Object();
         final Object run = new Object();
         final Object finish = new Object();
@@ -213,7 +213,7 @@ public class BackgroundCallableTest {
     }
 
     @Test
-    public void testCallInvokeCleanup() throws Exception {
+    public void testCallInvokeCleanup() {
         final Object prepare = new Object();
         final Object run = new Object();
         final Object finish = new Object();
@@ -228,7 +228,7 @@ public class BackgroundCallableTest {
             }
 
             @Override
-            public Object run() throws BackgroundException {
+            public Object run() {
                 stack.push(run);
                 return run;
             }

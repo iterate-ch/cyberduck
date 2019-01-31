@@ -14,12 +14,12 @@ public class SharedFileListApplicationLoginRegistryTest {
 
     @Test
     @Ignore
-    public void testRegister() throws Exception {
+    public void testRegister() {
         assertTrue(new SharedFileListApplicationLoginRegistry(new LaunchServicesApplicationFinder()).register(new Application("ch.sudo.cyberduck")));
     }
 
     @Test
-    public void testRegisterInvalidBundle() throws Exception {
+    public void testRegisterInvalidBundle() {
         assertFalse(new SharedFileListApplicationLoginRegistry(new DisabledApplicationFinder()).register(new Application("ch.sudo.cyberduck")));
     }
 }

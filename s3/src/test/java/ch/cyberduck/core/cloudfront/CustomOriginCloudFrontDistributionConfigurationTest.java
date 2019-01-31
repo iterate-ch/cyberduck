@@ -26,14 +26,14 @@ import static org.junit.Assert.*;
 public class CustomOriginCloudFrontDistributionConfigurationTest {
 
     @Test
-    public void testGetMethods() throws Exception {
+    public void testGetMethods() {
         assertEquals(Collections.singletonList(Distribution.CUSTOM),
             new CustomOriginCloudFrontDistributionConfiguration(new Host(new TestProtocol()), new DefaultX509TrustManager(), new DefaultX509KeyManager()).getMethods(
                 new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
-    public void testGetOrigin() throws Exception {
+    public void testGetOrigin() {
         final Host origin = new Host(new TestProtocol(), "m");
         final Path container = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         origin.setWebURL("http://w.example.net");
@@ -47,7 +47,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
     }
 
     @Test
-    public void testGetOriginCustomHttpPort() throws Exception {
+    public void testGetOriginCustomHttpPort() {
         final Host origin = new Host(new TestProtocol(), "m");
         final Path container = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         origin.setWebURL("http://w.example.net:8080");
@@ -61,7 +61,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
     }
 
     @Test
-    public void testGetOriginCustomHttpsPort() throws Exception {
+    public void testGetOriginCustomHttpsPort() {
         final Host origin = new Host(new TestProtocol(), "m");
         final Path container = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume));
         origin.setWebURL("https://w.example.net:4444");
@@ -83,7 +83,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
         final CustomOriginCloudFrontDistributionConfiguration configuration
             = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager() {
             @Override
-            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) {
                 //
             }
         }, new DefaultX509KeyManager());
@@ -102,7 +102,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
         final CustomOriginCloudFrontDistributionConfiguration configuration
             = new CustomOriginCloudFrontDistributionConfiguration(origin, new DefaultX509TrustManager() {
             @Override
-            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) {
                 //
             }
         }, new DefaultX509KeyManager());

@@ -112,7 +112,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
     }
 
     @Test
-    public void testUnconfirmedReadsNumber() throws Exception {
+    public void testUnconfirmedReadsNumber() {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
             System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));

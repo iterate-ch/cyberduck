@@ -87,7 +87,7 @@ public class FTPClient extends FTPSClient {
     }
 
     @Override
-    protected void _prepareDataSocket_(final Socket socket) throws IOException {
+    protected void _prepareDataSocket_(final Socket socket) {
         if(preferences.getBoolean("ftp.tls.session.requirereuse")) {
             if(socket instanceof SSLSocket) {
                 // Control socket is SSL

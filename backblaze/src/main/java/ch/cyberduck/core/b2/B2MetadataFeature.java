@@ -49,7 +49,7 @@ public class B2MetadataFeature implements Headers {
     }
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final Map<String, String> metadata) {
         // Only in file upload
     }
 }

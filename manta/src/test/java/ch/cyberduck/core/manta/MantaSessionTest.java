@@ -36,7 +36,7 @@ import static org.junit.Assert.assertTrue;
 public class MantaSessionTest {
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final MantaSession session = new MantaSession(new Host(new MantaProtocol(), "username"),
             new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertTrue(session.getFeature(Read.class) instanceof MantaReadFeature);
@@ -49,7 +49,7 @@ public class MantaSessionTest {
     }
 
     @Test
-    public void testUserOwnerIdentification() throws BackgroundException {
+    public void testUserOwnerIdentification() {
         final MantaSession ownerSession = new MantaSession(
             new Host(
                 new MantaProtocol(),

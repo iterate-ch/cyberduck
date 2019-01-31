@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 public class ChecksumComparisonServiceTest {
 
     @Test
-    public void testCompare() throws Exception {
+    public void testCompare() {
         ComparisonService s = new ChecksumComparisonService();
         assertEquals(Comparison.equal, s.compare(new PathAttributes() {
                                                      @Override
@@ -42,7 +42,7 @@ public class ChecksumComparisonServiceTest {
     }
 
     @Test
-    public void testDirectory() throws Exception {
+    public void testDirectory() {
         ComparisonService s = new ChecksumComparisonService();
         assertEquals(Comparison.unknown, s.compare(new PathAttributes(),
                 new LocalAttributes("/t")));

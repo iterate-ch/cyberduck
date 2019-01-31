@@ -52,7 +52,7 @@ public class CryptoOutputStreamTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
                         }
@@ -78,7 +78,7 @@ public class CryptoOutputStreamTest {
         final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
         final CryptoOutputStream<?> stream = new CryptoOutputStream<>(new StatusOutputStream<Void>(cipherText) {
             @Override
-            public Void getStatus() throws BackgroundException {
+            public Void getStatus() {
                 return null;
             }
         }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);
@@ -105,7 +105,7 @@ public class CryptoOutputStreamTest {
         final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
         final CryptoOutputStream<?> stream = new CryptoOutputStream<>(new StatusOutputStream<Void>(cipherText) {
             @Override
-            public Void getStatus() throws BackgroundException {
+            public Void getStatus() {
                 return null;
             }
         }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);
@@ -129,7 +129,7 @@ public class CryptoOutputStreamTest {
         final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
         final CryptoOutputStream<?> stream = new CryptoOutputStream<>(new StatusOutputStream<Void>(cipherText) {
             @Override
-            public Void getStatus() throws BackgroundException {
+            public Void getStatus() {
                 return null;
             }
         }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);

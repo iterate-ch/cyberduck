@@ -24,12 +24,12 @@ import java.util.Arrays;
 
 public class DisabledX509TrustManager extends AbstractX509TrustManager {
     @Override
-    public void checkClientTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+    public void checkClientTrusted(final X509Certificate[] certs, final String cipher) {
         this.accept(Arrays.asList(certs));
     }
 
     @Override
-    public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+    public void checkServerTrusted(final X509Certificate[] certs, final String cipher) {
         this.accept(Arrays.asList(certs));
     }
 
@@ -39,7 +39,7 @@ public class DisabledX509TrustManager extends AbstractX509TrustManager {
     }
 
     @Override
-    public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+    public void verify(final String hostname, final X509Certificate[] certs, final String cipher) {
         this.accept(Arrays.asList(certs));
     }
 }

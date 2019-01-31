@@ -82,13 +82,13 @@ public class FinderLocalTest {
     }
 
     @Test
-    public void testTilde() throws Exception {
+    public void testTilde() {
         assertEquals(System.getProperty("user.home") + "/f", new FinderLocal("~/f").getAbsolute());
         assertEquals("~/f", new FinderLocal("~/f").getAbbreviatedPath());
     }
 
     @Test
-    public void testDisplayName() throws Exception {
+    public void testDisplayName() {
         assertEquals("f/a", new FinderLocal(System.getProperty("java.io.tmpdir"), "f:a").getDisplayName());
     }
 
@@ -113,7 +113,7 @@ public class FinderLocalTest {
     }
 
     @Test
-    public void testToUrl() throws Exception {
+    public void testToUrl() {
         assertEquals("file:/c/file", new FinderLocal("/c/file").toURL());
     }
 
@@ -157,7 +157,7 @@ public class FinderLocalTest {
     }
 
     @Test
-    public void testSymbolicLink() throws Exception {
+    public void testSymbolicLink() {
         assertTrue(new FinderLocal("/tmp").isSymbolicLink());
         assertFalse(new FinderLocal("/private/tmp").isSymbolicLink());
         assertFalse(new FinderLocal("/t").isSymbolicLink());
@@ -213,12 +213,12 @@ public class FinderLocalTest {
     }
 
     @Test
-    public void testFollowLinks() throws Exception {
+    public void testFollowLinks() {
         assertTrue(new Local("/tmp").exists());
     }
 
     @Test
-    public void testIsSymbolicLink() throws Exception {
+    public void testIsSymbolicLink() {
         assertFalse(new FinderLocal(UUID.randomUUID().toString()).isSymbolicLink());
         assertTrue(new FinderLocal("/tmp").isSymbolicLink());
     }

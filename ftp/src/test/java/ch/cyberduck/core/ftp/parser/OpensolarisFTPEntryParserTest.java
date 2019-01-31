@@ -40,7 +40,7 @@ public class OpensolarisFTPEntryParserTest {
     }
 
     @Test
-    public void testParse() throws Exception {
+    public void testParse() {
         FTPFile parsed;
 
         // #3689

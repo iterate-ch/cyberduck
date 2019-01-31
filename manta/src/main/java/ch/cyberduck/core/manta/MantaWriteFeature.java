@@ -53,11 +53,11 @@ public class MantaWriteFeature implements Write<Void> {
      * {@inheritDoc}
      */
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final OutputStream putStream = session.getClient().putAsOutputStream(file.getAbsolute());
         return new HttpResponseOutputStream<Void>(putStream) {
             @Override
-            public Void getStatus() throws BackgroundException {
+            public Void getStatus() {
                 return null;
             }
         };

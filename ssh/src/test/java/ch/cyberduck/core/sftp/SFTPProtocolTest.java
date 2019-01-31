@@ -29,19 +29,19 @@ import static org.junit.Assert.assertTrue;
 public class SFTPProtocolTest {
 
     @Test
-    public void testValidateToken() throws Exception {
+    public void testValidateToken() {
         assertTrue(new SFTPProtocol().validate(new Credentials(null, "123414"), new LoginOptions().user(false).publickey(false).keychain(false)));
         assertFalse(new SFTPProtocol().validate(new Credentials("", "123414"), new LoginOptions().user(true).publickey(false).keychain(false)));
     }
 
     @Test
-    public void testValidateCredentialsEmpty() throws Exception {
+    public void testValidateCredentialsEmpty() {
         Credentials c = new Credentials("user", "");
         assertTrue(c.validate(new SFTPProtocol(), new LoginOptions(new SFTPProtocol())));
     }
 
     @Test
-    public void testValidateCredentialsBlank() throws Exception {
+    public void testValidateCredentialsBlank() {
         Credentials c = new Credentials("user", " ");
         assertTrue(c.validate(new SFTPProtocol(), new LoginOptions(new SFTPProtocol())));
     }

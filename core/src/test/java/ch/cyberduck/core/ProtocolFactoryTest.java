@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
 public class ProtocolFactoryTest {
 
     @Test
-    public void testGetProtocols() throws Exception {
+    public void testGetProtocols() {
         final TestProtocol defaultProtocol = new TestProtocol(Scheme.ftp);
         final TestProtocol providerProtocol = new TestProtocol(Scheme.ftp) {
             @Override
@@ -54,7 +54,7 @@ public class ProtocolFactoryTest {
     }
 
     @Test
-    public void testFindUnknownDefaultProtocol() throws Exception {
+    public void testFindUnknownDefaultProtocol() {
         final TestProtocol dav = new TestProtocol(Scheme.dav);
         final TestProtocol davs = new TestProtocol(Scheme.davs);
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav, davs)));
@@ -66,7 +66,7 @@ public class ProtocolFactoryTest {
     }
 
     @Test
-    public void testFindProtocolWithProviderInIdentifier() throws Exception {
+    public void testFindProtocolWithProviderInIdentifier() {
         final TestProtocol dav = new TestProtocol(Scheme.dav) {
             @Override
             public String getIdentifier() {
@@ -84,7 +84,7 @@ public class ProtocolFactoryTest {
     }
 
     @Test
-    public void testFindProtocolProviderMismatch() throws Exception {
+    public void testFindProtocolProviderMismatch() {
         final TestProtocol dav_provider1 = new TestProtocol(Scheme.dav) {
             @Override
             public String getIdentifier() {
@@ -115,7 +115,7 @@ public class ProtocolFactoryTest {
     }
 
     @Test
-    public void testSchemeFallbackType() throws Exception {
+    public void testSchemeFallbackType() {
         final TestProtocol dav = new TestProtocol(Scheme.dav);
         final TestProtocol swift = new TestProtocol(Scheme.dav) {
             @Override

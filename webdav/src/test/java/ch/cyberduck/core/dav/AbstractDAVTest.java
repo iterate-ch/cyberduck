@@ -63,13 +63,13 @@ public class AbstractDAVTest {
         session = new DAVSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 fail(reason);
                 return null;
             }
 
             @Override
-            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                 //
             }
         }, new DisabledHostKeyCallback(), new TestPasswordStore(), new DisabledProgressListener());
@@ -84,7 +84,7 @@ public class AbstractDAVTest {
     }
 
     @After
-    public void stop() throws Exception {
+    public void stop() {
         server.stop();
     }
 

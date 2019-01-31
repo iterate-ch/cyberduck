@@ -78,7 +78,7 @@ public class PooledSessionFactory extends BasePooledObjectFactory<Session> {
     }
 
     @Override
-    public void passivateObject(final PooledObject<Session> p) throws Exception {
+    public void passivateObject(final PooledObject<Session> p) {
         final Session session = p.getObject();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Pause session %s", session));

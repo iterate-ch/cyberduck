@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 public class HostParserTest {
 
     @Test
-    public void parseDefaultHostname() throws Exception {
+    public void parseDefaultHostname() {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
             @Override
             public Type getType() {

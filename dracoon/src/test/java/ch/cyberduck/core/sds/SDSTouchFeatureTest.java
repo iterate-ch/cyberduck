@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
 public class SDSTouchFeatureTest extends AbstractSDSTest {
 
     @Test
-    public void testSupported() throws Exception {
+    public void testSupported() {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
         assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory))));

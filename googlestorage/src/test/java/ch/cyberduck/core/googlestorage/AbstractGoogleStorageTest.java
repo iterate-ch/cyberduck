@@ -62,7 +62,7 @@ AbstractGoogleStorageTest {
         session = new GoogleStorageSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 fail(reason);
                 return null;
             }

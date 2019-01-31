@@ -92,7 +92,7 @@ public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetry
     }
 
     @Override
-    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+    public void process(final HttpRequest request, final HttpContext context) {
         if(StringUtils.isNotBlank(token)) {
             request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
             request.addHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, token);

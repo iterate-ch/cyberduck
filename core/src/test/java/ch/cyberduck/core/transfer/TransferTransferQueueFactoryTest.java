@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 public class TransferTransferQueueFactoryTest {
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() {
         assertTrue(TransferQueueFactory.get() == TransferQueueFactory.get());
     }
 }

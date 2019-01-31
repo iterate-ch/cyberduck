@@ -32,7 +32,7 @@ public class OpenSSHAgentAuthenticatorTest {
 
     @Test
     @Ignore
-    public void testGetIdentities() throws Exception {
+    public void testGetIdentities() {
         final OpenSSHAgentAuthenticator authenticator = new OpenSSHAgentAuthenticator();
         final Collection<Identity> identities = authenticator.getIdentities();
         assertNotNull(authenticator.getProxy());

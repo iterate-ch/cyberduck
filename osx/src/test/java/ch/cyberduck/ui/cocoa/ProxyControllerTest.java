@@ -29,7 +29,7 @@ public class ProxyControllerTest {
             }
 
             @Override
-            public Object run() throws BackgroundException {
+            public Object run() {
                 assertEquals("background-1", Thread.currentThread().getName());
                 return null;
             }

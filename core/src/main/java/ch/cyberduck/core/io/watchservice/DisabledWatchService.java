@@ -27,17 +27,17 @@ import java.util.concurrent.TimeUnit;
 public class DisabledWatchService implements RegisterWatchService {
 
     @Override
-    public WatchKey register(final Watchable folder, final WatchEvent.Kind<?>[] events, final WatchEvent.Modifier... modifiers) throws IOException {
+    public WatchKey register(final Watchable folder, final WatchEvent.Kind<?>[] events, final WatchEvent.Modifier... modifiers) {
         return null;
     }
 
     @Override
-    public void release() throws IOException {
+    public void release() {
 
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
 
     }
 
@@ -47,12 +47,12 @@ public class DisabledWatchService implements RegisterWatchService {
     }
 
     @Override
-    public WatchKey poll(final long timeout, final TimeUnit unit) throws InterruptedException {
+    public WatchKey poll(final long timeout, final TimeUnit unit) {
         return null;
     }
 
     @Override
-    public WatchKey take() throws InterruptedException {
+    public WatchKey take() {
         return null;
     }
 }

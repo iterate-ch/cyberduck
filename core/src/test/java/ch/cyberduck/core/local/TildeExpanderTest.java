@@ -25,12 +25,12 @@ import static org.junit.Assert.assertEquals;
 public class TildeExpanderTest {
 
     @Test
-    public void testExpand() throws Exception {
+    public void testExpand() {
         assertEquals(System.getProperty("user.home") + "/f", new TildeExpander().expand("~/f"));
     }
 
     @Test
-    public void testAbbreviate() throws Exception {
+    public void testAbbreviate() {
         assertEquals("~/f", new TildeExpander().abbreviate(System.getProperty("user.home") + "/f"));
     }
 }

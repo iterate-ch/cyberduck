@@ -37,7 +37,7 @@ public class OverwriteFilter extends AbstractCopyFilter {
     }
 
     @Override
-    public boolean accept(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path source, final Local local, final TransferStatus parent) {
         return true;
     }
 }

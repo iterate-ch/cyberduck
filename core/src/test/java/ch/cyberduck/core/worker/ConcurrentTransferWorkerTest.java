@@ -155,7 +155,7 @@ public class ConcurrentTransferWorkerTest {
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
                 assertNotNull(source);
                 transferred.add(file);
                 return file;
@@ -165,24 +165,24 @@ public class ConcurrentTransferWorkerTest {
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 return new AbstractDownloadFilter(new DisabledDownloadSymlinkResolver(), source, null) {
                     @Override
-                    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+                    public boolean accept(final Path file, final Local local, final TransferStatus parent) {
                         assertFalse(transferred.contains(file));
                         return true;
                     }
 
                     @Override
-                    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
+                    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) {
                         assertFalse(transferred.contains(file));
                         return new TransferStatus();
                     }
 
                     @Override
-                    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+                    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) {
                         assertFalse(transferred.contains(file));
                     }
 
                     @Override
-                    public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+                    public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status, final ProgressListener listener) {
                         assertTrue(transferred.contains(file));
                     }
                 };
@@ -266,7 +266,7 @@ public class ConcurrentTransferWorkerTest {
         for(int i = 0; i < workers; i++) {
             worker.submit(new TransferWorker.TransferCallable() {
                 @Override
-                public TransferStatus call() throws BackgroundException {
+                public TransferStatus call() {
                     entry.countDown();
                     return new TransferStatus().complete();
                 }

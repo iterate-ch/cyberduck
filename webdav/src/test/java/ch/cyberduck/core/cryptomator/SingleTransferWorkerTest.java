@@ -109,7 +109,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new PasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("test");
             }
         }));
@@ -155,7 +155,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new PasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("test");
             }
         }));

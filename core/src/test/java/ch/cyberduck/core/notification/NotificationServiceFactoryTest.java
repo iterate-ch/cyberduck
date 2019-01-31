@@ -25,7 +25,7 @@ import static org.junit.Assert.assertSame;
 public class NotificationServiceFactoryTest {
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() {
         assertSame(NotificationServiceFactory.get(), NotificationServiceFactory.get());
     }
 }

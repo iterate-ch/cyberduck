@@ -156,7 +156,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     /**
      * Release session from pool for transfer
      */
-    protected abstract void release(Session session, Connection type, BackgroundException failure) throws BackgroundException;
+    protected abstract void release(Session session, Connection type, BackgroundException failure);
 
     @Override
     public Boolean initialize() {

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 public class RegexFilterTest {
 
     @Test
-    public void testAccept() throws Exception {
+    public void testAccept() {
         assertFalse(new RegexFilter().accept(new Path(".f", EnumSet.of(Path.Type.file))));
         assertTrue(new RegexFilter().accept(new Path("f.f", EnumSet.of(Path.Type.file))));
         final Path d = new Path("f.f", EnumSet.of(Path.Type.file));

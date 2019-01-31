@@ -90,7 +90,7 @@ public class SwiftFindFeatureTest {
             }
         }) {
             @Override
-            public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+            public Map<String, String> getMetadata(final Path file) {
                 b.set(true);
                 return Collections.emptyMap();
             }

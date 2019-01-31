@@ -153,7 +153,7 @@ public class UDTProxyConfiguratorTest {
             }
 
             @Override
-            public void checkClientTrusted(final X509Certificate[] x509Certificates, final String s) throws CertificateException {
+            public void checkClientTrusted(final X509Certificate[] x509Certificates, final String s) {
                 //
             }
 
@@ -184,7 +184,7 @@ public class UDTProxyConfiguratorTest {
                 }
             }, new DefaultX509TrustManager() {
             @Override
-            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) {
 
             }
         }, new DefaultX509KeyManager());
@@ -293,7 +293,7 @@ public class UDTProxyConfiguratorTest {
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
             new LocalhostProxyProvider(), new DefaultX509TrustManager() {
             @Override
-            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) {
                 //
             }
         }, new DefaultX509KeyManager());

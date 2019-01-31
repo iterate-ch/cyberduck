@@ -19,7 +19,7 @@ public class RFC1123DateFormatterTest {
     }
 
     @Test
-    public void testPrint() throws Exception {
+    public void testPrint() {
         assertEquals("Thu, 01 Dec 1994 17:00:00 CET", new RFC1123DateFormatter().format((long) 786297600000L, TimeZone.getTimeZone("Europe/Zurich")));
         assertEquals("Thu, 01 Dec 1994 16:00:00 UTC", new RFC1123DateFormatter().format((long) 786297600000L, TimeZone.getTimeZone("UTC")));
     }

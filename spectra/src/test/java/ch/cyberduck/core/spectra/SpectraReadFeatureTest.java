@@ -113,7 +113,7 @@ public class SpectraReadFeatureTest {
     }
 
     @Test
-    public void testOffsetSupport() throws Exception {
+    public void testOffsetSupport() {
         final Host host = new Host(new SpectraProtocol() {
             @Override
             public Scheme getScheme() {

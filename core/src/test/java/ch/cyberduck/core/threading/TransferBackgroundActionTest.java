@@ -62,7 +62,7 @@ import static org.junit.Assert.*;
 public class TransferBackgroundActionTest {
 
     @Test
-    public void testWorkerImplementationDefaultConcurrent() throws Exception {
+    public void testWorkerImplementationDefaultConcurrent() {
         final AbstractController controller = new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
@@ -98,7 +98,7 @@ public class TransferBackgroundActionTest {
         final Path copy = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CopyTransfer t = new CopyTransfer(host, host, Collections.singletonMap(test, copy)) {
             @Override
-            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
+            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) {
                 return TransferAction.overwrite;
             }
         };
@@ -161,7 +161,7 @@ public class TransferBackgroundActionTest {
         final Path copy = new Path(new Path("/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new CopyTransfer(session.getHost(), destination.getHost(), Collections.singletonMap(test, copy)) {
             @Override
-            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
+            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) {
                 return TransferAction.overwrite;
             }
         };

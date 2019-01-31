@@ -88,12 +88,12 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
         return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
             PreferencesFactory.get().getInteger("b2.upload.largeobject.size.minimum"))) {
             @Override
-            public VersionId getStatus() throws BackgroundException {
+            public VersionId getStatus() {
                 return proxy.getFileId();
             }
         };

@@ -124,7 +124,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         private UploadSessionAppendV2Uploader uploader;
 
         public SegmentingUploadProxyOutputStream(final Path file, final TransferStatus status, final DbxUserFilesRequests client,
-                                                 final UploadSessionAppendV2Uploader uploader, final String sessionId) throws DbxException {
+                                                 final UploadSessionAppendV2Uploader uploader, final String sessionId) {
             super(uploader.getOutputStream());
             this.file = file;
             this.status = status;
@@ -162,13 +162,13 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         }
 
         @Override
-        protected void afterWrite(final int n) throws IOException {
+        protected void afterWrite(final int n) {
             offset += n;
             written += n;
         }
 
         @Override
-        public String getStatus() throws BackgroundException {
+        public String getStatus() {
             return fileId;
         }
 

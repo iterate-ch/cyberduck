@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 public class UserDefaultsPreferencesTest {
 
     @Test
-    public void testGetListEscapedWhitespace() throws Exception {
+    public void testGetListEscapedWhitespace() {
         Preferences p = new UserDefaultsPreferences();
         p.load();
         p.setProperty("metadata",
@@ -40,7 +40,7 @@ public class UserDefaultsPreferencesTest {
     }
 
     @Test
-    public void testGetList() throws Exception {
+    public void testGetList() {
         Preferences p = new UserDefaultsPreferences();
         p.load();
         p.setProperty("metadata",
@@ -52,7 +52,7 @@ public class UserDefaultsPreferencesTest {
     }
 
     @Test
-    public void testSetList() throws Exception {
+    public void testSetList() {
         Preferences p = new UserDefaultsPreferences();
         p.load();
         p.setProperty("metadata", Arrays.asList("a", "b"));

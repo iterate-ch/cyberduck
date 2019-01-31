@@ -24,19 +24,19 @@ import org.junit.Test;
 public class BundleApplicationResourcesFinderTest {
 
     @Test
-    public void testBundle() throws Exception {
+    public void testBundle() {
         Assert.assertNotNull(new BundleApplicationResourcesFinder().bundle());
     }
 
     @Test
-    public void testSymbolicLink() throws Exception {
+    public void testSymbolicLink() {
         final NSBundle bundle = new BundleApplicationResourcesFinder().bundle(NSBundle.bundleWithPath("."), new Local("/usr/bin/java"));
         Assert.assertNotNull(bundle);
         Assert.assertEquals(NSBundle.bundleWithPath("/System/Library/Frameworks/JavaVM.framework/Versions/A"), bundle);
     }
 
     @Test
-    public void testAccessDenied() throws Exception {
+    public void testAccessDenied() {
         final NSBundle bundle = new BundleApplicationResourcesFinder().bundle(NSBundle.bundleWithPath("."), new Local("/usr/bin/java") {
             @Override
             public Local getSymlinkTarget() throws NotfoundException {

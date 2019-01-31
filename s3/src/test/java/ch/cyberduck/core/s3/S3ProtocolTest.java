@@ -83,7 +83,7 @@ public class S3ProtocolTest {
     }
 
     @Test
-    public void testValidateCredentials() throws Exception {
+    public void testValidateCredentials() {
         assertFalse(new Credentials("user", "").validate(new S3Protocol(), new LoginOptions(new S3Protocol())));
         assertFalse(new Credentials("user", " ").validate(new S3Protocol(), new LoginOptions(new S3Protocol())));
         assertTrue(new Credentials("user", "key").validate(new S3Protocol(), new LoginOptions(new S3Protocol())));

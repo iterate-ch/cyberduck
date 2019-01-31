@@ -71,7 +71,7 @@ public class S3LocationFeatureTest extends AbstractS3Test {
         final S3Session session = new S3Session(host);
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 fail(reason);
                 return null;
             }
@@ -119,12 +119,12 @@ public class S3LocationFeatureTest extends AbstractS3Test {
     }
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         assertEquals(unknown, new S3LocationFeature.S3Region(null));
     }
 
     @Test
-    public void testEmptyThirdPartyProvider() throws Exception {
+    public void testEmptyThirdPartyProvider() {
         final Host host = new Host(new S3Protocol(), "mys3", new Credentials(
             PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));

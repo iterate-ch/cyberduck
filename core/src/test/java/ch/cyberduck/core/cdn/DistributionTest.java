@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class DistributionTest {
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         assertEquals(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false), new Distribution(URI.create("o"), Distribution.DOWNLOAD, false));
         assertFalse(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false).equals(new Distribution(URI.create("o"), Distribution.STREAMING, false)));
         assertFalse(new Distribution(URI.create("o"), Distribution.DOWNLOAD, false).equals(new Distribution(URI.create("o"), Distribution.CUSTOM, false)));
@@ -20,7 +20,7 @@ public class DistributionTest {
     }
 
     @Test
-    public void testMethods() throws Exception {
+    public void testMethods() {
         assertEquals(Distribution.DOWNLOAD, Distribution.Method.forName(Distribution.DOWNLOAD.toString()));
         assertEquals(Distribution.CUSTOM, Distribution.Method.forName(Distribution.CUSTOM.toString()));
         assertEquals(Distribution.STREAMING, Distribution.Method.forName(Distribution.STREAMING.toString()));
@@ -29,28 +29,28 @@ public class DistributionTest {
     }
 
     @Test
-    public void testDeployed() throws Exception {
+    public void testDeployed() {
         assertTrue(new Distribution(Distribution.DOWNLOAD, true).isDeployed());
     }
 
     @Test
-    public void testCnames() throws Exception {
+    public void testCnames() {
         assertNotNull(new Distribution(Distribution.DOWNLOAD, false).getCNAMEs());
     }
 
     @Test(expected = FactoryException.class)
-    public void testMethodInvalid() throws Exception {
+    public void testMethodInvalid() {
         Distribution.Method.forName("i");
     }
 
     @Test
-    public void testOriginBucket() throws Exception {
+    public void testOriginBucket() {
         assertEquals(URI.create("test.cyberduck.ch.s3.amazonaws.com"),
                 new Distribution(URI.create("test.cyberduck.ch.s3.amazonaws.com"), Distribution.DOWNLOAD, false).getOrigin());
     }
 
     @Test
-    public void testOriginCustom() throws Exception {
+    public void testOriginCustom() {
         assertEquals(URI.create("test.cyberduck.ch"),
                 new Distribution(URI.create("test.cyberduck.ch"), Distribution.DOWNLOAD, false).getOrigin());
     }

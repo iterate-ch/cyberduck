@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 public class CopyRootPathsNormalizerTest {
 
     @Test
-    public void testNormalizeNone() throws Exception {
+    public void testNormalizeNone() {
         CopyRootPathsNormalizer normalizer = new CopyRootPathsNormalizer();
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         files.put(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory)));
@@ -39,7 +39,7 @@ public class CopyRootPathsNormalizerTest {
     }
 
     @Test
-    public void testNormalize() throws Exception {
+    public void testNormalize() {
         CopyRootPathsNormalizer normalizer = new CopyRootPathsNormalizer();
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         files.put(new Path("/p", EnumSet.of(Path.Type.directory)), new Path("/d", EnumSet.of(Path.Type.directory)));
@@ -48,7 +48,7 @@ public class CopyRootPathsNormalizerTest {
     }
 
     @Test
-    public void testNormalize2() throws Exception {
+    public void testNormalize2() {
         CopyRootPathsNormalizer normalizer = new CopyRootPathsNormalizer();
         final HashMap<Path, Path> files = new HashMap<Path, Path>();
         files.put(new Path("/p/child", EnumSet.of(Path.Type.directory)), new Path("/d/child", EnumSet.of(Path.Type.directory)));

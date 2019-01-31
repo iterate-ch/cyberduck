@@ -202,18 +202,18 @@ public class LocalTest {
     }
 
     @Test
-    public void testNormalize() throws Exception {
+    public void testNormalize() {
         assertEquals(StringUtils.removeEnd(System.getProperty("java.io.tmpdir"),
             PreferencesFactory.get().getProperty("local.delimiter")), new Local(System.getProperty("java.io.tmpdir")).getAbsolute());
     }
 
     private static class WindowsLocal extends Local {
 
-        public WindowsLocal(final String parent, final String name, final String delimiter) throws LocalAccessDeniedException {
+        public WindowsLocal(final String parent, final String name, final String delimiter) {
             super(parent, name, delimiter);
         }
 
-        public WindowsLocal(final String name) throws LocalAccessDeniedException {
+        public WindowsLocal(final String name) {
             super(name);
         }
 
@@ -224,11 +224,11 @@ public class LocalTest {
     }
 
     private final class TestLocal extends Local {
-        private TestLocal(final String name) throws LocalAccessDeniedException {
+        private TestLocal(final String name) {
             super(name);
         }
 
-        public TestLocal(final String parent, final String name) throws LocalAccessDeniedException {
+        public TestLocal(final String parent, final String name) {
             super(parent, name);
         }
     }

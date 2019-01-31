@@ -66,7 +66,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
     }
 
     @Test
-    public void testRoles() throws Exception {
+    public void testRoles() {
         final GoogleStorageSession session = new GoogleStorageSession(new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("google.projectid"), null
         )));

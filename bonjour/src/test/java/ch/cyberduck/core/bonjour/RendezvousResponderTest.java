@@ -49,7 +49,7 @@ public class RendezvousResponderTest {
     }
 
     @Test
-    public void testGetProtocol() throws Exception {
+    public void testGetProtocol() {
         final AbstractRendezvous r = new RendezvousResponder(new ProtocolFactory(new HashSet<>(Arrays.asList(new TestProtocol(Scheme.sftp),
                 new TestProtocol(Scheme.ftp), new TestProtocol(Scheme.dav), new TestProtocol(Scheme.davs)))));
         assertEquals(new TestProtocol(Scheme.ftp), r.getProtocol("andaman._ftp._tcp.local."));

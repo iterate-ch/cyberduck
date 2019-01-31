@@ -162,7 +162,7 @@ public class ProxySocketFactoryTest {
                 }
             }, new SocketConfigurator() {
                 @Override
-                public void configure(final Socket socket) throws IOException {
+                public void configure(final Socket socket) {
                     // Not yet connected
                     assertNull(socket.getInetAddress());
                 }

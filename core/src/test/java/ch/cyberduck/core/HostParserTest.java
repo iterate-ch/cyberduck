@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 public class HostParserTest {
 
     @Test
-    public void parse() throws Exception {
+    public void parse() {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https)))).get("https://t%40u@host/key");
         assertEquals("host", host.getHostname());
         assertEquals("t@u", host.getCredentials().getUsername());

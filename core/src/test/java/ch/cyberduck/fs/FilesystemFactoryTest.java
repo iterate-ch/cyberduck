@@ -25,7 +25,7 @@ import org.junit.Test;
 public class FilesystemFactoryTest {
 
     @Test(expected = FactoryException.class)
-    public void testFactory() throws Exception {
+    public void testFactory() {
         FilesystemFactory.get(null, null, PathCache.empty());
     }
 }

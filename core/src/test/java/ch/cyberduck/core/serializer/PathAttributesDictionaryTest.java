@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 public class PathAttributesDictionaryTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         PathAttributes attributes = new PathAttributes();
         PathAttributes clone = new PathAttributesDictionary().deserialize(attributes.serialize(SerializerFactory.get()));
 
@@ -36,7 +36,7 @@ public class PathAttributesDictionaryTest {
     }
 
     @Test
-    public void testGetAsDictionary() throws Exception {
+    public void testGetAsDictionary() {
         PathAttributes attributes = new PathAttributes();
         attributes.setSize(3L);
         attributes.setChecksum(Checksum.parse("da39a3ee5e6b4b0d3255bfef95601890afd80709"));
@@ -46,7 +46,7 @@ public class PathAttributesDictionaryTest {
     }
 
     @Test
-    public void testSerializeHashCode() throws Exception {
+    public void testSerializeHashCode() {
         PathAttributes attributes = new PathAttributes();
         attributes.setPermission(new Permission(644));
         attributes.setDuplicate(true);

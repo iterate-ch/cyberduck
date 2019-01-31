@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 public class UploadTargetFinderTest {
 
     @Test
-    public void testFind() throws Exception {
+    public void testFind() {
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))).find(null));
         assertEquals(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)),
@@ -47,7 +47,7 @@ public class UploadTargetFinderTest {
     }
 
     @Test
-    public void testFindContainerSelected() throws Exception {
+    public void testFindContainerSelected() {
         assertEquals(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume)),
                 new UploadTargetFinder(new Path("/", EnumSet.of(Path.Type.directory)))
                         .find(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume))));

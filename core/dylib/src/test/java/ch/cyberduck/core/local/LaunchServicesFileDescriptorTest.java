@@ -25,12 +25,12 @@ import static org.junit.Assert.assertNotNull;
 public class LaunchServicesFileDescriptorTest {
 
     @Test
-    public void testGetKind() throws Exception {
+    public void testGetKind() {
         assertNotNull(new LaunchServicesFileDescriptor().getKind("/tmp/t.txt"));
     }
 
     @Test
-    public void testGetKindWithoutExtension() throws Exception {
+    public void testGetKindWithoutExtension() {
         assertNotNull(new LaunchServicesFileDescriptor().getKind("txt"));
     }
 }

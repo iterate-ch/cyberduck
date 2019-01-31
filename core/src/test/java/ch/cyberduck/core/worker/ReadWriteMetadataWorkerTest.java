@@ -127,7 +127,7 @@ public class ReadWriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public Map<String, String> getMetadata(Path file) throws BackgroundException {
+                        public Map<String, String> getMetadata(Path file) {
                             // Ensure server answers with correct values
                             switch(file.getName()) {
                                 case "a":
@@ -143,7 +143,7 @@ public class ReadWriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+                        public void setMetadata(final Path file, final Map<String, String> metadata) {
                             // Test metadata against expected.
                             switch(file.getName()) {
                                 case "a":

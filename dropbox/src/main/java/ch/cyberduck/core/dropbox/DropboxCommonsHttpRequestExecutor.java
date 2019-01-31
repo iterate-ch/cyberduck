@@ -86,7 +86,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
         return this.execute(url, headers, request);
     }
 
-    private Uploader execute(final String url, final Iterable<Header> headers, final HttpEntityEnclosingRequestBase request) throws IOException {
+    private Uploader execute(final String url, final Iterable<Header> headers, final HttpEntityEnclosingRequestBase request) {
         for(Header header : headers) {
             if(header.getKey().equals(HTTP.TRANSFER_ENCODING)) {
                 continue;

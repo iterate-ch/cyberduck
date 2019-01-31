@@ -664,7 +664,7 @@ public class MainController extends BundleController implements NSApplication.De
                 // Upload file
                 this.background(new AbstractBackgroundAction<Void>() {
                     @Override
-                    public Void run() throws BackgroundException {
+                    public Void run() {
                         // Wait until bookmarks are loaded
                         try {
                             bookmarksSemaphore.await();
@@ -1044,7 +1044,7 @@ public class MainController extends BundleController implements NSApplication.De
             null);
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public Void run() throws BackgroundException {
+            public Void run() {
                 bonjour.init();
                 return null;
             }

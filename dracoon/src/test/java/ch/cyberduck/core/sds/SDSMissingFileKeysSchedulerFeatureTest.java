@@ -73,7 +73,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
         final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("ahbic3Ae");
             }
         }, test);

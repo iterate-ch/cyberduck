@@ -88,7 +88,7 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
     }
 
     @Override
-    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+    public void process(final HttpRequest request, final HttpContext context) {
         if(StringUtils.contains(request.getRequestLine().getUri(), "b2_authorize_account")) {
             // Skip setting token for
             if(log.isDebugEnabled()) {

@@ -23,12 +23,12 @@ import ch.cyberduck.core.exception.BackgroundException;
 public abstract class AbstractIdentityConfiguration implements IdentityConfiguration {
 
     @Override
-    public void delete(final String username, final LoginCallback prompt) throws BackgroundException {
+    public void delete(final String username, final LoginCallback prompt) {
         //
     }
 
     @Override
-    public void create(final String username, final String policy, final LoginCallback prompt) throws BackgroundException {
+    public void create(final String username, final String policy, final LoginCallback prompt) {
         //
     }
 }

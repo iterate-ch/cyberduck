@@ -72,7 +72,7 @@ public class EditOpenWorker extends Worker<Transfer> {
                 new DownloadDuplicateFilter()) {
             @Override
             public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
-                                         final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
+                                         final TransferPrompt prompt, final ListProgressListener listener) {
                 return TransferAction.trash;
             }
         };

@@ -87,7 +87,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         final DAVSession session = new DAVSession(host) {
             final DAVUploadFeature upload = new DAVUploadFeature(new DAVWriteFeature(this)) {
                 @Override
-                protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+                protected InputStream decorate(final InputStream in, final MessageDigest digest) {
                     if(failed.get()) {
                         // Second attempt successful
                         return in;

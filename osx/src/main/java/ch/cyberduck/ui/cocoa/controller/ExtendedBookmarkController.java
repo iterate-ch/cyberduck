@@ -276,7 +276,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                 if(preferences.getBoolean("bookmark.favicon.download")) {
                     background(new AbstractBackgroundAction<Void>() {
                         @Override
-                        public Void run() throws BackgroundException {
+                        public Void run() {
                             final String f = bookmark.getProtocol().favicon();
                             if(StringUtils.isNotBlank(f)) {
                                 favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);

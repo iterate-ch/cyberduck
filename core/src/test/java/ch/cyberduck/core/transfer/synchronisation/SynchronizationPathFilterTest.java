@@ -89,7 +89,7 @@ public class SynchronizationPathFilterTest {
         Session session = new NullSession(new Host(new TestProtocol()));
         final SynchronizationPathFilter mirror = new SynchronizationPathFilter(new ComparePathFilter() {
             @Override
-            public Comparison compare(Path file, Local local) throws BackgroundException {
+            public Comparison compare(Path file, Local local) {
                 return Comparison.equal;
             }
         }, new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),

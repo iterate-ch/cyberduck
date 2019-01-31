@@ -22,12 +22,12 @@ import org.junit.Test;
 public class TerminalProgressListenerTest  {
 
     @Test
-    public void testNullMessage() throws Exception {
+    public void testNullMessage() {
         new TerminalProgressListener().message(null);
     }
 
     @Test
-    public void testMessage() throws Exception {
+    public void testMessage() {
         new TerminalProgressListener().message("b");
     }
 }

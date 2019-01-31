@@ -99,7 +99,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             case oauth:
                 authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
                     @Override
-                    public void process(final HttpRequest request, final HttpContext context) throws IOException {
+                    public void process(final HttpRequest request, final HttpContext context) {
                         request.addHeader(HttpHeaders.AUTHORIZATION,
                             String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
                     }
@@ -240,7 +240,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    protected void logout() {
         client.getHttpClient().close();
     }
 

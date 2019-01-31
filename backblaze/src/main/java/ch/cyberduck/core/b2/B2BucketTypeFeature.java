@@ -52,7 +52,7 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
     }
 
     @Override
-    public Acl getPermission(final Path file) throws BackgroundException {
+    public Acl getPermission(final Path file) {
         if(containerService.isContainer(file)) {
             return containerService.getContainer(file).attributes().getAcl();
         }
@@ -111,7 +111,7 @@ public class B2BucketTypeFeature extends DefaultAclFeature implements AclPermiss
     }
 
     @Override
-    public Name getLocation(final Path file) throws BackgroundException {
+    public Name getLocation(final Path file) {
         final Path container = containerService.getContainer(file);
         if(container.isRoot()) {
             return unknown;

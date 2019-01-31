@@ -36,12 +36,12 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final S3Session session = new S3Session(new Host(new S3Protocol()));
         final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 return true;
             }
         }, new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 return new PathAttributes();
             }
         });
@@ -54,12 +54,12 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final S3Session session = new S3Session(new Host(new S3Protocol()));
         final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 return true;
             }
         }, new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(3L);
                 return attributes;

@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 public class DefaultHomeFinderServiceTest {
 
     @Test
-    public void testFindWithWorkdir() throws Exception {
+    public void testFindWithWorkdir() {
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
             new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
@@ -37,27 +37,27 @@ public class DefaultHomeFinderServiceTest {
     }
 
     @Test
-    public void testRelativeParent() throws Exception {
+    public void testRelativeParent() {
         final Path home = new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox/sub");
         assertEquals(new Path("/sandbox/sub", EnumSet.of(Path.Type.directory)), home);
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)), home.getParent());
     }
 
     @Test
-    public void testHomeParent() throws Exception {
+    public void testHomeParent() {
         final Path home = new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), String.format("%s/sandbox/sub", Path.HOME));
         assertEquals(new Path("/sandbox/sub", EnumSet.of(Path.Type.directory)), home);
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)), home.getParent());
     }
 
     @Test
-    public void testDefaultLocalPathDriveLetter() throws Exception {
+    public void testDefaultLocalPathDriveLetter() {
         assertEquals(new Path("/C:/Users/example/Documents/vault", EnumSet.of(Path.Type.directory)),
             new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "C:/Users/example/Documents/vault"));
     }
 
     @Test
-    public void testDefaultLocalPathDriveLetterBackwardSlashes() throws Exception {
+    public void testDefaultLocalPathDriveLetterBackwardSlashes() {
         assertEquals(new Path("/C:/Users/example/Documents/vault", EnumSet.of(Path.Type.directory)),
             new DefaultHomeFinderService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "C:\\Users\\example\\Documents\\vault"));
     }

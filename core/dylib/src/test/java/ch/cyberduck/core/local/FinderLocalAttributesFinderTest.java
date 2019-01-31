@@ -37,7 +37,7 @@ public class FinderLocalAttributesFinderTest {
     }
 
     @Test
-    public void testGetPermission() throws Exception {
+    public void testGetPermission() {
         assertEquals(Permission.EMPTY, new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString())).getPermission());
     }
 
@@ -100,7 +100,7 @@ public class FinderLocalAttributesFinderTest {
     }
 
     @Test
-    public void testIsBundle() throws Exception {
+    public void testIsBundle() {
         FinderLocalAttributes a = new FinderLocalAttributes(new FinderLocal(UUID.randomUUID().toString()));
         assertFalse(a.isBundle());
     }

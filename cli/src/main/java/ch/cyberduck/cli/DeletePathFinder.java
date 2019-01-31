@@ -30,7 +30,7 @@ import java.util.Set;
 public class DeletePathFinder implements TransferItemFinder {
 
     @Override
-    public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) throws AccessDeniedException {
+    public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) {
         if(StringUtils.containsAny(remote.getName(), '*')) {
             // Treat asterisk as wildcard
             return Collections.singleton(new TransferItem(remote.getParent()));

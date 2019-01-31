@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class TimestampComparatorTest {
 
     @Test
-    public void testCompareFirst() throws Exception {
+    public void testCompareFirst() {
         assertEquals(0, new TimestampComparator(true).compareFirst(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file))));
         final Path p1 = new Path("/a", EnumSet.of(Path.Type.file));
         p1.attributes().setModificationDate(System.currentTimeMillis());
@@ -21,7 +21,7 @@ public class TimestampComparatorTest {
     }
 
     @Test
-    public void testCompareTransitivity() throws Exception {
+    public void testCompareTransitivity() {
         final BrowserComparator comparator = new TimestampComparator(true);
         final Path p1 = new Path("/c", EnumSet.of(Path.Type.file));
         p1.attributes().setModificationDate(1000);

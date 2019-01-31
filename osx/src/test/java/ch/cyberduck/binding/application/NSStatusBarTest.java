@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
 public class NSStatusBarTest {
 
     @Test
-    public void testSystemStatusBar() throws Exception {
+    public void testSystemStatusBar() {
         assertNotNull(NSStatusBar.systemStatusBar());
         assertNotNull(NSStatusBar.systemStatusBar().statusItemWithLength(NSStatusBar.NSSquareStatusItemLength));
     }

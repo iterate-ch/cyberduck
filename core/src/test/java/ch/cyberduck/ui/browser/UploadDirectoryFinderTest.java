@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNull;
 public class UploadDirectoryFinderTest {
 
     @Test
-    public void testFind() throws Exception {
+    public void testFind() {
         final Host host = new Host(new TestProtocol());
         assertNull(host.getDownloadFolder());
         final UploadDirectoryFinder finder = new UploadDirectoryFinder();

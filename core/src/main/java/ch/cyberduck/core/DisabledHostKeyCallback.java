@@ -26,7 +26,7 @@ import java.security.PublicKey;
 public class DisabledHostKeyCallback implements HostKeyCallback {
 
     @Override
-    public boolean verify(String hostname, int port, PublicKey key) throws ConnectionCanceledException, ChecksumException {
+    public boolean verify(String hostname, int port, PublicKey key) {
         return true;
     }
 }

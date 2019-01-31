@@ -51,7 +51,7 @@ public class CryptoChecksumComputeTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
                             assertTrue(folder.equals(vault) || folder.isChild(vault));
                             return folder;
                         }

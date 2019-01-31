@@ -107,7 +107,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
             return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
                 PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
                 @Override
-                public VersionId getStatus() throws BackgroundException {
+                public VersionId getStatus() {
                     return proxy.getVersionId();
                 }
             };

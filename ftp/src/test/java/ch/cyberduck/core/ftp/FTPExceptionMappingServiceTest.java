@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 public class FTPExceptionMappingServiceTest {
 
     @Test
-    public void testMap() throws Exception {
+    public void testMap() {
         assertEquals(ConnectionCanceledException.class,
             new FTPExceptionMappingService().map(new SocketException("Software caused connection abort")).getClass());
         assertEquals(ConnectionCanceledException.class,
@@ -27,27 +27,27 @@ public class FTPExceptionMappingServiceTest {
     }
 
     @Test
-    public void testQuota() throws Exception {
+    public void testQuota() {
         assertTrue(new FTPExceptionMappingService().map(new FTPException(452, "")) instanceof QuotaException);
     }
 
     @Test
-    public void testLogin() throws Exception {
+    public void testLogin() {
         assertTrue(new FTPExceptionMappingService().map(new FTPException(530, "")) instanceof LoginFailureException);
     }
 
     @Test
-    public void testFile() throws Exception {
+    public void testFile() {
         assertTrue(new FTPExceptionMappingService().map(new FTPException(550, "")) instanceof NotfoundException);
     }
 
     @Test
-    public void testTrim() throws Exception {
+    public void testTrim() {
         assertEquals("M. Please contact your web hosting service provider for assistance.", new FTPExceptionMappingService().map(new FTPException(500, "m\n")).getDetail());
     }
 
     @Test
-    public void testSocketTimeout() throws Exception {
+    public void testSocketTimeout() {
         assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()
             .map(new SocketTimeoutException()).getClass());
         assertEquals(ConnectionTimeoutException.class, new FTPExceptionMappingService()

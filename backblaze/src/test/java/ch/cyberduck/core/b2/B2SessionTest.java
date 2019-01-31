@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 public class B2SessionTest {
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final Host host = new Host(new B2Protocol(), "test.cyberduck.ch");
         final Session session = new B2Session(host);
         assertNotNull(session.getFeature(AclPermission.class));

@@ -121,7 +121,7 @@ public class BackportWindowsNegotiateScheme extends AuthSchemeBase {
     protected void parseChallenge(
         final CharArrayBuffer buffer,
         final int beginIndex,
-        final int endIndex) throws MalformedChallengeException {
+        final int endIndex) {
         this.challenge = buffer.substringTrimmed(beginIndex, endIndex);
 
         if(this.challenge.isEmpty()) {

@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 public class DefaultEditorFactoryTest {
 
     @Test
-    public void testGetDefaultEditor() throws Exception {
+    public void testGetDefaultEditor() {
         assertNotNull(new DefaultEditorFactory().getDefaultEditor());
     }
 }

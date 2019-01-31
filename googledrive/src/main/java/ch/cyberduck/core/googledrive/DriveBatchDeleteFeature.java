@@ -106,14 +106,14 @@ public class DriveBatchDeleteFeature implements Delete {
         }
 
         @Override
-        public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) throws IOException {
+        public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) {
             log.warn(String.format("Failure deleting %s. %s", file, e.getMessage()));
             failures.add(new HttpResponseExceptionMappingService().map(
                 new HttpResponseException(e.getCode(), e.getMessage())));
         }
 
         @Override
-        public void onSuccess(final V aVoid, final HttpHeaders responseHeaders) throws IOException {
+        public void onSuccess(final V aVoid, final HttpHeaders responseHeaders) {
             callback.delete(file);
         }
     }

@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class DistributionUrlProviderTest {
 
     @Test
-    public void testDownload() throws Exception {
+    public void testDownload() {
         final Distribution distribution = new Distribution(URI.create("https://test.cyberduck.ch.s3.amazonaws.com"), Distribution.DOWNLOAD, true);
         assertEquals("https://test.cyberduck.ch.s3.amazonaws.com/p/f",
                 new DistributionUrlProvider(distribution).toUrl(
@@ -21,7 +21,7 @@ public class DistributionUrlProviderTest {
     }
 
     @Test
-    public void testStreaming() throws Exception {
+    public void testStreaming() {
         final Distribution distribution = new Distribution(URI.create("https://test.cyberduck.ch.s3.amazonaws.com"), Distribution.STREAMING, true);
         distribution.setUrl(URI.create("rtmp://d1f6cbdjcbzyiu.cloudfront.net/cfx/st"));
         assertEquals("rtmp://d1f6cbdjcbzyiu.cloudfront.net/cfx/st/p/f",
@@ -31,14 +31,14 @@ public class DistributionUrlProviderTest {
     }
 
     @Test
-    public void testCustomOrigin() throws Exception {
+    public void testCustomOrigin() {
         final Distribution distribution = new Distribution(URI.create("http://test.cyberduck.ch/"), Distribution.CUSTOM, true);
         assertEquals("http://test.cyberduck.ch/p/f",
                 new DistributionUrlProvider(distribution).toUrl(new Path("/p/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.origin).getUrl());
     }
 
     @Test
-    public void testCustomOriginDefaultPath() throws Exception {
+    public void testCustomOriginDefaultPath() {
         final Distribution distribution = new Distribution(URI.create("http://test.cyberduck.ch/p"), Distribution.CUSTOM, true);
         assertEquals("http://test.cyberduck.ch/f",
                 new DistributionUrlProvider(distribution).toUrl(new Path("/p/f", EnumSet.of(Path.Type.directory))).find(DescriptiveUrl.Type.origin).getUrl());

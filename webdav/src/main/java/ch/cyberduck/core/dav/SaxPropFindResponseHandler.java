@@ -76,13 +76,13 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
         private Element root;
 
         @Override
-        public void startDocument() throws SAXException {
+        public void startDocument() {
             multistatus = new Multistatus();
             root = SardineUtil.createElement(SardineUtil.createQNameWithCustomNamespace("root"));
         }
 
         @Override
-        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
+        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
             if(localName.equals("response")) {
                 response = new Response();
                 multistatus.getResponse().add(response);
@@ -106,12 +106,12 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
         }
 
         @Override
-        public void characters(final char[] ch, final int start, final int length) throws SAXException {
+        public void characters(final char[] ch, final int start, final int length) {
             data.append(new String(ch, start, length));
         }
 
         @Override
-        public void endElement(final String uri, final String localName, final String qName) throws SAXException {
+        public void endElement(final String uri, final String localName, final String qName) {
             if(localName.equals("status")) {
                 propstat.setStatus(data.toString());
             }

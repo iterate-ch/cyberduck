@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 public class WorkspaceRevealServiceTest {
 
     @Test
-    public void testReveal() throws Exception {
+    public void testReveal() {
         assertTrue(new WorkspaceRevealService().reveal(new Local(System.getProperty("java.io.tmpdir"))));
     }
 }

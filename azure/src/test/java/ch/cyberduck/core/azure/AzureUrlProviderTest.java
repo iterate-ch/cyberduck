@@ -47,7 +47,7 @@ public class AzureUrlProviderTest {
     }
 
     @Test
-    public void testDisconnected() throws Exception {
+    public void testDisconnected() {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
                 System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));

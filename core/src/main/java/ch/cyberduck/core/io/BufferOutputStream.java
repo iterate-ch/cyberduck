@@ -61,7 +61,7 @@ public class BufferOutputStream extends ProxyOutputStream {
     }
 
     @Override
-    protected void afterWrite(final int n) throws IOException {
+    protected void afterWrite(final int n) {
         offset += n;
     }
 }

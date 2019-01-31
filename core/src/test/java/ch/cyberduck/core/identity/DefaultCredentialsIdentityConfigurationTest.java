@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class DefaultCredentialsIdentityConfigurationTest {
 
     @Test
-    public void testGetUserCredentials() throws Exception {
+    public void testGetUserCredentials() {
         final Host bookmark = new Host(new TestProtocol(), "h", new Credentials("u", null));
         final DefaultCredentialsIdentityConfiguration configuration = new DefaultCredentialsIdentityConfiguration(
                 bookmark,

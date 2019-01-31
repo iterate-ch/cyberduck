@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 public class PathContainerServiceTest {
 
     @Test
-    public void testIsContainer() throws Exception {
+    public void testIsContainer() {
         final PathContainerService s = new PathContainerService();
         assertFalse(s.isContainer(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
         assertTrue(s.isContainer(new Path("/t", EnumSet.of(Path.Type.directory, Path.Type.volume))));
@@ -35,14 +35,14 @@ public class PathContainerServiceTest {
     }
 
     @Test
-    public void testGetContainerName() throws Exception {
+    public void testGetContainerName() {
         final PathContainerService s = new PathContainerService();
         assertEquals("t", s.getContainer(new Path("/t", EnumSet.of(Path.Type.directory))).getName());
         assertEquals("t", s.getContainer(new Path("/t/a", EnumSet.of(Path.Type.file))).getName());
     }
 
     @Test
-    public void testGetContainer() throws Exception {
+    public void testGetContainer() {
         final PathContainerService s = new PathContainerService();
         assertEquals("/t", s.getContainer(new Path("/t", EnumSet.of(Path.Type.directory))).getAbsolute());
         final Path root = new Path("/", EnumSet.of(Path.Type.directory));
@@ -50,7 +50,7 @@ public class PathContainerServiceTest {
     }
 
     @Test
-    public void testGetKey() throws Exception {
+    public void testGetKey() {
         assertEquals("d/f", new PathContainerService().getKey(new Path("/c/d/f", EnumSet.of(Path.Type.directory))));
         assertNull(new PathContainerService().getKey(new Path("/", EnumSet.of(Path.Type.directory))));
     }

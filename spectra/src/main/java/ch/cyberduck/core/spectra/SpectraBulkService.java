@@ -102,7 +102,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     }
 
     @Override
-    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
         //
     }
 

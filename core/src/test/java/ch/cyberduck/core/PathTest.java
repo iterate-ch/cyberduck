@@ -108,7 +108,7 @@ public class PathTest {
     }
 
     @Test
-    public void testCreateRelative() throws Exception {
+    public void testCreateRelative() {
         final Path path = new Path(".CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory));
         assertEquals("/.CDN_ACCESS_LOGS", path.getAbsolute());
         assertEquals(".CDN_ACCESS_LOGS", path.getName());
@@ -120,7 +120,7 @@ public class PathTest {
     }
 
     @Test
-    public void testCreateAbsolute() throws Exception {
+    public void testCreateAbsolute() {
         final Path path = new Path("/.CDN_ACCESS_LOGS", EnumSet.of(Path.Type.volume, Path.Type.directory));
         assertEquals("/.CDN_ACCESS_LOGS", path.getAbsolute());
         assertEquals(".CDN_ACCESS_LOGS", path.getName());
@@ -132,14 +132,14 @@ public class PathTest {
     }
 
     @Test
-    public void testPathContainer() throws Exception {
+    public void testPathContainer() {
         final Path path = new Path(new Path("test.cyberduck.ch",
                 EnumSet.of(Path.Type.volume, Path.Type.directory)), "/test", EnumSet.of(Path.Type.directory));
         assertEquals("/test.cyberduck.ch/test", path.getAbsolute());
     }
 
     @Test
-    public void testSetGetType() throws Exception {
+    public void testSetGetType() {
         Path attributes = new Path("/", EnumSet.of(Path.Type.file, Path.Type.symboliclink));
         assertTrue(attributes.isFile());
         assertTrue(attributes.isSymbolicLink());

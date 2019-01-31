@@ -42,12 +42,12 @@ public class ReadMetadataWorkerTest {
                         }
 
                         @Override
-                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                        public Map<String, String> getMetadata(final Path file) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+                        public void setMetadata(final Path file, final Map<String, String> metadata) {
                             throw new UnsupportedOperationException();
                         }
                     };
@@ -81,7 +81,7 @@ public class ReadMetadataWorkerTest {
                         }
 
                         @Override
-                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                        public Map<String, String> getMetadata(final Path file) {
                             if(file.getName().equals("a")) {
                                 return Collections.singletonMap("key1", "value1");
                             }
@@ -98,7 +98,7 @@ public class ReadMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+                        public void setMetadata(final Path file, final Map<String, String> metadata) {
                             throw new UnsupportedOperationException();
                         }
                     };
@@ -136,7 +136,7 @@ public class ReadMetadataWorkerTest {
                         }
 
                         @Override
-                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                        public Map<String, String> getMetadata(final Path file) {
                             final HashMap<String, String> map = new HashMap<String, String>();
                             if(file.getName().equals("a")) {
                                 map.put("key1", "v1");
@@ -161,7 +161,7 @@ public class ReadMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+                        public void setMetadata(final Path file, final Map<String, String> metadata) {
                             throw new UnsupportedOperationException();
                         }
                     };

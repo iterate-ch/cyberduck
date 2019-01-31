@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 public class SchemeTest {
 
     @Test
-    public void testUrl() throws Exception {
+    public void testUrl() {
         assertTrue(Scheme.isURL("ftp://h.name"));
         assertTrue(Scheme.isURL("ftps://h.name"));
         assertTrue(Scheme.isURL("sftp://h.name"));

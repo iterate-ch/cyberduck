@@ -27,7 +27,7 @@ import static org.junit.Assert.assertNotNull;
 public class UpdaterTest {
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate() {
         assertNotNull(Updater.create());
     }
 }

@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class PathTooltipServiceTest {
 
     @Test
-    public void testGetTooltip() throws Exception {
+    public void testGetTooltip() {
         final PathTooltipService s = new PathTooltipService();
         assertEquals("/p", s.getTooltip(new Path("/p", EnumSet.of(Path.Type.file))));
     }

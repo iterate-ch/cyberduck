@@ -36,7 +36,7 @@ public class DeleteWorkerTest {
                 if(type == Delete.class) {
                     return (T) new Delete() {
                         @Override
-                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
                             assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), files.get(0));
                             assertEquals(new Path("/t/d/b", EnumSet.of(Path.Type.file)), files.get(1));
                             assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), files.get(2));
@@ -84,7 +84,7 @@ public class DeleteWorkerTest {
                 if(type == Delete.class) {
                     return (T) new Delete() {
                         @Override
-                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
                             assertEquals(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink)), files.get(0));
                         }
 

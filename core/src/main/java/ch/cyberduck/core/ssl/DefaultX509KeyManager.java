@@ -45,7 +45,7 @@ public class DefaultX509KeyManager extends AbstractX509KeyManager implements X50
     private javax.net.ssl.X509KeyManager _manager;
 
     @Override
-    public X509KeyManager init() throws IOException {
+    public X509KeyManager init() {
         return this;
     }
 

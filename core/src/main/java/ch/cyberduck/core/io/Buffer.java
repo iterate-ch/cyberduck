@@ -49,6 +49,6 @@ public interface Buffer {
     void truncate(Long length);
 
     interface Factory {
-        Buffer create(Path file) throws BackgroundException;
+        Buffer create(Path file);
     }
 }

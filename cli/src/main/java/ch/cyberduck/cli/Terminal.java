@@ -422,7 +422,7 @@ public class Terminal {
         return Exit.success;
     }
 
-    protected Exit mkdir(final SessionPool session, final Path remote, final String region) throws BackgroundException {
+    protected Exit mkdir(final SessionPool session, final Path remote, final String region) {
         final CreateDirectoryWorker worker = new CreateDirectoryWorker(remote, region);
         final SessionBackgroundAction<Path> action = new TerminalBackgroundAction<Path>(controller, session, worker);
         if(!this.execute(action)) {

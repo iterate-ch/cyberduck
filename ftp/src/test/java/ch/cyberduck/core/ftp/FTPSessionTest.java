@@ -131,7 +131,7 @@ public class FTPSessionTest extends AbstractFTPTest {
     }
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         assertNotNull(session.getFeature(UnixPermission.class));
         assertNotNull(session.getFeature(Timestamp.class));
     }

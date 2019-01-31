@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class DisabledBulkFeature implements Bulk<Map<TransferItem, TransferStatus>> {
     @Override
-    public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
         return files;
     }
 

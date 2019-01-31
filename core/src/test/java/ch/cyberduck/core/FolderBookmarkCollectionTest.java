@@ -19,7 +19,7 @@ public class FolderBookmarkCollectionTest {
     }
 
     @Test
-    public void testDefault() throws Exception {
+    public void testDefault() {
         assertNotNull(FolderBookmarkCollection.favoritesCollection());
     }
 

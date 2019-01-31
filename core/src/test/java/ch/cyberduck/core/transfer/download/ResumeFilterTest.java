@@ -57,7 +57,7 @@ public class ResumeFilterTest {
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
-            public boolean offset(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) {
                 return true;
             }
         });
@@ -96,7 +96,7 @@ public class ResumeFilterTest {
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
-            public boolean offset(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) {
                 return true;
             }
         });
@@ -127,7 +127,7 @@ public class ResumeFilterTest {
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
-            public boolean offset(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) {
                 return true;
             }
         });

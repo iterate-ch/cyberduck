@@ -60,7 +60,7 @@ public class CryptoBulkFeatureTest {
                 if(type == Directory.class) {
                     return (T) new Directory() {
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
                             return folder;
                         }
 
@@ -77,12 +77,12 @@ public class CryptoBulkFeatureTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<Map<TransferItem, TransferStatus>>(session, new Bulk<Map<TransferItem, TransferStatus>>() {
             @Override
-            public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+            public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
                 return files;
             }
 
             @Override
-            public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+            public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
                 //
             }
 
@@ -97,7 +97,7 @@ public class CryptoBulkFeatureTest {
             }
         }, new Delete() {
             @Override
-            public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+            public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
                 throw new UnsupportedOperationException();
             }
 
@@ -142,7 +142,7 @@ public class CryptoBulkFeatureTest {
                 if(type == Directory.class) {
                     return (T) new Directory() {
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
                             return folder;
                         }
 
@@ -159,12 +159,12 @@ public class CryptoBulkFeatureTest {
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
         final CryptoBulkFeature<Map<TransferItem, TransferStatus>> bulk = new CryptoBulkFeature<Map<TransferItem, TransferStatus>>(session, new Bulk<Map<TransferItem, TransferStatus>>() {
             @Override
-            public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+            public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
                 return files;
             }
 
             @Override
-            public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+            public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
                 //
             }
 
@@ -179,7 +179,7 @@ public class CryptoBulkFeatureTest {
             }
         }, new Delete() {
             @Override
-            public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+            public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
                 throw new UnsupportedOperationException();
             }
 

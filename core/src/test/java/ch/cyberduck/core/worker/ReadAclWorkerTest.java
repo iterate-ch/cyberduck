@@ -51,12 +51,12 @@ public class ReadAclWorkerTest {
                         if(type == AclPermission.class) {
                             return (T) new DefaultAclFeature() {
                                 @Override
-                                public Acl getPermission(final Path file) throws BackgroundException {
+                                public Acl getPermission(final Path file) {
                                     return new Acl(new Acl.DomainUser("a"), new Acl.Role("r"));
                                 }
 
                                 @Override
-                                public void setPermission(final Path file, final Acl acl) throws BackgroundException {
+                                public void setPermission(final Path file, final Acl acl) {
                                     //
                                 }
 

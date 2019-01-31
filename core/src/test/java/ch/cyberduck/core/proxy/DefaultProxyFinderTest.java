@@ -27,20 +27,20 @@ import static org.junit.Assert.assertEquals;
 public class DefaultProxyFinderTest {
 
     @Test
-    public void testFind() throws Exception {
+    public void testFind() {
         final DefaultProxyFinder proxy = new DefaultProxyFinder();
         assertEquals(Proxy.Type.DIRECT, proxy.find(new Host(new TestProtocol(), "cyberduck.io")).getType());
 //        assertEquals(Proxy.Type.HTTP, proxy.find(new Host(ProtocolFactory.WEBDAV, "cyberduck.io")).getType());
     }
 
     @Test
-    public void testExcludedLocalHost() throws Exception {
+    public void testExcludedLocalHost() {
         final DefaultProxyFinder proxy = new DefaultProxyFinder();
         assertEquals(Proxy.Type.DIRECT, proxy.find(new Host(new TestProtocol(), "cyberduck.local")).getType());
     }
 
     @Test
-    public void testSimpleExcluded() throws Exception {
+    public void testSimpleExcluded() {
         final DefaultProxyFinder proxy = new DefaultProxyFinder();
         assertEquals(Proxy.Type.DIRECT, proxy.find(new Host(new TestProtocol(), "simple")).getType());
     }

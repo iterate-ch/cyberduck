@@ -75,12 +75,12 @@ public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
         final DefaultSessionPool pool = new DefaultSessionPool(
             new LoginConnectionService(new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                     return new Credentials(username, "test");
                 }
 
                 @Override
-                public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                     //
                 }
             }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),

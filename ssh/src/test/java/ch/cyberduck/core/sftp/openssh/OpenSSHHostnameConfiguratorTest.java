@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 public class OpenSSHHostnameConfiguratorTest {
 
     @Test
-    public void testLookup() throws Exception {
+    public void testLookup() {
         OpenSSHHostnameConfigurator c = new OpenSSHHostnameConfigurator(
                 new OpenSshConfig(
                         new Local("src/test/resources", "openssh/config")));
@@ -36,7 +36,7 @@ public class OpenSSHHostnameConfiguratorTest {
     }
 
     @Test
-    public void testPort() throws Exception {
+    public void testPort() {
         OpenSSHHostnameConfigurator c = new OpenSSHHostnameConfigurator(
                 new OpenSshConfig(
                         new Local("src/test/resources", "openssh/config")));

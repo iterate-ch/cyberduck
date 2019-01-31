@@ -28,12 +28,12 @@ public class NSTextFieldTest {
 
     @Test
     @Ignore
-    public void testEquals() throws Exception {
+    public void testEquals() {
         assertEquals(new NSRect(100, 16), NSTextField.textfieldWithFrame(new NSRect(100, 16)).frame());
     }
 
     @Test
-    public void testTextfieldWithFrame() throws Exception {
+    public void testTextfieldWithFrame() {
         assertEquals(100, NSTextField.textfieldWithFrame(new NSRect(100, 16)).frame().size.width.intValue());
         assertEquals(16, NSTextField.textfieldWithFrame(new NSRect(100, 16)).frame().size.height.intValue());
     }

@@ -10,7 +10,7 @@ import static org.junit.Assert.assertFalse;
 public class VersioningConfigurationTest {
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         assertEquals(VersioningConfiguration.empty(), new VersioningConfiguration());
         assertEquals(new VersioningConfiguration(true), new VersioningConfiguration(true));
         assertEquals(new VersioningConfiguration(false), new VersioningConfiguration(false));

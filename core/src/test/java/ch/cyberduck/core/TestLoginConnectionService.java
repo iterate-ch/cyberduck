@@ -24,7 +24,7 @@ public class TestLoginConnectionService extends LoginConnectionService {
     }
 
     @Override
-    public void connect(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
+    public void connect(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) {
         //
     }
 }

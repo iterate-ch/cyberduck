@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 public class ChecksumTest {
 
     @Test
-    public void testParse() throws Exception {
+    public void testParse() {
         assertEquals(new Checksum(HashAlgorithm.md5, "d41d8cd98f00b204e9800998ecf8427e"),
                 Checksum.parse("d41d8cd98f00b204e9800998ecf8427e"));
         assertEquals(new Checksum(HashAlgorithm.sha1, "da39a3ee5e6b4b0d3255bfef95601890afd80709"),

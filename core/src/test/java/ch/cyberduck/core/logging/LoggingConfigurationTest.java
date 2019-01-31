@@ -8,7 +8,7 @@ import static org.junit.Assert.assertFalse;
 public class LoggingConfigurationTest {
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         assertEquals(LoggingConfiguration.empty(), new LoggingConfiguration());
         assertEquals(new LoggingConfiguration(true), new LoggingConfiguration(true));
         assertEquals(new LoggingConfiguration(false), new LoggingConfiguration(false));

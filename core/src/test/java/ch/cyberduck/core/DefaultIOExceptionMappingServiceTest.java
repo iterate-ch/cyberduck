@@ -35,7 +35,7 @@ import static org.junit.Assert.assertSame;
 public class DefaultIOExceptionMappingServiceTest {
 
     @Test
-    public void testMap() throws Exception {
+    public void testMap() {
         assertEquals(ConnectionCanceledException.class,
                 new DefaultIOExceptionMappingService().map(new SocketException("Software caused connection abort")).getClass());
         assertEquals(ConnectionCanceledException.class,
@@ -51,7 +51,7 @@ public class DefaultIOExceptionMappingServiceTest {
     }
 
     @Test
-    public void testPlaceholder() throws Exception {
+    public void testPlaceholder() {
         final BackgroundException e = new DefaultIOExceptionMappingService().map("{0} message", new SocketException("s"),
                 new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertEquals("N message.", e.getMessage());
@@ -59,7 +59,7 @@ public class DefaultIOExceptionMappingServiceTest {
     }
 
     @Test
-    public void testSameMessageInRootCause() throws Exception {
+    public void testSameMessageInRootCause() {
         assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException("s")))
                 .getDetail());
         assertEquals("The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException(null)))
@@ -69,7 +69,7 @@ public class DefaultIOExceptionMappingServiceTest {
     }
 
     @Test
-    public void testMapPathName() throws Exception {
+    public void testMapPathName() {
         final DefaultIOExceptionMappingService s = new DefaultIOExceptionMappingService();
         assertEquals("Download n failed.", s.map("Download {0} failed", new SocketException("s"),
                 new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
@@ -80,7 +80,7 @@ public class DefaultIOExceptionMappingServiceTest {
     }
 
     @Test
-    public void testMapWrappedCause() throws Exception {
+    public void testMapWrappedCause() {
         final DefaultIOExceptionMappingService s = new DefaultIOExceptionMappingService();
         final BackgroundException cause = new BackgroundException();
         assertSame(cause, s.map(new IOException(cause)));

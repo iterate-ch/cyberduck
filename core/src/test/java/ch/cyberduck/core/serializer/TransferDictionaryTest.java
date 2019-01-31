@@ -76,7 +76,7 @@ public class TransferDictionaryTest {
     }
 
     @Test
-    public void testSerializeUploadTransfer() throws Exception {
+    public void testSerializeUploadTransfer() {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
         Transfer t = new UploadTransfer(new Host(new TestProtocol(), "t"), test,
                 new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
@@ -146,7 +146,7 @@ public class TransferDictionaryTest {
             }
 
             @Override
-            public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
+            public AttributedList<Local> list(final Filter<String> filter) {
                 return AttributedList.emptyList();
             }
 

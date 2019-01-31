@@ -21,7 +21,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class AlphanumericRandomStringServiceTest {
     @Test
-    public void random() throws Exception {
+    public void random() {
         assertNotNull(new AlphanumericRandomStringService().random());
     }
 }

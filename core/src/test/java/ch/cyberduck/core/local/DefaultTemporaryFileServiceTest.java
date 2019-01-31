@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 public class DefaultTemporaryFileServiceTest {
 
     @Test
-    public void testExists() throws Exception {
+    public void testExists() {
         final Local f = new DefaultTemporaryFileService().create(new AlphanumericRandomStringService().random());
         assertFalse(f.exists());
         assertFalse(f.getParent().exists());
@@ -24,7 +24,7 @@ public class DefaultTemporaryFileServiceTest {
     }
 
     @Test
-    public void testCreateFile() throws Exception {
+    public void testCreateFile() {
         final String temp = StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), File.separator);
         final String s = System.getProperty("file.separator");
         assertEquals(String.format("%s%su%sp%sf", temp, s, s, s),
@@ -36,7 +36,7 @@ public class DefaultTemporaryFileServiceTest {
     }
 
     @Test
-    public void testVersion() throws Exception {
+    public void testVersion() {
         final String temp = StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), File.separator);
         final String s = System.getProperty("file.separator");
         {
@@ -56,7 +56,7 @@ public class DefaultTemporaryFileServiceTest {
     }
 
     @Test
-    public void testCreateContainer() throws Exception {
+    public void testCreateContainer() {
         final String temp = StringUtils.removeEnd(System.getProperty("java.io.tmpdir"), File.separator);
         final String s = System.getProperty("file.separator");
         final Path file = new Path("/container", EnumSet.of(Path.Type.directory));

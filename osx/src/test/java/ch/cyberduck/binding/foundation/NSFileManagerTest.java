@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 public class NSFileManagerTest {
 
     @Test
-    public void testContainerURLForSecurityApplicationGroupIdentifier() throws Exception {
+    public void testContainerURLForSecurityApplicationGroupIdentifier() {
         assertNotNull(NSFileManager.defaultManager().containerURLForSecurityApplicationGroupIdentifier("G69SCX94XU.duck"));
     }
 }

@@ -534,7 +534,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * Amazon CloudFront Extension used to enable or disable a distribution configuration and its CNAMESs
      */
     protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution)
-        throws IOException, BackgroundException {
+        throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -563,7 +563,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     protected UpdateStreamingDistributionResult updateStreamingDistribution(final Path container, final Distribution distribution)
-        throws IOException, BackgroundException {
+        throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -591,7 +591,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     protected UpdateDistributionResult updateCustomDistribution(final Path container, final Distribution distribution)
-        throws IOException, BackgroundException {
+        throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -618,7 +618,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     protected void deleteDownloadDistribution(final Path container, final Distribution distribution)
-        throws IOException, BackgroundException {
+        throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -628,7 +628,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     protected void deleteStreamingDistribution(final Path container, final Distribution distribution)
-        throws IOException, BackgroundException {
+        throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));

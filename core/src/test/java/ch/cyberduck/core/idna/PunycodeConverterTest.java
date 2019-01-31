@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 public class PunycodeConverterTest {
 
     @Test
-    public void testConvert() throws Exception {
+    public void testConvert() {
         assertEquals("host.localdomain", new PunycodeConverter().convert("host.localdomain"));
         assertEquals(null, new PunycodeConverter().convert(null));
         assertEquals("", new PunycodeConverter().convert(""));
@@ -32,12 +32,12 @@ public class PunycodeConverterTest {
     }
 
     @Test
-    public void testConvertWhitespace() throws Exception {
+    public void testConvertWhitespace() {
         assertEquals("host.localdomain", new PunycodeConverter().convert("host.localdomain "));
     }
 
     @Test
-    public void testHostnameStartsWithDot() throws Exception {
+    public void testHostnameStartsWithDot() {
         assertEquals(".blob.core.windows.net", new PunycodeConverter().convert(".blob.core.windows.net"));
     }
 }

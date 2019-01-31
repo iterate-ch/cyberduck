@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 public class FSEventWatchEditorFactoryTest {
 
     @Test
-    public void testGetEditor() throws Exception {
+    public void testGetEditor() {
         final FSEventWatchEditorFactory f = new FSEventWatchEditorFactory(new LaunchServicesApplicationFinder());
         assertEquals("TextEdit", f.getDefaultEditor().getName());
 //        assertEquals("TextEdit", f.getEditor("f.txt").getName());
@@ -38,14 +38,14 @@ public class FSEventWatchEditorFactoryTest {
     }
 
     @Test
-    public void getGetConfigured() throws Exception {
+    public void getGetConfigured() {
         final FSEventWatchEditorFactory f = new FSEventWatchEditorFactory(new LaunchServicesApplicationFinder());
         final List<Application> e = f.getConfigured();
         assertFalse(e.isEmpty());
     }
 
     @Test
-    public void testGetEditors() throws Exception {
+    public void testGetEditors() {
         final FSEventWatchEditorFactory f = new FSEventWatchEditorFactory(new LaunchServicesApplicationFinder());
         final List<Application> e = f.getEditors();
         assertFalse(e.isEmpty());

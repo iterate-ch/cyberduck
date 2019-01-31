@@ -9,7 +9,7 @@ import org.junit.Test;
 public class SystemLogAppenderTest {
 
     @Test
-    public void testAppend() throws Exception {
+    public void testAppend() {
         final SystemLogAppender a = new SystemLogAppender();
         a.setLayout(new SimpleLayout());
         a.append(new LoggingEvent("f", Logger.getLogger(SystemLogAppender.class),

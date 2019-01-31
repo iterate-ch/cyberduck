@@ -37,7 +37,7 @@ public class SessionListWorkerTest {
         final Host host = new Host(new TestProtocol());
         final Session<?> session = new NullSession(host) {
             @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws NotfoundException {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return new AttributedList<>(Collections.singletonList(new Path("/home/jenkins/f", EnumSet.of(Path.Type.file))));
             }
         };
@@ -103,7 +103,7 @@ public class SessionListWorkerTest {
     }
 
     @Test
-    public void testInitialValueOnFailure() throws Exception {
+    public void testInitialValueOnFailure() {
         final SessionListWorker worker = new SessionListWorker(PathCache.empty(),
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());

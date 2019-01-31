@@ -57,7 +57,7 @@ import static org.junit.Assert.*;
 public class SFTPSessionTest extends AbstractSFTPTest {
 
     @Test
-    public void testLoginPassword() throws Exception {
+    public void testLoginPassword() {
         assertTrue(session.isConnected());
     }
 
@@ -134,7 +134,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     }
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final Session session = new SFTPSession(host);
         assertNotNull(session.getFeature(Compress.class));
@@ -230,8 +230,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             }
 
             @Override
-            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options)
-                throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) {
                 if(change.get()) {
                     assertEquals("Change of username or service not allowed: (u1,ssh-connection) -> (jenkins,ssh-connection). Please contact your web hosting service provider for assistance.", reason);
                     return null;
@@ -296,13 +295,13 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 }
 
                 @Override
-                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
                     this.allow(hostname, key, true);
                     return true;
                 }
 
                 @Override
-                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
                     fail();
                     return false;
                 }
@@ -316,12 +315,12 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 }
 
                 @Override
-                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
                     return false;
                 }
 
                 @Override
-                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
                     return false;
                 }
             }, new DisabledLoginCallback()));

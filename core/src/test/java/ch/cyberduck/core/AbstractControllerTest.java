@@ -32,7 +32,7 @@ public class AbstractControllerTest {
             }
 
             @Override
-            public Object run(final Session<?> session) throws BackgroundException {
+            public Object run(final Session<?> session) {
                 return null;
             }
 

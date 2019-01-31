@@ -30,7 +30,7 @@ public class DefaultInetAddressReachabilityTest {
 
     @Test
     @Ignore
-    public void testIsReachablePort80() throws Exception {
+    public void testIsReachablePort80() {
         final Reachability r = new DefaultInetAddressReachability();
         assertTrue(r.isReachable(
                 new Host(new TestProtocol(), "cyberduck.ch", 80)
@@ -39,7 +39,7 @@ public class DefaultInetAddressReachabilityTest {
 
     @Test
     @Ignore
-    public void testIsReachablePort22() throws Exception {
+    public void testIsReachablePort22() {
         final Reachability r = new DefaultInetAddressReachability();
         assertTrue(r.isReachable(
                 new Host(new TestProtocol(), "cyberduck.ch", 22)
@@ -47,7 +47,7 @@ public class DefaultInetAddressReachabilityTest {
     }
 
     @Test
-    public void testNotReachablePort22() throws Exception {
+    public void testNotReachablePort22() {
         final Reachability r = new DefaultInetAddressReachability();
         assertFalse(r.isReachable(
                 new Host(new TestProtocol(), "a.cyberduck.ch", 22)
@@ -55,7 +55,7 @@ public class DefaultInetAddressReachabilityTest {
     }
 
     @Test
-    public void testNotReachableWrongHostname() throws Exception {
+    public void testNotReachableWrongHostname() {
         final Reachability r = new DefaultInetAddressReachability();
         assertFalse(r.isReachable(
                 new Host(new TestProtocol(), "iterate.ch.f", 22)

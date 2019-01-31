@@ -55,7 +55,7 @@ import static org.junit.Assert.*;
 public class AbstractEditorTest {
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         final NullSession session = new NullSession(new Host(new TestProtocol()));
         assertEquals(
                 new DisabledEditor(new Application("i"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new Path("/p/f", EnumSet.of(Path.Type.file))),
@@ -81,7 +81,7 @@ public class AbstractEditorTest {
                 if(type.equals(Read.class)) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             t.set(true);
                             return IOUtils.toInputStream("content", Charset.defaultCharset());
                         }
@@ -102,12 +102,12 @@ public class AbstractEditorTest {
         final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(),
                 new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), file, new DisabledProgressListener()) {
             @Override
-            protected void edit(final ApplicationQuitCallback quit, final FileWatcherListener listener) throws IOException {
+            protected void edit(final ApplicationQuitCallback quit, final FileWatcherListener listener) {
                 e.set(true);
             }
 
             @Override
-            protected void watch(final Local local, final FileWatcherListener listener) throws IOException {
+            protected void watch(final Local local, final FileWatcherListener listener) {
                 //
             }
         };
@@ -124,7 +124,7 @@ public class AbstractEditorTest {
         }
 
         @Override
-        protected void watch(final Local local, final FileWatcherListener listener) throws IOException {
+        protected void watch(final Local local, final FileWatcherListener listener) {
             //
         }
     }

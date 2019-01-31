@@ -48,7 +48,7 @@ public class LocalReadFeature implements Read {
     }
 
     @Override
-    public boolean offset(final Path file) throws BackgroundException {
+    public boolean offset(final Path file) {
         return true;
     }
 }

@@ -67,7 +67,7 @@ public final class FileWatcher {
         final CountDownLatch lock = new CountDownLatch(1);
         pool.execute(new Callable<Boolean>() {
             @Override
-            public Boolean call() throws IOException {
+            public Boolean call() {
                 while(true) {
                     // wait for key to be signaled
                     final WatchKey key;

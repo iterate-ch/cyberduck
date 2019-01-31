@@ -45,7 +45,7 @@ public class CompareFilterTest {
                 new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new ComparisonServiceFilter(
                 new NullSession(new Host(new TestProtocol())), null, new DisabledProgressListener()) {
             @Override
-            public Comparison compare(final Path file, final Local local) throws BackgroundException {
+            public Comparison compare(final Path file, final Local local) {
                 return Comparison.equal;
             }
         }
@@ -62,7 +62,7 @@ public class CompareFilterTest {
                 new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new ComparisonServiceFilter(
                 new NullSession(new Host(new TestProtocol())), null, new DisabledProgressListener()) {
             @Override
-            public Comparison compare(final Path file, final Local local) throws BackgroundException {
+            public Comparison compare(final Path file, final Local local) {
                 return Comparison.equal;
             }
         });

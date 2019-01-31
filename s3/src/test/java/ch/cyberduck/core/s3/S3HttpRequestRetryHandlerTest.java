@@ -17,10 +17,10 @@ import static org.junit.Assert.assertTrue;
 public class S3HttpRequestRetryHandlerTest {
 
     @Test
-    public void testRetryRequest() throws Exception {
+    public void testRetryRequest() {
         final S3HttpRequestRetryHandler h = new S3HttpRequestRetryHandler(new JetS3tRequestAuthorizer() {
             @Override
-            public void authorizeHttpRequest(final HttpUriRequest httpUriRequest, final HttpContext httpContext, final String s) throws ServiceException {
+            public void authorizeHttpRequest(final HttpUriRequest httpUriRequest, final HttpContext httpContext, final String s) {
                 //
             }
         }, 1);

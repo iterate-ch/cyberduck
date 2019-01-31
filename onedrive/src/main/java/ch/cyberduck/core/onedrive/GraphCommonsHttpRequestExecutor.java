@@ -54,19 +54,19 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
     }
 
     @Override
-    public Upload doPost(final URL url, final Set<RequestHeader> headers) throws IOException {
+    public Upload doPost(final URL url, final Set<RequestHeader> headers) {
         final HttpEntityEnclosingRequestBase request = new HttpPost(url.toString());
         return this.doUpload(url, headers, request);
     }
 
     @Override
-    public Upload doPut(final URL url, final Set<RequestHeader> headers) throws IOException {
+    public Upload doPut(final URL url, final Set<RequestHeader> headers) {
         final HttpEntityEnclosingRequestBase request = new HttpPut(url.toString());
         return this.doUpload(url, headers, request);
     }
 
     @Override
-    public Upload doPatch(final URL url, final Set<RequestHeader> headers) throws IOException {
+    public Upload doPatch(final URL url, final Set<RequestHeader> headers) {
         final HttpPatch request = new HttpPatch(url.toString());
         return this.doUpload(url, headers, request);
     }
@@ -181,12 +181,12 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
         }
 
         @Override
-        public int getStatusCode() throws IOException {
+        public int getStatusCode() {
             return response.getStatusLine().getStatusCode();
         }
 
         @Override
-        public String getStatusMessage() throws IOException {
+        public String getStatusMessage() {
             return response.getStatusLine().getReasonPhrase();
         }
 

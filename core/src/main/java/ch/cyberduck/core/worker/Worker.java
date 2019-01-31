@@ -87,13 +87,13 @@ public abstract class Worker<T> {
     public static <T> Worker<T> empty() {
         return new Worker<T>() {
             @Override
-            public T run(final Session<?> session) throws BackgroundException {
+            public T run(final Session<?> session) {
                 return null;
             }
         };
     }
 
-    public void reset() throws BackgroundException {
+    public void reset() {
         //
     }
 

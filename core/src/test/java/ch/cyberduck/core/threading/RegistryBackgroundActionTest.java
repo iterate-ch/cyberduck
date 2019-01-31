@@ -20,7 +20,7 @@ import static org.junit.Assert.assertNotNull;
 public class RegistryBackgroundActionTest {
 
     @Test
-    public void testGetSessions() throws Exception {
+    public void testGetSessions() {
         assertNotNull(new RegistryBackgroundAction<Boolean>(new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
@@ -30,7 +30,7 @@ public class RegistryBackgroundActionTest {
                 new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty(),
                 new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback()))) {
             @Override
-            public Boolean run(final Session<?> session) throws BackgroundException {
+            public Boolean run(final Session<?> session) {
                 return false;
             }
         }.pool);

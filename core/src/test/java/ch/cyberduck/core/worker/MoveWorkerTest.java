@@ -57,7 +57,7 @@ public class MoveWorkerTest {
                 if(type == Delete.class) {
                     return (T) new Delete() {
                         @Override
-                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
                             //
                         }
 
@@ -71,7 +71,7 @@ public class MoveWorkerTest {
                     return (T) new Directory<Void>() {
 
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
                             return folder;
                         }
 
@@ -86,7 +86,7 @@ public class MoveWorkerTest {
                         private final AtomicInteger count = new AtomicInteger();
 
                         @Override
-                        public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {
                             if(count.get() == 0) {
                                 assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), file);
                                 assertEquals(new Path("/t2/a", EnumSet.of(Path.Type.file)), renamed);

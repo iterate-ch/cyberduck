@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class FileTypeComparatorTest {
 
     @Test
-    public void testCompareFirst() throws Exception {
+    public void testCompareFirst() {
         assertEquals(0,
                 new FileTypeComparator(true).compareFirst(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/a", EnumSet.of(Path.Type.file))));
         assertEquals(0,

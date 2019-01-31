@@ -25,7 +25,7 @@ import static org.junit.Assert.assertSame;
 public class PasswordStoreFactoryTest {
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() {
         assertSame(PasswordStoreFactory.get(), PasswordStoreFactory.get());
     }
 }

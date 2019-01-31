@@ -40,7 +40,7 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
     }
 
     @Override
-    public FileStatusCallbackResponse statusCallback(final org.irods.jargon.core.transfer.TransferStatus t) throws JargonException {
+    public FileStatusCallbackResponse statusCallback(final org.irods.jargon.core.transfer.TransferStatus t) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Progress with %s", t));
         }
@@ -72,7 +72,7 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
     }
 
     @Override
-    public void overallStatusCallback(final org.irods.jargon.core.transfer.TransferStatus t) throws JargonException {
+    public void overallStatusCallback(final org.irods.jargon.core.transfer.TransferStatus t) {
         //
     }
 

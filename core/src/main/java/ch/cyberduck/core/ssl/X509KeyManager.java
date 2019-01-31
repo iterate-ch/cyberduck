@@ -28,7 +28,7 @@ public interface X509KeyManager extends javax.net.ssl.X509KeyManager {
     /**
      * Load the key store.
      */
-    X509KeyManager init() throws IOException;
+    X509KeyManager init();
 
     /**
      * @return List of aliases for certificates in key store.

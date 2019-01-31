@@ -86,7 +86,7 @@ public abstract class SegmentingOutputStream extends ProxyOutputStream {
     }
 
     @Override
-    protected void afterWrite(final int n) throws IOException {
+    protected void afterWrite(final int n) {
         after.set(true);
     }
 

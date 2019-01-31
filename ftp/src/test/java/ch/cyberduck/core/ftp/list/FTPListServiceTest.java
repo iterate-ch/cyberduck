@@ -61,7 +61,7 @@ public class FTPListServiceTest extends AbstractFTPTest {
         final Permission permission = new Permission(Permission.Action.read_write, Permission.Action.read_write, Permission.Action.read_write);
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
             @Override
-            public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
+            public void chunk(final Path parent, AttributedList<Path> list) {
                 assertFalse(list.isEmpty());
             }
         });
@@ -80,7 +80,7 @@ public class FTPListServiceTest extends AbstractFTPTest {
         new FTPTouchFeature(session).touch(file, new TransferStatus());
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener() {
             @Override
-            public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
+            public void chunk(final Path parent, AttributedList<Path> list) {
                 assertFalse(list.isEmpty());
             }
         });

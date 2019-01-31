@@ -116,7 +116,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault).load(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials(passphrase);
             }
         }, new DisabledPasswordStore());
@@ -150,7 +150,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault).load(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials(passphrase);
             }
         }, new DisabledPasswordStore());

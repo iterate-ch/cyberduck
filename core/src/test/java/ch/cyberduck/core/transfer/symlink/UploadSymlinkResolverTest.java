@@ -43,7 +43,7 @@ public class UploadSymlinkResolverTest {
         }));
         UploadSymlinkResolver resolver = new UploadSymlinkResolver(new Symlink() {
             @Override
-            public void symlink(final Path file, final String target) throws BackgroundException {
+            public void symlink(final Path file, final String target) {
                 //
             }
         }, files);

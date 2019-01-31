@@ -90,7 +90,7 @@ public class SingleTransferWorkerTest {
                     final SwiftRegionService regionService = new SwiftRegionService(this);
                     return (T) new SwiftLargeObjectUploadFeature(this, regionService, new SwiftWriteFeature(this, regionService), 1024L * 1024L, 5) {
                         @Override
-                        protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+                        protected InputStream decorate(final InputStream in, final MessageDigest digest) {
                             if(failed.get()) {
                                 // Second attempt successful
                                 return in;

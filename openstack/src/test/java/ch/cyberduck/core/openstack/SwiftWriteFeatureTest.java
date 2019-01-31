@@ -96,7 +96,7 @@ public class SwiftWriteFeatureTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftWriteFeature(session, regionService, new SwiftObjectListService(session, regionService) {
             @Override
-            public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+            public AttributedList<Path> list(Path directory, ListProgressListener listener) {
                 list.set(true);
                 return new AttributedList<Path>(Collections.<Path>emptyList());
             }
@@ -121,7 +121,7 @@ public class SwiftWriteFeatureTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftWriteFeature(session, regionService, new SwiftObjectListService(session, regionService) {
             @Override
-            public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+            public AttributedList<Path> list(Path directory, ListProgressListener listener) {
                 list.set(true);
                 final Path segment1 = segments.getSegment(file, 0L, 1);
                 segment1.attributes().setSize(1L);
@@ -149,19 +149,19 @@ public class SwiftWriteFeatureTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftWriteFeature(session, regionService, new SwiftObjectListService(session, regionService) {
             @Override
-            public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+            public AttributedList<Path> list(Path directory, ListProgressListener listener) {
                 list.set(true);
                 return new AttributedList<Path>(Collections.singletonList(file));
             }
         }, new SwiftSegmentService(session), new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 find.set(true);
                 return true;
             }
         }, new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 return new PathAttributes();
             }
         }
@@ -186,13 +186,13 @@ public class SwiftWriteFeatureTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftWriteFeature(session, regionService, new SwiftObjectListService(session, regionService) {
             @Override
-            public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+            public AttributedList<Path> list(Path directory, ListProgressListener listener) {
                 list.set(true);
                 return new AttributedList<Path>(Collections.singletonList(file));
             }
         }, new SwiftSegmentService(session), new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 find.set(true);
                 return false;
             }

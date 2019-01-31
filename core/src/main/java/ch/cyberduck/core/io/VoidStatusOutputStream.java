@@ -25,7 +25,7 @@ public class VoidStatusOutputStream extends StatusOutputStream<Void> {
     }
 
     @Override
-    public Void getStatus() throws BackgroundException {
+    public Void getStatus() {
         return null;
     }
 }

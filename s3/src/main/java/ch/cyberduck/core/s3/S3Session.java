@@ -114,8 +114,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
     }
 
-    protected boolean authorize(HttpUriRequest httpMethod, ProviderCredentials credentials)
-        throws ServiceException {
+    protected boolean authorize(HttpUriRequest httpMethod, ProviderCredentials credentials) {
         return false;
     }
 
@@ -197,7 +196,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     @Override
-    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) throws BackgroundException {
+    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         // Only for AWS
         if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {

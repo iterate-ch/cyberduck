@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 public class TransferStatusTest {
 
     @Test
-    public void testSetResume() throws Exception {
+    public void testSetResume() {
         TransferStatus status = new TransferStatus();
         status.setOffset(1024);
         status.setAppend(true);
@@ -35,7 +35,7 @@ public class TransferStatusTest {
     }
 
     @Test
-    public void testSetComplete() throws Exception {
+    public void testSetComplete() {
         TransferStatus status = new TransferStatus();
         status.setLength(1L);
         assertFalse(status.isComplete());
@@ -47,7 +47,7 @@ public class TransferStatusTest {
     }
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         assertEquals(new TransferStatus(), new TransferStatus());
         assertEquals(new TransferStatus().hashCode(), new TransferStatus().hashCode());
     }

@@ -261,7 +261,7 @@ public class BookmarkController extends SheetController implements CollectionLis
                         boolean reachable = false;
 
                         @Override
-                        public Boolean run() throws BackgroundException {
+                        public Boolean run() {
                             return reachable = ReachabilityFactory.get().isReachable(bookmark);
                         }
 

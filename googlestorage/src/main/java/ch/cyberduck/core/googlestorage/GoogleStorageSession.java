@@ -87,7 +87,7 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    protected boolean authorize(final HttpUriRequest request, final ProviderCredentials credentials) throws ServiceException {
+    protected boolean authorize(final HttpUriRequest request, final ProviderCredentials credentials) {
         request.setHeader("x-goog-api-version", "2");
         return true;
     }

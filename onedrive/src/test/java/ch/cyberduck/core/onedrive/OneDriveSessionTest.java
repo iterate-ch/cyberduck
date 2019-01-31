@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
 public class OneDriveSessionTest extends AbstractOneDriveTest {
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final OneDriveSession session = new OneDriveSession(new Host(new OneDriveProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.getFeature(Read.class));
         assertNotNull(session.getFeature(Write.class));

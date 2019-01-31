@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class DescriptiveUrlTest {
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         assertTrue(new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.provider, "a").equals(
                 new DescriptiveUrl(URI.create("http://host.domain"), DescriptiveUrl.Type.provider, "b")));
         assertFalse(new DescriptiveUrl(URI.create("http://host.domainb"), DescriptiveUrl.Type.provider, "a").equals(
@@ -20,7 +20,7 @@ public class DescriptiveUrlTest {
     }
 
     @Test
-    public void testDefault() throws Exception {
+    public void testDefault() {
         assertEquals("Open in Web Browser", new DescriptiveUrl(URI.create("http://me")).getHelp());
     }
 }

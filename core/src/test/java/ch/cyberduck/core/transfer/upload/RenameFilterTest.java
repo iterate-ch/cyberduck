@@ -38,13 +38,13 @@ public class RenameFilterTest {
         final AtomicBoolean moved = new AtomicBoolean();
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 return new PathAttributes();
             }
         };
         final Find find = new Find() {
             @Override
-            public boolean find(final Path f) throws BackgroundException {
+            public boolean find(final Path f) {
                 if(f.equals(directory)) {
                     found.set(true);
                     return true;

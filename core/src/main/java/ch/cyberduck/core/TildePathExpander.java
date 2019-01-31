@@ -37,7 +37,7 @@ public class TildePathExpander {
         return this.expand(remote, PREFIX);
     }
 
-    protected Path expand(final Path remote, final String format) throws BackgroundException {
+    protected Path expand(final Path remote, final String format) {
         if(remote.getAbsolute().startsWith(format)) {
             return new Path(StringUtils.replaceOnce(remote.getAbsolute(), format, workdir.getAbsolute()),
                     remote.getType());

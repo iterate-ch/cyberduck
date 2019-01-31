@@ -72,14 +72,14 @@ public class NTFTPEntryParserTest {
     }
 
     @Test
-    public void testParse() throws Exception {
+    public void testParse() {
         for(String sample : samples) {
             assertNotNull(sample, parser.parseFTPEntry(sample));
         }
     }
 
     @Test
-    public void testParseFieldsOnDirectory() throws Exception {
+    public void testParseFieldsOnDirectory() {
         FTPFile parsed = parser.parseFTPEntry("12-05-96  05:03PM       <DIR>          absoft2");
         assertNotNull("Could not parse entry.", parsed);
         assertEquals("Thu Dec 05 17:03:00 1996",
@@ -95,7 +95,7 @@ public class NTFTPEntryParserTest {
     }
 
     @Test
-    public void testParseFieldsOnFile() throws Exception {
+    public void testParseFieldsOnFile() {
         FTPFile parsed = parser.parseFTPEntry(
             "05-22-97  12:08AM                  5000000000 AUTOEXEC.BAK");
         assertNotNull("Could not parse entry.", parsed);
@@ -107,14 +107,14 @@ public class NTFTPEntryParserTest {
     }
 
     @Test
-    public void testDirectoryBeginningWithNumber() throws Exception {
+    public void testDirectoryBeginningWithNumber() {
         FTPFile parsed = parser.parseFTPEntry("12-03-96  06:38AM       <DIR>          123xyz");
         assertNotNull(parsed);
         assertEquals("name", "123xyz", parsed.getName());
     }
 
     @Test
-    public void testDirectoryBeginningWithNumberFollowedBySpaces() throws Exception {
+    public void testDirectoryBeginningWithNumberFollowedBySpaces() {
         FTPFile parsed = parser.parseFTPEntry(
             "12-03-96  06:38AM       <DIR>          123 xyz");
         assertNotNull(parsed);
@@ -126,7 +126,7 @@ public class NTFTPEntryParserTest {
     }
 
     @Test
-    public void testElectic() throws Exception {
+    public void testElectic() {
         FTPFile parsed = parser.parseFTPEntry(
             "09-04-06  11:28AM                  149 gearkommandon with spaces.txt");
         assertNotNull(parsed);

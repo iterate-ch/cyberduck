@@ -239,7 +239,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
     private Future<MultipartPart> submit(final ThreadPool pool, final Path file, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final MultipartUpload multipart,
-                                         final int partNumber, final long offset, final long length, final ConnectionCallback callback) throws BackgroundException {
+                                         final int partNumber, final long offset, final long length, final ConnectionCallback callback) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
