@@ -82,10 +82,7 @@ public class FSEventWatchServiceTest {
                 try {
                     update.await(1L, TimeUnit.SECONDS);
                 }
-                catch(InterruptedException | BrokenBarrierException e) {
-                    fail();
-                }
-                catch(TimeoutException e) {
+                catch(InterruptedException | BrokenBarrierException | TimeoutException e) {
                     fail();
                 }
             }
@@ -101,10 +98,7 @@ public class FSEventWatchServiceTest {
                 try {
                     delete.await(1L, TimeUnit.SECONDS);
                 }
-                catch(InterruptedException | BrokenBarrierException e) {
-                    fail();
-                }
-                catch(TimeoutException e) {
+                catch(InterruptedException | BrokenBarrierException | TimeoutException e) {
                     fail();
                 }
             }
