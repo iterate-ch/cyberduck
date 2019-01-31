@@ -113,7 +113,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
-        final LoginOptions options = new LoginOptions(bookmark.getProtocol()).anonymous(false).publickey(false)
+        final LoginOptions options = new LoginOptions(bookmark.getProtocol())
             .usernamePlaceholder(LocaleFactory.localizedString("Access Key ID", "S3"))
             .passwordPlaceholder(LocaleFactory.localizedString("Secret Access Key", "S3"));
         try {
