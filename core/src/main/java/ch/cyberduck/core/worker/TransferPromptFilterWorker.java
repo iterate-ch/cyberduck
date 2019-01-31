@@ -38,6 +38,7 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class TransferPromptFilterWorker extends Worker<Map<TransferItem, TransferStatus>> {
     private static final Logger log = Logger.getLogger(TransferPromptFilterWorker.class);
@@ -106,10 +107,10 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
             return false;
         }
         final TransferPromptFilterWorker that = (TransferPromptFilterWorker) o;
-        if(cache != null ? !cache.equals(that.cache) : that.cache != null) {
+        if(!Objects.equals(cache, that.cache)) {
             return false;
         }
-        if(transfer != null ? !transfer.equals(that.transfer) : that.transfer != null) {
+        if(!Objects.equals(transfer, that.transfer)) {
             return false;
         }
         return true;

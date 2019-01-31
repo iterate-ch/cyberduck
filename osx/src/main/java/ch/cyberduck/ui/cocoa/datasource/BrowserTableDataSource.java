@@ -87,6 +87,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
@@ -132,10 +133,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 return false;
             }
             final Item item = (Item) o;
-            if(column != null ? !column.equals(item.column) : item.column != null) {
+            if(!Objects.equals(column, item.column)) {
                 return false;
             }
-            if(file != null ? !file.equals(item.file) : item.file != null) {
+            if(!Objects.equals(file, item.file)) {
                 return false;
             }
             return true;

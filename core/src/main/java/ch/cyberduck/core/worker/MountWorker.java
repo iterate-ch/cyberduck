@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Objects;
 
 public class MountWorker extends Worker<Path> {
     private static final Logger log = Logger.getLogger(MountWorker.class);
@@ -123,7 +124,7 @@ public class MountWorker extends Worker<Path> {
             return false;
         }
         final MountWorker that = (MountWorker) o;
-        if(cache != null ? !cache.equals(that.cache) : that.cache != null) {
+        if(!Objects.equals(cache, that.cache)) {
             return false;
         }
         return true;

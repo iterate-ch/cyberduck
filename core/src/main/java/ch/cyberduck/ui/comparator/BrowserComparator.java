@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * The base class for comparators used to sort by column type in the browser
@@ -61,7 +62,7 @@ public abstract class BrowserComparator implements Comparator<Path>, Serializabl
         if(ascending != that.ascending) {
             return false;
         }
-        if(fallback != null ? !fallback.equals(that.fallback) : that.fallback != null) {
+        if(!Objects.equals(fallback, that.fallback)) {
             return false;
         }
         return true;

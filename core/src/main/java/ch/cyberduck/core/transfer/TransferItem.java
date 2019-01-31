@@ -24,6 +24,8 @@ import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.serializer.Serializer;
 
+import java.util.Objects;
+
 public class TransferItem implements Referenceable, Serializable {
 
     public Path remote;
@@ -68,7 +70,7 @@ public class TransferItem implements Referenceable, Serializable {
             return false;
         }
         TransferItem that = (TransferItem) o;
-        if(local != null ? !local.equals(that.local) : that.local != null) {
+        if(!Objects.equals(local, that.local)) {
             return false;
         }
         if(remote != null ? !new SimplePathPredicate(remote).equals(new SimplePathPredicate(that.remote)) : that.remote != null) {

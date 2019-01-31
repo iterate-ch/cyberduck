@@ -22,6 +22,8 @@ package ch.cyberduck.core.aquaticprime;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 
+import java.util.Objects;
+
 public class Receipt extends AbstractLicense {
 
     private final String guid;
@@ -69,7 +71,7 @@ public class Receipt extends AbstractLicense {
             return false;
         }
         final Receipt receipt = (Receipt) o;
-        if(guid != null ? !guid.equals(receipt.guid) : receipt.guid != null) {
+        if(!Objects.equals(guid, receipt.guid)) {
             return false;
         }
         return true;

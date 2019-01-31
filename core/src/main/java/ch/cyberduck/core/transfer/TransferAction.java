@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class TransferAction {
 
@@ -262,7 +263,7 @@ public abstract class TransferAction {
             return false;
         }
         final TransferAction that = (TransferAction) o;
-        if(name != null ? !name.equals(that.name) : that.name != null) {
+        if(!Objects.equals(name, that.name)) {
             return false;
         }
         return true;

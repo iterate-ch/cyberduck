@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 public class ReadSizeWorker extends Worker<Long> {
 
@@ -75,7 +76,7 @@ public class ReadSizeWorker extends Worker<Long> {
             return false;
         }
         final ReadSizeWorker that = (ReadSizeWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

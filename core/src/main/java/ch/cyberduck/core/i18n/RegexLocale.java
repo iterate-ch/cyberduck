@@ -33,6 +33,7 @@ import java.io.LineNumberReader;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -125,10 +126,10 @@ public class RegexLocale implements Locale {
                 return false;
             }
             final Key key1 = (Key) o;
-            if(key != null ? !key.equals(key1.key) : key1.key != null) {
+            if(!Objects.equals(key, key1.key)) {
                 return false;
             }
-            if(table != null ? !table.equals(key1.table) : key1.table != null) {
+            if(!Objects.equals(table, key1.table)) {
                 return false;
             }
             return true;

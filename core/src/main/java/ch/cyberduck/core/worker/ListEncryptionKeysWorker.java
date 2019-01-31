@@ -27,6 +27,7 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> {
@@ -77,7 +78,7 @@ public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> 
             return false;
         }
         final ListEncryptionKeysWorker that = (ListEncryptionKeysWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

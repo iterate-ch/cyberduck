@@ -25,6 +25,7 @@ import ch.cyberduck.core.LocaleFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 
 public abstract class AbstractLicense implements License {
 
@@ -57,7 +58,7 @@ public abstract class AbstractLicense implements License {
             return false;
         }
         AbstractLicense that = (AbstractLicense) o;
-        if(file != null ? !file.equals(that.file) : that.file != null) {
+        if(!Objects.equals(file, that.file)) {
             return false;
         }
         return true;

@@ -25,6 +25,7 @@ import ch.cyberduck.core.StringAppender;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
+import java.util.Objects;
 
 public class BackgroundException extends Exception {
     private static final long serialVersionUID = -6114495291207129418L;
@@ -120,7 +121,7 @@ public class BackgroundException extends Exception {
         if(this.getCause() != null ? !this.getCause().equals(that.getCause()) : that.getCause() != null) {
             return false;
         }
-        if(detail != null ? !detail.equals(that.detail) : that.detail != null) {
+        if(!Objects.equals(detail, that.detail)) {
             return false;
         }
         return true;

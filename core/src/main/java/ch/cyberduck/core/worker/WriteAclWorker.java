@@ -31,6 +31,7 @@ import ch.cyberduck.core.features.AclPermission;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 public class WriteAclWorker extends Worker<Boolean> {
 
@@ -114,7 +115,7 @@ public class WriteAclWorker extends Worker<Boolean> {
             return false;
         }
         final WriteAclWorker that = (WriteAclWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

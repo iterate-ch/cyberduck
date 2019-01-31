@@ -32,6 +32,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class WriteMetadataWorker extends Worker<Boolean> {
 
@@ -129,7 +130,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
             return false;
         }
         final WriteMetadataWorker that = (WriteMetadataWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

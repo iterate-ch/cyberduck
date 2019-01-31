@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class CalculateSizeWorker extends Worker<Long> {
 
@@ -108,7 +109,7 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
             return false;
         }
         final CalculateSizeWorker that = (CalculateSizeWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
 

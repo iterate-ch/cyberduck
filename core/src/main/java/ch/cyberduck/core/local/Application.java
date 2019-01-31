@@ -22,6 +22,8 @@ import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
+
 public class Application {
 
     public static final Application notfound
@@ -56,7 +58,7 @@ public class Application {
             return false;
         }
         final Application that = (Application) o;
-        if(identifier != null ? !identifier.equals(that.identifier) : that.identifier != null) {
+        if(!Objects.equals(identifier, that.identifier)) {
             return false;
         }
         return true;

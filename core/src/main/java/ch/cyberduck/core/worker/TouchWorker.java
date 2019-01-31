@@ -30,6 +30,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Objects;
 
 public class TouchWorker extends Worker<Path> {
 
@@ -82,7 +83,7 @@ public class TouchWorker extends Worker<Path> {
             return false;
         }
         final TouchWorker that = (TouchWorker) o;
-        return !(file != null ? !file.equals(that.file) : that.file != null);
+        return !(!Objects.equals(file, that.file));
 
     }
 

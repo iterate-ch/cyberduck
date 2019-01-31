@@ -47,6 +47,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Objects;
 
 public class EditOpenWorker extends Worker<Transfer> {
     private static final Logger log = Logger.getLogger(EditOpenWorker.class);
@@ -127,7 +128,7 @@ public class EditOpenWorker extends Worker<Transfer> {
             return false;
         }
         EditOpenWorker that = (EditOpenWorker) o;
-        if(editor != null ? !editor.equals(that.editor) : that.editor != null) {
+        if(!Objects.equals(editor, that.editor)) {
             return false;
         }
         return true;

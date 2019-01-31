@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Encryption;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 public class WriteEncryptionWorker extends Worker<Boolean> {
 
@@ -110,7 +111,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
             return false;
         }
         final WriteEncryptionWorker that = (WriteEncryptionWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;
