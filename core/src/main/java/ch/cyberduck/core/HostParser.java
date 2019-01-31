@@ -308,6 +308,7 @@ public final class HostParser {
                     }
                     if(t == '%') {
                         t = (char) Integer.parseInt(buffer.substring(i + 1, i + 3), 16);
+                        i += 2;
                     }
                     if(t == ':' && passwordBuilder == null) {
                         passwordBuilder = new StringBuilder();

@@ -186,7 +186,7 @@ public class HostParserTest {
         final String authority = "domain.tld";
         final HostParser.StringReader reader = new HostParser.StringReader(authority);
 
-        assertTrue(HostParser.parseAuthority(reader, host));
+        HostParser.parseAuthority(reader, host);
         assertEquals(authority, host.getHostname());
     }
 
@@ -196,7 +196,7 @@ public class HostParserTest {
         final String authority = "user@domain.tld";
         final HostParser.StringReader reader = new HostParser.StringReader(authority);
 
-        assertTrue(HostParser.parseAuthority(reader, host));
+        HostParser.parseAuthority(reader, host);
         assertEquals("user", host.getCredentials().getUsername());
         assertEquals("domain.tld", host.getHostname());
     }
@@ -207,7 +207,7 @@ public class HostParserTest {
         final String authority = "user:password@domain.tld";
         final HostParser.StringReader reader = new HostParser.StringReader(authority);
 
-        assertTrue(HostParser.parseAuthority(reader, host));
+        HostParser.parseAuthority(reader, host);
         assertEquals("user", host.getCredentials().getUsername());
         assertEquals("password", host.getCredentials().getPassword());
         assertEquals("domain.tld", host.getHostname());
@@ -219,7 +219,7 @@ public class HostParserTest {
         final String authority = "user:password@domain.tld:1337";
         final HostParser.StringReader reader = new HostParser.StringReader(authority);
 
-        assertTrue(HostParser.parseAuthority(reader, host));
+        HostParser.parseAuthority(reader, host);
         assertEquals("user", host.getCredentials().getUsername());
         assertEquals("password", host.getCredentials().getPassword());
         assertEquals("domain.tld", host.getHostname());
@@ -242,7 +242,7 @@ public class HostParserTest {
         final String authority = "user@/";
         final HostParser.StringReader reader = new HostParser.StringReader(authority);
 
-        assertTrue(HostParser.parseAuthority(reader, host));
+        HostParser.parseAuthority(reader, host);
         assertEquals(host.getProtocol().getDefaultHostname(), host.getHostname());
     }
 
@@ -252,7 +252,7 @@ public class HostParserTest {
         final String path = "/path/sub/directory";
         final HostParser.StringReader reader = new HostParser.StringReader(path);
 
-        assertTrue(HostParser.parseAbsolute(reader, host));
+        HostParser.parseAbsolute(reader, host);
         assertEquals(path, host.getDefaultPath());
     }
 
@@ -267,7 +267,7 @@ public class HostParserTest {
         final String path = "path/sub/directory";
         final HostParser.StringReader reader = new HostParser.StringReader(path);
 
-        assertTrue(HostParser.parseRootless(reader, host));
+        HostParser.parseRootless(reader, host);
         assertEquals(path, host.getDefaultPath());
     }
 
@@ -282,7 +282,7 @@ public class HostParserTest {
         final String path = "user@path/sub/directory";
         final HostParser.StringReader reader = new HostParser.StringReader(path);
 
-        assertTrue(HostParser.parseRootless(reader, host));
+        HostParser.parseRootless(reader, host);
         assertEquals("user", host.getCredentials().getUsername());
         assertEquals("path/sub/directory", host.getDefaultPath());
     }
