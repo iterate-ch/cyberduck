@@ -188,13 +188,13 @@ public class PreferencesController extends ToolbarWindowController {
         queue {
             @Override
             public String label() {
-                return LocaleFactory.localizedString(StringUtils.upperCase("Transfers"), "Preferences");
+                return LocaleFactory.localizedString("Transfers", "Preferences");
             }
         },
         pencil {
             @Override
             public String label() {
-                return LocaleFactory.localizedString(StringUtils.upperCase("Editor"), "Preferences");
+                return LocaleFactory.localizedString("Editor", "Preferences");
             }
         },
         ftp {
