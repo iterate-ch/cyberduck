@@ -185,8 +185,18 @@ public class PreferencesController extends ToolbarWindowController {
     protected enum PreferencesToolbarItem {
         general,
         browser,
-        queue,
-        pencil,
+        queue {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.upperCase("Transfers"), "Preferences");
+            }
+        },
+        pencil {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.upperCase("Editor"), "Preferences");
+            }
+        },
         ftp {
             @Override
             public String label() {
