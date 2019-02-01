@@ -2,6 +2,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.exception.InvalidHostException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
@@ -13,7 +14,7 @@ import static org.junit.Assert.*;
 
 public class HostParserTest {
 
-    @Test
+    @Test(expected = InvalidHostException.class)
     public void testParseURLEmpty() {
         Host h = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol()).get("");
         assertEquals(h.getHostname(), PreferencesFactory.get().getProperty("connection.hostname.default"));

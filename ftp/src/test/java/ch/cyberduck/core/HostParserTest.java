@@ -1,5 +1,6 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.exception.InvalidHostException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 
 import org.junit.Test;
@@ -10,7 +11,7 @@ import static org.junit.Assert.*;
 
 public class HostParserTest {
 
-    @Test
+    @Test(expected = InvalidHostException.class)
     public void testParseURLEmpty() {
         Host h = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("");
         assertEquals("", h.getHostname());
