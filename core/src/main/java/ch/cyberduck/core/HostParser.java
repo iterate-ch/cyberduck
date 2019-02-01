@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.log4j.Logger;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 public final class HostParser {
@@ -100,7 +101,12 @@ public final class HostParser {
         }
 
         if(uriType == URITypes.Authority) {
-            parseAuthority(reader, host);
+            if(host.getProtocol().isHostnameConfigurable()) {
+                parseAuthority(reader, host);
+            }
+            else {
+                parseRootless(reader, host);
+            }
         }
         else if(uriType == URITypes.Rootless) {
             parseRootless(reader, host);
@@ -155,21 +161,9 @@ public final class HostParser {
     static void parseAuthority(final StringReader reader, final Host host) {
         final boolean userInfoResult = parseUserInfo(reader, host);
 
-        boolean assumeRoot = false;
-        if(host.getProtocol().isHostnameConfigurable()) {
-            parseHostname(reader, host);
-        }
-        else {
-            if(userInfoResult) { //
-                // TODO: Backwards rooted
-                assumeRoot = true;
-            }
-            else {
-                reader.skip(-1);
-            }
-        }
+        parseHostname(reader, host);
 
-        parsePath(reader, host, assumeRoot);
+        parsePath(reader, host, false);
     }
 
     static void parseHostname(final StringReader reader, final Host host) {
@@ -237,32 +231,30 @@ public final class HostParser {
     }
 
     static void parsePort(final StringReader reader, final Host host) {
-        int port = 0;
+        Integer port = null;
         int tracker = reader.position;
 
         while(!reader.endOfString()) {
             final char c = (char) reader.read();
 
             if(Character.isDigit(c)) {
-                port = port * 10 + Character.getNumericValue(c);
-            }
-            else if(c == '/') {
-                // Move Reader one symbol back
-                // used in parseAbsolute (requires "/" at beginning)
-                reader.skip(-1);
-                break;
+                tracker = reader.position;
+                port = Optional.ofNullable(port).orElse(0) * 10 + Character.getNumericValue(c);
             }
             else {
-                reader.skip(tracker - reader.position);
+                if(c != '/') {
+                    log.warn(String.format("Got %s in port. This is unsupported. Continuing with port %d", c, port));
+                }
                 break;
             }
         }
+        reader.skip(tracker - reader.position);
 
-        if(port <= 0 || port >= 65536) {
-            throw new InvalidHostException(String.format("Port is outside range 0 < Port < 65536. Got %d", port));
-        }
+        if(port != null && host.getProtocol().isPortConfigurable()) {
+            if(port <= 0 || port >= 65536) {
+                throw new InvalidHostException(String.format("Port is outside range 0 < Port < 65536. Got %d", port));
+            }
 
-        if(host.getProtocol().isPortConfigurable()) {
             host.setPort(port);
         }
     }
@@ -396,11 +388,11 @@ public final class HostParser {
                 host.setDefaultPath(pathBuilder.toString());
             }
             else {
-                if(host.getDefaultPath().startsWith(pathBuilder.toString())) {
+                if(pathBuilder.indexOf(host.getDefaultPath()) != -1) {
                     host.setDefaultPath(pathBuilder.toString());
                 }
                 else {
-                    host.setDefaultPath(String.format("%s/%s", host.getDefaultPath(), pathBuilder));
+                    host.setDefaultPath(String.format("%s%s", host.getDefaultPath(), pathBuilder));
                 }
             }
         }
@@ -411,27 +403,18 @@ public final class HostParser {
         if(!copy.endOfString()) {
             char c = (char) copy.read();
             if(c == '/') {
+                reader.skip(1);
                 if(!copy.endOfString()) {
                     c = (char) copy.read();
                     if(c == '/') {
-                        reader.skip(2);
-                        if(!copy.endOfString()) {
-                            c = (char) copy.read();
-                            if(c == '/') {
-                                return URITypes.Absolute;
-                            }
-                        }
+                        reader.skip(1);
                         return URITypes.Authority;
                     }
-                    else {
-                        reader.skip(1);
-                        return URITypes.Absolute;
-                    }
+                    reader.skip(-1);
                 }
+                return URITypes.Absolute;
             }
-            else {
-                return URITypes.Rootless;
-            }
+            return URITypes.Rootless;
         }
         return URITypes.Undefined;
     }
