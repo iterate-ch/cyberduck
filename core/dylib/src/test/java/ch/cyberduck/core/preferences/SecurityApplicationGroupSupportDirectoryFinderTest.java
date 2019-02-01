@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
 public class SecurityApplicationGroupSupportDirectoryFinderTest {
 
     @Test
-    public void testFind() throws Exception {
+    public void testFind() {
         assertNotNull(new SecurityApplicationGroupSupportDirectoryFinder().find());
         assertEquals("~/Library/Group Containers/G69SCX94XU.duck/Library/Application Support/duck",
                 new SecurityApplicationGroupSupportDirectoryFinder().find().getAbbreviatedPath());

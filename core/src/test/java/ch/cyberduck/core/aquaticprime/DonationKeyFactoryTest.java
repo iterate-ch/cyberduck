@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 public class DonationKeyFactoryTest {
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate() {
         assertEquals(new Receipt(null, "c42c030b8670"), new DonationKeyFactory().create());
     }
 }

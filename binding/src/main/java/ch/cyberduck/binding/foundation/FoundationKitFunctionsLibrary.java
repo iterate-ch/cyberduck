@@ -33,7 +33,7 @@ public final class FoundationKitFunctionsLibrary {
         //
     }
 
-    private static final FoundationKitFunctions instance = (FoundationKitFunctions) Native.loadLibrary(
+    private static final FoundationKitFunctions instance = Native.load(
             "Foundation", FoundationKitFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
 
     public static NSRect NSUnionRect(NSRect aRect, NSRect bRect) {

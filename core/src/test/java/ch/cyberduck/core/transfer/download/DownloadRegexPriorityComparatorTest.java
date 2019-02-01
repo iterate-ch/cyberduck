@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 public class DownloadRegexPriorityComparatorTest {
 
     @Test
-    public void testCompare() throws Exception {
+    public void testCompare() {
         assertEquals(-1, new DownloadRegexPriorityComparator(".*\\.html").compare(
                 new Path("f.html", EnumSet.of(Path.Type.file)), new Path("g.t", EnumSet.of(Path.Type.file))));
         assertEquals(1, new DownloadRegexPriorityComparator(".*\\.html").compare(

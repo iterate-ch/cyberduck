@@ -24,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 public class TerminalOptionsBuilderTest  {
 
     @Test
-    public void testOptions() throws Exception {
+    public void testOptions() {
         assertNotNull(TerminalOptionsBuilder.options());
     }
 }

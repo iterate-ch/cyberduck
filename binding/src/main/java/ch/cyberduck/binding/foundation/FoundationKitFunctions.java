@@ -30,96 +30,96 @@ public interface FoundationKitFunctions extends Library {
      * <i>native declaration : /System/Library/Frameworks/ApplicationServices.framework/Headers/../Frameworks/CoreGraphics.framework/Headers/CGGeometry.h:36</i><br>
      * enum values
      */
-    public static interface CGRectEdge {
-        public static final int CGRectMinXEdge = 0;
-        public static final int CGRectMinYEdge = 1;
-        public static final int CGRectMaxXEdge = 2;
-        public static final int CGRectMaxYEdge = 3;
+    interface CGRectEdge {
+        int CGRectMinXEdge = 0;
+        int CGRectMinYEdge = 1;
+        int CGRectMaxXEdge = 2;
+        int CGRectMaxYEdge = 3;
     }
 
     /**
      * <i>native declaration : /System/Library/Frameworks/ApplicationServices.framework/Headers/../Frameworks/CoreGraphics.framework/Headers/CGGeometry.h</i><br>
      * enum values
      */
-    public static interface NSRectEdge {
-        public static final int NSMinXEdge = 0;
-        public static final int NSMinYEdge = 1;
-        public static final int NSMaxXEdge = 2;
-        public static final int NSMaxYEdge = 3;
+    interface NSRectEdge {
+        int NSMinXEdge = 0;
+        int NSMinYEdge = 1;
+        int NSMaxXEdge = 2;
+        int NSMaxYEdge = 3;
     }
 
     /**
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h</i><br>
      * enum values
      */
-    public static interface NSSearchPathDirectory {
+    interface NSSearchPathDirectory {
         /// supported applications (Applications)
-        public static final int NSApplicationDirectory = 1;
+        int NSApplicationDirectory = 1;
         /// unsupported applications, demonstration versions (Demos)
-        public static final int NSDemoApplicationDirectory = 2;
+        int NSDemoApplicationDirectory = 2;
         /// developer applications (Developer/Applications). DEPRECATED - there is no one single Developer directory.
-        public static final int NSDeveloperApplicationDirectory = 3;
+        int NSDeveloperApplicationDirectory = 3;
         /// system and network administration applications (Administration)
-        public static final int NSAdminApplicationDirectory = 4;
+        int NSAdminApplicationDirectory = 4;
         /// various user-visible documentation, support, and configuration files, resources (Library)
-        public static final int NSLibraryDirectory = 5;
+        int NSLibraryDirectory = 5;
         /// developer resources (Developer) DEPRECATED - there is no one single Developer directory.
-        public static final int NSDeveloperDirectory = 6;
+        int NSDeveloperDirectory = 6;
         /// user home directories (Users)
-        public static final int NSUserDirectory = 7;
+        int NSUserDirectory = 7;
         /// documentation (Documentation)
-        public static final int NSDocumentationDirectory = 8;
+        int NSDocumentationDirectory = 8;
         /// documents (Documents)
-        public static final int NSDocumentDirectory = 9;
+        int NSDocumentDirectory = 9;
         /// location of CoreServices directory (System/Library/CoreServices)
-        public static final int NSCoreServiceDirectory = 10;
+        int NSCoreServiceDirectory = 10;
         /// location of autosaved documents (Documents/Autosaved)
-        public static final int NSAutosavedInformationDirectory = 11;
+        int NSAutosavedInformationDirectory = 11;
         /// location of user's desktop
-        public static final int NSDesktopDirectory = 12;
+        int NSDesktopDirectory = 12;
         /// location of discardable cache files (Library/Caches)
-        public static final int NSCachesDirectory = 13;
+        int NSCachesDirectory = 13;
         /// location of application support files (plug-ins, etc) (Library/Application Support)
-        public static final int NSApplicationSupportDirectory = 14;
+        int NSApplicationSupportDirectory = 14;
         /// location of the user's "Downloads" directory
-        public static final int NSDownloadsDirectory = 15;
+        int NSDownloadsDirectory = 15;
         /// input methods (Library/Input Methods)
-        public static final int NSInputMethodsDirectory = 16;
+        int NSInputMethodsDirectory = 16;
         /// location of user's Movies directory (~/Movies)
-        public static final int NSMoviesDirectory = 17;
+        int NSMoviesDirectory = 17;
         /// location of user's Music directory (~/Music)
-        public static final int NSMusicDirectory = 18;
+        int NSMusicDirectory = 18;
         /// location of user's Pictures directory (~/Pictures)
-        public static final int NSPicturesDirectory = 19;
+        int NSPicturesDirectory = 19;
         /// location of system's PPDs directory (Library/Printers/PPDs)
-        public static final int NSPrinterDescriptionDirectory = 20;
+        int NSPrinterDescriptionDirectory = 20;
         /// location of user's Public sharing directory (~/Public)
-        public static final int NSSharedPublicDirectory = 21;
+        int NSSharedPublicDirectory = 21;
         /// location of the PreferencePanes directory for use with System Preferences (Library/PreferencePanes)
-        public static final int NSPreferencePanesDirectory = 22;
+        int NSPreferencePanesDirectory = 22;
         /// For use with NSFileManager's URLForDirectory:inDomain:appropriateForURL:create:error:
-        public static final int NSItemReplacementDirectory = 99;
+        int NSItemReplacementDirectory = 99;
         /// all directories where applications can occur
-        public static final int NSAllApplicationsDirectory = 100;
+        int NSAllApplicationsDirectory = 100;
         /// all directories where resources can occur
-        public static final int NSAllLibrariesDirectory = 101;
+        int NSAllLibrariesDirectory = 101;
     }
 
     /**
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h</i><br>
      * enum values
      */
-    public static interface NSSearchPathDomainMask {
+    interface NSSearchPathDomainMask {
         /// user's home directory --- place to install user's personal items (~)
-        public static final int NSUserDomainMask = 1;
+        int NSUserDomainMask = 1;
         /// local to the current machine --- place to install items available to everyone on this machine (/Library)
-        public static final int NSLocalDomainMask = 2;
+        int NSLocalDomainMask = 2;
         /// publically available location in the local area network --- place to install items available on the network (/Network)
-        public static final int NSNetworkDomainMask = 4;
+        int NSNetworkDomainMask = 4;
         /// provided by Apple, unmodifiable (/System)
-        public static final int NSSystemDomainMask = 8;
+        int NSSystemDomainMask = 8;
         /// all domains: all of the above and future items
-        public static final int NSAllDomainsMask = 65535;
+        int NSAllDomainsMask = 65535;
     }
 
     /**

@@ -128,7 +128,7 @@ public class S3MultipartCopyFeature extends S3CopyFeature {
 
     private Future<MultipartPart> submit(final Path source,
                                          final MultipartUpload multipart,
-                                         final int partNumber, final long offset, final long length) throws BackgroundException {
+                                         final int partNumber, final long offset, final long length) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, source, offset, length));
         }

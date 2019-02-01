@@ -27,7 +27,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
@@ -57,7 +56,7 @@ public class MoveWorkerTest {
                 if(type == Delete.class) {
                     return (T) new Delete() {
                         @Override
-                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
                             //
                         }
 
@@ -71,7 +70,7 @@ public class MoveWorkerTest {
                     return (T) new Directory<Void>() {
 
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
                             return folder;
                         }
 
@@ -86,7 +85,7 @@ public class MoveWorkerTest {
                         private final AtomicInteger count = new AtomicInteger();
 
                         @Override
-                        public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {
                             if(count.get() == 0) {
                                 assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), file);
                                 assertEquals(new Path("/t2/a", EnumSet.of(Path.Type.file)), renamed);
@@ -118,7 +117,7 @@ public class MoveWorkerTest {
                         }
                     };
                 }
-                return (T) super._getFeature(type);
+                return super._getFeature(type);
             }
 
             @Override
@@ -130,7 +129,7 @@ public class MoveWorkerTest {
                     ));
                 }
                 if(file.equals(new Path("/t/d", EnumSet.of(Path.Type.directory)))) {
-                    return new AttributedList<Path>(Arrays.asList(
+                    return new AttributedList<Path>(Collections.singletonList(
                         new Path("/t/d/b", EnumSet.of(Path.Type.file))
                     ));
                 }

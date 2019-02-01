@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 public class RegexLocaleTest {
 
     @Test
-    public void testLocalize() throws Exception {
+    public void testLocalize() {
         final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
         assertEquals("Download failed", locale.localize("Download failed", "Status"));
         locale.setDefault("fr");
@@ -35,7 +35,7 @@ public class RegexLocaleTest {
     }
 
     @Test
-    public void testLocalizeFallback() throws Exception {
+    public void testLocalizeFallback() {
         final RegexLocale locale = new RegexLocale(new Local(new WorkdirPrefixer().normalize("../i18n/src/main/resources")));
         assertEquals("Edit Bookmark", locale.localize("Edit Bookmark", "Bookmark"));
         locale.setDefault("fr");

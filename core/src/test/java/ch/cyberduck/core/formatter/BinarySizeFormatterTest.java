@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class BinarySizeFormatterTest {
 
     @Test
-    public void testFormat() throws Exception {
+    public void testFormat() {
         BinarySizeFormatter f = new BinarySizeFormatter();
         assertEquals("1.0 KiB", f.format(1024));
         assertEquals("1.5 KiB", f.format(1500));

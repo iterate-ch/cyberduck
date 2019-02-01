@@ -86,6 +86,5 @@ public class DefaultDownloadFeatureTest extends AbstractFTPTest {
         assertArrayEquals(content, buffer);
         final Delete delete = session.getFeature(Delete.class);
         delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 }

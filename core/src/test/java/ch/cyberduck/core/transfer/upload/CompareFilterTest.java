@@ -24,7 +24,6 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -45,7 +44,7 @@ public class CompareFilterTest {
                 new NullSession(new Host(new TestProtocol())), new UploadFilterOptions(),
                 new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())), null, new DisabledProgressListener()) {
                     @Override
-                    public Comparison compare(final Path file, final Local local) throws BackgroundException {
+                    public Comparison compare(final Path file, final Local local) {
                         return Comparison.equal;
                     }
                 }
@@ -65,7 +64,7 @@ public class CompareFilterTest {
                 new NullSession(new Host(new TestProtocol())), new UploadFilterOptions(),
                 new ComparisonServiceFilter(new NullSession(new Host(new TestProtocol())), null, new DisabledProgressListener()) {
                     @Override
-                    public Comparison compare(final Path file, final Local local) throws BackgroundException {
+                    public Comparison compare(final Path file, final Local local) {
                         return Comparison.equal;
                     }
                 });

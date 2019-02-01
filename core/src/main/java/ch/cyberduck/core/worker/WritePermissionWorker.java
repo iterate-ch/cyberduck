@@ -33,6 +33,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class WritePermissionWorker extends Worker<Boolean> {
 
@@ -125,7 +126,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
             return false;
         }
         final WritePermissionWorker that = (WritePermissionWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

@@ -42,20 +42,20 @@ public abstract class NSScreen extends NSObject {
          * All screens; first one is "zero" screen<br>
          * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSGraphics.h:235</i>
          */
-        public abstract NSArray screens();
+        NSArray screens();
 
         /**
          * Original signature : <code>+(NSScreen*)mainScreen</code><br>
          * Screen with key window<br>
          * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSGraphics.h:236</i>
          */
-        public abstract NSScreen mainScreen();
+        NSScreen mainScreen();
 
         /**
          * Original signature : <code>+(NSScreen*)deepestScreen</code><br>
          * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSGraphics.h:237</i>
          */
-        public abstract NSScreen deepestScreen();
+        NSScreen deepestScreen();
     }
 
     /**

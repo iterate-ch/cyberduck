@@ -30,7 +30,7 @@ import org.rococoa.cocoa.foundation.NSRect;
 /// <i>native declaration : :16</i>
 public abstract class NSComboBox extends NSTextField {
 
-    public static interface DataSource {
+    public interface DataSource {
         NSInteger numberOfItemsInComboBox(NSComboBox combo);
 
         NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row);

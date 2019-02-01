@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
 public class DriveReadFeatureTest extends AbstractDriveTest {
 
     @Test
-    public void testAppend() throws Exception {
+    public void testAppend() {
         assertTrue(new DriveReadFeature(null, new DriveFileidProvider(session).withCache(cache)).offset(new Path("/", EnumSet.of(Path.Type.file))));
     }
 

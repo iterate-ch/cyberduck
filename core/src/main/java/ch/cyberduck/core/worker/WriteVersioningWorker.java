@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Versioning;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 public class WriteVersioningWorker extends Worker<Boolean> {
 
@@ -80,7 +81,7 @@ public class WriteVersioningWorker extends Worker<Boolean> {
             return false;
         }
         final WriteVersioningWorker that = (WriteVersioningWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

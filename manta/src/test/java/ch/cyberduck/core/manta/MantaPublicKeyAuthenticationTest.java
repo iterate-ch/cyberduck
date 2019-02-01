@@ -110,7 +110,7 @@ public class MantaPublicKeyAuthenticationTest {
             session.login(Proxy.DIRECT,
                 new DisabledLoginCallback() {
                     @Override
-                    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                         return new VaultCredentials(passphraseKeyPassword);
                     }
                 },

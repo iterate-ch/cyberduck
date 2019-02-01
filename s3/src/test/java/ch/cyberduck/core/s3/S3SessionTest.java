@@ -4,7 +4,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -65,12 +64,12 @@ public class S3SessionTest extends AbstractS3Test {
             }
 
             @Override
-            public void checkClientTrusted(X509Certificate[] x509Certificates, final String cipher) throws CertificateException {
+            public void checkClientTrusted(X509Certificate[] x509Certificates, final String cipher) {
                 fail();
             }
 
             @Override
-            public void checkServerTrusted(X509Certificate[] x509Certificates, final String cipher) throws CertificateException {
+            public void checkServerTrusted(X509Certificate[] x509Certificates, final String cipher) {
                 fail();
             }
 
@@ -186,8 +185,7 @@ public class S3SessionTest extends AbstractS3Test {
         });
         session.open(Proxy.DIRECT, new HostKeyCallback() {
             @Override
-            public boolean verify(final String hostname, final int port, final PublicKey key)
-                throws ConnectionCanceledException {
+            public boolean verify(final String hostname, final int port, final PublicKey key) {
                 assertEquals("cyberduck.io", hostname);
                 return true;
             }
@@ -203,7 +201,7 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final S3Session aws = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertNotNull(aws.getFeature(Copy.class));
         assertNotNull(aws.getFeature(AclPermission.class));
@@ -234,13 +232,13 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
-    public void testBucketVirtualHostStyleCustomHost() throws Exception {
+    public void testBucketVirtualHostStyleCustomHost() {
         final Host host = new Host(new S3Protocol(), "test-us-east-1-cyberduck");
         assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", true));
     }
 
     @Test
-    public void testBucketVirtualHostStyleAmazon() throws Exception {
+    public void testBucketVirtualHostStyleAmazon() {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
         assertFalse(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", true));
     }

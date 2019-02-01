@@ -22,7 +22,7 @@ import static org.junit.Assert.assertFalse;
 public class TerminalBrowserLauncherTest {
 
     @Test
-    public void open() throws Exception {
+    public void open() {
         assertFalse(new TerminalBrowserLauncher().open("https://cyberduck.io"));
     }
 }

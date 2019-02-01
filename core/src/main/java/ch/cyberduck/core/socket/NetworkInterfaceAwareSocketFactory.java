@@ -89,7 +89,7 @@ public class NetworkInterfaceAwareSocketFactory extends SocketFactory {
     }
 
     @Override
-    public Socket createSocket() throws IOException {
+    public Socket createSocket() {
         return new HttpProxyAwareSocket(proxy) {
             @Override
             public void connect(final SocketAddress endpoint, final int timeout) throws IOException {

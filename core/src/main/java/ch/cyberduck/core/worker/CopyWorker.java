@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CopyWorker extends Worker<Map<Path, Path>> {
 
@@ -145,7 +146,7 @@ public class CopyWorker extends Worker<Map<Path, Path>> {
             return false;
         }
         final CopyWorker that = (CopyWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

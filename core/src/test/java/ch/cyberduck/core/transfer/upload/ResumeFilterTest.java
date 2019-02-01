@@ -11,7 +11,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.NullWriteFeature;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -60,7 +59,7 @@ public class ResumeFilterTest {
                 if(type == Find.class) {
                     return (T) new Find() {
                         @Override
-                        public boolean find(final Path file) throws BackgroundException {
+                        public boolean find(final Path file) {
                             return true;
                         }
                     };
@@ -164,7 +163,7 @@ public class ResumeFilterTest {
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
-            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) {
                 return new Write.Append(length);
             }
         });
@@ -199,7 +198,7 @@ public class ResumeFilterTest {
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
-            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) {
                 return new Write.Append(length - 1);
             }
         });
@@ -239,7 +238,7 @@ public class ResumeFilterTest {
         final ResumeFilter f = new ResumeFilter(new DisabledUploadSymlinkResolver(), session,
                 new UploadFilterOptions().withTemporary(true), new DefaultUploadFeature<Void>(new NullWriteFeature(session)) {
             @Override
-            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+            public Write.Append append(final Path file, final Long length, final Cache<Path> cache) {
                 return new Write.Append(length + 1);
             }
         });

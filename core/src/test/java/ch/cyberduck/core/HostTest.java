@@ -73,25 +73,6 @@ public class HostTest {
     }
 
     @Test
-    public void testTrimDefaultPath() {
-        Host host = new Host(new TestProtocol(Scheme.ftp), "localhost");
-        host.setDefaultPath("p");
-        assertEquals("p", host.getDefaultPath());
-        host.setDefaultPath("/p");
-        assertEquals("/p", host.getDefaultPath());
-        host.setDefaultPath("/p\n");
-        assertEquals("/p", host.getDefaultPath());
-        host.setDefaultPath("/p\r");
-        assertEquals("/p", host.getDefaultPath());
-        host.setDefaultPath("/p\r\n");
-        assertEquals("/p", host.getDefaultPath());
-        host.setDefaultPath("/p f");
-        assertEquals("/p f", host.getDefaultPath());
-        host.setDefaultPath("/p ");
-        assertEquals("/p", host.getDefaultPath());
-    }
-
-    @Test
     public void testCompare() {
         assertEquals(0, new Host(new TestProtocol(Scheme.ftp), "a", 33).compareTo(new Host(new TestProtocol(Scheme.ftp), "a", 33)));
         assertEquals(-1, new Host(new TestProtocol(Scheme.ftp), "a", 22).compareTo(new Host(new TestProtocol(Scheme.ftp), "a", 33)));

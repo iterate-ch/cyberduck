@@ -73,7 +73,7 @@ public class AmazonIdentityConfigurationTest {
         }
         catch(BackgroundException e) {
             assertEquals("Cannot write user configuration.", e.getMessage());
-            assertTrue(new DefaultFailureDiagnostics().determine(e) == FailureDiagnostics.Type.network);
+            assertSame(new DefaultFailureDiagnostics().determine(e), FailureDiagnostics.Type.network);
 //            assertEquals("Unable to execute HTTP request: Connect to iam.amazonaws.com:443 timed out.", e.getDetail());
             throw e;
         }

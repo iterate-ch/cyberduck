@@ -39,7 +39,7 @@ public class CryptoInputStream extends ProxyInputStream {
     private long chunkIndexOffset;
     private final int chunkSize;
 
-    public CryptoInputStream(final InputStream proxy, final Cryptor cryptor, final FileHeader header, final long chunkIndexOffset) throws IOException {
+    public CryptoInputStream(final InputStream proxy, final Cryptor cryptor, final FileHeader header, final long chunkIndexOffset) {
         super(proxy);
         this.proxy = proxy;
         this.cryptor = cryptor;

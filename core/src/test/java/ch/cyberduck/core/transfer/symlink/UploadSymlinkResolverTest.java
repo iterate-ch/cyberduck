@@ -3,8 +3,6 @@ package ch.cyberduck.core.transfer.symlink;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.transfer.TransferItem;
 
@@ -43,7 +41,7 @@ public class UploadSymlinkResolverTest {
         }));
         UploadSymlinkResolver resolver = new UploadSymlinkResolver(new Symlink() {
             @Override
-            public void symlink(final Path file, final String target) throws BackgroundException {
+            public void symlink(final Path file, final String target) {
                 //
             }
         }, files);
@@ -59,7 +57,7 @@ public class UploadSymlinkResolverTest {
             }
 
             @Override
-            public Local getSymlinkTarget() throws LocalAccessDeniedException {
+            public Local getSymlinkTarget() {
                 return new NullLocal(System.getProperty("java.io.tmpdir"),  "a" + File.separator + "c");
             }
         }));
@@ -74,7 +72,7 @@ public class UploadSymlinkResolverTest {
             }
 
             @Override
-            public Local getSymlinkTarget() throws LocalAccessDeniedException {
+            public Local getSymlinkTarget() {
                 return new NullLocal("/b/c");
             }
         }));

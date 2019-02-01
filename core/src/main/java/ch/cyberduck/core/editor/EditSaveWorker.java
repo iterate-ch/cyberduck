@@ -46,6 +46,7 @@ import ch.cyberduck.core.worker.Worker;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 
 public class EditSaveWorker extends Worker<Transfer> {
     private static final Logger log = Logger.getLogger(EditSaveWorker.class);
@@ -124,7 +125,7 @@ public class EditSaveWorker extends Worker<Transfer> {
             return false;
         }
         EditSaveWorker that = (EditSaveWorker) o;
-        if(editor != null ? !editor.equals(that.editor) : that.editor != null) {
+        if(!Objects.equals(editor, that.editor)) {
             return false;
         }
         return true;

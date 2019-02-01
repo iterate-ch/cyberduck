@@ -15,8 +15,6 @@ package ch.cyberduck.core.io;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-
 import java.io.OutputStream;
 
 public class VoidStatusOutputStream extends StatusOutputStream<Void> {
@@ -25,7 +23,7 @@ public class VoidStatusOutputStream extends StatusOutputStream<Void> {
     }
 
     @Override
-    public Void getStatus() throws BackgroundException {
+    public Void getStatus() {
         return null;
     }
 }

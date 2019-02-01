@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 public class PathPriorityComparatorTest {
 
     @Test
-    public void testCompare() throws Exception {
+    public void testCompare() {
         assertEquals(-1, new PathPriorityComparator().compare(
                 new Path("/t", EnumSet.of(Path.Type.directory)),
                 new Path("/t", EnumSet.of(Path.Type.file))

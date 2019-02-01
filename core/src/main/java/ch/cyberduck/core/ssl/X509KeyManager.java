@@ -18,7 +18,6 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.ch
  */
 
-import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -28,7 +27,7 @@ public interface X509KeyManager extends javax.net.ssl.X509KeyManager {
     /**
      * Load the key store.
      */
-    X509KeyManager init() throws IOException;
+    X509KeyManager init();
 
     /**
      * @return List of aliases for certificates in key store.

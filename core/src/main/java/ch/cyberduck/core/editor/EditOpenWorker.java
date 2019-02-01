@@ -47,6 +47,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Objects;
 
 public class EditOpenWorker extends Worker<Transfer> {
     private static final Logger log = Logger.getLogger(EditOpenWorker.class);
@@ -72,7 +73,7 @@ public class EditOpenWorker extends Worker<Transfer> {
                 new DownloadDuplicateFilter()) {
             @Override
             public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
-                                         final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
+                                         final TransferPrompt prompt, final ListProgressListener listener) {
                 return TransferAction.trash;
             }
         };
@@ -127,7 +128,7 @@ public class EditOpenWorker extends Worker<Transfer> {
             return false;
         }
         EditOpenWorker that = (EditOpenWorker) o;
-        if(editor != null ? !editor.equals(that.editor) : that.editor != null) {
+        if(!Objects.equals(editor, that.editor)) {
             return false;
         }
         return true;

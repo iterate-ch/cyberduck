@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 public class ReadDistributionWorker extends Worker<Distribution> {
     /**
@@ -83,7 +84,7 @@ public class ReadDistributionWorker extends Worker<Distribution> {
             return false;
         }
         final ReadDistributionWorker that = (ReadDistributionWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

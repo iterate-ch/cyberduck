@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
@@ -72,7 +73,7 @@ public class DriveSession extends HttpSession<Drive> {
         this.transport = new ApacheHttpTransport(configuration.build());
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override
-            public void initialize(HttpRequest request) throws IOException {
+            public void initialize(HttpRequest request) {
                 request.setSuppressUserAgentSuffix(true);
                 // OAuth Bearer added in interceptor
             }
@@ -88,7 +89,12 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     protected void logout() throws BackgroundException {
-        transport.shutdown();
+        try {
+            transport.shutdown();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     public HttpClient getHttpClient() {

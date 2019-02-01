@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class DecimalSizeFormatterTest {
 
     @Test
-    public void testFormat() throws Exception {
+    public void testFormat() {
         DecimalSizeFormatter f = new DecimalSizeFormatter();
         assertEquals("1.0 KB", f.format(1024));
         assertEquals("1.5 KB", f.format(1500));

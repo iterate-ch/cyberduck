@@ -19,7 +19,6 @@ import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -88,7 +87,7 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
     }
 
     @Override
-    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+    public void process(final HttpRequest request, final HttpContext context) {
         if(StringUtils.contains(request.getRequestLine().getUri(), "b2_authorize_account")) {
             // Skip setting token for
             if(log.isDebugEnabled()) {

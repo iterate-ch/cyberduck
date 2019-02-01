@@ -28,7 +28,7 @@ import static org.junit.Assert.*;
 public class SwiftSessionTest {
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com"));
         assertNull(session.getFeature(Versioning.class));
         assertNotNull(session.getFeature(AnalyticsProvider.class));

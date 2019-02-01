@@ -28,6 +28,8 @@ import ch.cyberduck.core.worker.Worker;
 
 import org.apache.log4j.Logger;
 
+import java.util.Objects;
+
 public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
     private static final Logger log = Logger.getLogger(WorkerBackgroundAction.class);
 
@@ -124,7 +126,7 @@ public class WorkerBackgroundAction<T> extends RegistryBackgroundAction<T> {
             return false;
         }
         final WorkerBackgroundAction that = (WorkerBackgroundAction) o;
-        if(worker != null ? !worker.equals(that.worker) : that.worker != null) {
+        if(!Objects.equals(worker, that.worker)) {
             return false;
         }
         return true;

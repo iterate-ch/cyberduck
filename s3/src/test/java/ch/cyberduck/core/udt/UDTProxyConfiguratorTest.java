@@ -76,6 +76,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -152,7 +153,7 @@ public class UDTProxyConfiguratorTest {
             }
 
             @Override
-            public void checkClientTrusted(final X509Certificate[] x509Certificates, final String s) throws CertificateException {
+            public void checkClientTrusted(final X509Certificate[] x509Certificates, final String s) {
                 //
             }
 
@@ -183,7 +184,7 @@ public class UDTProxyConfiguratorTest {
                 }
             }, new DefaultX509TrustManager() {
             @Override
-            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) {
 
             }
         }, new DefaultX509KeyManager());
@@ -194,7 +195,7 @@ public class UDTProxyConfiguratorTest {
 
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = "test".getBytes("UTF-8");
+        final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         out.close();
@@ -292,7 +293,7 @@ public class UDTProxyConfiguratorTest {
         final UDTProxyConfigurator proxy = new UDTProxyConfigurator(new S3LocationFeature.S3Region("ap-northeast-1"),
             new LocalhostProxyProvider(), new DefaultX509TrustManager() {
             @Override
-            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
+            public void checkServerTrusted(final X509Certificate[] certs, final String cipher) {
                 //
             }
         }, new DefaultX509KeyManager());

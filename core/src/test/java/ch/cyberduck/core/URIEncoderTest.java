@@ -7,19 +7,19 @@ import static org.junit.Assert.assertEquals;
 public class URIEncoderTest {
 
     @Test
-    public void testEncode() throws Exception {
+    public void testEncode() {
         assertEquals("/p", URIEncoder.encode("/p"));
         assertEquals("/p%20d", URIEncoder.encode("/p d"));
     }
 
     @Test
-    public void testEncodeTrailingDelimiter() throws Exception {
+    public void testEncodeTrailingDelimiter() {
         assertEquals("/a/p/", URIEncoder.encode("/a/p/"));
         assertEquals("/p%20d/", URIEncoder.encode("/p d/"));
     }
 
     @Test
-    public void testEncodeRelativeUri() throws Exception {
+    public void testEncodeRelativeUri() {
         assertEquals("a/p", URIEncoder.encode("a/p"));
         assertEquals("a/p/", URIEncoder.encode("a/p/"));
     }

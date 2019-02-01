@@ -278,7 +278,12 @@ public class FTPSession extends SSLSession<FTPClient> {
                 else {
                     timestamp = new FTPUTIMETimestampFeature(this);
                 }
-                permission = new FTPUnixPermissionFeature(this);
+                if(system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
+                    permission = null;
+                }
+                else {
+                    permission = new FTPUnixPermissionFeature(this);
+                }
                 if(client.hasFeature("SITE", "SYMLINK")) {
                     symlink = new FTPSymlinkFeature(this);
                 }

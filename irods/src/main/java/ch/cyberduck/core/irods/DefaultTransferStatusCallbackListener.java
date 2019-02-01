@@ -21,7 +21,6 @@ import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
-import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.transfer.TransferControlBlock;
 import org.irods.jargon.core.transfer.TransferStatusCallbackListener;
 
@@ -40,7 +39,7 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
     }
 
     @Override
-    public FileStatusCallbackResponse statusCallback(final org.irods.jargon.core.transfer.TransferStatus t) throws JargonException {
+    public FileStatusCallbackResponse statusCallback(final org.irods.jargon.core.transfer.TransferStatus t) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Progress with %s", t));
         }
@@ -72,7 +71,7 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
     }
 
     @Override
-    public void overallStatusCallback(final org.irods.jargon.core.transfer.TransferStatus t) throws JargonException {
+    public void overallStatusCallback(final org.irods.jargon.core.transfer.TransferStatus t) {
         //
     }
 

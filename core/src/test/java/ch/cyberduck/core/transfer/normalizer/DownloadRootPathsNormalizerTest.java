@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 public class DownloadRootPathsNormalizerTest {
 
     @Test
-    public void testNormalize() throws Exception {
+    public void testNormalize() {
         DownloadRootPathsNormalizer n = new DownloadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir"), "a")));
@@ -28,7 +28,7 @@ public class DownloadRootPathsNormalizerTest {
     }
 
     @Test
-    public void testNameClash() throws Exception {
+    public void testNameClash() {
         DownloadRootPathsNormalizer n = new DownloadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         final Path fa = new Path("/f/a", EnumSet.of(Path.Type.file));

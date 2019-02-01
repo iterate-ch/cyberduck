@@ -83,7 +83,7 @@ public class IRODSWriteFeature extends AppendWriteFeature<Integer> {
         }
 
         @Override
-        public Integer getStatus() throws BackgroundException {
+        public Integer getStatus() {
             return handle;
         }
     }

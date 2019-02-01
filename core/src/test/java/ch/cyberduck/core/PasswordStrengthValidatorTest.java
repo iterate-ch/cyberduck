@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 public class PasswordStrengthValidatorTest {
 
     @Test
-    public void testGetScore() throws Exception {
+    public void testGetScore() {
         assertEquals(PasswordStrengthValidator.Strength.veryweak, new PasswordStrengthValidator().getScore(""));
         assertEquals(PasswordStrengthValidator.Strength.veryweak, new PasswordStrengthValidator().getScore("Cyberduck"));
         assertEquals(PasswordStrengthValidator.Strength.verystrong, new PasswordStrengthValidator().getScore("ahvae7faY3ae"));

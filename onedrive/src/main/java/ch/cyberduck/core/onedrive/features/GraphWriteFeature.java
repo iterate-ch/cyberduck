@@ -79,7 +79,7 @@ public class GraphWriteFeature implements Write<Void> {
             return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy,
                 preferences.getInteger("onedrive.upload.multipart.partsize.minimum"))) {
                 @Override
-                public Void getStatus() throws BackgroundException {
+                public Void getStatus() {
                     return null;
                 }
             };

@@ -19,6 +19,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.Objects;
 import java.util.Set;
 
 public interface Location {
@@ -51,7 +52,7 @@ public interface Location {
                 return false;
             }
             final Name name = (Name) o;
-            if(identifier != null ? !identifier.equals(name.identifier) : name.identifier != null) {
+            if(!Objects.equals(identifier, name.identifier)) {
                 return false;
             }
             return true;

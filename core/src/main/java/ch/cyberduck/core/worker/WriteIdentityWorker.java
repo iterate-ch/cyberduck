@@ -21,6 +21,8 @@ import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 
+import java.util.Objects;
+
 public class WriteIdentityWorker extends Worker<Boolean> {
 
     private final LoginCallback prompt;
@@ -62,7 +64,7 @@ public class WriteIdentityWorker extends Worker<Boolean> {
             return false;
         }
         final WriteIdentityWorker that = (WriteIdentityWorker) o;
-        if(policy != null ? !policy.equals(that.policy) : that.policy != null) {
+        if(!Objects.equals(policy, that.policy)) {
             return false;
         }
         return true;

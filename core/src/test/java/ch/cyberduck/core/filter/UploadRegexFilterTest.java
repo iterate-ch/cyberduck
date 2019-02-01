@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 public class UploadRegexFilterTest {
 
     @Test
-    public void testAccept() throws Exception {
+    public void testAccept() {
         final Pattern pattern = Pattern.compile(".*~\\..*|\\.DS_Store|\\.svn|CVS");
         assertFalse(new UploadRegexFilter(pattern).accept(new NullLocal(".DS_Store")));
         assertTrue(new UploadRegexFilter(pattern).accept(new NullLocal("f")));

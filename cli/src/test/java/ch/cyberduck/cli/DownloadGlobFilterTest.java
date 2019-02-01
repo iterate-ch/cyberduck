@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 public class DownloadGlobFilterTest  {
 
     @Test
-    public void testAccept() throws Exception {
+    public void testAccept() {
         assertTrue(new DownloadGlobFilter("*.css").accept(new Path("/dir/f.css", EnumSet.of(Path.Type.file))));
         assertFalse(new DownloadGlobFilter("*.css").accept(new Path("/dir/f.png", EnumSet.of(Path.Type.file))));
     }

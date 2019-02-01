@@ -51,6 +51,7 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.AliasListEntry;
@@ -100,7 +101,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     }
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
-        final LoginOptions options = new LoginOptions(bookmark.getProtocol()).anonymous(false).publickey(false);
+        final LoginOptions options = new LoginOptions(bookmark.getProtocol());
         try {
             final LoginService login = new KeychainLoginService(PasswordStoreFactory.get());
             login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), prompt, options);
@@ -180,10 +181,17 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     }
 
     private AWSKMS client(final Path container) throws BackgroundException {
-        return AWSKMSClientBuilder.standard()
+        final AWSKMSClientBuilder builder = AWSKMSClientBuilder.standard()
             .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(bookmark.getCredentials()))
-            .withClientConfiguration(configuration)
-            .withRegion(locationFeature.getLocation(container).getIdentifier()).build();
+            .withClientConfiguration(configuration);
+        final Location.Name region = locationFeature.getLocation(container);
+        if(Location.unknown.equals(region)) {
+            builder.withRegion(Regions.DEFAULT_REGION);
+        }
+        else {
+            builder.withRegion(region.getIdentifier());
+        }
+        return builder.build();
     }
 
     /**

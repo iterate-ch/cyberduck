@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
 public class OpenSSHCredentialsConfiguratorTest {
 
     @Test
-    public void testNoConfigure() throws Exception {
+    public void testNoConfigure() {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
             new OpenSshConfig(
                 new Local("src/main/test/resources", "openssh/config")));
@@ -43,7 +43,7 @@ public class OpenSSHCredentialsConfiguratorTest {
     }
 
     @Test
-    public void testConfigureKnownHost() throws Exception {
+    public void testConfigureKnownHost() {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
             new OpenSshConfig(
                 new Local("src/test/resources", "openssh/config")));
@@ -55,7 +55,7 @@ public class OpenSSHCredentialsConfiguratorTest {
     }
 
     @Test
-    public void testConfigureDefaultKey() throws Exception {
+    public void testConfigureDefaultKey() {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
             new OpenSshConfig(
                 new Local("src/main/test/resources", "openssh/config")));
@@ -65,7 +65,7 @@ public class OpenSSHCredentialsConfiguratorTest {
     }
 
     @Test
-    public void testNullHostname() throws Exception {
+    public void testNullHostname() {
         OpenSSHCredentialsConfigurator c = new OpenSSHCredentialsConfigurator(
             new OpenSshConfig(
                 new Local("src/main/test/resources", "openssh/config")));

@@ -29,6 +29,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
 
@@ -100,7 +101,7 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
             if(port != key.port) {
                 return false;
             }
-            if(hostname != null ? !hostname.equals(key.hostname) : key.hostname != null) {
+            if(!Objects.equals(hostname, key.hostname)) {
                 return false;
             }
             if(!Arrays.equals(issuers, key.issuers)) {

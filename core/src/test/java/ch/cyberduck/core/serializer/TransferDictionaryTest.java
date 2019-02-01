@@ -28,8 +28,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -61,7 +59,7 @@ public class TransferDictionaryTest {
     }
 
     @Test
-    public void testSerializeDownloadTransfer() throws Exception {
+    public void testSerializeDownloadTransfer() {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
         Transfer t = new DownloadTransfer(new Host(new TestProtocol(), "t"), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         t.addSize(4L);
@@ -76,7 +74,7 @@ public class TransferDictionaryTest {
     }
 
     @Test
-    public void testSerializeUploadTransfer() throws Exception {
+    public void testSerializeUploadTransfer() {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
         Transfer t = new UploadTransfer(new Host(new TestProtocol(), "t"), test,
                 new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString()));
@@ -91,7 +89,7 @@ public class TransferDictionaryTest {
     }
 
     @Test
-    public void testSyncTransfer() throws Exception {
+    public void testSyncTransfer() {
         Transfer t = new SyncTransfer(new Host(new TestProtocol(), "t"),
                 new TransferItem(new Path("t", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
         t.addSize(4L);
@@ -114,7 +112,7 @@ public class TransferDictionaryTest {
             }
 
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         }));
@@ -146,7 +144,7 @@ public class TransferDictionaryTest {
             }
 
             @Override
-            public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
+            public AttributedList<Local> list(final Filter<String> filter) {
                 return AttributedList.emptyList();
             }
 

@@ -25,6 +25,7 @@ import ch.cyberduck.core.logging.LoggingConfiguration;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 public class WriteLoggingWorker extends Worker<Boolean> {
 
@@ -76,7 +77,7 @@ public class WriteLoggingWorker extends Worker<Boolean> {
             return false;
         }
         final WriteLoggingWorker that = (WriteLoggingWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

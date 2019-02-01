@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotEquals;
 public class LoginOptionsTest {
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         assertEquals(new LoginOptions(), new LoginOptions());
         final LoginOptions a = new LoginOptions();
         a.keychain = false;

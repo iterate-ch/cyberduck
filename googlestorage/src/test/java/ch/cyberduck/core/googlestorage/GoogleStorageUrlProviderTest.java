@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 public class GoogleStorageUrlProviderTest extends AbstractGoogleStorageTest {
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("google.projectid"), null
         ));
@@ -42,7 +42,7 @@ public class GoogleStorageUrlProviderTest extends AbstractGoogleStorageTest {
     }
 
     @Test
-    public void testGetEncoded() throws Exception {
+    public void testGetEncoded() {
         final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
                 System.getProperties().getProperty("google.projectid"), null
         ));

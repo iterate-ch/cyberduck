@@ -152,7 +152,7 @@ public class FTPListResponseReaderTest {
             new Path("/", EnumSet.of(Path.Type.directory)), Collections.singletonList(
                 "lrwxrwxrwx    1 ftp      ftp            23 Feb 05 06:51 debian -> ../pool/4/mirror/debian"), new DisabledListProgressListener() {
                 @Override
-                public void chunk(final Path parent, AttributedList<Path> list) throws ListCanceledException {
+                public void chunk(final Path parent, AttributedList<Path> list) {
                     fail();
                 }
             }

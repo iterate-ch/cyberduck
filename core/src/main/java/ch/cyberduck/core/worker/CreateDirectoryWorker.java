@@ -29,6 +29,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Objects;
 
 public class CreateDirectoryWorker extends Worker<Path> {
 
@@ -81,10 +82,10 @@ public class CreateDirectoryWorker extends Worker<Path> {
             return false;
         }
         final CreateDirectoryWorker that = (CreateDirectoryWorker) o;
-        if(folder != null ? !folder.equals(that.folder) : that.folder != null) {
+        if(!Objects.equals(folder, that.folder)) {
             return false;
         }
-        return !(region != null ? !region.equals(that.region) : that.region != null);
+        return Objects.equals(region, that.region);
 
     }
 

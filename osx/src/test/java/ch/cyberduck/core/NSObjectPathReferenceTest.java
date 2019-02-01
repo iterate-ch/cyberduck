@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotSame;
 public class NSObjectPathReferenceTest {
 
     @Test
-    public void testUnique() throws Exception {
+    public void testUnique() {
         NSObjectPathReference r = new NSObjectPathReference(NSString.stringWithString("a"));
         assertEquals(r, new NSObjectPathReference(NSString.stringWithString("a")));
         assertEquals(r.toString(), new NSObjectPathReference(NSString.stringWithString("a")).toString());
@@ -21,7 +21,7 @@ public class NSObjectPathReferenceTest {
     }
 
     @Test
-    public void testEqualConstructors() throws Exception {
+    public void testEqualConstructors() {
         assertEquals(new NSObjectPathReference(NSString.stringWithString("[file]-/b")).hashCode(),
                 NSObjectPathReference.get(new Path("/b", EnumSet.of(Path.Type.file))).hashCode()
         );
@@ -31,7 +31,7 @@ public class NSObjectPathReferenceTest {
     }
 
     @Test
-    public void testInterchange() throws Exception {
+    public void testInterchange() {
         assertEquals(
                 new DefaultPathPredicate(new Path("/b", EnumSet.of(Path.Type.file))),
                 new NSObjectPathReference(NSObjectPathReference.get(new Path("/b", EnumSet.of(Path.Type.file))))
@@ -46,7 +46,7 @@ public class NSObjectPathReferenceTest {
     }
 
     @Test
-    public void testUniquePath() throws Exception {
+    public void testUniquePath() {
         Path one = new Path("a", EnumSet.of(Path.Type.file));
         Path second = new Path("a", EnumSet.of(Path.Type.file));
         assertEquals(NSObjectPathReference.get(one), NSObjectPathReference.get(second));

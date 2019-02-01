@@ -171,7 +171,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseIpv6() throws Exception {
+    public void testParseIpv6() {
         final HostParser parser = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVProtocol())));
         assertEquals("fc01:2:3:4:5::1", parser.get("http://[fc01:2:3:4:5::1]:2121").getHostname());
         assertEquals(2121, parser.get("http://[fc01:2:3:4:5::1]:2121").getPort());
@@ -182,7 +182,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseIpv6LinkLocalZoneIndex() throws Exception {
+    public void testParseIpv6LinkLocalZoneIndex() {
         final HostParser parser = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVProtocol())));
         assertEquals("fe80::c62c:3ff:fe0b:8670%en0", parser.get("http://[fe80::c62c:3ff:fe0b:8670%en0]/~/sandbox").getHostname());
     }

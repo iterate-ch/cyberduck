@@ -12,7 +12,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 
 import org.junit.Test;
@@ -36,7 +35,7 @@ public class DeleteWorkerTest {
                 if(type == Delete.class) {
                     return (T) new Delete() {
                         @Override
-                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
                             assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), files.get(0));
                             assertEquals(new Path("/t/d/b", EnumSet.of(Path.Type.file)), files.get(1));
                             assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), files.get(2));
@@ -49,7 +48,7 @@ public class DeleteWorkerTest {
                         }
                     };
                 }
-                return (T) super._getFeature(type);
+                return super._getFeature(type);
             }
 
             @Override
@@ -61,7 +60,7 @@ public class DeleteWorkerTest {
                     ));
                 }
                 if(file.equals(new Path("/t/d", EnumSet.of(Path.Type.directory)))) {
-                    return new AttributedList<Path>(Arrays.asList(
+                    return new AttributedList<Path>(Collections.singletonList(
                         new Path("/t/d/b", EnumSet.of(Path.Type.file))
                     ));
                 }
@@ -84,7 +83,7 @@ public class DeleteWorkerTest {
                 if(type == Delete.class) {
                     return (T) new Delete() {
                         @Override
-                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
                             assertEquals(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink)), files.get(0));
                         }
 
@@ -94,7 +93,7 @@ public class DeleteWorkerTest {
                         }
                     };
                 }
-                return (T) super._getFeature(type);
+                return super._getFeature(type);
             }
 
             @Override

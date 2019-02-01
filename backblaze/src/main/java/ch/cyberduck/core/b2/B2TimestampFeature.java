@@ -16,7 +16,6 @@ package ch.cyberduck.core.b2;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
@@ -36,7 +35,7 @@ public class B2TimestampFeature extends DefaultTimestampFeature implements Times
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
+    public void setTimestamp(final Path file, final Long modified) {
         final Map<String, String> metadata = PreferencesFactory.get().getMap("b2.metadata.default");
         metadata.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(modified));
         new B2MetadataFeature(session, fileid).setMetadata(file, metadata);

@@ -7,7 +7,6 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -57,7 +56,7 @@ public class ResumeFilterTest {
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
-            public boolean offset(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) {
                 return true;
             }
         });
@@ -96,7 +95,7 @@ public class ResumeFilterTest {
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
-            public boolean offset(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) {
                 return true;
             }
         });
@@ -127,7 +126,7 @@ public class ResumeFilterTest {
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
-            public boolean offset(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) {
                 return true;
             }
         });

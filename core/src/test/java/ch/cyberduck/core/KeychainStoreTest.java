@@ -44,7 +44,7 @@ public class KeychainStoreTest {
     }
 
     @Test
-    public void testGetAliasesForIssuerDN() throws Exception {
+    public void testGetAliasesForIssuerDN() {
         final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
             keychain).init();
         final String[] aliases = m.getClientAliases("RSA", new Principal[]{
@@ -55,7 +55,7 @@ public class KeychainStoreTest {
     }
 
     @Test
-    public void testLoadPrivateKeyFromKeychain() throws Exception {
+    public void testLoadPrivateKeyFromKeychain() {
         final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
             keychain).init();
         assertNotNull(m.getPrivateKey("myClient"));

@@ -39,7 +39,7 @@ public class MantaHomeFinderFeatureTest extends AbstractMantaTest {
     }
 
     @Test
-    public void testPrivateRoot() throws BackgroundException {
+    public void testPrivateRoot() {
         final Path drive = new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountPrivateRoot();
         assertNotNull(drive);
         assertTrue(drive.isVolume());
@@ -49,7 +49,7 @@ public class MantaHomeFinderFeatureTest extends AbstractMantaTest {
     }
 
     @Test
-    public void testPublicRoot() throws BackgroundException {
+    public void testPublicRoot() {
         final Path drive = new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath()).getAccountPublicRoot();
         assertNotNull(drive);
         assertTrue(drive.isVolume());

@@ -36,7 +36,7 @@ public class LocalAttributesTest {
     }
 
     @Test
-    public void testGetPermissionNotFound() throws Exception {
+    public void testGetPermissionNotFound() {
         assertEquals(Permission.EMPTY, new LocalAttributes(UUID.randomUUID().toString()).getPermission());
     }
 

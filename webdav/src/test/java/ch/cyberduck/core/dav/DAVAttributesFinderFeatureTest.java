@@ -94,7 +94,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
     }
 
     @Test
-    public void testCustomModified_NotSet() throws Exception {
+    public void testCustomModified_NotSet() {
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(null);
         final DavResource mock = mock(DavResource.class);
 
@@ -108,7 +108,7 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
     }
 
     @Test
-    public void testCustomModified_Modified() throws Exception {
+    public void testCustomModified_Modified() {
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(null);
         final DavResource mock = mock(DavResource.class);
 

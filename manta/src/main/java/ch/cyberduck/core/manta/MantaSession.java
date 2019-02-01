@@ -77,7 +77,7 @@ public class MantaSession extends HttpSession<MantaClient> {
     }
 
     @Override
-    protected MantaClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    protected MantaClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
         return new MantaClient(config, new MantaConnectionFactoryConfigurator(builder.build(proxy, this, prompt)));
     }
 
@@ -111,7 +111,7 @@ public class MantaSession extends HttpSession<MantaClient> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    protected void logout() {
         if(client != null) {
             client.closeWithWarning();
         }

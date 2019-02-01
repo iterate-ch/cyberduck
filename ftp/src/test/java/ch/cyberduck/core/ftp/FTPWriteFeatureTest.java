@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.TimeZone;
@@ -38,7 +39,7 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
     @Test
     public void testReadWrite() throws Exception {
         final TransferStatus status = new TransferStatus();
-        final byte[] content = "test".getBytes("UTF-8");
+        final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         status.setLength(content.length);
         final Path test = new Path(new FTPWorkdirService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = new FTPWriteFeature(session).write(test, status, new DisabledConnectionCallback());
@@ -65,7 +66,6 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
             assertArrayEquals(reference, buffer);
         }
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 
     @Test

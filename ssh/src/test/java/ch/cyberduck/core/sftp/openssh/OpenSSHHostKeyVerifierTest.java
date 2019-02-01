@@ -2,7 +2,6 @@ package ch.cyberduck.core.sftp.openssh;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.junit.Test;
 
@@ -24,12 +23,12 @@ public class OpenSSHHostKeyVerifierTest {
         try {
             final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(l) {
                 @Override
-                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
+                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
                     return false;
                 }
 
                 @Override
-                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
+                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
                     return false;
                 }
             };
@@ -46,16 +45,16 @@ public class OpenSSHHostKeyVerifierTest {
     }
 
     @Test
-    public void testVerifyIndexError() throws Exception {
+    public void testVerifyIndexError() {
         final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(
             new Local("src/test/resources", "known_hosts.invalidline")) {
             @Override
-            protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
+            protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
                 return false;
             }
 
             @Override
-            protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
+            protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
                 return false;
             }
         };
@@ -63,18 +62,18 @@ public class OpenSSHHostKeyVerifierTest {
     }
 
     @Test
-    public void testEcdsaNist() throws Exception {
+    public void testEcdsaNist() {
         // |1|Gf2LppqPUrz9Tfl4QyS/bDqX0yw=|EWSG6Gl45mO6ZX1ENbmQUGCndF8= ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBLcNI58jw4+R7St2mDugzg46mEexty3p8AjWmc7OCy5vHoJRXzJwiKdUlbgE0YglnCz8MNvwQwKK0dnQDI3uJZ8=
 
         final OpenSSHHostKeyVerifier v = new OpenSSHHostKeyVerifier(
             new Local("src/test/resources", "known_hosts.ecdsa")) {
             @Override
-            protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
+            protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
                 return false;
             }
 
             @Override
-            protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
+            protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
                 return false;
             }
         };
@@ -91,13 +90,13 @@ public class OpenSSHHostKeyVerifierTest {
             }
         }) {
             @Override
-            protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
+            protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
                 unknown.set(true);
                 return true;
             }
 
             @Override
-            protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException {
+            protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
                 return false;
             }
         };

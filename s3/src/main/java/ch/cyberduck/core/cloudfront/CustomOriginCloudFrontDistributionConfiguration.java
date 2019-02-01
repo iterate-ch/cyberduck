@@ -18,16 +18,20 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginConnectionService;
+import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.WebUrlProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.proxy.ProxyFactory;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
@@ -50,12 +54,12 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     public CustomOriginCloudFrontDistributionConfiguration(final Host origin) {
         this(origin,
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(
-                        new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
-                ),
-                new KeychainX509KeyManager(
-                        new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())
-                )
+            new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
+            ),
+            new KeychainX509KeyManager(
+                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())
+            )
         );
     }
 
@@ -72,10 +76,9 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
         T call() throws BackgroundException;
     }
 
-    private <T> T connected(final Connected<T> run) throws BackgroundException {
-        if(!session.isConnected()) {
-            session.open(ProxyFactory.get().find(origin), new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        }
+    private <T> T connected(final Connected<T> run, final LoginCallback prompt) throws BackgroundException {
+        new LoginConnectionService(prompt, new DisabledHostKeyCallback(), PasswordStoreFactory.get(), new DisabledProgressListener())
+            .check(session, PathCache.empty(), new DisabledCancelCallback());
         return run.call();
     }
 
@@ -86,7 +89,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
             public Distribution call() throws BackgroundException {
                 return CustomOriginCloudFrontDistributionConfiguration.super.read(file, method, prompt);
             }
-        });
+        }, prompt);
     }
 
     @Override
@@ -97,7 +100,7 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
                 CustomOriginCloudFrontDistributionConfiguration.super.write(file, distribution, prompt);
                 return null;
             }
-        });
+        }, prompt);
     }
 
     @Override
@@ -112,5 +115,10 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
             log.debug(String.format("Use origin %s for distribution %s", url, method));
         }
         return url;
+    }
+
+    @Override
+    protected Location.Name getRegion(final Path container) {
+        return Location.unknown;
     }
 }

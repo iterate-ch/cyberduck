@@ -42,7 +42,7 @@ import static org.junit.Assert.assertNotSame;
 public class CopyTransferTest {
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final Path test = new Path("t", EnumSet.of(Path.Type.file));
         CopyTransfer t = new CopyTransfer(new Host(new TestProtocol()),
                 new Host(new TestProtocol()), Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))));

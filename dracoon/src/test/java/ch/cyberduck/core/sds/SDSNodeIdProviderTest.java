@@ -44,7 +44,7 @@ import static org.junit.Assert.*;
 public class SDSNodeIdProviderTest extends AbstractSDSTest {
 
     @Test
-    public void withCache() throws Exception {
+    public void withCache() {
         assertNotNull(new SDSNodeIdProvider(session).withCache(cache).withCache(PathCache.empty()));
     }
 

@@ -17,7 +17,6 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 
 import java.util.Collections;
@@ -30,12 +29,12 @@ public class DisabledHeadersFeature implements Headers {
     }
 
     @Override
-    public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+    public Map<String, String> getMetadata(final Path file) {
         return Collections.emptyMap();
     }
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final Map<String, String> metadata) {
         //
     }
 }

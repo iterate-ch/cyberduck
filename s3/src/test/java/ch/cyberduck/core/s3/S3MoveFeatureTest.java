@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(test));
         // Write some data to add a new version
         final S3WriteFeature feature = new S3WriteFeature(session);
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(10).getBytes("UTF-8");
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(10).getBytes(StandardCharsets.UTF_8);
         final TransferStatus status = new TransferStatus().withMime("text/plain");
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
@@ -117,7 +118,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
     }
 
     @Test
-    public void testSupport() throws Exception {
+    public void testSupport() {
         final Path c = new Path("/c", EnumSet.of(Path.Type.directory));
         assertFalse(new S3MoveFeature(null).isSupported(c, c));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));

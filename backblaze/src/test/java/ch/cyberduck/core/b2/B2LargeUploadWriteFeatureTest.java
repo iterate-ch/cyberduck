@@ -35,6 +35,7 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -54,7 +55,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         status.setTimestamp(1503654614004L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = feature.write(file, status, new DisabledConnectionCallback());
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(6 * 1024 * 1024).getBytes("UTF-8");
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(6 * 1024 * 1024).getBytes(StandardCharsets.UTF_8);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copy(in, out));
         in.close();
@@ -78,7 +79,7 @@ public class B2LargeUploadWriteFeatureTest extends AbstractB2Test {
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final OutputStream out = feature.write(file, status, new DisabledConnectionCallback());
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(2 * 1024 * 1024).getBytes("UTF-8");
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(2 * 1024 * 1024).getBytes(StandardCharsets.UTF_8);
         final ByteArrayInputStream in = new ByteArrayInputStream(content);
         assertEquals(content.length, IOUtils.copy(in, out));
         in.close();

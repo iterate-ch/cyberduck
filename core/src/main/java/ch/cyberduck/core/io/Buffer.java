@@ -16,7 +16,6 @@ package ch.cyberduck.core.io;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 
 import java.io.IOException;
 
@@ -49,6 +48,6 @@ public interface Buffer {
     void truncate(Long length);
 
     interface Factory {
-        Buffer create(Path file) throws BackgroundException;
+        Buffer create(Path file);
     }
 }

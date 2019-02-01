@@ -39,7 +39,7 @@ public class CryptoInputStream extends ProxyInputStream {
     private ByteBuffer buffer = ByteBuffer.allocate(0);
     private long lastread = -1;
 
-    public CryptoInputStream(final InputStream proxy, final FileDecryptionCipher cipher, final byte[] tag) throws IOException {
+    public CryptoInputStream(final InputStream proxy, final FileDecryptionCipher cipher, final byte[] tag) {
         super(proxy);
         this.proxy = proxy;
         this.cipher = cipher;

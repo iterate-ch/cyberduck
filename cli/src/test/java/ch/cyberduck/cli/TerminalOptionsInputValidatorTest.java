@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 public class TerminalOptionsInputValidatorTest {
 
     @Test
-    public void testValidate() throws Exception {
+    public void testValidate() {
         assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(Collections.singleton(new FTPProtocol() {
             @Override
             public boolean isEnabled() {

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertNotNull;
 public class SessionFactoryTest {
 
     @Test
-    public void testCreateSession() throws Exception {
+    public void testCreateSession() {
         assertNotNull(SessionFactory.create(new Host(new FTPProtocol()),
             new DefaultX509TrustManager(), new DefaultX509KeyManager()));
         assertNotNull(SessionFactory.create(new Host(new FTPTLSProtocol()),

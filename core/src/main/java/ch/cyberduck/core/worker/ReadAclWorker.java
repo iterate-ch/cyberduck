@@ -31,6 +31,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
@@ -81,7 +82,7 @@ public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
             return false;
         }
         final ReadAclWorker that = (ReadAclWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

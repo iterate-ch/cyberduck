@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class RendezvousCollectionTest {
 
     @Test
-    public void testAdd() throws Exception {
+    public void testAdd() {
         final AbstractRendezvous bonjour = new AbstractRendezvous(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.sftp)))) {
         };
         final RendezvousCollection c = new RendezvousCollection(bonjour);

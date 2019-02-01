@@ -51,6 +51,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import com.google.gson.stream.JsonReader;
 
@@ -149,7 +150,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                                 switch(putResponse.getStatusLine().getStatusCode()) {
                                     case HttpStatus.SC_OK:
                                     case HttpStatus.SC_CREATED:
-                                        try (JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), "UTF-8"))) {
+                                        try (JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8))) {
                                             reader.beginObject();
                                             String key = null;
                                             String secret = null;

@@ -90,17 +90,19 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
                             continue;
                         }
                         String value = scanner.next();
-                        if("name".equals(name)) {
-                            current.setNickname(value);
-                        }
-                        else if("comment".equals(name)) {
-                            current.setComment(value);
-                        }
-                        else if("access_key".equals(name)) {
-                            current.getCredentials().setUsername(value);
-                        }
-                        else if("secret_key".equals(name)) {
-                            current.getCredentials().setPassword(value);
+                        switch(name) {
+                            case "name":
+                                current.setNickname(value);
+                                break;
+                            case "comment":
+                                current.setComment(value);
+                                break;
+                            case "access_key":
+                                current.getCredentials().setUsername(value);
+                                break;
+                            case "secret_key":
+                                current.getCredentials().setPassword(value);
+                                break;
                         }
                     }
                 }

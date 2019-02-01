@@ -35,7 +35,6 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -261,7 +260,7 @@ public class BookmarkController extends SheetController implements CollectionLis
                         boolean reachable = false;
 
                         @Override
-                        public Boolean run() throws BackgroundException {
+                        public Boolean run() {
                             return reachable = ReachabilityFactory.get().isReachable(bookmark);
                         }
 

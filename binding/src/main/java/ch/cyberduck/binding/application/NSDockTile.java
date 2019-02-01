@@ -39,9 +39,9 @@ public abstract class NSDockTile extends NSObject {
 
     public interface _Class extends ObjCClass {
         /// <i>native declaration : NSDockTile.h</i>
-        public abstract NSDockTile alloc();
+        NSDockTile alloc();
         /// <i>native declaration : NSDockTile.h</i>
-        public abstract NSDockTile create();
+        NSDockTile create();
     }
 
 	/**

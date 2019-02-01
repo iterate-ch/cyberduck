@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
@@ -160,7 +161,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             return false;
         }
         final MoveWorker that = (MoveWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

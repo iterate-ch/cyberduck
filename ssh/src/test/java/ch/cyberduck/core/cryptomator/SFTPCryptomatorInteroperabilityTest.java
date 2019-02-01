@@ -27,7 +27,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.SFTPHomeDirectoryService;
 import ch.cyberduck.core.sftp.SFTPProtocol;
@@ -49,7 +48,6 @@ import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory;
 import org.cryptomator.cryptofs.CryptoFileSystem;
 import org.cryptomator.cryptofs.CryptoFileSystemProperties;
 import org.cryptomator.cryptofs.CryptoFileSystemProvider;
-import org.cryptomator.cryptofs.CryptoFileSystemUris;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,8 +79,9 @@ public class SFTPCryptomatorInteroperabilityTest {
         server.setSubsystemFactories(Collections.singletonList(new SftpSubsystemFactory()));
         final java.nio.file.Path tempDir = Files.createTempDirectory(String.format("%s-", this.getClass().getName()));
         final java.nio.file.Path vault = tempDir.resolve("vault");
+        Files.createDirectory(vault);
         passphrase = new AlphanumericRandomStringService().random();
-        cryptoFileSystem = new CryptoFileSystemProvider().newFileSystem(CryptoFileSystemUris.createUri(vault), CryptoFileSystemProperties.cryptoFileSystemProperties().withPassphrase(passphrase).build());
+        cryptoFileSystem = CryptoFileSystemProvider.newFileSystem(vault, CryptoFileSystemProperties.cryptoFileSystemProperties().withPassphrase(passphrase).build());
         server.setFileSystemFactory(new VirtualFileSystemFactory(cryptoFileSystem.getPathToVault().getParent().toAbsolutePath()));
         server.start();
     }
@@ -116,7 +115,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault).load(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials(passphrase);
             }
         }, new DisabledPasswordStore());
@@ -150,7 +149,7 @@ public class SFTPCryptomatorInteroperabilityTest {
         final Path vault = new Path(home, "vault", EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault).load(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials(passphrase);
             }
         }, new DisabledPasswordStore());

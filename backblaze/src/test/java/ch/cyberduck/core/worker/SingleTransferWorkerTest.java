@@ -90,7 +90,7 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
                 PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
                 PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency")) {
                 @Override
-                protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+                protected InputStream decorate(final InputStream in, final MessageDigest digest) {
                     if(failed.get()) {
                         // Second attempt successful
                         return in;

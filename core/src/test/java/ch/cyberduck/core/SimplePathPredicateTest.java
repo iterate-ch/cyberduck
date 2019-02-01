@@ -25,7 +25,7 @@ import static org.junit.Assert.assertTrue;
 public class SimplePathPredicateTest {
 
     @Test
-    public void testPredicateTest() throws Exception {
+    public void testPredicateTest() {
         final Path t = new Path("/f", EnumSet.of(Path.Type.file));
         assertTrue(new SimplePathPredicate(t).test(t));
         assertFalse(new SimplePathPredicate(t).test(new Path("/f/a", EnumSet.of(Path.Type.file))));

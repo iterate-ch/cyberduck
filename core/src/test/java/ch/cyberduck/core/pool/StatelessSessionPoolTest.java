@@ -45,7 +45,7 @@ public class StatelessSessionPoolTest {
         final AtomicBoolean interrupt = new AtomicBoolean();
         final StatelessSessionPool pool = new StatelessSessionPool(new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) {
                 return true;
             }
         }, new NullSession(new Host(new TestProtocol())) {
@@ -65,7 +65,7 @@ public class StatelessSessionPoolTest {
         final AtomicBoolean interrupt = new AtomicBoolean();
         final StatelessSessionPool pool = new StatelessSessionPool(new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) {
                 return true;
             }
         }, new NullSession(new Host(new TestProtocol())) {

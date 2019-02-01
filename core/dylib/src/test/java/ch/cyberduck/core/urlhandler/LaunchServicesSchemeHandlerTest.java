@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 public class LaunchServicesSchemeHandlerTest {
 
     @Test
-    public void testSetDefaultHandlerForURLScheme() throws Exception {
+    public void testSetDefaultHandlerForURLScheme() {
         final SchemeHandler l = new LaunchServicesSchemeHandler(new LaunchServicesApplicationFinder());
         l.setDefaultHandler(
                 Collections.singletonList(Scheme.ftp), new Application("none.app", null)

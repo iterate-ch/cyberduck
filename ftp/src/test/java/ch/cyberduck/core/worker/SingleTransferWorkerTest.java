@@ -17,7 +17,6 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
@@ -88,7 +87,7 @@ public class SingleTransferWorkerTest {
         final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
         final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 return new Credentials(
                     System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")
                 );

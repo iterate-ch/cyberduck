@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 public class S3ExceptionMappingServiceTest {
 
     @Test
-    public void testLoginFailure() throws Exception {
+    public void testLoginFailure() {
         final ServiceException f = new ServiceException("m", "<null/>");
         f.setResponseCode(401);
         f.setErrorMessage("m");
@@ -47,7 +47,7 @@ public class S3ExceptionMappingServiceTest {
     }
 
     @Test
-    public void testLoginFailure403() throws Exception {
+    public void testLoginFailure403() {
         final ServiceException f = new ServiceException("m", "<null/>");
         f.setResponseCode(403);
         f.setErrorMessage("m");

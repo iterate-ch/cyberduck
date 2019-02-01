@@ -26,7 +26,7 @@ import static org.junit.Assert.fail;
 public class BackgroundActionPauserTest {
 
     @Test
-    public void testAwait() throws Exception {
+    public void testAwait() {
         final AbstractBackgroundAction action = new AbstractBackgroundAction() {
             @Override
             public Object run() throws BackgroundException {

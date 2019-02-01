@@ -24,7 +24,6 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.PermissionOverwrite;
 import ch.cyberduck.core.TestPermissionAttributes;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 
@@ -34,6 +33,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class ReadPermissionWorkerTest {
 
@@ -57,22 +57,22 @@ public class ReadPermissionWorkerTest {
                 if(type == UnixPermission.class) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
-                        public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                        public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                        public void setUnixGroup(final Path file, final String group) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public Permission getUnixPermission(final Path file) throws BackgroundException {
+                        public Permission getUnixPermission(final Path file) {
                             return file.attributes().getPermission();
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                        public void setUnixPermission(final Path file, final Permission permission) {
                             throw new UnsupportedOperationException();
                         }
                     };
@@ -96,9 +96,9 @@ public class ReadPermissionWorkerTest {
 
         assertEquals(Boolean.TRUE, overwrite.group.read);
         assertEquals(Boolean.TRUE, overwrite.group.write);
-        assertEquals(null, overwrite.group.execute);
+        assertNull(overwrite.group.execute);
 
-        assertEquals(null, overwrite.other.read);
+        assertNull(overwrite.other.read);
         assertEquals(Boolean.FALSE, overwrite.other.write);
         assertEquals(Boolean.FALSE, overwrite.other.execute);
 

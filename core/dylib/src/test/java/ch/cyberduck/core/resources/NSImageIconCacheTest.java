@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
 public class NSImageIconCacheTest {
 
     @Test
-    public void testFolderIcon16() throws Exception {
+    public void testFolderIcon16() {
         final NSImage icon = new NSImageIconCache().folderIcon(16);
         assertNotNull(icon);
         assertTrue(icon.isValid());
@@ -46,7 +46,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testFolderIcon32() throws Exception {
+    public void testFolderIcon32() {
         final NSImage icon = new NSImageIconCache().folderIcon(32);
         assertNotNull(icon);
         assertTrue(icon.isValid());
@@ -57,7 +57,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testFolderIcon64() throws Exception {
+    public void testFolderIcon64() {
         final NSImage icon = new NSImageIconCache().folderIcon(64);
         assertNotNull(icon);
         assertTrue(icon.isValid());
@@ -68,7 +68,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testFolderIcon128() throws Exception {
+    public void testFolderIcon128() {
         final NSImage icon = new NSImageIconCache().folderIcon(128);
         assertNotNull(icon);
         assertTrue(icon.isValid());
@@ -79,7 +79,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testFolderIcon256() throws Exception {
+    public void testFolderIcon256() {
         final NSImage icon = new NSImageIconCache().folderIcon(256);
         assertNotNull(icon);
         assertTrue(icon.isValid());
@@ -90,7 +90,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testFolderIcon512() throws Exception {
+    public void testFolderIcon512() {
         final NSImage icon = new NSImageIconCache().folderIcon(512);
         assertNotNull(icon);
         assertTrue(icon.isValid());
@@ -101,7 +101,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testFolderIconAllSizes() throws Exception {
+    public void testFolderIconAllSizes() {
         final NSImage icon = new NSImageIconCache().folderIcon(null);
         assertNotNull(icon);
         assertTrue(icon.isValid());
@@ -110,7 +110,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testDocumentIcon() throws Exception {
+    public void testDocumentIcon() {
         final NSImage icon = new NSImageIconCache().documentIcon("txt", 64);
         assertNotNull(icon);
         assertTrue(icon.isValid());
@@ -120,7 +120,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testDocumentIconNoExtension() throws Exception {
+    public void testDocumentIconNoExtension() {
         final NSImage icon = new NSImageIconCache().documentIcon("", 64);
         assertNotNull(icon);
         assertTrue(icon.isValid());
@@ -130,7 +130,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testDocumentIconNullExtension() throws Exception {
+    public void testDocumentIconNullExtension() {
         final NSImage icon = new NSImageIconCache().documentIcon(null, 64);
         assertNotNull(icon);
         assertTrue(icon.isValid());
@@ -140,13 +140,13 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testIconForApplication() throws Exception {
+    public void testIconForApplication() {
         final NSImageIconCache cache = new NSImageIconCache();
         assertNotNull(cache.applicationIcon(new Application("com.apple.TextEdit"), 32));
     }
 
     @Test
-    public void testCacheSystemIcon() throws Exception {
+    public void testCacheSystemIcon() {
         final NSImageIconCache cache = new NSImageIconCache();
         final NSImage icon32 = cache.applicationIcon(new Application("com.apple.TextEdit"), 32);
         assertNotNull(icon32);
@@ -163,7 +163,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testCacheTiff() throws Exception {
+    public void testCacheTiff() {
         final NSImageIconCache cache = new NSImageIconCache();
         final NSImage icon32 = cache.fileIcon(new FinderLocal("img/ftp.tiff"), 32);
         assertNotNull(icon32);
@@ -183,7 +183,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testCacheTiffNamed() throws Exception {
+    public void testCacheTiffNamed() {
         final NSImageIconCache cache = new NSImageIconCache();
         final NSImage load = cache.fileIcon(new FinderLocal("img/ftp.tiff"), 32);
         // Search for an object whose name was set explicitly using the setName: method and currently resides in the image cache.
@@ -233,7 +233,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testIconNotfound() throws Exception {
+    public void testIconNotfound() {
         final NSImageIconCache cache = new NSImageIconCache();
         assertNull(cache.iconNamed(null, 64));
     }

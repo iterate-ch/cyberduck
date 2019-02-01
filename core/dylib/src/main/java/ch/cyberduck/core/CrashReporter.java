@@ -12,7 +12,7 @@ public abstract class CrashReporter extends NSObject {
         Native.load("core");
     }
 
-    private static final CrashReporter._Class CLASS = (CrashReporter._Class) Rococoa.createClass("UKCrashReporter", CrashReporter._Class.class);
+    private static final CrashReporter._Class CLASS = Rococoa.createClass("UKCrashReporter", _Class.class);
 
     public static CrashReporter create() {
         return CLASS.alloc().init();

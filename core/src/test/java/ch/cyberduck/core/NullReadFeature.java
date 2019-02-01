@@ -15,7 +15,6 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -25,12 +24,12 @@ import java.io.InputStream;
 
 public class NullReadFeature implements Read {
     @Override
-    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         return new NullInputStream(0L);
     }
 
     @Override
-    public boolean offset(final Path file) throws BackgroundException {
+    public boolean offset(final Path file) {
         return false;
     }
 }

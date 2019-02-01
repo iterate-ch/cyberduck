@@ -18,7 +18,6 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.transfer.TransferItem;
 
 import org.apache.commons.cli.CommandLine;
@@ -30,7 +29,7 @@ import java.util.Set;
 public class DeletePathFinder implements TransferItemFinder {
 
     @Override
-    public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) throws AccessDeniedException {
+    public Set<TransferItem> find(final CommandLine input, final TerminalAction action, final Path remote) {
         if(StringUtils.containsAny(remote.getName(), '*')) {
             // Treat asterisk as wildcard
             return Collections.singleton(new TransferItem(remote.getParent()));

@@ -97,7 +97,7 @@ public class S3TransferAccelerationService implements TransferAcceleration {
     }
 
     @Override
-    public void configure(final boolean enable, final Path file) throws BackgroundException {
+    public void configure(final boolean enable, final Path file) {
         final Jets3tProperties options = session.getClient().getJetS3tProperties();
         if(enable) {
             // Set accelerated endpoint

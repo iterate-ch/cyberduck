@@ -28,7 +28,6 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.PermissionOverwrite;
 import ch.cyberduck.core.TestPermissionAttributes;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.shared.DefaultUnixPermissionFeature;
 
@@ -68,22 +67,22 @@ public class WritePermissionWorkerTest {
                 if(type == UnixPermission.class) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
-                        public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                        public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                        public void setUnixGroup(final Path file, final String group) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public Permission getUnixPermission(final Path file) throws BackgroundException {
+                        public Permission getUnixPermission(final Path file) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                        public void setUnixPermission(final Path file, final Permission permission) {
                             assertEquals(new Permission(744), permission);
                         }
                     };
@@ -123,33 +122,35 @@ public class WritePermissionWorkerTest {
                 if(type == UnixPermission.class) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
-                        public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                        public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                        public void setUnixGroup(final Path file, final String group) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public Permission getUnixPermission(final Path file) throws BackgroundException {
+                        public Permission getUnixPermission(final Path file) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
-                            if(file.getName().equals("a")) {
-                                assertEquals(new Permission(644), permission);
-                            }
-                            else if(file.getName().equals("d")) {
-                                assertEquals(new Permission(544), permission);
-                            }
-                            else if(file.getName().equals("f")) {
-                                assertEquals(new Permission(644), permission);
-                            }
-                            else {
-                                fail();
+                        public void setUnixPermission(final Path file, final Permission permission) {
+                            switch(file.getName()) {
+                                case "a":
+                                    assertEquals(new Permission(644), permission);
+                                    break;
+                                case "d":
+                                    assertEquals(new Permission(544), permission);
+                                    break;
+                                case "f":
+                                    assertEquals(new Permission(644), permission);
+                                    break;
+                                default:
+                                    fail();
+                                    break;
                             }
                         }
                     };
@@ -191,22 +192,22 @@ public class WritePermissionWorkerTest {
                 if(type == UnixPermission.class) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
-                        public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                        public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                        public void setUnixGroup(final Path file, final String group) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public Permission getUnixPermission(final Path file) throws BackgroundException {
+                        public Permission getUnixPermission(final Path file) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                        public void setUnixPermission(final Path file, final Permission permission) {
                             if(file.equals(a)) {
                                 assertEquals(file.toString(), new Permission(775), permission);
                             }
@@ -250,22 +251,22 @@ public class WritePermissionWorkerTest {
                 if(type == UnixPermission.class) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
-                        public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                        public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                        public void setUnixGroup(final Path file, final String group) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public Permission getUnixPermission(final Path file) throws BackgroundException {
+                        public Permission getUnixPermission(final Path file) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                        public void setUnixPermission(final Path file, final Permission permission) {
                             assertEquals(new Permission(1744), permission);
                         }
                     };

@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 public class PermissionTest {
 
     @Test
-    public void testGetAsDictionary() throws Exception {
+    public void testGetAsDictionary() {
         assertEquals(new Permission(777), new PermissionDictionary().deserialize(new Permission(777).serialize(SerializerFactory.get())));
         assertEquals(new Permission(700), new PermissionDictionary().deserialize(new Permission(700).serialize(SerializerFactory.get())));
         assertEquals(new Permission(400), new PermissionDictionary().deserialize(new Permission(400).serialize(SerializerFactory.get())));

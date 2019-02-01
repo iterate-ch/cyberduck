@@ -28,12 +28,12 @@ import static org.junit.Assert.assertEquals;
 public class IRODSProtocolTest {
 
     @Test
-    public void testGetPrefix() throws Exception {
+    public void testGetPrefix() {
         assertEquals("ch.cyberduck.core.irods.IRODS", new IRODSProtocol().getPrefix());
     }
 
     @Test
-    public void testRegion() throws Exception {
+    public void testRegion() {
         assertEquals("bhctest", new Host(new Profile(new IRODSProtocol(), new Deserializer<String>() {
             @Override
             public String stringForKey(final String key) {
@@ -73,7 +73,7 @@ public class IRODSProtocolTest {
     }
 
     @Test
-    public void testResource() throws Exception {
+    public void testResource() {
         final Host bookmark = new Host(new Profile(new IRODSProtocol(), new Deserializer<String>() {
             @Override
             public String stringForKey(final String key) {

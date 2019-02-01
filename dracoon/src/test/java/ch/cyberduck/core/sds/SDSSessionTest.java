@@ -112,7 +112,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 assertEquals("Multi-Factor Authentication", reason);
                 assertFalse(options.user);
                 assertTrue(options.password);
@@ -183,7 +183,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         final LoginConnectionService c = new LoginConnectionService(
             new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                     return new Credentials("test", "n");
                 }
             },

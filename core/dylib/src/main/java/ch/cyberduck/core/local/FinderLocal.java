@@ -132,6 +132,9 @@ public class FinderLocal extends Local {
         NSURL resolved = null;
         try {
             resolved = this.lock(false);
+            if(null == resolved) {
+                return super.exists(options);
+            }
             return Files.exists(Paths.get(resolved.path()));
         }
         catch(AccessDeniedException e) {
@@ -164,7 +167,10 @@ public class FinderLocal extends Local {
     public AttributedList<Local> list(final Filter<String> filter) throws AccessDeniedException {
         final NSURL resolved;
         try {
-            resolved = this.lock(false);
+            resolved = this.lock(true);
+            if(null == resolved) {
+                return super.list(filter);
+            }
             final AttributedList<Local> list = super.list(resolved.path(), filter);
             this.release(resolved);
             return list;
@@ -180,6 +186,9 @@ public class FinderLocal extends Local {
         final NSURL resolved;
         try {
             resolved = this.lock(this.exists());
+            if(null == resolved) {
+                return super.getOutputStream(append);
+            }
         }
         catch(LocalAccessDeniedException e) {
             log.warn(String.format("Failure obtaining lock for %s. %s", this, e.getMessage()));
@@ -209,6 +218,10 @@ public class FinderLocal extends Local {
     @Override
     public NSURL lock(final boolean interactive) throws AccessDeniedException {
         final NSURL resolved = resolver.resolve(this, interactive);
+        if(null == resolved) {
+            // Ignore failure resolving path
+            return null; // NSURL.fileURLWithPath(this.getAbsolute());
+        }
         if(resolved.respondsToSelector(Foundation.selector("startAccessingSecurityScopedResource"))) {
             if(!resolved.startAccessingSecurityScopedResource()) {
                 throw new LocalAccessDeniedException(String.format("Failure accessing security scoped resource for %s", this));
@@ -233,6 +246,9 @@ public class FinderLocal extends Local {
         final NSURL resolved;
         try {
             resolved = this.lock(false);
+            if(null == resolved) {
+                return super.getInputStream();
+            }
         }
         catch(AccessDeniedException e) {
             log.warn(String.format("Failure obtaining lock for %s. %s", this, e.getMessage()));

@@ -17,6 +17,8 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import java.util.Objects;
+
 /**
  *
  */
@@ -59,10 +61,10 @@ public final class Header implements Comparable<Header> {
             return false;
         }
         final Header header = (Header) o;
-        if(name != null ? !name.equals(header.name) : header.name != null) {
+        if(!Objects.equals(name, header.name)) {
             return false;
         }
-        if(value != null ? !value.equals(header.value) : header.value != null) {
+        if(!Objects.equals(value, header.value)) {
             return false;
         }
         return true;

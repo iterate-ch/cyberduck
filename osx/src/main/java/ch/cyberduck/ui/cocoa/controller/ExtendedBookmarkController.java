@@ -40,7 +40,6 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.WebUrlProvider;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
@@ -276,7 +275,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                 if(preferences.getBoolean("bookmark.favicon.download")) {
                     background(new AbstractBackgroundAction<Void>() {
                         @Override
-                        public Void run() throws BackgroundException {
+                        public Void run() {
                             final String f = bookmark.getProtocol().favicon();
                             if(StringUtils.isNotBlank(f)) {
                                 favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);

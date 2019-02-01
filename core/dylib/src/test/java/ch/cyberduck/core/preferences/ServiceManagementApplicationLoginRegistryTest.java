@@ -27,13 +27,13 @@ import static org.junit.Assert.assertFalse;
 public class ServiceManagementApplicationLoginRegistryTest {
 
     @Test
-    public void testRegister() throws Exception {
+    public void testRegister() {
         assertFalse(new ServiceManagementApplicationLoginRegistry().register(
                 new Application("bundle.helper")));
     }
 
     @Test
-    public void testUnregister() throws Exception {
+    public void testUnregister() {
         assertFalse(new ServiceManagementApplicationLoginRegistry().unregister(
                 new Application("bundle.helper")));
     }

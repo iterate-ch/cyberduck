@@ -56,7 +56,7 @@ public class FTPStatListServiceTest extends AbstractFTPTest {
     }
 
     @Test
-    public void testParse() throws Exception {
+    public void testParse() {
         final List<String> list = new FTPStatListService(null, null).parse(
             212, new String[]{" drwxr-xr-x  11 root     root          8192 Dec 14 23:44 DK_BookStore"});
         assertEquals(1, list.size());
@@ -102,7 +102,7 @@ public class FTPStatListServiceTest extends AbstractFTPTest {
     }
 
     @Test
-    public void testParse9399() throws Exception {
+    public void testParse9399() {
         final List<String> list = new FTPStatListService(null, null).parse(
             212, new String[]{
                 "drwxrwxr-x   11 995      993          4096 Jan 11 21:24 .",

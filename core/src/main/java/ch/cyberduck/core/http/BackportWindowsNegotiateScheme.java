@@ -25,7 +25,6 @@ import org.apache.http.auth.AUTH;
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.InvalidCredentialsException;
-import org.apache.http.auth.MalformedChallengeException;
 import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.routing.RouteInfo;
@@ -121,7 +120,7 @@ public class BackportWindowsNegotiateScheme extends AuthSchemeBase {
     protected void parseChallenge(
         final CharArrayBuffer buffer,
         final int beginIndex,
-        final int endIndex) throws MalformedChallengeException {
+        final int endIndex) {
         this.challenge = buffer.substringTrimmed(beginIndex, endIndex);
 
         if(this.challenge.isEmpty()) {

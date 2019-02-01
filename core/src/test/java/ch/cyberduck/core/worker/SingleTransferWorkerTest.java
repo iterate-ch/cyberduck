@@ -1,9 +1,7 @@
 package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -42,7 +40,7 @@ public class SingleTransferWorkerTest {
         };
         final NullLocal local = new NullLocal("l") {
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "c") {
                     @Override
@@ -63,7 +61,7 @@ public class SingleTransferWorkerTest {
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
                 //
                 return file;
             }
@@ -83,7 +81,7 @@ public class SingleTransferWorkerTest {
                 }
                 super.transfer(new TransferItem(item.remote, new NullLocal("l") {
                     @Override
-                    public AttributedList<Local> list() throws LocalAccessDeniedException {
+                    public AttributedList<Local> list() {
                         AttributedList<Local> l = new AttributedList<Local>();
                         l.add(new NullLocal(this.getAbsolute(), "c"));
                         return l;
@@ -103,7 +101,7 @@ public class SingleTransferWorkerTest {
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         final NullLocal local = new NullLocal("l") {
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "c") {
                     @Override
@@ -124,7 +122,7 @@ public class SingleTransferWorkerTest {
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
@@ -183,7 +181,7 @@ public class SingleTransferWorkerTest {
             }
 
             @Override
-            public AttributedList<Local> list() throws AccessDeniedException {
+            public AttributedList<Local> list() {
                 return AttributedList.emptyList();
             }
         };
@@ -192,7 +190,7 @@ public class SingleTransferWorkerTest {
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
@@ -206,7 +204,7 @@ public class SingleTransferWorkerTest {
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 return super.filter(source, destination, action, listener).withAttributes(new AttributesFinder() {
                     @Override
-                    public PathAttributes find(final Path file) throws BackgroundException {
+                    public PathAttributes find(final Path file) {
                         return file.attributes();
                     }
                 });
@@ -272,7 +270,7 @@ public class SingleTransferWorkerTest {
             }, new DisabledTransferErrorCallback(),
                 new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
                 @Override
-                public Future<TransferStatus> transfer(final TransferItem file, final TransferAction action) throws BackgroundException {
+                public Future<TransferStatus> transfer(final TransferItem file, final TransferAction action) {
                     // Expected not found
                     fail();
                     return null;

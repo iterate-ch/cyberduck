@@ -90,7 +90,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
         return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
             preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
             @Override
-            public VersionId getStatus() throws BackgroundException {
+            public VersionId getStatus() {
                 return proxy.getVersionId();
             }
         };

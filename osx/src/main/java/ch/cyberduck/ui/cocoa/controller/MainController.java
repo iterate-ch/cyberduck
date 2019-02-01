@@ -580,15 +580,11 @@ public class MainController extends BundleController implements NSApplication.De
             if("duck".equals(f.getExtension())) {
                 final Host bookmark;
                 try {
-                    bookmark = HostReaderFactory.get().read(f);
-                    if(null == bookmark) {
-                        return false;
-                    }
-                    newDocument().mount(bookmark);
+                    newDocument().mount(HostReaderFactory.get().read(f));
                     return true;
                 }
                 catch(AccessDeniedException e) {
-                    log.error(e.getMessage());
+                    log.error(String.format("Failure reading bookmark from %s. %s", f, e.getMessage()));
                     return false;
                 }
             }
@@ -643,9 +639,6 @@ public class MainController extends BundleController implements NSApplication.De
             else if("cyberduckprofile".equals(f.getExtension())) {
                 try {
                     final Protocol profile = ProfileReaderFactory.get().read(f);
-                    if(null == profile) {
-                        return false;
-                    }
                     if(profile.isEnabled()) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Register profile %s", profile));
@@ -663,7 +656,7 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                 }
                 catch(AccessDeniedException e) {
-                    log.error(e.getMessage());
+                    log.error(String.format("Failure reading profile from %s. %s", f, e.getMessage()));
                     return false;
                 }
             }
@@ -671,7 +664,7 @@ public class MainController extends BundleController implements NSApplication.De
                 // Upload file
                 this.background(new AbstractBackgroundAction<Void>() {
                     @Override
-                    public Void run() throws BackgroundException {
+                    public Void run() {
                         // Wait until bookmarks are loaded
                         try {
                             bookmarksSemaphore.await();
@@ -1051,7 +1044,7 @@ public class MainController extends BundleController implements NSApplication.De
             null);
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public Void run() throws BackgroundException {
+            public Void run() {
                 bonjour.init();
                 return null;
             }

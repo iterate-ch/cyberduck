@@ -28,7 +28,7 @@ import static org.junit.Assert.*;
 public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Test {
 
     @Test
-    public void testGetMethodsAWS() throws Exception {
+    public void testGetMethodsAWS() {
         final S3Session session = new S3Session(new Host(new S3Protocol()));
         final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session, Collections.emptyMap(),
             new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -47,7 +47,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
     }
 
     @Test
-    public void testGetMethodsNonAWS() throws Exception {
+    public void testGetMethodsNonAWS() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), "s3.cyberduck.io"));
         final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session, Collections.emptyMap(),
             new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -66,7 +66,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
     }
 
     @Test
-    public void testGetName() throws Exception {
+    public void testGetName() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(
             session, Collections.emptyMap(), new DisabledX509TrustManager(), new DefaultX509KeyManager()
@@ -79,7 +79,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
     }
 
     @Test
-    public void testGetOrigin() throws Exception {
+    public void testGetOrigin() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(
             session, Collections.emptyMap(), new DisabledX509TrustManager(), new DefaultX509KeyManager()

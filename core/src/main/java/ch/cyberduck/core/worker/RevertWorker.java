@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Versioning;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class RevertWorker extends Worker<List<Path>> {
 
@@ -68,7 +69,7 @@ public class RevertWorker extends Worker<List<Path>> {
             return false;
         }
         final RevertWorker that = (RevertWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

@@ -9,7 +9,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.synchronization.ComparePathFilter;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonServiceFilter;
@@ -89,7 +88,7 @@ public class SynchronizationPathFilterTest {
         Session session = new NullSession(new Host(new TestProtocol()));
         final SynchronizationPathFilter mirror = new SynchronizationPathFilter(new ComparePathFilter() {
             @Override
-            public Comparison compare(Path file, Local local) throws BackgroundException {
+            public Comparison compare(Path file, Local local) {
                 return Comparison.equal;
             }
         }, new OverwriteFilter(new DownloadSymlinkResolver(Collections.<TransferItem>emptyList()), session),

@@ -163,14 +163,14 @@ public class FTPMlsdListResponseReaderTest {
     }
 
     @Test
-    public void testParseTimestamp() throws Exception {
+    public void testParseTimestamp() {
         // Pass UTC time
         final long time = new FTPMlsdListResponseReader().parseTimestamp("20130709111201");
         assertEquals(1373368321000L, time);
     }
 
     @Test
-    public void testParseTimestampInvalid() throws Exception {
+    public void testParseTimestampInvalid() {
         final long time = new FTPMlsdListResponseReader().parseTimestamp("2013");
         assertEquals(-1L, time);
     }

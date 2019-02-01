@@ -255,7 +255,7 @@ public class DAVSessionTest extends AbstractDAVTest {
     }
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final Session session = new DAVSession(new Host(new DAVProtocol(), "h"));
         assertNull(session.getFeature(UnixPermission.class));
         assertNotNull(session.getFeature(Timestamp.class));
@@ -286,7 +286,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         final AtomicBoolean prompt = new AtomicBoolean();
         final LoginConnectionService c = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) {
                 prompt.set(true);
                 return new Credentials(System.getProperties().getProperty("webdav.user"),
                     System.getProperties().getProperty("webdav.password")
@@ -295,7 +295,7 @@ public class DAVSessionTest extends AbstractDAVTest {
 
             @Override
             public void warn(Host bookmark, String title, String message,
-                             String continueButton, String disconnectButton, String preference) throws LoginCanceledException {
+                             String continueButton, String disconnectButton, String preference) {
                 //
             }
         }, new DisabledHostKeyCallback(),
@@ -333,7 +333,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             new DisabledLoginCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, String username,
-                                          String title, String reason, LoginOptions options) throws LoginCanceledException {
+                                          String title, String reason, LoginOptions options) {
                     //
                     return new Credentials();
                 }
@@ -341,12 +341,7 @@ public class DAVSessionTest extends AbstractDAVTest {
             new DisabledHostKeyCallback(),
             new DisabledPasswordStore(),
             new DisabledProgressListener());
-        try {
-            c.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        }
-        catch(InteroperabilityException e) {
-            throw e;
-        }
+        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -474,7 +469,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         final LoginConnectionService c = new LoginConnectionService(
             new DisabledLoginCallback() {
                 @Override
-                public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                     assertEquals("Unsecured WebDAV (HTTP) connection", title);
                     assertEquals("connection.unsecure.svn.cyberduck.io", preference);
                     warning.set(true);
@@ -521,7 +516,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         final LoginConnectionService c = new LoginConnectionService(
             new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                     return new Credentials("test", "n");
                 }
             },
@@ -549,7 +544,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         final LoginConnectionService c = new LoginConnectionService(
             new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                     return new Credentials("test", "test");
                 }
             },

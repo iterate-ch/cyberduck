@@ -10,7 +10,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -135,7 +134,7 @@ public class OverwriteFilterTest {
         final AbstractUploadFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol()))).withFinder(
             new Find() {
                 @Override
-                public boolean find(final Path file) throws BackgroundException {
+                public boolean find(final Path file) {
                     if(file.getType().contains(Path.Type.file)) {
                         return false;
                     }
@@ -151,7 +150,7 @@ public class OverwriteFilterTest {
         final AbstractUploadFilter f = new OverwriteFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol()))).withFinder(
             new Find() {
                 @Override
-                public boolean find(final Path file) throws BackgroundException {
+                public boolean find(final Path file) {
                     if(file.getType().contains(Path.Type.file)) {
                         return true;
                     }

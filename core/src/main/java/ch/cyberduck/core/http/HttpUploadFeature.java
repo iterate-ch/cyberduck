@@ -114,7 +114,7 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
             log.debug(String.format("Digest disabled for file %s", file));
             return;
         }
-        if(null == checksum || !checksum.algorithm.equals(HashAlgorithm.md5)) {
+        if(null == checksum) {
             log.warn("ETag returned by server is unknown checksum algorithm");
             return;
         }

@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 public class BookmarkCollectionTest {
 
     @Test
-    public void testDefault() throws Exception {
+    public void testDefault() {
         assertEquals(FolderBookmarkCollection.favoritesCollection(), FolderBookmarkCollection.favoritesCollection());
         assertEquals("Bookmarks", FolderBookmarkCollection.favoritesCollection().getName());
     }

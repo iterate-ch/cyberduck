@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 public class DefaultX509KeyManagerTest {
     @Test
-    public void testList() throws Exception {
+    public void testList() {
         assertTrue(new DefaultX509KeyManager().init().list().isEmpty());
     }
 }

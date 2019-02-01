@@ -96,7 +96,7 @@ public class SwiftUrlProviderTest {
     }
 
     @Test
-    public void testTempUrl() throws Exception {
+    public void testTempUrl() {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
                 new Credentials(System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))
         ));

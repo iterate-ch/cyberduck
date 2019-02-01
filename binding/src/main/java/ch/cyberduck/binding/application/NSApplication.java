@@ -66,7 +66,7 @@ public abstract class NSApplication extends NSObject {
          *
          * @return
          */
-        public NSApplication sharedApplication();
+        NSApplication sharedApplication();
     }
 
     public static NSApplication sharedApplication() {

@@ -26,7 +26,7 @@ public class LibcWorkingDirectoryFinderTest {
 
     @Test
     @Ignore
-    public void testFind() throws Exception {
+    public void testFind() {
         assertNotNull(new LibcWorkingDirectoryFinder().find());
     }
 }

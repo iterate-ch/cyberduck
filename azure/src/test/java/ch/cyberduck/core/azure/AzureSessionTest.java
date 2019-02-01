@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
 public class AzureSessionTest {
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final Host host = new Host(new AzureProtocol(), "test.cyberduck.ch");
         final Session session = new AzureSession(host);
         assertNotNull(session.getFeature(AclPermission.class));

@@ -1,8 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
-
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -13,15 +10,15 @@ import java.io.OutputStream;
 
 public class NullLocal extends Local {
 
-    public NullLocal(final String parent, final String name) throws LocalAccessDeniedException {
+    public NullLocal(final String parent, final String name) {
         super(StringUtils.removeEnd(parent, File.separator), name);
     }
 
-    public NullLocal(final Local parent, final String name) throws LocalAccessDeniedException {
+    public NullLocal(final Local parent, final String name) {
         super(parent, name);
     }
 
-    public NullLocal(final String name) throws LocalAccessDeniedException {
+    public NullLocal(final String name) {
         super(StringUtils.removeEnd(name, File.separator));
     }
 
@@ -34,12 +31,12 @@ public class NullLocal extends Local {
     }
 
     @Override
-    public InputStream getInputStream() throws AccessDeniedException {
+    public InputStream getInputStream() {
         return new NullInputStream(0L);
     }
 
     @Override
-    public OutputStream getOutputStream(boolean append) throws AccessDeniedException {
+    public OutputStream getOutputStream(boolean append) {
         return new NullOutputStream();
     }
 }

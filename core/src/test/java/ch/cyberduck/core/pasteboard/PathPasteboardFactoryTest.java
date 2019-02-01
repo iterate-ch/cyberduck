@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class PathPasteboardFactoryTest {
 
     @Test
-    public void testGetPasteboard() throws Exception {
+    public void testGetPasteboard() {
         final Host s = new Host(new TestProtocol(Scheme.ftp), "l");
         final PathPasteboard pasteboard = PathPasteboardFactory.getPasteboard(s);
         assertNotNull(pasteboard);

@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Redundancy;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 public class WriteRedundancyWorker extends Worker<Boolean> {
 
@@ -116,7 +117,7 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
             return false;
         }
         final WriteRedundancyWorker that = (WriteRedundancyWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

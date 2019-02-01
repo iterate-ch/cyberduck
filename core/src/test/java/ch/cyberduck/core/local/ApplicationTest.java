@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 public class ApplicationTest {
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         assertEquals(new Application("com.apple.textedit"), new Application("com.apple.textedit"));
         assertEquals(new Application("com.apple.textedit"), new Application("com.apple.textedit", "TextEdit"));
         assertEquals(new Application("com.apple.textedit"), new Application("com.apple.TextEdit"));

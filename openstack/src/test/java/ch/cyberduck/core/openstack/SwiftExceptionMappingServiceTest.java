@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 public class SwiftExceptionMappingServiceTest {
 
     @Test
-    public void testLoginFailure() throws Exception {
+    public void testLoginFailure() {
         final GenericException f = new GenericException(
                 "message", new Header[]{}, new BasicStatusLine(new ProtocolVersion("http", 1, 1), 403, "Forbidden"));
         assertTrue(new SwiftExceptionMappingService().map(f) instanceof AccessDeniedException);
@@ -43,7 +43,7 @@ public class SwiftExceptionMappingServiceTest {
     }
 
     @Test
-    public void testMap() throws Exception {
+    public void testMap() {
         assertEquals("Message. 500 reason. Please contact your web hosting service provider for assistance.", new SwiftExceptionMappingService().map(
                 new GenericException("message", null, new StatusLine() {
                     @Override

@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 public class HostParserTest {
 
     @Test
-    public void parse() throws Exception {
+    public void parse() {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https))))
             .get("https://t%40u@host:443/key");
         assertEquals("host", host.getHostname());

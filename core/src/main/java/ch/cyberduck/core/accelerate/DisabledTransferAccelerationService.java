@@ -35,7 +35,7 @@ public class DisabledTransferAccelerationService<C extends HttpSession<?>> imple
     }
 
     @Override
-    public boolean prompt(final Host bookmark, final Path file, final ConnectionCallback prompt) throws BackgroundException {
+    public boolean prompt(final Host bookmark, final Path file, final ConnectionCallback prompt) {
         return false;
     }
 

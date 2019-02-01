@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotEquals;
 public class HeaderTest {
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         assertEquals(new Header("k", "v"), new Header("k", "v"));
         assertNotEquals(new Header("k", "v"), new Header("k", "f"));
         assertNotEquals(new Header("k", "v"), new Header("m", "v"));

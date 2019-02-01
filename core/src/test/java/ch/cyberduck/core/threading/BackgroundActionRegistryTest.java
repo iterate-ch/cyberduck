@@ -18,8 +18,6 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -30,7 +28,7 @@ import static org.junit.Assert.*;
 public class BackgroundActionRegistryTest {
 
     @Test
-    public void testGlobal() throws Exception {
+    public void testGlobal() {
         assertSame(BackgroundActionRegistry.global(), BackgroundActionRegistry.global());
     }
 
@@ -40,7 +38,7 @@ public class BackgroundActionRegistryTest {
         final CountDownLatch lock = new CountDownLatch(1);
         final AbstractBackgroundAction action = new AbstractBackgroundAction() {
             @Override
-            public Object run() throws BackgroundException {
+            public Object run() {
                 return null;
             }
 
@@ -59,11 +57,11 @@ public class BackgroundActionRegistryTest {
     }
 
     @Test
-    public void testCancel() throws Exception {
+    public void testCancel() {
         BackgroundActionRegistry r = new BackgroundActionRegistry();
         final AbstractBackgroundAction action = new AbstractBackgroundAction() {
             @Override
-            public Object run() throws BackgroundException {
+            public Object run() {
                 return null;
             }
         };
@@ -80,7 +78,7 @@ public class BackgroundActionRegistryTest {
         final CountDownLatch lock = new CountDownLatch(1);
         final AbstractBackgroundAction action = new AbstractBackgroundAction() {
             @Override
-            public Object run() throws BackgroundException {
+            public Object run() {
                 return null;
             }
         };
@@ -92,7 +90,7 @@ public class BackgroundActionRegistryTest {
             }
         }).start();
         lock.await(1, TimeUnit.SECONDS);
-        assertTrue(r.size() == 1);
+        assertEquals(1, r.size());
         r.remove(action);
         assertTrue(r.isEmpty());
     }

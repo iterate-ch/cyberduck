@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 public class AlgorithmTest {
 
     @Test
-    public void testFromString() throws Exception {
+    public void testFromString() {
         assertEquals(new Encryption.Algorithm("aws:kms", null), Encryption.Algorithm.fromString("aws:kms"));
         assertEquals(new Encryption.Algorithm("aws:kms", "k"), Encryption.Algorithm.fromString("aws:kms|k"));
         assertEquals(new Encryption.Algorithm("AES256", null), Encryption.Algorithm.fromString("AES256"));

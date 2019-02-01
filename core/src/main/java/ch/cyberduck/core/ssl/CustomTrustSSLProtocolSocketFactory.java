@@ -98,7 +98,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @param socket    Socket to configure
      * @param protocols Enabled SSL protocol versions
      */
-    protected void configure(final Socket socket, final String[] protocols) throws IOException {
+    protected void configure(final Socket socket, final String[] protocols) {
         if(socket instanceof SSLSocket) {
             try {
                 if(log.isDebugEnabled()) {

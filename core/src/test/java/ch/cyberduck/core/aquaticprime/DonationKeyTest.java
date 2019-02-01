@@ -21,14 +21,14 @@ public class DonationKeyTest {
     }
 
     @Test
-    public void testVerifyFailure() throws Exception {
+    public void testVerifyFailure() {
         final Local f = new Local("src/test/resources/test.cyberducklicense");
         DonationKey r = new DonationKey(f);
         assertFalse(r.verify(new DisabledLicenseVerifierCallback()));
     }
 
     @Test
-    public void testGetValue() throws Exception {
+    public void testGetValue() {
         final Local f = new Local("src/test/resources/test.cyberducklicense");
         DonationKey r = new DonationKey(f);
         assertEquals("test@cyberduck.io", r.getValue("Email"));

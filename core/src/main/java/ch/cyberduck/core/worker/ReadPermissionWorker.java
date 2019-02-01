@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.UnixPermission;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -108,7 +109,7 @@ public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
             return false;
         }
         final ReadPermissionWorker that = (ReadPermissionWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

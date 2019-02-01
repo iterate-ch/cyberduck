@@ -25,7 +25,6 @@ import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 
 import javax.net.ssl.SSLException;
-import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
@@ -36,22 +35,16 @@ import java.util.List;
 public class DefaultCertificateStore implements CertificateStore {
 
     private final DefaultHostnameVerifier verifier
-            = new DefaultHostnameVerifier();
+        = new DefaultHostnameVerifier();
 
     @Override
     public X509Certificate choose(final String[] keyTypes, final Principal[] issuers,
                                   final Host bookmark, final String prompt) throws ConnectionCanceledException {
-        final CertificateStoreX509KeyManager store;
-        try {
-            store = new KeychainX509KeyManager(bookmark, this).init();
-        }
-        catch(IOException e) {
-            throw new ConnectionCanceledException(e);
-        }
+        final CertificateStoreX509KeyManager store = new KeychainX509KeyManager(bookmark, this).init();
         final String[] aliases = store.getClientAliases(keyTypes, issuers);
         if(null == aliases) {
             throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found",
-                    Arrays.toString(issuers)));
+                Arrays.toString(issuers)));
         }
         for(String alias : aliases) {
             return store.getCertificate(alias, keyTypes, issuers);
@@ -74,10 +67,7 @@ public class DefaultCertificateStore implements CertificateStore {
             try {
                 c.checkValidity();
             }
-            catch(CertificateExpiredException e) {
-                return false;
-            }
-            catch(CertificateNotYetValidException e) {
+            catch(CertificateExpiredException | CertificateNotYetValidException e) {
                 return false;
             }
         }

@@ -110,4 +110,8 @@ public class LRUCache<Key, Value> {
     public boolean contains(final Key key) {
         return null != delegate.getIfPresent(key);
     }
+
+    public void clear() {
+        delegate.invalidateAll();
+    }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -168,7 +168,7 @@
                                     </subviews>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Struktura" identifier="1" id="37">
+                            <tabViewItem label="Zarys" identifier="1" id="37">
                                 <view key="view" id="38">
                                     <rect key="frame" x="0.0" y="0.0" width="601" height="397"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -322,7 +322,7 @@
                         <action selector="infoButtonClicked:" target="-1" id="163"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Quick Look" image="NSQuickLookTemplate" id="69">
+                <menuItem title="Szybki podgląd" image="NSQuickLookTemplate" id="69">
                     <attributedString key="attributedTitle"/>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -332,7 +332,7 @@
                 <menuItem title="Edytuj poprzez" id="70">
                     <menu key="submenu" title="Edytuj poprzez" id="71"/>
                 </menuItem>
-                <menuItem title="Rename…" id="72">
+                <menuItem title="Zmień nazwę…" id="72">
                     <connections>
                         <action selector="renameFileButtonClicked:" target="-1" id="176"/>
                     </connections>
@@ -355,7 +355,7 @@
                         <action selector="downloadAsButtonClicked:" target="-1" id="168"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Download To…" id="77">
+                <menuItem title="Pobierz do…" id="77">
                     <connections>
                         <action selector="downloadToButtonClicked:" target="-1" id="177"/>
                     </connections>
@@ -374,12 +374,12 @@
                         <action selector="syncButtonClicked:" target="-1" id="172"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Nowa teczka…" keyEquivalent="N" id="81">
+                <menuItem title="Nowy folder…" keyEquivalent="N" id="81">
                     <connections>
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="6n9-Af-09P">
+                <menuItem title="Nowy Zakodowany Kontener..." keyEquivalent="N" id="6n9-Af-09P">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
@@ -390,7 +390,7 @@
                         <action selector="createFileButtonClicked:" target="-1" id="173"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Symbolic Link…" id="83">
+                <menuItem title="Nowy link symboliczny…" id="83">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="createSymlinkButtonClicked:" target="-1" id="184"/>
@@ -405,7 +405,7 @@ CA
                         <action selector="deleteFileButtonClicked:" target="-1" id="165"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Revert" id="86">
+                <menuItem title="Odwróć" id="86">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="revertFileButtonClicked:" target="-1" id="182"/>
@@ -414,10 +414,10 @@ CA
                 <menuItem isSeparatorItem="YES" id="87">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Create Archive" id="88">
-                    <menu key="submenu" title="Create Archive" id="89"/>
+                <menuItem title="Stwórz Archiwum" id="88">
+                    <menu key="submenu" title="Stwórz Archiwum" id="89"/>
                 </menuItem>
-                <menuItem title="Expand Archive" id="90">
+                <menuItem title="Rozwiń Archiwum" id="90">
                     <connections>
                         <action selector="unarchiveButtonClicked:" target="-1" id="181"/>
                     </connections>
@@ -425,13 +425,13 @@ CA
                 <menuItem isSeparatorItem="YES" id="91">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Copy URL" id="92">
+                <menuItem title="Kopiuj URL" id="92">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Copy URL" id="93"/>
+                    <menu key="submenu" title="Kopiuj URL" id="93"/>
                 </menuItem>
-                <menuItem title="Open Web URL" id="94">
+                <menuItem title="Otwórz Web URL" id="94">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Open Web URL" id="95"/>
+                    <menu key="submenu" title="Otwórz Web URL" id="95"/>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="96">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
@@ -478,30 +478,30 @@ DQ
                         <action selector="editBookmarkButtonClicked:" target="-1" id="171"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Duplicate Bookmark" id="105">
+                <menuItem title="Klonuj Zakładkę" id="105">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="duplicateBookmarkButtonClicked:" target="-1" id="183"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="106"/>
-                <menuItem title="Sort By" id="107">
+                <menuItem title="Sortuj według" id="107">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Sort By" id="108">
+                    <menu key="submenu" title="Sortuj według" id="108">
                         <items>
-                            <menuItem title="Nickname" keyEquivalent="1" id="109">
+                            <menuItem title="Pseudonim" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Hostname" keyEquivalent="2" id="110">
+                            <menuItem title="Nazwa hosta" keyEquivalent="2" id="110">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByHostname:" target="-1" id="187"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Protocol" keyEquivalent="3" id="111">
+                            <menuItem title="Protokół" keyEquivalent="3" id="111">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByProtocol:" target="-1" id="188"/>

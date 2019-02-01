@@ -28,12 +28,12 @@ import java.util.List;
 public class S3DisabledMultipartService implements S3MultipartService {
 
     @Override
-    public List<MultipartUpload> find(final Path file) throws BackgroundException {
+    public List<MultipartUpload> find(final Path file) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<MultipartPart> list(final MultipartUpload multipart) throws BackgroundException {
+    public List<MultipartPart> list(final MultipartUpload multipart) {
         return Collections.emptyList();
     }
 

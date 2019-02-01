@@ -23,7 +23,7 @@ import org.junit.Test;
 public class AutoreleaseActionOperationBatcherTest {
 
     @Test
-    public void testOperate() throws Exception {
+    public void testOperate() {
         new AutoreleaseActionOperationBatcher().operate();
     }
 }

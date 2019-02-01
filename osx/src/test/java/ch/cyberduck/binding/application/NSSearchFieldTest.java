@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 public class NSSearchFieldTest {
 
     @Test
-    public void testSendsSearchStringImmediately() throws Exception {
+    public void testSendsSearchStringImmediately() {
         final NSSearchField f = NSSearchField.searchField();
         f.setSendsSearchStringImmediately(true);
         assertTrue(f.sendsSearchStringImmediately());
@@ -33,7 +33,7 @@ public class NSSearchFieldTest {
     }
 
     @Test
-    public void testSendsWholeSearchString() throws Exception {
+    public void testSendsWholeSearchString() {
         final NSSearchField f = NSSearchField.searchField();
         f.setSendsWholeSearchString(true);
         assertTrue(f.sendsWholeSearchString());

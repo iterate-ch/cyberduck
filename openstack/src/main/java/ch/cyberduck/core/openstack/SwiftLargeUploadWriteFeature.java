@@ -88,12 +88,12 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     }
 
     @Override
-    public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
         return new HttpResponseOutputStream<List<StorageObject>>(new MemorySegementingOutputStream(proxy,
                 PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
             @Override
-            public List<StorageObject> getStatus() throws BackgroundException {
+            public List<StorageObject> getStatus() {
                 return proxy.getCompleted();
             }
         };

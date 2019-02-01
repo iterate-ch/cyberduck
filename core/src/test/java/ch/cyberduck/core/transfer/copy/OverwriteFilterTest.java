@@ -6,7 +6,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
@@ -42,7 +41,7 @@ public class OverwriteFilterTest {
         files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 return true;
             }
         };
@@ -104,7 +103,7 @@ public class OverwriteFilterTest {
                     return (T) new DefaultTimestampFeature() {
 
                         @Override
-                        public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
+                        public void setTimestamp(final Path file, final Long modified) {
                             assertEquals(time, modified);
                             timestampWrite[0] = true;
                         }
@@ -113,22 +112,22 @@ public class OverwriteFilterTest {
                 if(type.equals(UnixPermission.class)) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
-                        public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                        public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                        public void setUnixGroup(final Path file, final String group) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public Permission getUnixPermission(final Path file) throws BackgroundException {
+                        public Permission getUnixPermission(final Path file) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                        public void setUnixPermission(final Path file, final Permission permission) {
                             assertEquals(new Permission(777), permission);
                             permissionWrite[0] = true;
                         }

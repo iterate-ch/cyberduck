@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 public class DefaultIOExceptionMappingServiceTest {
 
     @Test
-    public void testRootCause() throws Exception {
+    public void testRootCause() {
         final BackgroundException failure = new DefaultIOExceptionMappingService().map(new IOException("e", new CryptoAuthenticationException("d", new AuthenticationFailedException("f"))));
         assertEquals(CryptoAuthenticationException.class, failure.getClass());
         assertEquals("d.", failure.getDetail());

@@ -15,7 +15,7 @@ public class MDTMSecondsDateFormatterTest {
     }
 
     @Test
-    public void testPrint() throws Exception {
+    public void testPrint() {
         assertEquals("19941201170000", new MDTMSecondsDateFormatter().format(786297600000L, TimeZone.getTimeZone("Europe/Zurich")));
     }
 }

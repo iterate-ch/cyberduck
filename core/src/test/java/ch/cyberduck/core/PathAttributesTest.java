@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class PathAttributesTest {
 
     @Test
-    public void testCopy() throws Exception {
+    public void testCopy() {
         final PathAttributes attributes = new PathAttributes();
         final PathAttributes clone = new PathAttributes(attributes);
 
@@ -21,7 +21,7 @@ public class PathAttributesTest {
     }
 
     @Test
-    public void testPermissions() throws Exception {
+    public void testPermissions() {
         final PathAttributes attributes = new PathAttributes();
         assertNull(attributes.getOwner());
         assertNull(attributes.getGroup());
@@ -31,17 +31,17 @@ public class PathAttributesTest {
     }
 
     @Test
-    public void testEquals() throws Exception {
-        assertTrue(new PathAttributes().equals(new PathAttributes()));
+    public void testEquals() {
+        assertEquals(new PathAttributes(), new PathAttributes());
         final PathAttributes r1 = new PathAttributes();
         r1.setRegion("r1");
         final PathAttributes r2 = new PathAttributes();
         r2.setRegion("r2");
-        assertFalse(r1.equals(r2));
+        assertNotEquals(r1, r2);
     }
 
     @Test
-    public void testSerialize() throws Exception {
+    public void testSerialize() {
         final PathAttributes attributes = new PathAttributes();
         attributes.setSize(100);
         attributes.setModificationDate(System.currentTimeMillis());

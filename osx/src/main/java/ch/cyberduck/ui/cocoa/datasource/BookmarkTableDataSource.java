@@ -396,20 +396,16 @@ public class BookmarkTableDataSource extends ListDataSource {
                     Host host = null;
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final String filename = elements.objectAtIndex(new NSUInteger(i)).toString();
-                        final Local local = LocalFactory.get(filename);
+                        final Local f = LocalFactory.get(filename);
                         if(filename.endsWith(".duck")) {
                             // Adding a previously exported bookmark file from the Finder
-                            final Host bookmark;
                             try {
-                                bookmark = HostReaderFactory.get().read(local);
-                                if(null == bookmark) {
-                                    continue;
-                                }
-                                source.add(row.intValue(), bookmark);
+                                source.add(row.intValue(), HostReaderFactory.get().read(f));
                                 view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
                                 view.scrollRowToVisible(row);
                             }
                             catch(AccessDeniedException e) {
+                                log.error(String.format("Failure reading bookmark from %s. %s", f, e.getMessage()));
                                 continue;
                             }
                         }
@@ -422,9 +418,8 @@ public class BookmarkTableDataSource extends ListDataSource {
                             // Upload to the remote host this bookmark points to
                             uploads.add(new TransferItem(
                                 new Path(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.directory)),
-                                    local.getName(), EnumSet.of(Path.Type.file)),
-                                local
-                            ));
+                                    f.getName(), EnumSet.of(Path.Type.file)), f)
+                            );
                         }
                     }
                     if(!uploads.isEmpty()) {

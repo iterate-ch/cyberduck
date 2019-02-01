@@ -6,6 +6,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -18,33 +19,38 @@ public class FolderBookmarkCollectionTest {
     }
 
     @Test
+    public void testDefault() {
+        assertNotNull(FolderBookmarkCollection.favoritesCollection());
+    }
+
+    @Test
     public void testLoad() throws Exception {
         final Local source = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final String uid = "4d6b034c-8635-4e2f-93b1-7306ba22da22";
         final Local b = new Local(source, String.format("%s.duck", uid));
         final String bookmark = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
-                "<plist version=\"1.0\">\n" +
-                "<dict>\n" +
-                "\t<key>Access Timestamp</key>\n" +
-                "\t<string>1296634123295</string>\n" +
-                "\t<key>Hostname</key>\n" +
-                "\t<string>mirror.switch.ch</string>\n" +
-                "\t<key>Nickname</key>\n" +
-                "\t<string>mirror.switch.ch – FTP</string>\n" +
-                "\t<key>Port</key>\n" +
-                "\t<string>21</string>\n" +
-                "\t<key>Protocol</key>\n" +
-                "\t<string>test</string>\n" +
-                "\t<key>UUID</key>\n" +
-                "\t<string>" + uid + "</string>\n" +
-                "\t<key>Username</key>\n" +
-                "\t<string>anonymous</string>\n" +
-                "</dict>\n" +
-                "</plist>\n";
+            "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+            "<plist version=\"1.0\">\n" +
+            "<dict>\n" +
+            "\t<key>Access Timestamp</key>\n" +
+            "\t<string>1296634123295</string>\n" +
+            "\t<key>Hostname</key>\n" +
+            "\t<string>mirror.switch.ch</string>\n" +
+            "\t<key>Nickname</key>\n" +
+            "\t<string>mirror.switch.ch – FTP</string>\n" +
+            "\t<key>Port</key>\n" +
+            "\t<string>21</string>\n" +
+            "\t<key>Protocol</key>\n" +
+            "\t<string>test</string>\n" +
+            "\t<key>UUID</key>\n" +
+            "\t<string>" + uid + "</string>\n" +
+            "\t<key>Username</key>\n" +
+            "\t<string>anonymous</string>\n" +
+            "</dict>\n" +
+            "</plist>\n";
         LocalTouchFactory.get().touch(b);
         final OutputStream os = b.getOutputStream(false);
-        os.write(bookmark.getBytes("UTF-8"));
+        os.write(bookmark.getBytes(StandardCharsets.UTF_8));
         os.close();
         assertTrue(source.exists());
         final FolderBookmarkCollection collection = new FolderBookmarkCollection(source);
@@ -57,7 +63,7 @@ public class FolderBookmarkCollectionTest {
     }
 
     @Test
-    public void testIndex() throws Exception {
+    public void testIndex() {
         FolderBookmarkCollection c = new FolderBookmarkCollection(new NullLocal("", "f")) {
             @Override
             protected void save(Host bookmark) {
@@ -78,7 +84,7 @@ public class FolderBookmarkCollectionTest {
     }
 
     @Test
-    public void testMove() throws Exception {
+    public void testMove() {
         FolderBookmarkCollection f = new FolderBookmarkCollection(new NullLocal("", "f"));
         final Host a = new Host(new TestProtocol(), "a");
         final Host b = new Host(new TestProtocol(), "b");

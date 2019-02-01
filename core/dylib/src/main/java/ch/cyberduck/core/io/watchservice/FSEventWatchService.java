@@ -174,7 +174,7 @@ public class FSEventWatchService extends AbstractWatchService {
     }
 
     @Override
-    public void release() throws IOException {
+    public void release() {
         for(CFRunLoop l : loops.values()) {
             // Tells the daemon to stop sending events
             library.FSEventStreamStop(l.getStreamRef());

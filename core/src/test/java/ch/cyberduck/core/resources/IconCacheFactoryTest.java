@@ -25,7 +25,7 @@ import static org.junit.Assert.assertSame;
 public class IconCacheFactoryTest {
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() {
         assertSame(IconCacheFactory.get(), IconCacheFactory.get());
     }
 }

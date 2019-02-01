@@ -38,7 +38,7 @@ public abstract class NSAppleEventManager extends NSObject {
          * Original signature : <code>+(NSAppleEventManager*)sharedAppleEventManager</code><br>
          * <i>native declaration : line 30</i>
          */
-        public abstract NSAppleEventManager sharedAppleEventManager();
+        NSAppleEventManager sharedAppleEventManager();
     }
 
     /**

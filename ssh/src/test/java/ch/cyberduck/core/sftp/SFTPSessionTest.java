@@ -18,7 +18,6 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
@@ -57,7 +56,7 @@ import static org.junit.Assert.*;
 public class SFTPSessionTest extends AbstractSFTPTest {
 
     @Test
-    public void testLoginPassword() throws Exception {
+    public void testLoginPassword() {
         assertTrue(session.isConnected());
     }
 
@@ -134,7 +133,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     }
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final Session session = new SFTPSession(host);
         assertNotNull(session.getFeature(Compress.class));
@@ -177,12 +176,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
             new DisabledProgressListener());
-        try {
-            login.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        }
-        catch(LoginCanceledException e) {
-            throw e;
-        }
+        login.connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -220,18 +214,11 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Local select(final Local identity) throws LoginCanceledException {
-                try {
-                    return new NullLocal("k");
-                }
-                catch(LocalAccessDeniedException e) {
-                    fail();
-                    throw new LoginCanceledException(e);
-                }
+                return new NullLocal("k");
             }
 
             @Override
-            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options)
-                throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) {
                 if(change.get()) {
                     assertEquals("Change of username or service not allowed: (u1,ssh-connection) -> (jenkins,ssh-connection). Please contact your web hosting service provider for assistance.", reason);
                     return null;
@@ -296,13 +283,13 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 }
 
                 @Override
-                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
                     this.allow(hostname, key, true);
                     return true;
                 }
 
                 @Override
-                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
                     fail();
                     return false;
                 }
@@ -316,12 +303,12 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                 }
 
                 @Override
-                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
                     return false;
                 }
 
                 @Override
-                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
                     return false;
                 }
             }, new DisabledLoginCallback()));

@@ -22,13 +22,9 @@ import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.threading.ThreadPool;
 import ch.cyberduck.core.threading.ThreadPoolFactory;
 
-import org.apache.log4j.Logger;
-
 import java.util.concurrent.Callable;
 
 public abstract class OneTimeSchedulerFeature<R> implements Scheduler<Void> {
-
-    private static final Logger log = Logger.getLogger(OneTimeSchedulerFeature.class);
 
     private final Path file;
 

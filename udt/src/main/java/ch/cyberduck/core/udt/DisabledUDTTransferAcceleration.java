@@ -36,7 +36,7 @@ public class DisabledUDTTransferAcceleration<C extends HttpSession<?>> implement
     }
 
     @Override
-    public boolean prompt(final Host bookmark, final Path file, final ConnectionCallback prompt) throws BackgroundException {
+    public boolean prompt(final Host bookmark, final Path file, final ConnectionCallback prompt) {
         return false;
     }
 

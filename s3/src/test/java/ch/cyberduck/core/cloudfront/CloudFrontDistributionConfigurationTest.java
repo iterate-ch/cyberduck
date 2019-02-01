@@ -11,7 +11,6 @@ import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.AbstractS3Test;
@@ -22,7 +21,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,7 +38,7 @@ import static org.junit.Assert.*;
 public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
 
     @Test
-    public void testGetMethods() throws Exception {
+    public void testGetMethods() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         assertEquals(Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING),
             new CloudFrontDistributionConfiguration(session,
@@ -48,7 +46,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
     }
 
     @Test
-    public void testGetName() throws Exception {
+    public void testGetName() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final DistributionConfiguration configuration = new CloudFrontDistributionConfiguration(
             session, Collections.emptyMap());
@@ -57,7 +55,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
     }
 
     @Test
-    public void testGetOrigin() throws Exception {
+    public void testGetOrigin() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration
             = new CloudFrontDistributionConfiguration(session, Collections.emptyMap());
@@ -114,7 +112,7 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
         final AtomicBoolean set = new AtomicBoolean();
         configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 set.set(true);
                 return new Credentials(username, System.getProperties().getProperty("s3.secret"));
             }
@@ -128,13 +126,13 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
         final AtomicBoolean set = new AtomicBoolean();
         final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, Collections.emptyMap()) {
             @Override
-            protected UpdateStreamingDistributionResult updateStreamingDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
+            protected UpdateStreamingDistributionResult updateStreamingDistribution(final Path container, final Distribution distribution) {
                 fail();
                 return null;
             }
 
             @Override
-            protected StreamingDistribution createStreamingDistribution(final Path container, final Distribution distribution) throws ConnectionCanceledException {
+            protected StreamingDistribution createStreamingDistribution(final Path container, final Distribution distribution) {
                 set.set(true);
                 return new StreamingDistribution().withId("");
             }
@@ -150,13 +148,13 @@ public class CloudFrontDistributionConfigurationTest extends AbstractS3Test {
         final AtomicBoolean set = new AtomicBoolean();
         final CloudFrontDistributionConfiguration configuration = new CloudFrontDistributionConfiguration(session, Collections.emptyMap()) {
             @Override
-            protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution) throws IOException, ConnectionCanceledException {
+            protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution) {
                 fail();
                 return null;
             }
 
             @Override
-            protected com.amazonaws.services.cloudfront.model.Distribution createDownloadDistribution(final Path container, final Distribution distribution) throws ConnectionCanceledException {
+            protected com.amazonaws.services.cloudfront.model.Distribution createDownloadDistribution(final Path container, final Distribution distribution) {
                 set.set(true);
                 return new com.amazonaws.services.cloudfront.model.Distribution().withId("");
             }

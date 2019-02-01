@@ -49,6 +49,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Objects;
 
 public abstract class AbstractEditor implements Editor {
     private static final Logger log = Logger.getLogger(AbstractEditor.class);
@@ -259,10 +260,10 @@ public abstract class AbstractEditor implements Editor {
             return false;
         }
         AbstractEditor that = (AbstractEditor) o;
-        if(application != null ? !application.equals(that.application) : that.application != null) {
+        if(!Objects.equals(application, that.application)) {
             return false;
         }
-        if(local != null ? !local.equals(that.local) : that.local != null) {
+        if(!Objects.equals(local, that.local)) {
             return false;
         }
         return true;

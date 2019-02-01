@@ -79,8 +79,7 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
         }
         final S deserialized = this.read(file.getInputStream());
         if(null == deserialized) {
-            log.error(String.format("Invalid bookmark file %s", file));
-            return null;
+            throw new AccessDeniedException(String.format("Failure parsing file %s", file.getName()));
         }
         return deserialized;
     }
@@ -90,14 +89,18 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
         return this.deserialize(dict);
     }
 
-    private NSObject parse(final InputStream in) {
+    private NSObject parse(final InputStream in) throws AccessDeniedException {
         try {
             return XMLPropertyListParser.parse(in);
         }
         catch(ParserConfigurationException | IOException | SAXException | ParseException | PropertyListFormatException e) {
-            return null;
+            throw new AccessDeniedException("Failure parsing XML property list", e);
         }
     }
 
+    /**
+     * @param dict Serialized format
+     * @return Null if deserialization fails
+     */
     public abstract S deserialize(NSDictionary dict);
 }

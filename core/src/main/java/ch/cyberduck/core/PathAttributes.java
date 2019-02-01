@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Attributes of a remote directory or file.
@@ -481,19 +482,19 @@ public class PathAttributes extends Attributes implements Serializable {
         if(size != that.size) {
             return false;
         }
-        if(checksum != null ? !checksum.equals(that.checksum) : that.checksum != null) {
+        if(!Objects.equals(checksum, that.checksum)) {
             return false;
         }
-        if(permission != null ? !permission.equals(that.permission) : that.permission != null) {
+        if(!Objects.equals(permission, that.permission)) {
             return false;
         }
-        if(versionId != null ? !versionId.equals(that.versionId) : that.versionId != null) {
+        if(!Objects.equals(versionId, that.versionId)) {
             return false;
         }
-        if(revision != null ? !revision.equals(that.revision) : that.revision != null) {
+        if(!Objects.equals(revision, that.revision)) {
             return false;
         }
-        if(region != null ? !region.equals(that.region) : that.region != null) {
+        if(!Objects.equals(region, that.region)) {
             return false;
         }
         return true;

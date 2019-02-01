@@ -135,7 +135,7 @@ public class StreamGobbler extends InputStream {
     }
 
     @Override
-    public int available() throws IOException {
+    public int available() {
         synchronized(synchronizer) {
             return write_pos - read_pos;
         }

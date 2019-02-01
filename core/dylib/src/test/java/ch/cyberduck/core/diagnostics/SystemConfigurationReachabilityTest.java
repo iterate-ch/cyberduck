@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 public class SystemConfigurationReachabilityTest {
 
     @Test
-    public void testMonitor() throws Exception {
+    public void testMonitor() {
         final Reachability r = new SystemConfigurationReachability();
         final Reachability.Monitor monitor = r.monitor(new Host(new TestProtocol(), "cyberduck.ch", 80),
             new Reachability.Callback() {
@@ -25,7 +25,7 @@ public class SystemConfigurationReachabilityTest {
     }
 
     @Test
-    public void testIsReachablePort80() throws Exception {
+    public void testIsReachablePort80() {
         final Reachability r = new SystemConfigurationReachability();
         assertTrue(r.isReachable(
                 new Host(new TestProtocol(), "cyberduck.ch", 80)
@@ -33,7 +33,7 @@ public class SystemConfigurationReachabilityTest {
     }
 
     @Test
-    public void testIsReachablePort22() throws Exception {
+    public void testIsReachablePort22() {
         final Reachability r = new SystemConfigurationReachability();
         assertTrue(r.isReachable(
                 new Host(new TestProtocol(), "cyberduck.ch", 22)
@@ -41,7 +41,7 @@ public class SystemConfigurationReachabilityTest {
     }
 
     @Test
-    public void testNotReachablePortSubdomain() throws Exception {
+    public void testNotReachablePortSubdomain() {
         final Reachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(
                 new Host(new TestProtocol(), "a.cyberduck.ch", 22)
@@ -49,7 +49,7 @@ public class SystemConfigurationReachabilityTest {
     }
 
     @Test
-    public void testNotReachableWrongHostname() throws Exception {
+    public void testNotReachableWrongHostname() {
         final Reachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(
                 new Host(new TestProtocol(), "cyberduck.ch.f", 80)
@@ -57,7 +57,7 @@ public class SystemConfigurationReachabilityTest {
     }
 
     @Test
-    public void testNotReachableWrongPort() throws Exception {
+    public void testNotReachableWrongPort() {
         final Reachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(
                 new Host(new TestProtocol(), "cyberduck.ch", 23)

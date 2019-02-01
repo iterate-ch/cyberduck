@@ -83,6 +83,6 @@ public class DefaultHomeFinderService implements Home {
 
     protected String normalize(final String input, final boolean absolute) {
         return PathNormalizer.normalize(StringUtils.replace(input,
-            String.valueOf("\\"), String.valueOf(Path.DELIMITER)), absolute);
+            "\\", String.valueOf(Path.DELIMITER)), absolute);
     }
 }

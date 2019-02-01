@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>6.9.2-SNAPSHOT</version>
+    <version>6.9.3-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -91,7 +91,7 @@
             <dependency>
                 <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
-                <version>0.9.18</version>
+                <version>0.9.19</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -262,7 +262,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.483</version>
+                <version>1.11.484</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

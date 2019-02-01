@@ -118,7 +118,7 @@ public abstract class NSFont extends NSObject implements NSCopying {
          * Original signature : <code>NSFont* fontWithName(NSString*, const CGFloat*)</code><br>
          * <i>native declaration : :63</i>
          */
-        NSFont fontWithName_matrix(String fontName, CGFloat fontMatrix[]);
+        NSFont fontWithName_matrix(String fontName, CGFloat[] fontMatrix);
 
         /**
          * Original signature : <code>NSFont* fontWithName(NSString*, const CGFloat*)</code><br>

@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 public class DAVExceptionMappingServiceTest {
 
     @Test
-    public void testMap() throws Exception {
+    public void testMap() {
         Assert.assertEquals(LoginFailureException.class,
             new DAVExceptionMappingService().map(new SardineException("m", 401, "r")).getClass());
         assertEquals(AccessDeniedException.class,

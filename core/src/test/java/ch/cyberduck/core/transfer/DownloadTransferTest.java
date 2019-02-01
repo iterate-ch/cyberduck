@@ -1,7 +1,6 @@
 package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -220,7 +219,7 @@ public class DownloadTransferTest {
             }
 
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
@@ -245,7 +244,7 @@ public class DownloadTransferTest {
             }
 
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
@@ -271,7 +270,7 @@ public class DownloadTransferTest {
             }
 
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
@@ -297,7 +296,7 @@ public class DownloadTransferTest {
             }
 
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 return new AttributedList<Local>(Collections.singletonList(new NullLocal("p", "a")));
             }
         });
@@ -326,7 +325,7 @@ public class DownloadTransferTest {
     }
 
     @Test
-    public void testStatus() throws Exception {
+    public void testStatus() {
         final Path parent = new Path("t", EnumSet.of(Path.Type.file));
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), parent, new NullLocal(System.getProperty("java.io.tmpdir")));
         assertFalse(t.isRunning());

@@ -165,7 +165,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         return Files.isSymbolicLink(Paths.get(path));
     }
 
-    public Local getSymlinkTarget() throws NotfoundException, LocalAccessDeniedException {
+    public Local getSymlinkTarget() throws NotfoundException {
         try {
             try {
                 Paths.get(path).toRealPath();

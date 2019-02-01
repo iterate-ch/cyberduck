@@ -24,7 +24,7 @@ import static org.junit.Assert.assertFalse;
 public class DisabledBrowserLauncherTest {
 
     @Test
-    public void testOpen() throws Exception {
+    public void testOpen() {
         assertFalse(new DisabledBrowserLauncher().open(""));
     }
 }

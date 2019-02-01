@@ -65,19 +65,19 @@ public class CertificateStoreX509KeyManagerTest {
     }
 
     @Test
-    public void testGetCertificateChain() throws Exception {
+    public void testGetCertificateChain() {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(), new Host(new TestProtocol())).init();
         m.getCertificateChain("a");
     }
 
     @Test
-    public void testGetPrivateKey() throws Exception {
+    public void testGetPrivateKey() {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(), new Host(new TestProtocol())).init();
         assertNull(m.getPrivateKey("unknown-alias"));
     }
 
     @Test
-    public void testPrincipalNotFound() throws Exception {
+    public void testPrincipalNotFound() {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(), new Host(new TestProtocol())).init();
         assertNull(m.getClientAliases("RSA", new Principal[]{
                 new X500Principal("CN=g")
@@ -85,14 +85,14 @@ public class CertificateStoreX509KeyManagerTest {
     }
 
     @Test
-    public void testClientAliasesNoIssuer() throws Exception {
+    public void testClientAliasesNoIssuer() {
         final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(), new Host(new TestProtocol())).init();
         assertNull(m.getClientAliases("RSA", new Principal[]{}));
         assertNull(m.getClientAliases("RSA", null));
     }
 
     @Test
-    public void testList() throws Exception {
+    public void testList() {
         assertTrue(new CertificateStoreX509KeyManager(new DisabledCertificateStore(), new Host(new TestProtocol())).init().list().isEmpty());
     }
 }

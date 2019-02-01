@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotSame;
 public class DefaultMainActionTest {
 
     @Test
-    public void testLock() throws Exception {
+    public void testLock() {
         assertNotSame(new DefaultMainAction() {
             @Override
             public void run() {

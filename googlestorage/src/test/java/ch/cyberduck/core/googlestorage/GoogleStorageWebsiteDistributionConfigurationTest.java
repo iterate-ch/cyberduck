@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
 public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractGoogleStorageTest {
 
     @Test
-    public void testGetMethods() throws Exception {
+    public void testGetMethods() {
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
                 new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
@@ -53,7 +53,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
     }
 
     @Test
-    public void testGetProtocol() throws Exception {
+    public void testGetProtocol() {
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
                 new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
@@ -61,7 +61,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
     }
 
     @Test
-    public void testUrl() throws Exception {
+    public void testUrl() {
         final DistributionConfiguration configuration
             = new GoogleStorageWebsiteDistributionConfiguration(session);
         assertEquals("http://test.cyberduck.ch.storage.googleapis.com/f", configuration.toUrl(new Path("test.cyberduck.ch/f", EnumSet.of(Path.Type.file))).find(

@@ -39,7 +39,7 @@ public class TrellixFTPEntryParserTest {
     }
 
     @Test
-    public void testParse() throws Exception {
+    public void testParse() {
         FTPFile parsed;
 
         //#1213

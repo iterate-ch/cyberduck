@@ -98,17 +98,19 @@ public class TotalCommanderBookmarkCollection extends ThirdpartyBookmarkCollecti
                             continue;
                         }
                         final String value = scanner.next();
-                        if("host".equals(name)) {
-                            current.setHostname(value);
-                        }
-                        else if("directory".equals(name)) {
-                            current.setDefaultPath(value);
-                        }
-                        else if("username".equals(name)) {
-                            current.getCredentials().setUsername(value);
-                        }
-                        else {
-                            log.warn(String.format("Ignore property %s", name));
+                        switch(name) {
+                            case "host":
+                                current.setHostname(value);
+                                break;
+                            case "directory":
+                                current.setDefaultPath(value);
+                                break;
+                            case "username":
+                                current.getCredentials().setUsername(value);
+                                break;
+                            default:
+                                log.warn(String.format("Ignore property %s", name));
+                                break;
                         }
                     }
                 }

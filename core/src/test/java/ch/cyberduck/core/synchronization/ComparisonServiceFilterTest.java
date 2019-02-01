@@ -9,7 +9,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.io.Checksum;
@@ -33,7 +32,7 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean attr = new AtomicBoolean();
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 attr.set(true);
                 return new PathAttributes() {
                     @Override
@@ -45,7 +44,7 @@ public class ComparisonServiceFilterTest {
         };
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 found.set(true);
                 return true;
             }
@@ -78,7 +77,7 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean found = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 found.set(true);
                 return true;
             }
@@ -99,7 +98,7 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean found = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 found.set(true);
                 return false;
             }
@@ -120,7 +119,7 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean found = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 found.set(true);
                 return true;
             }
@@ -142,14 +141,14 @@ public class ComparisonServiceFilterTest {
         final AtomicBoolean attr = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 found.set(true);
                 return true;
             }
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 attr.set(true);
                 return new PathAttributes() {
                     @Override

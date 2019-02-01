@@ -48,12 +48,12 @@ public class IRODSCopyFeature implements Copy {
             transfer.copy(fs.getIRODSFileFactory().instanceIRODSFile(source.getAbsolute()),
                 fs.getIRODSFileFactory().instanceIRODSFile(target.getAbsolute()), new TransferStatusCallbackListener() {
                     @Override
-                    public FileStatusCallbackResponse statusCallback(final TransferStatus transferStatus) throws JargonException {
+                    public FileStatusCallbackResponse statusCallback(final TransferStatus transferStatus) {
                         return FileStatusCallbackResponse.CONTINUE;
                     }
 
                     @Override
-                    public void overallStatusCallback(final TransferStatus transferStatus) throws JargonException {
+                    public void overallStatusCallback(final TransferStatus transferStatus) {
                         //
                     }
 

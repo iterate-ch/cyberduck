@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
 public class PageantAuthenticatorTest {
 
     @Test
-    public void testGetIdentities() throws Exception {
+    public void testGetIdentities() {
         final PageantAuthenticator authenticator = new PageantAuthenticator();
         final Collection<Identity> identities = authenticator.getIdentities();
         switch(Factory.Platform.getDefault()) {

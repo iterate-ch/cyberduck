@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 public class GraphExceptionMappingServiceTest {
 
     @Test
-    public void map() throws Exception {
+    public void map() {
         assertTrue(new GraphExceptionMappingService().map(
                 new OneDriveAPIException("The OneDrive API responded with too many redirects.")) instanceof InteroperabilityException);
         assertTrue(new GraphExceptionMappingService().map(

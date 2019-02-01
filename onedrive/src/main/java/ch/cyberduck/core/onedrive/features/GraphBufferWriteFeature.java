@@ -56,11 +56,11 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
     }
 
     @Override
-    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public HttpResponseOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final FileBuffer buffer = new FileBuffer();
         return new HttpResponseOutputStream<Void>(new BufferOutputStream(buffer) {
             @Override
-            public void flush() throws IOException {
+            public void flush() {
                 //
             }
 
@@ -88,7 +88,7 @@ public class GraphBufferWriteFeature implements MultipartWrite<Void> {
             }
         }) {
             @Override
-            public Void getStatus() throws BackgroundException {
+            public Void getStatus() {
                 return null;
             }
         };

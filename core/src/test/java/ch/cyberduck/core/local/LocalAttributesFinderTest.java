@@ -24,7 +24,7 @@ public class LocalAttributesFinderTest {
     }
 
     @Test
-    public void testGetPermission() throws Exception {
+    public void testGetPermission() {
         final LocalAttributes a = new LocalAttributes(UUID.randomUUID().toString());
         assertNotNull(a.getPermission());
         assertEquals(Permission.EMPTY, a.getPermission());
@@ -62,25 +62,25 @@ public class LocalAttributesFinderTest {
     }
 
     @Test
-    public void testGetOwner() throws Exception {
+    public void testGetOwner() {
         LocalAttributes a = new LocalAttributes(UUID.randomUUID().toString());
         assertNull(a.getOwner());
     }
 
     @Test
-    public void testGetGroup() throws Exception {
+    public void testGetGroup() {
         LocalAttributes a = new LocalAttributes(UUID.randomUUID().toString());
         assertNull(a.getGroup());
     }
 
     @Test
-    public void testIsBundle() throws Exception {
+    public void testIsBundle() {
         LocalAttributes a = new LocalAttributes(UUID.randomUUID().toString());
         assertFalse(a.isBundle());
     }
 
     @Test
-    public void testGetChecksum() throws Exception {
+    public void testGetChecksum() {
         assertEquals(Checksum.NONE, new LocalAttributes(UUID.randomUUID().toString()).getChecksum());
     }
 }

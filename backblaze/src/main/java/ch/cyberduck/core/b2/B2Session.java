@@ -54,7 +54,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
     }
 
     @Override
-    public B2ApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    public B2ApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.setServiceUnavailableRetryStrategy(retryHandler = new B2ErrorResponseInterceptor(
             this));

@@ -30,13 +30,13 @@ public class DAVProtocolTest {
     }
 
     @Test
-    public void testValidateCredentialsEmpty() throws Exception {
+    public void testValidateCredentialsEmpty() {
         Credentials c = new Credentials("user", "");
         assertTrue(c.validate(new DAVProtocol(), new LoginOptions(new DAVProtocol())));
     }
 
     @Test
-    public void testValidateCredentialsBlank() throws Exception {
+    public void testValidateCredentialsBlank() {
         Credentials c = new Credentials("user", " ");
         assertTrue(c.validate(new DAVProtocol(), new LoginOptions(new DAVProtocol())));
     }

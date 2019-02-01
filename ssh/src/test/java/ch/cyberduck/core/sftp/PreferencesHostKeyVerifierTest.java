@@ -1,7 +1,5 @@
 package ch.cyberduck.core.sftp;
 
-import ch.cyberduck.core.exception.ChecksumException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
@@ -20,12 +18,12 @@ public class PreferencesHostKeyVerifierTest {
     public void testVerifyAcceptServerHostKey() throws Exception {
         PreferencesHostKeyVerifier v = new PreferencesHostKeyVerifier() {
             @Override
-            public boolean isChangedKeyAccepted(String hostname, PublicKey key) throws ConnectionCanceledException, ChecksumException {
+            public boolean isChangedKeyAccepted(String hostname, PublicKey key) {
                 return false;
             }
 
             @Override
-            public boolean isUnknownKeyAccepted(String hostname, final PublicKey key) throws ConnectionCanceledException {
+            public boolean isUnknownKeyAccepted(String hostname, final PublicKey key) {
                 return true;
             }
         };
@@ -45,12 +43,12 @@ public class PreferencesHostKeyVerifierTest {
     public void testVerifyDenyServerHostKey() throws Exception {
         PreferencesHostKeyVerifier v = new PreferencesHostKeyVerifier() {
             @Override
-            public boolean isChangedKeyAccepted(String hostname, PublicKey key) throws ConnectionCanceledException, ChecksumException {
+            public boolean isChangedKeyAccepted(String hostname, PublicKey key) {
                 return false;
             }
 
             @Override
-            public boolean isUnknownKeyAccepted(String hostname, final PublicKey key) throws ConnectionCanceledException {
+            public boolean isUnknownKeyAccepted(String hostname, final PublicKey key) {
                 return false;
             }
         };

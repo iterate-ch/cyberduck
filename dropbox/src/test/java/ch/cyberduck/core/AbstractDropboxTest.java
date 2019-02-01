@@ -17,7 +17,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.dropbox.DropboxProtocol;
 import ch.cyberduck.core.dropbox.DropboxSession;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
@@ -48,7 +47,7 @@ public class AbstractDropboxTest {
         session = new DropboxSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 fail(reason);
                 return null;
             }

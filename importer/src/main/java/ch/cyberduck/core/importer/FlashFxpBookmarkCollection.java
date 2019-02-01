@@ -83,25 +83,27 @@ public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkColle
                             continue;
                         }
                         String value = scanner.next();
-                        if("ip".equals(name)) {
-                            current.setHostname(StringUtils.substringBefore(value, "\u0001"));
-                        }
-                        else if("port".equals(name)) {
-                            try {
-                                current.setPort(Integer.parseInt(value));
-                            }
-                            catch(NumberFormatException e) {
-                                log.warn("Invalid Port:" + e.getMessage());
-                            }
-                        }
-                        else if("path".equals(name)) {
-                            current.setDefaultPath(value);
-                        }
-                        else if("notes".equals(name)) {
-                            current.setComment(value);
-                        }
-                        else if("user".equals(name)) {
-                            current.getCredentials().setUsername(value);
+                        switch(name) {
+                            case "ip":
+                                current.setHostname(StringUtils.substringBefore(value, "\u0001"));
+                                break;
+                            case "port":
+                                try {
+                                    current.setPort(Integer.parseInt(value));
+                                }
+                                catch(NumberFormatException e) {
+                                    log.warn("Invalid Port:" + e.getMessage());
+                                }
+                                break;
+                            case "path":
+                                current.setDefaultPath(value);
+                                break;
+                            case "notes":
+                                current.setComment(value);
+                                break;
+                            case "user":
+                                current.getCredentials().setUsername(value);
+                                break;
                         }
                     }
                 }

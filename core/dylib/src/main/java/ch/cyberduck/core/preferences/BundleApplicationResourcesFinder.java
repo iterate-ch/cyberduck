@@ -21,7 +21,6 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.local.FinderLocal;
 
@@ -73,7 +72,7 @@ public class BundleApplicationResourcesFinder implements ApplicationResourcesFin
             try {
                 executable = executable.getSymlinkTarget();
             }
-            catch(NotfoundException | LocalAccessDeniedException e) {
+            catch(NotfoundException e) {
                 return main;
             }
         }

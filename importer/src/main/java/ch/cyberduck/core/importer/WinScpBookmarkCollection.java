@@ -98,38 +98,40 @@ public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
                             continue;
                         }
                         String value = scanner.next();
-                        if("hostname".equals(name)) {
-                            current.setHostname(value);
-                        }
-                        else if("username".equals(name)) {
-                            current.getCredentials().setUsername(value);
-                        }
-                        else if("portnumber".equals(name)) {
-                            try {
-                                current.setPort(Integer.parseInt(value));
-                            }
-                            catch(NumberFormatException e) {
-                                log.warn("Invalid Port:" + e.getMessage());
-                            }
-                        }
-                        else if("fsprotocol".equals(name)) {
-                            try {
-                                switch(Integer.parseInt(value)) {
-                                    case 0:
-                                    case 1:
-                                    case 2:
-                                        current.setProtocol(protocols.forScheme(Scheme.sftp));
-                                        break;
-                                    case 5:
-                                        current.setProtocol(protocols.forScheme(Scheme.ftp));
-                                        break;
+                        switch(name) {
+                            case "hostname":
+                                current.setHostname(value);
+                                break;
+                            case "username":
+                                current.getCredentials().setUsername(value);
+                                break;
+                            case "portnumber":
+                                try {
+                                    current.setPort(Integer.parseInt(value));
                                 }
-                                // Reset port to default
-                                current.setPort(-1);
-                            }
-                            catch(NumberFormatException e) {
-                                log.warn("Unknown Protocol:" + e.getMessage());
-                            }
+                                catch(NumberFormatException e) {
+                                    log.warn("Invalid Port:" + e.getMessage());
+                                }
+                                break;
+                            case "fsprotocol":
+                                try {
+                                    switch(Integer.parseInt(value)) {
+                                        case 0:
+                                        case 1:
+                                        case 2:
+                                            current.setProtocol(protocols.forScheme(Scheme.sftp));
+                                            break;
+                                        case 5:
+                                            current.setProtocol(protocols.forScheme(Scheme.ftp));
+                                            break;
+                                    }
+                                    // Reset port to default
+                                    current.setPort(-1);
+                                }
+                                catch(NumberFormatException e) {
+                                    log.warn("Unknown Protocol:" + e.getMessage());
+                                }
+                                break;
                         }
                     }
                 }

@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 public class LinuxTerminalPreferencesTest {
 
     @Test
-    public void setDefaults() throws Exception {
+    public void setDefaults() {
         final LinuxTerminalPreferences prefs = new LinuxTerminalPreferences();
         prefs.load();
         prefs.setLogging();

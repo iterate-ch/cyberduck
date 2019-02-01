@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 public class DefaultPathPredicateTest {
 
     @Test
-    public void testUnique() throws Exception {
+    public void testUnique() {
         final Path t_noregion = new Path("/", EnumSet.of(Path.Type.directory));
         assertEquals("[directory]-/", new DefaultPathPredicate(t_noregion).toString());
         final Path t_region = new Path("/", EnumSet.of(Path.Type.directory));
@@ -36,14 +36,14 @@ public class DefaultPathPredicateTest {
     }
 
     @Test
-    public void testUniqueSymbolicLInk() throws Exception {
+    public void testUniqueSymbolicLInk() {
         final Path s = new Path("/", EnumSet.of(Path.Type.directory, Path.Type.symboliclink));
         final Path t = new Path("/", EnumSet.of(Path.Type.directory));
         assertNotEquals(new DefaultPathPredicate(s), new DefaultPathPredicate(t));
     }
 
     @Test
-    public void testtoStringContainer() throws Exception {
+    public void testtoStringContainer() {
         final Path t_noregion = new Path("/container", EnumSet.of(Path.Type.directory));
         final Path t_region = new Path("/container", EnumSet.of(Path.Type.directory));
         t_region.attributes().setRegion("r");
@@ -51,7 +51,7 @@ public class DefaultPathPredicateTest {
     }
 
     @Test
-    public void testIgnoreVolumeFlag() throws Exception {
+    public void testIgnoreVolumeFlag() {
         assertEquals(new DefaultPathPredicate(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume))),
                 new DefaultPathPredicate(new Path("/container", EnumSet.of(Path.Type.directory))));
         assertEquals(new DefaultPathPredicate(new Path("/container", EnumSet.of(Path.Type.directory, Path.Type.volume))),
@@ -59,7 +59,7 @@ public class DefaultPathPredicateTest {
     }
 
     @Test
-    public void testIgnorePlaceholderFlag() throws Exception {
+    public void testIgnorePlaceholderFlag() {
         assertEquals(new DefaultPathPredicate(new Path("/container/p", EnumSet.of(Path.Type.directory, Path.Type.placeholder))),
                 new DefaultPathPredicate(new Path("/container/p", EnumSet.of(Path.Type.directory))));
         assertEquals(new DefaultPathPredicate(new Path("/container/p", EnumSet.of(Path.Type.directory))),
@@ -67,7 +67,7 @@ public class DefaultPathPredicateTest {
     }
 
     @Test
-    public void testPredicateTest() throws Exception {
+    public void testPredicateTest() {
         final Path t = new Path("/f", EnumSet.of(Path.Type.file));
         assertTrue(new DefaultPathPredicate(t).test(t));
         assertFalse(new DefaultPathPredicate(t).test(new Path("/f/a", EnumSet.of(Path.Type.file))));
@@ -75,7 +75,7 @@ public class DefaultPathPredicateTest {
     }
 
     @Test
-    public void testPredicateVersionIdFile() throws Exception {
+    public void testPredicateVersionIdFile() {
         final Path t = new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().withVersionId("1"));
         assertTrue(new DefaultPathPredicate(t).test(t));
         assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.file), new PathAttributes().withVersionId("1"))));
@@ -83,7 +83,7 @@ public class DefaultPathPredicateTest {
     }
 
     @Test
-    public void testPredicateVersionIdDirectory() throws Exception {
+    public void testPredicateVersionIdDirectory() {
         final Path t = new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("1"));
         assertTrue(new DefaultPathPredicate(t).test(t));
         assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("1"))));

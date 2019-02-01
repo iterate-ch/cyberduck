@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 public class WorkspaceIconServiceTest {
 
     @Test
-    public void testSetProgressNoFile() throws Exception {
+    public void testSetProgressNoFile() {
         final WorkspaceIconService s = new WorkspaceIconService();
         final Local file = new Local(PreferencesFactory.get().getProperty("tmp.dir"),
                 UUID.randomUUID().toString());

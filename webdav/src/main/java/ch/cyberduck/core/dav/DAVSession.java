@@ -125,7 +125,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     }
 
     @Override
-    public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+    public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
         // Always inject new pool to builder on connect because the pool is shutdown on disconnect
         final HttpClientBuilder pool = builder.build(proxy, this, prompt);
         pool.setRedirectStrategy(new DAVRedirectStrategy(redirect));
@@ -281,7 +281,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                 request.setConfig(RequestConfig.copy(context).setRedirectsEnabled(false).build());
                 final Header location = client.execute(request, new ValidatingResponseHandler<Header>() {
                     @Override
-                    public Header handleResponse(final HttpResponse response) throws IOException {
+                    public Header handleResponse(final HttpResponse response) {
                         if(response.getStatusLine().getStatusCode() == HttpStatus.SC_MOVED_PERMANENTLY) {
                             return response.getFirstHeader(HttpHeaders.LOCATION);
                         }

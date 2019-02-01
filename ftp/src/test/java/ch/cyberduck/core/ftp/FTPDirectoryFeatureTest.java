@@ -44,6 +44,5 @@ public class FTPDirectoryFeatureTest extends AbstractFTPTest {
         assertTrue(session.getFeature(Find.class).find(test));
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
-        ;
     }
 }

@@ -27,14 +27,14 @@ import static org.junit.Assert.assertTrue;
 public class TransferItemCacheTest {
 
     @Test
-    public void testRemove() throws Exception {
+    public void testRemove() {
         final AttributedList<TransferItem> remove = new TransferItemCache(1).remove(new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory))));
         assertNotNull(remove);
         assertTrue(remove.isEmpty());
     }
 
     @Test
-    public void testLookup() throws Exception {
+    public void testLookup() {
         final Cache<TransferItem> c = new ReverseLookupCache<TransferItem>(new TransferItemCache(1), 1);
         final AttributedList<TransferItem> list = new AttributedList<>();
         list.add(new TransferItem(new Path("/r2", EnumSet.of(Path.Type.file)), new Local("/l2")));
@@ -44,7 +44,7 @@ public class TransferItemCacheTest {
     }
 
     @Test
-    public void testLookupFromRootDirectory() throws Exception {
+    public void testLookupFromRootDirectory() {
         final Cache<TransferItem> c = new ReverseLookupCache<TransferItem>(new TransferItemCache(1), 1);
         final AttributedList<TransferItem> list = new AttributedList<>();
         list.add(new TransferItem(new Path("/r2", EnumSet.of(Path.Type.file)), new Local("/l2")));

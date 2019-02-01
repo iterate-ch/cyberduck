@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 public class S3BucketListServiceTest extends AbstractS3Test {
 
     @Test
-    public void testGetContainer() throws Exception {
+    public void testGetContainer() {
         assertEquals("bucketname", new S3BucketListService(new S3Session(new Host(new S3Protocol()))).getContainer(new Host(new S3Protocol(), "bucketname.s3.amazonaws.com")));
         assertNull(new S3BucketListService(new S3Session(new Host(new S3Protocol()))).getContainer(new Host(new TestProtocol(), "bucketname.s3.amazonaws.com")));
     }

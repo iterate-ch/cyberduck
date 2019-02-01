@@ -43,6 +43,5 @@ public class FTPUTIMETimestampFeatureTest extends AbstractFTPTest {
         new FTPTouchFeature(session).touch(test, new TransferStatus());
         new FTPUTIMETimestampFeature(session).setTimestamp(test, modified);
         new FTPDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 }

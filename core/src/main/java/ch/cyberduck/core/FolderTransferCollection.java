@@ -181,16 +181,18 @@ public class FolderTransferCollection extends Collection<Transfer> {
                     }
                 }
             );
-            for(Local next : transfers) {
-                final Transfer transfer = reader.read(next);
-                if(null == transfer) {
-                    continue;
+            for(Local f : transfers) {
+                try {
+                    final Transfer transfer = reader.read(f);
+                    // Legacy support.
+                    if(!this.getFile(transfer).equals(f)) {
+                        this.rename(f, transfer);
+                    }
+                    this.add(transfer);
                 }
-                // Legacy support.
-                if(!this.getFile(transfer).equals(next)) {
-                    this.rename(next, transfer);
+                catch(AccessDeniedException e) {
+                    log.error(String.format("Failure reading transfer from %s. %s", f, e.getMessage()));
                 }
-                this.add(transfer);
             }
             // Sort using previously built index
             this.sort();
@@ -259,9 +261,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
         Collections.sort(this, new Comparator<Transfer>() {
             @Override
             public int compare(Transfer o1, Transfer o2) {
-                return Integer.valueOf(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid()))).compareTo(
-                    preferences.getInteger(String.format("%s%s", prefix, o2.getUuid()))
-                );
+                return Integer.compare(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid())), preferences.getInteger(String.format("%s%s", prefix, o2.getUuid())));
             }
         });
     }
