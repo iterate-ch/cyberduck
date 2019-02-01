@@ -118,7 +118,7 @@ public class HostParserTest {
             }
         }))).get("https://folder/file");
         assertEquals("defaultHostname", host.getHostname());
-        assertEquals("/folder/file", host.getDefaultPath());
+        assertEquals("folder/file", host.getDefaultPath());
     }
 
     @Test
