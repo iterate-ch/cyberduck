@@ -84,7 +84,7 @@ public class TerminalOptionsInputValidatorTest {
         ));
         assertFalse(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace:"));
         assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace:/"));
-        assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace://"));
+        assertFalse(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace://"));
         assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace:///"));
     }
 }
