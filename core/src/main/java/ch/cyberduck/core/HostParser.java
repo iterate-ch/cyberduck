@@ -238,17 +238,20 @@ public final class HostParser {
             final char c = (char) reader.read();
 
             if(Character.isDigit(c)) {
-                tracker = reader.position;
                 port = Optional.ofNullable(port).orElse(0) * 10 + Character.getNumericValue(c);
             }
             else {
                 if(c != '/') {
-                    log.warn(String.format("Got %s in port. This is unsupported. Continuing with port %d", c, port));
+                    port = null;
+                    log.warn(String.format("Got %s in port. This is unsupported. Continuing with default port.", c));
+                    reader.skip(tracker - reader.position);
+                }
+                else {
+                    reader.skip(-1);
                 }
                 break;
             }
         }
-        reader.skip(tracker - reader.position);
 
         if(port != null && host.getProtocol().isPortConfigurable()) {
             if(port <= 0 || port >= 65536) {
