@@ -87,6 +87,8 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public class Terminal {
     private static final Logger log = Logger.getLogger(Terminal.class);
 
@@ -447,12 +449,7 @@ public class Terminal {
         if(!this.execute(action)) {
             return Exit.failure;
         }
-        try {
-            lock.await();
-        }
-        catch(InterruptedException e) {
-            return Exit.failure;
-        }
+        Uninterruptibles.awaitUninterruptibly(lock);
         return Exit.success;
     }
 

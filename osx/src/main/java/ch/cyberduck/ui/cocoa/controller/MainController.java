@@ -118,6 +118,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 /**
  * Setting the main menu and implements application delegate methods
  */
@@ -666,12 +668,7 @@ public class MainController extends BundleController implements NSApplication.De
                     @Override
                     public Void run() {
                         // Wait until bookmarks are loaded
-                        try {
-                            bookmarksSemaphore.await();
-                        }
-                        catch(InterruptedException e) {
-                            log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
-                        }
+                        Uninterruptibles.awaitUninterruptibly(bookmarksSemaphore);
                         return null;
                     }
 
@@ -1376,12 +1373,7 @@ public class MainController extends BundleController implements NSApplication.De
                     preferences.setProperty(t.getConfiguration(), true);
                 }
             }
-            try {
-                lock.await();
-            }
-            catch(InterruptedException e) {
-                log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
-            }
+            Uninterruptibles.awaitUninterruptibly(lock);
             return null;
         }
 

@@ -31,15 +31,16 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 /**
  * An editor listing for file system notifications on a particular folder
-
  */
 public class FSEventWatchEditor extends AbstractEditor {
     private static final Logger log = Logger.getLogger(FSEventWatchEditor.class);
 
     private final FileWatcher monitor
-            = new FileWatcher(new FSEventWatchService());
+        = new FileWatcher(new FSEventWatchService());
 
     /**
      * With custom editor for file type.
@@ -53,12 +54,7 @@ public class FSEventWatchEditor extends AbstractEditor {
     }
 
     public void watch(final Local local, final FileWatcherListener listener) throws IOException {
-        try {
-            monitor.register(local, listener).await();
-        }
-        catch(InterruptedException e) {
-            throw new IOException(String.format("Failure monitoring file %s", local), e);
-        }
+        Uninterruptibles.awaitUninterruptibly(monitor.register(local, listener));
     }
 
     @Override

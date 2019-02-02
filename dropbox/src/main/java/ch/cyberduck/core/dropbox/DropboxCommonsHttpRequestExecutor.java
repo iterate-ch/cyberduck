@@ -43,6 +43,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.dropbox.core.http.HttpRequestor;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements Closeable {
     private static final Logger log = Logger.getLogger(DropboxCommonsHttpRequestExecutor.class);
@@ -120,13 +121,8 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
         return new Uploader() {
             @Override
             public OutputStream getBody() {
-                try {
-                    // Await execution of HTTP request to make stream available
-                    entry.await();
-                }
-                catch(InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                // Await execution of HTTP request to make stream available
+                Uninterruptibles.awaitUninterruptibly(entry);
                 return entity.getStream();
             }
 
