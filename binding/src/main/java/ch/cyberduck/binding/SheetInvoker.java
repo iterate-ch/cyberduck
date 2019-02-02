@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public class SheetInvoker extends ProxyController {
     private static final Logger log = Logger.getLogger(SheetInvoker.class);
 
@@ -37,7 +39,7 @@ public class SheetInvoker extends ProxyController {
      * deallocated as a weak reference before the callback from the runtime
      */
     protected static final Set<SheetInvoker> registry
-            = new HashSet<SheetInvoker>();
+        = new HashSet<SheetInvoker>();
 
     private final SheetCallback callback;
 
@@ -58,7 +60,7 @@ public class SheetInvoker extends ProxyController {
     private int returncode = SheetCallback.CANCEL_OPTION;
 
     private final CountDownLatch signal
-            = new CountDownLatch(1);
+        = new CountDownLatch(1);
 
     {
         registry.add(this);
@@ -128,13 +130,7 @@ public class SheetInvoker extends ProxyController {
                 log.debug("Await sheet dismiss");
             }
             // Synchronize on parent controller. Only display one sheet at once.
-            try {
-                signal.await();
-            }
-            catch(InterruptedException e) {
-                log.error("Error waiting for sheet dismiss", e);
-                callback.callback(SheetCallback.CANCEL_OPTION);
-            }
+            Uninterruptibles.awaitUninterruptibly(signal);
             return returncode;
         }
     }
@@ -142,10 +138,10 @@ public class SheetInvoker extends ProxyController {
     protected int beginSheet(final NSWindow sheet) {
         parent.makeKeyAndOrderFront(null);
         application.beginSheet(sheet, //sheet
-                this.parentWindow(), // modalForWindow
-                this.id(), // modalDelegate
-                Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
-                null); //context
+            this.parentWindow(), // modalForWindow
+            this.id(), // modalDelegate
+            Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
+            null); //context
         return returncode;
     }
 
