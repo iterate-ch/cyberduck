@@ -94,7 +94,7 @@ public final class HostParser {
         if(uriType == URITypes.Undefined) {
             // scheme:
             if(StringUtils.isBlank(protocol.getDefaultHostname())) {
-                throw new InvalidHostException(String.format("Hostname must not be empty. Got: %s", url));
+                throw new InvalidHostException(String.format("Missing hostname in URI %s", url));
             }
 
             return host;
@@ -180,7 +180,7 @@ public final class HostParser {
             }
             else if(bracketFlag) {
                 if(c == '[') {
-                    throw new InvalidHostException("'[' inside IPv6. This is illegal.");
+                    throw new InvalidHostException("Illegal character '[' inside IPv6 address");
                 }
                 else if(c == ']') {
                     bracketFlag = false;
@@ -189,12 +189,12 @@ public final class HostParser {
                     buffer.append(c);
                 }
                 else {
-                    throw new InvalidHostException(String.format("Illegal character inside IPv6: '%s' at %d", c, reader.position));
+                    throw new InvalidHostException(String.format("Illegal character '%s' at %d inside IPv6 address", c, reader.position));
                 }
             }
             else {
                 if(c == ']') {
-                    throw new InvalidHostException("']' outside of IPv6. This is illegal.");
+                    throw new InvalidHostException("Illegal character ']' outside IPv6 address");
                 }
                 else if(c == '[') {
                     bracketFlag = true;
@@ -213,12 +213,12 @@ public final class HostParser {
         }
 
         if(bracketFlag) {
-            throw new InvalidHostException("IPv6 bracket not closed.");
+            throw new InvalidHostException("IPv6 bracket not closed in URI");
         }
 
         if(buffer.length() == 0) {
             if(StringUtils.isEmpty(host.getHostname())) {
-                throw new InvalidHostException("Hostname is empty.");
+                throw new InvalidHostException("Missing hostname in URI");
             }
         }
         else {
@@ -243,7 +243,7 @@ public final class HostParser {
             else {
                 if(c != '/') {
                     port = null;
-                    log.warn(String.format("Got %s in port. This is unsupported. Continuing with default port.", c));
+                    log.warn(String.format("Got %s in port. This is unsupported. Continuing with default port", c));
                     reader.skip(tracker - reader.position);
                 }
                 else {
@@ -255,7 +255,7 @@ public final class HostParser {
 
         if(port != null && host.getProtocol().isPortConfigurable()) {
             if(port <= 0 || port >= 65536) {
-                throw new InvalidHostException(String.format("Port is outside range 0 < Port < 65536. Got %d", port));
+                throw new InvalidHostException(String.format("Port %d is outside allowed range 0-65536", port));
             }
 
             host.setPort(port);
