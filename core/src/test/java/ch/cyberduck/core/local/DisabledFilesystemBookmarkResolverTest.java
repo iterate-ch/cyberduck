@@ -16,19 +16,20 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertNull;
+
 public class DisabledFilesystemBookmarkResolverTest {
 
-    @Test(expected = LocalAccessDeniedException.class)
+    @Test
     public void testResolve() {
-        new DisabledFilesystemBookmarkResolver().resolve(new NullLocal("/t"), false);
+        assertNull(new DisabledFilesystemBookmarkResolver().resolve(new NullLocal("/t"), false));
     }
 
-    @Test(expected = LocalAccessDeniedException.class)
+    @Test
     public void testCreate() {
-        new DisabledFilesystemBookmarkResolver().create(new NullLocal("/t"));
+        assertNull(new DisabledFilesystemBookmarkResolver().create(new NullLocal("/t")));
     }
 }
