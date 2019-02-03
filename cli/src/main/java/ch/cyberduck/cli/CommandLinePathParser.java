@@ -47,16 +47,11 @@ public class CommandLinePathParser {
         this.factory = factory;
     }
 
-    public Path parse(final String uri) {
-        try {
-            final Host host = new HostParser(factory).get(uri);
-            if(StringUtils.isBlank(host.getDefaultPath())) {
-                return new Path(String.valueOf(Path.DELIMITER), EnumSet.of((Path.Type.directory)));
-            }
-            return new Path(PathNormalizer.normalize(host.getDefaultPath()), EnumSet.of(detector.detect(host.getDefaultPath())));
-        }
-        catch(HostParserException e) {
+    public Path parse(final String uri) throws HostParserException {
+        final Host host = new HostParser(factory).get(uri);
+        if(StringUtils.isBlank(host.getDefaultPath())) {
             return new Path(String.valueOf(Path.DELIMITER), EnumSet.of((Path.Type.directory)));
         }
+        return new Path(PathNormalizer.normalize(host.getDefaultPath()), EnumSet.of(detector.detect(host.getDefaultPath())));
     }
 }
