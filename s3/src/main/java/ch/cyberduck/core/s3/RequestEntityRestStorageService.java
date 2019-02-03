@@ -109,7 +109,7 @@ public class RequestEntityRestStorageService extends RestS3Service {
         }
         if(preferences.getBoolean("s3.bucket.requesterpays")) {
             // Only for AWS
-            if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            if(S3Session.isAwsHostname(session.getHost().getHostname())) {
                 // Downloading Objects in Requester Pays Buckets
                 if("GET".equals(request.getMethod()) || "POST".equals(request.getMethod())) {
                     final Jets3tProperties properties = getJetS3tProperties();
