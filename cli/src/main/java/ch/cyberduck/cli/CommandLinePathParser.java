@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.HostParserException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.StringUtils;
@@ -47,10 +48,15 @@ public class CommandLinePathParser {
     }
 
     public Path parse(final String uri) {
-        final Host host = new HostParser(factory).get(uri);
-        if(StringUtils.isBlank(host.getDefaultPath())) {
-            return new Path(String.valueOf(Path.DELIMITER), EnumSet.of(detector.detect(host.getDefaultPath())));
+        try {
+            final Host host = new HostParser(factory).get(uri);
+            if(StringUtils.isBlank(host.getDefaultPath())) {
+                return new Path(String.valueOf(Path.DELIMITER), EnumSet.of((Path.Type.directory)));
+            }
+            return new Path(PathNormalizer.normalize(host.getDefaultPath()), EnumSet.of(detector.detect(host.getDefaultPath())));
         }
-        return new Path(PathNormalizer.normalize(host.getDefaultPath()), EnumSet.of(detector.detect(host.getDefaultPath())));
+        catch(HostParserException e) {
+            return new Path(String.valueOf(Path.DELIMITER), EnumSet.of((Path.Type.directory)));
+        }
     }
 }

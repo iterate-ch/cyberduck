@@ -15,8 +15,9 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
-public class InvalidHostException extends IllegalArgumentException {
-    public InvalidHostException(final String message) {
-        super(message);
+public class HostParserException extends BackgroundException {
+
+    public HostParserException(final String detail) {
+        super("Failure parsing URI", detail);
     }
 }

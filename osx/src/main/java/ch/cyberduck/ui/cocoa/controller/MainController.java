@@ -54,6 +54,7 @@ import ch.cyberduck.core.bonjour.Rendezvous;
 import ch.cyberduck.core.bonjour.RendezvousFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
 import ch.cyberduck.core.importer.Expandrive3BookmarkCollection;
 import ch.cyberduck.core.importer.Expandrive4BookmarkCollection;
@@ -1280,25 +1281,30 @@ public class MainController extends BundleController implements NSApplication.De
             }
         }
         else {
-            final Host h = HostParser.parse(url);
-            if(Path.Type.file == detector.detect(h.getDefaultPath())) {
-                final Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.file));
-                TransferControllerFactory.get().start(new DownloadTransfer(h, file,
-                    LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
-            }
-            else {
-                for(BrowserController browser : MainController.getBrowsers()) {
-                    if(browser.isMounted()) {
-                        if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
-                            new HostUrlProvider().get(h))) {
-                            // Handle browser window already connected to the same host. #4215
-                            browser.window().makeKeyAndOrderFront(null);
-                            return;
+            try {
+                final Host h = HostParser.parse(url);
+                if(Path.Type.file == detector.detect(h.getDefaultPath())) {
+                    final Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.file));
+                    TransferControllerFactory.get().start(new DownloadTransfer(h, file,
+                        LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
+                }
+                else {
+                    for(BrowserController browser : MainController.getBrowsers()) {
+                        if(browser.isMounted()) {
+                            if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
+                                new HostUrlProvider().get(h))) {
+                                // Handle browser window already connected to the same host. #4215
+                                browser.window().makeKeyAndOrderFront(null);
+                                return;
+                            }
                         }
                     }
+                    final BrowserController browser = newDocument(false);
+                    browser.mount(h);
                 }
-                final BrowserController browser = newDocument(false);
-                browser.mount(h);
+            }
+            catch(HostParserException e) {
+                log.warn(e.getDetail());
             }
         }
     }

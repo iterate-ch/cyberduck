@@ -32,6 +32,7 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -379,7 +380,13 @@ public class BookmarkTableDataSource extends ListDataSource {
             if(null == o) {
                 return false;
             }
-            final Host h = HostParser.parse(o);
+            final Host h;
+            try {
+                h = HostParser.parse(o);
+            }
+            catch(HostParserException e) {
+                return false;
+            }
             source.add(row.intValue(), h);
             view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             view.scrollRowToVisible(row);
@@ -439,7 +446,14 @@ public class BookmarkTableDataSource extends ListDataSource {
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final String url = elements.objectAtIndex(new NSUInteger(i)).toString();
                         if(StringUtils.isNotBlank(url)) {
-                            final Host h = HostParser.parse(url);
+                            final Host h;
+                            try {
+                                h = HostParser.parse(url);
+                            }
+                            catch(HostParserException e) {
+                                log.warn(e.getDetail());
+                                continue;
+                            }
                             source.add(row.intValue(), h);
                             view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
                             view.scrollRowToVisible(row);

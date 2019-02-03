@@ -15,7 +15,8 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import org.junit.Assert;
+import ch.cyberduck.core.exception.HostParserException;
+
 import org.junit.Test;
 
 import java.util.Collections;
@@ -29,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 public class HostParserTest {
 
     @Test
-    public void parse() {
+    public void parse() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https))))
             .get("https://t%40u@host:443/key");
         assertEquals("host", host.getHostname());
@@ -39,7 +40,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void parseNonConfigurableEmptyURL() {
+    public void parseNonConfigurableEmptyURL() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
             @Override
             public String getDefaultHostname() {
@@ -66,7 +67,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void parseEmptyHost() {
+    public void parseEmptyHost() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
             @Override
             public String getDefaultHostname() {
@@ -88,7 +89,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void parseEmptyHostWithPath() {
+    public void parseEmptyHostWithPath() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestProtocol(Scheme.https) {
             @Override
             public String getDefaultHostname() {
@@ -181,7 +182,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseAuthoritySimpleDomain() {
+    public void testParseAuthoritySimpleDomain() throws HostParserException {
         final Host host = new Host(new TestProtocol());
         final String authority = "domain.tld";
         final HostParser.StringReader reader = new HostParser.StringReader(authority);
@@ -191,7 +192,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseAuthorityUserDomain() {
+    public void testParseAuthorityUserDomain() throws HostParserException {
         final Host host = new Host(new TestProtocol());
         final String authority = "user@domain.tld";
         final HostParser.StringReader reader = new HostParser.StringReader(authority);
@@ -202,7 +203,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseAuthorityUserPasswordDomain() {
+    public void testParseAuthorityUserPasswordDomain() throws HostParserException {
         final Host host = new Host(new TestProtocol());
         final String authority = "user:password@domain.tld";
         final HostParser.StringReader reader = new HostParser.StringReader(authority);
@@ -214,7 +215,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseAuthorityUserPasswordDomainPort() {
+    public void testParseAuthorityUserPasswordDomainPort() throws HostParserException {
         final Host host = new Host(new TestProtocol());
         final String authority = "user:password@domain.tld:1337";
         final HostParser.StringReader reader = new HostParser.StringReader(authority);
@@ -227,7 +228,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseAuthorityUserDefaultDomain() {
+    public void testParseAuthorityUserDefaultDomain() throws HostParserException {
         final Host host = new Host(new TestProtocol() {
             @Override
             public boolean isHostnameConfigurable() {
@@ -257,7 +258,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseRootless() {
+    public void testParseRootless() throws HostParserException {
         final Host host = new Host(new TestProtocol() {
             @Override
             public boolean isHostnameConfigurable() {
@@ -272,7 +273,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseRootlessWithUser() {
+    public void testParseRootlessWithUser() throws HostParserException {
         final Host host = new Host(new TestProtocol() {
             @Override
             public boolean isHostnameConfigurable() {

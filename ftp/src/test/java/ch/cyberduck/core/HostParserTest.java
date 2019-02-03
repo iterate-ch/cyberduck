@@ -1,6 +1,6 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.exception.InvalidHostException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.ftp.FTPProtocol;
 
 import org.junit.Test;
@@ -11,28 +11,28 @@ import static org.junit.Assert.*;
 
 public class HostParserTest {
 
-    @Test(expected = InvalidHostException.class)
-    public void testParseURLEmpty() {
+    @Test(expected = HostParserException.class)
+    public void testParseURLEmpty() throws HostParserException {
         Host h = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("");
         assertEquals("", h.getHostname());
     }
 
     @Test
-    public void testParseHostnameOnly() {
+    public void testParseHostnameOnly() throws HostParserException {
         assertEquals("hostname", new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("hostname").getHostname());
         assertEquals("hostname", new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("hostname ").getHostname());
         assertEquals("hostname", new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get(" hostname").getHostname());
     }
 
     @Test
-    public void testParseHostnameOnlyRemoveTrailingSlash() {
+    public void testParseHostnameOnlyRemoveTrailingSlash() throws HostParserException {
         assertEquals("hostname", new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("hostname/").getHostname());
         assertEquals("hostname", new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("hostname//").getHostname());
         assertEquals("", new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("/hostname").getHostname());
     }
 
     @Test
-    public void testParseNoProtocolAndCustomPath() {
+    public void testParseNoProtocolAndCustomPath() throws HostParserException {
         String url = "user@hostname/path/to/file";
         Host h = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get(url);
         assertEquals("hostname", h.getHostname());
@@ -43,7 +43,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseNoProtocol() {
+    public void testParseNoProtocol() throws HostParserException {
         String url = "user@hostname";
         Host h = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get(url);
         assertEquals("hostname", h.getHostname());
@@ -53,7 +53,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseWithTwoAtSymbol() {
+    public void testParseWithTwoAtSymbol() throws HostParserException {
         String url = "user@name@hostname";
         Host h = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get(url);
         assertEquals("hostname", h.getHostname());
@@ -63,7 +63,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseWithTwoAtSymbolAndPassword() {
+    public void testParseWithTwoAtSymbolAndPassword() throws HostParserException {
         String url = "user@name:password@hostname";
         Host h = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get(url);
         assertEquals("hostname", h.getHostname());
@@ -73,21 +73,21 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseWithDefaultPath() {
+    public void testParseWithDefaultPath() throws HostParserException {
         String url = "user@hostname/path/to/file";
         Host h = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get(url);
         assertEquals("/path/to/file", h.getDefaultPath());
     }
 
     @Test
-    public void testParseWithDefaultPathAndCustomPort() {
+    public void testParseWithDefaultPathAndCustomPort() throws HostParserException {
         String url = "user@hostname:999/path/to/file";
         Host h = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get(url);
         assertEquals("/path/to/file", h.getDefaultPath());
     }
 
     @Test
-    public void testInvalidPortnumber() {
+    public void testInvalidPortnumber() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("ftp://hostname:21a");
         assertEquals("hostname", host.getHostname());
         assertEquals(Protocol.Type.ftp, host.getProtocol().getType());
@@ -95,7 +95,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testMissingPortNumber() {
+    public void testMissingPortNumber() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("ftp://hostname:~/sandbox");
         assertEquals("hostname", host.getHostname());
         assertEquals(Protocol.Type.ftp, host.getProtocol().getType());
@@ -104,7 +104,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseIpv6() {
+    public void testParseIpv6() throws HostParserException {
         final HostParser parser = new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol())));
         assertEquals("fc01:2:3:4:5::1", parser.get("ftp://[fc01:2:3:4:5::1]:2121").getHostname());
         assertEquals(2121, parser.get("ftp://[fc01:2:3:4:5::1]:2121").getPort());
@@ -115,7 +115,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseIpv6LinkLocalZoneIndex() {
+    public void testParseIpv6LinkLocalZoneIndex() throws HostParserException {
         assertEquals("fe80::c62c:3ff:fe0b:8670%en0", new HostParser(new ProtocolFactory(Collections.singleton(new TestFTPProtocol()))).get("ftp://[fe80::c62c:3ff:fe0b:8670%en0]/~/sandbox").getHostname());
     }
 

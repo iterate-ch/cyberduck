@@ -43,6 +43,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
@@ -355,7 +356,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         if(Scheme.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
-                            controller.mount(HostParser.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                            try {
+                                controller.mount(HostParser.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                            }
+                            catch(HostParserException e) {
+                                log.warn(e.getDetail());
+                                continue;
+                            }
                             return true;
                         }
                     }

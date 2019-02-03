@@ -40,6 +40,7 @@ import ch.cyberduck.core.editor.DefaultEditorListener;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Scheduler;
@@ -1674,7 +1675,12 @@ public class BrowserController extends WindowController
             }
         }
         // Try to parse the input as a URL and extract protocol, hostname, username and password if any.
-        this.mount(HostParser.parse(input));
+        try {
+            this.mount(HostParser.parse(input));
+        }
+        catch(HostParserException e) {
+            log.warn(e.getDetail());
+        }
     }
 
     @Action
