@@ -263,11 +263,17 @@ namespace Ch.Cyberduck.Ui.Controller
             String input = View.Hostname;
             if (Scheme.isURL(input))
             {
-                Host parsed = HostParser.parse(input);
-                _host.setHostname(parsed.getHostname());
-                _host.setProtocol(parsed.getProtocol());
-                _host.setPort(parsed.getPort());
-                _host.setDefaultPath(parsed.getDefaultPath());
+                try {
+                    Host parsed = HostParser.parse(input);
+                    _host.setHostname(parsed.getHostname());
+                    _host.setProtocol(parsed.getProtocol());
+                    _host.setPort(parsed.getPort());
+                    _host.setDefaultPath(parsed.getDefaultPath());
+                }
+                catch(HostParserException e)
+                {
+                    Log.warn(e.getDetail());
+                }
             }
             else
             {

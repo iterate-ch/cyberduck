@@ -400,32 +400,39 @@ namespace Ch.Cyberduck.Ui.Controller
 
         void ICyberduck.QuickConnect(string arg)
         {
-            Host h = HostParser.parse(arg);
-            if (AbstractPath.Type.file == _detector.detect(h.getDefaultPath()))
+            try
             {
-                Path file = new Path(h.getDefaultPath(), EnumSet.of(AbstractPath.Type.file));
-                // wait until transferCollection is loaded
-                transfersSemaphore.Wait();
-                TransferController.Instance.StartTransfer(new DownloadTransfer(h, file,
-                    LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"),
-                        file.getName())));
-            }
-            else
-            {
-                foreach (BrowserController b in Browsers)
+                Host h = HostParser.parse(arg);
+                if (AbstractPath.Type.file == _detector.detect(h.getDefaultPath()))
                 {
-                    if (b.IsMounted())
+                    Path file = new Path(h.getDefaultPath(), EnumSet.of(AbstractPath.Type.file));
+                    // wait until transferCollection is loaded
+                    transfersSemaphore.Wait();
+                    TransferController.Instance.StartTransfer(new DownloadTransfer(h, file,
+                        LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"),
+                            file.getName())));
+                }
+                else
+                {
+                    foreach (BrowserController b in Browsers)
                     {
-                        if (
-                            new HostUrlProvider().get(b.Session.getHost())
-                                .Equals(new HostUrlProvider().get(h)))
+                        if (b.IsMounted())
                         {
-                            b.View.BringToFront();
-                            return;
+                            if (
+                                new HostUrlProvider().get(b.Session.getHost())
+                                    .Equals(new HostUrlProvider().get(h)))
+                            {
+                                b.View.BringToFront();
+                                return;
+                            }
                         }
                     }
+                    NewBrowser().Mount(h);
                 }
-                NewBrowser().Mount(h);
+            }
+            catch(HostParserException e)
+            {
+                Logger.warn(e.getDetail());
             }
         }
 

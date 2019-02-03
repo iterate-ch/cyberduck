@@ -2344,7 +2344,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
             }
-            Mount(HostParser.parse(input));
+            try
+            {
+                Mount(HostParser.parse(input));
+            }
+            catch(HostParserException e)
+            {
+                Log.warn(e.getDetail());
+            }
         }
 
         /// <summary>
