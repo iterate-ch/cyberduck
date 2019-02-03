@@ -30,6 +30,7 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
