@@ -156,7 +156,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure for endpoint %s", host));
         }
-        if(S3Session.isAwsHostname(host.getHostname())) {
+        if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
             // Only for AWS
             configuration.setProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default"));
             configuration.setProperty("s3service.disable-dns-buckets",
