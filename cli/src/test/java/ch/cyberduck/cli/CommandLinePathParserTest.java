@@ -63,11 +63,18 @@ public class CommandLinePathParserTest {
                 new CommandLinePathParser(input, factory).parse("ftps://u@test.cyberduck.ch"));
 
         assertEquals(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory)),
-                new CommandLinePathParser(input, factory).parse("s3://u@test.cyberduck.ch/"));
+                new CommandLinePathParser(input, factory).parse("s3:u@test.cyberduck.ch/"));
+        assertEquals(new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.directory)),
+                new CommandLinePathParser(input, factory).parse("s3:u@test.cyberduck.ch/"));
         assertEquals(new Path("/test.cyberduck.ch/d", EnumSet.of(Path.Type.directory)),
-                new CommandLinePathParser(input, factory).parse("s3://u@test.cyberduck.ch/d/"));
+                new CommandLinePathParser(input, factory).parse("s3:u@test.cyberduck.ch/d/"));
+
+        assertEquals(new Path("/test.cyberduck.ch/d", EnumSet.of(Path.Type.directory)),
+                new CommandLinePathParser(input, factory).parse("s3://u@/test.cyberduck.ch/d/"));
         assertEquals(new Path("/test.cyberduck.ch/d", EnumSet.of(Path.Type.file)),
-                new CommandLinePathParser(input, factory).parse("s3://u@test.cyberduck.ch/d"));
+                new CommandLinePathParser(input, factory).parse("s3://u@/test.cyberduck.ch/d"));
+        assertEquals(new Path("/test.cyberduck.ch/d", EnumSet.of(Path.Type.file)),
+                new CommandLinePathParser(input, factory).parse("s3://u@/test.cyberduck.ch/d"));
     }
 
     @Test

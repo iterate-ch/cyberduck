@@ -35,6 +35,7 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -227,11 +228,16 @@ public class BookmarkController extends SheetController implements CollectionLis
     public void hostFieldDidChange(final NSNotification sender) {
         final String input = hostField.stringValue();
         if(Scheme.isURL(input)) {
-            final Host parsed = HostParser.parse(input);
-            bookmark.setHostname(parsed.getHostname());
-            bookmark.setProtocol(parsed.getProtocol());
-            bookmark.setPort(parsed.getPort());
-            bookmark.setDefaultPath(parsed.getDefaultPath());
+            try {
+                final Host parsed = HostParser.parse(input);
+                bookmark.setHostname(parsed.getHostname());
+                bookmark.setProtocol(parsed.getProtocol());
+                bookmark.setPort(parsed.getPort());
+                bookmark.setDefaultPath(parsed.getDefaultPath());
+            }
+            catch(HostParserException e) {
+                log.warn(e.getDetail());
+            }
         }
         else {
             bookmark.setHostname(input);

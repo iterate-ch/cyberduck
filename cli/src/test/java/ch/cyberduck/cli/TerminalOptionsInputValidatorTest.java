@@ -45,7 +45,7 @@ public class TerminalOptionsInputValidatorTest {
             }
         })))
                 .validate("ftp://cdn.duck.sh/"));
-        assertFalse(new TerminalOptionsInputValidator(new ProtocolFactory(Collections.singleton(new FTPProtocol() {
+        assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(Collections.singleton(new FTPProtocol() {
             @Override
             public boolean isEnabled() {
                 return true;
@@ -82,7 +82,9 @@ public class TerminalOptionsInputValidatorTest {
                 new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SwiftProtocol())))
                     .read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile"))
         ));
-        assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace:///"));
+        assertFalse(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace:"));
+        assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace:/"));
         assertFalse(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace://"));
+        assertTrue(new TerminalOptionsInputValidator(new ProtocolFactory(list)).validate("rackspace:///"));
     }
 }

@@ -30,6 +30,7 @@ using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
@@ -263,11 +264,17 @@ namespace Ch.Cyberduck.Ui.Controller
             String input = View.Hostname;
             if (Scheme.isURL(input))
             {
-                Host parsed = HostParser.parse(input);
-                _host.setHostname(parsed.getHostname());
-                _host.setProtocol(parsed.getProtocol());
-                _host.setPort(parsed.getPort());
-                _host.setDefaultPath(parsed.getDefaultPath());
+                try {
+                    Host parsed = HostParser.parse(input);
+                    _host.setHostname(parsed.getHostname());
+                    _host.setProtocol(parsed.getProtocol());
+                    _host.setPort(parsed.getPort());
+                    _host.setDefaultPath(parsed.getDefaultPath());
+                }
+                catch(HostParserException e)
+                {
+                    Log.warn(e.getDetail());
+                }
             }
             else
             {

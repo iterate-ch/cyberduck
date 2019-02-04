@@ -28,20 +28,23 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferOptions;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSRect;
 
 import java.util.EnumSet;
 
 public class DownloadController extends AlertController {
+    private static final Logger log = Logger.getLogger(DownloadController.class);
 
     protected final NSTextField urlField
-            = NSTextField.textfieldWithFrame(new NSRect(0, 22));
+        = NSTextField.textfieldWithFrame(new NSRect(0, 22));
 
     private final PathKindDetector detector = new DefaultPathKindDetector();
     private final String url;
@@ -81,20 +84,31 @@ public class DownloadController extends AlertController {
     public void callback(final int returncode) {
         switch(returncode) {
             case DEFAULT_OPTION:
-                final Host host = HostParser.parse(urlField.stringValue());
-                final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath()),
+                try {
+                    final Host host = HostParser.parse(urlField.stringValue());
+                    final Path file = new Path(PathNormalizer.normalize(host.getDefaultPath()),
                         EnumSet.of(detector.detect(host.getDefaultPath())));
-                host.setDefaultPath(file.getParent().getAbsolute());
-                final Transfer transfer = new DownloadTransfer(host, file,
+                    host.setDefaultPath(file.getParent().getAbsolute());
+                    final Transfer transfer = new DownloadTransfer(host, file,
                         LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"), file.getName()));
-                TransferControllerFactory.get().start(transfer, new TransferOptions());
-                break;
+                    TransferControllerFactory.get().start(transfer, new TransferOptions());
+                    break;
+                }
+                catch(HostParserException e) {
+                    log.warn(e.getDetail());
+                }
         }
     }
 
     @Override
     public boolean validate() {
-        Host host = HostParser.parse(urlField.stringValue());
+        final Host host;
+        try {
+            host = HostParser.parse(urlField.stringValue());
+        }
+        catch(HostParserException e) {
+            return false;
+        }
         return StringUtils.isNotBlank(host.getDefaultPath());
     }
 

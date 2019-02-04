@@ -24,6 +24,7 @@ import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 
@@ -83,9 +84,12 @@ public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
             // Possibly a folder
             return;
         }
-        final Host host = new HostParser(protocols).get(url);
-        if(StringUtils.isBlank(host.getHostname())) {
-            // Possibly file://
+        final Host host;
+        try {
+            host = new HostParser(protocols).get(url);
+        }
+        catch(HostParserException e) {
+            log.warn(e.getDetail());
             return;
         }
         final String title = bookmark.stringForKey("Title");

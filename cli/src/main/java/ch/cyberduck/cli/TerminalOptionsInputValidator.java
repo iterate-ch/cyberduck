@@ -22,6 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 
@@ -138,28 +139,34 @@ public class TerminalOptionsInputValidator {
                 return false;
             }
         }
-        final Host host = new HostParser(factory).get(uri);
-        switch(host.getProtocol().getType()) {
-            case file:
-            case b2:
-            case s3:
-            case googlestorage:
-            case swift:
-            case azure:
-            case googledrive:
-            case dropbox:
-            case onedrive:
-                break;
-            default:
-                if(StringUtils.isBlank(host.getHostname())) {
-                    console.printf("Missing hostname in URI %s%n", uri);
-                    return false;
-                }
+        try {
+            final Host host = new HostParser(factory).get(uri);
+            switch(host.getProtocol().getType()) {
+                case file:
+                case b2:
+                case s3:
+                case googlestorage:
+                case swift:
+                case azure:
+                case googledrive:
+                case dropbox:
+                case onedrive:
+                    break;
+                default:
+                    if(StringUtils.isBlank(host.getHostname())) {
+                        console.printf("Missing hostname in URI %s%n", uri);
+                        return false;
+                    }
+            }
+            if(StringUtils.isBlank(host.getDefaultPath())) {
+                console.printf("Missing path in URI %s%n", uri);
+                return false;
+            }
+            return true;
         }
-        if(StringUtils.isBlank(host.getDefaultPath())) {
-            console.printf("Missing path in URI %s%n", uri);
+        catch(HostParserException e) {
+            console.printf(e.getDetail());
             return false;
         }
-        return true;
     }
 }

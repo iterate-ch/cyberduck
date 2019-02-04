@@ -22,6 +22,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -115,7 +116,12 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
                                 break;
                         }
                     }
-                    this.add(HostParser.parse(protocols, protocol, url));
+                    try {
+                        this.add(new HostParser(protocols, protocol).get(url));
+                    }
+                    catch(HostParserException e) {
+                        log.warn(e.getDetail());
+                    }
                 }
             }
             reader.endArray();
