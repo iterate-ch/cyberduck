@@ -170,7 +170,7 @@ public class LoginConnectionService implements ConnectionService {
     private void authenticate(final Proxy proxy, final Session session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
         if(!login.authenticate(proxy, session, listener, prompt, callback)) {
             if(session.isConnected()) {
-                // Next attempt with updated credentials
+                // Next attempt with updated credentials but cancel when prompt is dismissed
                 this.authenticate(proxy, session, cache, callback);
             }
             else {

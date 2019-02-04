@@ -115,9 +115,10 @@ public class KeychainLoginService implements LoginService {
      * @param message  Message in prompt
      * @param prompt   Login prompt
      * @param options  Available login options for protocol
+     * @return True if credentials have been updated
      * @throws LoginCanceledException Prompt canceled by user
      */
-    public void prompt(final Host bookmark, final String message, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException {
+    public boolean prompt(final Host bookmark, final String message, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException {
         final Credentials credentials = bookmark.getCredentials();
         if(options.password) {
             final Credentials input = prompt.prompt(bookmark, credentials.getUsername(),
@@ -137,6 +138,7 @@ public class KeychainLoginService implements LoginService {
             credentials.setSaved(input.isSaved());
             credentials.setToken(input.getPassword());
         }
+        return options.password || options.token;
     }
 
     @Override
@@ -167,30 +169,15 @@ public class KeychainLoginService implements LoginService {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
             credentials.setPassed(false);
             final LoginOptions options = new LoginOptions(bookmark.getProtocol());
-            if(options.user && options.password) {
-                // Default login prompt with username and password input
-                final Credentials input = prompt.prompt(bookmark, credentials.getUsername(),
-                    LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
-                credentials.setUsername(input.getUsername());
-                credentials.setPassword(input.getPassword());
-                credentials.setSaved(input.isSaved());
-                if(input.isPublicKeyAuthentication()) {
-                    credentials.setIdentity(input.getIdentity());
-                }
-                if(input.isCertificateAuthentication()) {
-                    credentials.setCertificate(input.getCertificate());
-                }
+            final StringAppender details = new StringAppender();
+            details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
+            details.append(e.getDetail());
+            if(this.prompt(bookmark, details.toString(), prompt, options)) {
                 // Retry
                 return false;
             }
-            else {
-                final StringAppender details = new StringAppender();
-                details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
-                details.append(e.getDetail());
-                this.prompt(bookmark, details.toString(), prompt, options);
-                // Retry
-                return false;
-            }
+            // No updated credentials
+            throw e;
         }
     }
 }

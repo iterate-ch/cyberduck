@@ -142,18 +142,19 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                     final StringAppender details = new StringAppender();
                     details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
                     details.append(e.getDetail());
-                    service.prompt(bookmark, details.toString(), login, new LoginOptions(bookmark.getProtocol()));
-                    // Try to authenticate again
-                    service.authenticate(ProxyFactory.get().find(bookmark), session, progress, login, new CancelCallback() {
-                        @Override
-                        public void verify() throws ConnectionCanceledException {
-                            if(SessionBackgroundAction.this.isCanceled()) {
-                                throw new ConnectionCanceledException();
+                    if(service.prompt(bookmark, details.toString(), login, new LoginOptions(bookmark.getProtocol()))) {
+                        // Try to authenticate again
+                        service.authenticate(ProxyFactory.get().find(bookmark), session, progress, login, new CancelCallback() {
+                            @Override
+                            public void verify() throws ConnectionCanceledException {
+                                if(SessionBackgroundAction.this.isCanceled()) {
+                                    throw new ConnectionCanceledException();
+                                }
                             }
-                        }
-                    });
-                    // Run action again after login
-                    return this.run();
+                        });
+                        // Run action again after login
+                        return this.run();
+                    }
                 }
                 catch(BackgroundException f) {
                     log.warn(String.format("Ignore error %s after login failure %s ", f, e));
