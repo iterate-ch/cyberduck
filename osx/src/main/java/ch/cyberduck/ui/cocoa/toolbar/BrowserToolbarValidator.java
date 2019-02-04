@@ -307,7 +307,7 @@ public class BrowserToolbarValidator implements ToolbarValidator {
             return this.isBrowser() && controller.isMounted();
         }
         else if(action.equals(disconnect.action())) {
-            return this.isBrowser() && controller.isConnected();
+            return this.isBrowser() && (!controller.isIdle() || controller.isConnected());
         }
         else if(action.equals(Foundation.selector("gotofolderButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted();
