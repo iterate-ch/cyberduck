@@ -45,6 +45,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor {
 
     private final CloseableHttpClient client;
@@ -123,13 +125,8 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
 
             @Override
             public OutputStream getOutputStream() {
-                try {
-                    // Await execution of HTTP request to make stream available
-                    entry.await();
-                }
-                catch(InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                // Await execution of HTTP request to make stream available
+                Uninterruptibles.awaitUninterruptibly(entry);
                 return entity.getStream();
             }
         };

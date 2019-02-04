@@ -39,6 +39,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public class TransferStatus implements StreamCancelation, StreamProgress {
     private static final Logger log = Logger.getLogger(TransferStatus.class);
 
@@ -210,12 +212,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     public boolean await() {
         // Lock until complete
-        try {
-            done.await();
-        }
-        catch(InterruptedException e) {
-            log.error("Failure waiting for status to complete");
-        }
+        Uninterruptibles.awaitUninterruptibly(done);
         return complete.get();
     }
 
