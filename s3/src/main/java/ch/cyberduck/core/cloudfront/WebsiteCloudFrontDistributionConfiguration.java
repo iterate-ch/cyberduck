@@ -73,7 +73,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             return super.getMethods(container);
         }
         final List<Distribution.Method> methods = new ArrayList<Distribution.Method>();
-        if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+        if(S3Session.isAwsHostname(session.getHost().getHostname())) {
             methods.addAll(super.getMethods(container));
             methods.addAll(Arrays.asList(Distribution.WEBSITE, Distribution.WEBSITE_CDN));
         }

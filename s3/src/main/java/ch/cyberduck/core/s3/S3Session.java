@@ -93,13 +93,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
     public S3Session(final Host host) {
-        super(host, host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default")) ?
+        super(host, S3Session.isAwsHostname(host.getHostname()) ?
             new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()) :
             new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default")) ?
+        super(host, S3Session.isAwsHostname(host.getHostname()) ?
             new LaxHostnameDelegatingTrustManager(trust, host.getHostname()) :
             new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -156,7 +156,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Configure for endpoint %s", host));
         }
-        if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+        if(S3Session.isAwsHostname(host.getHostname())) {
             // Only for AWS
             configuration.setProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default"));
             configuration.setProperty("s3service.disable-dns-buckets",
@@ -199,7 +199,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         // Only for AWS
-        if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+        if(S3Session.isAwsHostname(host.getHostname())) {
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this, prompt));
         }
         return new RequestEntityRestStorageService(this, this.configure(), configuration);
@@ -221,7 +221,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         else {
             final Credentials credentials;
             // Only for AWS
-            if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+            if(isAwsHostname(host.getHostname())) {
                 // Try auto-configure
                 credentials = new STSCredentialsConfigurator(prompt).configure(host);
             }
@@ -255,6 +255,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
     }
 
+    public static boolean isAwsHostname(final String hostname) {
+        // Matches s3.amazonaws.com
+        // Matches s3.cn-north-1.amazonaws.com.cn
+        // Matches s3.cn-northwest-1.amazonaws.com.cn
+        // Matches s3-us-gov-west-1.amazonaws.com
+        return StringUtils.contains(hostname, "amazonaws.com");
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
@@ -265,7 +273,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3ReadFeature(this);
         }
         if(type == MultipartWrite.class) {
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            if(S3Session.isAwsHostname(host.getHostname())) {
                 return (T) new S3MultipartWriteFeature(this);
             }
             return (T) new S3MultipartWriteFeature(this);
@@ -283,13 +291,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3MoveFeature(this);
         }
         if(type == Copy.class) {
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            if(S3Session.isAwsHostname(host.getHostname())) {
                 return (T) new S3ThresholdCopyFeature(this);
             }
             return (T) new S3CopyFeature(this);
         }
         if(type == Delete.class) {
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            if(S3Session.isAwsHostname(host.getHostname())) {
                 return (T) new S3MultipleDeleteFeature(this);
             }
             return (T) new S3DefaultDeleteFeature(this);
@@ -314,7 +322,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == AnalyticsProvider.class) {
             // Only for AWS
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            if(S3Session.isAwsHostname(host.getHostname())) {
                 return (T) new QloudstatAnalyticsProvider();
             }
             return null;
@@ -330,7 +338,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Encryption.class) {
             // Only for AWS
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            if(S3Session.isAwsHostname(host.getHostname())) {
                 return (T) new KMSEncryptionFeature(this);
             }
             return null;
@@ -340,7 +348,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == IdentityConfiguration.class) {
             // Only for AWS
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            if(S3Session.isAwsHostname(host.getHostname())) {
                 return (T) new AmazonIdentityConfiguration(host);
             }
             return null;
@@ -362,14 +370,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == TransferAcceleration.class) {
             // Only for AWS
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            if(S3Session.isAwsHostname(host.getHostname())) {
                 return (T) new S3TransferAccelerationService(this);
             }
             return null;
         }
         if(type == Bulk.class) {
             // Only for AWS
-            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            if(S3Session.isAwsHostname(host.getHostname())) {
                 return (T) new S3BulkTransferAccelerationFeature(this, new S3TransferAccelerationService(this));
             }
             return (T) new DisabledBulkFeature();

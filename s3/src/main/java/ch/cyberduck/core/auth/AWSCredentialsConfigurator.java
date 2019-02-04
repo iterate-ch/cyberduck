@@ -19,7 +19,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.log4j.Logger;
 
@@ -43,7 +43,7 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
     public Credentials configure(final Host host) {
         final Credentials credentials = new Credentials(host.getCredentials());
         // Only for AWS
-        if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+        if(S3Session.isAwsHostname(host.getHostname())) {
             if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
                 // Lookup from default profile if no access key is set in bookmark
                 for(AWSCredentialsProvider provider : providers) {
