@@ -97,6 +97,7 @@ public class WritePermissionWorker extends Worker<Boolean> {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
             file.getName(), permission));
         feature.setUnixPermission(file, permission);
+        file.attributes().setPermission(permission);
         if(file.isDirectory()) {
             if(callback.recurse(file, permission)) {
                 for(Path child : session.getFeature(ListService.class).list(file, new WorkerListProgressListener(this, listener))) {
