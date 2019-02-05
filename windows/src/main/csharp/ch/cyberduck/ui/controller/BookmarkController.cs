@@ -279,13 +279,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 _host.setHostname(input);
-                Credentials auto = CredentialsConfiguratorFactory.get(_host.getProtocol()).configure(_host);
-                Credentials credentials = _host.getCredentials();
-                credentials.setUsername(auto.getUsername());
-                credentials.setPassword(auto.getPassword());
-                credentials.setIdentity(auto.getIdentity());
-                credentials.setToken(auto.getToken());
-                credentials.setCertificate(auto.getCertificate());
+                _host.setCredentials(CredentialsConfiguratorFactory.get(_host.getProtocol()).configure(_host));
             }
             ItemChanged();
             Update();
