@@ -1280,6 +1280,7 @@ public class MainController extends BundleController implements NSApplication.De
         else {
             try {
                 final Host h = HostParser.parse(url);
+                h.setCredentials(CredentialsConfiguratorFactory.get(h.getProtocol()).configure(h));
                 if(Path.Type.file == detector.detect(h.getDefaultPath())) {
                     final Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.file));
                     TransferControllerFactory.get().start(new DownloadTransfer(h, file,
