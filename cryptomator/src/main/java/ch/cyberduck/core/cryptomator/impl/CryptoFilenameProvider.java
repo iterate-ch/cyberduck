@@ -104,6 +104,10 @@ public class CryptoFilenameProvider {
         return new Path(second, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted, Path.Type.vault));
     }
 
+    public void invalidate(final String filename) {
+        cache.remove(filename);
+    }
+
     public void destroy() {
         cache.clear();
     }
