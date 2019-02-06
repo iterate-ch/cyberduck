@@ -377,7 +377,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Bulk.class) {
             // Only for AWS
-            if(S3Session.isAwsHostname(host.getHostname())) {
+            if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 return (T) new S3BulkTransferAccelerationFeature(this, new S3TransferAccelerationService(this));
             }
             return (T) new DisabledBulkFeature();
