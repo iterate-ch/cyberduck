@@ -241,13 +241,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         }
         else {
             bookmark.setHostname(input);
-            final Credentials auto = CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark);
-            final Credentials credentials = bookmark.getCredentials();
-            credentials.setUsername(auto.getUsername());
-            credentials.setPassword(auto.getPassword());
-            credentials.setIdentity(auto.getIdentity());
-            credentials.setToken(auto.getToken());
-            credentials.setCertificate(auto.getCertificate());
+            bookmark.setCredentials(CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark));
         }
         this.update();
     }

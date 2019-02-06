@@ -403,6 +403,7 @@ namespace Ch.Cyberduck.Ui.Controller
             try
             {
                 Host h = HostParser.parse(arg);
+                h.setCredentials(CredentialsConfiguratorFactory.get(h.getProtocol()).configure(h));
                 if (AbstractPath.Type.file == _detector.detect(h.getDefaultPath()))
                 {
                     Path file = new Path(h.getDefaultPath(), EnumSet.of(AbstractPath.Type.file));
