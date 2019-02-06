@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator.impl;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -25,12 +26,10 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 import org.cryptomator.cryptolib.common.MessageDigestSupplier;
 
 import java.util.EnumSet;
-import java.util.Map;
 
 import com.google.common.io.BaseEncoding;
 
@@ -47,8 +46,8 @@ public class CryptoFilenameProvider {
 
     private final Path metadataRoot;
 
-    private final Map<String, String> cache = new LRUMap<String, String>(
-        PreferencesFactory.get().getInteger("browser.cache.size"));
+    private final LRUCache<String, String> cache = LRUCache.build(
+        PreferencesFactory.get().getLong("browser.cache.size"));
 
     public CryptoFilenameProvider(final Path vault) {
         this.metadataRoot = new Path(vault, METADATA_DIR_NAME, vault.getType());
@@ -66,7 +65,7 @@ public class CryptoFilenameProvider {
         if(filename.length() < NAME_SHORTENING_THRESHOLD) {
             return filename;
         }
-        if(cache.containsKey(filename)) {
+        if(cache.contains(filename)) {
             return cache.get(filename);
         }
         final byte[] longFileNameBytes = filename.getBytes(UTF_8);
