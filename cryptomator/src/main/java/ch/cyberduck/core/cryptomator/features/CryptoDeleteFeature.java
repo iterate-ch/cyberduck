@@ -62,6 +62,7 @@ public class CryptoDeleteFeature implements Delete {
                     encrypted.add(metadata);
                 }
                 if(filenameProvider.isDeflated(metadata.getName())) {
+                    filenameProvider.invalidate(filenameProvider.inflate(session, metadata.getName()));
                     final Path metadataFile = filenameProvider.resolve(metadata.getName());
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Add metadata file %s", metadata));
