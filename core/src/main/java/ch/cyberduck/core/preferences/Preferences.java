@@ -1042,7 +1042,7 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("terminal.bundle.identifier", "com.apple.Terminal");
         this.setDefault("terminal.command", "do script \"{0}\"");
-        this.setDefault("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL\"");
+        this.setDefault("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL --login\"");
 
         this.setDefault("network.interface.blacklist", StringUtils.EMPTY);
 
