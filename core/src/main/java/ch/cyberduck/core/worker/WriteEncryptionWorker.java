@@ -82,6 +82,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                 file.getName()));
         feature.setEncryption(file, algorithm);
+        file.attributes().setEncryption(algorithm);
         if(file.isDirectory()) {
             if(callback.recurse(file, algorithm)) {
                 for(Path child : session.getFeature(ListService.class).list(file, new WorkerListProgressListener(this, listener))) {
