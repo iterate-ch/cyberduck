@@ -24,19 +24,18 @@ import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
-import java.util.Map;
 
 public class CryptoDirectoryProvider {
     private static final Logger log = Logger.getLogger(CryptoDirectoryProvider.class);
@@ -51,7 +50,7 @@ public class CryptoDirectoryProvider {
     private final RandomStringService random
         = new UUIDRandomStringService();
 
-    private final Map<CacheReference<Path>, String> cache = new LRUMap<CacheReference<Path>, String>(
+    private final LRUCache<CacheReference<Path>, String> cache = LRUCache.build(
         PreferencesFactory.get().getInteger("browser.cache.size"));
 
     public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
@@ -120,7 +119,7 @@ public class CryptoDirectoryProvider {
             return ROOT_DIR_ID;
         }
         if(StringUtils.isBlank(directoryId)) {
-            if(cache.containsKey(new DefaultPathPredicate(directory))) {
+            if(cache.contains(new DefaultPathPredicate(directory))) {
                 return cache.get(new DefaultPathPredicate(directory));
             }
             final String id = this.load(session, directory);
