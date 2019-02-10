@@ -17,6 +17,7 @@ package ch.cyberduck.core.cache;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -98,7 +99,7 @@ public class LRUCache<Key, Value> {
     }
 
     public Map<Key, Value> asMap() {
-        return delegate.asMap();
+        return Collections.unmodifiableMap(delegate.asMap());
     }
 
     public void put(final Key key, Value value) {
