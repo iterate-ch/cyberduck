@@ -41,6 +41,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.HostParserException;
@@ -71,7 +72,6 @@ import ch.cyberduck.ui.cocoa.controller.CopyController;
 import ch.cyberduck.ui.cocoa.controller.DeleteController;
 import ch.cyberduck.ui.cocoa.controller.MoveController;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -104,11 +104,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final Map<Item, NSAttributedString> attributed = new LRUMap<Item, NSAttributedString>(
+    private final LRUCache<Item, NSAttributedString> attributed = LRUCache.build(
         preferences.getInteger("browser.model.cache.size")
     );
 
-    private final Map<Path, AttributedList<Path>> filtered = new LRUMap<Path, AttributedList<Path>>(
+    private final LRUCache<Path, AttributedList<Path>> filtered = LRUCache.build(
         preferences.getInteger("browser.model.cache.size")
     );
 
@@ -165,6 +165,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         this.cache = cache;
     }
 
+    @Override
+    public void invalidate() {
+        attributed.clear();
+        filtered.clear();
+        super.invalidate();
+    }
+
     /**
      * Tell the browser view to reload the data
      *
@@ -178,7 +185,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     public AttributedList<Path> get(final Path directory) {
-        if(!filtered.containsKey(directory)) {
+        if(!filtered.contains(directory)) {
             filtered.put(directory, cache.get(directory).filter(controller.getComparator(), controller.getFilter()));
         }
         return filtered.get(directory);
