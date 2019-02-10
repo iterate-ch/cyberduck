@@ -23,9 +23,9 @@ import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.library.Native;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -33,7 +33,6 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public final class LaunchServicesApplicationFinder implements ApplicationFinder {
     private static final Logger log = Logger.getLogger(LaunchServicesApplicationFinder.class);
@@ -74,23 +73,23 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      * display name of application
      */
     @SuppressWarnings("unchecked")
-    private static final Map<String, Application> applicationNameCache
-            = Collections.synchronizedMap(new LRUMap<String, Application>(20));
+    private static final LRUCache<String, Application> applicationNameCache
+        = LRUCache.build(20);
 
     /**
      *
      */
     @SuppressWarnings("unchecked")
-    private static final Map<String, Application> defaultApplicationCache
-            = Collections.synchronizedMap(new LRUMap<String, Application>(20));
+    private static final LRUCache<String, Application> defaultApplicationCache
+        = LRUCache.build(20);
 
     /**
      * Caching map between application bundle identifiers and
      * file type extensions.
      */
     @SuppressWarnings("unchecked")
-    private static final Map<String, List<Application>> defaultApplicationListCache
-            = Collections.synchronizedMap(new LRUMap<String, List<Application>>(20));
+    private static final LRUCache<String, List<Application>> defaultApplicationListCache
+        = LRUCache.build(20);
 
     @Override
     public List<Application> findAll(final String filename) {
@@ -98,7 +97,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
         if(StringUtils.isEmpty(extension)) {
             return Collections.emptyList();
         }
-        if(!defaultApplicationListCache.containsKey(extension)) {
+        if(!defaultApplicationListCache.contains(extension)) {
             final List<Application> applications = new ArrayList<Application>();
             for(String identifier : this.findAllForType(extension)) {
                 applications.add(this.getDescription(identifier));
@@ -127,7 +126,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
     @Override
     public Application find(final String filename) {
         final String extension = FilenameUtils.getExtension(filename);
-        if(!defaultApplicationCache.containsKey(extension)) {
+        if(!defaultApplicationCache.contains(extension)) {
             if(StringUtils.isEmpty(extension)) {
                 return Application.notfound;
             }
@@ -157,7 +156,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      */
     @Override
     public Application getDescription(final String search) {
-        if(applicationNameCache.containsKey(search)) {
+        if(applicationNameCache.contains(search)) {
             return applicationNameCache.get(search);
         }
         if(log.isDebugEnabled()) {
@@ -228,7 +227,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
                 return false;
             }
             return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                    application.getIdentifier()) != null;
+                application.getIdentifier()) != null;
         }
     }
 
