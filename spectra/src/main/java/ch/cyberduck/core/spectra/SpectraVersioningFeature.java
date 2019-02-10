@@ -21,16 +21,14 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.s3.S3PathContainerService;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
 import java.util.UUID;
 
 import com.spectralogic.ds3client.Ds3Client;
@@ -55,16 +53,15 @@ public class SpectraVersioningFeature implements Versioning {
     private final PathContainerService containerService
         = new S3PathContainerService();
 
-    @SuppressWarnings("unchecked")
-    private Map<Path, VersioningConfiguration> cache
-        = Collections.synchronizedMap(new LRUMap<Path, VersioningConfiguration>(10));
+    private LRUCache<Path, VersioningConfiguration> cache
+        = LRUCache.build(10);
 
     public SpectraVersioningFeature(final SpectraSession session) {
         this.session = session;
     }
 
     @Override
-    public Versioning withCache(final Map<Path, VersioningConfiguration> cache) {
+    public Versioning withCache(final LRUCache<Path, VersioningConfiguration> cache) {
         this.cache = cache;
         return this;
     }
@@ -76,7 +73,7 @@ public class SpectraVersioningFeature implements Versioning {
         if(container.isRoot()) {
             return VersioningConfiguration.empty();
         }
-        if(cache.containsKey(container)) {
+        if(cache.contains(container)) {
             return cache.get(container);
         }
         try {
