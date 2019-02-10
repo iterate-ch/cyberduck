@@ -20,13 +20,12 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.VersioningConfiguration;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
-
-import java.util.Map;
 
 public class VaultRegistryVersioningFeature implements Versioning {
 
@@ -41,7 +40,7 @@ public class VaultRegistryVersioningFeature implements Versioning {
     }
 
     @Override
-    public Versioning withCache(final Map<Path, VersioningConfiguration> cache) {
+    public Versioning withCache(final LRUCache<Path, VersioningConfiguration> cache) {
         proxy.withCache(cache);
         return this;
     }
