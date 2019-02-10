@@ -19,22 +19,19 @@ package ch.cyberduck.core.i18n;
  */
 
 import ch.cyberduck.binding.foundation.NSBundle;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.preferences.BundleApplicationResourcesFinder;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.collections4.map.LRUMap;
-
 import java.util.Collections;
-import java.util.Map;
 
 public class BundleLocale implements Locale {
 
     private final NSBundle bundle;
 
-    @SuppressWarnings("unchecked")
-    private final Map<String, String> cache
-            = Collections.synchronizedMap(new LRUMap<String, String>(1000));
+    private final LRUCache<String, String> cache
+        = LRUCache.build(1000);
 
     public BundleLocale() {
         this(new BundleApplicationResourcesFinder().bundle());
@@ -47,7 +44,7 @@ public class BundleLocale implements Locale {
     @Override
     public String localize(final String key, final String table) {
         final String identifier = String.format("%s.%s", table, key);
-        if(!cache.containsKey(identifier)) {
+        if(!cache.contains(identifier)) {
             cache.put(identifier, bundle.localizedString(key, table));
         }
         return cache.get(identifier);
