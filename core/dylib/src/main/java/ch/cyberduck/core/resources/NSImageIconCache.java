@@ -23,18 +23,15 @@ import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class NSImageIconCache extends AbstractIconCache<NSImage> {
     private static final Logger log = Logger.getLogger(NSImageIconCache.class);
@@ -44,29 +41,8 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     /**
      * Cache limited to n entries
      */
-    private final Map<String, NSImage> cache;
-
-    public NSImageIconCache() {
-        if(0 == PreferencesFactory.get().getInteger("icon.cache.size")) {
-            cache = new HashMap<String, NSImage>() {
-                @Override
-                public NSImage put(String key, NSImage value) {
-                    return value;
-                }
-            };
-        }
-        else {
-            cache = new LRUMap<String, NSImage>(PreferencesFactory.get().getInteger("icon.cache.size")) {
-                @Override
-                protected boolean removeLRU(LinkEntry entry) {
-                    if(log.isDebugEnabled()) {
-                        log.debug("Removing from cache:" + entry);
-                    }
-                    return true;
-                }
-            };
-        }
-    }
+    private final LRUCache<String, NSImage> cache
+        = LRUCache.build(PreferencesFactory.get().getInteger("icon.cache.size"));
 
     private NSImage put(final String name, final NSImage image, final Integer size) {
         cache.put(String.format("%d-%s", size, name), image);
@@ -74,7 +50,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     }
 
     private NSImage load(final String name, final Integer size) {
-        if(!cache.containsKey(String.format("%d-%s", size, name))) {
+        if(!cache.contains(String.format("%d-%s", size, name))) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("No cached image for %s", name));
             }
