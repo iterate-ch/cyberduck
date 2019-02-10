@@ -58,7 +58,7 @@ public class CryptoFilenameProvider {
     }
 
     public String inflate(final Session<?> session, final String shortName) throws BackgroundException {
-        return new ContentReader(session).read(resolve(shortName));
+        return new ContentReader(session).read(this.resolve(shortName));
     }
 
     public String deflate(final Session<?> session, final String filename) throws BackgroundException {
