@@ -66,6 +66,6 @@ public class PathCacheTest {
         final Path file = new Path("name", EnumSet.of(Path.Type.file));
         cache.put(file, AttributedList.<Path>emptyList());
         assertFalse(cache.containsKey(file));
-        assertEquals(0, cache.keySet().size());
+        assertEquals(0, cache.size());
     }
 }

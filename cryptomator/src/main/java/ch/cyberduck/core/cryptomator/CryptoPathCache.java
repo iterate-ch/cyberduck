@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
 
-import java.util.Set;
+import java.util.Map;
 
 public final class CryptoPathCache implements Cache<Path> {
     private static final Logger log = Logger.getLogger(CryptoPathCache.class);
@@ -54,14 +54,14 @@ public final class CryptoPathCache implements Cache<Path> {
     }
 
     @Override
-    public AttributedList<Path> put(final Path folder, final AttributedList<Path> encrypted) {
+    public void put(final Path folder, final AttributedList<Path> encrypted) {
         final AttributedList<Path> list = new AttributedList<>();
         // Swap with decrypted paths
         for(int i = 0; i < encrypted.size(); i++) {
             final Path f = encrypted.get(i);
             list.add(i, this.toDecrypted(f));
         }
-        return delegate.put(this.toDecrypted(folder), list);
+        delegate.put(this.toDecrypted(folder), list);
     }
 
     @Override
@@ -77,13 +77,18 @@ public final class CryptoPathCache implements Cache<Path> {
     }
 
     @Override
-    public AttributedList<Path> remove(final Path folder) {
-        return delegate.remove(this.toDecrypted(folder));
+    public void remove(final Path folder) {
+        delegate.remove(this.toDecrypted(folder));
     }
 
     @Override
-    public Set<Path> keySet() {
-        return delegate.keySet();
+    public long size() {
+        return delegate.size();
+    }
+
+    @Override
+    public Map<Path, AttributedList<Path>> asMap() {
+        return delegate.asMap();
     }
 
     @Override
