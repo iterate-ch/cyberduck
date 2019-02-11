@@ -21,6 +21,7 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 public class TransferItemCacheTest {
@@ -45,7 +46,8 @@ public class TransferItemCacheTest {
         final Cache<TransferItem> c = new ReverseLookupCache<TransferItem>(new TransferItemCache(1), 1);
         final AttributedList<TransferItem> list = new AttributedList<>();
         list.add(new TransferItem(new Path("/r2", EnumSet.of(Path.Type.file)), new Local("/l2")));
-        c.put(new TransferItem(new Path("/", EnumSet.of(Path.Type.directory))), list);
+        c.put(null, list);
+        assertFalse(c.get(null).isEmpty());
         final NSObjectTransferItemReference reference = new NSObjectTransferItemReference(NSObjectTransferItemReference.get(new Path("/r2", EnumSet.of(Path.Type.file))));
         assertNotNull(c.lookup(reference));
     }
