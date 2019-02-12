@@ -51,6 +51,7 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             return new LoginFailureException(buffer.toString(), failure);
         }
         if(failure instanceof RetryException) {
+            // Rate limit
             final Duration delay = Duration.ofMillis(((RetryException) failure).getBackoffMillis());
             return new RetriableAccessDeniedException(buffer.toString(), delay);
         }
@@ -221,6 +222,9 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
     }
 
     private void parse(final StringBuilder buffer, final String message) {
+        if(StringUtils.isBlank(message)) {
+            return;
+        }
         final JsonParser parser = new JsonParser();
         try {
             final JsonElement element = parser.parse(new StringReader(message));
