@@ -27,6 +27,8 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFinder;
+import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
@@ -86,6 +88,17 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
         if(null == file.getBookmark()) {
             log.warn(String.format("Missing security scoped bookmark for file %s", file));
             if(interactive) {
+                if(!file.exists()) {
+                    return null;
+                }
+                if(file.isChild(new TemporarySupportDirectoryFinder().find())) {
+                    // Skip prompt for file in temporary folder where access is not sandboxed
+                    return null;
+                }
+                if(file.isChild(new SecurityApplicationGroupSupportDirectoryFinder().find())) {
+                    // Skip prompt for file in application group folder where access is not sandboxed
+                    return null;
+                }
                 // Prompt user if no bookmark reference is available
                 final String reference = this.choose(file);
                 file.setBookmark(reference);
