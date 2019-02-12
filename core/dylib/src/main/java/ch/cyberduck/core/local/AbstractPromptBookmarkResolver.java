@@ -86,7 +86,6 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
     public NSURL resolve(final Local file, final boolean interactive) throws AccessDeniedException {
         final NSData bookmark;
         if(null == file.getBookmark()) {
-            log.warn(String.format("Missing security scoped bookmark for file %s", file));
             if(interactive) {
                 if(!file.exists()) {
                     return null;
@@ -100,6 +99,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
                     return null;
                 }
                 // Prompt user if no bookmark reference is available
+                log.warn(String.format("Missing security scoped bookmark for file %s", file));
                 final String reference = this.choose(file);
                 file.setBookmark(reference);
                 bookmark = NSData.dataWithBase64EncodedString(reference);
