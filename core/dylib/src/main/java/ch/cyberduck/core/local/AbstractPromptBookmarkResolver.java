@@ -142,7 +142,7 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
         };
         proxy.invoke(action, action.lock(), true);
         if(selected.get() == null) {
-            throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file));
+            throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file.getName()));
         }
         // Save Base64 encoded scoped reference
         return this.create(selected.get());
