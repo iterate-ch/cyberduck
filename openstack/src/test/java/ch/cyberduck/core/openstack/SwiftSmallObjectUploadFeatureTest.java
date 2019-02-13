@@ -31,7 +31,8 @@ import java.util.EnumSet;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 @Category(IntegrationTest.class)
 public class SwiftSmallObjectUploadFeatureTest {
@@ -42,13 +43,6 @@ public class SwiftSmallObjectUploadFeatureTest {
         final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol()));
         assertSame(NullInputStream.class, new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
                 session, new SwiftRegionService(session))).decorate(n, null).getClass());
-    }
-
-    @Test
-    public void testDigest() throws Exception {
-        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol()));
-        assertNotNull(new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
-                session, new SwiftRegionService(session))).digest());
     }
 
     @Test(expected = ChecksumException.class)
