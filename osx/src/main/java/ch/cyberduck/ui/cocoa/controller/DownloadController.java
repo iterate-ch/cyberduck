@@ -19,6 +19,7 @@ import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.application.NSAlert;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSView;
+import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.core.DefaultPathKindDetector;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
@@ -70,6 +71,8 @@ public class DownloadController extends AlertController {
 
     @Override
     public NSView getAccessoryView(final NSAlert alert) {
+        urlField.cell().setWraps(false);
+        urlField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(StringUtils.EMPTY, TRUNCATE_MIDDLE_ATTRIBUTES));
         return urlField;
     }
 
