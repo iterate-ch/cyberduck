@@ -56,12 +56,6 @@ public class S3SingleUploadServiceTest extends AbstractS3Test {
     }
 
     @Test
-    public void testDigest() throws Exception {
-        final S3Session session = new S3Session(new Host(new S3Protocol()));
-        assertNotNull(new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService())).digest());
-    }
-
-    @Test
     public void testUpload() throws Exception {
         final S3SingleUploadService service = new S3SingleUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()));
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
