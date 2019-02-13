@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -271,8 +271,12 @@
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="64">
                                     <font key="font" metaFont="system"/>
                                     <segments>
-                                        <segment image="nav-backward" width="35"/>
-                                        <segment image="nav-forward" width="35" tag="1"/>
+                                        <segment image="nav-backward" width="35">
+                                            <nil key="label"/>
+                                        </segment>
+                                        <segment image="nav-forward" width="35" tag="1">
+                                            <nil key="label"/>
+                                        </segment>
                                     </segments>
                                 </segmentedCell>
                             </segmentedControl>
@@ -295,10 +299,18 @@
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="54">
                                     <font key="font" metaFont="system"/>
                                     <segments>
-                                        <segment image="outline" imageScaling="none" width="35" tag="-1"/>
-                                        <segment image="bookmarks" width="35" selected="YES"/>
-                                        <segment image="history" width="35"/>
-                                        <segment image="NSBonjour" width="35"/>
+                                        <segment image="outline" imageScaling="none" width="35" tag="-1">
+                                            <nil key="label"/>
+                                        </segment>
+                                        <segment image="bookmarks" width="35" selected="YES">
+                                            <nil key="label"/>
+                                        </segment>
+                                        <segment image="history" width="35">
+                                            <nil key="label"/>
+                                        </segment>
+                                        <segment image="NSBonjour" width="35">
+                                            <nil key="label"/>
+                                        </segment>
                                     </segments>
                                 </segmentedCell>
                             </segmentedControl>
@@ -316,63 +328,6 @@
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="67">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                </menuItem>
-                <menuItem title="Zināšanai" keyEquivalent="i" id="68">
-                    <connections>
-                        <action selector="infoButtonClicked:" target="-1" id="163"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Ātrais skatījums" image="NSQuickLookTemplate" id="69">
-                    <attributedString key="attributedTitle"/>
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="quicklookButtonClicked:" target="-1" id="185"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Labot ar" id="70">
-                    <menu key="submenu" title="Labot ar" id="71"/>
-                </menuItem>
-                <menuItem title="Pārsaukt…" id="72">
-                    <connections>
-                        <action selector="renameFileButtonClicked:" target="-1" id="176"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Dublēt datni…" keyEquivalent="d" id="73">
-                    <connections>
-                        <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
-                    </connections>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="74"/>
-                <menuItem title="Lejuplādēt" keyEquivalent="" id="75">
-                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
-                    <connections>
-                        <action selector="downloadButtonClicked:" target="-1" id="164"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Lejuplādēs kā…" keyEquivalent="" id="76">
-                    <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
-                    <connections>
-                        <action selector="downloadAsButtonClicked:" target="-1" id="168"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Lejuplādēt iekš…" id="77">
-                    <connections>
-                        <action selector="downloadToButtonClicked:" target="-1" id="177"/>
-                    </connections>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="78">
-                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                </menuItem>
-                <menuItem title="Augšuplādēt…" keyEquivalent="" id="79">
-                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
-                    <connections>
-                        <action selector="uploadButtonClicked:" target="-1" id="174"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Saskaņot…" id="80">
-                    <connections>
-                        <action selector="syncButtonClicked:" target="-1" id="172"/>
-                    </connections>
                 </menuItem>
                 <menuItem title="Jauna mape…" keyEquivalent="N" id="81">
                     <connections>
@@ -397,6 +352,64 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="84"/>
+                <menuItem title="Zināšanai" keyEquivalent="i" id="68">
+                    <connections>
+                        <action selector="infoButtonClicked:" target="-1" id="163"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Ātrais skatījums" image="NSQuickLookTemplate" id="69">
+                    <attributedString key="attributedTitle"/>
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="quicklookButtonClicked:" target="-1" id="185"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Labot ar" id="70">
+                    <menu key="submenu" title="Labot ar" id="71"/>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="74"/>
+                <menuItem title="Pārsaukt…" id="72">
+                    <connections>
+                        <action selector="renameFileButtonClicked:" target="-1" id="176"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Dublēt datni…" keyEquivalent="d" id="73">
+                    <connections>
+                        <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="U9L-O8-fnA"/>
+                <menuItem title="Lejuplādēt" keyEquivalent="" id="75">
+                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                    <connections>
+                        <action selector="downloadButtonClicked:" target="-1" id="164"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Lejuplādēs kā…" keyEquivalent="" id="76">
+                    <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
+                    <connections>
+                        <action selector="downloadAsButtonClicked:" target="-1" id="168"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Lejuplādēt iekš…" id="77">
+                    <connections>
+                        <action selector="downloadToButtonClicked:" target="-1" id="177"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Augšuplādēt…" keyEquivalent="" id="79">
+                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                    <connections>
+                        <action selector="uploadButtonClicked:" target="-1" id="174"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Saskaņot…" id="80">
+                    <connections>
+                        <action selector="syncButtonClicked:" target="-1" id="172"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="78">
+                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                </menuItem>
                 <menuItem title="Dzēst" id="85">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
@@ -433,6 +446,11 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Atvērt interneta adresi" id="95"/>
                 </menuItem>
+                <menuItem title="Share…" id="NBw-Mh-zlT">
+                    <connections>
+                        <action selector="shareFileButtonClicked:" target="-1" id="iI0-ew-cyt"/>
+                    </connections>
+                </menuItem>
                 <menuItem isSeparatorItem="YES" id="96">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
@@ -447,7 +465,7 @@ CA
                     </connections>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="-184.5" y="588.5"/>
+            <point key="canvasLocation" x="-367" y="582"/>
         </menu>
         <menu title="Izvēlne" id="99">
             <items>
