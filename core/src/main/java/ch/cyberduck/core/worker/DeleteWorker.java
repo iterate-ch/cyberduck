@@ -113,23 +113,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
-                    if(child.attributes().isDuplicate() && child.isFile()) {
-                        // Delete latest version only, skip this duplicate
-                        log.debug(String.format("Skip duplicate %s", child));
-                        continue;
-                    }
-                    final Path copy = new Path(child);
-                    switch(host.getProtocol().getType()) {
-                        case s3:
-                            if(!file.attributes().isDuplicate()) {
-                                if(!file.getType().contains(Path.Type.upload)) {
-                                    // Add delete marker
-                                    log.debug(String.format("Nullify version to add delete marker for %s", file));
-                                    copy.attributes().setVersionId(null);
-                                }
-                            }
-                    }
-                    recursive.addAll(this.compile(host, delete, list, listener, copy));
+                    recursive.addAll(this.compile(host, delete, list, listener, child));
                 }
             }
             // Add parent after children
