@@ -56,6 +56,7 @@
         }
 
 
+
     </style>
 </head>
 
@@ -84,6 +85,16 @@
         file when connecting to AWS GovCloud or AWS China
     </li>
     <li><span class="label label-warning">Bugfix</span> Checksum verification disabled by default for file transfers
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Add --login option to executed shell for "Open in Terminal"
+        feature
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Disable transfer acceleration for AWS GovCloud (S3)</li>
+    <li><span class="label label-warning">Bugfix</span> Login using temporary tokens from STS to AWS GovCloud (S3)
+        (#10594)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Support auto-configuration from ~/.aws/credentials for AWS
+        GovCloud and Amazon S3 China (S3)
     </li>
 </ul>
 
