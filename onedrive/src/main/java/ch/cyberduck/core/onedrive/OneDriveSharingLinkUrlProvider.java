@@ -45,7 +45,11 @@ public class OneDriveSharingLinkUrlProvider implements PromptUrlProvider {
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
-        return true;
+        switch(type) {
+            case download:
+                return file.isFile();
+        }
+        return false;
     }
 
     @Override
