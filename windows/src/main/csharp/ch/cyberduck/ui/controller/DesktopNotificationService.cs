@@ -46,10 +46,11 @@ namespace Ch.Cyberduck.Ui.Controller
             DesktopNotificationManagerCompat.CreateToastNotifier().Show(toast);
         }
         
-        public void setup()
+        public NotificationService setup()
         {
             DesktopNotificationManagerCompat.RegisterAumidAndComServer<DesktopNotificationActivator>("iterate.Cyberduck");
             DesktopNotificationManagerCompat.RegisterActivator<DesktopNotificationActivator>();
+            return this;
         }
 
         public void unregister()

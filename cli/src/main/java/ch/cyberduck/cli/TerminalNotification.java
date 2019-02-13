@@ -26,8 +26,8 @@ public class TerminalNotification implements NotificationService {
         = new TerminalProgressListener();
 
     @Override
-    public void setup() {
-        //
+    public NotificationService setup() {
+        return this;
     }
 
     @Override

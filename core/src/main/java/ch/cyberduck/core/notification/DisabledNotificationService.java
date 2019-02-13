@@ -24,8 +24,8 @@ public final class DisabledNotificationService implements NotificationService {
     private static final Logger log = Logger.getLogger(DisabledNotificationService.class);
 
     @Override
-    public void setup() {
-        log.warn("Notifications disabled");
+    public NotificationService setup() {
+        return this;
     }
 
     @Override

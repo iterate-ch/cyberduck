@@ -27,11 +27,11 @@ import org.rococoa.Foundation;
 public class NotificationCenter implements NotificationService {
 
     private final NSUserNotificationCenter center
-            = NSUserNotificationCenter.defaultUserNotificationCenter();
+        = NSUserNotificationCenter.defaultUserNotificationCenter();
 
     @Override
-    public void setup() {
-        //
+    public NotificationService setup() {
+        return this;
     }
 
     @Override
@@ -41,16 +41,11 @@ public class NotificationCenter implements NotificationService {
         }
     }
 
-    private NSUserNotification create(final String title, final String description) {
+    @Override
+    public void notify(final String title, final String description) {
         final NSUserNotification notification = NSUserNotification.notification();
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
-        return notification;
-    }
-
-    @Override
-    public void notify(final String title, final String description) {
-        final NSUserNotification notification = this.create(title, description);
         center.scheduleNotification(notification);
     }
 }

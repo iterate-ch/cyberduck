@@ -849,8 +849,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 InitStoreContext();
             }
 
-            NotificationServiceFactory.get().setup();
-
             InitializeTransfers();
             InitializeSessions();
 

@@ -23,7 +23,7 @@ public interface NotificationService {
     /**
      * Register application
      */
-    void setup();
+    NotificationService setup();
 
     /**
      * Unregister application
