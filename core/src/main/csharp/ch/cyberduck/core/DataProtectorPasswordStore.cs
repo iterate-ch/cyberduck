@@ -28,19 +28,15 @@ namespace Ch.Cyberduck.Core
         private static readonly Logger Log = Logger.getLogger(typeof(DataProtectorPasswordStore).FullName);
 
         // Login Password
-        public override void addPassword(Scheme scheme, int port, String hostName, String user, String password)
+        public override void addPassword(Scheme scheme, int port, String hostname, String user, String password)
         {
-            Host host = new Host(ProtocolFactory.get().forScheme(scheme), hostName, port);
-            host.getCredentials().setUsername(user);
-            PreferencesFactory.get().setProperty(new HostUrlProvider().get(host), DataProtector.Encrypt(password));
+            PreferencesFactory.get().setProperty(new HostUrlProvider().withPath(false).get(scheme, port, user, hostname, null), DataProtector.Encrypt(password));
         }
 
         // Login Password
-        public override string getPassword(Scheme scheme, int port, String hostName, String user)
+        public override string getPassword(Scheme scheme, int port, String hostname, String user)
         {
-            Host host = new Host(ProtocolFactory.get().forScheme(scheme), hostName, port);
-            host.getCredentials().setUsername(user);
-            return getPassword(host);
+            return getPassword(scheme, port, hostname, user);
         }
 
         // Generic Password
@@ -56,21 +52,14 @@ namespace Ch.Cyberduck.Core
             if (null == password)
             {
                 // Legacy implementation
-                Protocol ftp = ProtocolFactory.get().forScheme(Scheme.ftp);
-                if (null == ftp)
-                {
-                    return null;
-                }
-                Host host = new Host(ftp, serviceName);
-                host.getCredentials().setUsername(user);
-                return getPassword(host);
+                return getPassword(Scheme.ftp, Scheme.ftp.getPort(), serviceName, user);
             }
             return DataProtector.Decrypt(password);
         }
 
-        private string getPassword(Host host)
+        private string getPassword(Scheme scheme, int port, String hostname, String user)
         {
-            string password = PreferencesFactory.get().getProperty(new HostUrlProvider().get(host));
+            string password = PreferencesFactory.get().getProperty(new HostUrlProvider().withPath(false).get(scheme, port, user, hostname, null));
             if (null == password)
             {
                 return null;
