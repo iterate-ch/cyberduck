@@ -1173,6 +1173,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         }
                         try
                         {
+                            // Retry setting the clipboard 5 times with a delay of 25 milliseconds between
                             Clipboard.SetDataObject(sb.ToString(), true, 5, 25);
                         }
                         catch (ExternalException exception)
