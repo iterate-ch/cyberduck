@@ -21,11 +21,13 @@ import ch.cyberduck.core.transfer.TransferItem;
 
 public class TransferItemCache extends AbstractCache<TransferItem> {
 
+    private static final TransferItem NULL_KEY = new TransferItem(null);
+
     public static TransferItemCache empty() {
         return new TransferItemCache(0) {
             @Override
-            public AttributedList<TransferItem> put(final TransferItem item, final AttributedList<TransferItem> children) {
-                return AttributedList.emptyList();
+            public void put(final TransferItem item, final AttributedList<TransferItem> children) {
+                //
             }
         };
     }
@@ -37,5 +39,20 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
     @Override
     public CacheReference key(final TransferItem object) {
         return new DefaultPathPredicate(object.remote);
+    }
+
+    @Override
+    public boolean containsKey(final TransferItem key) {
+        return super.containsKey(null == key ? NULL_KEY : key);
+    }
+
+    @Override
+    public AttributedList<TransferItem> get(final TransferItem key) {
+        return super.get(null == key ? NULL_KEY : key);
+    }
+
+    @Override
+    public void put(final TransferItem key, final AttributedList<TransferItem> children) {
+        super.put(null == key ? NULL_KEY : key, children);
     }
 }

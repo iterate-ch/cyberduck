@@ -21,16 +21,14 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class TransferItemCacheTest {
 
     @Test
     public void testRemove() {
-        final AttributedList<TransferItem> remove = new TransferItemCache(1).remove(new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory))));
-        assertNotNull(remove);
-        assertTrue(remove.isEmpty());
+        new TransferItemCache(1).remove(new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
@@ -49,6 +47,7 @@ public class TransferItemCacheTest {
         final AttributedList<TransferItem> list = new AttributedList<>();
         list.add(new TransferItem(new Path("/r2", EnumSet.of(Path.Type.file)), new Local("/l2")));
         c.put(null, list);
+        assertFalse(c.get(null).isEmpty());
         final NSObjectTransferItemReference reference = new NSObjectTransferItemReference(NSObjectTransferItemReference.get(new Path("/r2", EnumSet.of(Path.Type.file))));
         assertNotNull(c.lookup(reference));
     }

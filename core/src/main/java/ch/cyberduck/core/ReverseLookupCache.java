@@ -20,7 +20,6 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
     private static final Logger log = Logger.getLogger(ReverseLookupCache.class);
@@ -64,13 +63,13 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
     }
 
     @Override
-    public AttributedList<T> put(final T reference, final AttributedList<T> children) {
+    public void put(final T reference, final AttributedList<T> children) {
         for(T f : children) {
             final CacheReference key = proxy.key(f);
             reverse.remove(key);
             reverse.put(key, reference);
         }
-        return proxy.put(reference, children);
+        proxy.put(reference, children);
     }
 
     @Override
@@ -102,17 +101,18 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
         return null;
     }
 
-    public AttributedList<T> remove(final T reference) {
-        final AttributedList<T> removed = proxy.remove(reference);
-        for(T r : removed) {
-            reverse.remove(proxy.key(r));
-        }
-        return removed;
+    public void remove(final T reference) {
+        proxy.remove(reference);
     }
 
     @Override
-    public Set<T> keySet() {
-        return proxy.keySet();
+    public Map<T, AttributedList<T>> asMap() {
+        return proxy.asMap();
+    }
+
+    @Override
+    public long size() {
+        return proxy.size();
     }
 
     @Override

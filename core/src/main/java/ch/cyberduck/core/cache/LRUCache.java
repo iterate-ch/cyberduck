@@ -17,8 +17,9 @@ package ch.cyberduck.core.cache;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.google.common.cache.Cache;
@@ -97,8 +98,8 @@ public class LRUCache<Key, Value> {
         return delegate.getIfPresent(key);
     }
 
-    public void forEach(final BiConsumer<Key, Value> function) {
-        delegate.asMap().forEach(function);
+    public Map<Key, Value> asMap() {
+        return Collections.unmodifiableMap(delegate.asMap());
     }
 
     public void put(final Key key, Value value) {
@@ -107,6 +108,14 @@ public class LRUCache<Key, Value> {
 
     public void remove(final Key key) {
         delegate.invalidate(key);
+    }
+
+    public long size() {
+        return delegate.size();
+    }
+
+    public boolean isEmpty() {
+        return delegate.size() == 0;
     }
 
     public boolean contains(final Key key) {
