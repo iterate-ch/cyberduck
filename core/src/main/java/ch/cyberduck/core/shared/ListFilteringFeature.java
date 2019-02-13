@@ -19,13 +19,13 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.DefaultPathPredicate;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.transfer.CachingListProgressListener;
 
 public abstract class ListFilteringFeature {
 
@@ -42,7 +42,9 @@ public abstract class ListFilteringFeature {
         final AttributedList<Path> list;
         if(!cache.isCached(file.getParent())) {
             // Do not decrypt filenames to match with input
-            list = session._getFeature(ListService.class).list(file.getParent(), new CachingListProgressListener(cache));
+            list = session._getFeature(ListService.class).list(file.getParent(), new DisabledListProgressListener());
+            // Cache directory listing
+            cache.put(file.getParent(), list);
         }
         else {
             list = cache.get(file.getParent());
