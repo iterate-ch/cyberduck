@@ -32,6 +32,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -114,7 +115,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                     final String checksum = session.getClient().storeObject(
                             regionService.lookup(file),
                             containerService.getContainer(file).getName(), containerService.getKey(file),
-                            entity, headers, null);
+                        entity, headers, Checksum.NONE == status.getChecksum() ? null : status.getChecksum().hash);
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Saved object %s with checksum %s", file, checksum));
                     }
