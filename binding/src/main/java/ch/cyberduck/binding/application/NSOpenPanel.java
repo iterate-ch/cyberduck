@@ -50,12 +50,6 @@ public abstract class NSOpenPanel extends NSSavePanel {
     public abstract NSArray URLs();
 
     /**
-     * Original signature : <code>NSArray* filenames()</code><br>
-     * <i>native declaration : :22</i>
-     */
-    public abstract NSArray filenames();
-
-    /**
      * Original signature : <code>BOOL resolvesAliases()</code><br>
      * <i>native declaration : :24</i>
      */

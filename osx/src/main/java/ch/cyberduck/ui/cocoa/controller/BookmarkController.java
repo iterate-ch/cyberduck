@@ -33,6 +33,7 @@ import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.HostParserException;
@@ -48,6 +49,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -518,9 +520,9 @@ public class BookmarkController extends SheetController implements CollectionLis
     public void privateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
-                final NSObject selected = privateKeyOpenPanel.filenames().lastObject();
+                final NSObject selected = privateKeyOpenPanel.URLs().lastObject();
                 if(selected != null) {
-                    final Local key = LocalFactory.get(selected.toString());
+                    final Local key = LocalFactory.get(Rococoa.cast(selected, NSURL.class).path());
                     credentials.setIdentity(key);
                 }
                 break;

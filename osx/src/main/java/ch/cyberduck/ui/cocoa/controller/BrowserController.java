@@ -33,6 +33,7 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.bonjour.RendezvousCollection;
@@ -2458,8 +2459,8 @@ public class BrowserController extends WindowController
     public void downloadToPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(contextInfo);
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            if(sheet.filename() != null) {
-                final Local target = LocalFactory.get(sheet.filename());
+            if(sheet.URL() != null) {
+                final Local target = LocalFactory.get(sheet.URL().path());
                 new DownloadDirectoryFinder().save(pool.getHost(), target);
                 final List<TransferItem> downloads = new ArrayList<TransferItem>();
                 for(Path file : this.getSelectedPaths()) {
@@ -2487,8 +2488,8 @@ public class BrowserController extends WindowController
     public void downloadAsPanelDidEnd_returnCode_contextInfo(final NSSavePanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(contextInfo);
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            if(sheet.filename() != null) {
-                final Local target = LocalFactory.get(sheet.filename());
+            if(sheet.URL() != null) {
+                final Local target = LocalFactory.get(sheet.URL().path());
                 new DownloadDirectoryFinder().save(pool.getHost(), target.getParent());
                 final List<TransferItem> downloads
                     = Collections.singletonList(new TransferItem(this.getSelectedPath(), target));
@@ -2526,8 +2527,8 @@ public class BrowserController extends WindowController
     public void syncPanelDidEnd_returnCode_contextInfo(final NSOpenPanel sheet, final int returncode, final ID contextInfo) {
         sheet.orderOut(contextInfo);
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            if(sheet.filename() != null) {
-                final Local target = LocalFactory.get(sheet.filename());
+            if(sheet.URL() != null) {
+                final Local target = LocalFactory.get(sheet.URL().path());
                 new UploadDirectoryFinder().save(pool.getHost(), target.getParent());
                 final Path selected;
                 if(this.getSelectionCount() == 1 && this.getSelectedPath().isDirectory()) {
@@ -2591,14 +2592,14 @@ public class BrowserController extends WindowController
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             final Path destination = new UploadTargetFinder(workdir).find(this.getSelectedPath());
             // Selected files on the local filesystem
-            final NSArray selected = sheet.filenames();
+            final NSArray selected = sheet.URLs();
             final NSEnumerator iterator = selected.objectEnumerator();
             final List<TransferItem> uploads = new ArrayList<TransferItem>();
-            NSObject next;
             boolean parentFound = false;
             Local parent = null;
+            NSObject next;
             while((next = iterator.nextObject()) != null) {
-                final Local local = LocalFactory.get(next.toString());
+                final Local local = LocalFactory.get(Rococoa.cast(next, NSURL.class).path());
                 final Local localParent = local.getParent();
 
                 if(!parentFound && localParent != parent) {

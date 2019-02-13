@@ -24,6 +24,7 @@ import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -39,6 +40,7 @@ import ch.cyberduck.ui.cocoa.controller.LoginController;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+import org.rococoa.Rococoa;
 
 public final class PromptLoginCallback extends PromptPasswordCallback implements LoginCallback {
     private static final Logger log = Logger.getLogger(PromptLoginCallback.class);
@@ -107,9 +109,9 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
         };
         final int option = sheet.beginSheet();
         if(option == SheetCallback.DEFAULT_OPTION) {
-            final NSObject selected = select.filenames().lastObject();
+            final NSObject selected = select.URLs().lastObject();
             if(selected != null) {
-                return LocalFactory.get(selected.toString());
+                return LocalFactory.get(Rococoa.cast(selected, NSURL.class).path());
             }
         }
         throw new LoginCanceledException();

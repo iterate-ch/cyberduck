@@ -27,7 +27,9 @@ import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSRange;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Location;
@@ -52,6 +54,7 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Object;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
@@ -349,10 +352,9 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void editorPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            NSArray selected = sheet.filenames();
-            String filename;
-            if((filename = selected.lastObject().toString()) != null) {
-                final String path = LocalFactory.get(filename).getAbsolute();
+            NSObject selected = sheet.URLs().lastObject();
+            if(selected != null) {
+                final String path = LocalFactory.get(Rococoa.cast(selected, NSURL.class).path()).getAbsolute();
                 final ApplicationFinder finder = ApplicationFinderFactory.get();
                 final Application application = finder.getDescription(path);
                 if(finder.isInstalled(application)) {
@@ -1324,10 +1326,9 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            NSArray selected = sheet.filenames();
-            String filename;
-            if((filename = selected.lastObject().toString()) != null) {
-                final Local folder = LocalFactory.get(filename);
+            NSObject selected = sheet.URLs().lastObject();
+            if(selected != null) {
+                final Local folder = LocalFactory.get(Rococoa.cast(selected, NSURL.class).path());
                 preferences.setProperty("queue.download.folder", folder.getAbbreviatedPath());
                 preferences.setProperty("queue.download.folder.bookmark", folder.getBookmark());
             }

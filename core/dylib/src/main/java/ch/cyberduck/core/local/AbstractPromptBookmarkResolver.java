@@ -33,6 +33,7 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSError;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -143,11 +144,11 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
                 panel.setPrompt(LocaleFactory.localizedString("Choose"));
                 final NSInteger modal = panel.runModal(file.getParent().getAbsolute(), file.getName());
                 if(modal.intValue() == SheetCallback.DEFAULT_OPTION) {
-                    final NSArray filenames = panel.filenames();
+                    final NSArray filenames = panel.URLs();
                     final NSEnumerator enumerator = filenames.objectEnumerator();
                     NSObject next;
                     while((next = enumerator.nextObject()) != null) {
-                        selected.set(new FinderLocal(next.toString()));
+                        selected.set(new FinderLocal(Rococoa.cast(next, NSURL.class).path()));
                     }
                 }
                 panel.orderOut(null);
