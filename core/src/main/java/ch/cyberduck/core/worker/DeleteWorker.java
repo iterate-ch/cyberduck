@@ -119,7 +119,16 @@ public class DeleteWorker extends Worker<List<Path>> {
                         continue;
                     }
                     final Path copy = new Path(child);
-                    copy.attributes().setVersionId(null);
+                    switch(host.getProtocol().getType()) {
+                        case s3:
+                            if(!file.attributes().isDuplicate()) {
+                                if(!file.getType().contains(Path.Type.upload)) {
+                                    // Add delete marker
+                                    log.debug(String.format("Nullify version to add delete marker for %s", file));
+                                    copy.attributes().setVersionId(null);
+                                }
+                            }
+                    }
                     recursive.addAll(this.compile(host, delete, list, listener, copy));
                 }
             }
