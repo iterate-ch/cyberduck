@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.AbstractDropboxTest;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -30,7 +31,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class DropboxUrlProviderTest extends AbstractDropboxTest {
@@ -40,7 +41,7 @@ public class DropboxUrlProviderTest extends AbstractDropboxTest {
         final DropboxUrlProvider provider = new DropboxUrlProvider(session);
         final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
-        assertEquals(1, provider.toUrl(file).size());
+        assertNotNull(provider.toDownloadUrl(file, null, new DisabledPasswordCallback()).getUrl());
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

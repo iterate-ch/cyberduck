@@ -21,7 +21,6 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -30,6 +29,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
@@ -147,7 +147,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         if(type == Copy.class) {
             return (T) new DropboxCopyFeature(this);
         }
-        if(type == UrlProvider.class) {
+        if(type == PromptUrlProvider.class) {
             return (T) new DropboxUrlProvider(this);
         }
         if(type == Find.class) {

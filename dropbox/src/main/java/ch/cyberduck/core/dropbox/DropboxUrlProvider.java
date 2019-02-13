@@ -16,11 +16,12 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.PromptUrlProvider;
 
 import org.apache.log4j.Logger;
 
@@ -30,9 +31,10 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.CommitInfo;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 
-public class DropboxUrlProvider implements UrlProvider {
+public class DropboxUrlProvider implements PromptUrlProvider<Void, Void> {
     private static final Logger log = Logger.getLogger(DropboxUrlProvider.class);
 
     private final DropboxSession session;
@@ -42,25 +44,41 @@ public class DropboxUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
-        final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        if(file.isFile()) {
-            try {
-                // This link will expire in four hours and afterwards you will get 410 Gone.
-                final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryLink(file.getAbsolute()).getLink();
-                // Determine expiry time for URL
-                final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                expiry.add(Calendar.HOUR, 4);
-                list.add(new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.http,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3"))
-                        + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                        UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
-                ));
-            }
-            catch(DbxException e) {
-                log.warn(String.format("Failure retrieving shared link. %s", e.getMessage()));
-            }
+    public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+        try {
+            // This link will expire in four hours and afterwards you will get 410 Gone.
+            final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryLink(file.getAbsolute()).getLink();
+            // Determine expiry time for URL
+            final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            expiry.add(Calendar.HOUR, 4);
+            return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.http,
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3"))
+                    + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                    UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
+            );
         }
-        return list;
+        catch(DbxException e) {
+            throw new DropboxExceptionMappingService().map(e);
+        }
+    }
+
+    @Override
+    public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+        try {
+            final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryUploadLink(new CommitInfo(file.getAbsolute())).getLink();
+            return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.http, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3")));
+        }
+        catch(DbxException e) {
+            throw new DropboxExceptionMappingService().map(e);
+        }
+    }
+
+    @Override
+    public boolean isSupported(final Path file, final Type type) {
+        switch(type) {
+            case download:
+                return file.isFile();
+        }
+        return true;
     }
 }
