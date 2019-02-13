@@ -130,7 +130,8 @@ public class AzureSessionTest {
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals("Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
+                assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
+                assertEquals("Login failed. Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
                     reason);
                 return super.prompt(bookmark, username, title, reason, options);
             }
@@ -147,7 +148,8 @@ public class AzureSessionTest {
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
-                assertEquals("Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
+                assertEquals("Login kahy9boj3eib.blob.core.windows.net", title);
+                assertEquals("Login failed. Server failed to authenticate the request. Make sure the value of Authorization header is formed correctly including the signature. Please contact your web hosting service provider for assistance.",
                     reason);
                 return super.prompt(bookmark, username, title, reason, options);
             }
