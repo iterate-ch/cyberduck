@@ -54,14 +54,14 @@ public final class CryptoPathCache implements Cache<Path> {
     }
 
     @Override
-    public void put(final Path folder, final AttributedList<Path> encrypted) {
+    public AttributedList<Path> put(final Path folder, final AttributedList<Path> encrypted) {
         final AttributedList<Path> list = new AttributedList<>();
         // Swap with decrypted paths
         for(int i = 0; i < encrypted.size(); i++) {
             final Path f = encrypted.get(i);
             list.add(i, this.toDecrypted(f));
         }
-        delegate.put(this.toDecrypted(folder), list);
+        return delegate.put(this.toDecrypted(folder), list);
     }
 
     @Override
@@ -77,8 +77,8 @@ public final class CryptoPathCache implements Cache<Path> {
     }
 
     @Override
-    public void remove(final Path folder) {
-        delegate.remove(this.toDecrypted(folder));
+    public AttributedList<Path> remove(final Path folder) {
+        return delegate.remove(this.toDecrypted(folder));
     }
 
     @Override

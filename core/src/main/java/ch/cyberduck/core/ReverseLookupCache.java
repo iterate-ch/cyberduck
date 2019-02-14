@@ -63,13 +63,13 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
     }
 
     @Override
-    public void put(final T reference, final AttributedList<T> children) {
+    public AttributedList<T> put(final T reference, final AttributedList<T> children) {
         for(T f : children) {
             final CacheReference key = proxy.key(f);
             reverse.remove(key);
             reverse.put(key, reference);
         }
-        proxy.put(reference, children);
+        return proxy.put(reference, children);
     }
 
     @Override
@@ -101,8 +101,12 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
         return null;
     }
 
-    public void remove(final T reference) {
-        proxy.remove(reference);
+    public AttributedList<T> remove(final T reference) {
+        final AttributedList<T> removed = proxy.remove(reference);
+        for(T r : removed) {
+            reverse.remove(proxy.key(r));
+        }
+        return removed;
     }
 
     @Override

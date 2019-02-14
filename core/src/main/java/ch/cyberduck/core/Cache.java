@@ -47,7 +47,7 @@ public interface Cache<T extends Referenceable> {
      * @param children Folder listing
      * @return Return previous list
      */
-    void put(T parent, AttributedList<T> children);
+    AttributedList<T> put(T parent, AttributedList<T> children);
 
     /**
      * @param parent Directory
@@ -63,7 +63,7 @@ public interface Cache<T extends Referenceable> {
      *
      * @param parent Directory
      */
-    void remove(T parent);
+    AttributedList<T> remove(T parent);
 
     /**
      * Mark cached directory listing as out of date

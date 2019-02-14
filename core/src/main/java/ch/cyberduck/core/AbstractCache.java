@@ -74,8 +74,14 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      * @param reference Reference to the path in cache.
      * @return The previously cached directory listing
      */
-    public void remove(final T reference) {
+    public AttributedList<T> remove(final T reference) {
+        final AttributedList<T> removed = impl.get(reference);
         impl.remove(reference);
+        if(null == removed) {
+            // Not previously in cache
+            return AttributedList.emptyList();
+        }
+        return removed;
     }
 
     /**
@@ -103,11 +109,17 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      * @param children  Cached directory listing
      * @return Previous cached version
      */
-    public void put(final T reference, final AttributedList<T> children) {
+    public AttributedList<T> put(final T reference, final AttributedList<T> children) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Caching %s", reference));
         }
+        final AttributedList<T> replaced = impl.get(reference);
         impl.put(reference, children);
+        if(null == replaced) {
+            // Not previously in cache
+            return AttributedList.emptyList();
+        }
+        return replaced;
     }
 
     /**

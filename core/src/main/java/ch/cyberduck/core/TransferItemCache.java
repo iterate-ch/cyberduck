@@ -26,8 +26,8 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
     public static TransferItemCache empty() {
         return new TransferItemCache(0) {
             @Override
-            public void put(final TransferItem item, final AttributedList<TransferItem> children) {
-                //
+            public AttributedList<TransferItem> put(final TransferItem item, final AttributedList<TransferItem> children) {
+                return AttributedList.emptyList();
             }
         };
     }
@@ -52,7 +52,7 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
     }
 
     @Override
-    public void put(final TransferItem key, final AttributedList<TransferItem> children) {
-        super.put(null == key ? NULL_KEY : key, children);
+    public AttributedList<TransferItem> put(final TransferItem key, final AttributedList<TransferItem> children) {
+        return super.put(null == key ? NULL_KEY : key, children);
     }
 }
