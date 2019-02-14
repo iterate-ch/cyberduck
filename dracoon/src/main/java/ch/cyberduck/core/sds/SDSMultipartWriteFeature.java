@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Version;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -96,10 +97,12 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
 
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final CreateFileUploadRequest body = new CreateFileUploadRequest();
-        body.setParentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())));
-        body.setName(file.getName());
-        body.classification(DEFAULT_CLASSIFICATION); // internal
+        final CreateFileUploadRequest body = new CreateFileUploadRequest()
+            .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
+            .name(file.getName());
+        if(new Version(StringUtils.removePattern(session.softwareVersion().getRestApiVersion(), "-.*")).compareTo(new Version("4.9.0")) < 0) {
+            body.classification(DEFAULT_CLASSIFICATION);
+        }
         try {
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
             final String id = response.getUploadId();

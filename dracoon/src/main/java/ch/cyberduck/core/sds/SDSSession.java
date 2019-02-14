@@ -39,9 +39,11 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.JSON;
 import ch.cyberduck.core.sds.io.swagger.client.api.AuthApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.ConfigApi;
+import ch.cyberduck.core.sds.io.swagger.client.api.PublicApi;
 import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.KeyValueEntry;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
+import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
@@ -83,6 +85,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     private final ExpiringObjectHolder<UserKeyPairContainer> keyPair
         = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
+
+    private final ExpiringObjectHolder<SoftwareVersionData> softwareVersion
+        = new ExpiringObjectHolder<SoftwareVersionData>(PreferencesFactory.get().getLong("sds.useracount.ttl"));
 
     private final List<KeyValueEntry> configuration = new ArrayList<>();
     private final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(this);
@@ -182,6 +187,12 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         catch(ApiException e) {
             log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e).getDetail()));
         }
+        try {
+            softwareVersion.set(new PublicApi(this.getClient()).getSoftwareVersion(null));
+        }
+        catch(ApiException e) {
+            log.warn(String.format("Ignore failure reading version. %s", new SDSExceptionMappingService().map(e).getDetail()));
+        }
     }
 
     private String login(final LoginCallback controller, final LoginRequest request) throws BackgroundException {
@@ -218,7 +229,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 throw new SDSExceptionMappingService().map(e);
             }
         }
-        return this.userAccount.get();
+        return userAccount.get();
     }
 
     public UserKeyPairContainer keyPair() throws BackgroundException {
@@ -231,7 +242,20 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 throw new SDSExceptionMappingService().map(e);
             }
         }
-        return this.keyPair.get();
+        return keyPair.get();
+    }
+
+    public SoftwareVersionData softwareVersion() throws BackgroundException {
+        if(softwareVersion.get() == null) {
+            try {
+                softwareVersion.set(new PublicApi(this.getClient()).getSoftwareVersion(null));
+            }
+            catch(ApiException e) {
+                log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
+                throw new SDSExceptionMappingService().map(e);
+            }
+        }
+        return softwareVersion.get();
     }
 
     public List<KeyValueEntry> configuration() {
