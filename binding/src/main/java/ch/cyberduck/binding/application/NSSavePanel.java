@@ -49,15 +49,26 @@ public abstract class NSSavePanel extends NSPanel {
     public abstract NSURL URL();
 
     /**
+     * Original signature : <code>NSString* filename()</code><br>
+     * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:71</i>
+     */
+    @Deprecated
+    public abstract String filename();
+
+    /**
      * Original signature : <code>NSString* directory()</code><br>
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:73</i>
      */
+    @Deprecated
+    public abstract String directory();
     public abstract NSURL directoryURL();
 
     /**
      * Original signature : <code>void setDirectory(NSString*)</code><br>
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:74</i>
      */
+    @Deprecated
+    public abstract void setDirectory(String path);
     public abstract void setDirectoryURL(NSURL path);
 
     /**
