@@ -185,21 +185,29 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     @Override
     public Boolean run() throws BackgroundException {
         final String lock = sleep.lock();
-        final Session<?> source = this.borrow(Connection.source);
-        final Session<?> destination = this.borrow(Connection.destination);
         try {
+            Session<?> source;
+            Session<?> destination;
+            final TransferAction action;
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Start transfer with prompt %s and options %s", prompt, options));
             }
-            final TransferAction action;
-            // Determine the filter to match files against
-            action = transfer.action(source, destination, options.resumeRequested, options.reloadRequested, prompt,
-                new DisabledListProgressListener() {
-                    @Override
-                    public void message(final String message) {
-                        progress.message(message);
-                    }
-                });
+            source = this.borrow(Connection.source);
+            destination = this.borrow(Connection.destination);
+            try {
+                // Determine the filter to match files against
+                action = transfer.action(source, destination, options.resumeRequested, options.reloadRequested, prompt,
+                    new DisabledListProgressListener() {
+                        @Override
+                        public void message(final String message) {
+                            progress.message(message);
+                        }
+                    });
+            }
+            finally {
+                this.release(source, Connection.source, null);
+                this.release(destination, Connection.destination, null);
+            }
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Selected transfer action %s", action));
             }
@@ -222,17 +230,31 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             }
             this.await();
             meter.reset();
-            transfer.pre(source, destination, table, connectionCallback);
+            source = this.borrow(Connection.source);
+            destination = this.borrow(Connection.destination);
+            try {
+                transfer.pre(source, destination, table, connectionCallback);
+            }
+            finally {
+                this.release(source, Connection.source, null);
+                this.release(destination, Connection.destination, null);
+            }
             // Transfer all files sequentially
             for(TransferItem next : transfer.getRoots()) {
                 this.transfer(next, action);
             }
             this.await();
+            source = this.borrow(Connection.source);
+            destination = this.borrow(Connection.destination);
+            try {
+                transfer.post(source, destination, table, connectionCallback);
+            }
+            finally {
+                this.release(source, Connection.source, null);
+                this.release(destination, Connection.destination, null);
+            }
         }
         finally {
-            transfer.post(source, destination, table, connectionCallback);
-            this.release(source, Connection.source, null);
-            this.release(destination, Connection.destination, null);
             if(transfer.isReset()) {
                 notification.notify(transfer.isComplete() ?
                     String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
