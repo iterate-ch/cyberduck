@@ -36,7 +36,12 @@ namespace Ch.Cyberduck.Core
         // Login Password
         public override string getPassword(Scheme scheme, int port, String hostname, String user)
         {
-            return getPassword(scheme, port, hostname, user);
+            string password = PreferencesFactory.get().getProperty(new HostUrlProvider().withPath(false).get(scheme, port, user, hostname, null));
+            if (null == password)
+            {
+                return null;
+            }
+            return DataProtector.Decrypt(password);
         }
 
         // Generic Password
@@ -53,16 +58,6 @@ namespace Ch.Cyberduck.Core
             {
                 // Legacy implementation
                 return getPassword(Scheme.ftp, Scheme.ftp.getPort(), serviceName, user);
-            }
-            return DataProtector.Decrypt(password);
-        }
-
-        private string getPassword(Scheme scheme, int port, String hostname, String user)
-        {
-            string password = PreferencesFactory.get().getProperty(new HostUrlProvider().withPath(false).get(scheme, port, user, hostname, null));
-            if (null == password)
-            {
-                return null;
             }
             return DataProtector.Decrypt(password);
         }
