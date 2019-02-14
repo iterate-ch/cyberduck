@@ -38,7 +38,7 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
     @Override
     public BackgroundException map(final HttpResponseException failure) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, failure.getMessage());
+        this.append(buffer, failure.getReasonPhrase());
         final int statusCode = failure.getStatusCode();
         return this.map(failure, buffer, statusCode);
     }
