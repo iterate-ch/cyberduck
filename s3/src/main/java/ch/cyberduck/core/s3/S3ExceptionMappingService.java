@@ -82,6 +82,9 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
         if(e.getCause() instanceof SAXException) {
             return new InteroperabilityException(buffer.toString(), e);
         }
+        if(-1 == e.getResponseCode()) {
+            return new InteroperabilityException(buffer.toString(), e);
+        }
         return new HttpResponseExceptionMappingService().map(new HttpResponseException(e.getResponseCode(), buffer.toString()));
     }
 }
