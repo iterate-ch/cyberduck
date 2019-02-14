@@ -103,6 +103,10 @@ public class LRUCache<Key, Value> {
     }
 
     public void put(final Key key, Value value) {
+        if(null == key || null == value) {
+            log.warn(String.format("Discard caching %s=%s", key, value));
+            return;
+        }
         delegate.put(key, value);
     }
 
