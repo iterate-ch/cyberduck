@@ -42,6 +42,7 @@ import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.WebUrlProvider;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -131,9 +132,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
             @Override
             public void change(Host bookmark) {
                 connectmodePopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.ftp);
-                if(bookmark.getProtocol().getType() == Protocol.Type.ftp) {
-                    connectmodePopup.selectItemAtIndex(connectmodePopup.indexOfItemWithRepresentedObject(bookmark.getFTPConnectMode().name()));
-                }
+                connectmodePopup.selectItemAtIndex(connectmodePopup.indexOfItemWithRepresentedObject(bookmark.getFTPConnectMode().name()));
             }
         });
     }

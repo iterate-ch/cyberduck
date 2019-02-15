@@ -585,10 +585,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SelectedEncoding = _host.getEncoding() == null ? Default : _host.getEncoding();
             View.EncodingFieldEnabled = _host.getProtocol().isEncodingConfigurable();
             View.ConnectModeFieldEnabled = _host.getProtocol().getType() == Protocol.Type.ftp;
-            if (_host.getProtocol().getType() == Protocol.Type.ftp)
-            {
-                View.SelectedConnectMode = _host.getFTPConnectMode();
-            }
+            View.SelectedConnectMode = _host.getFTPConnectMode();
             View.PrivateKeyFieldEnabled = _options.publickey();
 
             if (_host.getCredentials().isPublicKeyAuthentication())
