@@ -9,6 +9,9 @@ https://cyberduck.io/
 - [Bugfix] Disable transfer acceleration for AWS GovCloud (S3)
 - [Bugfix] Login using temporary tokens from STS to AWS GovCloud (S3) (#10594)
 - [Bugfix] Support auto-configuration from ~/.aws/credentials for AWS GovCloud and Amazon S3 China (S3)
+- [Bugfix] Modification date not applied when copying file between browser windows (#10592)
+- [Bugfix] Unable to delete incomplete multipart upload (S3) (#10568)
+- [Bugfix] Updated localizations
 
 6.9.2
 - [Bugfix] Failure using RSA/ECDSA private in new OpenSSH format (#10552)
