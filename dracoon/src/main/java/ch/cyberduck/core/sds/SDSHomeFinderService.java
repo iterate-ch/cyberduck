@@ -41,6 +41,10 @@ public class SDSHomeFinderService extends DefaultHomeFinderService {
             }
             path.attributes().setAcl(acl);
         }
+        else {
+            final Acl acl = new SDSPermissionsFeature(session, new SDSNodeIdProvider(session)).getPermission(path);
+            path.attributes().setAcl(acl);
+        }
         return path;
     }
 }
