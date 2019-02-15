@@ -2395,7 +2395,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         protected void transfer(Transfer transfer, IList<Path> selected)
         {
-            this.transfer(transfer, selected, transfer.getSource().getTransferType().equals(Host.TransferType.browser));
+            this.transfer(transfer, selected, transfer.getTransferType().equals(Host.TransferType.browser));
         }
 
         /// <summary>

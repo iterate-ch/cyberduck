@@ -34,6 +34,7 @@ import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -256,6 +257,13 @@ public abstract class Transfer implements Serializable {
 
     public Host getDestination() {
         return null;
+    }
+
+    public Host.TransferType getTransferType() {
+        if(Host.TransferType.unknown.equals(host.getTransferType())) {
+            return Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type"));
+        }
+        return host.getTransferType();
     }
 
     public String getName() {

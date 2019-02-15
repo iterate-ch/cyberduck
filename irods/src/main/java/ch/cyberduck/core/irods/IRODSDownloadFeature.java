@@ -64,7 +64,12 @@ public class IRODSDownloadFeature implements Download {
                 final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
                         preferences.getInteger("connection.retry"));
                 final TransferOptions options = new DefaultTransferOptionsConfigurer().configure(new TransferOptions());
-                options.setUseParallelTransfer(session.getHost().getTransferType().equals(Host.TransferType.concurrent));
+                if(Host.TransferType.unknown.equals(session.getHost().getTransferType())) {
+                    options.setUseParallelTransfer(Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type")).equals(Host.TransferType.concurrent));
+                }
+                else {
+                    options.setUseParallelTransfer(session.getHost().getTransferType().equals(Host.TransferType.concurrent));
+                }
                 block.setTransferOptions(options);
                 final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
                         .getDataTransferOperations(fs.getIRODSAccount());

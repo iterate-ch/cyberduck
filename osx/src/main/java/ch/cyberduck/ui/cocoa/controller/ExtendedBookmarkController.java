@@ -151,6 +151,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         final Host.TransferType unknown = Host.TransferType.unknown;
         this.transferPopup.addItemWithTitle(unknown.toString());
         this.transferPopup.lastItem().setRepresentedObject(unknown.name());
+        this.transferPopup.lastItem().setToolTip(Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type")).toString());
         this.transferPopup.menu().addItem(NSMenuItem.separatorItem());
         for(String name : preferences.getList("queue.transfer.type.enabled")) {
             final Host.TransferType t = Host.TransferType.valueOf(name);

@@ -92,8 +92,7 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
         this.source = source;
         this.destination = destination;
         this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
-            transfer.getSource().getTransferType() == Host.TransferType.newconnection ?
-                1 : PreferencesFactory.get().getInteger("queue.connections.limit"), priority);
+            transfer.getTransferType() == Host.TransferType.newconnection ? 1 : PreferencesFactory.get().getInteger("queue.connections.limit"), priority);
         this.completion = new ExecutorCompletionService<TransferStatus>(pool.executor());
     }
 

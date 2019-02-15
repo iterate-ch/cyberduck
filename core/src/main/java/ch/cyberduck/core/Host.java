@@ -450,10 +450,6 @@ public class Host implements Serializable, Comparable<Host> {
      * if the default should be used
      */
     public TransferType getTransferType() {
-        switch(transfer) {
-            case unknown:
-                return Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type"));
-        }
         return transfer;
     }
 
