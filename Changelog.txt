@@ -4,7 +4,6 @@ https://cyberduck.io/
 6.9.3
 - [Bugfix] RFC compliant parsing of URI parameters (CLI)
 - [Bugfix] Failure displaying alert window for multiple consecutive transfer failures
-- [Bugfix] Does not read credentials from the standard AWS SDK credentials file when connecting to AWS GovCloud or AWS China
 - [Bugfix] Checksum verification disabled by default for file transfers
 - [Bugfix] Add --login option to executed shell for "Open in Terminal" feature
 - [Bugfix] Disable transfer acceleration for AWS GovCloud (S3)
