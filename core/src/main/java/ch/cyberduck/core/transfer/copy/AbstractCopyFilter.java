@@ -126,26 +126,25 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
     }
 
     @Override
-    public void apply(final Path file, final Local n, final TransferStatus status,
-                      final ProgressListener listener) {
+    public void apply(final Path source, final Local n, final TransferStatus status, final ProgressListener listener) {
         //
     }
 
     @Override
-    public void complete(final Path file, final Local n, final TransferOptions options,
-                         final TransferStatus status, final ProgressListener listener) {
+    public void complete(final Path source, final Local n, final TransferOptions options, final TransferStatus status, final ProgressListener listener) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
+            log.debug(String.format("Complete %s with status %s", source.getAbsolute(), status));
         }
         if(status.isComplete()) {
+            final Path target = files.get(source);
             if(!Permission.EMPTY.equals(status.getPermission())) {
                 final UnixPermission feature = destinationSession.getFeature(UnixPermission.class);
                 if(feature != null) {
                     if(!Permission.EMPTY.equals(status.getPermission())) {
                         try {
                             listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                                    file.getName(), status.getPermission()));
-                            feature.setUnixPermission(file, status.getPermission());
+                                target.getName(), status.getPermission()));
+                            feature.setUnixPermission(target, status.getPermission());
                         }
                         catch(BackgroundException e) {
                             // Ignore
@@ -159,8 +158,8 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
                 if(feature != null) {
                     try {
                         listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing permission of {0} to {1}", "Status"),
-                                file.getName(), status.getAcl()));
-                        feature.setPermission(file, status.getAcl());
+                            target.getName(), status.getAcl()));
+                        feature.setPermission(target, status.getAcl());
                     }
                     catch(BackgroundException e) {
                         // Ignore
@@ -172,9 +171,9 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
                 final Timestamp timestamp = destinationSession.getFeature(Timestamp.class);
                 if(timestamp != null) {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                            file.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
+                        target.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
                     try {
-                        timestamp.setTimestamp(file, status.getTimestamp());
+                        timestamp.setTimestamp(target, status.getTimestamp());
                     }
                     catch(BackgroundException e) {
                         // Ignore
