@@ -130,10 +130,7 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         IOUtils.write(content, out);
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
+        final SDSSession conn = new SDSSession(session.getHost(), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             final SDSWriteFeature write = new SDSWriteFeature(this, fileid) {
                 @Override
                 public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
@@ -171,14 +168,14 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
                 return super._getFeature(type);
             }
         };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new Path(
+        conn.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        conn.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path room = new SDSDirectoryFeature(conn, fileid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
         final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
-        assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+        assertTrue(new SingleTransferWorker(conn, conn, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
@@ -190,8 +187,8 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         local.delete();
         assertEquals(98305L, counter.getSent(), 0L);
         assertTrue(failed.get());
-        assertEquals(98305L, new SDSAttributesFinderFeature(session, fileid).find(test).getSize());
-        new SDSDeleteFeature(session, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertEquals(98305L, new SDSAttributesFinderFeature(conn, fileid).find(test).getSize());
+        new SDSDeleteFeature(conn, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -204,7 +201,7 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         IOUtils.write(content, out);
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
@@ -261,7 +258,7 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         IOUtils.write(content, out);
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
