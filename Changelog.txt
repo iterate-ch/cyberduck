@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+7.0.0
+- [Feature] Segmented downloads with multiple connections per file (#10115)
+
 6.9.3
 - [Bugfix] RFC compliant parsing of URI parameters (CLI)
 - [Bugfix] Failure displaying alert window for multiple consecutive transfer failures
