@@ -324,6 +324,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(type == Search.class) {
             return (T) new SDSSearchFeature(this, nodeid);
         }
+        if(type == Home.class) {
+            return (T) new SDSHomeFinderService(this);
+        }
         return super._getFeature(type);
     }
 }
