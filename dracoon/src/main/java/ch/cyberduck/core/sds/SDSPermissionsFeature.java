@@ -32,6 +32,7 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
 
     private static final Logger log = Logger.getLogger(SDSPermissionsFeature.class);
 
+    // Node roles
     public static final Acl.Role MANAGE_ROLE = new Acl.Role("MANAGE_ROLE");
     public static final Acl.Role READ_ROLE = new Acl.Role("READ");
     public static final Acl.Role CREATE_ROLE = new Acl.Role("CREATE");
@@ -39,6 +40,13 @@ public class SDSPermissionsFeature extends DefaultAclFeature {
     public static final Acl.Role DELETE_ROLE = new Acl.Role("DELETE");
     public static final Acl.Role DOWNLOAD_SHARE_ROLE = new Acl.Role("DOWNLOAD_SHARE");
     public static final Acl.Role UPLOAD_SHARE_ROLE = new Acl.Role("UPLOAD_SHARE");
+
+    // User roles
+    public static final Acl.Role ROOM_MANAGER_ROLE = new Acl.Role("ROOM_MANAGER");
+    public static final Acl.Role GROUP_MANAGER_ROLE = new Acl.Role("GROUP_MANAGER");
+    public static final Acl.Role USER_MANAGER_ROLE = new Acl.Role("USER_MANAGER");
+    public static final Acl.Role CONFIG_MANAGER_ROLE = new Acl.Role("CONFIG_MANAGER");
+    public static final Acl.Role LOG_AUDITOR_ROLE = new Acl.Role("LOG_AUDITOR");
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;

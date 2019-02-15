@@ -15,7 +15,10 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class UserAccountWrapper {
 
@@ -33,4 +36,9 @@ public class UserAccountWrapper {
     public Long getId() {
         return account.getId();
     }
+
+    public boolean isUserInRole(final Acl.Role role) {
+        return account.getUserRoles().getItems().stream().anyMatch(r -> StringUtils.equals(r.getName(), role.getName()));
+    }
+
 }
