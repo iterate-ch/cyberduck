@@ -125,7 +125,7 @@
                     <artifactId>jnidispatch</artifactId>
                     <classifier>x86_32</classifier>
                     <type>dll</type>
-                    <version>5.0.0</version>
+                    <version>${jna-version}</version>
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>

@@ -78,7 +78,7 @@
             <artifactId>libjnidispatch</artifactId>
             <classifier>x86_32</classifier>
             <type>so</type>
-            <version>5.0.0</version>
+            <version>${jna-version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -86,7 +86,7 @@
             <artifactId>libjnidispatch</artifactId>
             <classifier>x86_64</classifier>
             <type>so</type>
-            <version>5.0.0</version>
+            <version>${jna-version}</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
