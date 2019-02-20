@@ -73,19 +73,26 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         session.close();
     }
 
-    @Test
+    @Test(expected = NotfoundException.class)
     public void tetsEmptyPlaceholder() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)), new DisabledListProgressListener());
-        assertTrue(list.isEmpty());
-        session.close();
+        try {
+            new S3ObjectListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        }
+        finally {
+            session.close();
+        }
     }
 
     @Test(expected = NotfoundException.class)
     public void testListNotfound() throws Exception {
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.volume));
-        new S3ObjectListService(session).list(container, new DisabledListProgressListener());
-        session.close();
+        try {
+            new S3ObjectListService(session).list(container, new DisabledListProgressListener());
+        }
+        finally {
+            session.close();
+        }
     }
 
     @Test
