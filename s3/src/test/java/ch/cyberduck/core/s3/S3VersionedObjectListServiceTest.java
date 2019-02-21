@@ -43,7 +43,6 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         assertTrue(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
-        session.close();
     }
 
     @Test
@@ -61,7 +60,6 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
                 assertNull(p.attributes().getVersionId());
             }
         }
-        session.close();
     }
 
     @Test(expected = NotfoundException.class)

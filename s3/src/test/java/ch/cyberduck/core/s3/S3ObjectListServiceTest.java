@@ -60,7 +60,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
                 assertNotNull(p.attributes().getStorageClass());
             }
         }
-        session.close();
     }
 
     @Test
@@ -70,29 +69,18 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         assertTrue(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
-        session.close();
     }
 
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolder() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        try {
-            new S3ObjectListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
-        }
-        finally {
-            session.close();
-        }
+        new S3ObjectListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
     @Test(expected = NotfoundException.class)
     public void testListNotfoundBucket() throws Exception {
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.volume));
-        try {
-            new S3ObjectListService(session).list(container, new DisabledListProgressListener());
-        }
-        finally {
-            session.close();
-        }
+        new S3ObjectListService(session).list(container, new DisabledListProgressListener());
     }
 
     @Test
@@ -153,7 +141,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -165,7 +152,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -177,7 +163,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -189,7 +174,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -197,7 +181,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
-        session.close();
     }
 
     @Test
@@ -205,7 +188,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS2);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
-        session.close();
     }
 
     @Test(expected = BackgroundException.class)
