@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -158,7 +159,7 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
      * @see ch.cyberduck.core.Host#getCredentials()
      */
     @Override
-    public void save(final Host bookmark) {
+    public void save(final Host bookmark) throws LocalAccessDeniedException {
         if(StringUtils.isEmpty(bookmark.getHostname())) {
             log.warn("No hostname given");
             return;

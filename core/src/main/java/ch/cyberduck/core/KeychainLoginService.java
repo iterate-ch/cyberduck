@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
@@ -158,7 +159,12 @@ public class KeychainLoginService implements LoginService {
             }
             listener.message(LocaleFactory.localizedString("Login successful", "Credentials"));
             // Write credentials to keychain
-            keychain.save(bookmark);
+            try {
+                keychain.save(bookmark);
+            }
+            catch(LocalAccessDeniedException e) {
+                log.error(String.format("Failure saving credentials for %s in keychain. %s", session, e.getDetail()));
+            }
             // Flag for successful authentication
             credentials.setPassed(true);
             // Nullify password.
