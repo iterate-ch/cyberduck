@@ -15,6 +15,8 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
+
 public interface HostPasswordStore extends PasswordStore {
     String findLoginPassword(Host bookmark);
 
@@ -24,5 +26,5 @@ public interface HostPasswordStore extends PasswordStore {
 
     OAuthTokens findOAuthTokens(Host bookmark);
 
-    void save(Host bookmark);
+    void save(Host bookmark) throws LocalAccessDeniedException;
 }
