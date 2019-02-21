@@ -32,7 +32,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
@@ -80,7 +79,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
             final AttributedList<Path> children = new AttributedList<Path>();
             // Null if listing is complete
             String priorLastKey = null;
-            boolean placeholderFound = StringUtils.isEmpty(prefix);
+            boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 // Read directory listing in chunks. List results are always returned
                 // in lexicographic (alphabetical) order.
@@ -97,7 +96,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                     }
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         // Placeholder object, skip
-                        placeholderFound = true;
+                        hasDirectoryPlaceholder = true;
                         continue;
                     }
                     final EnumSet<AbstractPath.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
@@ -139,7 +138,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 listener.chunk(directory, children);
             }
             while(priorLastKey != null);
-            if(!placeholderFound && children.isEmpty()) {
+            if(!hasDirectoryPlaceholder && children.isEmpty()) {
                 final ServiceException cause = new ServiceException();
                 cause.setResponseCode(404);
                 throw new S3ExceptionMappingService().map("Listing directory {0} failed", cause, directory);

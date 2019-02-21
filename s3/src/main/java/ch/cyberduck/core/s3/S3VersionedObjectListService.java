@@ -84,7 +84,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             String priorLastVersionId = null;
             long revision = 0L;
             String lastKey = null;
-            boolean placeholderFound = StringUtils.isEmpty(prefix);
+            boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
                     bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
@@ -100,7 +100,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     }
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         // Placeholder object, skip
-                        placeholderFound = true;
+                        hasDirectoryPlaceholder = true;
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
@@ -163,7 +163,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     throw new BackgroundException(e.getCause());
                 }
             }
-            if(!placeholderFound && children.isEmpty()) {
+            if(!hasDirectoryPlaceholder && children.isEmpty()) {
                 final ServiceException cause = new ServiceException();
                 cause.setResponseCode(404);
                 throw new S3ExceptionMappingService().map("Listing directory {0} failed", cause, directory);
