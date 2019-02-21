@@ -29,6 +29,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -139,9 +140,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
             }
             while(priorLastKey != null);
             if(!hasDirectoryPlaceholder && children.isEmpty()) {
-                final ServiceException cause = new ServiceException();
-                cause.setResponseCode(404);
-                throw new S3ExceptionMappingService().map("Listing directory {0} failed", cause, directory);
+                throw new NotfoundException(directory.getAbsolute());
             }
             return children;
         }
