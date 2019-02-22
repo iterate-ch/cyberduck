@@ -40,12 +40,10 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     private static final Logger log = Logger.getLogger(S3ThresholdUploadService.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final S3Session session;
-
-    private Long multipartThreshold
-            = preferences.getLong("s3.upload.multipart.threshold");
+    private final Long threshold;
 
     private Write<StorageObject> writer;
 
@@ -53,9 +51,9 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         this(session, PreferencesFactory.get().getLong("s3.upload.multipart.threshold"));
     }
 
-    public S3ThresholdUploadService(final S3Session session, final Long multipartThreshold) {
+    public S3ThresholdUploadService(final S3Session session, final Long threshold) {
         this.session = session;
-        this.multipartThreshold = multipartThreshold;
+        this.threshold = threshold;
         this.writer = new S3WriteFeature(session);
     }
 
@@ -67,7 +65,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     @Override
     public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
-        if(status.getLength() > multipartThreshold) {
+        if(status.getLength() > threshold) {
             if(!preferences.getBoolean("s3.upload.multipart")) {
                 log.warn("Multipart upload is disabled with property s3.upload.multipart");
                 // Disabled by user
@@ -85,11 +83,6 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
         }
         // Use single upload service
         return new S3SingleUploadService(session, writer).upload(file, local, throttle, listener, status, prompt);
-    }
-
-    public S3ThresholdUploadService withMultipartThreshold(final Long threshold) {
-        this.multipartThreshold = threshold;
-        return this;
     }
 
     @Override
