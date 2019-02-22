@@ -35,7 +35,6 @@ import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
@@ -64,9 +63,6 @@ import java.util.concurrent.Future;
 
 public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, MessageDigest> {
     private static final Logger log = Logger.getLogger(S3MultipartUploadService.class);
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
 
     private final S3Session session;
 
