@@ -47,7 +47,7 @@ public class SwiftObjectListServiceTest {
     @Test
     public void testList() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -74,12 +74,26 @@ public class SwiftObjectListServiceTest {
     }
 
     @Test(expected = NotfoundException.class)
-    public void testListNotfound() throws Exception {
+    public void testListNotFoundFolder() throws Exception {
         final SwiftSession session = new SwiftSession(
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-                        )));
+            new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                new Credentials(
+                    System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+                )));
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
+        new SwiftObjectListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testListNotfoundContainer() throws Exception {
+        final SwiftSession session = new SwiftSession(
+            new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                new Credentials(
+                    System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+                )));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -89,25 +103,25 @@ public class SwiftObjectListServiceTest {
     @Test
     public void testListPlaceholder() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path placeholder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new SwiftDirectoryFeature(session).mkdir(placeholder, null, new TransferStatus());
-        final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
-        assertTrue(list.isEmpty());
-        new SwiftDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
+        final Path placeholder2 = new SwiftDirectoryFeature(session).mkdir(new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(new SwiftObjectListService(session).list(placeholder2, new DisabledListProgressListener()).isEmpty());
+        new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, placeholder2), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
     @Test
     public void testListPlaceholderParent() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -128,34 +142,32 @@ public class SwiftObjectListServiceTest {
     @Test
     public void testPlaceholderAndObjectSameName() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
+            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         final SwiftSession session = new SwiftSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final String basename = UUID.randomUUID().toString();
-        final String childname = String.format("%s/%s", basename, UUID.randomUUID().toString());
-        final Path base = new Path(container, basename, EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(base, new TransferStatus());
-        final Path child = new Path(container, childname, EnumSet.of(Path.Type.file));
-        new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(child, new TransferStatus());
+        final Path base = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
+            new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path child = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
+            new Path(base, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
             assertTrue(list.contains(base));
             assertEquals(EnumSet.of(Path.Type.file), list.get(base).getType());
-            final Path placeholder = new Path(container, basename, EnumSet.of(Path.Type.directory));
+            final Path placeholder = new Path(container, base.getName(), EnumSet.of(Path.Type.directory));
             assertTrue(list.contains(placeholder));
             assertEquals(EnumSet.of(Path.Type.directory), list.get(placeholder).getType());
         }
         {
-            final AttributedList<Path> list = new SwiftObjectListService(session).list(new Path(container, basename, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            final AttributedList<Path> list = new SwiftObjectListService(session).list(new Path(container, base.getName(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
             assertTrue(list.contains(child));
             assertEquals(EnumSet.of(Path.Type.file), list.get(child).getType());
         }
         {
-            final AttributedList<Path> list = new SwiftObjectListService(session).list(new Path(container, basename, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            final AttributedList<Path> list = new SwiftObjectListService(session).list(new Path(container, base.getName(), EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
             assertTrue(list.contains(child));
             assertEquals(EnumSet.of(Path.Type.file), list.get(child).getType());
         }

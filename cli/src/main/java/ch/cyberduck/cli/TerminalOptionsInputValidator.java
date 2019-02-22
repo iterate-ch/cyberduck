@@ -132,8 +132,8 @@ public class TerminalOptionsInputValidator {
      * Validate URI
      */
     protected boolean validate(final String uri) {
-        if(uri.indexOf("://", 0) != -1) {
-            final Protocol protocol = factory.forName(uri.substring(0, uri.indexOf("://", 0)));
+        if(uri.indexOf("://") != -1) {
+            final Protocol protocol = factory.forName(uri.substring(0, uri.indexOf("://")));
             if(null == protocol) {
                 console.printf("Unknown protocol in URI %s%n", uri);
                 return false;

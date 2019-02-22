@@ -18,6 +18,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -32,6 +33,7 @@ import javax.net.ssl.SSLHandshakeException;
 import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -131,5 +133,11 @@ public class S3ExceptionMappingServiceTest {
                         new NoSuchAlgorithmException("EC AlgorithmParameters not available")
                     )
                 ))).getDetail());
+    }
+
+    @Test
+    public void testEmpty() {
+        assertEquals("Listing directory / failed.",
+            new S3ExceptionMappingService().map("Listing directory {0} failed", new ServiceException(), new Path("/", EnumSet.of(Path.Type.directory))).getMessage());
     }
 }
