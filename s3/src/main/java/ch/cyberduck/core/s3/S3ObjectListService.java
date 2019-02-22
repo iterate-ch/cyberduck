@@ -29,6 +29,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -43,10 +44,10 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
     private static final Logger log = Logger.getLogger(S3ObjectListService.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3Session session;
     private final S3AttributesFinderFeature attributes;
@@ -79,12 +80,13 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
             final AttributedList<Path> children = new AttributedList<Path>();
             // Null if listing is complete
             String priorLastKey = null;
+            boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 // Read directory listing in chunks. List results are always returned
                 // in lexicographic (alphabetical) order.
                 final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
-                        PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
-                        chunksize, priorLastKey);
+                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
+                    chunksize, priorLastKey);
 
                 final StorageObject[] objects = chunk.getObjects();
                 for(StorageObject object : objects) {
@@ -94,10 +96,12 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                         continue;
                     }
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                        // Placeholder object, skip
+                        hasDirectoryPlaceholder = true;
                         continue;
                     }
                     final EnumSet<AbstractPath.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
-                            ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                        ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     final Path file;
                     final PathAttributes attr = attributes.toAttributes(object);
                     // Copy bucket location
@@ -135,6 +139,9 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 listener.chunk(directory, children);
             }
             while(priorLastKey != null);
+            if(!hasDirectoryPlaceholder && children.isEmpty()) {
+                throw new NotfoundException(directory.getAbsolute());
+            }
             return children;
         }
         catch(ServiceException e) {

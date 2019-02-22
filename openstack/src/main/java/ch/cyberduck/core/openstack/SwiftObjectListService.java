@@ -29,6 +29,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -93,6 +94,11 @@ public class SwiftObjectListService implements ListService {
                 listener.chunk(directory, children);
             }
             while(list.size() == limit);
+            if(!containerService.isContainer(directory) && children.isEmpty()) {
+                if(!new SwiftFindFeature(session).find(directory)) {
+                    throw new NotfoundException(directory.getAbsolute());
+                }
+            }
             return children;
         }
         catch(GenericException e) {

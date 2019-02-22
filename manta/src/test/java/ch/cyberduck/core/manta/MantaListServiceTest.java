@@ -17,19 +17,47 @@ package ch.cyberduck.core.manta;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class MantaListServiceTest extends AbstractMantaTest {
 
+    @Test(expected = NotfoundException.class)
+    public void testListNotFoundFolder() throws Exception {
+        new MantaListService(session).list(new Path(
+            new MantaHomeFinderFeature(session).find(), "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+    }
+
     @Test
-    public void testListBuckets() throws Exception {
+    public void testListEmptyFolder() throws Exception {
+        final Path folder = new MantaDirectoryFeature(session).mkdir(new Path(
+            testPathPrefix, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(new MantaListService(session).list(folder, new DisabledListProgressListener()).isEmpty());
+        new MantaDeleteFeature(session).delete(Arrays.asList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testListNotfoundTopLevelFolder() throws Exception {
+        final Path directory = new Path(testPathPrefix, "notfound-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new MantaListService(session).list(directory, new DisabledListProgressListener());
+    }
+
+    @Test
+    public void testAccountRoot() throws Exception {
         final MantaAccountHomeInfo root = new MantaAccountHomeInfo(session.getHost().getCredentials().getUsername(), session.getHost().getDefaultPath());
         final AttributedList<Path> list = new MantaListService(session)
             .list(root.getAccountRoot(), new DisabledListProgressListener());
