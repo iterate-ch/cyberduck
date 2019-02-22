@@ -67,8 +67,8 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
     @Test(expected = NotfoundException.class)
     public void testListNotfoundContainer() throws Exception {
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
-        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new B2ObjectListService(session, fileid).list(new Path(bucket, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+        final Path bucket = new Path("notfound-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new B2ObjectListService(session, fileid).list(bucket, new DisabledListProgressListener());
     }
 
     @Test
