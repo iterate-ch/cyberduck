@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
@@ -46,6 +47,29 @@ import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class B2ObjectListServiceTest extends AbstractB2Test {
+
+    @Test(expected = NotfoundException.class)
+    public void testListNotFoundFolder() throws Exception {
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new B2ObjectListService(session, fileid).list(new Path(bucket, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+    }
+
+    @Test
+    public void testListEmptyFolder() throws Exception {
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path folder = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(new B2ObjectListService(session, fileid).list(folder, new DisabledListProgressListener()).isEmpty());
+        new B2DeleteFeature(session, fileid).delete(Arrays.asList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testListNotfoundContainer() throws Exception {
+        final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
+        final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        new B2ObjectListService(session, fileid).list(new Path(bucket, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+    }
 
     @Test
     public void testList() throws Exception {
