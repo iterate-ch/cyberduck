@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -282,7 +282,7 @@
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingMiddle" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="62" id="60">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="61">
+                                    <menu key="menu" title="其他视图" id="61">
                                         <items>
                                             <menuItem title=" " state="on" id="62"/>
                                         </items>
@@ -379,7 +379,7 @@
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="6n9-Af-09P">
+                <menuItem title="新建加密库..." keyEquivalent="N" id="6n9-Af-09P">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
@@ -425,9 +425,9 @@ CA
                 <menuItem isSeparatorItem="YES" id="91">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="拷贝 URL" id="92">
+                <menuItem title="复制 URL" id="92">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="拷贝 URL" id="93"/>
+                    <menu key="submenu" title="复制 URL" id="93"/>
                 </menuItem>
                 <menuItem title="打开 URL" id="94">
                     <modifierMask key="keyEquivalentModifierMask"/>
@@ -489,7 +489,7 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="排序方式" id="108">
                         <items>
-                            <menuItem title="昵称" keyEquivalent="1" id="109">
+                            <menuItem title="备注名" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>

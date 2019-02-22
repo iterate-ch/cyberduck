@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -96,7 +96,7 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="File" id="243">
+                <menuItem title="文件" id="243">
                     <attributedString key="attributedTitle">
                         <fragment content="File">
                             <attributes>
@@ -135,7 +135,7 @@
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="新建加密库…" keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
@@ -281,14 +281,14 @@ CA
                                     <action selector="cut:" target="-1" id="396"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="拷贝" keyEquivalent="c" id="285">
+                            <menuItem title="复制" keyEquivalent="c" id="285">
                                 <connections>
                                     <action selector="copy:" target="-1" id="397"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="拷贝 URL" id="286">
+                            <menuItem title="复制 URL" id="286">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="拷贝 URL" id="287"/>
+                                <menu key="submenu" title="复制 URL" id="287"/>
                             </menuItem>
                             <menuItem title="粘贴" keyEquivalent="v" id="288">
                                 <connections>
@@ -303,8 +303,8 @@ CA
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="显示" id="290">
-                    <menu key="submenu" title="显示" id="291">
+                <menuItem title="视图" id="290">
+                    <menu key="submenu" title="视图" id="291">
                         <items>
                             <menuItem title="为列表" keyEquivalent="1" id="292">
                                 <connections>
@@ -441,7 +441,7 @@ CA
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="排序方式" id="326">
                                     <items>
-                                        <menuItem title="昵称" keyEquivalent="1" id="327">
+                                        <menuItem title="备注名" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByNickame:" target="-1" id="418"/>

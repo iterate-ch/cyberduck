@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -69,9 +70,14 @@ public class TripleCryptKeyPair {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Save encryption password for %s", bookmark));
                 }
-                keychain.addPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
-                    new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl(),
-                    credentials.getPassword());
+                try {
+                    keychain.addPassword(String.format("Triple-Crypt Encryption Password (%s)", bookmark.getCredentials().getUsername()),
+                        new DefaultUrlProvider(bookmark).toUrl(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))).find(DescriptiveUrl.Type.provider).getUrl(),
+                        credentials.getPassword());
+                }
+                catch(LocalAccessDeniedException e) {
+                    log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e.getDetail()));
+                }
             }
             return credentials;
         }

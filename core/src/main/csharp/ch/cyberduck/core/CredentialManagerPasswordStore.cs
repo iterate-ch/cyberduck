@@ -17,6 +17,7 @@
 //
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core.CredentialManager;
 using org.apache.log4j;
 using System;
@@ -39,7 +40,7 @@ namespace Ch.Cyberduck.Core
             var hostUrl = $"{serviceName} - {user}";
             if (!WinCredentialManager.SaveCredentials(hostUrl, new NetworkCredential(user, password)))
             {
-                throw new Exception($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
+                throw new LocalAccessDeniedException($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
             }
         }
 
@@ -48,7 +49,7 @@ namespace Ch.Cyberduck.Core
             var hostUrl = hostUrlProvider.get(scheme, port, user, hostName, string.Empty);
             if (!WinCredentialManager.SaveCredentials(hostUrl, new NetworkCredential(user, password)))
             {
-                throw new Exception($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
+                throw new LocalAccessDeniedException($"Could not save credentials for \"{hostUrl}\" to Windows Credential Manager.");
             }
         }
 

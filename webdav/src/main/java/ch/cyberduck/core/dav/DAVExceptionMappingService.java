@@ -23,20 +23,23 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpResponseException;
 
-public class DAVExceptionMappingService extends HttpResponseExceptionMappingService {
+import com.github.sardine.impl.SardineException;
+
+public class DAVExceptionMappingService extends HttpResponseExceptionMappingService<SardineException> {
 
     @Override
-    public BackgroundException map(final HttpResponseException failure) {
+    public BackgroundException map(final SardineException failure) {
         final StringBuilder buffer = new StringBuilder();
-        final int statusCode = failure.getStatusCode();
-        if(statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_MULTI_STATUS) {
-            // HTTP method status
-            this.append(buffer, failure.getMessage());
-            // Failure unmarshalling XML response
-            return new InteroperabilityException(buffer.toString(), failure);
+        switch(failure.getStatusCode()) {
+            case HttpStatus.SC_OK:
+            case HttpStatus.SC_MULTI_STATUS:
+                // HTTP method status
+                this.append(buffer, failure.getMessage());
+                // Failure unmarshalling XML response
+                return new InteroperabilityException(buffer.toString(), failure);
         }
-        return super.map(failure);
+        this.append(buffer, String.format("%s (%d %s)", failure.getReasonPhrase(), failure.getStatusCode(), failure.getResponsePhrase()));
+        return super.map(failure, buffer, failure.getStatusCode());
     }
 }
