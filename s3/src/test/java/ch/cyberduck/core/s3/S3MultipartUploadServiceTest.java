@@ -41,7 +41,7 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
     public void testUploadSinglePart() throws Exception {
         final S3MultipartUploadService service = new S3MultipartUploadService(session, new S3WriteFeature(session, new S3DisabledMultipartService()), 5 * 1024L, 2);
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final String name = UUID.randomUUID().toString() + ".txt";
+        final String name = String.format(" %s.txt", UUID.randomUUID().toString());
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
         final Local local = new Local(System.getProperty("java.io.tmpdir"), name);
         final String random = new RandomStringGenerator.Builder().build().generate(1000);
