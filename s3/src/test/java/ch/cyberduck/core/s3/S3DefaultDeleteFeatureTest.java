@@ -46,7 +46,6 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
-        session.close();
     }
 
     @Test
@@ -57,7 +56,6 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
-        session.close();
     }
 
     @Test
@@ -80,7 +78,6 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
             new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
             assertFalse(new S3FindFeature(session).find(test));
         }
-        session.close();
     }
 
     @Test
@@ -91,7 +88,6 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(container));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(container));
-        session.close();
     }
 
     @Ignore

@@ -105,7 +105,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         assertTrue(list.contains(new Path("/dist.springframework.org/release", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertTrue(list.contains(new Path("/dist.springframework.org/milestone", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
         assertTrue(list.contains(new Path("/dist.springframework.org/snapshot", EnumSet.of(Path.Type.directory, Path.Type.placeholder))));
-        session.close();
     }
 
     @Test
@@ -220,9 +219,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
             assertEquals("Received redirect response HTTP/1.1 301 Moved Permanently but no location header.", e.getDetail());
             throw e;
         }
-        finally {
-            session.close();
-        }
     }
 
     @Test
@@ -251,6 +247,5 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         login.check(session, PathCache.empty(), new DisabledCancelCallback());
         new S3ObjectListService(session).list(
             new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
-        session.close();
     }
 }

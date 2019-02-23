@@ -76,7 +76,6 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE, PathCache.empty()).append);
         assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE, PathCache.empty()));
         assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()));
-        session.close();
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -87,12 +86,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        try {
-            feature.write(file, status, new DisabledConnectionCallback());
-        }
-        finally {
-            session.close();
-        }
+        feature.write(file, status, new DisabledConnectionCallback());
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -111,9 +105,6 @@ public class S3WriteFeatureTest extends AbstractS3Test {
             assertEquals("A header you provided implies functionality that is not implemented. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
-        finally {
-            session.close();
-        }
     }
 
     @Test
@@ -125,12 +116,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        try {
-            feature.write(file, status, new DisabledConnectionCallback());
-            new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
-        finally {
-            session.close();
-        }
+        feature.write(file, status, new DisabledConnectionCallback());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -52,7 +52,6 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         feature.mkdir(test, region.getIdentifier(), new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -65,7 +64,6 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         feature.mkdir(test, region.getIdentifier(), new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -92,7 +90,6 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener()).contains(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -104,7 +101,6 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
-        session.close();
     }
 
     @Test
@@ -116,6 +112,5 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         assertTrue(new DefaultFindFeature(session).find(test));
         assertTrue(new S3ObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

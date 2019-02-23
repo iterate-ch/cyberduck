@@ -59,7 +59,6 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -100,7 +99,6 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         assertFalse(metadata.isEmpty());
         assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -114,7 +112,6 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -139,6 +136,5 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         assertFalse(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

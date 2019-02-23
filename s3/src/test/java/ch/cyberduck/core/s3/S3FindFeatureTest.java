@@ -28,14 +28,12 @@ public class S3FindFeatureTest extends AbstractS3Test {
     public void testFindUnknownBucket() throws Exception {
         final Path test = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         assertFalse(new S3FindFeature(session).find(test));
-        session.close();
     }
 
     @Test
     public void testFindBucket() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertTrue(new S3FindFeature(session).find(container));
-        session.close();
     }
 
     @Test

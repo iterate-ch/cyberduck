@@ -44,7 +44,6 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(container);
         assertTrue(metadata.isEmpty());
-        session.close();
     }
 
     @Test
@@ -60,7 +59,6 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         assertFalse(metadata.containsKey(Constants.KEY_FOR_USER_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_SERVICE_METADATA));
         assertFalse(metadata.containsKey(Constants.KEY_FOR_COMPLETE_METADATA));
-        session.close();
     }
 
     @Test
@@ -88,7 +86,6 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         assertEquals("AES256", encryption.getEncryption(test).algorithm);
 
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -103,6 +100,5 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
         assertTrue(metadata.containsKey("Content-Type"));
         assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }
