@@ -20,6 +20,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -42,7 +43,6 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
         assertTrue(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(directory));
-        session.close();
     }
 
     @Test
@@ -60,6 +60,11 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
                 assertNull(p.attributes().getVersionId());
             }
         }
-        session.close();
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testListNotFoundFolder() throws Exception {
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        new S3ObjectListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 }

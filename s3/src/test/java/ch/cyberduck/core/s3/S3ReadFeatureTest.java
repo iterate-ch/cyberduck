@@ -60,7 +60,6 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -87,7 +86,6 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         assertArrayEquals(reference, buffer.toByteArray());
         in.close();
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -108,7 +106,6 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         assertEquals(content.length, status.getLength());
         in.close();
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -126,6 +123,5 @@ public class S3ReadFeatureTest extends AbstractS3Test {
         in.close();
         assertEquals(0L, in.getByteCount(), 0L);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

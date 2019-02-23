@@ -59,17 +59,11 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
     @Override
     public Map<TransferItem, TransferStatus> run(final Session<?> session) throws BackgroundException {
         final Map<TransferItem, TransferStatus> status = new HashMap<TransferItem, TransferStatus>();
-        for(TransferItem file : transfer.getRoots()) {
-            if(this.isCanceled()) {
-                throw new ConnectionCanceledException();
-            }
-            status.put(file.getParent(), new TransferStatus().exists(true));
-        }
-
         final TransferPathFilter filter = transfer.filter(session, session, action, listener);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter cache %s with filter %s", cache, filter));
         }
+        // Unordered list
         for(Map.Entry<TransferItem, AttributedList<TransferItem>> entry : cache.asMap().entrySet()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
@@ -79,8 +73,8 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
-                final boolean accept = filter.accept(file.remote, file.local, status.get(file.getParent()));
-                status.put(file, filter.prepare(file.remote, file.local, status.get(file.getParent()), listener)
+                final boolean accept = filter.accept(file.remote, file.local, new TransferStatus().exists(true));
+                status.put(file, filter.prepare(file.remote, file.local, new TransferStatus().exists(true), listener)
                     .reject(!accept));
             }
         }

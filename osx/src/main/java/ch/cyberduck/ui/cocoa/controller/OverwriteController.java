@@ -57,14 +57,14 @@ public class OverwriteController extends ProxyController {
             final Path item = iter.next();
             if(cache.get(item.getParent()).contains(item)) {
                 if(i < 10) {
-                    alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(item.getName());
+                    alertText.append('\n').append('\u2022').append(' ').append(item.getName());
                 }
                 shouldWarn = true;
             }
             i++;
         }
         if(i >= 10) {
-            alertText.append("\n").append(Character.toString('\u2022')).append(" …)");
+            alertText.append('\n').append('\u2022').append(' ').append('…');
         }
         if(shouldWarn) {
             NSAlert alert = NSAlert.alert(

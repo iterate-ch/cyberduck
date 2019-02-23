@@ -81,7 +81,7 @@ public class DAVMetadataFeature implements Headers {
         }
         try {
             session.getClient().setCustomProps(new DAVPathEncoder().encode(file),
-                    metadata, Collections.<java.lang.String>emptyList());
+                metadata, Collections.emptyList());
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);

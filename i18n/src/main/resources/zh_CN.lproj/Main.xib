@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
+        <development version="7000" identifier="xcode"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
     </dependencies>
     <objects>
@@ -95,7 +96,7 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="File" id="243">
+                <menuItem title="文件" id="243">
                     <attributedString key="attributedTitle">
                         <fragment content="File">
                             <attributes>
@@ -117,20 +118,24 @@
                                     <action selector="connectButtonClicked:" target="-1" id="375"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="247"/>
+                            <menuItem isSeparatorItem="YES" id="247">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
                             <menuItem title="新建下载" keyEquivalent="" id="248">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="newDownloadMenuClicked:" target="-2" id="376"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="249"/>
+                            <menuItem isSeparatorItem="YES" id="249">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
                             <menuItem title="新建文件夹…" keyEquivalent="N" id="250">
                                 <connections>
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="新建加密库…" keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
@@ -147,9 +152,7 @@
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="255"/>
                             <menuItem title="重命名文件…" id="253">
-                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
@@ -159,11 +162,16 @@
                                     <action selector="duplicateFileButtonClicked:" target="-1" id="381"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="t4E-eL-Tgs"/>
-                            <menuItem title="简介" tag="2" keyEquivalent="i" id="261">
-                                <connections>
-                                    <action selector="infoButtonClicked:" target="-1" id="383"/>
-                                </connections>
+                            <menuItem isSeparatorItem="YES" id="255">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="打开网络 URL" id="256">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="打开网络 URL" id="257"/>
+                            </menuItem>
+                            <menuItem title="编辑" id="258">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="编辑" id="259"/>
                             </menuItem>
                             <menuItem title="快速查看" image="NSQuickLookTemplate" id="260">
                                 <attributedString key="attributedTitle"/>
@@ -172,11 +180,14 @@
                                     <action selector="quicklookButtonClicked:" target="-1" id="382"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="编辑" id="258">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="编辑" id="259"/>
+                            <menuItem title="简介" tag="2" keyEquivalent="i" id="261">
+                                <connections>
+                                    <action selector="infoButtonClicked:" target="-1" id="383"/>
+                                </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="262"/>
+                            <menuItem isSeparatorItem="YES" id="262">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
                             <menuItem title="下载" keyEquivalent="" id="263">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                                 <connections>
@@ -190,7 +201,6 @@
                                 </connections>
                             </menuItem>
                             <menuItem title="下载至…" id="265">
-                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="downloadToButtonClicked:" target="-1" id="386"/>
                                 </connections>
@@ -202,7 +212,6 @@
                                 </connections>
                             </menuItem>
                             <menuItem title="同步…" id="267">
-                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="syncButtonClicked:" target="-1" id="388"/>
                                 </connections>
@@ -221,7 +230,9 @@ CA
                                     <action selector="revertFileButtonClicked:" target="-1" id="390"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="271"/>
+                            <menuItem isSeparatorItem="YES" id="271">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
                             <menuItem title="创建压缩包" id="272">
                                 <menu key="submenu" title="创建压缩包" id="273"/>
                             </menuItem>
@@ -230,22 +241,17 @@ CA
                                     <action selector="unarchiveButtonClicked:" target="-1" id="391"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="Xdd-Sj-x3y"/>
-                            <menuItem title="打开网络 URL" id="256">
-                                <menu key="submenu" title="打开网络 URL" id="257"/>
+                            <menuItem isSeparatorItem="YES" id="275">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Share…" id="Dp0-uw-cX3">
-                                <connections>
-                                    <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="275"/>
                             <menuItem title="打印…" keyEquivalent="p" id="276">
                                 <connections>
                                     <action selector="printDocument:" target="-1" id="392"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="277"/>
+                            <menuItem isSeparatorItem="YES" id="277">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
                             <menuItem title="关闭窗口" keyEquivalent="w" id="278">
                                 <connections>
                                     <action selector="performClose:" target="-1" id="393"/>
@@ -275,14 +281,14 @@ CA
                                     <action selector="cut:" target="-1" id="396"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="拷贝" keyEquivalent="c" id="285">
+                            <menuItem title="复制" keyEquivalent="c" id="285">
                                 <connections>
                                     <action selector="copy:" target="-1" id="397"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="拷贝 URL" id="286">
+                            <menuItem title="复制 URL" id="286">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="拷贝 URL" id="287"/>
+                                <menu key="submenu" title="复制 URL" id="287"/>
                             </menuItem>
                             <menuItem title="粘贴" keyEquivalent="v" id="288">
                                 <connections>
@@ -297,8 +303,8 @@ CA
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="显示" id="290">
-                    <menu key="submenu" title="显示" id="291">
+                <menuItem title="视图" id="290">
+                    <menu key="submenu" title="视图" id="291">
                         <items>
                             <menuItem title="为列表" keyEquivalent="1" id="292">
                                 <connections>
@@ -435,7 +441,7 @@ CA
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="排序方式" id="326">
                                     <items>
-                                        <menuItem title="昵称" keyEquivalent="1" id="327">
+                                        <menuItem title="备注名" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
                                                 <action selector="sortBookmarksByNickame:" target="-1" id="418"/>

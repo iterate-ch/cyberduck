@@ -42,7 +42,6 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
             // Expected
         }
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test(expected = NotfoundException.class)
@@ -50,8 +49,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final S3AttributesFinderFeature f = new S3AttributesFinderFeature(session);
-        final PathAttributes attributes = f.find(test);
-        session.close();
+        f.find(test);
     }
 
     @Test
@@ -61,7 +59,6 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertEquals(-1L, attributes.getSize());
         assertNotNull(attributes.getRegion());
         assertEquals(EnumSet.of(Path.Type.directory, Path.Type.volume), container.getType());
-        session.close();
     }
 
     @Test(expected = NotfoundException.class)
@@ -81,7 +78,6 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertEquals(0L, attributes.getSize());
         assertEquals(Checksum.parse("d41d8cd98f00b204e9800998ecf8427e"), attributes.getChecksum());
         assertNotEquals(-1L, attributes.getModificationDate());
-        session.close();
     }
 
     @Test
@@ -95,7 +91,6 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final String deleteMarker = new S3AttributesFinderFeature(session).find(test).getVersionId();
         assertNotNull(deleteMarker);
         assertNotEquals(versionId, deleteMarker);
-        session.close();
     }
 
     @Test
@@ -106,7 +101,6 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         new S3TouchFeature(session).touch(file, new TransferStatus());
         new S3AttributesFinderFeature(session).find(file);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -117,6 +111,5 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         new S3TouchFeature(session).touch(file, new TransferStatus());
         new S3AttributesFinderFeature(session).find(file);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

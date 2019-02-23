@@ -63,7 +63,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals("text/plain", metadata.get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-        session.close();
     }
 
     @Test
@@ -95,7 +94,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertNotNull(metadata.get("server-side-encryption-aws-kms-key-id"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-        session.close();
     }
 
     @Test(expected = NotfoundException.class)
@@ -127,7 +125,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-        session.close();
     }
 
     @Test
@@ -149,7 +146,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-        session.close();
     }
 
     @Test
@@ -214,7 +210,6 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertArrayEquals(content, buffer);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-        session.close();
     }
 
     @Test
@@ -278,6 +273,5 @@ public class S3MultipartUploadServiceTest extends AbstractS3Test {
         assertArrayEquals(content, buffer);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-        session.close();
     }
 }

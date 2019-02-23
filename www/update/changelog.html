@@ -54,9 +54,6 @@
         ul li ul li {
             list-style-type: disc;
         }
-
-
-
     </style>
 </head>
 
@@ -74,15 +71,20 @@
 </p>
 
 <p>
+    <a href="https://trac.cyberduck.io/milestone/7.0.0"><strong>Version 7.0.0</strong></a>
+</p>
+<ul>
+    <li><span class="label label-success">Localize</span> Segmented downloads with multiple connections per file (<a
+        href="https://trac.cyberduck.io/ticket/10115">#10115</a>)</li>
+</ul>
+
+<p>
     <a href="https://trac.cyberduck.io/milestone/6.9.3"><strong>Version 6.9.3</strong></a>
 </p>
 <ul>
     <li><span class="label label-warning">Bugfix</span> RFC compliant parsing of URI parameters (CLI)</li>
     <li><span class="label label-warning">Bugfix</span> Failure displaying alert window for multiple consecutive
         transfer failures
-    </li>
-    <li><span class="label label-warning">Bugfix</span> Does not read credentials from the standard AWS SDK credentials
-        file when connecting to AWS GovCloud or AWS China
     </li>
     <li><span class="label label-warning">Bugfix</span> Checksum verification disabled by default for file transfers
     </li>
@@ -91,11 +93,20 @@
     </li>
     <li><span class="label label-warning">Bugfix</span> Disable transfer acceleration for AWS GovCloud (S3)</li>
     <li><span class="label label-warning">Bugfix</span> Login using temporary tokens from STS to AWS GovCloud (S3)
-        (#10594)
+        (<a
+            href="https://trac.cyberduck.io/ticket/10594">#10594</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Support auto-configuration from ~/.aws/credentials for AWS
         GovCloud and Amazon S3 China (S3)
     </li>
+    <li><span class="label label-warning">Bugfix</span> Modification date not applied when copying file between browser
+        windows (<a
+            href="https://trac.cyberduck.io/ticket/10592">#10592</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Unable to delete incomplete multipart upload (S3) (<a
+            href="https://trac.cyberduck.io/ticket/10568">#10568</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Updated localizations</li>
 </ul>
 
 <p>

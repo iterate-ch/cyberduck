@@ -17,6 +17,8 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
+
 public interface PasswordStore {
 
     /**
@@ -35,7 +37,7 @@ public interface PasswordStore {
      * @param accountName Account
      * @param password    Password to save for service
      */
-    void addPassword(String serviceName, String accountName, String password);
+    void addPassword(String serviceName, String accountName, String password) throws LocalAccessDeniedException;
 
     /**
      * Find internet password
@@ -56,5 +58,5 @@ public interface PasswordStore {
      * @param user     Credentials
      * @param password Password to save for service
      */
-    void addPassword(Scheme scheme, int port, String hostname, String user, String password);
+    void addPassword(Scheme scheme, int port, String hostname, String user, String password) throws LocalAccessDeniedException;
 }

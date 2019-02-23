@@ -372,7 +372,7 @@ public final class HostParser {
                 host.setDefaultPath(pathBuilder.toString());
             }
             else {
-                if(pathBuilder.indexOf(host.getDefaultPath()) != -1) {
+                if(StringUtils.isNotBlank(host.getDefaultPath()) && pathBuilder.indexOf(host.getDefaultPath()) != -1) {
                     host.setDefaultPath(pathBuilder.toString());
                 }
                 else {

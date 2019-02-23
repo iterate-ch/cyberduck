@@ -1900,13 +1900,13 @@ public class BrowserController extends WindowController
         int i = 0;
         Iterator<Host> iter = selected.iterator();
         while(i < 10 && iter.hasNext()) {
-            alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(
+            alertText.append('\n').append('\u2022').append(' ').append(
                 BookmarkNameProvider.toString(iter.next())
             );
             i++;
         }
         if(iter.hasNext()) {
-            alertText.append("\n").append(Character.toString('\u2022')).append(" " + "…");
+            alertText.append('\n').append('\u2022').append(' ').append('…');
         }
         final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete Bookmark"),
             alertText.toString(),

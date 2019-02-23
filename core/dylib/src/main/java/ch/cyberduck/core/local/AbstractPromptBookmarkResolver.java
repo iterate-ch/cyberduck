@@ -102,6 +102,10 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
                 // Prompt user if no bookmark reference is available
                 log.warn(String.format("Missing security scoped bookmark for file %s", file));
                 final String reference = this.choose(file);
+                if(null == reference) {
+                    // Prompt canceled by user
+                    return null;
+                }
                 file.setBookmark(reference);
                 bookmark = NSData.dataWithBase64EncodedString(reference);
             }
@@ -156,7 +160,8 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
         };
         proxy.invoke(action, action.lock(), true);
         if(selected.get() == null) {
-            throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file.getName()));
+            log.warn(String.format("Prompt for %s canceled", file));
+            return null;
         }
         // Save Base64 encoded scoped reference
         return this.create(selected.get());

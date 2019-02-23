@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -84,6 +85,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             String priorLastVersionId = null;
             long revision = 0L;
             String lastKey = null;
+            boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
                     bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
@@ -98,6 +100,8 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         continue;
                     }
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                        // Placeholder object, skip
+                        hasDirectoryPlaceholder = true;
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
@@ -159,6 +163,9 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     }
                     throw new BackgroundException(e.getCause());
                 }
+            }
+            if(!hasDirectoryPlaceholder && children.isEmpty()) {
+                throw new NotfoundException(directory.getAbsolute());
             }
             return children;
         }

@@ -52,7 +52,6 @@ public class S3SearchFeatureTest extends AbstractS3Test {
         final Path subdir = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -79,7 +78,6 @@ public class S3SearchFeatureTest extends AbstractS3Test {
             assertEquals(subdir, result.find(new SimplePathPredicate(filesubdir)).getParent());
         }
         new S3DefaultDeleteFeature(session).delete(Arrays.asList(file, filesubdir, subdir), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
 }

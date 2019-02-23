@@ -47,7 +47,7 @@ public class SDSQuotaFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testRoom() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         host.setDefaultPath(new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume)).getAbsolute());

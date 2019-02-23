@@ -51,7 +51,6 @@ public class S3CopyFeatureTest extends AbstractS3Test {
         assertEquals("application/cyberduck",
             new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(copy).get("Content-Type"));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -67,6 +66,5 @@ public class S3CopyFeatureTest extends AbstractS3Test {
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new S3FindFeature(session).find(copy));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }
