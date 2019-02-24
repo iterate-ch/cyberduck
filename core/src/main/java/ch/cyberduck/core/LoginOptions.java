@@ -89,7 +89,7 @@ public final class LoginOptions {
         this.configure(protocol);
     }
 
-    public void configure(final Protocol protocol) {
+    public LoginOptions configure(final Protocol protocol) {
         publickey = protocol.isPrivateKeyConfigurable();
         certificate = protocol.isCertificateConfigurable();
         anonymous = protocol.isAnonymousConfigurable();
@@ -100,6 +100,7 @@ public final class LoginOptions {
         icon = protocol.disk();
         usernamePlaceholder = protocol.getUsernamePlaceholder();
         passwordPlaceholder = protocol.getPasswordPlaceholder();
+        return this;
     }
 
     public LoginOptions user(boolean e) {
