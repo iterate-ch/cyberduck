@@ -140,9 +140,9 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
 
     protected String getOAuthHostname(final Host bookmark) {
         if(StringUtils.isNotBlank(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost())) {
-            return bookmark.getHostname();
+            return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost();
         }
-        return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost();
+        return bookmark.getHostname();
     }
 
     private String getOAuthPrefix(final Host bookmark) {
