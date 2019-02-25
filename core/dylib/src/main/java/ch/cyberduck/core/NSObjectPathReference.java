@@ -31,7 +31,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 public class NSObjectPathReference implements CacheReference<Path> {
 
     private static final LRUCache<Path, NSString> cache = LRUCache.build(
-            PreferencesFactory.get().getInteger("browser.model.cache.size")
+        PreferencesFactory.get().getInteger("browser.model.cache.size")
     );
 
     public static NSObject get(final Path file) {
@@ -73,6 +73,6 @@ public class NSObjectPathReference implements CacheReference<Path> {
 
     @Override
     public boolean test(final Path file) {
-        return hashCode == file.hashCode();
+        return hashCode == new DefaultPathPredicate(file).hashCode();
     }
 }
