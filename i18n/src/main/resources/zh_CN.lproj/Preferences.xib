@@ -1584,7 +1584,7 @@
                             <textField verticalHuggingPriority="750" id="340">
                                 <rect key="frame" x="9" y="77" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="最大流量:" id="341">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="最高限速:" id="341">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1609,7 +1609,7 @@
                             <textField verticalHuggingPriority="750" id="347">
                                 <rect key="frame" x="9" y="14" width="243" height="17"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="最大流量:" id="348">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="right" title="最高限速:" id="348">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
