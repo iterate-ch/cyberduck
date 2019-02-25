@@ -55,10 +55,10 @@ public class NSObjectPathReferenceTest {
     public void testHashcodeCollision() {
         assertNotEquals(
             NSObjectPathReference.get(
-                new Path("19.vcf.gz", EnumSet.of(Path.Type.file))
+                new Path("19", EnumSet.of(Path.Type.file))
             ),
             NSObjectPathReference.get(
-                new Path("0X.vcf.gz", EnumSet.of(Path.Type.file))
+                new Path("0X", EnumSet.of(Path.Type.file))
             )
         );
     }
