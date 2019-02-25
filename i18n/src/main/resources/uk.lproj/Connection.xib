@@ -219,14 +219,6 @@ DQ
                             <action selector="closeSheet:" target="-2" id="92"/>
                         </connections>
                     </button>
-                    <button id="30">
-                        <rect key="frame" x="18" y="22" width="146" height="18"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="check" title="Додати до Keychain" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="31">
-                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                    </button>
                     <button horizontalHuggingPriority="750" verticalHuggingPriority="750" id="66">
                         <rect key="frame" x="243" y="20" width="21" height="23"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
@@ -237,6 +229,14 @@ DQ
                         <connections>
                             <action selector="helpButtonClicked:" target="-2" id="95"/>
                         </connections>
+                    </button>
+                    <button id="30">
+                        <rect key="frame" x="18" y="22" width="146" height="18"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="check" title="Додати до Keychain" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="31">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
                     </button>
                 </subviews>
             </view>
