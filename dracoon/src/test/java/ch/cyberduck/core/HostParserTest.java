@@ -38,4 +38,12 @@ public class HostParserTest {
             .compareTo(new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
                 "dracoon://post%40iterate.ch@duck.dracoon.com/key")));
     }
+
+    @Test
+    public void testParseDefaultPath() throws Exception {
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
+            this.getClass().getResourceAsStream("/DRACOON (Email Address).cyberduckprofile"));
+        assertEquals("/room/key", new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
+            "dracoon://duck.dracoon.com/room/key").getDefaultPath());
+    }
 }

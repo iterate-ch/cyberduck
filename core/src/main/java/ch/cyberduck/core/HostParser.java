@@ -372,11 +372,16 @@ public final class HostParser {
                 host.setDefaultPath(pathBuilder.toString());
             }
             else {
-                if(StringUtils.isNotBlank(host.getDefaultPath()) && pathBuilder.indexOf(host.getDefaultPath()) != -1) {
-                    host.setDefaultPath(pathBuilder.toString());
+                if(StringUtils.isNotBlank(host.getDefaultPath())) {
+                    if(pathBuilder.indexOf(host.getDefaultPath()) != -1) {
+                        host.setDefaultPath(pathBuilder.toString());
+                    }
+                    else {
+                        host.setDefaultPath(String.format("%s%s", host.getDefaultPath(), pathBuilder));
+                    }
                 }
                 else {
-                    host.setDefaultPath(String.format("%s%s", host.getDefaultPath(), pathBuilder));
+                    host.setDefaultPath(pathBuilder.toString());
                 }
             }
         }
