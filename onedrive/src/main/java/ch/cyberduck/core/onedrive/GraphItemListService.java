@@ -62,7 +62,7 @@ public class GraphItemListService implements ListService {
                     continue;
                 }
                 final PathAttributes attr = attributes.toAttributes(metadata);
-                children.add(new Path(directory, metadata.getName(), resolveType(metadata), attr));
+                children.add(new Path(directory, metadata.getName(), this.resolveType(metadata), attr));
                 listener.chunk(directory, children);
             }
         }
@@ -78,12 +78,12 @@ public class GraphItemListService implements ListService {
         return this;
     }
 
-    private EnumSet<Path.Type> resolveType(OneDriveItem.Metadata metadata) {
+    private EnumSet<Path.Type> resolveType(final OneDriveItem.Metadata metadata) {
         if(metadata instanceof OneDrivePackageItem.Metadata) {
-            return EnumSet.of(Path.Type.placeholder);
+            return EnumSet.of(Path.Type.file, Path.Type.placeholder);
         }
         else if(metadata instanceof OneDriveRemoteItem.Metadata) {
-            final EnumSet<Path.Type> types = resolveType(((OneDriveRemoteItem.Metadata) metadata).getRemoteItem());
+            final EnumSet<Path.Type> types = this.resolveType(((OneDriveRemoteItem.Metadata) metadata).getRemoteItem());
             types.add(Path.Type.shared);
             return types;
         }
