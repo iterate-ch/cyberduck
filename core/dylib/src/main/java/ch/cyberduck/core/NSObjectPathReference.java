@@ -21,6 +21,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.core.cache.LRUCache;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 /**
  * Mapper between path references returned from the outline view model and its internal
@@ -28,8 +30,15 @@ import ch.cyberduck.binding.foundation.NSString;
  */
 public class NSObjectPathReference implements CacheReference<Path> {
 
+    private static final LRUCache<Path, NSString> cache = LRUCache.build(
+        PreferencesFactory.get().getInteger("browser.model.cache.size")
+    );
+
     public static NSObject get(final Path file) {
-        return NSString.stringWithString(new DefaultPathPredicate(file).toString());
+        if(!cache.contains(file)) {
+            cache.put(file, NSString.stringWithString(new DefaultPathPredicate(file).toString()));
+        }
+        return cache.get(file);
     }
 
     private final String stringRepresentation;
