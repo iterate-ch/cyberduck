@@ -46,7 +46,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     private static final Logger log = Logger.getLogger(PromptLoginCallback.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final WindowController parent;
 
@@ -59,8 +59,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     }
 
     @Override
-    public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference)
-            throws LoginCanceledException {
+    public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Display insecure connection alert for %s", bookmark));
         }
@@ -83,7 +82,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
             log.debug(String.format("Prompt for credentials for %s", username));
         }
         final Credentials credentials = new Credentials(username).withSaved(options.save);
-        final LoginController controller = new LoginController(title, reason, bookmark, credentials, options);
+        final LoginController controller = new LoginController(title, reason, new Host(bookmark).withCredentials(credentials), options);
         final SheetInvoker sheet = new SheetInvoker(controller, parent, controller);
         final int option = sheet.beginSheet();
         if(option == SheetCallback.CANCEL_OPTION) {
@@ -103,7 +102,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
                 select.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
                 select.setPrompt(LocaleFactory.localizedString("Choose"));
                 select.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(),
-                        null, parent.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null);
+                    null, parent.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null);
                 return this.getSelectedOption();
             }
         };
