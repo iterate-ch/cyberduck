@@ -42,7 +42,6 @@ public class S3LoggingFeatureTest extends AbstractS3Test {
         assertNotNull(configuration);
         assertEquals("test-logging-us-east-1-cyberduck", configuration.getLoggingTarget());
         assertTrue(configuration.isEnabled());
-        session.close();
     }
 
     @Test(expected = NotfoundException.class)

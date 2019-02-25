@@ -69,6 +69,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <argLine />
+        <jna-version>5.2.0</jna-version>
     </properties>
 
     <dependencyManagement>
@@ -76,12 +77,12 @@
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna</artifactId>
-                <version>5.2.0</version>
+                <version>${jna-version}</version>
             </dependency>
             <dependency>
                 <groupId>net.java.dev.jna</groupId>
                 <artifactId>jna-platform</artifactId>
-                <version>5.2.0</version>
+                <version>${jna-version}</version>
             </dependency>
             <dependency>
                 <groupId>cglib</groupId>
@@ -91,7 +92,7 @@
             <dependency>
                 <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
-                <version>0.9.19</version>
+                <version>0.9.20</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -176,22 +177,22 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.25</version>
+                <version>1.7.26</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>1.7.25</version>
+                <version>1.7.26</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
-                <version>1.7.25</version>
+                <version>1.7.26</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
-                <version>1.7.25</version>
+                <version>1.7.26</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -262,7 +263,7 @@
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.484</version>
+                <version>1.11.505</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

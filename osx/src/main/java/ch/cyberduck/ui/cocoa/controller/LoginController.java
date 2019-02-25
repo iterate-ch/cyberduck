@@ -20,7 +20,6 @@ import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSImageView;
 import ch.cyberduck.binding.application.NSTextField;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
@@ -42,9 +41,8 @@ public class LoginController extends ConnectionController {
     @Outlet
     private NSTextField textField;
 
-    public LoginController(final String title, final String reason,
-                           final Host bookmark, final Credentials credentials, final LoginOptions options) {
-        super(bookmark, credentials, options);
+    public LoginController(final String title, final String reason, final Host bookmark, final LoginOptions options) {
+        super(bookmark, options);
         this.title = title;
         this.reason = reason;
     }
@@ -55,7 +53,7 @@ public class LoginController extends ConnectionController {
         if(options.user) {
             window.makeFirstResponder(usernameField);
         }
-        if(options.password && !org.apache.commons.lang3.StringUtils.isBlank(credentials.getUsername())) {
+        if(options.password && !org.apache.commons.lang3.StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
             window.makeFirstResponder(passwordField);
         }
     }

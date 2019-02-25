@@ -73,18 +73,27 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
                 }
             }
         }
-        return super.doSendRequest(request, conn, context);
+        final HttpResponse response = super.doSendRequest(request, conn, context);
+        if(null != response) {
+            // response received as part of an expect-continue handshake
+            this.log(response);
+        }
+        return response;
     }
 
     @Override
     protected HttpResponse doReceiveResponse(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws HttpException, IOException {
         final HttpResponse response = super.doReceiveResponse(request, conn, context);
+        this.log(response);
+        return response;
+    }
+
+    private void log(final HttpResponse response) {
         synchronized(listener) {
             listener.log(TranscriptListener.Type.response, response.getStatusLine().toString());
             for(Header header : response.getAllHeaders()) {
                 listener.log(TranscriptListener.Type.response, header.toString());
             }
         }
-        return response;
     }
 }

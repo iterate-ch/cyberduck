@@ -60,23 +60,17 @@ public class DefaultBookmarkController extends BookmarkController {
     }
 
     public DefaultBookmarkController(final Host bookmark, final LoginOptions options) {
-        super(bookmark, bookmark.getCredentials(), options.password(false));
+        super(bookmark, options.password(false));
     }
 
     public DefaultBookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
-        super(bookmark, bookmark.getCredentials(), validator, options.password(false));
+        super(bookmark, validator, options.password(false));
     }
 
     @Override
     public void awakeFromNib() {
         super.awakeFromNib();
         window.makeFirstResponder(hostField);
-    }
-
-    @Override
-    public boolean validate() {
-        options.password(false);
-        return super.validate();
     }
 
     public void setNicknameField(final NSTextField field) {
@@ -117,8 +111,8 @@ public class DefaultBookmarkController extends BookmarkController {
                         certificatePopup.lastItem().setRepresentedObject(certificate);
                     }
                 }
-                if(credentials.isCertificateAuthentication()) {
-                    certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(credentials.getCertificate()));
+                if(bookmark.getCredentials().isCertificateAuthentication()) {
+                    certificatePopup.selectItemAtIndex(certificatePopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getCertificate()));
                 }
                 else {
                     certificatePopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
@@ -129,7 +123,7 @@ public class DefaultBookmarkController extends BookmarkController {
 
     @Action
     public void certificateSelectionChanged(final NSPopUpButton sender) {
-        credentials.setCertificate(sender.selectedItem().representedObject());
+        bookmark.getCredentials().setCertificate(sender.selectedItem().representedObject());
         this.update();
     }
 

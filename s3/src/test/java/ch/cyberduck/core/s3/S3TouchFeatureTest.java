@@ -44,7 +44,6 @@ public class S3TouchFeatureTest extends AbstractS3Test {
         assertEquals(test.attributes(), new S3AttributesFinderFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
-        session.close();
     }
 
     @Test
@@ -73,7 +72,6 @@ public class S3TouchFeatureTest extends AbstractS3Test {
             new PathAttributes(file.attributes()).withVersionId(version1)))));
         assertTrue((new S3FindFeature(session).find(new Path(file.getParent(), file.getName(), file.getType(),
             new PathAttributes(file.attributes()).withVersionId(version2)))));
-        session.close();
     }
 
     @Test(expected = AccessDeniedException.class)

@@ -54,7 +54,6 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
         assertEquals("AES256", value.algorithm);
         assertNull(value.key);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -68,6 +67,5 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
         assertEquals("AES256", value.algorithm);
         assertNull(value.key);
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

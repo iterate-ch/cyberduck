@@ -29,7 +29,6 @@ public class S3BucketListServiceTest extends AbstractS3Test {
             new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        session.close();
     }
 
     @Test
@@ -38,7 +37,6 @@ public class S3BucketListServiceTest extends AbstractS3Test {
             new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        session.close();
     }
 
     @Test
@@ -49,6 +47,5 @@ public class S3BucketListServiceTest extends AbstractS3Test {
         for(Path bucket : list) {
             assertEquals("eu-central-1", bucket.attributes().getRegion());
         }
-        session.close();
     }
 }

@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         private ConnectionController(Host bookmark, LoginOptions options) : this(bookmark,
-            new LoginInputValidator(bookmark.getCredentials(), bookmark.getProtocol(), options), options)
+            new LoginInputValidator(bookmark, options), options)
         {
         }
 
@@ -94,6 +94,7 @@ namespace Ch.Cyberduck.Ui.Controller
             base.Update();
             View.Password = _host.getCredentials().getPassword();
             View.PasswordEnabled = _options.password() && !_host.getCredentials().isAnonymousLogin();
+            View.PasswordLabel = _host.getProtocol().getPasswordPlaceholder() + ":";
         }
 
         public void ReadPasswordFromKeychain()

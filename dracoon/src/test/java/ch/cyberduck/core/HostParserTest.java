@@ -17,10 +17,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,17 +26,16 @@ import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 
-@Category(IntegrationTest.class)
 public class HostParserTest {
 
     @Test
     public void testParseUsernameFromUrlEvent() throws Exception {
         final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
             this.getClass().getResourceAsStream("/DRACOON (Email Address).cyberduckprofile"));
-        assertEquals(0, new Host(new SDSProtocol(), "duck.ssp-europe.eu", 443, "/cyberduck-test/key", new Credentials(
-            System.getProperties().getProperty("sds.user")
+        assertEquals(0, new Host(new SDSProtocol(), "duck.dracoon.com", 443, "/key", new Credentials(
+            "post@iterate.ch"
         ))
             .compareTo(new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
-                "dracoon://post%40iterate.ch@duck.ssp-europe.eu/key")));
+                "dracoon://post%40iterate.ch@duck.dracoon.com/key")));
     }
 }

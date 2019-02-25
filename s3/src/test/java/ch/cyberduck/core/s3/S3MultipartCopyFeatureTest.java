@@ -63,7 +63,6 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(copy));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(copy).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -88,6 +87,5 @@ public class S3MultipartCopyFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(copy));
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(copy).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }
