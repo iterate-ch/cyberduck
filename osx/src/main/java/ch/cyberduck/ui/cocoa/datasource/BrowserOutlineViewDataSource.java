@@ -173,7 +173,7 @@ public class BrowserOutlineViewDataSource extends BrowserTableDataSource impleme
     }
 
     @Override
-    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn tableColumn, NSObject item) {
+    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn tableColumn, final NSObject item) {
         if(null == item) {
             return null;
         }
