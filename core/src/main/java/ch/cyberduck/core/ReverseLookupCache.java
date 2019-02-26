@@ -15,30 +15,26 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.cache.LRUCache;
+
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
     private static final Logger log = Logger.getLogger(ReverseLookupCache.class);
 
     private final Cache<T> proxy;
-    private final Map<CacheReference, T> reverse;
+    private final LRUCache<CacheReference, T> reverse;
 
     public ReverseLookupCache(final Cache<T> proxy, final int size) {
         this.proxy = proxy;
         if(size == Integer.MAX_VALUE) {
             // Unlimited
-            reverse = Collections.synchronizedMap(new LinkedHashMap<CacheReference, T>());
-        }
-        else if(size == 0) {
-            reverse = Collections.emptyMap();
+            reverse = LRUCache.build();
         }
         else {
-            // Will inflate to the given size
-            reverse = Collections.synchronizedMap(new LinkedHashMap<CacheReference, T>());
+            reverse = LRUCache.build(size);
         }
     }
 

@@ -21,14 +21,13 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class TransferItemCacheTest {
 
     @Test
     public void testRemove() {
-        new TransferItemCache(1).remove(new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory))));
+        assertEquals(AttributedList.emptyList(), new TransferItemCache(1).remove(new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory)))));
     }
 
     @Test

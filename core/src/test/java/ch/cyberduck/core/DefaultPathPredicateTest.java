@@ -89,4 +89,16 @@ public class DefaultPathPredicateTest {
         assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("1"))));
         assertTrue(new DefaultPathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("2"))));
     }
+
+    @Test
+    public void testHashcodeCollision() {
+        assertNotEquals(
+            new DefaultPathPredicate(
+                new Path("19", EnumSet.of(Path.Type.file))
+            ),
+            new DefaultPathPredicate(
+                new Path("0X", EnumSet.of(Path.Type.file))
+            )
+        );
+    }
 }
