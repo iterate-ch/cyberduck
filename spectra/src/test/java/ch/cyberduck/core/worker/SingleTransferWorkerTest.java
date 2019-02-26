@@ -61,6 +61,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.jets3t.service.model.StorageObject;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -79,6 +80,7 @@ import static org.junit.Assert.assertTrue;
 @Category(IntegrationTest.class)
 public class SingleTransferWorkerTest {
 
+    @Ignore
     @Test(expected = ConflictException.class)
     public void testTransferredSizeRepeat() throws Exception {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -93,11 +95,11 @@ public class SingleTransferWorkerTest {
                 return Scheme.http;
             }
         }, System.getProperties().getProperty("spectra.hostname"), Integer.valueOf(System.getProperties().getProperty("spectra.port")), new Credentials(
-                System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
+            System.getProperties().getProperty("spectra.user"), System.getProperties().getProperty("spectra.key")
         ));
         final AtomicBoolean failed = new AtomicBoolean();
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
-                new DefaultX509KeyManager()) {
+            new DefaultX509KeyManager()) {
             final SpectraWriteFeature write = new SpectraWriteFeature(this) {
                 @Override
                 public HttpResponseOutputStream<StorageObject> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
