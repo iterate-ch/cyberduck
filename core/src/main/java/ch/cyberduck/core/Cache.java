@@ -23,7 +23,7 @@ public interface Cache<T extends Referenceable> {
      * @param object Value object
      * @return Key used for internal comparison in map
      */
-    CacheReference key(T object);
+    CacheReference<?> reference(T object);
 
     /**
      * @param parent Directory

@@ -23,21 +23,12 @@ public class TransferItemCache extends AbstractCache<TransferItem> {
 
     private static final TransferItem NULL_KEY = new TransferItem(null);
 
-    public static TransferItemCache empty() {
-        return new TransferItemCache(0) {
-            @Override
-            public AttributedList<TransferItem> put(final TransferItem item, final AttributedList<TransferItem> children) {
-                return AttributedList.emptyList();
-            }
-        };
-    }
-
     public TransferItemCache(final int size) {
         super(size);
     }
 
     @Override
-    public CacheReference key(final TransferItem object) {
+    public CacheReference<?> reference(final TransferItem object) {
         return new DefaultPathPredicate(object.remote);
     }
 

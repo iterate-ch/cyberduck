@@ -42,6 +42,14 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
 
     @Override
     public T lookup(final CacheReference<T> reference) {
+        for(AttributedList<T> entry : impl.asMap().values()) {
+            final T f = entry.find(reference);
+            if(null == f) {
+                continue;
+            }
+            return f;
+        }
+        log.warn(String.format("Lookup failed for %s in cache", reference));
         return null;
     }
 

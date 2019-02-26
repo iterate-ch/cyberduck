@@ -35,7 +35,7 @@ public class PathCache extends AbstractCache<Path> {
     }
 
     @Override
-    public CacheReference key(final Path file) {
+    public CacheReference<?> reference(final Path file) {
         return new DefaultPathPredicate(file);
     }
 }
