@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
@@ -64,7 +64,7 @@ public class AmazonServiceExceptionMappingService extends AbstractExceptionMappi
                             return new LoginFailureException(buffer.toString(), e);
                     }
             }
-            return new HttpResponseExceptionMappingService().map(new HttpResponseException(failure.getStatusCode(), buffer.toString()));
+            return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getStatusCode(), buffer.toString()));
         }
         this.append(buffer, e.getMessage());
         return this.wrap(e, buffer);

@@ -20,7 +20,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.http.client.HttpResponseException;
@@ -108,7 +108,7 @@ public class DriveBatchDeleteFeature implements Delete {
         @Override
         public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) {
             log.warn(String.format("Failure deleting %s. %s", file, e.getMessage()));
-            failures.add(new HttpResponseExceptionMappingService().map(
+            failures.add(new DefaultHttpResponseExceptionMappingService().map(
                 new HttpResponseException(e.getCode(), e.getMessage())));
         }
 

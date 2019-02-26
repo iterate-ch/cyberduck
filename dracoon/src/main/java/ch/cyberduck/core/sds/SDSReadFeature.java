@@ -21,9 +21,9 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
@@ -79,7 +79,7 @@ public class SDSReadFeature implements Read {
                 case HttpStatus.SC_PARTIAL_CONTENT:
                     return new HttpMethodReleaseInputStream(response);
                 default:
-                    throw new HttpResponseExceptionMappingService().map(new HttpResponseException(
+                    throw new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(
                             response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
             }
         }

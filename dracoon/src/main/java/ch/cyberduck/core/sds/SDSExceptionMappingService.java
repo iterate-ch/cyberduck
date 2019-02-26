@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +54,7 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                 return new DefaultSocketExceptionMappingService().map((SocketException) cause);
             }
             if(cause instanceof HttpResponseException) {
-                return new HttpResponseExceptionMappingService().map((HttpResponseException) cause);
+                return new DefaultHttpResponseExceptionMappingService().map((HttpResponseException) cause);
             }
             if(cause instanceof IOException) {
                 return new DefaultIOExceptionMappingService().map((IOException) cause);
@@ -154,6 +154,6 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                 // [-10106] Username must be changed
                 return new LoginFailureException(buffer.toString(), failure);
         }
-        return new HttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
+        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
     }
 }

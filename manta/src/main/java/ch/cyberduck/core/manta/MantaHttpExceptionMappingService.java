@@ -18,7 +18,7 @@ package ch.cyberduck.core.manta;
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.http.client.HttpResponseException;
 
@@ -34,6 +34,6 @@ public class MantaHttpExceptionMappingService extends AbstractExceptionMappingSe
                 this.append(buffer, failure.getStatusMessage());
                 return new LoginFailureException(buffer.toString(), failure);
         }
-        return new HttpResponseExceptionMappingService().map(new HttpResponseException(failure.getStatusCode(), failure.getStatusMessage()));
+        return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getStatusCode(), failure.getStatusMessage()));
     }
 }

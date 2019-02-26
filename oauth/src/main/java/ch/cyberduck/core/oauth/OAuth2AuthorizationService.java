@@ -26,7 +26,7 @@ import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -150,21 +150,23 @@ public class OAuth2AuthorizationService {
         if(!browser.open(url)) {
             log.warn(String.format("Failed to launch web browser for %s", url));
         }
-        if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
-            final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
-            registry.register(new OAuth2TokenListener() {
-                @Override
-                public void callback(final String param) {
-                    log.warn(String.format("Callback with code %s from redirect uri not currently handled.", param));
-                }
-            }, cancel);
-        }
         final Credentials input = prompt.prompt(bookmark,
             LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
             LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
             new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).password(true)
                 .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
         );
+        if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
+            final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
+            registry.register(new OAuth2TokenListener() {
+                @Override
+                public void callback(final String param) {
+                    log.warn(String.format("Callback with code %s", param));
+                    input.setPassword(param);
+
+                }
+            }, cancel);
+        }
         try {
             if(StringUtils.isBlank(input.getPassword())) {
                 throw new LoginCanceledException();
@@ -186,7 +188,7 @@ public class OAuth2AuthorizationService {
             throw new OAuthExceptionMappingService().map(e);
         }
         catch(HttpResponseException e) {
-            throw new HttpResponseExceptionMappingService().map(new org.apache.http.client
+            throw new DefaultHttpResponseExceptionMappingService().map(new org.apache.http.client
                 .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
         }
         catch(IOException e) {
@@ -217,7 +219,7 @@ public class OAuth2AuthorizationService {
             throw new OAuthExceptionMappingService().map(e);
         }
         catch(HttpResponseException e) {
-            throw new HttpResponseExceptionMappingService().map(new org.apache.http.client
+            throw new DefaultHttpResponseExceptionMappingService().map(new org.apache.http.client
                 .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
         }
         catch(IOException e) {
