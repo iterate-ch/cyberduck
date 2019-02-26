@@ -150,7 +150,7 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
         switch(failure.getCode()) {
             case 901:
                 // Server with AV scanners will block transfer attempts of infected files (upload or download) and answer the request 901
-                return new AccessDeniedException();
+                return new AccessDeniedException(LocaleFactory.localizedString("The AV scanner detected that the file could be malicious", "SDS"));
             case HttpStatus.SC_PRECONDITION_FAILED:
                 // [-10103] EULA must be accepted
                 // [-10104] Password must be changed
