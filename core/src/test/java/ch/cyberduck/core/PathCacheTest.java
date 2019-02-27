@@ -14,10 +14,13 @@ public class PathCacheTest {
         assertNull(cache.lookup(new DefaultPathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))));
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path directory = new Path("p", EnumSet.of(Path.Type.directory));
-        final Path file = new Path(directory, "name", EnumSet.of(Path.Type.file));
-        list.add(file);
+        final Path file1 = new Path(directory, "name1", EnumSet.of(Path.Type.file));
+        list.add(file1);
+        final Path file2 = new Path(directory, "name2", EnumSet.of(Path.Type.file));
+        list.add(file2);
         cache.put(directory, list);
-        assertNotNull(cache.lookup(new DefaultPathPredicate(file)));
+        assertNotNull(cache.lookup(new DefaultPathPredicate(file1)));
+        assertNotNull(cache.lookup(new DefaultPathPredicate(file2)));
     }
 
     @Test
