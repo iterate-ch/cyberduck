@@ -65,9 +65,9 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     protected Drive connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) {
-        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         this.transport = new ApacheHttpTransport(configuration.build());

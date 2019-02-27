@@ -123,7 +123,8 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
     @Override
     protected OneDriveAPI connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
-        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol()) {
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol()) {
             @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 if(request.containsHeader(HttpHeaders.AUTHORIZATION)) {
@@ -131,7 +132,6 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
                 }
             }
         }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
-        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         final RequestExecutor executor = new GraphCommonsHttpRequestExecutor(configuration.build()) {
