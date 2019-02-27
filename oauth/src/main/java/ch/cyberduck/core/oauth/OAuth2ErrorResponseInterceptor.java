@@ -19,7 +19,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ExpiredTokenException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
 
 import org.apache.http.HttpResponse;
@@ -54,7 +54,7 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
                             service.setTokens(service.refresh());
                             return true;
                         }
-                        catch(ExpiredTokenException e) {
+                        catch(LoginFailureException e) {
                             log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
                             service.authorize(bookmark, prompt, new DisabledCancelCallback());
                         }
