@@ -88,7 +88,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
         }
         final MultipartOutputStream proxy = new MultipartOutputStream(multipart, file, status);
         return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
-            preferences.getInteger("s3.upload.multipart.partsize.minimum"))) {
+            preferences.getInteger("s3.upload.multipart.size"))) {
             @Override
             public VersionId getStatus() {
                 return proxy.getVersionId();
