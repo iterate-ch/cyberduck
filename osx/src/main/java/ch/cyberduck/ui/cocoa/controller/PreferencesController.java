@@ -1682,6 +1682,22 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
+    NSButton segmentedDownloadCheckbox;
+
+    public void setSegmentedDownloadCheckbox(final NSButton b) {
+        this.segmentedDownloadCheckbox = b;
+        this.segmentedDownloadCheckbox.setTarget(this.id());
+        this.segmentedDownloadCheckbox.setAction(Foundation.selector("segmentedDownloadCheckboxClicked:"));
+        this.segmentedDownloadCheckbox.setState(preferences.getBoolean("queue.download.segments") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void segmentedDownloadCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.NSOnState;
+        preferences.setProperty("queue.download.segments", enabled);
+    }
+
+    @Outlet
     private NSButton openAfterDownloadCheckbox;
 
     public void setOpenAfterDownloadCheckbox(NSButton b) {

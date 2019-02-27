@@ -30,7 +30,6 @@ using ch.cyberduck.core.s3;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Ch.Cyberduck.Core.Date;
 using java.util;
@@ -82,6 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.TransfersToBackChangedEvent += View_TransfersToBackChangedEvent;
             View.RemoveFromTransfersChangedEvent += View_RemoveFromTransfersChangedEvent;
             View.OpenAfterDownloadChangedEvent += View_OpenAfterDownloadChangedEvent;
+            View.SegmentedDownloadsChangedEvent += View_SegmentedDownloadsChangedEvent;
             View.DownloadFolderChangedEvent += View_DownloadFolderChangedEvent;
             View.DuplicateDownloadActionChangedEvent += View_DuplicateDownloadActionChangedEvent;
             View.DuplicateUploadActionChangedEvent += View_DuplicateUploadActionChangedEvent;
@@ -161,6 +161,11 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UpdateFeedChangedEvent += View_UpdateFeedChangedEvent;
 
             #endregion
+        }
+
+        private void View_SegmentedDownloadsChangedEvent()
+        {
+            PreferencesFactory.get().setProperty("queue.download.segments", View.SegmentedDownloads);
         }
 
         private void View_VerifyChecksumUploadChangedEvent()
@@ -898,6 +903,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.TransfersToFront = PreferencesFactory.get().getBoolean("queue.window.open.transfer.start");
             View.TransfersToBack = PreferencesFactory.get().getBoolean("queue.window.open.transfer.stop");
             View.RemoveFromTransfers = PreferencesFactory.get().getBoolean("queue.removeItemWhenComplete");
+            View.SegmentedDownloads = PreferencesFactory.get().getBoolean("queue.download.segments");
             View.OpenAfterDownload = PreferencesFactory.get().getBoolean("queue.download.complete.open");
             View.DownloadFolder = PreferencesFactory.get().getProperty("queue.download.folder");
             PopulateDuplicateActions();
