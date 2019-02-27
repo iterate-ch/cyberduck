@@ -52,12 +52,13 @@ public class OAuth2ErrorResponseInterceptor extends DisabledServiceUnavailableRe
                         try {
                             log.info(String.format("Attempt to refresh OAuth tokens for failure %s", response));
                             service.setTokens(service.refresh());
-                            return true;
                         }
                         catch(LoginFailureException e) {
                             log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
                             service.setTokens(service.authorize(bookmark, prompt, new DisabledCancelCallback()));
                         }
+                        // Try again
+                        return true;
                     }
                     catch(BackgroundException e) {
                         log.warn(String.format("Failure refreshing OAuth tokens. %s", e));
