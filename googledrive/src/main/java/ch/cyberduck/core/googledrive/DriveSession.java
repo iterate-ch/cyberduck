@@ -69,7 +69,7 @@ public class DriveSession extends HttpSession<Drive> {
             .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         configuration.addInterceptorLast(authorizationService);
-        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         this.transport = new ApacheHttpTransport(configuration.build());
         return new Drive.Builder(transport, json, new HttpRequestInitializer() {
             @Override
