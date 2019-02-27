@@ -373,6 +373,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             // Handle submit of one or more segments
             final List<TransferStatus> segments = status.getSegments();
             for(final TransferStatus segment : segments) {
+                if(segment.isComplete()) {
+                    continue;
+                }
                 this.submit(new RetryTransferCallable() {
                     @Override
                     public TransferStatus call() throws BackgroundException {
