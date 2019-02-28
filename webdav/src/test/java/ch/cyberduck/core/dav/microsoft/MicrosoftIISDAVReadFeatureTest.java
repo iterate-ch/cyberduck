@@ -26,7 +26,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.dav.AbstractDAVTest;
 import ch.cyberduck.core.dav.DAVDeleteFeature;
 import ch.cyberduck.core.dav.DAVProtocol;
-import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.dav.DAVWriteFeature;
@@ -59,7 +58,7 @@ import static org.junit.Assert.assertNotNull;
 public class MicrosoftIISDAVReadFeatureTest extends AbstractDAVTest {
 
     @Test
-    public void testReadRangeUnknownLength() throws Exception {
+    public void testReadMicrosoft() throws Exception {
         final Host host = new Host(new DAVProtocol(), "winbuild.iterate.ch", new Credentials(
             System.getProperties().getProperty("webdav.iis.user"), System.getProperties().getProperty("webdav.iis.password")
         ));
@@ -81,7 +80,7 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractDAVTest {
             new DisabledConnectionCallback());
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
-        final InputStream in = new DAVReadFeature(session).read(test, status, new DisabledConnectionCallback());
+        final InputStream in = new MicrosoftIISDAVReadFeature(session).read(test, status, new DisabledConnectionCallback());
         assertNotNull(in);
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream(content.length);
         new StreamCopier(status, status).transfer(in, buffer);
