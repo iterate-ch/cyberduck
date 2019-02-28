@@ -182,33 +182,4 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         assertEquals(0L, in.getByteCount(), 0L);
         session.close();
     }
-
-    @Test
-    public void testReadPRMarketingWebDAV() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "prmarketing.ddns.net", 8080, new Credentials(
-            System.getProperties().getProperty("connection.webdav.prmarketing.user"), System.getProperties().getProperty("connection.webdav.prmarketing.password")
-        ));
-        final DAVSession session = new DAVSession(host);
-        try {
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-            session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-            final TransferStatus status = new TransferStatus();
-            final Path test = new Path("/webdav/j/2017 GENERIC Heater Deck 3.21.17.pptx", EnumSet.of(Path.Type.file));
-            InputStream remoteStream = null;
-            try {
-                remoteStream = new DAVReadFeature(session).read(test, status, new DisabledConnectionCallback());
-                while(remoteStream.available() > 0) {
-                    remoteStream.read();
-                }
-            }
-            finally {
-                if(remoteStream != null) {
-                    remoteStream.close();
-                }
-            }
-        }
-        finally {
-            session.close();
-        }
-    }
 }
