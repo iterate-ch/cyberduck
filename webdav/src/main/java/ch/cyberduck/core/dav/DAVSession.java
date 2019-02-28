@@ -33,6 +33,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVListService;
+import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVReadFeature;
 import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -78,6 +79,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.Arrays;
 
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.ValidatingResponseHandler;
@@ -332,7 +334,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVDirectoryFeature(this);
         }
         if(type == Read.class) {
-            return (T) new DAVReadFeature(this);
+            return iis ? (T) new MicrosoftIISDAVReadFeature(this) : (T) new DAVReadFeature(this);
         }
         if(type == Write.class) {
             return (T) new DAVWriteFeature(this);
