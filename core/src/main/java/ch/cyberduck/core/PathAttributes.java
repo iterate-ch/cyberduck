@@ -108,7 +108,7 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     private String displayname;
 
-    private DescriptiveUrl link;
+    private DescriptiveUrl link = DescriptiveUrl.EMPTY;
 
     /**
      * HTTP headers
@@ -180,6 +180,9 @@ public class PathAttributes extends Attributes implements Serializable {
         }
         if(acl != Acl.EMPTY) {
             dict.setObjectForKey(acl, "Acl");
+        }
+        if(link != DescriptiveUrl.EMPTY) {
+            dict.setStringForKey(link.getUrl(), "Link");
         }
         if(checksum != Checksum.NONE) {
             dict.setStringForKey(checksum.hash, "Checksum");
