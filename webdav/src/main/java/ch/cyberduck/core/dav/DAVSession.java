@@ -207,15 +207,11 @@ public class DAVSession extends HttpSession<DAVClient> {
                 client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new ValidatingResponseHandler<Void>() {
                     @Override
                     public Void handleResponse(final HttpResponse response) throws IOException {
-                        for(Header h : response.getAllHeaders()) {
-                            if(HttpHeaders.SERVER.equals(h.getName())) {
-                                iis = StringUtils.contains(h.getValue(), "Microsoft-IIS");
-                                if(iis) {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug("Microsoft-IIS backend detected - use IIS WebDAV features");
-                                    }
-                                }
-                                break;
+                        iis = Arrays.stream(response.getAllHeaders()).anyMatch(header ->
+                            HttpHeaders.SERVER.equals(header.getName()) && "Microsoft-IIS".equals(header.getValue()));
+                        if(iis) {
+                            if(log.isDebugEnabled()) {
+                                log.debug("Microsoft-IIS backend detected");
                             }
                         }
                         this.validateResponse(response);
