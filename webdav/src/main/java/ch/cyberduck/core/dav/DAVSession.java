@@ -33,6 +33,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVAttributesFinderFeature;
 import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVListService;
+import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVReadFeature;
 import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVTimestampFeature;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -78,6 +79,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.Arrays;
 
 import com.github.sardine.impl.SardineException;
 import com.github.sardine.impl.handler.ValidatingResponseHandler;
@@ -92,10 +94,10 @@ public class DAVSession extends HttpSession<DAVClient> {
     private final Preferences preferences
         = PreferencesFactory.get();
 
-    /**
-     * Detected Microsoft IIS
-     */
-    private boolean iis;
+    private ListService list = new DAVListService(this, new DAVAttributesFinderFeature(this));
+    private Read read = new DAVReadFeature(this);
+    private Timestamp timestamp = new DAVTimestampFeature(this);
+    private AttributesFinder attributes = new DAVAttributesFinderFeature(this);
 
     public DAVSession(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -207,16 +209,15 @@ public class DAVSession extends HttpSession<DAVClient> {
                 client.execute(new HttpHead(new DAVPathEncoder().encode(home)), new ValidatingResponseHandler<Void>() {
                     @Override
                     public Void handleResponse(final HttpResponse response) throws IOException {
-                        for(Header h : response.getAllHeaders()) {
-                            if(HttpHeaders.SERVER.equals(h.getName())) {
-                                iis = StringUtils.contains(h.getValue(), "Microsoft-IIS");
-                                if(iis) {
-                                    if(log.isDebugEnabled()) {
-                                        log.debug("Microsoft-IIS backend detected - use IIS WebDAV features");
-                                    }
-                                }
-                                break;
+                        if(Arrays.stream(response.getAllHeaders()).anyMatch(header ->
+                            HttpHeaders.SERVER.equals(header.getName()) && StringUtils.contains(header.getValue(), "Microsoft-IIS"))) {
+                            if(log.isDebugEnabled()) {
+                                log.debug("Microsoft-IIS backend detected");
                             }
+                            list = new MicrosoftIISDAVListService(DAVSession.this, new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this));
+                            read = new MicrosoftIISDAVReadFeature(DAVSession.this);
+                            timestamp = new MicrosoftIISDAVTimestampFeature(DAVSession.this);
+                            attributes = new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this);
                         }
                         this.validateResponse(response);
                         return null;
@@ -329,14 +330,13 @@ public class DAVSession extends HttpSession<DAVClient> {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return iis ? (T) new MicrosoftIISDAVListService(this, new MicrosoftIISDAVAttributesFinderFeature(this)) :
-                (T) new DAVListService(this, new DAVAttributesFinderFeature(this));
+            return (T) list;
         }
         if(type == Directory.class) {
             return (T) new DAVDirectoryFeature(this);
         }
         if(type == Read.class) {
-            return (T) new DAVReadFeature(this);
+            return (T) read;
         }
         if(type == Write.class) {
             return (T) new DAVWriteFeature(this);
@@ -363,10 +363,10 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVFindFeature(this);
         }
         if(type == AttributesFinder.class) {
-            return iis ? (T) new MicrosoftIISDAVAttributesFinderFeature(this) : (T) new DAVAttributesFinderFeature(this);
+            return (T) attributes;
         }
         if(type == Timestamp.class) {
-            return iis ? (T) new MicrosoftIISDAVTimestampFeature(this) : (T) new DAVTimestampFeature(this);
+            return (T) timestamp;
         }
         if(type == Quota.class) {
             return (T) new DAVQuotaFeature(this);
