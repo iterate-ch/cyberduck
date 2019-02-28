@@ -174,7 +174,7 @@ public class CryptoVault implements Vault {
     }
 
     private void unlock(final Session<?> session, final Path masterKeyFile, final KeyFile masterKeyFileContent,
-                        String passphrase, final Host bookmark, final PasswordCallback prompt, final String message, final PasswordStore keychain) throws BackgroundException {
+                        final String passphrase, final Host bookmark, final PasswordCallback prompt, final String message, final PasswordStore keychain) throws BackgroundException {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = prompt.prompt(
