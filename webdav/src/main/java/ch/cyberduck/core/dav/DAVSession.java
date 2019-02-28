@@ -210,7 +210,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                     @Override
                     public Void handleResponse(final HttpResponse response) throws IOException {
                         iis = Arrays.stream(response.getAllHeaders()).anyMatch(header ->
-                            HttpHeaders.SERVER.equals(header.getName()) && "Microsoft-IIS".equals(header.getValue()));
+                            HttpHeaders.SERVER.equals(header.getName()) && StringUtils.contains(header.getValue(), "Microsoft-IIS"));
                         if(iis) {
                             if(log.isDebugEnabled()) {
                                 log.debug("Microsoft-IIS backend detected");
