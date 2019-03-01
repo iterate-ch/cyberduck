@@ -58,15 +58,15 @@ public class DefaultBookmarkController extends BookmarkController {
     private final KeychainX509KeyManager x509KeyManager = new KeychainX509KeyManager(bookmark);
 
     public DefaultBookmarkController(final Host bookmark) {
-        this(bookmark, new LoginOptions(bookmark.getProtocol()).password(false));
+        this(bookmark, new LoginOptions(bookmark.getProtocol()));
     }
 
     public DefaultBookmarkController(final Host bookmark, final LoginOptions options) {
-        super(bookmark, options.password(false));
+        super(bookmark, options);
     }
 
     public DefaultBookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
-        super(bookmark, validator, options.password(false));
+        super(bookmark, validator, options);
     }
 
     @Override
