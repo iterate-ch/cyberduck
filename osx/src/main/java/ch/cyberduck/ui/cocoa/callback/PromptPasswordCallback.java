@@ -22,9 +22,14 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.oauth.OAuth2TokenListener;
+import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.ui.cocoa.controller.PasswordController;
 
+import org.apache.log4j.Logger;
+
 public class PromptPasswordCallback implements PasswordCallback {
+    private static final Logger log = Logger.getLogger(PromptPasswordCallback.class);
 
     private final WindowController parent;
 
@@ -41,6 +46,17 @@ public class PromptPasswordCallback implements PasswordCallback {
         }
         final Credentials credentials = new Credentials().withSaved(options.save);
         final PasswordController controller = new PasswordController(bookmark, credentials, title, reason, options);
+        if(options.oauth) {
+            final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
+            registry.register(new OAuth2TokenListener() {
+                @Override
+                public void callback(final String param) {
+                    log.warn(String.format("Callback with code %s", param));
+                    credentials.setPassword(param);
+                    controller.closeSheet(SheetCallback.DEFAULT_OPTION);
+                }
+            });
+        }
         final int option = controller.beginSheet(parent);
         if(option == SheetCallback.CANCEL_OPTION) {
             if(controller.isSuppressed()) {

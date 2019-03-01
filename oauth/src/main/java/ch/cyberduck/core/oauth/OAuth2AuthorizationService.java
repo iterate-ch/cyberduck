@@ -148,20 +148,10 @@ public class OAuth2AuthorizationService {
         final Credentials input = prompt.prompt(bookmark,
             LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
             LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
-            new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).password(true)
-                .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
+            new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).password(true).oauth(
+                StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)
+            ).passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
         );
-        if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
-            final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
-            registry.register(new OAuth2TokenListener() {
-                @Override
-                public void callback(final String param) {
-                    log.warn(String.format("Callback with code %s", param));
-                    input.setPassword(param);
-
-                }
-            }, cancel);
-        }
         try {
             if(StringUtils.isBlank(input.getPassword())) {
                 throw new LoginCanceledException();
