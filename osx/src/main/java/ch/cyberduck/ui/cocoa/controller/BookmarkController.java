@@ -26,6 +26,7 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -80,6 +81,9 @@ public class BookmarkController extends SheetController implements CollectionLis
     protected final LoginInputValidator validator;
     protected final LoginOptions options;
 
+    private final HostPasswordStore keychain
+        = PasswordStoreFactory.get();
+
     @Outlet
     protected NSPopUpButton protocolPopup;
     @Outlet
@@ -96,6 +100,10 @@ public class BookmarkController extends SheetController implements CollectionLis
     protected NSTextField usernameField;
     @Outlet
     protected NSTextField usernameLabel;
+    @Outlet
+    protected NSTextField passwordField;
+    @Outlet
+    private NSTextField passwordLabel;
     @Outlet
     protected NSButton anonymousCheckbox;
     @Outlet
@@ -405,6 +413,57 @@ public class BookmarkController extends SheetController implements CollectionLis
             bookmark.getCredentials().setPassword(null);
         }
         this.update();
+    }
+
+    public void setPasswordField(NSSecureTextField field) {
+        this.passwordField = field;
+        this.updateField(this.passwordField, bookmark.getCredentials().getPassword());
+        this.notificationCenter.addObserver(this.id(),
+            Foundation.selector("passwordFieldTextDidChange:"),
+            NSControl.NSControlTextDidChangeNotification,
+            field.id());
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(final Host bookmark) {
+                updateField(passwordField, bookmark.getCredentials().getPassword());
+                passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
+                passwordField.setEnabled(options.password && !bookmark.getCredentials().isAnonymousLogin());
+                if(options.keychain) {
+                    if(StringUtils.isBlank(bookmark.getHostname())) {
+                        return;
+                    }
+                    if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+                        return;
+                    }
+                    final String password = keychain.getPassword(bookmark.getProtocol().getScheme(),
+                        bookmark.getPort(),
+                        bookmark.getHostname(),
+                        bookmark.getCredentials().getUsername());
+                    if(StringUtils.isNotBlank(password)) {
+                        bookmark.getCredentials().setPassword(password);
+                        updateField(passwordField, password);
+                    }
+                }
+            }
+        });
+    }
+
+    @Action
+    public void passwordFieldTextDidChange(NSNotification notification) {
+        bookmark.getCredentials().setPassword(passwordField.stringValue());
+    }
+
+    public void setPasswordLabel(NSTextField passwordLabel) {
+        this.passwordLabel = passwordLabel;
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(final Host bookmark) {
+                passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                    StringUtils.isNotBlank(options.getPasswordPlaceholder()) ? String.format("%s:",
+                        options.getPasswordPlaceholder()) : StringUtils.EMPTY, TRUNCATE_TAIL_ATTRIBUTES
+                ));
+            }
+        });
     }
 
     @Override
