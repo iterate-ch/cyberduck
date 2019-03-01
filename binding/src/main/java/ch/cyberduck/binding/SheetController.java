@@ -78,8 +78,12 @@ public abstract class SheetController extends WindowController implements SheetC
             log.debug(String.format("Close sheet with button %s", sender.title()));
         }
         final int option = new AlertSheetReturnCodeMapper().getOption(sender);
+        this.closeSheet(option);
+    }
+
+    public void closeSheet(final int option) {
+        window.endEditingFor(null);
         if(option == SheetCallback.DEFAULT_OPTION || option == SheetCallback.ALTERNATE_OPTION) {
-            window.endEditingFor(null);
             if(!this.validate()) {
                 AppKitFunctionsLibrary.beep();
                 return;
