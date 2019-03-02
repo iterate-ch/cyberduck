@@ -77,8 +77,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
 
-    private SDSErrorResponseInterceptor retryHandler;
-    private OAuth2RequestInterceptor authorizationService;
+    protected SDSErrorResponseInterceptor retryHandler;
+    protected OAuth2RequestInterceptor authorizationService;
 
     private final ExpiringObjectHolder<UserAccountWrapper> userAccount
         = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.useracount.ttl"));
