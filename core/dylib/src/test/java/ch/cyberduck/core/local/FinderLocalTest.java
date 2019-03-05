@@ -119,7 +119,6 @@ public class FinderLocalTest {
         new DefaultLocalTouchFeature().touch(l);
         assertNotNull(l.getBookmark());
         assertEquals(l.getBookmark(), l.getBookmark());
-        assertSame(l.getBookmark(), l.getBookmark());
         l.delete();
     }
 
