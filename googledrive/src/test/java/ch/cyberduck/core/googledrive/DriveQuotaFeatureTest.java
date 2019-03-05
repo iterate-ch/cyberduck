@@ -26,6 +26,7 @@ import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class DriveQuotaFeatureTest extends AbstractDriveTest {
+
     @Test
     public void testGet() throws Exception {
         final Quota.Space quota = new DriveQuotaFeature(session).get();
