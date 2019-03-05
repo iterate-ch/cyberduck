@@ -88,6 +88,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final CreateFileUploadRequest body = new CreateFileUploadRequest()
+            .size(status.getLength())
             .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
             .name(file.getName());
         if(new Version(StringUtils.removePattern(session.softwareVersion().getRestApiVersion(), "-.*")).compareTo(new Version("4.9.0")) < 0) {
