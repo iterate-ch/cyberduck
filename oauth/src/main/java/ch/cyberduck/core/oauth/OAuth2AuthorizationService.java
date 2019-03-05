@@ -54,7 +54,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 
 public class OAuth2AuthorizationService {
     private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
@@ -63,7 +63,7 @@ public class OAuth2AuthorizationService {
     private static final String CYBERDUCK_REDIRECT_URI = "x-cyberduck-action:oauth";
 
     private final JsonFactory json
-        = new GsonFactory();
+        = new JacksonFactory();
 
     private final String tokenServerUrl;
     private final String authorizationServerUrl;
