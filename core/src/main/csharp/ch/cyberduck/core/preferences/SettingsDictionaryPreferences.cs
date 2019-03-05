@@ -346,7 +346,7 @@ namespace Ch.Cyberduck.Core.Preferences
                     properties.load(new FileInputStream(config));
                     foreach (var key in Utils.ConvertFromJavaList<String>(properties.keySet()))
                     {
-                        setProperty(key, properties.getProperty(key));
+                        setDefault(key, properties.getProperty(key));
                     }
                 }
                 catch (Exception e)
