@@ -1034,6 +1034,9 @@ public abstract class Preferences implements Locales {
         this.setDefault("archive.command.expand.gz", "gzip -d {0}");
         this.setDefault("archive.command.expand.bz2", "bzip2 -dk {0}");
 
+        this.setDefault("update.feed.nightly.enable", String.valueOf(true));
+        this.setDefault("update.feed.beta.enable", String.valueOf(true));
+
         this.setDefault("update.check", String.valueOf(true));
         final int day = 60 * 60 * 24;
         this.setDefault("update.check.interval", String.valueOf(day)); // periodic update check in seconds
