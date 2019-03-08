@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2019 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,6 +18,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using ch.cyberduck.core;
@@ -31,8 +32,19 @@ namespace Ch.Cyberduck.Core.Diagnostics
         {
             try
             {
-                TcpClient c = new TcpClient(h.getHostname(), h.getPort());
-                c.Close();
+                if (h.getProtocol().getScheme().name().Equals("http") || h.getProtocol().getScheme().name().Equals("https"))
+                {
+                    WebRequest.DefaultWebProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
+                    WebRequest request =
+                        WebRequest.Create(new HostUrlProvider().withUsername(false).withPath(true).get(h));
+                    request.GetResponse();
+                }
+                else
+                {
+                    TcpClient c = new TcpClient(h.getHostname(), h.getPort());
+                    c.Close();
+                }
+
                 return true;
             }
             catch (Exception)
