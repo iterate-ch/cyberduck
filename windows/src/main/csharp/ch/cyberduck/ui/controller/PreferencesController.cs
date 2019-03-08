@@ -1060,8 +1060,12 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList<KeyValuePair<string, string>> feeds = new List<KeyValuePair<string, string>>();
             feeds.Add(new KeyValuePair<string, string>("release", LocaleFactory.localizedString("Release")));
-            feeds.Add(new KeyValuePair<string, string>("beta", LocaleFactory.localizedString("Beta")));
-            feeds.Add(new KeyValuePair<string, string>("nightly", LocaleFactory.localizedString("Snapshot Builds")));
+            if(PreferencesFactory.get().getBoolean("update.feed.beta.enable")) {
+                feeds.Add(new KeyValuePair<string, string>("beta", LocaleFactory.localizedString("Beta")));
+            }
+            if(PreferencesFactory.get().getBoolean("update.feed.nightly.enable")) {
+                feeds.Add(new KeyValuePair<string, string>("nightly", LocaleFactory.localizedString("Snapshot Builds")));
+            }
             View.PopulateUpdateFeeds(feeds);
         }
 
