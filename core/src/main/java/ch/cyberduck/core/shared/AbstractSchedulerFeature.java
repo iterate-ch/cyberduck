@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 
@@ -42,6 +43,10 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
         scheduler.repeat(() -> {
             try {
                 this.operate(callback, null);
+            }
+            catch(ConnectionCanceledException e) {
+                log.warn("Cancel processing scheduled task. %s", e);
+                this.shutdown();
             }
             catch(BackgroundException e) {
                 log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
