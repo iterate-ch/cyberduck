@@ -30,7 +30,7 @@ import com.dracoon.sdk.crypto.FileDecryptionCipher;
 import com.dracoon.sdk.crypto.model.EncryptedDataContainer;
 import com.dracoon.sdk.crypto.model.PlainDataContainer;
 
-public class CryptoInputStream extends ProxyInputStream {
+public class TripleCryptInputStream extends ProxyInputStream {
 
     private final InputStream proxy;
     private final FileDecryptionCipher cipher;
@@ -39,7 +39,7 @@ public class CryptoInputStream extends ProxyInputStream {
     private ByteBuffer buffer = ByteBuffer.allocate(0);
     private long lastread = -1;
 
-    public CryptoInputStream(final InputStream proxy, final FileDecryptionCipher cipher, final byte[] tag) {
+    public TripleCryptInputStream(final InputStream proxy, final FileDecryptionCipher cipher, final byte[] tag) {
         super(proxy);
         this.proxy = proxy;
         this.cipher = cipher;

@@ -30,8 +30,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserIdFileIdItem;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserUserPublicKey;
-import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
 import ch.cyberduck.core.shared.AbstractSchedulerFeature;
 
@@ -121,7 +121,7 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             throw new SDSExceptionMappingService().map(e);
         }
         catch(CryptoException e) {
-            throw new CryptoExceptionMappingService().map(e);
+            throw new TripleCryptExceptionMappingService().map(e);
         }
         return processed;
     }

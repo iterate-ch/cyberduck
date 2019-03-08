@@ -43,14 +43,14 @@ import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.dracoon.sdk.crypto.model.UserPrivateKey;
 
-public class CryptoReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(CryptoReadFeature.class);
+public class TripleCryptReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(TripleCryptReadFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
     private final SDSReadFeature proxy;
 
-    public CryptoReadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSReadFeature proxy) {
+    public TripleCryptReadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSReadFeature proxy) {
         this.session = session;
         this.nodeid = nodeid;
         this.proxy = proxy;
@@ -72,14 +72,14 @@ public class CryptoReadFeature implements Read {
             }
             final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
             final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
-            return new CryptoInputStream(proxy.read(file, status, callback),
+            return new TripleCryptInputStream(proxy.read(file, status, callback),
                     Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(CryptoException e) {
-            throw new CryptoExceptionMappingService().map("Download {0} failed", e, file);
+            throw new TripleCryptExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

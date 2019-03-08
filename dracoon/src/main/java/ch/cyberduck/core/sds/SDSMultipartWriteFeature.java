@@ -40,8 +40,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -234,7 +234,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                 throw new IOException(new SDSExceptionMappingService().map("Upload {0} failed", e, file));
             }
             catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException e) {
-                throw new IOException(new CryptoExceptionMappingService().map("Upload {0} failed", e, file));
+                throw new IOException(new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file));
             }
             catch(BackgroundException e) {
                 throw new IOException(e);
