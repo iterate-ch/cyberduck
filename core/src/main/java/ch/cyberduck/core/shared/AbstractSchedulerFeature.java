@@ -44,10 +44,10 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
                 this.operate(callback, null);
             }
             catch(BackgroundException e) {
-                log.warn("Failure processing scheduled task. %s", e);
+                log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
             }
             catch(Exception e) {
-                log.error("Failure processing scheduled task. %s", e);
+                log.error(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
                 this.shutdown();
             }
         }, period, TimeUnit.MILLISECONDS);
