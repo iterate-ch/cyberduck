@@ -472,7 +472,6 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-
                 privateKeyPopup.setEnabled(options.publickey);
                 if(bookmark.getCredentials().isPublicKeyAuthentication()) {
                     privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getIdentity().getAbsolute()));
