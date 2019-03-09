@@ -38,6 +38,7 @@ import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.HostParserException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -419,8 +420,8 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.passwordField = field;
         this.updateField(this.passwordField, bookmark.getCredentials().getPassword());
         this.notificationCenter.addObserver(this.id(),
-            Foundation.selector("passwordFieldTextDidChange:"),
-            NSControl.NSControlTextDidChangeNotification,
+            Foundation.selector("passwordFieldTextDidEndEditing:"),
+            NSControl.NSControlTextDidEndEditingNotification,
             field.id());
         this.addObserver(new BookmarkObserver() {
             @Override
@@ -439,18 +440,37 @@ public class BookmarkController extends SheetController implements CollectionLis
                         bookmark.getPort(),
                         bookmark.getHostname(),
                         bookmark.getCredentials().getUsername());
-                    if(StringUtils.isNotBlank(password)) {
-                        bookmark.getCredentials().setPassword(password);
-                        updateField(passwordField, password);
-                    }
+                    bookmark.getCredentials().setPassword(password);
+                    updateField(passwordField, password);
                 }
             }
         });
     }
 
     @Action
-    public void passwordFieldTextDidChange(NSNotification notification) {
-        bookmark.getCredentials().setPassword(passwordField.stringValue());
+    public void passwordFieldTextDidEndEditing(NSNotification notification) {
+        if(options.keychain) {
+            if(StringUtils.isBlank(bookmark.getHostname())) {
+                return;
+            }
+            if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+                return;
+            }
+            if(StringUtils.isBlank(passwordField.stringValue())) {
+                return;
+            }
+            try {
+                keychain.addPassword(bookmark.getProtocol().getScheme(),
+                    bookmark.getPort(),
+                    bookmark.getHostname(),
+                    bookmark.getCredentials().getUsername(),
+                    passwordField.stringValue()
+                );
+            }
+            catch(LocalAccessDeniedException e) {
+                log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e.getDetail()));
+            }
+        }
     }
 
     public void setPasswordLabel(NSTextField passwordLabel) {
