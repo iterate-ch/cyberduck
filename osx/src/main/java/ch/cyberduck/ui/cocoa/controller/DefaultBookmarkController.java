@@ -55,6 +55,8 @@ public class DefaultBookmarkController extends BookmarkController {
     @Outlet
     private NSPopUpButton encodingPopup;
 
+    private final KeychainX509KeyManager x509KeyManager = new KeychainX509KeyManager(bookmark);
+
     public DefaultBookmarkController(final Host bookmark) {
         this(bookmark, new LoginOptions(bookmark.getProtocol()).password(false));
     }
@@ -106,7 +108,7 @@ public class DefaultBookmarkController extends BookmarkController {
                 certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
                 if(options.certificate) {
                     certificatePopup.menu().addItem(NSMenuItem.separatorItem());
-                    for(String certificate : new KeychainX509KeyManager(bookmark).list()) {
+                    for(String certificate : x509KeyManager.list()) {
                         certificatePopup.addItemWithTitle(certificate);
                         certificatePopup.lastItem().setRepresentedObject(certificate);
                     }
