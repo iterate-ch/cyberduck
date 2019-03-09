@@ -33,7 +33,6 @@ public class BackgroundException extends Exception {
     private Path file = new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.directory));
 
     private String message;
-
     private String detail;
 
     public BackgroundException() {
@@ -73,6 +72,11 @@ public class BackgroundException extends Exception {
 
     public void setFile(final Path file) {
         this.file = file;
+    }
+
+    public BackgroundException withFile(final Path file) {
+        this.file = file;
+        return this;
     }
 
     public Path getFile() {
