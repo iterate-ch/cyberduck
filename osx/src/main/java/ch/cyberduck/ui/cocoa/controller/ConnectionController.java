@@ -18,6 +18,8 @@ package ch.cyberduck.ui.cocoa.controller;
 import ch.cyberduck.binding.Action;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
+import ch.cyberduck.binding.application.NSControl;
+import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.SheetCallback;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Host;
@@ -90,5 +92,19 @@ public class ConnectionController extends BookmarkController {
     @Action
     public void keychainCheckboxClicked(final NSButton sender) {
         bookmark.getCredentials().setSaved(sender.state() == NSCell.NSOnState);
+    }
+
+    @Override
+    public void setPasswordField(final NSSecureTextField field) {
+        super.setPasswordField(field);
+        this.notificationCenter.addObserver(this.id(),
+            Foundation.selector("passwordFieldTextDidChange:"),
+            NSControl.NSControlTextDidChangeNotification,
+            field.id());
+    }
+
+    @Action
+    public void passwordFieldTextDidChange(NSNotification notification) {
+        bookmark.getCredentials().setPassword(passwordField.stringValue());
     }
 }
