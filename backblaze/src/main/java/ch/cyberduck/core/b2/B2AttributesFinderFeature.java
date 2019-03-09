@@ -76,11 +76,13 @@ public class B2AttributesFinderFeature implements AttributesFinder {
         else {
             attributes.setChecksum(Checksum.parse(StringUtils.removeStart(StringUtils.lowerCase(response.getContentSha1(), Locale.ROOT), "unverified:")));
         }
-        final Map<String, String> metadata = new HashMap<>();
-        for(Map.Entry<String, String> entry : response.getFileInfo().entrySet()) {
-            metadata.put(entry.getKey(), entry.getValue());
+        if(!response.getFileInfo().isEmpty()) {
+            final Map<String, String> metadata = new HashMap<>();
+            for(Map.Entry<String, String> entry : response.getFileInfo().entrySet()) {
+                metadata.put(entry.getKey(), entry.getValue());
+            }
+            attributes.setMetadata(metadata);
         }
-        attributes.setMetadata(metadata);
         attributes.setVersionId(response.getFileId());
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
             attributes.setModificationDate(Long.valueOf(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
