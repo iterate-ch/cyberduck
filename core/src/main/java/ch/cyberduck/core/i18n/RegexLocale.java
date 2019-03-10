@@ -137,5 +137,14 @@ public class RegexLocale implements Locale {
             result = 31 * result + (key != null ? key.hashCode() : 0);
             return result;
         }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Key{");
+            sb.append("table='").append(table).append('\'');
+            sb.append(", key='").append(key).append('\'');
+            sb.append('}');
+            return sb.toString();
+        }
     }
 }
