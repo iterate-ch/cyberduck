@@ -18,7 +18,6 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -80,7 +79,7 @@ public class DefaultDownloadFeatureTest extends AbstractS3Test {
             new DefaultDownloadFeature(new S3ReadFeature(session)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 readStatus,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
             final byte[] buffer = new byte[content.length];
             final InputStream in = local.getInputStream();
             IOUtils.readFully(in, buffer);

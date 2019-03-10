@@ -424,7 +424,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             transfer.transfer(s, d,
                                 segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                 segment.getRename().local != null ? segment.getRename().local : item.local,
-                                options, segment, connectionCallback, passwordCallback, progress, stream);
+                                options, segment, connectionCallback, progress, stream);
                         }
                         catch(ConnectionCanceledException e) {
                             log.warn(String.format("Canceled transfer of %s", item));
