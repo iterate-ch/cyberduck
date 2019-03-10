@@ -17,7 +17,20 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
@@ -236,7 +249,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
+                         final TransferStatus status, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
@@ -269,7 +282,7 @@ public class DownloadTransfer extends Transfer {
                     addTransferred(bytes);
                     super.recv(bytes);
                 }
-            }, status, connectionCallback, passwordCallback);
+            }, status, connectionCallback);
         }
         else if(file.isDirectory()) {
             if(!status.isExists()) {

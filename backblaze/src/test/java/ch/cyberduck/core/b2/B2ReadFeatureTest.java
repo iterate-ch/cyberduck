@@ -17,7 +17,6 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -78,7 +77,7 @@ public class B2ReadFeatureTest extends AbstractB2Test {
                         assertEquals(923L, length);
                         // Ignore update. As with unknown length for chunked transfer
                     }
-                }, new DisabledLoginCallback(), new DisabledPasswordCallback());
+            }, new DisabledLoginCallback());
         assertEquals(923L, local.attributes().getSize());
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

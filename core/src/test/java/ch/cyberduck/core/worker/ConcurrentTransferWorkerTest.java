@@ -155,7 +155,7 @@ public class ConcurrentTransferWorkerTest {
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 assertNotNull(source);
                 transferred.add(file);
                 return file;

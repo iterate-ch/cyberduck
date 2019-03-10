@@ -18,7 +18,6 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
@@ -77,14 +76,14 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
             new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true).exists(true);
             new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
@@ -117,7 +116,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
             new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();

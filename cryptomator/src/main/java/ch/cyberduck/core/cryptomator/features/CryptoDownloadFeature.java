@@ -17,7 +17,6 @@ package ch.cyberduck.core.cryptomator.features;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
@@ -43,8 +42,8 @@ public class CryptoDownloadFeature implements Download {
     }
 
     @Override
-    public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
-        proxy.download(vault.encrypt(session, file), local, throttle, listener, status, connectionCallback, passwordCallback);
+    public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        proxy.download(vault.encrypt(session, file), local, throttle, listener, status, callback);
     }
 
     @Override
