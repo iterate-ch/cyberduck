@@ -69,13 +69,6 @@ public class ConnectionController extends BookmarkController {
         }
     }
 
-    @Override
-    public void windowDidBecomeKey(final NSNotification notification) {
-        // Reset bookmark.getCredentials()
-        this.updateField(usernameField, bookmark.getCredentials().getUsername());
-        this.updateField(passwordField, bookmark.getCredentials().getPassword());
-    }
-
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
         this.keychainCheckbox.setTarget(this.id());

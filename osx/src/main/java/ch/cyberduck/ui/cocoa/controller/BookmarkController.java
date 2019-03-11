@@ -418,7 +418,6 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     public void setPasswordField(NSSecureTextField field) {
         this.passwordField = field;
-        this.updateField(this.passwordField, bookmark.getCredentials().getPassword());
         this.notificationCenter.addObserver(this.id(),
             Foundation.selector("passwordFieldTextDidEndEditing:"),
             NSControl.NSControlTextDidEndEditingNotification,
