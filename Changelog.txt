@@ -4,6 +4,10 @@ https://cyberduck.io/
 7.0.0
 - [Feature] Segmented downloads with multiple connections per file (#10115)
 
+6.9.5
+- [Bugfix] Allow password input in bookmark window
+- [Bugfix] Existing metadata not displayed (S3) (#10647)
+
 6.9.4
 - [Bugfix] Connect button not working to initiate a connection (#10621)
 - [Bugfix] Multipart uploads fail if key begins or ends with whitespace character (S3) (#10628)
