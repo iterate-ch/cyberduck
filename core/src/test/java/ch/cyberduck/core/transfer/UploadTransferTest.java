@@ -142,7 +142,7 @@ public class UploadTransferTest {
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 assertTrue(options.resumeRequested);
                 return file;
             }
@@ -207,7 +207,7 @@ public class UploadTransferTest {
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 //
                 return file;
             }
@@ -395,7 +395,7 @@ public class UploadTransferTest {
             @Override
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
-                                 final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
+                                 final ConnectionCallback connectionCallback, final ProgressListener listener, final StreamListener streamListener) {
                 status.setComplete();
                 set.set(true);
                 return file;

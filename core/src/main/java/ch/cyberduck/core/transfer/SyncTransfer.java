@@ -24,7 +24,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.ProgressListener;
@@ -221,16 +220,16 @@ public class SyncTransfer extends Transfer {
     @Override
     public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
                          final TransferOptions options, final TransferStatus status, final ConnectionCallback connectionCallback,
-                         final PasswordCallback passwordCallback, final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
+                         final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         switch(comparison.compare(file, local)) {
             case remote:
-                download.transfer(source, destination, file, local, options, status, connectionCallback, passwordCallback, progressListener, streamListener);
+                download.transfer(source, destination, file, local, options, status, connectionCallback, progressListener, streamListener);
                 break;
             case local:
-                upload.transfer(source, destination, file, local, options, status, connectionCallback, passwordCallback, progressListener, streamListener);
+                upload.transfer(source, destination, file, local, options, status, connectionCallback, progressListener, streamListener);
                 break;
         }
         return file;

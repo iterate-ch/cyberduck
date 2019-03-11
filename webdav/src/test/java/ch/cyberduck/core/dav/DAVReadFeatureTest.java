@@ -5,7 +5,6 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
@@ -78,7 +77,7 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         assertEquals(-1L, local.attributes().getSize());
         new DefaultDownloadFeature(session.getFeature(Read.class)).download(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
-            new DisabledStreamListener(), status, new DisabledLoginCallback(), new DisabledPasswordCallback());
+            new DisabledStreamListener(), status, new DisabledLoginCallback());
         assertEquals(35147L, local.attributes().getSize());
     }
 

@@ -18,14 +18,17 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 
+import org.apache.log4j.Logger;
+
 public class DisabledConnectionCallback implements ConnectionCallback {
+    private static final Logger log = Logger.getLogger(DisabledConnectionCallback.class);
+
     @Override
     public void warn(final Host bookmark, final String title, final String message,
-                     final String continueButton, final String disconnectButton, final String preference) throws ConnectionCanceledException {
-        throw new ConnectionCanceledException();
+                     final String continueButton, final String disconnectButton, final String preference) {
+        log.warn(String.format("Ignore prompt %s for %s", message, bookmark));
     }
 
     @Override
