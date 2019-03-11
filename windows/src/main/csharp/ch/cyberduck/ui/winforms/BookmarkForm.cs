@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
-// http://cyberduck.io/
+// Copyright (c) 2010-2019 Yves Langisch. All rights reserved.
+// https://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             SetMinMaxSize(Height);
             ConfigureToggleOptions();
 
+            textBoxPassword.LostFocus += delegate { ChangedPasswordEvent(); };
 
             numericUpDownPort.GotFocus += delegate { numericUpDownPort.Select(0, numericUpDownPort.Text.Length); };
         }
@@ -61,43 +62,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return new[] {"Bookmark"}; }
         }
 
-        public bool SavePasswordEnabled
-        {
-            set
-            {
-                ;
-            }
-        }
-
         public string PasswordLabel
         {
-            set { }
+            set { labelPassword.Text = value; }
         }
 
         public string Password
         {
-            get { return string.Empty; }
-            set
-            {
-                ;
-            }
+            get { return textBoxPassword.Text; }
+            set { textBoxPassword.Text = value; }
         }
 
         public bool PasswordEnabled
         {
-            set
-            {
-                ;
-            }
-        }
-
-        public bool SavePasswordChecked
-        {
-            get { return true; }
-            set
-            {
-                ;
-            }
+            set { textBoxPassword.Enabled = value; }
         }
 
         public bool HostFieldEnabled
@@ -217,6 +195,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler OpenDownloadFolderBrowserEvent = delegate { };
         public event VoidHandler OpenDownloadFolderEvent = delegate { };
         public event VoidHandler LaunchNetworkAssistantEvent = delegate { };
+        public event VoidHandler ChangedPasswordEvent = delegate { };
         public event VoidHandler OpenUrl = delegate { };
         public event EventHandler<PrivateKeyArgs> ChangedPrivateKeyEvent = delegate { };
 
@@ -296,6 +275,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         SetMinMaxSize(Height - optionsPanel.Height);
                         Height -= optionsPanel.Height;
                     }
+
                     optionsPanel.Visible = _expanded;
                     toggleOptionsLabel.ImageIndex = (_expanded ? 1 : 4);
                 }
@@ -470,6 +450,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 textBoxPath.Text = trimmed;
                 textBoxPath.SelectionStart = sel;
             }
+
             ChangedPathEvent();
         }
 

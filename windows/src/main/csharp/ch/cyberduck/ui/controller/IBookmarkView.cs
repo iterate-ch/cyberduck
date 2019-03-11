@@ -67,6 +67,9 @@ namespace Ch.Cyberduck.Ui.Controller
         bool PathEnabled { get; set; }
         bool AnonymousChecked { get; set; }
         bool AnonymousEnabled { get; set; }
+        string Password { get; set; }
+        bool PasswordEnabled { set; }
+        string PasswordLabel { set; }
         event VoidHandler ToggleOptions;
 
         void PopulateProtocols(List<KeyValueIconTriple<Protocol, string>> protocols);
@@ -105,5 +108,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         //todo
         event VoidHandler LaunchNetworkAssistantEvent;
+        event VoidHandler ChangedPasswordEvent;
     }
 }
