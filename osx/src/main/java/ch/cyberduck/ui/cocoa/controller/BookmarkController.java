@@ -376,8 +376,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             @Override
             public void change(final Host bookmark) {
                 usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                    StringUtils.isNotBlank(bookmark.getProtocol().getUsernamePlaceholder()) ? String.format("%s:",
-                        bookmark.getProtocol().getUsernamePlaceholder()) : StringUtils.EMPTY,
+                    String.format("%s:", bookmark.getProtocol().getUsernamePlaceholder()),
                     TRUNCATE_TAIL_ATTRIBUTES
                 ));
             }
@@ -478,8 +477,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             @Override
             public void change(final Host bookmark) {
                 passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                    StringUtils.isNotBlank(options.getPasswordPlaceholder()) ? String.format("%s:",
-                        options.getPasswordPlaceholder()) : StringUtils.EMPTY, TRUNCATE_TAIL_ATTRIBUTES
+                    String.format("%s:", options.getPasswordPlaceholder()), TRUNCATE_TAIL_ATTRIBUTES
                 ));
             }
         });

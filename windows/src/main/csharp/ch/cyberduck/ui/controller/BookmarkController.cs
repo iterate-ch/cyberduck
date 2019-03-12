@@ -639,9 +639,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UsernameEnabled = _options.user() && !_host.getCredentials().isAnonymousLogin();
             View.UsernameLabel = $"{_host.getProtocol().getUsernamePlaceholder()}:";
             View.Password = _host.getCredentials().getPassword();
-            View.PasswordLabel = Utils.IsNotBlank(_options.getPasswordPlaceholder())
-                ? $"{_options.getPasswordPlaceholder()}:"
-                : String.Empty;
+            View.PasswordLabel = $"{_options.getPasswordPlaceholder()}:";
             View.PasswordEnabled = _options.password() && !_host.getCredentials().isAnonymousLogin();
             View.AnonymousEnabled = _options.anonymous();
             View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
