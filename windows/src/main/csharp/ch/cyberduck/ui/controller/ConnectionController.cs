@@ -69,7 +69,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void Init()
         {
-            View.Username = PreferencesFactory.get().getProperty("connection.login.name");
             View.SavePasswordChecked = _options.keychain();
             View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
 
