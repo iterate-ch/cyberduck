@@ -7,6 +7,6 @@ public class NotificationCenterTest {
     @Test
     public void testNotify() {
         final NotificationService n = new NotificationCenter();
-        n.notify("title", "test");
+        n.notify(null, null, "title", "test");
     }
 }

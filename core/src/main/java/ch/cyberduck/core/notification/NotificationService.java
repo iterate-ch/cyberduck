@@ -31,14 +31,10 @@ public interface NotificationService {
     void unregister();
 
     /**
+     * @param group       Notification group or null
+     * @param identifier  Replace previous notifications with same identifier
      * @param title       Non localized title to be looked up in status table
      * @param description Informative text
      */
-    void notify(String title, String description);
-
-    /**
-     * @param title       Non localized title to be looked up in status table
-     * @param description Informative text
-     */
-    void notify(String identifier, String title, String description);
+    void notify(String group, String identifier, String title, String description);
 }

@@ -15,12 +15,7 @@ namespace Ch.Cyberduck.Core.Notifications
     {
         protected abstract string AumID { get; }
 
-        public void notify(string title, string description)
-        {
-            notify(null, title, description);
-        }
-
-        public void notify(string identifier, string title, string description)
+        public void notify(string group, string identifier, string title, string description)
         {
             // Construct the visuals of the toast (using Notifications library)
             ToastContent toastContent = new ToastContent()

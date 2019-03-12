@@ -34,7 +34,7 @@ public class NotificationRendezvousListener implements RendezvousListener {
 
     @Override
     public void serviceResolved(final String identifier, final Host host) {
-        notification.notify(host.getUuid(), "Bonjour", bonjour.getDisplayedName(identifier));
+        notification.notify(host.getUuid(), null, "Bonjour", bonjour.getDisplayedName(identifier));
     }
 
     @Override
