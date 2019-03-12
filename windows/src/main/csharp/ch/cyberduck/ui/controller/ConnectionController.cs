@@ -81,7 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedSavePasswordCheckboxEvent()
         {
-            //
+            _host.getCredentials().setSaved(View.SavePasswordChecked);
         }
 
         protected override void ItemChanged()
