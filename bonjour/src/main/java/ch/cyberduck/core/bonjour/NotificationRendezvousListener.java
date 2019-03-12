@@ -18,6 +18,7 @@ package ch.cyberduck.core.bonjour;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.notification.NotificationService;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
@@ -34,7 +35,7 @@ public class NotificationRendezvousListener implements RendezvousListener {
 
     @Override
     public void serviceResolved(final String identifier, final Host host) {
-        notification.notify(host.getUuid(), null, "Bonjour", bonjour.getDisplayedName(identifier));
+        notification.notify(BookmarkNameProvider.toString(host), host.getUuid(), "Bonjour", bonjour.getDisplayedName(identifier));
     }
 
     @Override
