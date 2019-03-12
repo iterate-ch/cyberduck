@@ -22,6 +22,7 @@ import ch.cyberduck.binding.foundation.NSUserNotification;
 import ch.cyberduck.binding.foundation.NSUserNotificationCenter;
 import ch.cyberduck.core.LocaleFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 
 public class NotificationCenter implements NotificationService {
@@ -42,8 +43,11 @@ public class NotificationCenter implements NotificationService {
     }
 
     @Override
-    public void notify(final String title, final String description) {
+    public void notify(final String group, final String identifier, final String title, final String description) {
         final NSUserNotification notification = NSUserNotification.notification();
+        if(StringUtils.isNotBlank(identifier)) {
+            notification.setIdentifier(identifier);
+        }
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
         center.scheduleNotification(notification);

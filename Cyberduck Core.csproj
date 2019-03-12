@@ -88,6 +88,9 @@
       <HintPath>core\native\target\ikvm\bin\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Microsoft.Toolkit.Uwp.Notifications, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Toolkit.Uwp.Notifications.2.0.0\lib\dotnet\Microsoft.Toolkit.Uwp.Notifications.dll</HintPath>
+    </Reference>
     <Reference Include="SimpleMapi, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\Simple-MAPI.NET.1.0.1\lib\net20\SimpleMapi.dll</HintPath>
     </Reference>
@@ -150,6 +153,8 @@
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeConstants.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeListEnumerator.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\NativeMethods.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\notifications\AbstractDesktopNotificationService.cs" />
+    <Compile Include="core\src\main\csharp\ch\cyberduck\core\notifications\DesktopNotificationManagerCompat.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\PasswordStoreFacade.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\AppConfigPreferences.cs" />
     <Compile Include="core\src\main\csharp\ch\cyberduck\core\preferences\DefaultLocales.cs" />
