@@ -1,6 +1,6 @@
 ﻿// 
 // Copyright (c) 2010-2019 Yves Langisch. All rights reserved.
-// http://cyberduck.io/
+// https://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ namespace Ch.Cyberduck.Core.Date
             return d.ToString("F");
         }
 
-        public static DateTime ConvertJavaMillisecondsToDateTime(long javaMS, string tz)
+        private static DateTime ConvertJavaMillisecondsToDateTime(long javaMS, string tz)
         {
             int offset = TimeZone.getTimeZone(tz).getOffset(javaMS);
             return ConvertJavaMillisecondsToDateTime(javaMS + offset);
@@ -81,7 +81,7 @@ namespace Ch.Cyberduck.Core.Date
         public static DateTime ConvertJavaMillisecondsToDateTime(long javaMS)
         {
             DateTime utcBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS * TimeSpan.TicksPerMillisecond)).ToLocalTime();
+            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS * TimeSpan.TicksPerMillisecond));
             return dt;
         }
 
@@ -90,13 +90,6 @@ namespace Ch.Cyberduck.Core.Date
             TimeSpan timeSpan = dateTime.ToUniversalTime()
                 .Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc));
             return timeSpan.Ticks / TimeSpan.TicksPerMillisecond;
-        }
-
-        public static long ConvertJavaMillisecondsToDotNetMillis(long javaMS)
-        {
-            DateTime utcBaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            DateTime dt = utcBaseTime.Add(new TimeSpan(javaMS * TimeSpan.TicksPerMillisecond)).ToLocalTime();
-            return dt.Ticks / TimeSpan.TicksPerMillisecond;
         }
     }
 }
