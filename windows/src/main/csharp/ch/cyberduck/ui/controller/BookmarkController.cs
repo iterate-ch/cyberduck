@@ -85,7 +85,42 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ToggleOptions += View_ToggleOptions;
             View.OptionsVisible = PreferencesFactory.get().getBoolean(ToggleProperty);
 
-            Init();
+            //set default favicon
+            View.Favicon = IconCache.Instance.IconForName("site", 16);
+
+            InitProtocols();
+            InitPrivateKeys();
+            InitConnectModes();
+            InitEncodings();
+            InitTimezones();
+            InitTransferModes();
+            Update();
+
+            View.ChangedProtocolEvent += View_ChangedProtocolEvent;
+            View.ChangedProtocolEvent += ReadPasswordFromKeychain;
+            View.ChangedPortEvent += View_ChangedPortEvent;
+            View.ChangedUsernameEvent += View_ChangedUsernameEvent;
+            View.ChangedUsernameEvent += ReadPasswordFromKeychain;
+            View.ChangedPasswordEvent += View_ChangedPasswordEvent;
+            View.ChangedServerEvent += View_ChangedServerEvent;
+            View.ChangedServerEvent += ReadPasswordFromKeychain;
+            View.ChangedEncodingEvent += View_ChangedEncodingEvent;
+            View.ChangedPathEvent += View_ChangedPathEvent;
+            View.ChangedTimezoneEvent += View_ChangedTimezoneEvent;
+            View.ChangedConnectModeEvent += View_ChangedConnectModeEvent;
+            View.ChangedTransferEvent += View_ChangedTransferEvent;
+            View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
+            View.ChangedPrivateKeyEvent += View_ChangedPrivateKeyEvent;
+            View.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
+            View.ChangedClientCertificateEvent += View_ChangedClientCertificateEvent;
+            View.ChangedNicknameEvent += View_ChangedNicknameEvent;
+            View.ChangedWebURLEvent += View_ChangedWebURLEvent;
+            View.ChangedCommentEvent += View_ChangedCommentEvent;
+            View.ChangedBrowserDownloadPathEvent += View_ChangedBrowserDownloadPathEvent;
+            View.OpenDownloadFolderBrowserEvent += View_OpenDownloadFolderBrowserEvent;
+            View.OpenDownloadFolderEvent += View_OpenDownloadFolderEvent;
+            View.OpenUrl += View_OpenUrl;
+            View.OpenWebUrl += View_OpenWebUrl;
         }
 
         protected BookmarkController(Host host) : this(host,
@@ -396,46 +431,6 @@ namespace Ch.Cyberduck.Ui.Controller
             _host.getCredentials().setUsername(View.Username);
             ItemChanged();
             Update();
-        }
-
-        public void Init()
-        {
-            //set default favicon
-            View.Favicon = IconCache.Instance.IconForName("site", 16);
-
-            InitProtocols();
-            InitPrivateKeys();
-            InitConnectModes();
-            InitEncodings();
-            InitTimezones();
-            InitTransferModes();
-            Update();
-
-            View.ChangedProtocolEvent += View_ChangedProtocolEvent;
-            View.ChangedProtocolEvent += ReadPasswordFromKeychain;
-            View.ChangedPortEvent += View_ChangedPortEvent;
-            View.ChangedUsernameEvent += View_ChangedUsernameEvent;
-            View.ChangedUsernameEvent += ReadPasswordFromKeychain;
-            View.ChangedPasswordEvent += View_ChangedPasswordEvent;
-            View.ChangedServerEvent += View_ChangedServerEvent;
-            View.ChangedServerEvent += ReadPasswordFromKeychain;
-            View.ChangedEncodingEvent += View_ChangedEncodingEvent;
-            View.ChangedPathEvent += View_ChangedPathEvent;
-            View.ChangedTimezoneEvent += View_ChangedTimezoneEvent;
-            View.ChangedConnectModeEvent += View_ChangedConnectModeEvent;
-            View.ChangedTransferEvent += View_ChangedTransferEvent;
-            View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
-            View.ChangedPrivateKeyEvent += View_ChangedPrivateKeyEvent;
-            View.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
-            View.ChangedClientCertificateEvent += View_ChangedClientCertificateEvent;
-            View.ChangedNicknameEvent += View_ChangedNicknameEvent;
-            View.ChangedWebURLEvent += View_ChangedWebURLEvent;
-            View.ChangedCommentEvent += View_ChangedCommentEvent;
-            View.ChangedBrowserDownloadPathEvent += View_ChangedBrowserDownloadPathEvent;
-            View.OpenDownloadFolderBrowserEvent += View_OpenDownloadFolderBrowserEvent;
-            View.OpenDownloadFolderEvent += View_OpenDownloadFolderEvent;
-            View.OpenUrl += View_OpenUrl;
-            View.OpenWebUrl += View_OpenWebUrl;
         }
 
         public void ReadPasswordFromKeychain()
