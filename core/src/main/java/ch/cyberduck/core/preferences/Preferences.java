@@ -515,7 +515,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("queue.download.wherefrom", String.valueOf(true));
 
         // Segmented concurrent downloads
-        this.setDefault("queue.download.segments", String.valueOf(true));
+        this.setDefault("queue.download.segments", String.valueOf(false));
         this.setDefault("queue.download.segments.threshold", String.valueOf(10L * 1024L * 1024L));
         this.setDefault("queue.download.segments.size", String.valueOf(5L * 1024L * 1024L));
 
