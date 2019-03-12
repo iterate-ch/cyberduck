@@ -1,4 +1,5 @@
 ﻿using ch.cyberduck.core.notification;
+using Ch.Cyberduck.Core.Notifications;
 using DesktopNotifications;
 using Microsoft.Toolkit.Uwp.Notifications;
 using System;
@@ -12,51 +13,9 @@ using Windows.UI.Notifications;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class DesktopNotificationService : NotificationService
+    public class DesktopNotificationService : AbstractDesktopNotificationService<DesktopNotificationService.DesktopNotificationActivator>
     {
-        public void notify(string title, string description)
-        {
-            // Construct the visuals of the toast (using Notifications library)
-            ToastContent toastContent = new ToastContent()
-            {
-                Visual = new ToastVisual()
-                {
-                    BindingGeneric = new ToastBindingGeneric()
-                    {
-                        Children =
-                        {
-                            new AdaptiveText()
-                            {
-                                Text = title
-                            },
-                            new AdaptiveText()
-                            {
-                                Text = description
-                            }
-                        }
-                    }
-                }
-            };
-
-            var doc = new XmlDocument();
-            doc.LoadXml(toastContent.GetContent());
-
-            var toast = new ToastNotification(doc);
-
-            DesktopNotificationManagerCompat.CreateToastNotifier().Show(toast);
-        }
-        
-        public NotificationService setup()
-        {
-            DesktopNotificationManagerCompat.RegisterAumidAndComServer<DesktopNotificationActivator>("iterate.Cyberduck");
-            DesktopNotificationManagerCompat.RegisterActivator<DesktopNotificationActivator>();
-            return this;
-        }
-
-        public void unregister()
-        {
-            DesktopNotificationManagerCompat.History.Clear();
-        }
+        protected override string AumID => "iterate.Cyberduck";
 
         [ClassInterface(ClassInterfaceType.None)]
         [ComSourceInterfaces(typeof(INotificationActivationCallback))]
