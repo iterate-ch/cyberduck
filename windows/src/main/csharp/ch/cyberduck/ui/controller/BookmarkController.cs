@@ -440,7 +440,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void ReadPasswordFromKeychain()
         {
-            if (_options.keychain())
+            if (_options.keychain() && _options.password()) {
             {
                 if (string.IsNullOrEmpty(_host.getHostname()))
                 {
@@ -463,7 +463,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPasswordEvent()
         {
-            if (_options.keychain())
+            if (_options.keychain() && _options.password()) {
             {
                 if (Utils.IsBlank(_host.getHostname()))
                 {

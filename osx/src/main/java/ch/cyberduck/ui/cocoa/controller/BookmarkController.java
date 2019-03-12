@@ -426,7 +426,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             public void change(final Host bookmark) {
                 passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
                 passwordField.setEnabled(options.password && !bookmark.getCredentials().isAnonymousLogin());
-                if(options.keychain) {
+                if(options.keychain && options.password) {
                     if(StringUtils.isBlank(bookmark.getHostname())) {
                         return;
                     }
@@ -445,7 +445,7 @@ public class BookmarkController extends SheetController implements CollectionLis
 
     @Action
     public void passwordFieldTextDidEndEditing(NSNotification notification) {
-        if(options.keychain) {
+        if(options.keychain && options.password) {
             if(StringUtils.isBlank(bookmark.getHostname())) {
                 return;
             }
