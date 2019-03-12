@@ -424,7 +424,6 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                updateField(passwordField, bookmark.getCredentials().getPassword());
                 passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
                 passwordField.setEnabled(options.password && !bookmark.getCredentials().isAnonymousLogin());
                 if(options.keychain) {
@@ -438,7 +437,6 @@ public class BookmarkController extends SheetController implements CollectionLis
                         bookmark.getPort(),
                         bookmark.getHostname(),
                         bookmark.getCredentials().getUsername());
-                    bookmark.getCredentials().setPassword(password);
                     updateField(passwordField, password);
                 }
             }
