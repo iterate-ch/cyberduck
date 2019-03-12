@@ -233,7 +233,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             this.release(source, Connection.source, null);
             this.release(destination, Connection.destination, null);
             if(transfer.isReset()) {
-                notification.notify(transfer.getSource().getUuid(), transfer.isComplete() ?
+                notification.notify(transfer.getUuid(), null, transfer.isComplete() ?
                     String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
                     "Transfer incomplete", transfer.getName());
             }
