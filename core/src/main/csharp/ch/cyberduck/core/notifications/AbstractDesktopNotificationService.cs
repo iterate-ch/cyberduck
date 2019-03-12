@@ -17,6 +17,11 @@ namespace Ch.Cyberduck.Core.Notifications
 
         public void notify(string title, string description)
         {
+            notify(null, title, description);
+        }
+
+        public void notify(string identifier, string title, string description)
+        {
             // Construct the visuals of the toast (using Notifications library)
             ToastContent toastContent = new ToastContent()
             {

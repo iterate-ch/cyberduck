@@ -32,7 +32,13 @@ public interface NotificationService {
 
     /**
      * @param title       Non localized title to be looked up in status table
-     * @param description Hostname
+     * @param description Informative text
      */
     void notify(String title, String description);
+
+    /**
+     * @param title       Non localized title to be looked up in status table
+     * @param description Informative text
+     */
+    void notify(String identifier, String title, String description);
 }

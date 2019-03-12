@@ -43,7 +43,13 @@ public class NotificationCenter implements NotificationService {
 
     @Override
     public void notify(final String title, final String description) {
+        this.notify(null, title, description);
+    }
+
+    @Override
+    public void notify(final String identifier, final String title, final String description) {
         final NSUserNotification notification = NSUserNotification.notification();
+        notification.setIdentifier(identifier);
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
         center.scheduleNotification(notification);

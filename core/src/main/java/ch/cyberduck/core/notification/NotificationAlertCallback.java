@@ -29,7 +29,7 @@ public class NotificationAlertCallback implements AlertCallback {
 
     @Override
     public boolean alert(final Host bookmark, final BackgroundException failure, final StringBuilder transcript) {
-        notification.notify(failure.getMessage(), BookmarkNameProvider.toString(bookmark));
+        notification.notify(bookmark.getUuid(), failure.getMessage(), BookmarkNameProvider.toString(bookmark));
         return false;
     }
 }
