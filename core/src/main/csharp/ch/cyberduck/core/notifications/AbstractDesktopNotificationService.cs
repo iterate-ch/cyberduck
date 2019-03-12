@@ -22,20 +22,13 @@ namespace Ch.Cyberduck.Core.Notifications
 
         public void notify(string group, string identifier, string title, string description)
         {
-            var uuid = group;
-            var groupTitle = ResolveGroup(group);
-
-            var toastContent = new ToastContent();
-
-            if (!string.IsNullOrWhiteSpace(group))
+            var toastContent = new ToastContent
             {
-                toastContent.Header = new ToastHeader(uuid, groupTitle, string.Empty);
-            }
-            toastContent.Visual = new ToastVisual()
-            {
-                BindingGeneric = new ToastBindingGeneric()
+                Visual = new ToastVisual()
                 {
-                    Children =
+                    BindingGeneric = new ToastBindingGeneric()
+                    {
+                        Children =
                         {
                             new AdaptiveText()
                             {
@@ -46,6 +39,7 @@ namespace Ch.Cyberduck.Core.Notifications
                                 Text = description
                             }
                         }
+                    }
                 }
             };
 
@@ -55,7 +49,7 @@ namespace Ch.Cyberduck.Core.Notifications
             var toast = new ToastNotification(doc);
             if (!string.IsNullOrWhiteSpace(group))
             {
-                toast.Group = uuid;
+                toast.Group = group;
             }
             toast.Tag = identifier;
 
@@ -79,8 +73,6 @@ namespace Ch.Cyberduck.Core.Notifications
                 return true;
             };
         }
-
-        protected abstract string ResolveGroup(string group);
 
         NotificationService NotificationService.setup()
         {

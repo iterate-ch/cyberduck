@@ -16,8 +16,6 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         protected override string AumID => "iterate.Cyberduck";
 
-        protected override string ResolveGroup(string group) => null;
-
         [ClassInterface(ClassInterfaceType.None)]
         [ComSourceInterfaces(typeof(INotificationActivationCallback))]
         [Guid("04FAA434-8D25-4690-AF66-B63B39C1FEDE"), ComVisible(true)]
