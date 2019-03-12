@@ -79,22 +79,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetModified(Path path)
         {
-            long modificationDate = path.attributes().getModificationDate();
-            if (modificationDate != -1)
-            {
-                return UserDefaultsDateFormatter.ConvertJavaMillisecondsToDateTime(modificationDate);
-            }
-            return DateTime.MinValue;
+            return path.attributes().getModificationDate();
         }
 
         public string GetModifiedAsString(object value)
         {
-            DateTime modificationDate = (DateTime) value;
-            if (modificationDate != DateTime.MinValue)
+            long modificationDate = (long) value;
+            if (modificationDate != -1)
             {
                 return
                     UserDateFormatterFactory.get()
-                        .getShortFormat(UserDefaultsDateFormatter.ConvertDateTimeToJavaMilliseconds(modificationDate),
+                        .getShortFormat(modificationDate,
                             PreferencesFactory.get().getBoolean("browser.date.natural"));
             }
             return _unknown;

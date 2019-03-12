@@ -109,16 +109,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return path.remote.getName();
         }
 
-        public object GetModified(TransferItem path)
-        {
-            long modificationDate = path.remote.attributes().getModificationDate();
-            if (modificationDate != -1)
-            {
-                return UserDefaultsDateFormatter.ConvertJavaMillisecondsToDateTime(modificationDate);
-            }
-            return UNKNOWN;
-        }
-
         public object GetSize(TransferItem path)
         {
             TransferStatus status = GetStatus(path);
