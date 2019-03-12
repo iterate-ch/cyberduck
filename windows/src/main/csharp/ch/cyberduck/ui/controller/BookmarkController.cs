@@ -44,14 +44,7 @@ using TimeZone = java.util.TimeZone;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class BookmarkController : BookmarkController<IBookmarkView>
-    {
-        private BookmarkController(Host host) : base(host)
-        {
-        }
-    }
-
-    public class BookmarkController<T> : WindowController<T> where T : IBookmarkView
+    public abstract class BookmarkController<T> : WindowController<T> where T : IBookmarkView
     {
         private const String TimezoneIdPrefixes = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
         public const int SmallBookmarkSize = 16;
@@ -70,6 +63,24 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Timer _ticklerFavicon;
         private readonly Timer _ticklerReachability;
         protected readonly LoginInputValidator _validator;
+
+        protected BookmarkController(Host host) : this(host,
+            new LoginOptions(host.getProtocol()))
+        {
+        }
+
+        protected BookmarkController(Host host,
+            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
+            new LoginInputValidator(host, options), options)
+        {
+        }
+
+        protected BookmarkController(Host host, LoginInputValidator validator,
+            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
+            validator, options)
+        {
+            _bookmarkCollectionListener = new RemovedCollectionListener(this, host);
+        }
 
         private BookmarkController(T view, Host host, LoginInputValidator validator,
             LoginOptions options) : base(validator)
@@ -101,7 +112,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChangedPortEvent += View_ChangedPortEvent;
             View.ChangedUsernameEvent += View_ChangedUsernameEvent;
             View.ChangedUsernameEvent += ReadPasswordFromKeychain;
-            View.ChangedPasswordEvent += View_ChangedPasswordEvent;
             View.ChangedServerEvent += View_ChangedServerEvent;
             View.ChangedServerEvent += ReadPasswordFromKeychain;
             View.ChangedEncodingEvent += View_ChangedEncodingEvent;
@@ -121,24 +131,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.OpenDownloadFolderEvent += View_OpenDownloadFolderEvent;
             View.OpenUrl += View_OpenUrl;
             View.OpenWebUrl += View_OpenWebUrl;
-        }
-
-        protected BookmarkController(Host host) : this(host,
-            new LoginOptions(host.getProtocol()))
-        {
-        }
-
-        protected BookmarkController(Host host,
-            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
-            new LoginInputValidator(host, options), options)
-        {
-        }
-
-        protected BookmarkController(Host host, LoginInputValidator validator,
-            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
-            validator, options)
-        {
-            _bookmarkCollectionListener = new RemovedCollectionListener(this, host);
         }
 
         protected virtual String ToggleProperty => "bookmark.toggle.options";
@@ -456,38 +448,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void View_ChangedPasswordEvent()
-        {
-            if (_options.keychain() && _options.password()) {
-            {
-                if (Utils.IsBlank(_host.getHostname()))
-                {
-                    return;
-                }
-                if (Utils.IsBlank(_host.getCredentials().getUsername()))
-                {
-                    return;
-                }
-                if (Utils.IsBlank(View.Password))
-                {
-                    return;
-                }
-                try
-                {
-                    _keychain.addPassword(_host.getProtocol().getScheme(),
-                        _host.getPort(),
-                        _host.getHostname(),
-                        _host.getCredentials().getUsername(),
-                        View.Password
-                    );
-                }
-                catch (LocalAccessDeniedException e)
-                {
-                    Log.error($"Failure saving credentials for ${_host} in keychain. ${e.getDetail()}");
-                }
-            }
-        }
-
         private void View_ChangedClientCertificateEvent()
         {
             _host.getCredentials().setCertificate(View.SelectedClientCertificate);
@@ -740,7 +700,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     return c;
                 }
 
-                c = new BookmarkController<T>(host);
+                c = new DefaultBookmarkController<T>(host);
                 c.View.ViewClosedEvent += () => Open.Remove(host);
                 Open.Add(host, c);
                 return c;
