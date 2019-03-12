@@ -1,4 +1,6 @@
-﻿using ch.cyberduck.core.notification;
+﻿using ch.cyberduck.core;
+using ch.cyberduck.core.notification;
+using ch.cyberduck.core.pool;
 using DesktopNotifications;
 using Microsoft.Toolkit.Uwp.Notifications;
 using System;
@@ -13,18 +15,27 @@ namespace Ch.Cyberduck.Core.Notifications
 {
     public abstract class AbstractDesktopNotificationService<TActivator> : NotificationService where TActivator : NotificationActivator
     {
+        private ToastNotifier notifier;
+        private DesktopNotificationHistoryCompat history;
+
         protected abstract string AumID { get; }
 
         public void notify(string group, string identifier, string title, string description)
         {
-            // Construct the visuals of the toast (using Notifications library)
-            ToastContent toastContent = new ToastContent()
+            var uuid = group;
+            var groupTitle = ResolveGroup(group);
+
+            var toastContent = new ToastContent();
+
+            if (!string.IsNullOrWhiteSpace(group))
             {
-                Visual = new ToastVisual()
+                toastContent.Header = new ToastHeader(uuid, groupTitle, string.Empty);
+            }
+            toastContent.Visual = new ToastVisual()
+            {
+                BindingGeneric = new ToastBindingGeneric()
                 {
-                    BindingGeneric = new ToastBindingGeneric()
-                    {
-                        Children =
+                    Children =
                         {
                             new AdaptiveText()
                             {
@@ -35,7 +46,6 @@ namespace Ch.Cyberduck.Core.Notifications
                                 Text = description
                             }
                         }
-                    }
                 }
             };
 
@@ -43,21 +53,48 @@ namespace Ch.Cyberduck.Core.Notifications
             doc.LoadXml(toastContent.GetContent());
 
             var toast = new ToastNotification(doc);
+            if (!string.IsNullOrWhiteSpace(group))
+            {
+                toast.Group = uuid;
+            }
+            toast.Tag = identifier;
 
-            DesktopNotificationManagerCompat.CreateToastNotifier().Show(toast);
+            toast.SuppressPopup = history.GetHistory().Any(GetToastComparer(toast));
+
+            notifier.Show(toast);
         }
+
+        private static Func<ToastNotification, bool> GetToastComparer(ToastNotification original)
+        {
+            return other =>
+            {
+                if (!Equals(other.Group, original.Group))
+                {
+                    return false;
+                }
+                if (!Equals(other.Tag, original.Tag))
+                {
+                    return false;
+                }
+                return true;
+            };
+        }
+
+        protected abstract string ResolveGroup(string group);
 
         NotificationService NotificationService.setup()
         {
             DesktopNotificationManagerCompat.RegisterAumidAndComServer<TActivator>(AumID);
             DesktopNotificationManagerCompat.RegisterActivator<TActivator>();
+            notifier = DesktopNotificationManagerCompat.CreateToastNotifier();
+            history = DesktopNotificationManagerCompat.History;
 
             return this;
         }
 
         void NotificationService.unregister()
         {
-            throw new NotImplementedException();
+            history.Clear();
         }
     }
 }
