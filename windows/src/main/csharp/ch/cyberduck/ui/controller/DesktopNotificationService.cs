@@ -1,7 +1,6 @@
 ﻿using ch.cyberduck.core.notification;
 using Ch.Cyberduck.Core.Notifications;
 using DesktopNotifications;
-using Microsoft.Toolkit.Uwp.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
