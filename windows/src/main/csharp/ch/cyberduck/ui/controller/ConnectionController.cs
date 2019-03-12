@@ -70,7 +70,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void Init()
         {
             View.Username = PreferencesFactory.get().getProperty("connection.login.name");
-            View.SavePasswordChecked = _options.save();
+            View.SavePasswordChecked = _options.keychain();
             View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
 
             View.ChangedServerEvent += ReadPasswordFromKeychain;
@@ -87,14 +87,6 @@ namespace Ch.Cyberduck.Ui.Controller
         protected override void ItemChanged()
         {
             //
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-            View.Password = _host.getCredentials().getPassword();
-            View.PasswordEnabled = _options.password() && !_host.getCredentials().isAnonymousLogin();
-            View.PasswordLabel = _host.getProtocol().getPasswordPlaceholder() + ":";
         }
 
         public void ReadPasswordFromKeychain()
