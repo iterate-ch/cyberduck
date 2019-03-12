@@ -48,9 +48,6 @@ public class NotificationCenter implements NotificationService {
         if(StringUtils.isNotBlank(identifier)) {
             notification.setIdentifier(identifier);
         }
-        else {
-            notification.setIdentifier(group);
-        }
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
         center.scheduleNotification(notification);
