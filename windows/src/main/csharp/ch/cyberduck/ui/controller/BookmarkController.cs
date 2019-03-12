@@ -412,10 +412,13 @@ namespace Ch.Cyberduck.Ui.Controller
             Update();
 
             View.ChangedProtocolEvent += View_ChangedProtocolEvent;
+            View.ChangedProtocolEvent += ReadPasswordFromKeychain;
             View.ChangedPortEvent += View_ChangedPortEvent;
             View.ChangedUsernameEvent += View_ChangedUsernameEvent;
+            View.ChangedUsernameEvent += ReadPasswordFromKeychain;
             View.ChangedPasswordEvent += View_ChangedPasswordEvent;
             View.ChangedServerEvent += View_ChangedServerEvent;
+            View.ChangedServerEvent += ReadPasswordFromKeychain;
             View.ChangedEncodingEvent += View_ChangedEncodingEvent;
             View.ChangedPathEvent += View_ChangedPathEvent;
             View.ChangedTimezoneEvent += View_ChangedTimezoneEvent;
@@ -435,6 +438,29 @@ namespace Ch.Cyberduck.Ui.Controller
             View.OpenWebUrl += View_OpenWebUrl;
         }
 
+        public void ReadPasswordFromKeychain()
+        {
+            if (_options.keychain())
+            {
+                if (string.IsNullOrEmpty(_host.getHostname()))
+                {
+                    return;
+                }
+                if (string.IsNullOrEmpty(_host.getCredentials().getUsername()))
+                {
+                    return;
+                }
+                string password = keychain.getPassword(_host.getProtocol().getScheme(),
+                    _host.getPort(),
+                    _host.getHostname(),
+                    _host.getCredentials().getUsername());
+                if (Utils.IsNotBlank(password))
+                {
+                    View.Password = password;
+                }
+            }
+        }
+
         private void View_ChangedPasswordEvent()
         {
             if (_options.keychain())
@@ -443,17 +469,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return;
                 }
-
                 if (Utils.IsBlank(_host.getCredentials().getUsername()))
                 {
                     return;
                 }
-
                 if (Utils.IsBlank(View.Password))
                 {
                     return;
                 }
-
                 try
                 {
                     _keychain.addPassword(_host.getProtocol().getScheme(),

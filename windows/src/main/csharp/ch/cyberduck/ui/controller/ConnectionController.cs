@@ -71,10 +71,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View.SavePasswordChecked = _options.keychain();
             View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
-
-            View.ChangedServerEvent += ReadPasswordFromKeychain;
-            View.ChangedUsernameEvent += ReadPasswordFromKeychain;
-            View.ChangedProtocolEvent += ReadPasswordFromKeychain;
             View.ChangedPasswordEvent += delegate { _host.getCredentials().setPassword(View.Password); };
         }
 
@@ -86,33 +82,6 @@ namespace Ch.Cyberduck.Ui.Controller
         protected override void ItemChanged()
         {
             //
-        }
-
-        public void ReadPasswordFromKeychain()
-        {
-            if (_options.keychain())
-            {
-                if (string.IsNullOrEmpty(View.Hostname))
-                {
-                    return;
-                }
-                if (string.IsNullOrEmpty(View.Port))
-                {
-                    return;
-                }
-                if (string.IsNullOrEmpty(View.Username))
-                {
-                    return;
-                }
-                Protocol protocol = View.SelectedProtocol;
-                string password = PasswordStoreFactory.get().getPassword(protocol.getScheme(),
-                    Integer.parseInt(View.Port), View.Hostname,
-                    View.Username);
-                if (Utils.IsNotBlank(password))
-                {
-                    View.Password = password;
-                }
-            }
         }
     }
 }
