@@ -1035,11 +1035,11 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateBookmarkSize()
         {
             List<KeyValuePair<int, string>> sizes = new List<KeyValuePair<int, string>>();
-            sizes.Add(new KeyValuePair<int, string>(BookmarkController.SmallBookmarkSize,
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController<IBookmarkView>.SmallBookmarkSize,
                 LocaleFactory.localizedString("Use Small Icons", "Preferences")));
-            sizes.Add(new KeyValuePair<int, string>(BookmarkController.MediumBookmarkSize,
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController<IBookmarkView>.MediumBookmarkSize,
                 LocaleFactory.localizedString("Use Medium Icons", "Preferences")));
-            sizes.Add(new KeyValuePair<int, string>(BookmarkController.LargeBookmarkSize,
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController<IBookmarkView>.LargeBookmarkSize,
                 LocaleFactory.localizedString("Use Large Icons", "Preferences")));
             View.PopulateBookmarkSize(sizes);
         }
