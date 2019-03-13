@@ -18,6 +18,7 @@
 
 using System.Collections.Generic;
 using ch.cyberduck.core;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui;
 using Ch.Cyberduck.Core;
@@ -53,7 +54,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 try
                 {
-                    _keychain.addPassword(_host.getProtocol().getScheme(),
+                    PasswordStoreFactory.get().addPassword(_host.getProtocol().getScheme(),
                         _host.getPort(),
                         _host.getHostname(),
                         _host.getCredentials().getUsername(),
