@@ -46,7 +46,7 @@ namespace Ch.Cyberduck.Core.Notifications
             doc.LoadXml(toastContent.GetContent());
 
             var toast = new ToastNotification(doc);
-            if (!(identifier is null))
+            if (!string.IsNullOrWhiteSpace(identifier))
             {
                 toast.Tag = identifier;
             }
