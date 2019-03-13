@@ -37,7 +37,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPasswordEvent()
         {
-            if (_options.keychain() && _options.password()) {
+            if (_options.keychain() && _options.password())
             {
                 if (Utils.IsBlank(_host.getHostname()))
                 {
