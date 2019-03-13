@@ -69,15 +69,13 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
-        protected BookmarkController(Host host,
-            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
-            new LoginInputValidator(host, options), options)
+        protected BookmarkController(Host host, LoginOptions options)
+            : this(ObjectFactory.GetInstance<T>(), host, new LoginInputValidator(host, options), options)
         {
         }
 
-        protected BookmarkController(Host host, LoginInputValidator validator,
-            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
-            validator, options)
+        protected BookmarkController(Host host, LoginInputValidator validator, LoginOptions options)
+            : this(ObjectFactory.GetInstance<T>(), host, validator, options)
         {
             _bookmarkCollectionListener = new RemovedCollectionListener(this, host);
         }
@@ -437,7 +435,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return;
                 }
-                string password = keychain.getPassword(_host.getProtocol().getScheme(),
+                string password = _keychain.getPassword(_host.getProtocol().getScheme(),
                     _host.getPort(),
                     _host.getHostname(),
                     _host.getCredentials().getUsername());
