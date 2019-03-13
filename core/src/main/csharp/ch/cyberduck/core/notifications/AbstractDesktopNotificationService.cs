@@ -15,7 +15,6 @@ namespace Ch.Cyberduck.Core.Notifications
 {
     public abstract class AbstractDesktopNotificationService<TActivator> : NotificationService where TActivator : NotificationActivator
     {
-        private ToastNotifier notifier;
         private DesktopNotificationHistoryCompat history;
 
         protected abstract string AumID { get; }
@@ -54,7 +53,7 @@ namespace Ch.Cyberduck.Core.Notifications
 
             toast.SuppressPopup = history.GetHistory().Any(GetToastComparer(toast));
 
-            notifier.Show(toast);
+            DesktopNotificationManagerCompat.CreateToastNotifier().Show(toast);
         }
 
         private static Func<ToastNotification, bool> GetToastComparer(ToastNotification original)
@@ -77,7 +76,6 @@ namespace Ch.Cyberduck.Core.Notifications
         {
             DesktopNotificationManagerCompat.RegisterAumidAndComServer<TActivator>(AumID);
             DesktopNotificationManagerCompat.RegisterActivator<TActivator>();
-            notifier = DesktopNotificationManagerCompat.CreateToastNotifier();
             history = DesktopNotificationManagerCompat.History;
 
             return this;
