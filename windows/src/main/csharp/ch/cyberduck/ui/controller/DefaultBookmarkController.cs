@@ -67,25 +67,25 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
         }
-    }
 
-    public static class Factory
-    {
-        private static readonly IDictionary<Host, DefaultBookmarkController> Open =
-            new Dictionary<Host, DefaultBookmarkController>();
-
-        public static DefaultBookmarkController Create(Host host)
+        public static class Factory
         {
-            DefaultBookmarkController c;
-            if (Open.TryGetValue(host, out c))
+            private static readonly IDictionary<Host, DefaultBookmarkController> Open =
+                new Dictionary<Host, DefaultBookmarkController>();
+
+            public static DefaultBookmarkController Create(Host host)
             {
+                DefaultBookmarkController c;
+                if (Open.TryGetValue(host, out c))
+                {
+                    return c;
+                }
+
+                c = new DefaultBookmarkController(host);
+                c.View.ViewClosedEvent += () => Open.Remove(host);
+                Open.Add(host, c);
                 return c;
             }
-
-            c = new DefaultBookmarkController(host);
-            c.View.ViewClosedEvent += () => Open.Remove(host);
-            Open.Add(host, c);
-            return c;
         }
     }
 }
