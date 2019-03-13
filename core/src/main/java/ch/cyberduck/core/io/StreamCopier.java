@@ -20,7 +20,7 @@ package ch.cyberduck.core.io;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -145,7 +145,7 @@ public final class StreamCopier {
             throw e;
         }
         if(cancel.isCanceled()) {
-            throw new ConnectionCanceledException();
+            throw new TransferCanceledException();
         }
     }
 
