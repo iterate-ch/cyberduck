@@ -685,26 +685,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public static class Factory
-        {
-            private static readonly IDictionary<Host, BookmarkController<T>> Open =
-                new Dictionary<Host, BookmarkController<T>>();
-
-            public static BookmarkController<T> Create(Host host)
-            {
-                BookmarkController<T> c;
-                if (Open.TryGetValue(host, out c))
-                {
-                    return c;
-                }
-
-                c = new DefaultBookmarkController<T>(host);
-                c.View.ViewClosedEvent += () => Open.Remove(host);
-                Open.Add(host, c);
-                return c;
-            }
-        }
-
         private class FaviconAction : AbstractBackgroundAction
         {
             private readonly BookmarkController<T> _controller;

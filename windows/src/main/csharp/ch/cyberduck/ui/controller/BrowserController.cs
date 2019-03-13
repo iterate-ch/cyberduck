@@ -1229,7 +1229,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.SelectedBookmarks.Count == 1)
             {
-                BookmarkController<IBookmarkView>.Factory.Create(View.SelectedBookmark).View.Show(View);
+                DefaultBookmarkController.Factory.Create(View.SelectedBookmark).View.Show(View);
             }
         }
 
@@ -1275,7 +1275,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.SelectBookmark(item);
             View.EnsureBookmarkVisible(item);
-            BookmarkController<IBookmarkView>.Factory.Create(item).View.Show(View);
+            DefaultBookmarkController.Factory.Create(item).View.Show(View);
         }
 
         private void View_DeleteBookmark()
