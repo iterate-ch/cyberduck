@@ -62,7 +62,7 @@ import java.util.Set;
 public class Local extends AbstractPath implements Referenceable, Serializable {
     private static final Logger log = Logger.getLogger(Local.class);
 
-    private static final char DELIMITER = CharUtils.toChar(PreferencesFactory.get().getProperty("local.delimiter"));
+    public static final char DELIMITER = CharUtils.toChar(PreferencesFactory.get().getProperty("local.delimiter"));
 
     /**
      * Absolute path in local file system
