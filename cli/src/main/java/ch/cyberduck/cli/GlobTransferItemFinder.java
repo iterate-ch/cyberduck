@@ -22,6 +22,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.transfer.TransferItem;
 
@@ -49,7 +50,7 @@ public class GlobTransferItemFinder implements TransferItemFinder {
             if(StringUtils.containsAny(path, '*', '?')) {
                 final Local directory = LocalFactory.get(FilenameUtils.getFullPath(path));
                 if(directory.isDirectory()) {
-                    final PathMatcher matcher = FileSystems.getDefault().getPathMatcher(String.format("glob:%s", FilenameUtils.getName(path)));
+                    final PathMatcher matcher = FileSystems.getDefault().getPathMatcher(String.format("glob:%s", PathNormalizer.name(path)));
                     final Set<TransferItem> items = new HashSet<TransferItem>();
                     for(Local file : directory.list(new NullFilter<String>() {
                         @Override

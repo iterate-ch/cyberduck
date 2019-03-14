@@ -20,7 +20,6 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.unicode.NFCNormalizer;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -38,10 +37,13 @@ public final class PathNormalizer {
         if(String.valueOf(Path.DELIMITER).equals(path)) {
             return path;
         }
-        if(StringUtils.endsWith(path, String.valueOf(Path.DELIMITER))) {
-            return FilenameUtils.getName(normalize(path));
+        if(!StringUtils.contains(path, Path.DELIMITER)) {
+            return path;
         }
-        return FilenameUtils.getName(path);
+        if(StringUtils.endsWith(path, String.valueOf(Path.DELIMITER))) {
+            return StringUtils.substringAfterLast(normalize(path), String.valueOf(Path.DELIMITER));
+        }
+        return StringUtils.substringAfterLast(path, String.valueOf(Path.DELIMITER));
     }
 
     public static String parent(final String absolute, final char delimiter) {
