@@ -40,7 +40,7 @@ public class ConnectionController extends BookmarkController {
     }
 
     public ConnectionController(final Host bookmark, final LoginOptions options) {
-        super(bookmark, new LoginInputValidator(bookmark, options), options.keychain(false));
+        super(bookmark, new LoginInputValidator(bookmark, options), options);
     }
 
     @Override
