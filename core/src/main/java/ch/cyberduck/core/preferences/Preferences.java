@@ -1061,6 +1061,10 @@ public abstract class Preferences implements Locales {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
+        this.resetLogging();
+    }
+
+    private void resetLogging() {
         final URL configuration;
         final String file = this.getDefault("logging.config");
         if(null == file) {
@@ -1069,6 +1073,7 @@ public abstract class Preferences implements Locales {
         else {
             configuration = Preferences.class.getClassLoader().getResource(file);
         }
+        LogManager.resetConfiguration();
         final Logger root = Logger.getRootLogger();
         if(null != configuration) {
             DOMConfigurator.configure(configuration);
@@ -1100,6 +1105,14 @@ public abstract class Preferences implements Locales {
                 java.util.logging.Logger.getLogger(logger.getName()).setLevel(map.get(logger.getLevel()));
             }
         }
+    }
+
+    public void enabledDebugLogging() {
+        Logger.getRootLogger().setLevel(Level.DEBUG);
+    }
+
+    public void disableDebugLogging() {
+        this.resetLogging();
     }
 
     /**
