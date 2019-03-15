@@ -1107,7 +1107,7 @@ public abstract class Preferences implements Locales {
         }
     }
 
-    public void enabledDebugLogging() {
+    public void enableDebugLogging() {
         Logger.getRootLogger().setLevel(Level.DEBUG);
     }
 
