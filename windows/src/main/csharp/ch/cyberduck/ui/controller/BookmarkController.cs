@@ -44,14 +44,7 @@ using TimeZone = java.util.TimeZone;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class BookmarkController : BookmarkController<IBookmarkView>
-    {
-        private BookmarkController(Host host) : base(host)
-        {
-        }
-    }
-
-    public class BookmarkController<T> : WindowController<T> where T : IBookmarkView
+    public abstract class BookmarkController<T> : WindowController<T> where T : IBookmarkView
     {
         private const String TimezoneIdPrefixes = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
         public const int SmallBookmarkSize = 16;
@@ -71,6 +64,22 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Timer _ticklerReachability;
         protected readonly LoginInputValidator _validator;
 
+        protected BookmarkController(Host host) : this(host,
+            new LoginOptions(host.getProtocol()))
+        {
+        }
+
+        protected BookmarkController(Host host, LoginOptions options)
+            : this(ObjectFactory.GetInstance<T>(), host, new LoginInputValidator(host, options), options)
+        {
+        }
+
+        protected BookmarkController(Host host, LoginInputValidator validator, LoginOptions options)
+            : this(ObjectFactory.GetInstance<T>(), host, validator, options)
+        {
+            _bookmarkCollectionListener = new RemovedCollectionListener(this, host);
+        }
+
         private BookmarkController(T view, Host host, LoginInputValidator validator,
             LoginOptions options) : base(validator)
         {
@@ -85,25 +94,41 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ToggleOptions += View_ToggleOptions;
             View.OptionsVisible = PreferencesFactory.get().getBoolean(ToggleProperty);
 
-            Init();
-        }
+            //set default favicon
+            View.Favicon = IconCache.Instance.IconForName("site", 16);
 
-        protected BookmarkController(Host host) : this(host,
-            new LoginOptions(host.getProtocol()))
-        {
-        }
+            InitProtocols();
+            InitPrivateKeys();
+            InitConnectModes();
+            InitEncodings();
+            InitTimezones();
+            InitTransferModes();
+            Update();
 
-        protected BookmarkController(Host host,
-            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
-            new LoginInputValidator(host, options), options)
-        {
-        }
-
-        protected BookmarkController(Host host, LoginInputValidator validator,
-            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
-            validator, options)
-        {
-            _bookmarkCollectionListener = new RemovedCollectionListener(this, host);
+            View.ChangedProtocolEvent += View_ChangedProtocolEvent;
+            View.ChangedProtocolEvent += ReadPasswordFromKeychain;
+            View.ChangedPortEvent += View_ChangedPortEvent;
+            View.ChangedUsernameEvent += View_ChangedUsernameEvent;
+            View.ChangedUsernameEvent += ReadPasswordFromKeychain;
+            View.ChangedServerEvent += View_ChangedServerEvent;
+            View.ChangedServerEvent += ReadPasswordFromKeychain;
+            View.ChangedEncodingEvent += View_ChangedEncodingEvent;
+            View.ChangedPathEvent += View_ChangedPathEvent;
+            View.ChangedTimezoneEvent += View_ChangedTimezoneEvent;
+            View.ChangedConnectModeEvent += View_ChangedConnectModeEvent;
+            View.ChangedTransferEvent += View_ChangedTransferEvent;
+            View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
+            View.ChangedPrivateKeyEvent += View_ChangedPrivateKeyEvent;
+            View.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
+            View.ChangedClientCertificateEvent += View_ChangedClientCertificateEvent;
+            View.ChangedNicknameEvent += View_ChangedNicknameEvent;
+            View.ChangedWebURLEvent += View_ChangedWebURLEvent;
+            View.ChangedCommentEvent += View_ChangedCommentEvent;
+            View.ChangedBrowserDownloadPathEvent += View_ChangedBrowserDownloadPathEvent;
+            View.OpenDownloadFolderBrowserEvent += View_OpenDownloadFolderBrowserEvent;
+            View.OpenDownloadFolderEvent += View_OpenDownloadFolderEvent;
+            View.OpenUrl += View_OpenUrl;
+            View.OpenWebUrl += View_OpenWebUrl;
         }
 
         protected virtual String ToggleProperty => "bookmark.toggle.options";
@@ -398,74 +423,25 @@ namespace Ch.Cyberduck.Ui.Controller
             Update();
         }
 
-        public void Init()
+        public void ReadPasswordFromKeychain()
         {
-            //set default favicon
-            View.Favicon = IconCache.Instance.IconForName("site", 16);
-
-            InitProtocols();
-            InitPrivateKeys();
-            InitConnectModes();
-            InitEncodings();
-            InitTimezones();
-            InitTransferModes();
-            Update();
-
-            View.ChangedProtocolEvent += View_ChangedProtocolEvent;
-            View.ChangedPortEvent += View_ChangedPortEvent;
-            View.ChangedUsernameEvent += View_ChangedUsernameEvent;
-            View.ChangedPasswordEvent += View_ChangedPasswordEvent;
-            View.ChangedServerEvent += View_ChangedServerEvent;
-            View.ChangedEncodingEvent += View_ChangedEncodingEvent;
-            View.ChangedPathEvent += View_ChangedPathEvent;
-            View.ChangedTimezoneEvent += View_ChangedTimezoneEvent;
-            View.ChangedConnectModeEvent += View_ChangedConnectModeEvent;
-            View.ChangedTransferEvent += View_ChangedTransferEvent;
-            View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
-            View.ChangedPrivateKeyEvent += View_ChangedPrivateKeyEvent;
-            View.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
-            View.ChangedClientCertificateEvent += View_ChangedClientCertificateEvent;
-            View.ChangedNicknameEvent += View_ChangedNicknameEvent;
-            View.ChangedWebURLEvent += View_ChangedWebURLEvent;
-            View.ChangedCommentEvent += View_ChangedCommentEvent;
-            View.ChangedBrowserDownloadPathEvent += View_ChangedBrowserDownloadPathEvent;
-            View.OpenDownloadFolderBrowserEvent += View_OpenDownloadFolderBrowserEvent;
-            View.OpenDownloadFolderEvent += View_OpenDownloadFolderEvent;
-            View.OpenUrl += View_OpenUrl;
-            View.OpenWebUrl += View_OpenWebUrl;
-        }
-
-        private void View_ChangedPasswordEvent()
-        {
-            if (_options.keychain())
+            if (_options.keychain() && _options.password())
             {
-                if (Utils.IsBlank(_host.getHostname()))
+                if (string.IsNullOrEmpty(_host.getHostname()))
                 {
                     return;
                 }
-
-                if (Utils.IsBlank(_host.getCredentials().getUsername()))
+                if (string.IsNullOrEmpty(_host.getCredentials().getUsername()))
                 {
                     return;
                 }
-
-                if (Utils.IsBlank(View.Password))
+                string password = _keychain.getPassword(_host.getProtocol().getScheme(),
+                    _host.getPort(),
+                    _host.getHostname(),
+                    _host.getCredentials().getUsername());
+                if (Utils.IsNotBlank(password))
                 {
-                    return;
-                }
-
-                try
-                {
-                    _keychain.addPassword(_host.getProtocol().getScheme(),
-                        _host.getPort(),
-                        _host.getHostname(),
-                        _host.getCredentials().getUsername(),
-                        View.Password
-                    );
-                }
-                catch (LocalAccessDeniedException e)
-                {
-                    Log.error($"Failure saving credentials for ${_host} in keychain. ${e.getDetail()}");
+                    View.Password = password;
                 }
             }
         }
@@ -639,9 +615,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UsernameEnabled = _options.user() && !_host.getCredentials().isAnonymousLogin();
             View.UsernameLabel = $"{_host.getProtocol().getUsernamePlaceholder()}:";
             View.Password = _host.getCredentials().getPassword();
-            View.PasswordLabel = Utils.IsNotBlank(_options.getPasswordPlaceholder())
-                ? $"{_options.getPasswordPlaceholder()}:"
-                : String.Empty;
+            View.PasswordLabel = $"{_options.getPasswordPlaceholder()}:";
             View.PasswordEnabled = _options.password() && !_host.getCredentials().isAnonymousLogin();
             View.AnonymousEnabled = _options.anonymous();
             View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
@@ -708,26 +682,6 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 View.SelectedTimezone = _host.getTimezone().getID();
-            }
-        }
-
-        public static class Factory
-        {
-            private static readonly IDictionary<Host, BookmarkController<T>> Open =
-                new Dictionary<Host, BookmarkController<T>>();
-
-            public static BookmarkController<T> Create(Host host)
-            {
-                BookmarkController<T> c;
-                if (Open.TryGetValue(host, out c))
-                {
-                    return c;
-                }
-
-                c = new BookmarkController<T>(host);
-                c.View.ViewClosedEvent += () => Open.Remove(host);
-                Open.Add(host, c);
-                return c;
             }
         }
 

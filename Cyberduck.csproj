@@ -190,6 +190,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\DefaultBookmarkController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\DesktopNotificationService.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\IDonationController.cs" />
     <Compile Include="windows\src\main\csharp\ch\cyberduck\ui\controller\INewVaultPromptView.cs" />

@@ -16,6 +16,7 @@ package ch.cyberduck.ui.cocoa.controller;
  */
 
 import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSControl;
@@ -31,6 +32,7 @@ import org.rococoa.Foundation;
 
 public class ConnectionController extends BookmarkController {
 
+    @Outlet
     private NSButton keychainCheckbox;
 
     public ConnectionController(final Host bookmark) {
@@ -38,7 +40,7 @@ public class ConnectionController extends BookmarkController {
     }
 
     public ConnectionController(final Host bookmark, final LoginOptions options) {
-        super(bookmark, new LoginInputValidator(bookmark, options), options);
+        super(bookmark, new LoginInputValidator(bookmark, options), options.keychain(false));
     }
 
     @Override

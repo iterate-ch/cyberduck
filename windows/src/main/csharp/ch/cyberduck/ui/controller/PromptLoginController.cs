@@ -76,14 +76,14 @@ namespace Ch.Cyberduck.Ui.Controller
         public Credentials prompt(Host bookmark, String username, String title, String reason, LoginOptions options)
         {
             View = ObjectFactory.GetInstance<ILoginView>();
-            var credentials = new Credentials().withSaved(options.save()).withUsername(username);
+            var credentials = new Credentials().withSaved(options.keychain()).withUsername(username);
             InitEventHandlers(bookmark, credentials, options);
 
 
             View.Title = LocaleFactory.localizedString(title, "Credentials");
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
             View.Username = username;
-            View.SavePasswordState = options.save();
+            View.SavePasswordState = options.keychain();
             View.DiskIcon = IconCache.Instance.IconForName(options.icon(), 64);
 
             InitPrivateKeys();

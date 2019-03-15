@@ -1627,7 +1627,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Font f;
             switch (size)
             {
-                case BookmarkController.SmallBookmarkSize:
+                case BookmarkController<IBookmarkView>.SmallBookmarkSize:
                     r = new SmallBookmarkRenderer();
                     r.NicknameFont = new Font(bookmarkListView.Font, FontStyle.Bold);
 
@@ -1635,14 +1635,14 @@ namespace Ch.Cyberduck.Ui.Winforms
                     imageColumn.Width = 25;
                     f = new Font(bookmarkListView.Font.FontFamily, bookmarkListView.Font.Size - 1);
                     break;
-                case BookmarkController.MediumBookmarkSize:
+                case BookmarkController<IBookmarkView>.MediumBookmarkSize:
                     r = new MediumBookmarkRenderer();
                     l.RowHeight = 42;
                     imageColumn.Width = 40;
                     f = new Font(bookmarkListView.Font.FontFamily, bookmarkListView.Font.Size - 2);
 
                     break;
-                case BookmarkController.LargeBookmarkSize:
+                case BookmarkController<IBookmarkView>.LargeBookmarkSize:
                 default:
                     r = new LargeBookmarkRenderer();
 

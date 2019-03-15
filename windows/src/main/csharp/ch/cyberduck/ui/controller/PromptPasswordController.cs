@@ -37,7 +37,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public Credentials prompt(Host bookmark, string title, string reason, LoginOptions options)
         {
-            Credentials credentials = new Credentials().withSaved(options.save());
+            Credentials credentials = new Credentials().withSaved(options.keychain());
             AsyncDelegate d = delegate
             {
                 View = ObjectFactory.GetInstance<IPasswordPromptView>();
@@ -45,7 +45,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Reason = reason;
                 View.OkButtonText = LocaleFactory.localizedString("Continue", "Credentials");
                 View.IconView = IconCache.Instance.IconForName(options.icon(), 64);
-                View.SavePassword = options.save();
+                View.SavePassword = credentials.isSaved();
                 View.ValidateInput += ValidateInputEventHandler;
                 if (DialogResult.Cancel == View.ShowDialog(_browser.View))
                 {
