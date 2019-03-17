@@ -705,7 +705,7 @@
                                     <button id="U8B-Wt-dfT">
                                         <rect key="frame" x="10" y="203" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Segmented downloads with multiple connections per file" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
+                                        <buttonCell key="cell" type="check" title="Download segmentato con più connessioni per file" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
