@@ -45,7 +45,7 @@ public class AzureTouchFeature implements Touch<Void> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String filename) {
         return !workdir.isRoot();
     }
 

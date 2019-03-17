@@ -57,7 +57,7 @@ public class SwiftTouchFeature implements Touch<StorageObject> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String filename) {
         // Creating files is only possible inside a container.
         return !workdir.isRoot();
     }

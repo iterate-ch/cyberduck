@@ -26,6 +26,8 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 
 public class SDSTouchFeature implements Touch<VersionId> {
@@ -57,12 +59,39 @@ public class SDSTouchFeature implements Touch<VersionId> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String filename) {
         if(workdir.isRoot()) {
+            return false;
+        }
+        if(!this.validate(filename)) {
             return false;
         }
         // for existing files the delete role is also needed but at this point we don't know if it exists or not
         return new SDSPermissionsFeature(session, nodeid).containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE);
+    }
+
+    /**
+     * Validate node name convention
+     */
+    public boolean validate(final String filename) {
+        // Empty argument if not known in validation
+        if(StringUtils.isNotBlank(filename)) {
+            if(StringUtils.length(filename) > 150) {
+                // Node (room, folder, file) names are limited to 150 characters.
+                return false;
+            }
+            // '\\', '<','>', ':', '\"', '|', '?', '*', '/', leading '-', trailing '.'
+            if(StringUtils.containsAny(filename, '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
+                return false;
+            }
+            if(StringUtils.startsWith(filename, "-")) {
+                return false;
+            }
+            if(StringUtils.endsWith(filename, ".")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

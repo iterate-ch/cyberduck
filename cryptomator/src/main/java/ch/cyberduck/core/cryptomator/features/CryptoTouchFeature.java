@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
@@ -53,8 +54,8 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
-        return proxy.isSupported(workdir);
+    public boolean isSupported(final Path workdir, final String filename) {
+        return proxy.isSupported(workdir, StringUtils.EMPTY);
     }
 
     @Override

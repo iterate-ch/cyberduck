@@ -55,7 +55,7 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String filename) {
         // Creating files is only possible inside a bucket.
         return !workdir.isRoot();
     }
