@@ -1773,7 +1773,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Due to the limited functionality of the OpenFileDialog class it is
             // currently not possible to select a folder. May be we should provide
             // a second menu item which allows to select a folder to upload
-            string[] paths = View.UploadDialog(null);
+            string[] paths = View.UploadDialog(new UploadDirectoryFinder().find(Session.getHost()));
             if (null == paths || paths.Length == 0) return;
 
             bool parentFound = false;
