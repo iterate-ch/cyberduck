@@ -27,7 +27,7 @@ public class FTPTouchFeature extends DefaultTouchFeature<Integer> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String filename) {
         return true;
     }
 }

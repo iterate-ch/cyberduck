@@ -949,7 +949,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         return;
                 }
                 Touch feature = (Touch) Session.getFeature(typeof(Touch));
-                if (!feature.isSupported(destination))
+                if (!feature.isSupported(destination, String.Empty))
                 {
                     args.Effect = DragDropEffects.None;
                     args.DropTargetLocation = DropTargetLocation.None;
@@ -1758,14 +1758,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return IsMounted() &&
                    ((Touch) Session.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath));
+                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
         private bool View_ValidateUpload()
         {
             return IsMounted() &&
                    ((Touch) Session.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath));
+                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
         private void View_Upload()
@@ -2128,7 +2128,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             return;
                     }
                     Touch feature = (Touch) Session.getFeature(typeof(Touch));
-                    if (!feature.isSupported(destination))
+                    if (!feature.isSupported(destination, String.Empty))
                     {
                         Log.trace("Session does not allow file creation");
                         args.Effect = DragDropEffects.None;

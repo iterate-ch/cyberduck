@@ -33,7 +33,7 @@ public interface Directory<Reply> {
      * @param name    Folder name or null if unknown
      * @return True if creating directory will succeed
      */
-    default boolean isSupported(Path workdir, String name) {
+    default boolean isSupported(final Path workdir, final String name) {
         return workdir.attributes().getPermission().isWritable();
     }
 

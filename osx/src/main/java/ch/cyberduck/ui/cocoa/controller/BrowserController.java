@@ -2558,8 +2558,8 @@ public class BrowserController extends WindowController
         uploadPanel = NSOpenPanel.openPanel();
         uploadPanel.setCanChooseDirectories(true);
         uploadPanel.setCanChooseFiles(pool.getFeature(Touch.class).isSupported(
-            new UploadTargetFinder(workdir).find(this.getSelectedPath())
-        ));
+            new UploadTargetFinder(workdir).find(this.getSelectedPath()),
+            StringUtils.EMPTY));
         uploadPanel.setCanCreateDirectories(false);
         uploadPanel.setTreatsFilePackagesAsDirectories(true);
         uploadPanel.setAllowsMultipleSelection(true);
