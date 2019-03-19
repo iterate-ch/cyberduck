@@ -49,9 +49,8 @@ namespace Ch.Cyberduck.Core.Notifications
             if (!string.IsNullOrWhiteSpace(identifier))
             {
                 toast.Tag = identifier;
+                toast.SuppressPopup = history.GetHistory().Any(GetToastComparer(toast));
             }
-
-            toast.SuppressPopup = history.GetHistory().Any(GetToastComparer(toast));
 
             DesktopNotificationManagerCompat.CreateToastNotifier().Show(toast);
         }
