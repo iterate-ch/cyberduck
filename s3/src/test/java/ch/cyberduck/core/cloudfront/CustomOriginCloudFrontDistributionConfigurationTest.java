@@ -13,6 +13,7 @@ import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -98,6 +99,7 @@ public class CustomOriginCloudFrontDistributionConfigurationTest {
     }
 
     @Test
+    @Ignore
     public void testWriteReadUpdate() throws Exception {
         final Host origin = new Host(new TestProtocol(), String.format("%s.localdomain", UUID.randomUUID().toString()));
         origin.setWebURL("http://example.net");
