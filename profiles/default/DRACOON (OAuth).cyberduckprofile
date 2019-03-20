@@ -3,11 +3,9 @@
         <key>Protocol</key>
         <string>dracoon</string>
         <key>Vendor</key>
-        <string>iterate GmbH</string>
-        <key>Bundled</key>
-        <true/>
+        <string>dracoon-oauth</string>
         <key>Description</key>
-        <string>DRACOON (Email Address)</string>
+        <string>DRACOON (OAuth)</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Port</key>
@@ -29,7 +27,21 @@
         <key>Certificate Configurable</key>
         <false/>
         <key>Authorization</key>
-        <string>sql</string>
+        <string>oauth</string>
+        <key>Username Configurable</key>
+        <false/>
+        <key>Password Configurable</key>
+        <false/>
+        <key>OAuth Authorization Url</key>
+        <string>/oauth/authorize</string>
+        <key>OAuth Token Url</key>
+        <string>/oauth/token</string>
+        <key>OAuth Redirect Url</key>
+        <string>https://cyberduck.io/oauth</string>
+        <key>OAuth Client ID</key>
+        <string>dracoon-desktop-client</string>
+        <key>OAuth Client Secret</key>
+        <string>HhTMrci9W6qtTuW2jJs7cwxz3mbVyaQd</string>
         <key>Disk</key>
         <string>
 TU0AKgAAORqAACBQOCQWDQeEQmFQuGQ2HQ+IRGJROKRWLReMRmNRuOR2PR+QSGRSOSSWTS
