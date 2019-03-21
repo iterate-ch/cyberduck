@@ -18,12 +18,14 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.SessionPoolFactory;
+import ch.cyberduck.core.TransferPromptControllerFactory;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferProgress;
+import ch.cyberduck.core.transfer.TransferPrompt;
 
 public class BrowserTransferBackgroundAction extends TransferBackgroundAction {
     private final Transfer transfer;
@@ -31,11 +33,16 @@ public class BrowserTransferBackgroundAction extends TransferBackgroundAction {
 
     public BrowserTransferBackgroundAction(final Controller controller, final SessionPool pool,
                                            final Transfer transfer, final TransferCallback callback) {
+        this(controller, pool, transfer, callback, TransferPromptControllerFactory.get(controller, transfer, pool, SessionPool.DISCONNECTED));
+    }
+
+    public BrowserTransferBackgroundAction(final Controller controller, final SessionPool pool,
+                                           final Transfer transfer, final TransferCallback callback, final TransferPrompt prompt) {
         super(controller,
             // Need new pool for transfer filter and prompt if using stateful session pool with lock
             transfer.getSource().getProtocol().isStateful() ? SessionPoolFactory.create(controller, pool.getCache(), transfer.getSource()) : pool,
             transfer.getType() == Transfer.Type.copy ? SessionPoolFactory.create(controller, pool.getCache(), transfer.getDestination()) : SessionPool.DISCONNECTED,
-            new BrowserTransferAdapter(controller), transfer, new TransferOptions());
+            new BrowserTransferAdapter(controller), controller, transfer, new TransferOptions(), prompt);
         this.transfer = transfer;
         this.callback = callback;
     }

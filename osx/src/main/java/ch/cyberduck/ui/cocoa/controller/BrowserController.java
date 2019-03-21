@@ -63,7 +63,6 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
-import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
@@ -72,11 +71,9 @@ import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -591,8 +588,7 @@ public class BrowserController extends WindowController
         }
         if(downloads.size() > 0) {
             final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
-            final TransferOptions options = new TransferOptions();
-            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, options, downloads));
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, downloads));
         }
     }
 
@@ -3674,18 +3670,18 @@ public class BrowserController extends WindowController
         }
     }
 
-    private final class QuicklookTransferBackgroundAction extends TransferBackgroundAction {
+    private final class QuicklookTransferBackgroundAction extends BrowserTransferBackgroundAction {
         private final QuickLook quicklook;
         private final List<TransferItem> downloads;
 
         public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session, final Transfer download,
-                                                 final TransferOptions options, final List<TransferItem> downloads) {
-            super(controller, session, SessionPool.DISCONNECTED, new TransferAdapter() {
+                                                 final List<TransferItem> downloads) {
+            super(controller, session, download, new TransferCallback() {
                 @Override
-                public void transferDidProgress(final Transfer transfer, final TransferProgress status) {
-                    controller.message(status.getProgress());
+                public void complete(final Transfer transfer) {
+                    //
                 }
-            }, controller, download, options, new TransferPrompt() {
+            }, new TransferPrompt() {
                 @Override
                 public TransferAction prompt(final TransferItem item) {
                     return TransferAction.comparison;
@@ -3700,7 +3696,7 @@ public class BrowserController extends WindowController
                 public void message(final String message) {
                     controller.message(message);
                 }
-            }, new DisabledTransferErrorCallback());
+            });
             this.quicklook = quicklook;
             this.downloads = downloads;
         }
