@@ -19,9 +19,9 @@
         <key>Protocol</key>
         <string>s3</string>
         <key>Vendor</key>
-        <string>poc</string>
+        <string>scaleway-nl-ams</string>
         <key>Description</key>
-        <string>Scaleway Object Storage (ams1)</string>
+        <string>Scaleway Object Storage (NL-AMS)</string>
         <key>Default Hostname</key>
         <string>s3.nl-ams.scw.cloud</string>
         <key>Default Port</key>
