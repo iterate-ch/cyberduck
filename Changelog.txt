@@ -3,8 +3,6 @@ https://cyberduck.io/
 
 7.0.0
 - [Feature] Segmented downloads with multiple connections per file (#10115)
-
-6.9.5
 - [Feature] Allow password input in bookmark window
 - [Bugfix] Existing metadata not displayed (S3) (#10647)
 - [Bugfix] Browser always shows modification time in UTC timezone (Windows) (#10629)
