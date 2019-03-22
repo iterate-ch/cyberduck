@@ -778,6 +778,7 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("sds.listing.chunksize", String.valueOf(500));
         this.setDefault("sds.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
+        this.setDefault("sds.upload.transferencoding.chunked", String.valueOf(true));
         // Run missing file keys in bulk feature after upload
         this.setDefault("sds.encryption.missingkeys.upload", String.valueOf(true));
         this.setDefault("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
