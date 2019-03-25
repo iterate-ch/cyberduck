@@ -111,10 +111,10 @@ public final class TerminalHelpPrinter {
         String format = "%s:";
         if(protocol.isHostnameConfigurable()) {
             if(StringUtils.isBlank(protocol.getDefaultHostname())) {
-                format += "(//<hostname>)";
+                format += "//<hostname>";
             }
             else {
-                format += "//<hostname>";
+                format += "(//<hostname>)";
             }
         }
 
