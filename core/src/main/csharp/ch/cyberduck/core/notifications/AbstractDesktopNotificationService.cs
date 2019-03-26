@@ -1,7 +1,6 @@
 ﻿using ch.cyberduck.core;
 using ch.cyberduck.core.notification;
 using ch.cyberduck.core.pool;
-using DesktopNotifications;
 using Microsoft.Toolkit.Uwp.Notifications;
 using System;
 using System.Collections.Generic;
@@ -13,9 +12,9 @@ using Windows.UI.Notifications;
 
 namespace Ch.Cyberduck.Core.Notifications
 {
-    public abstract class AbstractDesktopNotificationService<TActivator> : NotificationService where TActivator : NotificationActivator
+    public abstract class AbstractDesktopNotificationService : NotificationService
     {
-        private DesktopNotificationHistoryCompat history;
+        private ToastNotificationHistory history;
 
         protected abstract string AumID { get; }
 
@@ -49,10 +48,39 @@ namespace Ch.Cyberduck.Core.Notifications
             if (!string.IsNullOrWhiteSpace(identifier))
             {
                 toast.Tag = identifier;
-                toast.SuppressPopup = history.GetHistory().Any(GetToastComparer(toast));
+                toast.SuppressPopup = ShouldSuppressPopup(toast);
             }
 
-            DesktopNotificationManagerCompat.CreateToastNotifier().Show(toast);
+            ToastNotifier notifier;
+            if (Utils.IsRunningAsUWP)
+            {
+                notifier = ToastNotificationManager.CreateToastNotifier();
+            }
+            else
+            {
+                notifier = ToastNotificationManager.CreateToastNotifier(AumID);
+            }
+
+            notifier.Show(toast);
+        }
+
+        NotificationService NotificationService.setup()
+        {
+            history = ToastNotificationManager.History;
+
+            return this;
+        }
+
+        void NotificationService.unregister()
+        {
+            if (Utils.IsRunningAsUWP)
+            {
+                history.Clear();
+            }
+            else
+            {
+                history.Clear(AumID);
+            }
         }
 
         private static Func<ToastNotification, bool> GetToastComparer(ToastNotification original)
@@ -71,18 +99,18 @@ namespace Ch.Cyberduck.Core.Notifications
             };
         }
 
-        NotificationService NotificationService.setup()
+        private bool ShouldSuppressPopup(ToastNotification toast)
         {
-            DesktopNotificationManagerCompat.RegisterAumidAndComServer<TActivator>(AumID);
-            DesktopNotificationManagerCompat.RegisterActivator<TActivator>();
-            history = DesktopNotificationManagerCompat.History;
-
-            return this;
-        }
-
-        void NotificationService.unregister()
-        {
-            history.Clear();
+            IReadOnlyList<ToastNotification> toasts;
+            if (Utils.IsRunningAsUWP)
+            {
+                toasts = history.GetHistory();
+            }
+            else
+            {
+                toasts = history.GetHistory(AumID);
+            }
+            return toasts.Any(GetToastComparer(toast));
         }
     }
 }
