@@ -64,6 +64,7 @@ public class RegexLocale implements Locale {
     public void setDefault(final String language) {
         locale = language;
         cache.clear();
+        tables.clear();
     }
 
     @Override
