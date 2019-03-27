@@ -22,7 +22,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -31,13 +30,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.nio.charset.Charset;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexLocale implements Locale {
     private static final Logger log = Logger.getLogger(RegexLocale.class);
 
+    /**
+     * Loaded tables
+     */
+    private final Set<String> tables = new HashSet<>();
     private final LRUCache<Key, String> cache = LRUCache.build(1000);
     private final Local resources;
 
@@ -65,11 +70,16 @@ public class RegexLocale implements Locale {
     public String localize(final String key, final String table) {
         final Key lookup = new Key(table, key);
         if(!cache.contains(lookup)) {
-            try {
-                this.load(table);
-            }
-            catch(IOException e) {
-                log.warn(String.format("Failure loading properties from %s.strings. %s", table, e.getMessage()));
+            if(!tables.contains(table)) {
+                try {
+                    this.load(table);
+                }
+                catch(IOException e) {
+                    log.warn(String.format("Failure loading properties from %s.strings. %s", table, e.getMessage()));
+                }
+                finally {
+                    tables.add(table);
+                }
             }
         }
         if(cache.contains(lookup)) {
@@ -89,8 +99,7 @@ public class RegexLocale implements Locale {
     }
 
     private void load(final String table, final File file) throws IOException {
-        final LineNumberReader reader = new LineNumberReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-16")));
-        try {
+        try (final LineNumberReader reader = new LineNumberReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-16")))) {
             String line;
             while((line = reader.readLine()) != null) {
                 final Matcher matcher = pattern.matcher(line);
@@ -98,9 +107,6 @@ public class RegexLocale implements Locale {
                     cache.put(new Key(table, matcher.group(1)), matcher.group(2));
                 }
             }
-        }
-        finally {
-            IOUtils.closeQuietly(reader);
         }
     }
 
