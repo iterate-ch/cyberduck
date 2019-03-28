@@ -84,7 +84,7 @@ namespace Ch.Cyberduck.Core
 
             Process process = new Process();
             process.StartInfo.FileName = bash;
-            process.StartInfo.Arguments = $"-c \"{$"ssh {username}@{hostname} -T -P {port} \"cd \\\"{workdir}\\\""}\"";
+            process.StartInfo.Arguments = $"-c \"{$"ssh -T -P {port} {username}@{hostname} 'cd \\\"{workdir}\\\"'"}\"";
 
             var success = process.Start();
             if (success)
