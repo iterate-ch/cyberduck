@@ -249,12 +249,8 @@ public class Profile implements Protocol, Serializable {
         final Local file = TemporaryFileServiceFactory.get().create(new AlphanumericRandomStringService().random());
         try {
             new DefaultLocalTouchFeature().touch(file);
-            final OutputStream out = file.getOutputStream(false);
-            try {
+            try (final OutputStream out = file.getOutputStream(false)) {
                 IOUtils.write(favicon, out);
-            }
-            finally {
-                IOUtils.closeQuietly(out);
             }
             return file;
         }
