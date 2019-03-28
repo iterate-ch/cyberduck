@@ -73,6 +73,7 @@ namespace Ch.Cyberduck.Core
 
         public static readonly bool IsWin10 = Environment.OSVersion.Version.Major == 10;
         public static readonly bool IsWin10FallCreatorsUpdate = IsWin10 && Environment.OSVersion.Version.Build >= 15063;
+        public static readonly bool IsWin101809 = IsWin10 && Environment.OSVersion.Version.Build >= 17763;
 
         // Original by Matteo Pagani (https://github.com/qmatteoq/DesktopBridgeHelpers) licensed under MIT
         // modified by Jöran Malek for iterate GmbH
