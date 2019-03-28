@@ -32,6 +32,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVAttributesFinderFeature;
+import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVFindFeature;
 import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVListService;
 import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVReadFeature;
 import ch.cyberduck.core.dav.microsoft.MicrosoftIISDAVTimestampFeature;
@@ -98,6 +99,7 @@ public class DAVSession extends HttpSession<DAVClient> {
     private Read read = new DAVReadFeature(this);
     private Timestamp timestamp = new DAVTimestampFeature(this);
     private AttributesFinder attributes = new DAVAttributesFinderFeature(this);
+    private Find find = new DAVFindFeature(this);
 
     public DAVSession(final Host host) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
@@ -218,6 +220,7 @@ public class DAVSession extends HttpSession<DAVClient> {
                             read = new MicrosoftIISDAVReadFeature(DAVSession.this);
                             timestamp = new MicrosoftIISDAVTimestampFeature(DAVSession.this);
                             attributes = new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this);
+                            find = new MicrosoftIISDAVFindFeature(DAVSession.this);
                         }
                         this.validateResponse(response);
                         return null;
@@ -360,7 +363,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             return (T) new DAVCopyFeature(this);
         }
         if(type == Find.class) {
-            return (T) new DAVFindFeature(this);
+            return (T) find;
         }
         if(type == AttributesFinder.class) {
             return (T) attributes;
