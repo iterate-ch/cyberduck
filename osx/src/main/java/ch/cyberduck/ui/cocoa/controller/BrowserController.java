@@ -2443,11 +2443,10 @@ public class BrowserController extends WindowController
     @Action
     public void shareFileButtonClicked(final ID sender) {
         final Path file = this.getSelectedPath();
-        this.background(new WorkerBackgroundAction<DescriptiveUrl>(this, this.getSession(),
+        this.background(new WorkerBackgroundAction<DescriptiveUrl>(this, pool,
                 new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this)) {
                     @Override
                     public void cleanup(final DescriptiveUrl url) {
-                        super.cleanup(url);
                         // Display
                         if(!DescriptiveUrl.EMPTY.equals(url)) {
                             final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Create Download Share", "Share"),
