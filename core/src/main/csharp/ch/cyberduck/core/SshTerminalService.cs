@@ -34,7 +34,6 @@ namespace Ch.Cyberduck.Core
 {
     public class SshTerminalService : TerminalService
     {
-        private const string OPENSSH_FORMAT = "{0}@{1} -T -p {2} \"cd '{3}'; $SHELL\"";
         private static Logger logger = Logger.getLogger(typeof(SshTerminalService).FullName);
 
         public void open(Host host, ch.cyberduck.core.Path workdir)
@@ -70,10 +69,25 @@ namespace Ch.Cyberduck.Core
             return test;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string CreateOpenSSHCompatibleArguments(string username, string hostname, int port, string workdir)
+        private static bool StartProcess(Process process)
         {
-            return string.Format(OPENSSH_FORMAT, username, hostname, port, workdir);
+            if (!Utils.StartProcess(process))
+            {
+                return false;
+            }
+            if (process.WaitForExit(500))
+            {
+                return process.ExitCode == 0;
+            }
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string CreateOpenSSHCompatibleArguments(string username, string identity, string hostname, int port, string workdir)
+        {
+            return string.Format(
+                PreferencesFactory.get().getProperty("terminal.command.openssh.args"),
+                username, identity, hostname, port, workdir);
         }
 
         private bool TryStartBashSSH(Host host, string workdir)
@@ -101,22 +115,14 @@ namespace Ch.Cyberduck.Core
                     FileName = wsl,
                     Arguments = "ssh " + CreateOpenSSHCompatibleArguments(
                         credentials.getUsername(),
+                        null,
                         host.getHostname(),
                         host.getPort(),
                         workdir)
                 }
             })
             {
-                var success = process.Start();
-                if (success)
-                {
-                    if (!process.WaitForExit(500))
-                    {
-                        return true;
-                    }
-                    return process.ExitCode == 0;
-                }
-                return false;
+                return StartProcess(process);
             }
         }
 
@@ -131,22 +137,23 @@ namespace Ch.Cyberduck.Core
 
             var credentials = host.getCredentials();
             var identity = credentials.isPublicKeyAuthentication();
+            var identityString = identity ? string.Format("-i \"{0}\"", credentials.getIdentity().getAbsolute()) : "";
 
-            var args = identity ? string.Format("-i \"{0}\"", credentials.getIdentity().getAbsolute()) : "";
             using (var process = new Process()
             {
                 StartInfo = new ProcessStartInfo()
                 {
                     FileName = ssh,
-                    Arguments = args + " " + CreateOpenSSHCompatibleArguments(
+                    Arguments = identityString + " " + CreateOpenSSHCompatibleArguments(
                         credentials.getUsername(),
+                        identityString,
                         host.getHostname(),
                         host.getPort(),
                         workdir)
                 }
             })
             {
-                return process.Start();
+                return StartProcess(process);
             }
         }
 

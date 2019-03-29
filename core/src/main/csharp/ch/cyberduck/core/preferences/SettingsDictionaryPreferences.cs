@@ -249,6 +249,7 @@ namespace Ch.Cyberduck.Core.Preferences
             this.setDefault("browser.enterkey.rename", false.ToString());
             this.setDefault("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
             this.setDefault("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
+            this.setDefault("terminal.command.openssh.args", "{1} {0}@{2} -t -p {3} \"cd '{4}'; $SHELL\"");
 
             this.setDefault("editor.bundleIdentifier", new SystemWatchEditorFactory.Notepad().getIdentifier());
 
