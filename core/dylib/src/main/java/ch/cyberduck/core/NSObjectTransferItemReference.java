@@ -28,7 +28,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 public class NSObjectTransferItemReference implements CacheReference<TransferItem> {
 
     private static final LRUCache<Path, NSString> cache = LRUCache.build(
-            PreferencesFactory.get().getInteger("browser.model.cache.size")
+        PreferencesFactory.get().getInteger("browser.model.cache.size")
     );
 
     public static NSObject get(final Path file) {
@@ -38,10 +38,12 @@ public class NSObjectTransferItemReference implements CacheReference<TransferIte
         return cache.get(file);
     }
 
+    private final String stringRepresentation;
     private final int hashCode;
 
     public NSObjectTransferItemReference(final NSObject reference) {
-        this.hashCode = reference.toString().hashCode();
+        this.stringRepresentation = reference.toString();
+        this.hashCode = stringRepresentation.hashCode();
     }
 
     @Override
@@ -62,10 +64,7 @@ public class NSObjectTransferItemReference implements CacheReference<TransferIte
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("NSObjectPathReference{");
-        sb.append("hashCode=").append(hashCode);
-        sb.append('}');
-        return sb.toString();
+        return stringRepresentation;
     }
 
     @Override

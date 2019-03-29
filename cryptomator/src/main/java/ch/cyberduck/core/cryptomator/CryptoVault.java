@@ -21,6 +21,7 @@ import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameProvider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.preferences.Preferences;
@@ -105,8 +106,13 @@ public class CryptoVault implements Vault {
         );
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
-            keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+            try {
+                keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
+                    new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+            }
+            catch(LocalAccessDeniedException e) {
+                log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e.getDetail()));
+            }
         }
         final String passphrase = credentials.getPassword();
         final KeyFile masterKeyFileContent = provider.createNew().writeKeysToMasterkeyFile(passphrase, pepper, VAULT_VERSION);
@@ -174,14 +180,14 @@ public class CryptoVault implements Vault {
     }
 
     private void unlock(final Session<?> session, final Path masterKeyFile, final KeyFile masterKeyFileContent,
-                        String passphrase, final Host bookmark, final PasswordCallback prompt, final String message, final PasswordStore keychain) throws BackgroundException {
+                        final String passphrase, final Host bookmark, final PasswordCallback prompt, final String message, final PasswordStore keychain) throws BackgroundException {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = prompt.prompt(
                 bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                 message,
                 new LoginOptions()
-                    .save(preferences.getBoolean("vault.keychain"))
+                    .keychain(preferences.getBoolean("vault.keychain"))
                     .user(false)
                     .anonymous(false)
                     .icon("cryptomator.tiff")

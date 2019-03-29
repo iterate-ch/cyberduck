@@ -130,7 +130,9 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         IOUtils.write(content, out);
         out.close();
         final AtomicBoolean failed = new AtomicBoolean();
-        final SDSSession conn = new SDSSession(session.getHost(), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
+        final SDSSession conn = new SDSSession(session.getHost().withCredentials(
+            new Credentials(System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key"))
+        ), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             final SDSWriteFeature write = new SDSWriteFeature(this, fileid) {
                 @Override
                 public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {

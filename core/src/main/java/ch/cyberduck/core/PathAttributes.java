@@ -108,7 +108,7 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     private String displayname;
 
-    private DescriptiveUrl link;
+    private DescriptiveUrl link = DescriptiveUrl.EMPTY;
 
     /**
      * HTTP headers
@@ -180,6 +180,9 @@ public class PathAttributes extends Attributes implements Serializable {
         }
         if(acl != Acl.EMPTY) {
             dict.setObjectForKey(acl, "Acl");
+        }
+        if(link != DescriptiveUrl.EMPTY) {
+            dict.setStringForKey(link.getUrl(), "Link");
         }
         if(checksum != Checksum.NONE) {
             dict.setStringForKey(checksum.hash, "Checksum");
@@ -488,6 +491,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(!Objects.equals(permission, that.permission)) {
             return false;
         }
+        if(!Objects.equals(acl, that.acl)) {
+            return false;
+        }
         if(!Objects.equals(versionId, that.versionId)) {
             return false;
         }
@@ -505,6 +511,7 @@ public class PathAttributes extends Attributes implements Serializable {
         int result = (int) (size ^ (size >>> 32));
         result = 31 * result + (int) (modified ^ (modified >>> 32));
         result = 31 * result + (permission != null ? permission.hashCode() : 0);
+        result = 31 * result + (acl != null ? acl.hashCode() : 0);
         result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
         result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
         result = 31 * result + (revision != null ? revision.hashCode() : 0);

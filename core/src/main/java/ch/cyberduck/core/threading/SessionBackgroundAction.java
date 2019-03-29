@@ -135,6 +135,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
         }
         catch(LoginFailureException e) {
             if(PreferencesFactory.get().getBoolean("connection.retry.login.enable")) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Prompt to re-authenticate for failure %s", e));
+                }
                 final Host bookmark = pool.getHost();
                 try {
                     // Prompt for new credentials
@@ -143,6 +146,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                     details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
                     details.append(e.getDetail());
                     if(service.prompt(bookmark, details.toString(), login, new LoginOptions(bookmark.getProtocol()))) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Re-authenticate with credentials %s", bookmark.getCredentials()));
+                        }
                         // Try to authenticate again
                         service.authenticate(ProxyFactory.get().find(bookmark), session, progress, login, new CancelCallback() {
                             @Override
@@ -159,6 +165,9 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
                 catch(BackgroundException f) {
                     log.warn(String.format("Ignore error %s after login failure %s ", f, e));
                 }
+            }
+            else {
+                log.warn(String.format("Disabled retry for login failure %s", e));
             }
             failure = e;
             throw e;

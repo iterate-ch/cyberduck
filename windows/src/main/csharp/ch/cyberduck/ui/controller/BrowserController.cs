@@ -949,7 +949,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         return;
                 }
                 Touch feature = (Touch) Session.getFeature(typeof(Touch));
-                if (!feature.isSupported(destination))
+                if (!feature.isSupported(destination, String.Empty))
                 {
                     args.Effect = DragDropEffects.None;
                     args.DropTargetLocation = DropTargetLocation.None;
@@ -1229,7 +1229,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.SelectedBookmarks.Count == 1)
             {
-                BookmarkController<IBookmarkView>.Factory.Create(View.SelectedBookmark).View.Show(View);
+                DefaultBookmarkController.Factory.Create(View.SelectedBookmark).View.Show(View);
             }
         }
 
@@ -1275,7 +1275,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.SelectBookmark(item);
             View.EnsureBookmarkVisible(item);
-            BookmarkController<IBookmarkView>.Factory.Create(item).View.Show(View);
+            DefaultBookmarkController.Factory.Create(item).View.Show(View);
         }
 
         private void View_DeleteBookmark()
@@ -1758,14 +1758,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return IsMounted() &&
                    ((Touch) Session.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath));
+                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
         private bool View_ValidateUpload()
         {
             return IsMounted() &&
                    ((Touch) Session.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath));
+                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
         private void View_Upload()
@@ -1773,7 +1773,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Due to the limited functionality of the OpenFileDialog class it is
             // currently not possible to select a folder. May be we should provide
             // a second menu item which allows to select a folder to upload
-            string[] paths = View.UploadDialog(null);
+            string[] paths = View.UploadDialog(new UploadDirectoryFinder().find(Session.getHost()));
             if (null == paths || paths.Length == 0) return;
 
             bool parentFound = false;
@@ -2128,7 +2128,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             return;
                     }
                     Touch feature = (Touch) Session.getFeature(typeof(Touch));
-                    if (!feature.isSupported(destination))
+                    if (!feature.isSupported(destination, String.Empty))
                     {
                         Log.trace("Session does not allow file creation");
                         args.Effect = DragDropEffects.None;

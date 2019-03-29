@@ -25,10 +25,8 @@ import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     private static final Logger log = Logger.getLogger(FolderBookmarkCollection.class);
@@ -98,19 +96,6 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         finally {
             super.collectionItemRemoved(bookmark);
         }
-    }
-
-    @Override
-    public boolean addAll(java.util.Collection<? extends Host> c) {
-        final List<Host> temporary = new ArrayList<Host>();
-        for(Host host : c) {
-            if(temporary.contains(host)) {
-                log.warn(String.format("Reset UUID of duplicate in collection for %s", host));
-                host.setUuid(null);
-            }
-            temporary.add(host);
-        }
-        return super.addAll(temporary);
     }
 
     /**

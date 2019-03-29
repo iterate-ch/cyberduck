@@ -33,7 +33,7 @@ import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 
-public class HttpResponseExceptionMappingService<E extends HttpResponseException> extends AbstractExceptionMappingService<E> {
+public abstract class HttpResponseExceptionMappingService<E extends HttpResponseException> extends AbstractExceptionMappingService<E> {
 
     @Override
     public BackgroundException map(final E failure) {

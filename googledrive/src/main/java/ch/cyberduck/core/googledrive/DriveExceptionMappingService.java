@@ -18,7 +18,7 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.http.HttpStatus;
 
@@ -52,7 +52,7 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
         if(failure instanceof HttpResponseException) {
             final HttpResponseException response = (HttpResponseException) failure;
             this.append(buffer, response.getStatusMessage());
-            return new HttpResponseExceptionMappingService().map(new org.apache.http.client
+            return new DefaultHttpResponseExceptionMappingService().map(new org.apache.http.client
                     .HttpResponseException(response.getStatusCode(), buffer.toString()));
         }
         return super.map(failure);

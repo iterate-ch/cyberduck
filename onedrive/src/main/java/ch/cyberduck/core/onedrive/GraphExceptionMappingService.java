@@ -20,7 +20,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.client.HttpResponseException;
@@ -36,7 +36,7 @@ public class GraphExceptionMappingService extends AbstractExceptionMappingServic
             final StringAppender buffer = new StringAppender();
             buffer.append(failure.getMessage());
             buffer.append(failure.getErrorMessage());
-            return new HttpResponseExceptionMappingService().map(new HttpResponseException(failure.getResponseCode(), buffer.toString()));
+            return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getResponseCode(), buffer.toString()));
         }
         if(ExceptionUtils.getRootCause(failure) instanceof IOException) {
             return new DefaultIOExceptionMappingService().map((IOException) ExceptionUtils.getRootCause(failure));

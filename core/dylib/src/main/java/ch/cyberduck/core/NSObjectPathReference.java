@@ -31,7 +31,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 public class NSObjectPathReference implements CacheReference<Path> {
 
     private static final LRUCache<Path, NSString> cache = LRUCache.build(
-            PreferencesFactory.get().getInteger("browser.model.cache.size")
+        PreferencesFactory.get().getInteger("browser.model.cache.size")
     );
 
     public static NSObject get(final Path file) {
@@ -41,10 +41,12 @@ public class NSObjectPathReference implements CacheReference<Path> {
         return cache.get(file);
     }
 
+    private final String stringRepresentation;
     private final int hashCode;
 
     public NSObjectPathReference(final NSObject reference) {
-        this.hashCode = reference.toString().hashCode();
+        this.stringRepresentation = reference.toString();
+        this.hashCode = stringRepresentation.hashCode();
     }
 
     @Override
@@ -58,21 +60,20 @@ public class NSObjectPathReference implements CacheReference<Path> {
             return false;
         }
         if(other instanceof CacheReference) {
-            return this.hashCode() == other.hashCode();
+            if(hashCode == other.hashCode()) {
+                return stringRepresentation.equals(other.toString());
+            }
         }
         return false;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("NSObjectPathReference{");
-        sb.append("hashCode=").append(hashCode);
-        sb.append('}');
-        return sb.toString();
+        return stringRepresentation;
     }
 
     @Override
     public boolean test(final Path file) {
-        return hashCode == file.hashCode();
+        return hashCode == new DefaultPathPredicate(file).hashCode();
     }
 }

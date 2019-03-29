@@ -70,11 +70,11 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
 
     @Override
     protected DbxRawClientV2 connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) {
-        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
-        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         final CloseableHttpClient client = configuration.build();
         return new CustomDbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
             .withAutoRetryDisabled()

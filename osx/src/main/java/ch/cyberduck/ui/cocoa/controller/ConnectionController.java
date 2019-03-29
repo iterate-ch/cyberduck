@@ -21,14 +21,10 @@ import ch.cyberduck.binding.application.NSButton;
 import ch.cyberduck.binding.application.NSCell;
 import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSSecureTextField;
-import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.SheetCallback;
-import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.ui.LoginInputValidator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,13 +32,6 @@ import org.rococoa.Foundation;
 
 public class ConnectionController extends BookmarkController {
 
-    private final HostPasswordStore keychain
-        = PasswordStoreFactory.get();
-
-    @Outlet
-    protected NSTextField passwordField;
-    @Outlet
-    private NSTextField passwordLabel;
     @Outlet
     private NSButton keychainCheckbox;
 
@@ -82,64 +71,6 @@ public class ConnectionController extends BookmarkController {
         }
     }
 
-    @Override
-    public void windowDidBecomeKey(final NSNotification notification) {
-        // Reset bookmark.getCredentials()
-        this.updateField(usernameField, bookmark.getCredentials().getUsername());
-        this.updateField(passwordField, bookmark.getCredentials().getPassword());
-    }
-
-    public void setPasswordField(NSSecureTextField field) {
-        this.passwordField = field;
-        this.updateField(this.passwordField, bookmark.getCredentials().getPassword());
-        this.notificationCenter.addObserver(this.id(),
-            Foundation.selector("passwordFieldTextDidChange:"),
-            NSControl.NSControlTextDidChangeNotification,
-            field.id());
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                updateField(passwordField, bookmark.getCredentials().getPassword());
-                passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
-                passwordField.setEnabled(options.password && !bookmark.getCredentials().isAnonymousLogin());
-                if(options.keychain) {
-                    if(StringUtils.isBlank(bookmark.getHostname())) {
-                        return;
-                    }
-                    if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
-                        return;
-                    }
-                    final String password = keychain.getPassword(bookmark.getProtocol().getScheme(),
-                        bookmark.getPort(),
-                        bookmark.getHostname(),
-                        bookmark.getCredentials().getUsername());
-                    if(StringUtils.isNotBlank(password)) {
-                        bookmark.getCredentials().setPassword(password);
-                        updateField(passwordField, password);
-                    }
-                }
-            }
-        });
-    }
-
-    @Action
-    public void passwordFieldTextDidChange(NSNotification notification) {
-        bookmark.getCredentials().setPassword(passwordField.stringValue());
-    }
-
-    public void setPasswordLabel(NSTextField passwordLabel) {
-        this.passwordLabel = passwordLabel;
-        this.addObserver(new BookmarkObserver() {
-            @Override
-            public void change(final Host bookmark) {
-                passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                    StringUtils.isNotBlank(options.getPasswordPlaceholder()) ? String.format("%s:",
-                        options.getPasswordPlaceholder()) : StringUtils.EMPTY, TRUNCATE_TAIL_ATTRIBUTES
-                ));
-            }
-        });
-    }
-
     public void setKeychainCheckbox(NSButton keychainCheckbox) {
         this.keychainCheckbox = keychainCheckbox;
         this.keychainCheckbox.setTarget(this.id());
@@ -156,5 +87,19 @@ public class ConnectionController extends BookmarkController {
     @Action
     public void keychainCheckboxClicked(final NSButton sender) {
         bookmark.getCredentials().setSaved(sender.state() == NSCell.NSOnState);
+    }
+
+    @Override
+    public void setPasswordField(final NSSecureTextField field) {
+        super.setPasswordField(field);
+        this.notificationCenter.addObserver(this.id(),
+            Foundation.selector("passwordFieldTextDidChange:"),
+            NSControl.NSControlTextDidChangeNotification,
+            field.id());
+    }
+
+    @Action
+    public void passwordFieldTextDidChange(NSNotification notification) {
+        bookmark.getCredentials().setPassword(passwordField.stringValue());
     }
 }

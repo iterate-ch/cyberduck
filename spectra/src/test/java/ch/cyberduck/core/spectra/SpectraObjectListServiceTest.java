@@ -85,7 +85,7 @@ public class SpectraObjectListServiceTest {
         session.close();
     }
 
-    @Test
+    @Test(expected = NotfoundException.class)
     public void tetsEmptyPlaceholder() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override

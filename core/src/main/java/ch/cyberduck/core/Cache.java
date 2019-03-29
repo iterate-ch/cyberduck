@@ -23,7 +23,7 @@ public interface Cache<T extends Referenceable> {
      * @param object Value object
      * @return Key used for internal comparison in map
      */
-    CacheReference key(T object);
+    CacheReference<?> reference(T object);
 
     /**
      * @param parent Directory
@@ -56,6 +56,9 @@ public interface Cache<T extends Referenceable> {
      */
     AttributedList<T> get(T parent);
 
+    /**
+     * @return Map representation for cached entries
+     */
     Map<T, AttributedList<T>> asMap();
 
     /**
@@ -77,5 +80,9 @@ public interface Cache<T extends Referenceable> {
      */
     void clear();
 
+    /**
+     * @param reference Key for item in cached list
+     * @return Cached value for reference
+     */
     T lookup(CacheReference<T> reference);
 }

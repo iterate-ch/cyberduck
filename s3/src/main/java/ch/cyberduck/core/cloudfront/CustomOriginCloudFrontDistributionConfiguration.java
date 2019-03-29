@@ -18,6 +18,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledProgressListener;
@@ -27,9 +28,11 @@ import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.WebUrlProvider;
 import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.DistributionUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -44,11 +47,19 @@ import org.apache.log4j.Logger;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
     private static final Logger log = Logger.getLogger(CustomOriginCloudFrontDistributionConfiguration.class);
+
+    private final PathContainerService containerService
+        = new PathContainerService();
+
+    private final Map<Path, Distribution> cache
+        = new HashMap<Path, Distribution>();
 
     private final Host origin;
 
@@ -84,12 +95,14 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
 
     @Override
     public Distribution read(final Path file, final Distribution.Method method, final LoginCallback prompt) throws BackgroundException {
-        return this.connected(new Connected<Distribution>() {
+        final Distribution distribution = this.connected(new Connected<Distribution>() {
             @Override
             public Distribution call() throws BackgroundException {
                 return CustomOriginCloudFrontDistributionConfiguration.super.read(file, method, prompt);
             }
         }, prompt);
+        cache.put(containerService.getContainer(file), distribution);
+        return distribution;
     }
 
     @Override
@@ -120,5 +133,13 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     @Override
     protected Location.Name getRegion(final Path container) {
         return Location.unknown;
+    }
+
+    @Override
+    public DescriptiveUrlBag toUrl(final Path file) {
+        if(cache.containsKey(containerService.getContainer(file))) {
+            return new DistributionUrlProvider(cache.get(containerService.getContainer(file))).toUrl(file);
+        }
+        return DescriptiveUrlBag.empty();
     }
 }

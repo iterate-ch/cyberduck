@@ -36,8 +36,12 @@
             <artifactId>google-oauth-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.iterate.google-http-client</groupId>
-            <artifactId>google-http-client-gson</artifactId>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client-apache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client-jackson2</artifactId>
         </dependency>
     </dependencies>
 </project>

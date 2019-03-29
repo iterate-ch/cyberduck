@@ -62,6 +62,7 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
             for(Header header : request.getAllHeaders()) {
                 switch(header.getName()) {
                     case HttpHeaders.AUTHORIZATION:
+                    case HttpHeaders.PROXY_AUTHORIZATION:
                     case "X-Auth-Key":
                     case "X-Auth-Token":
                         listener.log(TranscriptListener.Type.request, String.format("%s: %s", header.getName(),

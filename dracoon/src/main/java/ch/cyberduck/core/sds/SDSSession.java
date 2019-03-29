@@ -28,6 +28,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
@@ -46,6 +47,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -69,6 +72,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dracoon.sdk.crypto.CryptoException;
+import com.dracoon.sdk.crypto.model.UserKeyPair;
+import com.dracoon.sdk.crypto.model.UserPrivateKey;
 import com.migcomponents.migbase64.Base64;
 
 public class SDSSession extends HttpSession<SDSApiClient> {
@@ -111,7 +117,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     host).withRedirectUri(Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                     host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
                 );
-                configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
+                configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
                 configuration.addInterceptorLast(authorizationService);
                 configuration.addInterceptorLast(new HttpRequestInterceptor() {
                     @Override
@@ -183,6 +189,24 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         try {
             userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null)));
             keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
+            final UserPrivateKey privateKey = new UserPrivateKey();
+            final UserKeyPairContainer keyPairContainer = keyPair.get();
+            privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
+            privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
+            final UserKeyPair userKeyPair = new UserKeyPair();
+            userKeyPair.setUserPrivateKey(privateKey);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Attempt to unlock private key %s", privateKey));
+            }
+            try {
+                new TripleCryptKeyPair().unlock(controller, host, userKeyPair);
+            }
+            catch(LoginCanceledException e) {
+                log.warn("Ignore cancel unlocking triple crypt private key pair");
+            }
+        }
+        catch(CryptoException e) {
+            throw new TripleCryptExceptionMappingService().map(e);
         }
         catch(ApiException e) {
             log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e).getDetail()));

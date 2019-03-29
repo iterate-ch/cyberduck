@@ -35,8 +35,10 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.github.sardine.impl.SardineException;
 
@@ -51,9 +53,7 @@ public class DAVReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final List<Header> headers = new ArrayList<Header>();
-        // request the source of the URI not the processed resource - https://docs.oracle.com/cd/E19146-01/821-1828/gczya/index.html
-        headers.add(new BasicHeader("Translate", "f"));
+        final List<Header> headers = new ArrayList<Header>(this.headers());
         if(status.isAppend()) {
             final HttpRange range = HttpRange.withStatus(status);
             final String header;
@@ -104,5 +104,9 @@ public class DAVReadFeature implements Read {
     @Override
     public boolean offset(final Path file) {
         return true;
+    }
+
+    public Set<Header> headers() {
+        return Collections.emptySet();
     }
 }

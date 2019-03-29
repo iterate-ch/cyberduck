@@ -60,7 +60,9 @@ public class DefaultPathPredicate implements CacheReference<Path> {
             return false;
         }
         if(o instanceof CacheReference) {
-            return this.hashCode() == o.hashCode();
+            if(this.hashCode() == o.hashCode()) {
+                return reference.equals(o.toString());
+            }
         }
         return false;
     }

@@ -35,6 +35,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -110,7 +111,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         if(!local.exists()) {
             // Local file is no more here
-            throw new NotfoundException(local.getAbsolute());
+            throw new LocalNotfoundException(local.getAbsolute());
         }
         return true;
     }

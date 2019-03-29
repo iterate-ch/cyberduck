@@ -22,7 +22,7 @@ import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
@@ -78,6 +78,6 @@ public class B2ExceptionMappingService extends AbstractExceptionMappingService<B
                 }
                 break;
         }
-        return new HttpResponseExceptionMappingService().map(new HttpResponseException(e.getStatus(), buffer.toString()));
+        return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(e.getStatus(), buffer.toString()));
     }
 }

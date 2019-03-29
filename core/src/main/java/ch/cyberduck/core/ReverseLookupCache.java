@@ -15,36 +15,43 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.cache.LRUCache;
+
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
     private static final Logger log = Logger.getLogger(ReverseLookupCache.class);
 
     private final Cache<T> proxy;
-    private final Map<CacheReference, T> reverse;
+    private final LRUCache<CacheReference, Referenceable> reverse;
+
+    private final Referenceable MISSING_ITEM = new Referenceable() {
+    };
 
     public ReverseLookupCache(final Cache<T> proxy, final int size) {
         this.proxy = proxy;
         if(size == Integer.MAX_VALUE) {
             // Unlimited
-            reverse = Collections.synchronizedMap(new LinkedHashMap<CacheReference, T>());
-        }
-        else if(size == 0) {
-            reverse = Collections.emptyMap();
+            reverse = LRUCache.usingLoader(this::load);
         }
         else {
-            // Will inflate to the given size
-            reverse = Collections.synchronizedMap(new LinkedHashMap<CacheReference, T>());
+            reverse = LRUCache.usingLoader(this::load, size);
         }
     }
 
+    private Referenceable load(final CacheReference key) {
+        final Referenceable value = proxy.lookup(key);
+        if(null == value) {
+            return MISSING_ITEM;
+        }
+        return value;
+    }
+
     @Override
-    public CacheReference key(final T object) {
-        return proxy.key(object);
+    public CacheReference<?> reference(final T object) {
+        return proxy.reference(object);
     }
 
     @Override
@@ -65,9 +72,8 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
     @Override
     public AttributedList<T> put(final T reference, final AttributedList<T> children) {
         for(T f : children) {
-            final CacheReference key = proxy.key(f);
-            reverse.remove(key);
-            reverse.put(key, reference);
+            // Preload cache
+            reverse.put(proxy.reference(f), f);
         }
         return proxy.put(reference, children);
     }
@@ -85,26 +91,18 @@ public class ReverseLookupCache<T extends Referenceable> implements Cache<T> {
      * @see ch.cyberduck.core.AttributedList#get(Referenceable)
      */
     public T lookup(final CacheReference reference) {
-        final T parent = reverse.get(reference);
-        final AttributedList<T> list = proxy.get(parent);
-        if(list.isEmpty()) {
+        final Referenceable value = reverse.get(reference);
+        if(MISSING_ITEM == value) {
             log.warn(String.format("Lookup failed for %s in reverse cache", reference));
             return null;
         }
-        final T[] entries = list.toArray();
-        for(T entry : entries) {
-            if(proxy.key(entry).equals(reference)) {
-                return entry;
-            }
-        }
-        log.warn(String.format("Lookup failed for %s in reverse cache", reference));
-        return null;
+        return (T) value;
     }
 
     public AttributedList<T> remove(final T reference) {
         final AttributedList<T> removed = proxy.remove(reference);
         for(T r : removed) {
-            reverse.remove(proxy.key(r));
+            reverse.remove(proxy.reference(r));
         }
         return removed;
     }

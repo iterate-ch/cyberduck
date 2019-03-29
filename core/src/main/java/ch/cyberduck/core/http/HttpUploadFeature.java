@@ -84,7 +84,7 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
             return response;
         }
         catch(HttpResponseException e) {
-            throw new HttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);

@@ -233,7 +233,7 @@ DQ
                     <button id="30">
                         <rect key="frame" x="18" y="22" width="244" height="16"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="check" title="Dodaj do pęku kluczy" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="31">
+                        <buttonCell key="cell" type="check" title="Dodaj do Keychain" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="31">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>

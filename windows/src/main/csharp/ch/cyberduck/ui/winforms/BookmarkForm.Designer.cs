@@ -39,6 +39,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.cancelButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.textBoxPassword = new System.Windows.Forms.TextBox();
             this.protocol = new Ch.Cyberduck.Ui.Winforms.Controls.ImageComboBox();
             this.labelNickname = new System.Windows.Forms.Label();
             this.alertIcon = new System.Windows.Forms.PictureBox();
@@ -57,6 +58,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.comboBoxPrivateKey = new System.Windows.Forms.ComboBox();
             this.comboBoxClientCertificate = new System.Windows.Forms.ComboBox();
             this.choosePkButton = new System.Windows.Forms.Button();
+            this.labelPassword = new System.Windows.Forms.Label();
             this.optionsPanel = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.textBoxPath = new System.Windows.Forms.TextBox();
@@ -121,6 +123,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.Controls.Add(this.textBoxPassword, 1, 6);
             this.tableLayoutPanel1.Controls.Add(this.protocol, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.labelNickname, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.alertIcon, 3, 2);
@@ -134,16 +137,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Controls.Add(this.labelPort, 2, 3);
             this.tableLayoutPanel1.Controls.Add(this.checkBoxAnonymous, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.numericUpDownPort, 3, 3);
-            this.tableLayoutPanel1.Controls.Add(this.labelPrivateKey, 0, 6);
-            this.tableLayoutPanel1.Controls.Add(this.labelClientCertificate, 0, 7);
-            this.tableLayoutPanel1.Controls.Add(this.comboBoxPrivateKey, 1, 6);
-            this.tableLayoutPanel1.Controls.Add(this.comboBoxClientCertificate, 1, 7);
-            this.tableLayoutPanel1.Controls.Add(this.choosePkButton, 3, 6);
+            this.tableLayoutPanel1.Controls.Add(this.labelPrivateKey, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.labelClientCertificate, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.comboBoxPrivateKey, 1, 7);
+            this.tableLayoutPanel1.Controls.Add(this.comboBoxClientCertificate, 1, 8);
+            this.tableLayoutPanel1.Controls.Add(this.choosePkButton, 3, 7);
+            this.tableLayoutPanel1.Controls.Add(this.labelPassword, 0, 6);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(10, 10, 10, 0);
-            this.tableLayoutPanel1.RowCount = 8;
+            this.tableLayoutPanel1.RowCount = 9;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 32F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
@@ -151,9 +155,21 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(482, 239);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(482, 268);
             this.tableLayoutPanel1.TabIndex = 36;
+            // 
+            // textBoxPassword
+            // 
+            this.textBoxPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.SetColumnSpan(this.textBoxPassword, 3);
+            this.textBoxPassword.Location = new System.Drawing.Point(117, 185);
+            this.textBoxPassword.Name = "textBoxPassword";
+            this.textBoxPassword.Size = new System.Drawing.Size(352, 23);
+            this.textBoxPassword.TabIndex = 8;
+            this.textBoxPassword.UseSystemPasswordChar = true;
             // 
             // protocol
             // 
@@ -314,7 +330,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelPrivateKey.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelPrivateKey.AutoSize = true;
-            this.labelPrivateKey.Location = new System.Drawing.Point(19, 188);
+            this.labelPrivateKey.Location = new System.Drawing.Point(19, 216);
             this.labelPrivateKey.Name = "labelPrivateKey";
             this.labelPrivateKey.Size = new System.Drawing.Size(92, 15);
             this.labelPrivateKey.TabIndex = 34;
@@ -325,7 +341,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelClientCertificate.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelClientCertificate.AutoSize = true;
-            this.labelClientCertificate.Location = new System.Drawing.Point(13, 217);
+            this.labelClientCertificate.Location = new System.Drawing.Point(13, 245);
             this.labelClientCertificate.Name = "labelClientCertificate";
             this.labelClientCertificate.Size = new System.Drawing.Size(98, 15);
             this.labelClientCertificate.TabIndex = 35;
@@ -339,7 +355,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.SetColumnSpan(this.comboBoxPrivateKey, 2);
             this.comboBoxPrivateKey.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxPrivateKey.FormattingEnabled = true;
-            this.comboBoxPrivateKey.Location = new System.Drawing.Point(117, 185);
+            this.comboBoxPrivateKey.Location = new System.Drawing.Point(117, 213);
             this.comboBoxPrivateKey.Name = "comboBoxPrivateKey";
             this.comboBoxPrivateKey.Size = new System.Drawing.Size(272, 23);
             this.comboBoxPrivateKey.TabIndex = 8;
@@ -352,7 +368,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.SetColumnSpan(this.comboBoxClientCertificate, 3);
             this.comboBoxClientCertificate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxClientCertificate.FormattingEnabled = true;
-            this.comboBoxClientCertificate.Location = new System.Drawing.Point(117, 213);
+            this.comboBoxClientCertificate.Location = new System.Drawing.Point(117, 241);
             this.comboBoxClientCertificate.Name = "comboBoxClientCertificate";
             this.comboBoxClientCertificate.Size = new System.Drawing.Size(352, 23);
             this.comboBoxClientCertificate.TabIndex = 9;
@@ -361,7 +377,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // choosePkButton
             // 
             this.choosePkButton.AutoSize = true;
-            this.choosePkButton.Location = new System.Drawing.Point(395, 184);
+            this.choosePkButton.Location = new System.Drawing.Point(395, 212);
             this.choosePkButton.Margin = new System.Windows.Forms.Padding(3, 2, 2, 1);
             this.choosePkButton.Name = "choosePkButton";
             this.choosePkButton.Size = new System.Drawing.Size(75, 25);
@@ -369,6 +385,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.choosePkButton.Text = "Choose…";
             this.choosePkButton.UseVisualStyleBackColor = true;
             this.choosePkButton.Click += new System.EventHandler(this.choosePkButton_Click);
+            // 
+            // labelPassword
+            // 
+            this.labelPassword.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelPassword.AutoSize = true;
+            this.labelPassword.Location = new System.Drawing.Point(51, 188);
+            this.labelPassword.Name = "labelPassword";
+            this.labelPassword.Size = new System.Drawing.Size(60, 15);
+            this.labelPassword.TabIndex = 36;
+            this.labelPassword.Text = "Password:";
+            this.labelPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // optionsPanel
             // 
@@ -396,7 +423,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.Controls.Add(this.comboBoxTransferFiles, 1, 6);
             this.optionsPanel.Controls.Add(this.downloadFolderButton, 2, 5);
             this.optionsPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.optionsPanel.Location = new System.Drawing.Point(0, 288);
+            this.optionsPanel.Location = new System.Drawing.Point(0, 311);
             this.optionsPanel.Name = "optionsPanel";
             this.optionsPanel.Padding = new System.Windows.Forms.Padding(10, 0, 10, 10);
             this.optionsPanel.RowCount = 11;
@@ -630,7 +657,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.separatorLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.separatorLine.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.separatorLine.Location = new System.Drawing.Point(17, 269);
+            this.separatorLine.Location = new System.Drawing.Point(17, 301);
             this.separatorLine.Name = "separatorLine";
             this.separatorLine.Size = new System.Drawing.Size(452, 2);
             this.separatorLine.TabIndex = 40;
@@ -640,7 +667,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toggleOptionsLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.toggleOptionsLabel.ImageIndex = 3;
             this.toggleOptionsLabel.ImageList = this.imageList;
-            this.toggleOptionsLabel.Location = new System.Drawing.Point(13, 240);
+            this.toggleOptionsLabel.Location = new System.Drawing.Point(13, 272);
             this.toggleOptionsLabel.Name = "toggleOptionsLabel";
             this.toggleOptionsLabel.Size = new System.Drawing.Size(168, 27);
             this.toggleOptionsLabel.TabIndex = 7;
@@ -652,7 +679,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(482, 624);
+            this.ClientSize = new System.Drawing.Size(482, 647);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.optionsPanel);
@@ -719,5 +746,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ComboBox comboBoxPrivateKey;
         private System.Windows.Forms.ComboBox comboBoxClientCertificate;
         private System.Windows.Forms.Button choosePkButton;
+        private System.Windows.Forms.TextBox textBoxPassword;
+        private System.Windows.Forms.Label labelPassword;
     }
 }

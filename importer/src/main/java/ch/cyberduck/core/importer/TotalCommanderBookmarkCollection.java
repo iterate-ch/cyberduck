@@ -26,7 +26,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -61,65 +60,58 @@ public class TotalCommanderBookmarkCollection extends ThirdpartyBookmarkCollecti
 
     @Override
     protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
-        try {
-            final BufferedReader in
-                    = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
-            try {
-                Host current = null;
-                String line;
-                while((line = in.readLine()) != null) {
-                    if(line.startsWith("[")) {
-                        if(current != null) {
-                            this.add(current);
-                        }
-                        current = new Host(protocols.forScheme(Scheme.ftp));
-                        current.getCredentials().setUsername(
-                                PreferencesFactory.get().getProperty("connection.login.anon.name"));
-                        Pattern pattern = Pattern.compile("\\[(.*)\\]");
-                        Matcher matcher = pattern.matcher(line);
-                        if(matcher.matches()) {
-                            current.setNickname(matcher.group(1));
-                        }
+        try (final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")))) {
+            Host current = null;
+            String line;
+            while((line = in.readLine()) != null) {
+                if(line.startsWith("[")) {
+                    if(current != null) {
+                        this.add(current);
                     }
-                    else {
-                        if(null == current) {
-                            log.warn("Failed to detect start of bookmark");
-                            continue;
-                        }
-                        final Scanner scanner = new Scanner(line);
-                        scanner.useDelimiter("=");
-                        if(!scanner.hasNext()) {
-                            log.warn("Missing key in line:" + line);
-                            continue;
-                        }
-                        final String name = scanner.next().toLowerCase(Locale.ROOT);
-                        if(!scanner.hasNext()) {
-                            log.warn("Missing value in line:" + line);
-                            continue;
-                        }
-                        final String value = scanner.next();
-                        switch(name) {
-                            case "host":
-                                current.setHostname(value);
-                                break;
-                            case "directory":
-                                current.setDefaultPath(value);
-                                break;
-                            case "username":
-                                current.getCredentials().setUsername(value);
-                                break;
-                            default:
-                                log.warn(String.format("Ignore property %s", name));
-                                break;
-                        }
+                    current = new Host(protocols.forScheme(Scheme.ftp));
+                    current.getCredentials().setUsername(
+                        PreferencesFactory.get().getProperty("connection.login.anon.name"));
+                    Pattern pattern = Pattern.compile("\\[(.*)\\]");
+                    Matcher matcher = pattern.matcher(line);
+                    if(matcher.matches()) {
+                        current.setNickname(matcher.group(1));
                     }
                 }
-                if(current != null) {
-                    this.add(current);
+                else {
+                    if(null == current) {
+                        log.warn("Failed to detect start of bookmark");
+                        continue;
+                    }
+                    final Scanner scanner = new Scanner(line);
+                    scanner.useDelimiter("=");
+                    if(!scanner.hasNext()) {
+                        log.warn("Missing key in line:" + line);
+                        continue;
+                    }
+                    final String name = scanner.next().toLowerCase(Locale.ROOT);
+                    if(!scanner.hasNext()) {
+                        log.warn("Missing value in line:" + line);
+                        continue;
+                    }
+                    final String value = scanner.next();
+                    switch(name) {
+                        case "host":
+                            current.setHostname(value);
+                            break;
+                        case "directory":
+                            current.setDefaultPath(value);
+                            break;
+                        case "username":
+                            current.getCredentials().setUsername(value);
+                            break;
+                        default:
+                            log.warn(String.format("Ignore property %s", name));
+                            break;
+                    }
                 }
             }
-            finally {
-                IOUtils.closeQuietly(in);
+            if(current != null) {
+                this.add(current);
             }
         }
         catch(IOException e) {

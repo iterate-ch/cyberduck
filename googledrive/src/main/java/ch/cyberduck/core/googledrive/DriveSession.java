@@ -42,15 +42,12 @@ import java.io.IOException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.apache.ApacheHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 
 public class DriveSession extends HttpSession<Drive> {
 
     private ApacheHttpTransport transport;
-
-    private final JsonFactory json = new GsonFactory();
 
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();
@@ -65,13 +62,13 @@ public class DriveSession extends HttpSession<Drive> {
 
     @Override
     protected Drive connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) {
-        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
-        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         this.transport = new ApacheHttpTransport(configuration.build());
-        return new Drive.Builder(transport, json, new HttpRequestInitializer() {
+        return new Drive.Builder(transport, new JacksonFactory(), new HttpRequestInitializer() {
             @Override
             public void initialize(HttpRequest request) {
                 request.setSuppressUserAgentSuffix(true);

@@ -274,6 +274,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { openAfterDownloadCheckbox.Checked = value; }
         }
 
+        public bool SegmentedDownloads
+        {
+            get { return segmentedDownloadsCheckbox.Checked; }
+            set { segmentedDownloadsCheckbox.Checked = value; }
+        }
+
         public string DownloadFolder
         {
             get { return downloadFolderLabel.Text; }
@@ -708,6 +714,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler TransfersToBackChangedEvent = delegate { };
         public event VoidHandler RemoveFromTransfersChangedEvent = delegate { };
         public event VoidHandler OpenAfterDownloadChangedEvent = delegate { };
+        public event VoidHandler SegmentedDownloadsChangedEvent = delegate { };
         public event VoidHandler DownloadFolderChangedEvent = delegate { };
         public event VoidHandler DuplicateDownloadActionChangedEvent = delegate { };
         public event VoidHandler DuplicateUploadActionChangedEvent = delegate { };
@@ -1493,6 +1500,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void verifyChecksumUploadCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             VerifyChecksumUploadChangedEvent();
+        }
+
+        private void segmentedDownloadsCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            SegmentedDownloadsChangedEvent();
         }
     }
 }

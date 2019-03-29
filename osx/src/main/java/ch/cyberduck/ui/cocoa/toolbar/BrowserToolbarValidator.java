@@ -234,13 +234,13 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(
-                new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
+                new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), StringUtils.EMPTY
             );
         }
         else if(action.equals(upload.action())) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(
-                new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
-            );
+                new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()),
+                StringUtils.EMPTY);
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Symlink.class) != null

@@ -97,7 +97,7 @@ public final class Keychain extends DefaultHostPasswordStore implements Password
     @Override
     public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) throws LocalAccessDeniedException {
         if(!this.addInternetPasswordToKeychain(scheme.name(), port, hostname, user, password)) {
-            throw new LocalAccessDeniedException();
+            throw new LocalAccessDeniedException(String.format("Failure saving credentials for %s in Keychain", user));
         }
     }
 
@@ -109,7 +109,7 @@ public final class Keychain extends DefaultHostPasswordStore implements Password
     @Override
     public void addPassword(final String serviceName, final String accountName, final String password) throws LocalAccessDeniedException {
         if(!this.addPasswordToKeychain(serviceName, accountName, password)) {
-            throw new LocalAccessDeniedException();
+            throw new LocalAccessDeniedException(String.format("Failure saving credentials for %s in Keychain", accountName));
         }
     }
 

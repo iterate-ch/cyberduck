@@ -25,7 +25,7 @@ import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
-import ch.cyberduck.core.sds.triplecrypt.CryptoWriteFeature;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptWriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
@@ -47,7 +47,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
             // File key is set in encryption bulk feature if container is encrypted
-            return new CryptoWriteFeature(session, proxy).write(file, status, callback);
+            return new TripleCryptWriteFeature(session, proxy).write(file, status, callback);
         }
         return proxy.write(file, status, callback);
     }
@@ -55,7 +55,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     @Override
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
-            return new CryptoWriteFeature(session, proxy).append(file, length, cache);
+            return new TripleCryptWriteFeature(session, proxy).append(file, length, cache);
         }
         return proxy.append(file, length, cache);
     }
@@ -73,7 +73,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     @Override
     public ChecksumCompute checksum(final Path file) {
         if(Boolean.valueOf(containerService.getContainer(file).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))) {
-            return new CryptoWriteFeature(session, proxy).checksum(file);
+            return new TripleCryptWriteFeature(session, proxy).checksum(file);
         }
         return proxy.checksum(file);
     }

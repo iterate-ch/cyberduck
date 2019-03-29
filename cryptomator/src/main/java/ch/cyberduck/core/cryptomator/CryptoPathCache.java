@@ -39,8 +39,8 @@ public final class CryptoPathCache implements Cache<Path> {
     }
 
     @Override
-    public CacheReference key(final Path object) {
-        return delegate.key(object);
+    public CacheReference<?> reference(final Path object) {
+        return delegate.reference(object);
     }
 
     @Override

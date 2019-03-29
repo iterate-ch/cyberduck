@@ -24,6 +24,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -38,9 +39,9 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     @Test
     public void testSupported() {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
-        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory))));
-        assertFalse(new SDSTouchFeature(session, nodeid).isSupported(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), StringUtils.EMPTY));
+        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), StringUtils.EMPTY));
+        assertFalse(new SDSTouchFeature(session, nodeid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), StringUtils.EMPTY));
     }
 
     @Test(expected = BackgroundException.class)

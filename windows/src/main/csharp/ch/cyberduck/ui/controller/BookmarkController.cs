@@ -1,6 +1,6 @@
 // 
-// Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
-// http://cyberduck.io/
+// Copyright (c) 2010-2019 Yves Langisch. All rights reserved.
+// https://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,13 +24,12 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.diagnostics;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
-using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
-using ch.cyberduck.core.exception;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
@@ -45,14 +44,7 @@ using TimeZone = java.util.TimeZone;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class BookmarkController : BookmarkController<IBookmarkView>
-    {
-        private BookmarkController(Host host) : base(host)
-        {
-        }
-    }
-
-    public class BookmarkController<T> : WindowController<T> where T : IBookmarkView
+    public abstract class BookmarkController<T> : WindowController<T> where T : IBookmarkView
     {
         private const String TimezoneIdPrefixes = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
         public const int SmallBookmarkSize = 16;
@@ -62,14 +54,31 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly Logger Log = Logger.getLogger(typeof(BookmarkController<>).FullName);
         private static readonly TimeZone UTC = TimeZone.getTimeZone("UTC");
         private readonly AbstractCollectionListener _bookmarkCollectionListener;
-        private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
 
         protected readonly Host _host;
+        private readonly HostPasswordStore _keychain = PasswordStoreFactory.get();
+        private readonly List<string> _keys = new List<string> {LocaleFactory.localizedString("None")};
         protected readonly LoginOptions _options;
-        protected readonly LoginInputValidator _validator;
 
         private readonly Timer _ticklerFavicon;
         private readonly Timer _ticklerReachability;
+        protected readonly LoginInputValidator _validator;
+
+        protected BookmarkController(Host host) : this(host,
+            new LoginOptions(host.getProtocol()))
+        {
+        }
+
+        protected BookmarkController(Host host, LoginOptions options)
+            : this(ObjectFactory.GetInstance<T>(), host, new LoginInputValidator(host, options), options)
+        {
+        }
+
+        protected BookmarkController(Host host, LoginInputValidator validator, LoginOptions options)
+            : this(ObjectFactory.GetInstance<T>(), host, validator, options)
+        {
+            _bookmarkCollectionListener = new RemovedCollectionListener(this, host);
+        }
 
         private BookmarkController(T view, Host host, LoginInputValidator validator,
             LoginOptions options) : base(validator)
@@ -85,25 +94,41 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ToggleOptions += View_ToggleOptions;
             View.OptionsVisible = PreferencesFactory.get().getBoolean(ToggleProperty);
 
-            Init();
-        }
+            //set default favicon
+            View.Favicon = IconCache.Instance.IconForName("site", 16);
 
-        protected BookmarkController(Host host) : this(host,
-            new LoginOptions(host.getProtocol()))
-        {
-        }
+            InitProtocols();
+            InitPrivateKeys();
+            InitConnectModes();
+            InitEncodings();
+            InitTimezones();
+            InitTransferModes();
+            Update();
 
-        protected BookmarkController(Host host,
-            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
-            new LoginInputValidator(host, options), options)
-        {
-        }
-
-        protected BookmarkController(Host host, LoginInputValidator validator,
-            LoginOptions options) : this(ObjectFactory.GetInstance<T>(), host,
-            validator, options)
-        {
-            _bookmarkCollectionListener = new RemovedCollectionListener(this, host);
+            View.ChangedProtocolEvent += View_ChangedProtocolEvent;
+            View.ChangedProtocolEvent += ReadPasswordFromKeychain;
+            View.ChangedPortEvent += View_ChangedPortEvent;
+            View.ChangedUsernameEvent += View_ChangedUsernameEvent;
+            View.ChangedUsernameEvent += ReadPasswordFromKeychain;
+            View.ChangedServerEvent += View_ChangedServerEvent;
+            View.ChangedServerEvent += ReadPasswordFromKeychain;
+            View.ChangedEncodingEvent += View_ChangedEncodingEvent;
+            View.ChangedPathEvent += View_ChangedPathEvent;
+            View.ChangedTimezoneEvent += View_ChangedTimezoneEvent;
+            View.ChangedConnectModeEvent += View_ChangedConnectModeEvent;
+            View.ChangedTransferEvent += View_ChangedTransferEvent;
+            View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
+            View.ChangedPrivateKeyEvent += View_ChangedPrivateKeyEvent;
+            View.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
+            View.ChangedClientCertificateEvent += View_ChangedClientCertificateEvent;
+            View.ChangedNicknameEvent += View_ChangedNicknameEvent;
+            View.ChangedWebURLEvent += View_ChangedWebURLEvent;
+            View.ChangedCommentEvent += View_ChangedCommentEvent;
+            View.ChangedBrowserDownloadPathEvent += View_ChangedBrowserDownloadPathEvent;
+            View.OpenDownloadFolderBrowserEvent += View_OpenDownloadFolderBrowserEvent;
+            View.OpenDownloadFolderEvent += View_OpenDownloadFolderEvent;
+            View.OpenUrl += View_OpenUrl;
+            View.OpenWebUrl += View_OpenWebUrl;
         }
 
         protected virtual String ToggleProperty => "bookmark.toggle.options";
@@ -148,6 +173,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Host.TransferType t = Host.TransferType.valueOf(name);
                 modes.Add(new KeyValuePair<string, Host.TransferType>(t.toString(), t));
             }
+
             View.PopulateTransferModes(modes);
         }
 
@@ -189,6 +215,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _host.setPort(-1);
             }
+
             ItemChanged();
             Update();
             Reachable();
@@ -201,6 +228,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 selectedKeyFile = Path.GetDirectoryName(_host.getCredentials().getIdentity().getAbsolute());
             }
+
             View.ShowPrivateKeyBrowser(selectedKeyFile);
         }
 
@@ -229,6 +257,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     break;
                 }
             }
+
             ItemChanged();
         }
 
@@ -247,6 +276,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _host.setEncoding(View.SelectedEncoding);
             }
+
             ItemChanged();
         }
 
@@ -264,14 +294,15 @@ namespace Ch.Cyberduck.Ui.Controller
             String input = View.Hostname;
             if (Scheme.isURL(input))
             {
-                try {
+                try
+                {
                     Host parsed = HostParser.parse(input);
                     _host.setHostname(parsed.getHostname());
                     _host.setProtocol(parsed.getProtocol());
                     _host.setPort(parsed.getPort());
                     _host.setDefaultPath(parsed.getDefaultPath());
                 }
-                catch(HostParserException e)
+                catch (HostParserException e)
                 {
                     Log.warn(e.getDetail());
                 }
@@ -281,6 +312,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _host.setHostname(input);
                 _host.setCredentials(CredentialsConfiguratorFactory.get(_host.getProtocol()).configure(_host));
             }
+
             ItemChanged();
             Update();
             Reachable();
@@ -307,6 +339,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     timezones.Add(TimeZone.getTimeZone(timezone).getID());
                 }
             }
+
             View.PopulateTimezones(timezones);
         }
 
@@ -317,6 +350,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 modes.Add(new KeyValuePair<string, FTPConnectMode>(m.toString(), m));
             }
+
             View.PopulateConnectModes(modes);
         }
 
@@ -330,27 +364,33 @@ namespace Ch.Cyberduck.Ui.Controller
                 // of newly selected protocol.
                 _host.setHostname(selected.getDefaultHostname());
             }
+
             if (!selected.isHostnameConfigurable())
             {
                 // Hostname of newly selected protocol is not configurable. Change to default.
                 _host.setHostname(selected.getDefaultHostname());
             }
+
             if (Utils.IsNotBlank(selected.getDefaultHostname()))
             {
                 // Prefill with default hostname
                 _host.setHostname(selected.getDefaultHostname());
             }
+
             if (Objects.equals(_host.getDefaultPath(), _host.getProtocol().getDefaultPath()) ||
                 !selected.isPathConfigurable())
             {
                 _host.setDefaultPath(selected.getDefaultPath());
             }
+
             _host.setProtocol(selected);
             int port = HostnameConfiguratorFactory.get(selected).getPort(_host.getHostname());
-            if(port != -1) {
+            if (port != -1)
+            {
                 // External configuration found
                 _host.setPort(port);
             }
+
             _options.configure(selected);
             _validator.configure(selected);
             ItemChanged();
@@ -383,40 +423,27 @@ namespace Ch.Cyberduck.Ui.Controller
             Update();
         }
 
-        public void Init()
+        public void ReadPasswordFromKeychain()
         {
-            //set default favicon
-            View.Favicon = IconCache.Instance.IconForName("site", 16);
-
-            InitProtocols();
-            InitPrivateKeys();
-            InitConnectModes();
-            InitEncodings();
-            InitTimezones();
-            InitTransferModes();
-            Update();
-
-            View.ChangedProtocolEvent += View_ChangedProtocolEvent;
-            View.ChangedPortEvent += View_ChangedPortEvent;
-            View.ChangedUsernameEvent += View_ChangedUsernameEvent;
-            View.ChangedServerEvent += View_ChangedServerEvent;
-            View.ChangedEncodingEvent += View_ChangedEncodingEvent;
-            View.ChangedPathEvent += View_ChangedPathEvent;
-            View.ChangedTimezoneEvent += View_ChangedTimezoneEvent;
-            View.ChangedConnectModeEvent += View_ChangedConnectModeEvent;
-            View.ChangedTransferEvent += View_ChangedTransferEvent;
-            View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
-            View.ChangedPrivateKeyEvent += View_ChangedPrivateKeyEvent;
-            View.OpenPrivateKeyBrowserEvent += View_OpenPrivateKeyBrowserEvent;
-            View.ChangedClientCertificateEvent += View_ChangedClientCertificateEvent;
-            View.ChangedNicknameEvent += View_ChangedNicknameEvent;
-            View.ChangedWebURLEvent += View_ChangedWebURLEvent;
-            View.ChangedCommentEvent += View_ChangedCommentEvent;
-            View.ChangedBrowserDownloadPathEvent += View_ChangedBrowserDownloadPathEvent;
-            View.OpenDownloadFolderBrowserEvent += View_OpenDownloadFolderBrowserEvent;
-            View.OpenDownloadFolderEvent += View_OpenDownloadFolderEvent;
-            View.OpenUrl += View_OpenUrl;
-            View.OpenWebUrl += View_OpenWebUrl;
+            if (_options.keychain() && _options.password())
+            {
+                if (string.IsNullOrEmpty(_host.getHostname()))
+                {
+                    return;
+                }
+                if (string.IsNullOrEmpty(_host.getCredentials().getUsername()))
+                {
+                    return;
+                }
+                string password = _keychain.getPassword(_host.getProtocol().getScheme(),
+                    _host.getPort(),
+                    _host.getHostname(),
+                    _host.getCredentials().getUsername());
+                if (Utils.IsNotBlank(password))
+                {
+                    View.Password = password;
+                }
+            }
         }
 
         private void View_ChangedClientCertificateEvent()
@@ -435,6 +462,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _keys.Add(key.getAbsolute());
             }
+
             View.PopulatePrivateKeys(_keys);
         }
 
@@ -481,6 +509,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.Username = PreferencesFactory.get().getProperty("connection.login.name");
                 }
             }
+
             ItemChanged();
             Update();
         }
@@ -508,13 +537,16 @@ namespace Ch.Cyberduck.Ui.Controller
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
                     protocol.disk()));
             }
+
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
-                EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2, Protocol.Type.dracoon,
+                EnumSet.of(Protocol.Type.s3, Protocol.Type.swift, Protocol.Type.azure, Protocol.Type.b2,
+                    Protocol.Type.dracoon,
                     Protocol.Type.googlestorage))).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
                     protocol.disk()));
             }
+
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
                     EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))
                 .toArray(new Protocol[] { }))
@@ -522,17 +554,20 @@ namespace Ch.Cyberduck.Ui.Controller
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
                     protocol.disk()));
             }
+
             foreach (Protocol protocol in p.find(new DefaultProtocolPredicate(
                 EnumSet.of(Protocol.Type.file))).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
                     protocol.disk()));
             }
+
             foreach (Protocol protocol in p.find(new ProfileProtocolPredicate()).toArray(new Protocol[] { }))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(protocol, protocol.getDescription(),
                     protocol.disk()));
             }
+
             View.PopulateProtocols(protocols);
         }
 
@@ -555,6 +590,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return Image.FromStream(response.GetResponseStream());
                 }
+
                 return null;
             }
             catch (Exception)
@@ -577,7 +613,10 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Path = _host.getDefaultPath();
             View.Username = _host.getCredentials().getUsername();
             View.UsernameEnabled = _options.user() && !_host.getCredentials().isAnonymousLogin();
-            View.UsernameLabel = _host.getProtocol().getUsernamePlaceholder() + ":";
+            View.UsernameLabel = $"{_host.getProtocol().getUsernamePlaceholder()}:";
+            View.Password = _host.getCredentials().getPassword();
+            View.PasswordLabel = $"{_options.getPasswordPlaceholder()}:";
+            View.PasswordEnabled = _options.password() && !_host.getCredentials().isAnonymousLogin();
             View.AnonymousEnabled = _options.anonymous();
             View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
             View.SelectedProtocol = _host.getProtocol();
@@ -596,21 +635,24 @@ namespace Ch.Cyberduck.Ui.Controller
                     _keys.Add(key);
                     View.PopulatePrivateKeys(_keys);
                 }
+
                 View.SelectedPrivateKey = key;
             }
             else
             {
                 View.SelectedPrivateKey = LocaleFactory.localizedString("None");
             }
+
             View.ClientCertificateFieldEnabled = _options.certificate();
             List<string> keys = new List<string> {LocaleFactory.localizedString("None")};
-            if(_options.certificate())
+            if (_options.certificate())
             {
                 foreach (String certificate in SystemCertificateStore.ListAliases())
                 {
                     keys.Add(certificate);
                 }
             }
+
             View.PopulateClientCertificates(keys);
             if (_host.getCredentials().isCertificateAuthentication())
             {
@@ -620,6 +662,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.SelectedClientCertificate = LocaleFactory.localizedString("None");
             }
+
             View.WebUrlButtonToolTip = new WebUrlProvider(_host).toUrl().getUrl();
             View.WebURL = _host.getWebURL();
             View.Notes = _host.getComment();
@@ -639,25 +682,6 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 View.SelectedTimezone = _host.getTimezone().getID();
-            }
-        }
-
-        public static class Factory
-        {
-            private static readonly IDictionary<Host, BookmarkController<T>> Open =
-                new Dictionary<Host, BookmarkController<T>>();
-
-            public static BookmarkController<T> Create(Host host)
-            {
-                BookmarkController<T> c;
-                if (Open.TryGetValue(host, out c))
-                {
-                    return c;
-                }
-                c = new BookmarkController<T>(host);
-                c.View.ViewClosedEvent += () => Open.Remove(host);
-                Open.Add(host, c);
-                return c;
             }
         }
 
@@ -686,6 +710,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     //catch silently
                 }
+
                 return true;
             }
 

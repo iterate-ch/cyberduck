@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -243,7 +244,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             @Override
             public MultipartPart call() throws BackgroundException {
                 if(overall.isCanceled()) {
-                    throw new ConnectionCanceledException();
+                    throw new TransferCanceledException();
                 }
                 final Map<String, String> requestParameters = new HashMap<String, String>();
                 requestParameters.put("uploadId", multipart.getUploadId());

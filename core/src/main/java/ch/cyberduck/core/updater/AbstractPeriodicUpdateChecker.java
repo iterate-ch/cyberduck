@@ -52,7 +52,7 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
     @Override
     public Duration register() {
         log.info(String.format("Register update checker hook after %s", delay));
-        timer.schedule(new TimerTask() {
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 if(log.isLoggable(Level.FINE)) {
@@ -66,7 +66,7 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
                     }
                 });
             }
-        }, delay.toMillis());
+        }, delay.toMillis(), delay.toMillis());
         return delay;
     }
 

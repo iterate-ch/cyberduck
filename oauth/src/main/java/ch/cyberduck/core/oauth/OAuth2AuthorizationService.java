@@ -26,11 +26,9 @@ import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +54,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 
 public class OAuth2AuthorizationService {
     private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
@@ -64,11 +62,8 @@ public class OAuth2AuthorizationService {
     private static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
     private static final String CYBERDUCK_REDIRECT_URI = "x-cyberduck-action:oauth";
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
     private final JsonFactory json
-        = new GsonFactory();
+        = new JacksonFactory();
 
     private final String tokenServerUrl;
     private final String authorizationServerUrl;
@@ -125,8 +120,14 @@ public class OAuth2AuthorizationService {
                 }
             }
             else {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Returned saved OAuth tokens %s for %s", saved, bookmark));
+                }
                 return saved;
             }
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Start new OAuth flow for %s", bookmark));
         }
         // Start OAuth2 flow within browser
         final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
@@ -147,17 +148,11 @@ public class OAuth2AuthorizationService {
 
         // Direct the user to an authorization page to grant access to their protected data.
         final String url = authorizationCodeRequestUrl.build();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Open browser with URL %s", url));
+        }
         if(!browser.open(url)) {
             log.warn(String.format("Failed to launch web browser for %s", url));
-        }
-        if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
-            final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
-            registry.register(new OAuth2TokenListener() {
-                @Override
-                public void callback(final String param) {
-                    log.warn(String.format("Callback with code %s from redirect uri not currently handled.", param));
-                }
-            }, cancel);
         }
         final Credentials input = prompt.prompt(bookmark,
             LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
@@ -165,9 +160,23 @@ public class OAuth2AuthorizationService {
             new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).password(true)
                 .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
         );
+        if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
+            final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
+            registry.register(new OAuth2TokenListener() {
+                @Override
+                public void callback(final String param) {
+                    log.warn(String.format("Callback with code %s", param));
+                    input.setPassword(param);
+
+                }
+            }, cancel);
+        }
         try {
             if(StringUtils.isBlank(input.getPassword())) {
                 throw new LoginCanceledException();
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Request tokens for authentication code %s", input.getPassword()));
             }
             // Swap the given authorization token for access/refresh tokens
             final TokenResponse response = flow.newTokenRequest(input.getPassword())
@@ -186,7 +195,7 @@ public class OAuth2AuthorizationService {
             throw new OAuthExceptionMappingService().map(e);
         }
         catch(HttpResponseException e) {
-            throw new HttpResponseExceptionMappingService().map(new org.apache.http.client
+            throw new DefaultHttpResponseExceptionMappingService().map(new org.apache.http.client
                 .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
         }
         catch(IOException e) {
@@ -217,7 +226,7 @@ public class OAuth2AuthorizationService {
             throw new OAuthExceptionMappingService().map(e);
         }
         catch(HttpResponseException e) {
-            throw new HttpResponseExceptionMappingService().map(new org.apache.http.client
+            throw new DefaultHttpResponseExceptionMappingService().map(new org.apache.http.client
                 .HttpResponseException(e.getStatusCode(), e.getStatusMessage()));
         }
         catch(IOException e) {

@@ -24,6 +24,8 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultUnlockCancelException;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class VaultRegistryTouchFeature<R> implements Touch<R> {
 
     private final Session<?> session;
@@ -42,13 +44,13 @@ public class VaultRegistryTouchFeature<R> implements Touch<R> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String filename) {
         // Run through registry without looking for vaults to circumvent deadlock due to synchronized load of vault
         try {
-            return registry.find(session, workdir, false).getFeature(session, Touch.class, proxy).isSupported(workdir);
+            return registry.find(session, workdir, false).getFeature(session, Touch.class, proxy).isSupported(workdir, StringUtils.EMPTY);
         }
         catch(VaultUnlockCancelException e) {
-            return proxy.isSupported(workdir);
+            return proxy.isSupported(workdir, StringUtils.EMPTY);
         }
     }
 

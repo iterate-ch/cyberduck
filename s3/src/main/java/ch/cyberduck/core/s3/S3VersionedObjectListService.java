@@ -188,7 +188,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                 try {
                     final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
-                        bucket.getName(), common, String.valueOf(Path.DELIMITER), 1,
+                        bucket.getName(), common, null, 1,
                         null, null, false);
                     if(versions.getItems().length == 1) {
                         final BaseVersionOrDeleteMarker version = versions.getItems()[0];
@@ -202,7 +202,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         else {
                             // no placeholder but objects inside - need to check if all of them are deleted
                             final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
-                                StringUtils.EMPTY, 1, null, false);
+                                null, 1, null, false);
                             if(unversioned.getObjects().length == 0) {
                                 attributes.setDuplicate(true);
                             }

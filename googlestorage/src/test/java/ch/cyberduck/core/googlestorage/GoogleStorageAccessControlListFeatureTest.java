@@ -33,8 +33,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 @Category(IntegrationTest.class)
@@ -62,7 +61,7 @@ public class GoogleStorageAccessControlListFeatureTest extends AbstractGoogleSto
         final Acl acl = f.getPermission(container);
         assertTrue(acl.containsKey(new Acl.GroupUser("cloud-storage-analytics@google.com")));
         assertTrue(acl.containsKey(new Acl.GroupUser(acl.getOwner().getIdentifier())));
-        assertTrue(acl.containsKey(new Acl.GroupUser(Acl.GroupUser.EVERYONE)));
+        assertFalse(acl.containsKey(new Acl.GroupUser(Acl.GroupUser.EVERYONE)));
     }
 
     @Test

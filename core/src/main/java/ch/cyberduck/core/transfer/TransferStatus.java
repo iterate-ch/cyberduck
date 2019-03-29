@@ -575,6 +575,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.lockId = lockId;
     }
 
+    public TransferStatus withLockId(final Object lockId) {
+        this.setLockId(lockId);
+        return this;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if(this == o) {

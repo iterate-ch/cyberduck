@@ -44,8 +44,7 @@ public class Path extends AbstractPath implements Referenceable, Serializable {
     /**
      * The file type
      */
-    private EnumSet<Type> type
-        = EnumSet.noneOf(Type.class);
+    private EnumSet<Type> type;
 
     /**
      * Attributes denoting this path

@@ -64,7 +64,6 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
-import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
@@ -73,11 +72,9 @@ import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -593,8 +590,7 @@ public class BrowserController extends WindowController
         }
         if(downloads.size() > 0) {
             final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
-            final TransferOptions options = new TransferOptions();
-            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, options, downloads));
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, downloads));
         }
     }
 
@@ -605,7 +601,7 @@ public class BrowserController extends WindowController
                 return selected.getParent();
             }
         }
-        return this.workdir();
+        return workdir;
     }
 
     /**
@@ -860,7 +856,7 @@ public class BrowserController extends WindowController
                 final List<Path> s = BrowserController.this.getSelectedPaths();
                 if(s.isEmpty()) {
                     if(BrowserController.this.isMounted()) {
-                        return Collections.singletonList(BrowserController.this.workdir());
+                        return Collections.singletonList(workdir);
                     }
                 }
                 return s;
@@ -883,7 +879,7 @@ public class BrowserController extends WindowController
                 final List<Path> s = BrowserController.this.getSelectedPaths();
                 if(s.isEmpty()) {
                     if(BrowserController.this.isMounted()) {
-                        return Collections.singletonList(BrowserController.this.workdir());
+                        return Collections.singletonList(workdir);
                     }
                 }
                 return s;
@@ -1308,7 +1304,7 @@ public class BrowserController extends WindowController
 
             @Override
             public void tableView_willDisplayCell_forTableColumn_row(final NSTableView view, final NSTextFieldCell cell, final NSTableColumn tableColumn, final NSInteger row) {
-                final Path file = browserListModel.get(BrowserController.this.workdir()).get(row.intValue());
+                final Path file = browserListModel.get(workdir).get(row.intValue());
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
                     if(!BrowserController.this.isConnected() || !SearchFilterFactory.HIDDEN_FILTER.accept(file)) {
                         cell.setTextColor(NSColor.disabledControlTextColor());
@@ -1854,7 +1850,7 @@ public class BrowserController extends WindowController
         if(this.isMounted()) {
             Path selected = this.getSelectedPath();
             if(null == selected || !selected.isDirectory()) {
-                selected = this.workdir();
+                selected = workdir;
             }
             bookmark = new HostDictionary().deserialize(pool.getHost().serialize(SerializerFactory.get()));
             // Make sure a new UUID is asssigned for duplicate
@@ -1980,7 +1976,7 @@ public class BrowserController extends WindowController
     public void backButtonClicked(final ID sender) {
         final Path selected = navigation.back();
         if(selected != null) {
-            final Path previous = this.workdir();
+            final Path previous = workdir;
             if(previous.getParent().equals(selected)) {
                 this.setWorkdir(selected, previous);
             }
@@ -2009,7 +2005,7 @@ public class BrowserController extends WindowController
 
     @Action
     public void upButtonClicked(final ID sender) {
-        final Path previous = this.workdir();
+        final Path previous = workdir;
         this.setWorkdir(previous.getParent(), previous);
     }
 
@@ -2222,7 +2218,7 @@ public class BrowserController extends WindowController
     public void newBrowserButtonClicked(final ID sender) {
         Path selected = this.getSelectedPath();
         if(null == selected || !selected.isDirectory()) {
-            selected = this.workdir();
+            selected = workdir;
         }
         BrowserController c = MainController.newDocument(true);
         final Host host = new HostDictionary().deserialize(pool.getHost().serialize(SerializerFactory.get()));
@@ -2259,7 +2255,7 @@ public class BrowserController extends WindowController
                     new TouchWorker(file) {
                         @Override
                         public void cleanup(final Path folder) {
-                            reload(workdir(), Collections.singletonList(file), Collections.singletonList(file));
+                            reload(workdir, Collections.singletonList(file), Collections.singletonList(file));
                             if(edit) {
                                 file.attributes().setSize(0L);
                                 edit(file);
@@ -2279,7 +2275,7 @@ public class BrowserController extends WindowController
                 background(new WorkerBackgroundAction<Path>(BrowserController.this, pool, new CreateSymlinkWorker(link, selected.getName()) {
                     @Override
                     public void cleanup(final Path symlink) {
-                        reload(workdir(), Collections.singletonList(symlink), Collections.singletonList(symlink));
+                        reload(workdir, Collections.singletonList(symlink), Collections.singletonList(symlink));
                     }
                 }));
             }
@@ -2303,7 +2299,7 @@ public class BrowserController extends WindowController
                                         final List<Path> changed = new ArrayList<>();
                                         changed.addAll(result.keySet());
                                         changed.addAll(result.values());
-                                        reload(workdir(), changed, new ArrayList<Path>(selected.values()));
+                                        reload(workdir, changed, new ArrayList<Path>(selected.values()));
                                     }
                                 }
                             )
@@ -2327,7 +2323,7 @@ public class BrowserController extends WindowController
                     new CreateDirectoryWorker(folder, region) {
                         @Override
                         public void cleanup(final Path folder) {
-                            reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
+                            reload(workdir, Collections.singletonList(folder), Collections.singletonList(folder));
                         }
                     }));
             }
@@ -2346,7 +2342,7 @@ public class BrowserController extends WindowController
                     new CreateVaultWorker(region, passphrase, PasswordStoreFactory.get(), VaultFactory.get(folder, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER)) {
                         @Override
                         public void cleanup(final Path vault) {
-                            reload(workdir(), Collections.singletonList(folder), Collections.singletonList(folder));
+                            reload(workdir, Collections.singletonList(folder), Collections.singletonList(folder));
                         }
                     })
                 );
@@ -2419,7 +2415,7 @@ public class BrowserController extends WindowController
             list = pool.getFeature(UrlProvider.class).toUrl(this.getSelectedPath());
         }
         else {
-            list = pool.getFeature(UrlProvider.class).toUrl(this.workdir());
+            list = pool.getFeature(UrlProvider.class).toUrl(workdir);
         }
         if(!list.isEmpty()) {
             BrowserLauncherFactory.get().open(list.find(DescriptiveUrl.Type.http).getUrl());
@@ -2553,7 +2549,7 @@ public class BrowserController extends WindowController
             selection = this.getSelectedPath();
         }
         else {
-            selection = this.workdir();
+            selection = workdir;
         }
         syncPanel = NSOpenPanel.openPanel();
         syncPanel.setCanChooseDirectories(selection.isDirectory());
@@ -2582,7 +2578,7 @@ public class BrowserController extends WindowController
                     selected = this.getSelectedPath();
                 }
                 else {
-                    selected = this.workdir();
+                    selected = workdir;
                 }
                 this.transfer(new SyncTransfer(pool.getHost(), new TransferItem(selected, target)));
             }
@@ -2605,8 +2601,8 @@ public class BrowserController extends WindowController
         uploadPanel = NSOpenPanel.openPanel();
         uploadPanel.setCanChooseDirectories(true);
         uploadPanel.setCanChooseFiles(pool.getFeature(Touch.class).isSupported(
-            new UploadTargetFinder(workdir).find(this.getSelectedPath())
-        ));
+            new UploadTargetFinder(workdir).find(this.getSelectedPath()),
+            StringUtils.EMPTY));
         uploadPanel.setCanCreateDirectories(false);
         uploadPanel.setTreatsFilePackagesAsDirectories(true);
         uploadPanel.setAllowsMultipleSelection(true);
@@ -2882,7 +2878,7 @@ public class BrowserController extends WindowController
         pasteboard.addAll(s);
         final NSPasteboard clipboard = NSPasteboard.generalPasteboard();
         if(s.size() == 0) {
-            s.add(this.workdir());
+            s.add(workdir);
         }
         clipboard.declareTypes(NSArray.arrayWithObject(
             NSString.stringWithString(NSPasteboard.StringPboardType)), null);
@@ -2957,7 +2953,7 @@ public class BrowserController extends WindowController
         }
         else {
             final Map<Path, Path> files = new HashMap<Path, Path>();
-            final Path parent = this.workdir();
+            final Path parent = workdir;
             for(final Path next : pasteboard) {
                 Path renamed = new Path(parent, next.getName(), next.getType(), next.attributes());
                 files.put(next, renamed);
@@ -2990,7 +2986,6 @@ public class BrowserController extends WindowController
             if(o != null) {
                 if(o.isKindOfClass(Rococoa.createClass("NSArray", NSArray._Class.class))) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
-                    final Path workdir = this.workdir();
                     final List<TransferItem> uploads = new ArrayList<TransferItem>();
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final Local local = LocalFactory.get(elements.objectAtIndex(new NSUInteger(i)).toString());
@@ -3014,7 +3009,7 @@ public class BrowserController extends WindowController
             }
         }
         if(null == workdir) {
-            workdir = this.workdir();
+            workdir = this.workdir;
         }
         try {
             final TerminalService terminal = TerminalServiceFactory.get();
@@ -3564,7 +3559,7 @@ public class BrowserController extends WindowController
         public String tableView_toolTipForCell_rect_tableColumn_row_mouseLocation(NSTableView t, NSCell cell,
                                                                                   ID rect, NSTableColumn c,
                                                                                   NSInteger row, NSPoint mouseLocation) {
-            return this.tooltip(browserListModel.get(workdir()).get(row.intValue()), BrowserColumn.valueOf(c.identifier()));
+            return this.tooltip(browserListModel.get(workdir).get(row.intValue()), BrowserColumn.valueOf(c.identifier()));
         }
 
         @Override
@@ -3722,18 +3717,18 @@ public class BrowserController extends WindowController
         }
     }
 
-    private final class QuicklookTransferBackgroundAction extends TransferBackgroundAction {
+    private final class QuicklookTransferBackgroundAction extends BrowserTransferBackgroundAction {
         private final QuickLook quicklook;
         private final List<TransferItem> downloads;
 
         public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session, final Transfer download,
-                                                 final TransferOptions options, final List<TransferItem> downloads) {
-            super(controller, session, SessionPool.DISCONNECTED, new TransferAdapter() {
+                                                 final List<TransferItem> downloads) {
+            super(controller, session, download, new TransferCallback() {
                 @Override
-                public void transferDidProgress(final Transfer transfer, final TransferProgress status) {
-                    controller.message(status.getProgress());
+                public void complete(final Transfer transfer) {
+                    //
                 }
-            }, controller, download, options, new TransferPrompt() {
+            }, new TransferPrompt() {
                 @Override
                 public TransferAction prompt(final TransferItem item) {
                     return TransferAction.comparison;
@@ -3748,7 +3743,7 @@ public class BrowserController extends WindowController
                 public void message(final String message) {
                     controller.message(message);
                 }
-            }, new DisabledTransferErrorCallback());
+            });
             this.quicklook = quicklook;
             this.downloads = downloads;
         }

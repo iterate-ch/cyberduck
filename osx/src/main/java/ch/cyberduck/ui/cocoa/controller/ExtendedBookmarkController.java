@@ -319,10 +319,4 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     public void helpButtonClicked(final ID sender) {
         BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help());
     }
-
-    @Override
-    public boolean validate() {
-        options.password(false);
-        return super.validate();
-    }
 }

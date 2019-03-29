@@ -468,7 +468,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 return NSDraggingInfo.NSDragOperationNone;
             }
             final Touch feature = controller.getSession().getFeature(Touch.class);
-            if(!feature.isSupported(destination)) {
+            if(!feature.isSupported(destination, StringUtils.EMPTY)) {
                 // Target file system does not support creating files. Creating files is not supported
                 // for example in root of cloud storage accounts.
                 return NSDraggingInfo.NSDragOperationNone;

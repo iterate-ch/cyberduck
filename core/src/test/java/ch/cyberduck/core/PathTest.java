@@ -149,4 +149,9 @@ public class PathTest {
         assertTrue(attributes.isSymbolicLink());
         assertTrue(attributes.isDirectory());
     }
+
+    @Test
+    public void testHashcodeCollision() {
+        assertNotEquals(new Path("19.vcf.gz", EnumSet.of(Path.Type.file)), new Path("0X.vcf.gz", EnumSet.of(Path.Type.file)));
+    }
 }
