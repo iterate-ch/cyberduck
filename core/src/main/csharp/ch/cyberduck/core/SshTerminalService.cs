@@ -16,14 +16,17 @@
 // feedback@cyberduck.io
 //
 
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
+using org.apache.log4j;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 using Application = ch.cyberduck.core.local.Application;
 using Path = System.IO.Path;
 
@@ -31,6 +34,9 @@ namespace Ch.Cyberduck.Core
 {
     public class SshTerminalService : TerminalService
     {
+        private const string OPENSSH_FORMAT = "{0}@{1} -T -p {2} \"cd '{3}'; $SHELL\"";
+        private static Logger logger = Logger.getLogger(typeof(SshTerminalService).FullName);
+
         public void open(Host host, ch.cyberduck.core.Path workdir)
         {
             if (Utils.IsWin101809)
@@ -51,21 +57,29 @@ namespace Ch.Cyberduck.Core
             TryStartPuTTy(host, workdir.getAbsolute());
         }
 
-        private static string GetSystemPath()
+        private static string GetSystemPath(string path)
         {
             var system = Environment.GetFolderPath(Environment.SpecialFolder.System);
-            if (Environment.Is64BitOperatingSystem)
+            var test = Path.Combine(system, path);
+            if (!File.Exists(test))
             {
                 system = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "SysNative");
+                test = Path.Combine(system, path);
             }
-            return system;
+
+            return test;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string CreateOpenSSHCompatibleArguments(string username, string hostname, int port, string workdir)
+        {
+            return string.Format(OPENSSH_FORMAT, username, hostname, port, workdir);
         }
 
         private bool TryStartBashSSH(Host host, string workdir)
         {
-            var system = GetSystemPath();
-            var bash = Path.Combine(system, "bash.exe");
-            if (!File.Exists(bash))
+            var wsl = GetSystemPath("wsl.exe");
+            if (!File.Exists(wsl))
             {
                 return false;
             }
@@ -73,56 +87,67 @@ namespace Ch.Cyberduck.Core
             var credentials = host.getCredentials();
             if (credentials.isPublicKeyAuthentication())
             {
-                // there is no way of determining the mount path for each
-                // and every distribution. Assume no public key authentication.
+                if (logger.isInfoEnabled())
+                {
+                    logger.info("OpenSSH over Bash might complain 0777 permissions on DrvFS locations. Skipping Bash.");
+                }
                 return false;
             }
 
-            var hostname = host.getHostname();
-            var username = credentials.getUsername();
-            var port = host.getPort();
-
-            Process process = new Process();
-            process.StartInfo.FileName = bash;
-            process.StartInfo.Arguments = $"-c \"{$"ssh -T -P {port} {username}@{hostname} 'cd \\\"{workdir}\\\"'"}\"";
-
-            var success = process.Start();
-            if (success)
+            using (var process = new Process()
             {
-                if (!process.WaitForExit(500))
+                StartInfo = new ProcessStartInfo()
                 {
-                    return true;
+                    FileName = wsl,
+                    Arguments = "ssh " + CreateOpenSSHCompatibleArguments(
+                        credentials.getUsername(),
+                        host.getHostname(),
+                        host.getPort(),
+                        workdir)
                 }
-                return process.ExitCode == 0;
+            })
+            {
+                var success = process.Start();
+                if (success)
+                {
+                    if (!process.WaitForExit(500))
+                    {
+                        return true;
+                    }
+                    return process.ExitCode == 0;
+                }
+                return false;
             }
-            return false;
         }
 
         private bool TryStartBuiltinOpenSSH(Host host, string workdir)
         {
-            var system = GetSystemPath();
-            var openSSH = new DirectoryInfo(Path.Combine(system, "OpenSSH"));
-            if (!openSSH.Exists)
+            var ssh = GetSystemPath(Path.Combine("OpenSSH", "ssh.exe"));
+            if (!File.Exists(ssh))
             {
-                return false;
-            }
-            var ssh = new FileInfo(Path.Combine(openSSH.FullName, "ssh.exe"));
-            if (!ssh.Exists)
-            {
+                logger.warn("Native openssh ssh.exe not found.");
                 return false;
             }
 
             var credentials = host.getCredentials();
             var identity = credentials.isPublicKeyAuthentication();
-            var args = identity ? string.Format("-i \"{0}\"", credentials.getIdentity().getAbsolute()) : "";
-            var hostname = host.getHostname();
-            var username = credentials.getUsername();
-            var port = host.getPort();
 
-            Process process = new Process();
-            process.StartInfo.FileName = ssh.FullName;
-            process.StartInfo.Arguments = $"{args} {username}@{hostname} -T -P {port} \"cd \\\"{workdir}\\\";\\$SHELL\"";
-            return process.Start();
+            var args = identity ? string.Format("-i \"{0}\"", credentials.getIdentity().getAbsolute()) : "";
+            using (var process = new Process()
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = ssh,
+                    Arguments = args + " " + CreateOpenSSHCompatibleArguments(
+                        credentials.getUsername(),
+                        host.getHostname(),
+                        host.getPort(),
+                        workdir)
+                }
+            })
+            {
+                return process.Start();
+            }
         }
 
         private bool TryStartPuTTy(Host host, string workdir)
