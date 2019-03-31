@@ -39,7 +39,11 @@ public class DriveSharingUrlProvider implements PromptUrlProvider {
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
-        return Type.download.equals(type);
+        switch(type) {
+            case download:
+                return file.isFile();
+        }
+        return false;
     }
 
     @Override
