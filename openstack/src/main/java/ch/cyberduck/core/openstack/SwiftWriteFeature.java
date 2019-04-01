@@ -26,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -56,10 +57,10 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     private static final Logger log = Logger.getLogger(SwiftSession.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final SwiftSession session;
     private final SwiftSegmentService segmentService;
@@ -70,9 +71,9 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this(session, regionService,
-                new SwiftObjectListService(session, regionService),
-                new SwiftSegmentService(session, regionService),
-                new DefaultFindFeature(session));
+            new SwiftObjectListService(session, regionService),
+            new SwiftSegmentService(session, regionService),
+            new DefaultFindFeature(session));
     }
 
     public SwiftWriteFeature(final SwiftSession session, final SwiftRegionService regionService,
@@ -113,8 +114,8 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                     // Previous
                     final HashMap<String, String> headers = new HashMap<>(status.getMetadata());
                     final String checksum = session.getClient().storeObject(
-                            regionService.lookup(file),
-                            containerService.getContainer(file).getName(), containerService.getKey(file),
+                        regionService.lookup(file),
+                        containerService.getContainer(file).getName(), containerService.getKey(file),
                         entity, headers, Checksum.NONE == status.getChecksum() ? null : status.getChecksum().hash);
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Saved object %s with checksum %s", file, checksum));
@@ -144,9 +145,15 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(length >= preferences.getLong("openstack.upload.largeobject.threshold")) {
             if(preferences.getBoolean("openstack.upload.largeobject")) {
+                final List<Path> segments;
                 long size = 0L;
-                final List<Path> segments = listService.list(segmentService.getSegmentsDirectory(file, length), new DisabledListProgressListener()).toList();
-                if(segments.isEmpty()) {
+                try {
+                    segments = listService.list(segmentService.getSegmentsDirectory(file, length), new DisabledListProgressListener()).toList();
+                    if(segments.isEmpty()) {
+                        return Write.notfound;
+                    }
+                }
+                catch(NotfoundException e) {
                     return Write.notfound;
                 }
                 for(Path segment : segments) {
