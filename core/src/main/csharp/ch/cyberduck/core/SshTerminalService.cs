@@ -82,7 +82,6 @@ namespace Ch.Cyberduck.Core
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string CreateOpenSSHCompatibleArguments(string username, string identity, string hostname, int port, string workdir)
         {
             return string.Format(
@@ -101,10 +100,7 @@ namespace Ch.Cyberduck.Core
             var credentials = host.getCredentials();
             if (credentials.isPublicKeyAuthentication())
             {
-                if (logger.isInfoEnabled())
-                {
-                    logger.info("OpenSSH over Bash might complain 0777 permissions on DrvFS locations. Skipping Bash.");
-                }
+                logger.warn("OpenSSH over Bash might complain 0777 permissions on DrvFS locations. Skipping Bash.");
                 return false;
             }
 
