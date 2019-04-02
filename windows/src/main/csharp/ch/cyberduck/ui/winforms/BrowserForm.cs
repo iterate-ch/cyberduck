@@ -47,6 +47,8 @@ using org.apache.log4j;
 using Application = ch.cyberduck.core.local.Application;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
+using StructureMap;
+using Ch.Cyberduck.Ui.Core.Contracts;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -1232,6 +1234,14 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
                 c++;
             }
+        }
+
+        void IView.BringToFront()
+        {
+            var desktopManager = ObjectFactory.GetInstance<IVirtualDesktopManager>();
+            desktopManager.BringToCurrentDesktop(this);
+
+            this.BringToFront();
         }
 
         private void SetShortcutText(MenuItem target, ToolStripMenuItem source, string shortCutText)
