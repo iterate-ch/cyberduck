@@ -41,9 +41,27 @@ public class AliasFilesystemBookmarkResolverTest {
     }
 
     @Test
-    public void testCreateFile() throws Exception {
+    public void testCreateFileTemporary() throws Exception {
         final String name = UUID.randomUUID().toString();
         Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        new DefaultLocalTouchFeature().touch(l);
+        try {
+            final AliasFilesystemBookmarkResolver resolver = new AliasFilesystemBookmarkResolver();
+            final String bookmark = resolver.create(l);
+            assertNotNull(bookmark);
+            l.setBookmark(bookmark);
+            final NSURL resolved = resolver.resolve(l, false);
+            assertNull(resolved);
+        }
+        finally {
+            l.delete();
+        }
+    }
+
+    @Test
+    public void testCreateFileUserdir() throws Exception {
+        final String name = UUID.randomUUID().toString();
+        Local l = new FinderLocal(System.getProperty("user.dir"), name);
         new DefaultLocalTouchFeature().touch(l);
         try {
             final AliasFilesystemBookmarkResolver resolver = new AliasFilesystemBookmarkResolver();
@@ -57,5 +75,4 @@ public class AliasFilesystemBookmarkResolverTest {
             l.delete();
         }
     }
-
 }
