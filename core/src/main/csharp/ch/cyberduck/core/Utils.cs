@@ -71,8 +71,9 @@ namespace Ch.Cyberduck.Core
             "windows-31j"
         };
 
-        public static readonly bool IsWin10 = Environment.OSVersion.Version.Major == 10;
-        public static readonly bool IsWin10FallCreatorsUpdate = IsWin10 && Environment.OSVersion.Version.Build >= 15063;
+        public static bool IsWin10 => OSVersion.IsVersion(OSVersion.Windows10.Release);
+        public static bool IsWin10FallCreatorsUpdate => OSVersion.IsVersion(OSVersion.Windows10.V1709);
+        public static bool IsWin101809 => OSVersion.IsVersion(OSVersion.Windows10.V1809);
 
         // Original by Matteo Pagani (https://github.com/qmatteoq/DesktopBridgeHelpers) licensed under MIT
         // modified by Jöran Malek for iterate GmbH
@@ -556,6 +557,39 @@ namespace Ch.Cyberduck.Core
                 }
             }
             return null;
+        }
+
+        public static class OSVersion
+        {
+            public static readonly System.Version Windows7 = new System.Version(6, 1, 7600);
+            public static readonly System.Version Windows7SP1 = new System.Version(6, 1, 7601);
+            public static readonly System.Version Windows8 = new System.Version(6, 2);
+            public static readonly System.Version Windows81 = new System.Version(6, 3);
+
+            public static class Windows10
+            {
+                public static readonly System.Version Release = new System.Version(10, 0);
+                public static readonly System.Version V1511 = new System.Version(10, 0, 10586);
+                public static readonly System.Version V1607 = new System.Version(10, 0, 14393);
+                public static readonly System.Version V1703 = new System.Version(10, 0, 15063);
+                public static readonly System.Version V1709 = new System.Version(10, 0, 19266);
+                public static readonly System.Version V1803 = new System.Version(10, 0, 17134);
+                public static readonly System.Version V1809 = new System.Version(10, 0, 17763);
+            }
+
+            public static bool IsVersion(System.Version version)
+            {
+                var os = Environment.OSVersion.Version;
+
+                if (version.Build != 0)
+                {
+                    if (os.Build >= version.Build)
+                    {
+                        return true;
+                    }
+                }
+                return os.Major >= version.Major && os.Minor >= version.Minor;
+            }
         }
     }
 }
