@@ -193,8 +193,22 @@ public class FinderLocalTest {
     }
 
     @Test
-    public void testLock() throws Exception {
+    public void testLockTemporary() throws Exception {
         FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver());
+        new DefaultLocalTouchFeature().touch(l);
+        try {
+            final NSURL lock = l.lock(false);
+            assertNull(lock);
+            l.release(lock);
+        }
+        finally {
+            l.delete();
+        }
+    }
+
+    @Test
+    public void testLockUserdir() throws Exception {
+        FinderLocal l = new FinderLocal(System.getProperty("user.dir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver());
         new DefaultLocalTouchFeature().touch(l);
         try {
             final NSURL lock = l.lock(false);
