@@ -69,15 +69,12 @@ public class SDSListService implements ListService {
                             break;
                         case FOLDER:
                             type = EnumSet.of(Path.Type.directory);
-                            if(node.getIsEncrypted()) {
-                                type.add(Path.Type.decrypted);
-                            }
                             break;
                         default:
                             type = EnumSet.of(Path.Type.file);
-                            if(node.getIsEncrypted()) {
-                                type.add(Path.Type.decrypted);
-                            }
+                    }
+                    if(node.getIsEncrypted()) {
+                        type.add(Path.Type.decrypted);
                     }
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     children.add(file);

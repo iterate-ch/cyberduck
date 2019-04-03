@@ -26,7 +26,6 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -334,8 +333,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final String roomName = new AlphanumericRandomStringService().random();
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume),
-            new PathAttributes().withCustom(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(true))), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest();
         encrypt.setIsEncrypted(true);
         new NodesApi(session.getClient()).encryptRoom(Long.parseLong(new SDSNodeIdProvider(session).withCache(cache).getFileid(room,
@@ -345,8 +343,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         // create file inside encrypted room
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(encrypted, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.directory)), null, new TransferStatus());
-        final Path renamed = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume),
-            new PathAttributes().withCustom(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(true)));
+        final Path renamed = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         final MoveWorker worker = new MoveWorker(Collections.singletonMap(encrypted, renamed), new SessionPool.SingleSessionPool(session), PathCache.empty(),
             new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);

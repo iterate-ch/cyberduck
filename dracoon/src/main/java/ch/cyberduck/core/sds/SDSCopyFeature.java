@@ -72,8 +72,7 @@ public class SDSCopyFeature implements Copy {
             // Rooms cannot be copied
             return false;
         }
-        if(Boolean.valueOf(containerService.getContainer(source).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))
-            ^ Boolean.valueOf(containerService.getContainer(target).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))) {
+        if(nodeid.isEncrypted(source) ^ nodeid.isEncrypted(target)) {
             // If source xor target is encrypted data room we cannot use server side copy
             return false;
         }
