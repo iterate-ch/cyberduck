@@ -28,10 +28,12 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Objects;
 
 public class SDSCopyFeature implements Copy {
+    private static final Logger log = Logger.getLogger(SDSCopyFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -75,14 +77,18 @@ public class SDSCopyFeature implements Copy {
         if(Boolean.valueOf(containerService.getContainer(source).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))
             ^ Boolean.valueOf(containerService.getContainer(target).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))) {
             // If source xor target is encrypted data room we cannot use server side copy
+            log.warn(String.format("Cannot use server side copy with source container %s and target container %s",
+                containerService.getContainer(source), containerService.getContainer(target)));
             return false;
         }
         if(!StringUtils.equals(source.getName(), target.getName())) {
             // Cannot rename node to be copied at the same time
+            log.warn(String.format("Deny copy of %s for changed name %s", source, target.getName()));
             return false;
         }
         if(Objects.equals(source.getParent(), target.getParent())) {
             // Nodes must not have the same parent
+            log.warn(String.format("Deny copy of %s to %s", source, target));
             return false;
         }
         return true;

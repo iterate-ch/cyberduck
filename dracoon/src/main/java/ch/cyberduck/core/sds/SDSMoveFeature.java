@@ -33,10 +33,12 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UpdateRoomRequest;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 
 public class SDSMoveFeature implements Move {
+    private static final Logger log = Logger.getLogger(SDSMoveFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -53,6 +55,7 @@ public class SDSMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
+                log.warn(String.format("Delete existing file %s", renamed));
                 new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(renamed), connectionCallback, callback);
             }
             final long nodeId = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
@@ -103,20 +106,27 @@ public class SDSMoveFeature implements Move {
         if(containerService.isContainer(source)) {
             if(!new SimplePathPredicate(source.getParent()).test(target.getParent())) {
                 // Cannot move data room but only rename
+                log.warn(String.format("Deny moving data room %s", source));
                 return false;
             }
         }
         if(target.getParent().isRoot() && !source.getParent().isRoot()) {
             // Cannot move file or directory to root but only rename data rooms
+            log.warn(String.format("Deny moving file %s to root", source));
             return false;
         }
         if(!new SDSTouchFeature(session, nodeid).validate(target.getName())) {
+            log.warn(String.format("Validation failed for target name %s", target));
             return false;
         }
         final SDSPermissionsFeature acl = new SDSPermissionsFeature(session, nodeid);
-        return acl.containsRole(source, SDSPermissionsFeature.CHANGE_ROLE) &&
+        final boolean permissions = acl.containsRole(source, SDSPermissionsFeature.CHANGE_ROLE) &&
             acl.containsRole(source, SDSPermissionsFeature.DELETE_ROLE) &&
             acl.containsRole(target, SDSPermissionsFeature.CREATE_ROLE);
+        if(!permissions) {
+            log.warn(String.format("Deny move of %s with missing permissions for user", source));
+        }
+        return permissions;
     }
 
     @Override
