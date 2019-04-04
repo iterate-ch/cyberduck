@@ -21,6 +21,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -115,7 +116,8 @@ public class SDSNodeIdProvider implements IdProvider {
         if(file.isRoot()) {
             return false;
         }
-        return file.getType().contains(Path.Type.decrypted);
+        final Path container = new PathContainerService().getContainer(file);
+        return container.getType().contains(Path.Type.decrypted);
     }
 
     public void setFileKey(final TransferStatus status) throws BackgroundException {
