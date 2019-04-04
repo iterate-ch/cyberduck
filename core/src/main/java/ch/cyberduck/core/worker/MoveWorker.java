@@ -93,8 +93,12 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     throw new ConnectionCanceledException();
                 }
                 final Map<Path, Path> recursive = this.compile(feature, list, entry.getKey(), entry.getValue());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Compiled recursive list %s", recursive));
+                }
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                     if(r.getKey().isDirectory() && !feature.isRecursive(r.getKey(), r.getValue())) {
+                        log.warn(String.format("Move operation is not recursive. Create directory %s", r.getValue()));
                         // Create directory unless copy implementation is recursive
                         result.put(r.getKey(), session.getFeature(Directory.class).mkdir(r.getValue(), r.getKey().attributes().getRegion(), new TransferStatus()));
                     }
@@ -116,6 +120,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                 }
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                     if(r.getKey().isDirectory() && !feature.isRecursive(r.getKey(), r.getValue())) {
+                        log.warn(String.format("Delete source directory %s", r.getKey()));
                         session.getFeature(Delete.class).delete(Collections.singletonList(r.getKey()), callback, new Delete.DisabledCallback());
                     }
                 }
