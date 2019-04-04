@@ -167,7 +167,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testCopyFromEncryptedDataRoom() throws Exception {
-        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room1 = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
@@ -220,7 +220,7 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testCopyToEncryptedDataRoom() throws Exception {
-        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room1 = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
@@ -259,9 +259,9 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testCopyFileWithRenameBetweenEncryptedDataRooms() throws Exception {
-        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room1 = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
-        final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room2 = new Path("test-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -309,9 +309,9 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testCopyFileSameNameBetweenEncryptedDataRooms() throws Exception {
-        final Path room1 = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
+        final Path room1 = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         room1.attributes().getAcl().addAll(new Acl.EmailUser(System.getProperties().getProperty("sds.user")), SDSPermissionsFeature.DELETE_ROLE);
-        final Path room2 = new Path("CD-TEST-ENCRYPTED-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
+        final Path room2 = new Path("test-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
