@@ -112,6 +112,9 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     public DescriptiveUrl toDownloadUrl(final Path file, final CreateDownloadShareRequest options,
                                         final PasswordCallback callback) throws BackgroundException {
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create download share for %s", file));
+            }
             final Long fileid = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
             if(nodeid.isEncrypted(file)) {
                 // get existing file key associated with the sharing user
@@ -162,6 +165,9 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create upload share for %s", file));
+            }
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(
                 options.targetId(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()))), StringUtils.EMPTY, null);
             final String help;

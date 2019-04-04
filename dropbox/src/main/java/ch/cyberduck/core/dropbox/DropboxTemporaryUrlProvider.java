@@ -46,6 +46,9 @@ public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create temporary link for %s", file));
+            }
             // This link will expire in four hours and afterwards you will get 410 Gone.
             final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryLink(file.getAbsolute()).getLink();
             // Determine expiry time for URL
@@ -65,6 +68,9 @@ public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create temporary upload link for %s", file));
+            }
             final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryUploadLink(new CommitInfo(file.getAbsolute())).getLink();
             return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.http, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3")));
         }
