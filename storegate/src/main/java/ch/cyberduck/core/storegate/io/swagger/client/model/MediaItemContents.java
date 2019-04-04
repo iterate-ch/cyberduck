@@ -29,7 +29,7 @@ import java.util.List;
  * Contains a list of mediaItems
  */
 @ApiModel(description = "Contains a list of mediaItems")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class MediaItemContents {
   @JsonProperty("parent")
   private MediaFolder parent = null;
@@ -65,7 +65,7 @@ public class MediaItemContents {
 
   public MediaItemContents addMediaItemsItem(MediaItem mediaItemsItem) {
     if (this.mediaItems == null) {
-      this.mediaItems = new ArrayList<>();
+      this.mediaItems = new ArrayList<MediaItem>();
     }
     this.mediaItems.add(mediaItemsItem);
     return this;

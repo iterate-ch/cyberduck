@@ -29,7 +29,7 @@ import java.util.List;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class PaymentInfo {
   @JsonProperty("paymentMethodId")
   private String paymentMethodId = null;
@@ -131,7 +131,7 @@ public class PaymentInfo {
 
   public PaymentInfo addPaymentMethodsItem(PaymentMethod paymentMethodsItem) {
     if (this.paymentMethods == null) {
-      this.paymentMethods = new ArrayList<>();
+      this.paymentMethods = new ArrayList<PaymentMethod>();
     }
     this.paymentMethods.add(paymentMethodsItem);
     return this;
@@ -157,7 +157,7 @@ public class PaymentInfo {
 
   public PaymentInfo addPaymentPeriodsItem(PaymentPeriod paymentPeriodsItem) {
     if (this.paymentPeriods == null) {
-      this.paymentPeriods = new ArrayList<>();
+      this.paymentPeriods = new ArrayList<PaymentPeriod>();
     }
     this.paymentPeriods.add(paymentPeriodsItem);
     return this;

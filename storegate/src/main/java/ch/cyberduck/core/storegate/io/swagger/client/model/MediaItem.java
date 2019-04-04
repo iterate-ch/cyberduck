@@ -20,13 +20,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * A media item (a image in a album).
  */
 @ApiModel(description = "A media item (a image in a album).")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class MediaItem {
   @JsonProperty("id")
   private String id = null;
@@ -41,10 +41,10 @@ public class MediaItem {
   private String description = null;
 
   @JsonProperty("created")
-  private LocalDateTime created = null;
+  private DateTime created = null;
 
   @JsonProperty("modified")
-  private LocalDateTime modified = null;
+  private DateTime modified = null;
 
   @JsonProperty("transformAngle")
   private Integer transformAngle = null;
@@ -121,7 +121,7 @@ public class MediaItem {
     this.description = description;
   }
 
-  public MediaItem created(LocalDateTime created) {
+  public MediaItem created(DateTime created) {
     this.created = created;
     return this;
   }
@@ -131,15 +131,15 @@ public class MediaItem {
    * @return created
   **/
   @ApiModelProperty(value = "When the image was created.")
-  public LocalDateTime getCreated() {
+  public DateTime getCreated() {
     return created;
   }
 
-  public void setCreated(LocalDateTime created) {
+  public void setCreated(DateTime created) {
     this.created = created;
   }
 
-  public MediaItem modified(LocalDateTime modified) {
+  public MediaItem modified(DateTime modified) {
     this.modified = modified;
     return this;
   }
@@ -149,11 +149,11 @@ public class MediaItem {
    * @return modified
   **/
   @ApiModelProperty(value = "When the image last was modified.")
-  public LocalDateTime getModified() {
+  public DateTime getModified() {
     return modified;
   }
 
-  public void setModified(LocalDateTime modified) {
+  public void setModified(DateTime modified) {
     this.modified = modified;
   }
 

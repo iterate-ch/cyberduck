@@ -27,10 +27,10 @@ import java.util.List;
  * A fileContent object
  */
 @ApiModel(description = "A fileContent object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class FileContents {
   @JsonProperty("parent")
-  private java.io.File parent = null;
+  private ch.cyberduck.core.storegate.io.swagger.client.model.File parent = null;
 
   @JsonProperty("rootPath")
   private String rootPath = null;
@@ -39,9 +39,9 @@ public class FileContents {
   private Integer totalRowCount = null;
 
   @JsonProperty("files")
-  private List<java.io.File> files = null;
+  private List<ch.cyberduck.core.storegate.io.swagger.client.model.File> files = null;
 
-  public FileContents parent(java.io.File parent) {
+  public FileContents parent(ch.cyberduck.core.storegate.io.swagger.client.model.File parent) {
     this.parent = parent;
     return this;
   }
@@ -51,11 +51,11 @@ public class FileContents {
    * @return parent
   **/
   @ApiModelProperty(value = "The parent resourceItem, if included.")
-  public java.io.File getParent() {
+  public ch.cyberduck.core.storegate.io.swagger.client.model.File getParent() {
     return parent;
   }
 
-  public void setParent(java.io.File parent) {
+  public void setParent(ch.cyberduck.core.storegate.io.swagger.client.model.File parent) {
     this.parent = parent;
   }
 
@@ -95,14 +95,14 @@ public class FileContents {
     this.totalRowCount = totalRowCount;
   }
 
-  public FileContents files(List<java.io.File> files) {
+  public FileContents files(List<ch.cyberduck.core.storegate.io.swagger.client.model.File> files) {
     this.files = files;
     return this;
   }
 
-  public FileContents addFilesItem(java.io.File filesItem) {
+  public FileContents addFilesItem(ch.cyberduck.core.storegate.io.swagger.client.model.File filesItem) {
     if (this.files == null) {
-      this.files = new ArrayList<>();
+      this.files = new ArrayList<ch.cyberduck.core.storegate.io.swagger.client.model.File>();
     }
     this.files.add(filesItem);
     return this;
@@ -113,11 +113,11 @@ public class FileContents {
    * @return files
   **/
   @ApiModelProperty(value = "The list of items.")
-  public List<java.io.File> getFiles() {
+  public List<ch.cyberduck.core.storegate.io.swagger.client.model.File> getFiles() {
     return files;
   }
 
-  public void setFiles(List<java.io.File> files) {
+  public void setFiles(List<ch.cyberduck.core.storegate.io.swagger.client.model.File> files) {
     this.files = files;
   }
 

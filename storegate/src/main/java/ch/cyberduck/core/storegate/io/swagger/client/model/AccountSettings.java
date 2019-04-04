@@ -29,7 +29,7 @@ import java.util.Map;
  * A accounts settings. Properties that are null/undefined/missing are not available
  */
 @ApiModel(description = "A accounts settings. Properties that are null/undefined/missing are not available")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class AccountSettings {
   @JsonProperty("startPagesAvailable")
   private List<String> startPagesAvailable = null;
@@ -71,7 +71,7 @@ public class AccountSettings {
 
   public AccountSettings addStartPagesAvailableItem(String startPagesAvailableItem) {
     if (this.startPagesAvailable == null) {
-      this.startPagesAvailable = new ArrayList<>();
+      this.startPagesAvailable = new ArrayList<String>();
     }
     this.startPagesAvailable.add(startPagesAvailableItem);
     return this;
@@ -97,7 +97,7 @@ public class AccountSettings {
 
   public AccountSettings putLocalesAvailableItem(String key, String localesAvailableItem) {
     if (this.localesAvailable == null) {
-      this.localesAvailable = new HashMap<>();
+      this.localesAvailable = new HashMap<String, String>();
     }
     this.localesAvailable.put(key, localesAvailableItem);
     return this;
@@ -123,7 +123,7 @@ public class AccountSettings {
 
   public AccountSettings addVersionsAvailableItem(Integer versionsAvailableItem) {
     if (this.versionsAvailable == null) {
-      this.versionsAvailable = new ArrayList<>();
+      this.versionsAvailable = new ArrayList<Integer>();
     }
     this.versionsAvailable.add(versionsAvailableItem);
     return this;

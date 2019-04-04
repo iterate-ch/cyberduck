@@ -20,33 +20,33 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.joda.time.DateTime;
 
 /**
  * A FileShare
  */
 @ApiModel(description = "A FileShare")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class FileShare {
   @JsonProperty("url")
   private String url = null;
 
   @JsonProperty("pathFile")
-  private java.io.File pathFile = null;
+  private ch.cyberduck.core.storegate.io.swagger.client.model.File pathFile = null;
 
   @JsonProperty("id")
   private String id = null;
 
   @JsonProperty("created")
-  private LocalDateTime created = null;
+  private DateTime created = null;
 
   @JsonProperty("accessed")
   private Integer accessed = null;
 
   @JsonProperty("lastAccessed")
-  private LocalDateTime lastAccessed = null;
+  private DateTime lastAccessed = null;
 
   @JsonProperty("ownerId")
   private String ownerId = null;
@@ -61,7 +61,7 @@ public class FileShare {
   private Integer accessLimit = null;
 
   @JsonProperty("accessUntil")
-  private LocalDateTime accessUntil = null;
+  private DateTime accessUntil = null;
 
   @JsonProperty("allowUpload")
   private Boolean allowUpload = null;
@@ -96,7 +96,7 @@ public class FileShare {
     this.url = url;
   }
 
-  public FileShare pathFile(java.io.File pathFile) {
+  public FileShare pathFile(ch.cyberduck.core.storegate.io.swagger.client.model.File pathFile) {
     this.pathFile = pathFile;
     return this;
   }
@@ -106,11 +106,11 @@ public class FileShare {
    * @return pathFile
   **/
   @ApiModelProperty(value = "The shared item.")
-  public java.io.File getPathFile() {
+  public ch.cyberduck.core.storegate.io.swagger.client.model.File getPathFile() {
     return pathFile;
   }
 
-  public void setPathFile(java.io.File pathFile) {
+  public void setPathFile(ch.cyberduck.core.storegate.io.swagger.client.model.File pathFile) {
     this.pathFile = pathFile;
   }
 
@@ -132,7 +132,7 @@ public class FileShare {
     this.id = id;
   }
 
-  public FileShare created(LocalDateTime created) {
+  public FileShare created(DateTime created) {
     this.created = created;
     return this;
   }
@@ -142,11 +142,11 @@ public class FileShare {
    * @return created
   **/
   @ApiModelProperty(value = "When the share was created.")
-  public LocalDateTime getCreated() {
+  public DateTime getCreated() {
     return created;
   }
 
-  public void setCreated(LocalDateTime created) {
+  public void setCreated(DateTime created) {
     this.created = created;
   }
 
@@ -168,7 +168,7 @@ public class FileShare {
     this.accessed = accessed;
   }
 
-  public FileShare lastAccessed(LocalDateTime lastAccessed) {
+  public FileShare lastAccessed(DateTime lastAccessed) {
     this.lastAccessed = lastAccessed;
     return this;
   }
@@ -178,11 +178,11 @@ public class FileShare {
    * @return lastAccessed
   **/
   @ApiModelProperty(value = "Last time the share was accessed")
-  public LocalDateTime getLastAccessed() {
+  public DateTime getLastAccessed() {
     return lastAccessed;
   }
 
-  public void setLastAccessed(LocalDateTime lastAccessed) {
+  public void setLastAccessed(DateTime lastAccessed) {
     this.lastAccessed = lastAccessed;
   }
 
@@ -229,7 +229,7 @@ public class FileShare {
 
   public FileShare addSentToEmailsItem(String sentToEmailsItem) {
     if (this.sentToEmails == null) {
-      this.sentToEmails = new ArrayList<>();
+      this.sentToEmails = new ArrayList<String>();
     }
     this.sentToEmails.add(sentToEmailsItem);
     return this;
@@ -266,7 +266,7 @@ public class FileShare {
     this.accessLimit = accessLimit;
   }
 
-  public FileShare accessUntil(LocalDateTime accessUntil) {
+  public FileShare accessUntil(DateTime accessUntil) {
     this.accessUntil = accessUntil;
     return this;
   }
@@ -276,11 +276,11 @@ public class FileShare {
    * @return accessUntil
   **/
   @ApiModelProperty(value = "Limit access to before this date.")
-  public LocalDateTime getAccessUntil() {
+  public DateTime getAccessUntil() {
     return accessUntil;
   }
 
-  public void setAccessUntil(LocalDateTime accessUntil) {
+  public void setAccessUntil(DateTime accessUntil) {
     this.accessUntil = accessUntil;
   }
 
@@ -309,7 +309,7 @@ public class FileShare {
 
   public FileShare addUploadNotificationEmailsItem(String uploadNotificationEmailsItem) {
     if (this.uploadNotificationEmails == null) {
-      this.uploadNotificationEmails = new ArrayList<>();
+      this.uploadNotificationEmails = new ArrayList<String>();
     }
     this.uploadNotificationEmails.add(uploadNotificationEmailsItem);
     return this;

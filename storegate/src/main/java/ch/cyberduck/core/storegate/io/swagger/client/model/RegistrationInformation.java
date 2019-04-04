@@ -32,7 +32,7 @@ import java.util.List;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class RegistrationInformation {
   @JsonProperty("salepackage")
   private UpgradeSalepackage salepackage = null;
@@ -176,7 +176,7 @@ public class RegistrationInformation {
 
   public RegistrationInformation addCountriesItem(Country countriesItem) {
     if (this.countries == null) {
-      this.countries = new ArrayList<>();
+      this.countries = new ArrayList<Country>();
     }
     this.countries.add(countriesItem);
     return this;
@@ -202,7 +202,7 @@ public class RegistrationInformation {
 
   public RegistrationInformation addPaymentMethodsItem(PaymentMethod paymentMethodsItem) {
     if (this.paymentMethods == null) {
-      this.paymentMethods = new ArrayList<>();
+      this.paymentMethods = new ArrayList<PaymentMethod>();
     }
     this.paymentMethods.add(paymentMethodsItem);
     return this;
@@ -228,7 +228,7 @@ public class RegistrationInformation {
 
   public RegistrationInformation addPaymentPeriodsItem(PaymentPeriod paymentPeriodsItem) {
     if (this.paymentPeriods == null) {
-      this.paymentPeriods = new ArrayList<>();
+      this.paymentPeriods = new ArrayList<PaymentPeriod>();
     }
     this.paymentPeriods.add(paymentPeriodsItem);
     return this;

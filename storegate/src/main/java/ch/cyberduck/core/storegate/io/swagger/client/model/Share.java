@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.joda.time.DateTime;
 
 /**
  * Information about the enhanced share.
  */
 @ApiModel(description = "Information about the enhanced share.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class Share {
   @JsonProperty("itemId")
   private String itemId = null;
@@ -85,13 +85,13 @@ public class Share {
   private String id = null;
 
   @JsonProperty("created")
-  private LocalDateTime created = null;
+  private DateTime created = null;
 
   @JsonProperty("accessed")
   private Integer accessed = null;
 
   @JsonProperty("lastAccessed")
-  private LocalDateTime lastAccessed = null;
+  private DateTime lastAccessed = null;
 
   @JsonProperty("ownerId")
   private String ownerId = null;
@@ -106,7 +106,7 @@ public class Share {
   private Integer accessLimit = null;
 
   @JsonProperty("accessUntil")
-  private LocalDateTime accessUntil = null;
+  private DateTime accessUntil = null;
 
   @JsonProperty("allowUpload")
   private Boolean allowUpload = null;
@@ -213,7 +213,7 @@ public class Share {
     this.id = id;
   }
 
-  public Share created(LocalDateTime created) {
+  public Share created(DateTime created) {
     this.created = created;
     return this;
   }
@@ -223,11 +223,11 @@ public class Share {
    * @return created
   **/
   @ApiModelProperty(value = "When the share was created.")
-  public LocalDateTime getCreated() {
+  public DateTime getCreated() {
     return created;
   }
 
-  public void setCreated(LocalDateTime created) {
+  public void setCreated(DateTime created) {
     this.created = created;
   }
 
@@ -249,7 +249,7 @@ public class Share {
     this.accessed = accessed;
   }
 
-  public Share lastAccessed(LocalDateTime lastAccessed) {
+  public Share lastAccessed(DateTime lastAccessed) {
     this.lastAccessed = lastAccessed;
     return this;
   }
@@ -259,11 +259,11 @@ public class Share {
    * @return lastAccessed
   **/
   @ApiModelProperty(value = "Last time the share was accessed")
-  public LocalDateTime getLastAccessed() {
+  public DateTime getLastAccessed() {
     return lastAccessed;
   }
 
-  public void setLastAccessed(LocalDateTime lastAccessed) {
+  public void setLastAccessed(DateTime lastAccessed) {
     this.lastAccessed = lastAccessed;
   }
 
@@ -310,7 +310,7 @@ public class Share {
 
   public Share addSentToEmailsItem(String sentToEmailsItem) {
     if (this.sentToEmails == null) {
-      this.sentToEmails = new ArrayList<>();
+      this.sentToEmails = new ArrayList<String>();
     }
     this.sentToEmails.add(sentToEmailsItem);
     return this;
@@ -347,7 +347,7 @@ public class Share {
     this.accessLimit = accessLimit;
   }
 
-  public Share accessUntil(LocalDateTime accessUntil) {
+  public Share accessUntil(DateTime accessUntil) {
     this.accessUntil = accessUntil;
     return this;
   }
@@ -357,11 +357,11 @@ public class Share {
    * @return accessUntil
   **/
   @ApiModelProperty(value = "Limit access to before this date.")
-  public LocalDateTime getAccessUntil() {
+  public DateTime getAccessUntil() {
     return accessUntil;
   }
 
-  public void setAccessUntil(LocalDateTime accessUntil) {
+  public void setAccessUntil(DateTime accessUntil) {
     this.accessUntil = accessUntil;
   }
 
@@ -390,7 +390,7 @@ public class Share {
 
   public Share addUploadNotificationEmailsItem(String uploadNotificationEmailsItem) {
     if (this.uploadNotificationEmails == null) {
-      this.uploadNotificationEmails = new ArrayList<>();
+      this.uploadNotificationEmails = new ArrayList<String>();
     }
     this.uploadNotificationEmails.add(uploadNotificationEmailsItem);
     return this;

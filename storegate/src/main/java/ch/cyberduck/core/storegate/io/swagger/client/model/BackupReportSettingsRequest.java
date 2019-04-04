@@ -27,7 +27,7 @@ import java.util.List;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class BackupReportSettingsRequest {
   @JsonProperty("interval")
   private String interval = null;
@@ -60,7 +60,7 @@ public class BackupReportSettingsRequest {
 
   public BackupReportSettingsRequest addEmailsItem(String emailsItem) {
     if (this.emails == null) {
-      this.emails = new ArrayList<>();
+      this.emails = new ArrayList<String>();
     }
     this.emails.add(emailsItem);
     return this;

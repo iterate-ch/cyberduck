@@ -20,13 +20,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * A file metadata object
  */
 @ApiModel(description = "A file metadata object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class FileMetadata {
   @JsonProperty("id")
   private String id = null;
@@ -41,13 +41,13 @@ public class FileMetadata {
   private Long fileSize = null;
 
   @JsonProperty("modified")
-  private LocalDateTime modified = null;
+  private DateTime modified = null;
 
   @JsonProperty("created")
-  private LocalDateTime created = null;
+  private DateTime created = null;
 
   @JsonProperty("accessed")
-  private LocalDateTime accessed = null;
+  private DateTime accessed = null;
 
   @JsonProperty("attributes")
   private Integer attributes = null;
@@ -179,7 +179,7 @@ public class FileMetadata {
     this.fileSize = fileSize;
   }
 
-  public FileMetadata modified(LocalDateTime modified) {
+  public FileMetadata modified(DateTime modified) {
     this.modified = modified;
     return this;
   }
@@ -189,15 +189,15 @@ public class FileMetadata {
    * @return modified
   **/
   @ApiModelProperty(value = "The file's modified datetime in UTC")
-  public LocalDateTime getModified() {
+  public DateTime getModified() {
     return modified;
   }
 
-  public void setModified(LocalDateTime modified) {
+  public void setModified(DateTime modified) {
     this.modified = modified;
   }
 
-  public FileMetadata created(LocalDateTime created) {
+  public FileMetadata created(DateTime created) {
     this.created = created;
     return this;
   }
@@ -207,15 +207,15 @@ public class FileMetadata {
    * @return created
   **/
   @ApiModelProperty(value = "The file's created datetime in UTC")
-  public LocalDateTime getCreated() {
+  public DateTime getCreated() {
     return created;
   }
 
-  public void setCreated(LocalDateTime created) {
+  public void setCreated(DateTime created) {
     this.created = created;
   }
 
-  public FileMetadata accessed(LocalDateTime accessed) {
+  public FileMetadata accessed(DateTime accessed) {
     this.accessed = accessed;
     return this;
   }
@@ -225,11 +225,11 @@ public class FileMetadata {
    * @return accessed
   **/
   @ApiModelProperty(value = "The file's last access datetime in UTC")
-  public LocalDateTime getAccessed() {
+  public DateTime getAccessed() {
     return accessed;
   }
 
-  public void setAccessed(LocalDateTime accessed) {
+  public void setAccessed(DateTime accessed) {
     this.accessed = accessed;
   }
 

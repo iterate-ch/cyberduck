@@ -28,7 +28,7 @@ import java.util.List;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class MediaContentList {
   @JsonProperty("locale")
   private String locale = null;
@@ -61,7 +61,7 @@ public class MediaContentList {
 
   public MediaContentList addMediaItem(Content mediaItem) {
     if (this.media == null) {
-      this.media = new ArrayList<>();
+      this.media = new ArrayList<Content>();
     }
     this.media.add(mediaItem);
     return this;

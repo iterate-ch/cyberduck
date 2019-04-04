@@ -9,14 +9,13 @@ import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 import javax.ws.rs.core.GenericType;
 
 import ch.cyberduck.core.storegate.io.swagger.client.model.FilePermission;
-import ch.cyberduck.core.storegate.io.swagger.client.model.UpdatePermissionRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class PermissionsApi {
   private ApiClient apiClient;
 
@@ -201,7 +200,7 @@ public class PermissionsApi {
    * @param permissionRequest The userId or groupId. (required)
    * @throws ApiException if fails to make API call
    */
-  public void permissionsPut(String id, UpdatePermissionRequest permissionRequest) throws ApiException {
+  public void permissionsPut(String id, ch.cyberduck.core.storegate.io.swagger.client.model.UpdatePermissionRequest permissionRequest) throws ApiException {
 
     permissionsPutWithHttpInfo(id, permissionRequest);
   }
@@ -213,7 +212,7 @@ public class PermissionsApi {
    * @param permissionRequest The userId or groupId. (required)
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<Void> permissionsPutWithHttpInfo(String id, UpdatePermissionRequest permissionRequest) throws ApiException {
+  public ApiResponse<Void> permissionsPutWithHttpInfo(String id, ch.cyberduck.core.storegate.io.swagger.client.model.UpdatePermissionRequest permissionRequest) throws ApiException {
     Object localVarPostBody = permissionRequest;
     
     // verify the required parameter 'id' is set

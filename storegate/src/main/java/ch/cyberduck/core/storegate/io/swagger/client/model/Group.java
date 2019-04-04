@@ -20,13 +20,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * A group of users.
  */
 @ApiModel(description = "A group of users.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class Group {
   @JsonProperty("id")
   private String id = null;
@@ -38,7 +38,7 @@ public class Group {
   private String description = null;
 
   @JsonProperty("created")
-  private LocalDateTime created = null;
+  private DateTime created = null;
 
   @JsonProperty("isSystemGroup")
   private Boolean isSystemGroup = null;
@@ -97,7 +97,7 @@ public class Group {
     this.description = description;
   }
 
-  public Group created(LocalDateTime created) {
+  public Group created(DateTime created) {
     this.created = created;
     return this;
   }
@@ -107,11 +107,11 @@ public class Group {
    * @return created
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getCreated() {
+  public DateTime getCreated() {
     return created;
   }
 
-  public void setCreated(LocalDateTime created) {
+  public void setCreated(DateTime created) {
     this.created = created;
   }
 

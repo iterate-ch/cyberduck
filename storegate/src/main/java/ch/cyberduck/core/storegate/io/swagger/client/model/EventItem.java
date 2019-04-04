@@ -20,22 +20,22 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.joda.time.DateTime;
 
 /**
  * Eventitem
  */
 @ApiModel(description = "Eventitem")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class EventItem {
   @JsonProperty("id")
   private String id = null;
 
   @JsonProperty("date")
-  private LocalDateTime date = null;
+  private DateTime date = null;
 
   @JsonProperty("userId")
   private String userId = null;
@@ -70,7 +70,7 @@ public class EventItem {
     this.id = id;
   }
 
-  public EventItem date(LocalDateTime date) {
+  public EventItem date(DateTime date) {
     this.date = date;
     return this;
   }
@@ -80,11 +80,11 @@ public class EventItem {
    * @return date
   **/
   @ApiModelProperty(value = "The date and time the item.")
-  public LocalDateTime getDate() {
+  public DateTime getDate() {
     return date;
   }
 
-  public void setDate(LocalDateTime date) {
+  public void setDate(DateTime date) {
     this.date = date;
   }
 
@@ -167,7 +167,7 @@ public class EventItem {
 
   public EventItem putDataItem(String key, String dataItem) {
     if (this.data == null) {
-      this.data = new HashMap<>();
+      this.data = new HashMap<String, String>();
     }
     this.data.put(key, dataItem);
     return this;

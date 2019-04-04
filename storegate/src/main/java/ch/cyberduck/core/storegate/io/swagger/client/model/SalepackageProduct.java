@@ -21,15 +21,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.joda.time.DateTime;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class SalepackageProduct {
   @JsonProperty("currentId")
   private String currentId = null;
@@ -38,7 +38,7 @@ public class SalepackageProduct {
   private Long used = null;
 
   @JsonProperty("expires")
-  private LocalDateTime expires = null;
+  private DateTime expires = null;
 
   @JsonProperty("available")
   private List<Product> available = null;
@@ -79,7 +79,7 @@ public class SalepackageProduct {
     this.used = used;
   }
 
-  public SalepackageProduct expires(LocalDateTime expires) {
+  public SalepackageProduct expires(DateTime expires) {
     this.expires = expires;
     return this;
   }
@@ -89,11 +89,11 @@ public class SalepackageProduct {
    * @return expires
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getExpires() {
+  public DateTime getExpires() {
     return expires;
   }
 
-  public void setExpires(LocalDateTime expires) {
+  public void setExpires(DateTime expires) {
     this.expires = expires;
   }
 
@@ -104,7 +104,7 @@ public class SalepackageProduct {
 
   public SalepackageProduct addAvailableItem(Product availableItem) {
     if (this.available == null) {
-      this.available = new ArrayList<>();
+      this.available = new ArrayList<Product>();
     }
     this.available.add(availableItem);
     return this;

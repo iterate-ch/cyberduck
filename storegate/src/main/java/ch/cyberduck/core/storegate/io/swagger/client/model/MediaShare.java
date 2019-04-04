@@ -21,15 +21,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.joda.time.DateTime;
 
 /**
  * A enhanced shared mediaFolder
  */
 @ApiModel(description = "A enhanced shared mediaFolder")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class MediaShare {
   @JsonProperty("url")
   private String url = null;
@@ -41,13 +41,13 @@ public class MediaShare {
   private String id = null;
 
   @JsonProperty("created")
-  private LocalDateTime created = null;
+  private DateTime created = null;
 
   @JsonProperty("accessed")
   private Integer accessed = null;
 
   @JsonProperty("lastAccessed")
-  private LocalDateTime lastAccessed = null;
+  private DateTime lastAccessed = null;
 
   @JsonProperty("ownerId")
   private String ownerId = null;
@@ -62,7 +62,7 @@ public class MediaShare {
   private Integer accessLimit = null;
 
   @JsonProperty("accessUntil")
-  private LocalDateTime accessUntil = null;
+  private DateTime accessUntil = null;
 
   @JsonProperty("allowUpload")
   private Boolean allowUpload = null;
@@ -133,7 +133,7 @@ public class MediaShare {
     this.id = id;
   }
 
-  public MediaShare created(LocalDateTime created) {
+  public MediaShare created(DateTime created) {
     this.created = created;
     return this;
   }
@@ -143,11 +143,11 @@ public class MediaShare {
    * @return created
   **/
   @ApiModelProperty(value = "When the share was created.")
-  public LocalDateTime getCreated() {
+  public DateTime getCreated() {
     return created;
   }
 
-  public void setCreated(LocalDateTime created) {
+  public void setCreated(DateTime created) {
     this.created = created;
   }
 
@@ -169,7 +169,7 @@ public class MediaShare {
     this.accessed = accessed;
   }
 
-  public MediaShare lastAccessed(LocalDateTime lastAccessed) {
+  public MediaShare lastAccessed(DateTime lastAccessed) {
     this.lastAccessed = lastAccessed;
     return this;
   }
@@ -179,11 +179,11 @@ public class MediaShare {
    * @return lastAccessed
   **/
   @ApiModelProperty(value = "Last time the share was accessed")
-  public LocalDateTime getLastAccessed() {
+  public DateTime getLastAccessed() {
     return lastAccessed;
   }
 
-  public void setLastAccessed(LocalDateTime lastAccessed) {
+  public void setLastAccessed(DateTime lastAccessed) {
     this.lastAccessed = lastAccessed;
   }
 
@@ -230,7 +230,7 @@ public class MediaShare {
 
   public MediaShare addSentToEmailsItem(String sentToEmailsItem) {
     if (this.sentToEmails == null) {
-      this.sentToEmails = new ArrayList<>();
+      this.sentToEmails = new ArrayList<String>();
     }
     this.sentToEmails.add(sentToEmailsItem);
     return this;
@@ -267,7 +267,7 @@ public class MediaShare {
     this.accessLimit = accessLimit;
   }
 
-  public MediaShare accessUntil(LocalDateTime accessUntil) {
+  public MediaShare accessUntil(DateTime accessUntil) {
     this.accessUntil = accessUntil;
     return this;
   }
@@ -277,11 +277,11 @@ public class MediaShare {
    * @return accessUntil
   **/
   @ApiModelProperty(value = "Limit access to before this date.")
-  public LocalDateTime getAccessUntil() {
+  public DateTime getAccessUntil() {
     return accessUntil;
   }
 
-  public void setAccessUntil(LocalDateTime accessUntil) {
+  public void setAccessUntil(DateTime accessUntil) {
     this.accessUntil = accessUntil;
   }
 
@@ -310,7 +310,7 @@ public class MediaShare {
 
   public MediaShare addUploadNotificationEmailsItem(String uploadNotificationEmailsItem) {
     if (this.uploadNotificationEmails == null) {
-      this.uploadNotificationEmails = new ArrayList<>();
+      this.uploadNotificationEmails = new ArrayList<String>();
     }
     this.uploadNotificationEmails.add(uploadNotificationEmailsItem);
     return this;

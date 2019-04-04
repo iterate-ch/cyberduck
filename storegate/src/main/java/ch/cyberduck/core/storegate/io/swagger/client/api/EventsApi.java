@@ -8,15 +8,15 @@ import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
+import org.joda.time.DateTime;
 import ch.cyberduck.core.storegate.io.swagger.client.model.EventContents;
-import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class EventsApi {
   private ApiClient apiClient;
 
@@ -49,7 +49,7 @@ public class EventsApi {
    * @return EventContents
    * @throws ApiException if fails to make API call
    */
-  public EventContents eventsGet(Integer pageIndex, Integer pageSize, LocalDateTime fromDate, LocalDateTime toDate, String user, String fileId, String filename) throws ApiException {
+  public EventContents eventsGet(Integer pageIndex, Integer pageSize, DateTime fromDate, DateTime toDate, String user, String fileId, String filename) throws ApiException {
     return eventsGetWithHttpInfo(pageIndex, pageSize, fromDate, toDate, user, fileId, filename).getData();
       }
 
@@ -66,7 +66,7 @@ public class EventsApi {
    * @return ApiResponse&lt;EventContents&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<EventContents> eventsGetWithHttpInfo(Integer pageIndex, Integer pageSize, LocalDateTime fromDate, LocalDateTime toDate, String user, String fileId, String filename) throws ApiException {
+  public ApiResponse<EventContents> eventsGetWithHttpInfo(Integer pageIndex, Integer pageSize, DateTime fromDate, DateTime toDate, String user, String fileId, String filename) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'pageIndex' is set
@@ -148,7 +148,7 @@ public class EventsApi {
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String eventsGet_0(LocalDateTime fromDate, LocalDateTime toDate, String user, String fileId, String filename) throws ApiException {
+  public String eventsGet_0(DateTime fromDate, DateTime toDate, String user, String fileId, String filename) throws ApiException {
     return eventsGet_0WithHttpInfo(fromDate, toDate, user, fileId, filename).getData();
       }
 
@@ -163,7 +163,7 @@ public class EventsApi {
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> eventsGet_0WithHttpInfo(LocalDateTime fromDate, LocalDateTime toDate, String user, String fileId, String filename) throws ApiException {
+  public ApiResponse<String> eventsGet_0WithHttpInfo(DateTime fromDate, DateTime toDate, String user, String fileId, String filename) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'fromDate' is set
@@ -286,7 +286,7 @@ public class EventsApi {
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String eventsPost(LocalDateTime fromDate, LocalDateTime toDate, String user, String fileId, String filename) throws ApiException {
+  public String eventsPost(DateTime fromDate, DateTime toDate, String user, String fileId, String filename) throws ApiException {
     return eventsPostWithHttpInfo(fromDate, toDate, user, fileId, filename).getData();
       }
 
@@ -301,7 +301,7 @@ public class EventsApi {
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> eventsPostWithHttpInfo(LocalDateTime fromDate, LocalDateTime toDate, String user, String fileId, String filename) throws ApiException {
+  public ApiResponse<String> eventsPostWithHttpInfo(DateTime fromDate, DateTime toDate, String user, String fileId, String filename) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'fromDate' is set

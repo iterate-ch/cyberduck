@@ -20,13 +20,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class ExtendedUser {
   /**
    * Permission for common root
@@ -139,10 +139,10 @@ public class ExtendedUser {
   private FlagsEnum flags = null;
 
   @JsonProperty("created")
-  private LocalDateTime created = null;
+  private DateTime created = null;
 
   @JsonProperty("lastLogin")
-  private LocalDateTime lastLogin = null;
+  private DateTime lastLogin = null;
 
   @JsonProperty("email")
   private String email = null;
@@ -267,7 +267,7 @@ public class ExtendedUser {
     this.flags = flags;
   }
 
-  public ExtendedUser created(LocalDateTime created) {
+  public ExtendedUser created(DateTime created) {
     this.created = created;
     return this;
   }
@@ -277,15 +277,15 @@ public class ExtendedUser {
    * @return created
   **/
   @ApiModelProperty(value = "When the account was created.")
-  public LocalDateTime getCreated() {
+  public DateTime getCreated() {
     return created;
   }
 
-  public void setCreated(LocalDateTime created) {
+  public void setCreated(DateTime created) {
     this.created = created;
   }
 
-  public ExtendedUser lastLogin(LocalDateTime lastLogin) {
+  public ExtendedUser lastLogin(DateTime lastLogin) {
     this.lastLogin = lastLogin;
     return this;
   }
@@ -295,11 +295,11 @@ public class ExtendedUser {
    * @return lastLogin
   **/
   @ApiModelProperty(value = "When the user last was logged in.")
-  public LocalDateTime getLastLogin() {
+  public DateTime getLastLogin() {
     return lastLogin;
   }
 
-  public void setLastLogin(LocalDateTime lastLogin) {
+  public void setLastLogin(DateTime lastLogin) {
     this.lastLogin = lastLogin;
   }
 

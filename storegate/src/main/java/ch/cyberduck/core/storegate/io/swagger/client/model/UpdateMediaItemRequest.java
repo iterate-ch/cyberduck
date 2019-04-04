@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * A CreateMediaItemRequest request object
  */
 @ApiModel(description = "A CreateMediaItemRequest request object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class UpdateMediaItemRequest {
   @JsonProperty("description")
   private String description = null;

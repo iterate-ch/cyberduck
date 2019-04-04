@@ -27,7 +27,7 @@ import java.util.List;
  * A accounts multi settings. Properties that are null/undefined/missing are not available
  */
 @ApiModel(description = "A accounts multi settings. Properties that are null/undefined/missing are not available")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class MultiSettings {
   @JsonProperty("versionsAvailable")
   private List<Integer> versionsAvailable = null;
@@ -106,7 +106,7 @@ public class MultiSettings {
 
   public MultiSettings addVersionsAvailableItem(Integer versionsAvailableItem) {
     if (this.versionsAvailable == null) {
-      this.versionsAvailable = new ArrayList<>();
+      this.versionsAvailable = new ArrayList<Integer>();
     }
     this.versionsAvailable.add(versionsAvailableItem);
     return this;

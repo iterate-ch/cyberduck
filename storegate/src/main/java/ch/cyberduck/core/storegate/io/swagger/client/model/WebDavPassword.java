@@ -20,13 +20,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class WebDavPassword {
   @JsonProperty("name")
   private String name = null;
@@ -35,10 +35,10 @@ public class WebDavPassword {
   private String id = null;
 
   @JsonProperty("created")
-  private LocalDateTime created = null;
+  private DateTime created = null;
 
   @JsonProperty("lastLogin")
-  private LocalDateTime lastLogin = null;
+  private DateTime lastLogin = null;
 
   /**
    * 
@@ -117,7 +117,7 @@ public class WebDavPassword {
     this.id = id;
   }
 
-  public WebDavPassword created(LocalDateTime created) {
+  public WebDavPassword created(DateTime created) {
     this.created = created;
     return this;
   }
@@ -127,15 +127,15 @@ public class WebDavPassword {
    * @return created
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getCreated() {
+  public DateTime getCreated() {
     return created;
   }
 
-  public void setCreated(LocalDateTime created) {
+  public void setCreated(DateTime created) {
     this.created = created;
   }
 
-  public WebDavPassword lastLogin(LocalDateTime lastLogin) {
+  public WebDavPassword lastLogin(DateTime lastLogin) {
     this.lastLogin = lastLogin;
     return this;
   }
@@ -145,11 +145,11 @@ public class WebDavPassword {
    * @return lastLogin
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getLastLogin() {
+  public DateTime getLastLogin() {
     return lastLogin;
   }
 
-  public void setLastLogin(LocalDateTime lastLogin) {
+  public void setLastLogin(DateTime lastLogin) {
     this.lastLogin = lastLogin;
   }
 

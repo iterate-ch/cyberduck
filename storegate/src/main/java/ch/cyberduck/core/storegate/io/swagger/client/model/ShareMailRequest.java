@@ -27,7 +27,7 @@ import java.util.List;
  * A share mail request object
  */
 @ApiModel(description = "A share mail request object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class ShareMailRequest {
   @JsonProperty("sendToEmails")
   private List<String> sendToEmails = null;
@@ -42,7 +42,7 @@ public class ShareMailRequest {
 
   public ShareMailRequest addSendToEmailsItem(String sendToEmailsItem) {
     if (this.sendToEmails == null) {
-      this.sendToEmails = new ArrayList<>();
+      this.sendToEmails = new ArrayList<String>();
     }
     this.sendToEmails.add(sendToEmailsItem);
     return this;

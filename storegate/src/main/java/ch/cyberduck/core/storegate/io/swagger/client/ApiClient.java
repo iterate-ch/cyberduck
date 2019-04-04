@@ -50,7 +50,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.auth.HttpBasicAuth;
 import ch.cyberduck.core.storegate.io.swagger.client.auth.ApiKeyAuth;
 import ch.cyberduck.core.storegate.io.swagger.client.auth.OAuth;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class ApiClient {
   protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
   protected String basePath = "https://ws1-stage.storegate.se:443/api";

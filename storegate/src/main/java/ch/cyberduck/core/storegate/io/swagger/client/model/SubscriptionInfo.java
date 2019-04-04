@@ -20,19 +20,19 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * Subscription information
  */
 @ApiModel(description = "Subscription information")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class SubscriptionInfo {
   @JsonProperty("isTrial")
   private Boolean isTrial = null;
 
   @JsonProperty("expires")
-  private LocalDateTime expires = null;
+  private DateTime expires = null;
 
   @JsonProperty("hasPaymentInfo")
   private Boolean hasPaymentInfo = null;
@@ -55,7 +55,7 @@ public class SubscriptionInfo {
     this.isTrial = isTrial;
   }
 
-  public SubscriptionInfo expires(LocalDateTime expires) {
+  public SubscriptionInfo expires(DateTime expires) {
     this.expires = expires;
     return this;
   }
@@ -65,11 +65,11 @@ public class SubscriptionInfo {
    * @return expires
   **/
   @ApiModelProperty(value = "When the account expires (0001-01-01T00:00:00Z indicates that no expire date is set)")
-  public LocalDateTime getExpires() {
+  public DateTime getExpires() {
     return expires;
   }
 
-  public void setExpires(LocalDateTime expires) {
+  public void setExpires(DateTime expires) {
     this.expires = expires;
   }
 

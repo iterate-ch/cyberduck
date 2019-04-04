@@ -20,22 +20,22 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * Contains information about a sync client
  */
 @ApiModel(description = "Contains information about a sync client")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class SyncClient {
   @JsonProperty("created")
-  private LocalDateTime created = null;
+  private DateTime created = null;
 
   @JsonProperty("userId")
   private String userId = null;
 
   @JsonProperty("lastConnect")
-  private LocalDateTime lastConnect = null;
+  private DateTime lastConnect = null;
 
   @JsonProperty("version")
   private String version = null;
@@ -46,7 +46,7 @@ public class SyncClient {
   @JsonProperty("name")
   private String name = null;
 
-  public SyncClient created(LocalDateTime created) {
+  public SyncClient created(DateTime created) {
     this.created = created;
     return this;
   }
@@ -56,11 +56,11 @@ public class SyncClient {
    * @return created
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getCreated() {
+  public DateTime getCreated() {
     return created;
   }
 
-  public void setCreated(LocalDateTime created) {
+  public void setCreated(DateTime created) {
     this.created = created;
   }
 
@@ -82,7 +82,7 @@ public class SyncClient {
     this.userId = userId;
   }
 
-  public SyncClient lastConnect(LocalDateTime lastConnect) {
+  public SyncClient lastConnect(DateTime lastConnect) {
     this.lastConnect = lastConnect;
     return this;
   }
@@ -92,11 +92,11 @@ public class SyncClient {
    * @return lastConnect
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getLastConnect() {
+  public DateTime getLastConnect() {
     return lastConnect;
   }
 
-  public void setLastConnect(LocalDateTime lastConnect) {
+  public void setLastConnect(DateTime lastConnect) {
     this.lastConnect = lastConnect;
   }
 

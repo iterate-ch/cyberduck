@@ -27,7 +27,7 @@ import java.util.List;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class DownloadRequest {
   @JsonProperty("ids")
   private List<String> ids = null;
@@ -42,7 +42,7 @@ public class DownloadRequest {
 
   public DownloadRequest addIdsItem(String idsItem) {
     if (this.ids == null) {
-      this.ids = new ArrayList<>();
+      this.ids = new ArrayList<String>();
     }
     this.ids.add(idsItem);
     return this;

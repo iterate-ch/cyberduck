@@ -28,7 +28,7 @@ import java.util.List;
  * Contains a list of recyclebin items.
  */
 @ApiModel(description = "Contains a list of recyclebin items.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class RecycleBinContents {
   @JsonProperty("totalRowCount")
   private Integer totalRowCount = null;
@@ -61,7 +61,7 @@ public class RecycleBinContents {
 
   public RecycleBinContents addRecycleBinItemsItem(RecycleBinItem recycleBinItemsItem) {
     if (this.recycleBinItems == null) {
-      this.recycleBinItems = new ArrayList<>();
+      this.recycleBinItems = new ArrayList<RecycleBinItem>();
     }
     this.recycleBinItems.add(recycleBinItemsItem);
     return this;

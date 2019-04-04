@@ -21,16 +21,16 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * Contains information about a backup client
  */
 @ApiModel(description = "Contains information about a backup client")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class BackupClient {
   @JsonProperty("removed")
-  private LocalDateTime removed = null;
+  private DateTime removed = null;
 
   @JsonProperty("folderId")
   private String folderId = null;
@@ -39,13 +39,13 @@ public class BackupClient {
   private BackupClientSettings settings = null;
 
   @JsonProperty("created")
-  private LocalDateTime created = null;
+  private DateTime created = null;
 
   @JsonProperty("userId")
   private String userId = null;
 
   @JsonProperty("lastConnect")
-  private LocalDateTime lastConnect = null;
+  private DateTime lastConnect = null;
 
   @JsonProperty("version")
   private String version = null;
@@ -56,7 +56,7 @@ public class BackupClient {
   @JsonProperty("name")
   private String name = null;
 
-  public BackupClient removed(LocalDateTime removed) {
+  public BackupClient removed(DateTime removed) {
     this.removed = removed;
     return this;
   }
@@ -66,11 +66,11 @@ public class BackupClient {
    * @return removed
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getRemoved() {
+  public DateTime getRemoved() {
     return removed;
   }
 
-  public void setRemoved(LocalDateTime removed) {
+  public void setRemoved(DateTime removed) {
     this.removed = removed;
   }
 
@@ -110,7 +110,7 @@ public class BackupClient {
     this.settings = settings;
   }
 
-  public BackupClient created(LocalDateTime created) {
+  public BackupClient created(DateTime created) {
     this.created = created;
     return this;
   }
@@ -120,11 +120,11 @@ public class BackupClient {
    * @return created
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getCreated() {
+  public DateTime getCreated() {
     return created;
   }
 
-  public void setCreated(LocalDateTime created) {
+  public void setCreated(DateTime created) {
     this.created = created;
   }
 
@@ -146,7 +146,7 @@ public class BackupClient {
     this.userId = userId;
   }
 
-  public BackupClient lastConnect(LocalDateTime lastConnect) {
+  public BackupClient lastConnect(DateTime lastConnect) {
     this.lastConnect = lastConnect;
     return this;
   }
@@ -156,11 +156,11 @@ public class BackupClient {
    * @return lastConnect
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getLastConnect() {
+  public DateTime getLastConnect() {
     return lastConnect;
   }
 
-  public void setLastConnect(LocalDateTime lastConnect) {
+  public void setLastConnect(DateTime lastConnect) {
     this.lastConnect = lastConnect;
   }
 

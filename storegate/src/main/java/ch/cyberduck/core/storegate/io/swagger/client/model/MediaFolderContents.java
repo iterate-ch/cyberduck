@@ -28,7 +28,7 @@ import java.util.List;
  * Contains a list of mediaFolders
  */
 @ApiModel(description = "Contains a list of mediaFolders")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class MediaFolderContents {
   @JsonProperty("mediaFolders")
   private List<MediaFolder> mediaFolders = null;
@@ -43,7 +43,7 @@ public class MediaFolderContents {
 
   public MediaFolderContents addMediaFoldersItem(MediaFolder mediaFoldersItem) {
     if (this.mediaFolders == null) {
-      this.mediaFolders = new ArrayList<>();
+      this.mediaFolders = new ArrayList<MediaFolder>();
     }
     this.mediaFolders.add(mediaFoldersItem);
     return this;

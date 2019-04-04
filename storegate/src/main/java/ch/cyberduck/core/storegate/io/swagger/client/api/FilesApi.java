@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class FilesApi {
   private ApiClient apiClient;
 
@@ -45,10 +45,10 @@ public class FilesApi {
    * 
    * @param id The id of the reaource to copy (required)
    * @param copyFileRequest The request data (required)
-   * @return java.io.File
+   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
    * @throws ApiException if fails to make API call
    */
-  public java.io.File filesCopy(String id, CopyFileRequest copyFileRequest) throws ApiException {
+  public ch.cyberduck.core.storegate.io.swagger.client.model.File filesCopy(String id, CopyFileRequest copyFileRequest) throws ApiException {
     return filesCopyWithHttpInfo(id, copyFileRequest).getData();
       }
 
@@ -57,10 +57,10 @@ public class FilesApi {
    * 
    * @param id The id of the reaource to copy (required)
    * @param copyFileRequest The request data (required)
-   * @return ApiResponse&lt;java.io.File&gt;
+   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<java.io.File> filesCopyWithHttpInfo(String id, CopyFileRequest copyFileRequest) throws ApiException {
+  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesCopyWithHttpInfo(String id, CopyFileRequest copyFileRequest) throws ApiException {
     Object localVarPostBody = copyFileRequest;
     
     // verify the required parameter 'id' is set
@@ -97,17 +97,17 @@ public class FilesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<java.io.File> localVarReturnType = new GenericType<java.io.File>() {};
+    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Creates a new file of type folder.
    * 
    * @param createFolderRequest createFolderRequest (required)
-   * @return java.io.File
+   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
    * @throws ApiException if fails to make API call
    */
-  public java.io.File filesCreateFolder(CreateFolderRequest createFolderRequest) throws ApiException {
+  public ch.cyberduck.core.storegate.io.swagger.client.model.File filesCreateFolder(CreateFolderRequest createFolderRequest) throws ApiException {
     return filesCreateFolderWithHttpInfo(createFolderRequest).getData();
       }
 
@@ -115,10 +115,10 @@ public class FilesApi {
    * Creates a new file of type folder.
    * 
    * @param createFolderRequest createFolderRequest (required)
-   * @return ApiResponse&lt;java.io.File&gt;
+   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<java.io.File> filesCreateFolderWithHttpInfo(CreateFolderRequest createFolderRequest) throws ApiException {
+  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesCreateFolderWithHttpInfo(CreateFolderRequest createFolderRequest) throws ApiException {
     Object localVarPostBody = createFolderRequest;
     
     // verify the required parameter 'createFolderRequest' is set
@@ -149,7 +149,7 @@ public class FilesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<java.io.File> localVarReturnType = new GenericType<java.io.File>() {};
+    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
@@ -524,10 +524,10 @@ public class FilesApi {
    * 
    * @param id The id of the reaource (required)
    * @param numberOfPhotos Number of photos (optional)
-   * @return List&lt;java.io.File&gt;
+   * @return List&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
    * @throws ApiException if fails to make API call
    */
-  public List<java.io.File> filesGetRandomPhotos(String id, Integer numberOfPhotos) throws ApiException {
+  public List<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesGetRandomPhotos(String id, Integer numberOfPhotos) throws ApiException {
     return filesGetRandomPhotosWithHttpInfo(id, numberOfPhotos).getData();
       }
 
@@ -536,10 +536,10 @@ public class FilesApi {
    * 
    * @param id The id of the reaource (required)
    * @param numberOfPhotos Number of photos (optional)
-   * @return ApiResponse&lt;List&lt;java.io.File&gt;&gt;
+   * @return ApiResponse&lt;List&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<List<java.io.File>> filesGetRandomPhotosWithHttpInfo(String id, Integer numberOfPhotos) throws ApiException {
+  public ApiResponse<List<ch.cyberduck.core.storegate.io.swagger.client.model.File>> filesGetRandomPhotosWithHttpInfo(String id, Integer numberOfPhotos) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
@@ -572,7 +572,7 @@ public class FilesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<List<java.io.File>> localVarReturnType = new GenericType<List<java.io.File>>() {};
+    GenericType<List<ch.cyberduck.core.storegate.io.swagger.client.model.File>> localVarReturnType = new GenericType<List<ch.cyberduck.core.storegate.io.swagger.client.model.File>>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
@@ -704,10 +704,10 @@ public class FilesApi {
    * Gets a file by id
    * 
    * @param id  (required)
-   * @return java.io.File
+   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
    * @throws ApiException if fails to make API call
    */
-  public java.io.File filesGet_0(String id) throws ApiException {
+  public ch.cyberduck.core.storegate.io.swagger.client.model.File filesGet_0(String id) throws ApiException {
     return filesGet_0WithHttpInfo(id).getData();
       }
 
@@ -715,10 +715,10 @@ public class FilesApi {
    * Gets a file by id
    * 
    * @param id  (required)
-   * @return ApiResponse&lt;java.io.File&gt;
+   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<java.io.File> filesGet_0WithHttpInfo(String id) throws ApiException {
+  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesGet_0WithHttpInfo(String id) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
@@ -750,17 +750,17 @@ public class FilesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<java.io.File> localVarReturnType = new GenericType<java.io.File>() {};
+    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
    * Gets a file by path.
    * 
    * @param path The path to the file to get, this path should be URL encoded (required)
-   * @return java.io.File
+   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
    * @throws ApiException if fails to make API call
    */
-  public java.io.File filesGet_1(String path) throws ApiException {
+  public ch.cyberduck.core.storegate.io.swagger.client.model.File filesGet_1(String path) throws ApiException {
     return filesGet_1WithHttpInfo(path).getData();
       }
 
@@ -768,10 +768,10 @@ public class FilesApi {
    * Gets a file by path.
    * 
    * @param path The path to the file to get, this path should be URL encoded (required)
-   * @return ApiResponse&lt;java.io.File&gt;
+   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<java.io.File> filesGet_1WithHttpInfo(String path) throws ApiException {
+  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesGet_1WithHttpInfo(String path) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'path' is set
@@ -803,7 +803,7 @@ public class FilesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<java.io.File> localVarReturnType = new GenericType<java.io.File>() {};
+    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**

@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class PublicSharesApi {
   private ApiClient apiClient;
 
@@ -151,10 +151,10 @@ public class PublicSharesApi {
    * 
    * @param id The share id (required)
    * @param accessId Access id (required)
-   * @return java.io.File
+   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
    * @throws ApiException if fails to make API call
    */
-  public java.io.File publicSharesGetPublicFileShareFile(String id, String accessId) throws ApiException {
+  public ch.cyberduck.core.storegate.io.swagger.client.model.File publicSharesGetPublicFileShareFile(String id, String accessId) throws ApiException {
     return publicSharesGetPublicFileShareFileWithHttpInfo(id, accessId).getData();
       }
 
@@ -163,10 +163,10 @@ public class PublicSharesApi {
    * 
    * @param id The share id (required)
    * @param accessId Access id (required)
-   * @return ApiResponse&lt;java.io.File&gt;
+   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<java.io.File> publicSharesGetPublicFileShareFileWithHttpInfo(String id, String accessId) throws ApiException {
+  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> publicSharesGetPublicFileShareFileWithHttpInfo(String id, String accessId) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
@@ -204,7 +204,7 @@ public class PublicSharesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<java.io.File> localVarReturnType = new GenericType<java.io.File>() {};
+    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**

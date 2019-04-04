@@ -20,16 +20,16 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class InvoiceInfo {
   @JsonProperty("createdDate")
-  private LocalDateTime createdDate = null;
+  private DateTime createdDate = null;
 
   @JsonProperty("currency")
   private String currency = null;
@@ -93,7 +93,7 @@ public class InvoiceInfo {
   @JsonProperty("vatAmount")
   private Double vatAmount = null;
 
-  public InvoiceInfo createdDate(LocalDateTime createdDate) {
+  public InvoiceInfo createdDate(DateTime createdDate) {
     this.createdDate = createdDate;
     return this;
   }
@@ -103,11 +103,11 @@ public class InvoiceInfo {
    * @return createdDate
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getCreatedDate() {
+  public DateTime getCreatedDate() {
     return createdDate;
   }
 
-  public void setCreatedDate(LocalDateTime createdDate) {
+  public void setCreatedDate(DateTime createdDate) {
     this.createdDate = createdDate;
   }
 

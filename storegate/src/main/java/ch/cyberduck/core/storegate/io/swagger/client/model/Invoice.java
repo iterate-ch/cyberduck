@@ -21,13 +21,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class Invoice {
   @JsonProperty("customerNumber")
   private String customerNumber = null;
@@ -36,7 +36,7 @@ public class Invoice {
   private String bodyText = null;
 
   @JsonProperty("payedDate")
-  private LocalDateTime payedDate = null;
+  private DateTime payedDate = null;
 
   @JsonProperty("paymentInfo")
   private PaymentInfo paymentInfo = null;
@@ -45,7 +45,7 @@ public class Invoice {
   private String senderAddress = null;
 
   @JsonProperty("createdDate")
-  private LocalDateTime createdDate = null;
+  private DateTime createdDate = null;
 
   @JsonProperty("currency")
   private String currency = null;
@@ -145,7 +145,7 @@ public class Invoice {
     this.bodyText = bodyText;
   }
 
-  public Invoice payedDate(LocalDateTime payedDate) {
+  public Invoice payedDate(DateTime payedDate) {
     this.payedDate = payedDate;
     return this;
   }
@@ -155,11 +155,11 @@ public class Invoice {
    * @return payedDate
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getPayedDate() {
+  public DateTime getPayedDate() {
     return payedDate;
   }
 
-  public void setPayedDate(LocalDateTime payedDate) {
+  public void setPayedDate(DateTime payedDate) {
     this.payedDate = payedDate;
   }
 
@@ -199,7 +199,7 @@ public class Invoice {
     this.senderAddress = senderAddress;
   }
 
-  public Invoice createdDate(LocalDateTime createdDate) {
+  public Invoice createdDate(DateTime createdDate) {
     this.createdDate = createdDate;
     return this;
   }
@@ -209,11 +209,11 @@ public class Invoice {
    * @return createdDate
   **/
   @ApiModelProperty(value = "")
-  public LocalDateTime getCreatedDate() {
+  public DateTime getCreatedDate() {
     return createdDate;
   }
 
-  public void setCreatedDate(LocalDateTime createdDate) {
+  public void setCreatedDate(DateTime createdDate) {
     this.createdDate = createdDate;
   }
 

@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.joda.time.DateTime;
 
 /**
  * A share parameters request object
  */
 @ApiModel(description = "A share parameters request object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class CreateFileShareRequest {
   @JsonProperty("fileId")
   private String fileId = null;
@@ -43,7 +43,7 @@ public class CreateFileShareRequest {
   private Integer accessLimit = null;
 
   @JsonProperty("accessUntil")
-  private LocalDateTime accessUntil = null;
+  private DateTime accessUntil = null;
 
   @JsonProperty("allowUpload")
   private Boolean allowUpload = null;
@@ -103,7 +103,7 @@ public class CreateFileShareRequest {
 
   public CreateFileShareRequest addSentToEmailsItem(String sentToEmailsItem) {
     if (this.sentToEmails == null) {
-      this.sentToEmails = new ArrayList<>();
+      this.sentToEmails = new ArrayList<String>();
     }
     this.sentToEmails.add(sentToEmailsItem);
     return this;
@@ -140,7 +140,7 @@ public class CreateFileShareRequest {
     this.accessLimit = accessLimit;
   }
 
-  public CreateFileShareRequest accessUntil(LocalDateTime accessUntil) {
+  public CreateFileShareRequest accessUntil(DateTime accessUntil) {
     this.accessUntil = accessUntil;
     return this;
   }
@@ -150,11 +150,11 @@ public class CreateFileShareRequest {
    * @return accessUntil
   **/
   @ApiModelProperty(value = "Limit access to before this date.")
-  public LocalDateTime getAccessUntil() {
+  public DateTime getAccessUntil() {
     return accessUntil;
   }
 
-  public void setAccessUntil(LocalDateTime accessUntil) {
+  public void setAccessUntil(DateTime accessUntil) {
     this.accessUntil = accessUntil;
   }
 
@@ -183,7 +183,7 @@ public class CreateFileShareRequest {
 
   public CreateFileShareRequest addUploadNotificationEmailsItem(String uploadNotificationEmailsItem) {
     if (this.uploadNotificationEmails == null) {
-      this.uploadNotificationEmails = new ArrayList<>();
+      this.uploadNotificationEmails = new ArrayList<String>();
     }
     this.uploadNotificationEmails.add(uploadNotificationEmailsItem);
     return this;

@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Update a accounts settings. Properties that are null/undefined/missing are not updated
  */
 @ApiModel(description = "Update a accounts settings. Properties that are null/undefined/missing are not updated")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class UpdateAccountSettings {
   @JsonProperty("startPage")
   private String startPage = null;

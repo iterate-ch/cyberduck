@@ -28,7 +28,7 @@ import java.util.List;
  * Contains a list of enhanced shared pathResourceItems.
  */
 @ApiModel(description = "Contains a list of enhanced shared pathResourceItems.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class ShareContents {
   @JsonProperty("totalRowCount")
   private Integer totalRowCount = null;
@@ -61,7 +61,7 @@ public class ShareContents {
 
   public ShareContents addSharesItem(Share sharesItem) {
     if (this.shares == null) {
-      this.shares = new ArrayList<>();
+      this.shares = new ArrayList<Share>();
     }
     this.shares.add(sharesItem);
     return this;

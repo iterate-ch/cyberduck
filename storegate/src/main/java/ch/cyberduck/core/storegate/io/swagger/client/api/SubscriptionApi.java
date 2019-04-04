@@ -8,7 +8,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import java.time.LocalDateTime;
+import org.joda.time.DateTime;
 import ch.cyberduck.core.storegate.io.swagger.client.model.Subscription;
 import ch.cyberduck.core.storegate.io.swagger.client.model.TerminateSubscriptionRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateSubscriptionRequest;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-03-25T11:22:03.779+03:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
 public class SubscriptionApi {
   private ApiClient apiClient;
 
@@ -87,20 +87,20 @@ public class SubscriptionApi {
   /**
    * Get current subscription end date
    * 
-   * @return LocalDateTime
+   * @return DateTime
    * @throws ApiException if fails to make API call
    */
-  public LocalDateTime subscriptionGetSubscriptionEndDate() throws ApiException {
+  public DateTime subscriptionGetSubscriptionEndDate() throws ApiException {
     return subscriptionGetSubscriptionEndDateWithHttpInfo().getData();
       }
 
   /**
    * Get current subscription end date
    * 
-   * @return ApiResponse&lt;LocalDateTime&gt;
+   * @return ApiResponse&lt;DateTime&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<LocalDateTime> subscriptionGetSubscriptionEndDateWithHttpInfo() throws ApiException {
+  public ApiResponse<DateTime> subscriptionGetSubscriptionEndDateWithHttpInfo() throws ApiException {
     Object localVarPostBody = null;
     
     // create path and map variables
@@ -126,7 +126,7 @@ public class SubscriptionApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<LocalDateTime> localVarReturnType = new GenericType<LocalDateTime>() {};
+    GenericType<DateTime> localVarReturnType = new GenericType<DateTime>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
