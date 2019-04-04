@@ -276,7 +276,8 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                 if(null == selected) {
                     return false;
                 }
-                return controller.getSession().getFeature(PromptUrlProvider.class).isSupported(selected, PromptUrlProvider.Type.download);
+                return controller.getSession().getFeature(PromptUrlProvider.class) != null &&
+                    controller.getSession().getFeature(PromptUrlProvider.class).isSupported(selected, PromptUrlProvider.Type.download);
             }
             return false;
         }
