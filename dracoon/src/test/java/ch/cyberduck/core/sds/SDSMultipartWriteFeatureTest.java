@@ -48,7 +48,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
     public void testReadWrite() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
@@ -72,7 +72,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
     public void testWriteZeroLength() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final TransferStatus status = new TransferStatus();
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);

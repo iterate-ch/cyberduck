@@ -59,7 +59,7 @@ public class TripleCryptWriteFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testWrite() throws Exception {
-        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -84,7 +84,7 @@ public class TripleCryptWriteFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("ahbic3Ae");
+                return new VaultCredentials("aiW3iem#uaviTeh");
             }
         });
         IOUtils.readFully(stream, compare);
@@ -96,7 +96,7 @@ public class TripleCryptWriteFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testWriteMultipart() throws Exception {
-        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -121,7 +121,7 @@ public class TripleCryptWriteFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("ahbic3Ae");
+                return new VaultCredentials("aiW3iem#uaviTeh");
             }
         });
         IOUtils.readFully(stream, compare);

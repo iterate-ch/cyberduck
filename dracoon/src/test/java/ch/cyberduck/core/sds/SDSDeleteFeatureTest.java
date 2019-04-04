@@ -39,7 +39,7 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
     public void testDeleteFile() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
@@ -52,7 +52,7 @@ public class SDSDeleteFeatureTest extends AbstractSDSTest {
     public void testDeleteFolderRoomWithContent() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-                new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room,
                 new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));

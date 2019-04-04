@@ -67,7 +67,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMove() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         assertEquals(new SDSAttributesFinderFeature(session, nodeid).find(test).getVersionId(),
@@ -83,9 +83,9 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveDifferentDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room1 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final Path test = new Path(room1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -101,9 +101,9 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveWithRenameDifferentDataRoomSameFilename() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room1 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final Path test1 = new Path(room1, "A", EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(test1, new TransferStatus());
         final Path test2 = new Path(room2, "A", EnumSet.of(Path.Type.file));
@@ -121,10 +121,10 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     @Test
     public void testMoveFromEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room1 = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room1 = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         room2.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room2));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -145,7 +145,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("ahbic3Ae");
+                return new VaultCredentials("aiW3iem#uaviTeh");
             }
         });
         assertEquals(1, session.getMetrics().get(Copy.class));
@@ -161,7 +161,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("ahbic3Ae");
+                return new VaultCredentials("aiW3iem#uaviTeh");
             }
         });
         IOUtils.readFully(stream, compare);
@@ -173,7 +173,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     @Test
     public void testMoveToEncryptedDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room1 = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room1 = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
         final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
@@ -201,7 +201,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("ahbic3Ae");
+                return new VaultCredentials("aiW3iem#uaviTeh");
             }
         });
         IOUtils.readFully(stream, compare);
@@ -213,10 +213,15 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     @Test
     public void testMoveBetweenEncryptedDataRooms() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room1 = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room1 = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         room1.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room1));
-        final Path room2 = new Path("test-TOO", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        room2.setAttributes(new SDSAttributesFinderFeature(session, nodeid).find(room2));
+        final Path room2 = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
+        final EncryptRoomRequest encrypt = new EncryptRoomRequest();
+        encrypt.setIsEncrypted(true);
+        new NodesApi(session.getClient()).encryptRoom(Long.parseLong(new SDSNodeIdProvider(session).withCache(cache).getFileid(room2,
+            new DisabledListProgressListener())), encrypt, StringUtils.EMPTY, null);
+        room2.getType().add(Path.Type.decrypted);
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -228,7 +233,17 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final Path target = new Path(room2, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus().length(content.length), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        new SDSDelegatingMoveFeature(session, nodeid, new SDSMoveFeature(session, nodeid)).move(test, target, new TransferStatus().length(content.length), new Delete.DisabledCallback(), new ConnectionCallback() {
+            @Override
+            public void warn(final Host bookmark, final String title, final String message, final String defaultButton, final String cancelButton, final String preference) {
+                //
+            }
+
+            @Override
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                return new VaultCredentials("aiW3iem#uaviTeh");
+            }
+        });
         test.attributes().setVersionId(null);
         assertFalse(new SDSFindFeature(nodeid).find(test));
         assertTrue(new SDSFindFeature(nodeid).find(target));
@@ -241,20 +256,20 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("ahbic3Ae");
+                return new VaultCredentials("aiW3iem#uaviTeh");
             }
         });
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(target, room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testMoveDirectory() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final String foldername = new AlphanumericRandomStringService().random();
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, foldername, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -269,7 +284,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveDirectoryToRoot() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path target = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
@@ -285,10 +300,10 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveRoomToDirectory() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
         assertFalse(move.isSupported(test, target));
         move.move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
@@ -302,10 +317,10 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveSubroom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room,
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
         assertTrue(move.isSupported(subroom, target));
         move.move(subroom, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
@@ -320,11 +335,11 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveDataRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final String directoryname = new AlphanumericRandomStringService().random();
-        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(directoryname, EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
-        final Path target = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(directoryname, EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
+        final Path target = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(0, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(new Path(directoryname, EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertFalse(new SDSFindFeature(nodeid).find(new Path(directoryname, EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted))));
         assertTrue(new SDSFindFeature(nodeid).find(target));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -348,7 +363,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
             new DisabledProgressListener(), new DisabledLoginCallback());
         worker.run(session);
         assertEquals(0, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertFalse(new SDSFindFeature(nodeid).find(new Path(roomName, EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted))));
         assertTrue(new SDSFindFeature(nodeid).find(renamed));
         assertTrue(new SDSFindFeature(nodeid).find(new Path(renamed, folder.getName(), EnumSet.of(Path.Type.directory, Path.Type.directory))));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -358,7 +373,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveOverride() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -373,7 +388,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     public void testMoveToDifferentParentAndRename() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -387,7 +402,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
     @Test(expected = NotfoundException.class)
     public void testMoveNotFound() throws Exception {
         final Path room = new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         new SDSMoveFeature(session, nodeid).move(test, new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
