@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -329,63 +329,6 @@
                 <menuItem isSeparatorItem="YES" id="67">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Info" keyEquivalent="i" id="68">
-                    <connections>
-                        <action selector="infoButtonClicked:" target="-1" id="163"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Quick Look" image="NSQuickLookTemplate" id="69">
-                    <attributedString key="attributedTitle"/>
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="quicklookButtonClicked:" target="-1" id="185"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Edit With" id="70">
-                    <menu key="submenu" title="Edit With" id="71"/>
-                </menuItem>
-                <menuItem title="Rename…" id="72">
-                    <connections>
-                        <action selector="renameFileButtonClicked:" target="-1" id="176"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Duplicate…" keyEquivalent="d" id="73">
-                    <connections>
-                        <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
-                    </connections>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="74"/>
-                <menuItem title="Download" keyEquivalent="" id="75">
-                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
-                    <connections>
-                        <action selector="downloadButtonClicked:" target="-1" id="164"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Download As…" keyEquivalent="" id="76">
-                    <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
-                    <connections>
-                        <action selector="downloadAsButtonClicked:" target="-1" id="168"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Download To…" id="77">
-                    <connections>
-                        <action selector="downloadToButtonClicked:" target="-1" id="177"/>
-                    </connections>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="78">
-                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                </menuItem>
-                <menuItem title="Upload…" keyEquivalent="" id="79">
-                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
-                    <connections>
-                        <action selector="uploadButtonClicked:" target="-1" id="174"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Synchronize…" id="80">
-                    <connections>
-                        <action selector="syncButtonClicked:" target="-1" id="172"/>
-                    </connections>
-                </menuItem>
                 <menuItem title="New Folder…" keyEquivalent="N" id="81">
                     <connections>
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
@@ -409,6 +352,64 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="84"/>
+                <menuItem title="Info" keyEquivalent="i" id="68">
+                    <connections>
+                        <action selector="infoButtonClicked:" target="-1" id="163"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Quick Look" image="NSQuickLookTemplate" id="69">
+                    <attributedString key="attributedTitle"/>
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="quicklookButtonClicked:" target="-1" id="185"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Edit With" id="70">
+                    <menu key="submenu" title="Edit With" id="71"/>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="74"/>
+                <menuItem title="Rename…" id="72">
+                    <connections>
+                        <action selector="renameFileButtonClicked:" target="-1" id="176"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Duplicate…" keyEquivalent="d" id="73">
+                    <connections>
+                        <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="U9L-O8-fnA"/>
+                <menuItem title="Download" keyEquivalent="" id="75">
+                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                    <connections>
+                        <action selector="downloadButtonClicked:" target="-1" id="164"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Download As…" keyEquivalent="" id="76">
+                    <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
+                    <connections>
+                        <action selector="downloadAsButtonClicked:" target="-1" id="168"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Download To…" id="77">
+                    <connections>
+                        <action selector="downloadToButtonClicked:" target="-1" id="177"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Upload…" keyEquivalent="" id="79">
+                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                    <connections>
+                        <action selector="uploadButtonClicked:" target="-1" id="174"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Synchronize…" id="80">
+                    <connections>
+                        <action selector="syncButtonClicked:" target="-1" id="172"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="78">
+                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                </menuItem>
                 <menuItem title="Delete" id="85">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
@@ -445,6 +446,11 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Open URL" id="95"/>
                 </menuItem>
+                <menuItem title="Share…" id="NBw-Mh-zlT">
+                    <connections>
+                        <action selector="shareFileButtonClicked:" target="-1" id="iI0-ew-cyt"/>
+                    </connections>
+                </menuItem>
                 <menuItem isSeparatorItem="YES" id="96">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
@@ -459,7 +465,7 @@ CA
                     </connections>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="-184.5" y="588.5"/>
+            <point key="canvasLocation" x="-367" y="582"/>
         </menu>
         <menu title="Menu" id="99">
             <items>

@@ -34,24 +34,27 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.CommitInfo;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 
-public class DropboxUrlProvider implements PromptUrlProvider<Void, Void> {
-    private static final Logger log = Logger.getLogger(DropboxUrlProvider.class);
+public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void> {
+    private static final Logger log = Logger.getLogger(DropboxTemporaryUrlProvider.class);
 
     private final DropboxSession session;
 
-    public DropboxUrlProvider(final DropboxSession session) {
+    public DropboxTemporaryUrlProvider(final DropboxSession session) {
         this.session = session;
     }
 
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create temporary link for %s", file));
+            }
             // This link will expire in four hours and afterwards you will get 410 Gone.
             final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryLink(file.getAbsolute()).getLink();
             // Determine expiry time for URL
             final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             expiry.add(Calendar.HOUR, 4);
-            return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.http,
+            return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3"))
                     + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                     UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
@@ -65,6 +68,9 @@ public class DropboxUrlProvider implements PromptUrlProvider<Void, Void> {
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create temporary upload link for %s", file));
+            }
             final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryUploadLink(new CommitInfo(file.getAbsolute())).getLink();
             return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.http, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3")));
         }

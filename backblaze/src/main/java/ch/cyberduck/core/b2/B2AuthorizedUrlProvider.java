@@ -68,6 +68,9 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
             URIEncoder.encode(containerService.getContainer(file).getName()),
             URIEncoder.encode(containerService.getKey(file)));
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create download authorization for %s", file));
+            }
             final int seconds = 604800;
             // Determine expiry time for URL
             final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
