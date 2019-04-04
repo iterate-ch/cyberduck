@@ -23,11 +23,14 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 
 public class WriteLifecycleWorker extends Worker<Boolean> {
+    private static final Logger log = Logger.getLogger(WriteLifecycleWorker.class);
 
     /**
      * Selected files.
@@ -45,6 +48,9 @@ public class WriteLifecycleWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Lifecycle feature = session.getFeature(Lifecycle.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         for(Path file : this.getContainers(files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();

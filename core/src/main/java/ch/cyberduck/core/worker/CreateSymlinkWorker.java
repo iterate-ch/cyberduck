@@ -21,9 +21,12 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Symlink;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 
 public class CreateSymlinkWorker extends Worker<Path> {
+    private static final Logger log = Logger.getLogger(CreateSymlinkWorker.class);
 
     private final Path link;
     private final String target;
@@ -37,6 +40,9 @@ public class CreateSymlinkWorker extends Worker<Path> {
     public Path run(final Session<?> session) throws BackgroundException {
         // Symlink pointing to existing target file
         final Symlink feature = session.getFeature(Symlink.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         feature.symlink(link, target);
         return link;
     }

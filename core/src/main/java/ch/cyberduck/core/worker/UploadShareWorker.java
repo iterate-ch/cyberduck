@@ -23,10 +23,13 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.Collections;
 
 public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
+    private static final Logger log = Logger.getLogger(UploadShareWorker.class);
 
     private final Path file;
     private final Options options;
@@ -41,6 +44,9 @@ public class UploadShareWorker<Options> extends Worker<DescriptiveUrl> {
     @Override
     public DescriptiveUrl run(final Session<?> session) throws BackgroundException {
         final PromptUrlProvider<Void, Options> provider = session.getFeature(PromptUrlProvider.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", provider));
+        }
         return provider.toUploadUrl(file, options, callback);
     }
 

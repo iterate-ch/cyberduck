@@ -25,6 +25,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Metadata;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,6 +37,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class ReadMetadataWorker extends Worker<Map<String, String>> {
+    private static final Logger log = Logger.getLogger(ReadMetadataWorker.class);
 
     /**
      * Selected files.
@@ -48,6 +51,9 @@ public class ReadMetadataWorker extends Worker<Map<String, String>> {
     @Override
     public Map<String, String> run(final Session<?> session) throws BackgroundException {
         final Metadata feature = session.getFeature(Metadata.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         // Map for metadata entry key > File & Metadata Values
         final Map<String, Map<Path, String>> graphMetadata = new HashMap<>();
         for(Path next : files) {

@@ -28,6 +28,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Metadata;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +37,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class WriteMetadataWorker extends Worker<Boolean> {
+    private static final Logger log = Logger.getLogger(WriteMetadataWorker.class);
 
     /**
      * Selected files.
@@ -50,7 +53,6 @@ public class WriteMetadataWorker extends Worker<Boolean> {
      * Descend into directories
      */
     private final RecursiveCallback<String> callback;
-
     private final ProgressListener listener;
 
     public WriteMetadataWorker(List<Path> files, final Map<String, String> metadata,
@@ -71,6 +73,9 @@ public class WriteMetadataWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Metadata feature = session.getFeature(Metadata.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();

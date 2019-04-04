@@ -22,11 +22,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.TransferAcceleration;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 
 public class WriteTransferAccelerationWorker extends Worker<Boolean> {
+    private static final Logger log = Logger.getLogger(WriteTransferAccelerationWorker.class);
 
     /**
      * Selected files.
@@ -43,6 +46,9 @@ public class WriteTransferAccelerationWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final TransferAcceleration feature = session.getFeature(TransferAcceleration.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         for(Path file : this.getContainers(files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();

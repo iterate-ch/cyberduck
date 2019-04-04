@@ -38,6 +38,8 @@ import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,6 +49,7 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 public class MoveWorker extends Worker<Map<Path, Path>> {
+    private static final Logger log = Logger.getLogger(MoveWorker.class);
 
     private final Map<Path, Path> files;
     private final SessionPool target;
@@ -76,7 +79,10 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             }
         });
         try {
-            final Move move = session.getFeature(Move.class).withTarget(destination);
+            final Move feature = session.getFeature(Move.class).withTarget(destination);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Run with feature %s", feature));
+            }
             final ListService list = session.getFeature(ListService.class);
             // sort ascending by timestamp to move older versions first
             final Map<Path, Path> sorted = new TreeMap<>(new TimestampComparator(true));
@@ -86,9 +92,9 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
-                final Map<Path, Path> recursive = this.compile(move, list, entry.getKey(), entry.getValue());
+                final Map<Path, Path> recursive = this.compile(feature, list, entry.getKey(), entry.getValue());
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                    if(r.getKey().isDirectory() && !move.isRecursive(r.getKey(), r.getValue())) {
+                    if(r.getKey().isDirectory() && !feature.isRecursive(r.getKey(), r.getValue())) {
                         // Create directory unless copy implementation is recursive
                         result.put(r.getKey(), session.getFeature(Directory.class).mkdir(r.getValue(), r.getKey().attributes().getRegion(), new TransferStatus()));
                     }
@@ -97,7 +103,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                             .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
                             .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
                             .length(r.getKey().attributes().getSize());
-                        result.put(r.getKey(), move.move(r.getKey(), r.getValue(), status,
+                        result.put(r.getKey(), feature.move(r.getKey(), r.getValue(), status,
                             new Delete.Callback() {
                                 @Override
                                 public void delete(final Path file) {
@@ -109,7 +115,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     }
                 }
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
-                    if(r.getKey().isDirectory() && !move.isRecursive(r.getKey(), r.getValue())) {
+                    if(r.getKey().isDirectory() && !feature.isRecursive(r.getKey(), r.getValue())) {
                         session.getFeature(Delete.class).delete(Collections.singletonList(r.getKey()), callback, new Delete.DisabledCallback());
                     }
                 }
