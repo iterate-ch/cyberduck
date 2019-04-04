@@ -136,10 +136,15 @@
                                     <configOptions>
                                         <sourceFolder>swagger</sourceFolder>
                                         <library>jersey2</library>
+                                        <dateLibrary>joda</dateLibrary>
                                     </configOptions>
                                     <environmentVariables>
                                         <apiTests>false</apiTests>
                                     </environmentVariables>
+                                    <importMappings>
+                                        <importMapping>File=ch.cyberduck.core.storegate.io.swagger.client.model.File</importMapping>
+                                        <importMapping>UpdatePermissionRequest=ch.cyberduck.core.storegate.io.swagger.client.model.UpdatePermissionRequest</importMapping>
+                                    </importMappings>
                                 </configuration>
                             </execution>
                         </executions>
