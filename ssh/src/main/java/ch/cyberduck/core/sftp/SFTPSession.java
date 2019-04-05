@@ -22,6 +22,7 @@ import ch.cyberduck.core.AuthenticationProvider;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostnameConfiguratorFactory;
@@ -230,8 +231,15 @@ public class SFTPSession extends Session<SSHClient> {
         }
         else {
             if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-                methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
-                methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
+                switch (Factory.Platform.getDefault())
+                {
+                    case windows:
+                        methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
+                        break;
+                    default:
+                        methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
+                        break;
+                }
             }
             methods.add(new SFTPPublicKeyAuthentication(this));
             methods.add(new SFTPChallengeResponseAuthentication(this));
