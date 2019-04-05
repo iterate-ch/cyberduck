@@ -77,6 +77,8 @@ import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.dracoon.sdk.crypto.model.UserPrivateKey;
 import com.migcomponents.migbase64.Base64;
 
+import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
+
 public class SDSSession extends HttpSession<SDSApiClient> {
     private static final Logger log = Logger.getLogger(SDSSession.class);
 
@@ -114,8 +116,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                             String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
                     }
                 }).build(),
-                    host).withRedirectUri(Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
-                    host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
+                    host).withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
+                    Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
+                        host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
                 );
                 configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
                 configuration.addInterceptorLast(authorizationService);
