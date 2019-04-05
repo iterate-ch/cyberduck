@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
@@ -320,6 +321,9 @@ public abstract class Session<C> implements TranscriptListener {
         }
         if(type == UrlProvider.class) {
             return (T) new DefaultUrlProvider(host);
+        }
+        if(type == PromptUrlProvider.class) {
+            return (T) new DefaulPrompttUrlProvider(this.getFeature(UrlProvider.class));
         }
         if(type == Find.class) {
             return (T) new DefaultFindFeature(this);
