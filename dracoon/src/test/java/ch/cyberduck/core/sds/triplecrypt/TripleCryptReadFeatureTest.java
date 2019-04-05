@@ -60,7 +60,7 @@ public class TripleCryptReadFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testPartialRead() throws Exception {
-        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -85,7 +85,7 @@ public class TripleCryptReadFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("ahbic3Ae");
+                return new VaultCredentials("aiW3iem#uaviTeh");
             }
         });
         stream.skip(1000);
