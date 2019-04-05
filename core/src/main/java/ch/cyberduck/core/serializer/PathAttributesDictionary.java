@@ -61,7 +61,7 @@ public class PathAttributesDictionary {
         if(aclObj != null) {
             attributes.setAcl(new AclDictionary().deserialize(aclObj));
         }
-        final Object linkObj = dict.objectForKey("Link");
+        final Object linkObj = dict.stringForKey("Link");
         if(linkObj != null) {
             attributes.setLink(new DescriptiveUrl(URI.create(dict.stringForKey("Link")), DescriptiveUrl.Type.http));
         }

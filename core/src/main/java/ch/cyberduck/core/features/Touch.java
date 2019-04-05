@@ -25,9 +25,10 @@ public interface Touch<Reply> {
 
     /**
      * @param workdir Working directory
+     * @param filename
      * @return True if creating an empty file is possible.
      */
-    default boolean isSupported(Path workdir) {
+    default boolean isSupported(final Path workdir, final String filename) {
         return workdir.attributes().getPermission().isWritable();
     }
 

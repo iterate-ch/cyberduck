@@ -54,11 +54,6 @@ public class FinderLocal extends Local {
 
     private final FilesystemBookmarkResolver<NSURL> resolver;
 
-    /**
-     * Application scoped bookmark to access outside of sandbox
-     */
-    private String bookmark;
-
     public FinderLocal(final Local parent, final String name) {
         this(parent, name, FilesystemBookmarkResolverFactory.get());
     }
@@ -89,11 +84,6 @@ public class FinderLocal extends Local {
     @Override
     public <T> T serialize(final Serializer dict) {
         dict.setStringForKey(this.getAbbreviatedPath(), "Path");
-        // Get or create application scope bookmark
-        final String bookmark = this.getBookmark();
-        if(StringUtils.isNotBlank(bookmark)) {
-            dict.setStringForKey(bookmark, String.format("%s Bookmark", PreferencesFactory.get().getProperty("application.name")));
-        }
         return dict.getSerialized();
     }
 
@@ -145,8 +135,13 @@ public class FinderLocal extends Local {
         }
     }
 
+    /**
+     * @return Application scoped bookmark to access outside of sandbox
+     */
     @Override
     public String getBookmark() {
+        final String path = this.getAbbreviatedPath();
+        String bookmark = PreferencesFactory.get().getProperty(String.format("local.bookmark.%s", path));
         if(StringUtils.isBlank(bookmark)) {
             try {
                 bookmark = resolver.create(this);
@@ -160,7 +155,8 @@ public class FinderLocal extends Local {
 
     @Override
     public void setBookmark(final String data) {
-        this.bookmark = data;
+        final String path = this.getAbbreviatedPath();
+        PreferencesFactory.get().setProperty(String.format("local.bookmark.%s", path), data);
     }
 
     @Override

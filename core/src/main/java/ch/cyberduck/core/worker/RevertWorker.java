@@ -24,12 +24,15 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public class RevertWorker extends Worker<List<Path>> {
+    private static final Logger log = Logger.getLogger(RevertWorker.class);
 
     private final List<Path> files;
 
@@ -40,6 +43,9 @@ public class RevertWorker extends Worker<List<Path>> {
     @Override
     public List<Path> run(final Session<?> session) throws BackgroundException {
         final Versioning feature = session.getFeature(Versioning.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();

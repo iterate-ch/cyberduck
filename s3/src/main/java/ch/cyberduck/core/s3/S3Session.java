@@ -354,7 +354,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return null;
         }
         if(type == DistributionConfiguration.class) {
-            return (T) new WebsiteCloudFrontDistributionConfiguration(this, distributions, trust, key);
+            return (T) new WebsiteCloudFrontDistributionConfiguration(this, distributions);
         }
         if(type == UrlProvider.class) {
             return (T) new S3UrlProvider(this);

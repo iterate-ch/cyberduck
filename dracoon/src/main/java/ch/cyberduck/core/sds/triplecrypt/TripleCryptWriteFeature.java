@@ -36,13 +36,13 @@ import com.dracoon.sdk.crypto.CryptoSystemException;
 import com.dracoon.sdk.crypto.InvalidFileKeyException;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-public class CryptoWriteFeature implements Write<VersionId> {
-    private static final Logger log = Logger.getLogger(CryptoWriteFeature.class);
+public class TripleCryptWriteFeature implements Write<VersionId> {
+    private static final Logger log = Logger.getLogger(TripleCryptWriteFeature.class);
 
     private final SDSSession session;
     private final Write<VersionId> proxy;
 
-    public CryptoWriteFeature(final SDSSession session, final Write<VersionId> proxy) {
+    public TripleCryptWriteFeature(final SDSSession session, final Write<VersionId> proxy) {
         this.session = session;
         this.proxy = proxy;
     }
@@ -55,12 +55,12 @@ public class CryptoWriteFeature implements Write<VersionId> {
                 log.debug(String.format("Read file key for file %s", file));
             }
             final FileKey fileKey = reader.readValue(status.getFilekey().array());
-            return new CryptoOutputStream<VersionId>(session, proxy.write(file, status, callback),
+            return new TripleCryptOutputStream<VersionId>(session, proxy.write(file, status, callback),
                     Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status
             );
         }
         catch(CryptoSystemException | InvalidFileKeyException e) {
-            throw new CryptoExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);

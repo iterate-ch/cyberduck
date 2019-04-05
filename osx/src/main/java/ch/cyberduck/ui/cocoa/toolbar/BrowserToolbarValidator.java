@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Symlink;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Versioning;
@@ -233,13 +234,13 @@ public class BrowserToolbarValidator implements ToolbarValidator {
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(
-                new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
+                new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()), StringUtils.EMPTY
             );
         }
         else if(action.equals(upload.action())) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Touch.class).isSupported(
-                new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath())
-            );
+                new UploadTargetFinder(controller.workdir()).find(controller.getSelectedPath()),
+                StringUtils.EMPTY);
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
             return this.isBrowser() && controller.isMounted() && controller.getSession().getFeature(Symlink.class) != null
@@ -266,6 +267,17 @@ public class BrowserToolbarValidator implements ToolbarValidator {
                     return false;
                 }
                 return controller.getSession().getFeature(Delete.class).isSupported(selected);
+            }
+            return false;
+        }
+        else if(action.equals(share.action())) {
+            if(this.isBrowser() && controller.isMounted() && controller.getSelectionCount() == 1) {
+                final Path selected = controller.getSelectedPath();
+                if(null == selected) {
+                    return false;
+                }
+                return controller.getSession().getFeature(PromptUrlProvider.class) != null &&
+                    controller.getSession().getFeature(PromptUrlProvider.class).isSupported(selected, PromptUrlProvider.Type.download);
             }
             return false;
         }

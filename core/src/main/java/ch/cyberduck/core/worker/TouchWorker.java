@@ -28,11 +28,14 @@ import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
 public class TouchWorker extends Worker<Path> {
+    private static final Logger log = Logger.getLogger(TouchWorker.class);
 
     private final Path file;
 
@@ -43,6 +46,9 @@ public class TouchWorker extends Worker<Path> {
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
         final Touch feature = session.getFeature(Touch.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         final TransferStatus status = new TransferStatus()
             .exists(false)
             .length(0L)

@@ -21,7 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import com.dracoon.sdk.crypto.CryptoException;
 
-public class CryptoExceptionMappingService extends AbstractExceptionMappingService<CryptoException> {
+public class TripleCryptExceptionMappingService extends AbstractExceptionMappingService<CryptoException> {
 
     @Override
     public BackgroundException map(final CryptoException failure) {

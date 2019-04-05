@@ -34,11 +34,11 @@ import java.util.UUID;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
-public class DropboxUrlProviderTest extends AbstractDropboxTest {
+public class DropboxTemporaryUrlProviderTest extends AbstractDropboxTest {
 
     @Test
     public void testToUrl() throws Exception {
-        final DropboxUrlProvider provider = new DropboxUrlProvider(session);
+        final DropboxTemporaryUrlProvider provider = new DropboxTemporaryUrlProvider(session);
         final Path file = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         assertNotNull(provider.toDownloadUrl(file, null, new DisabledPasswordCallback()).getUrl());

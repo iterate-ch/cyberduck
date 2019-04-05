@@ -18,8 +18,11 @@ package ch.cyberduck.core.sds.triplecrypt;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.sds.SDSExceptionMappingService;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
@@ -43,14 +46,14 @@ import com.dracoon.sdk.crypto.model.PlainFileKey;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.dracoon.sdk.crypto.model.UserPrivateKey;
 
-public class CryptoReadFeature implements Read {
-    private static final Logger log = Logger.getLogger(CryptoReadFeature.class);
+public class TripleCryptReadFeature implements Read {
+    private static final Logger log = Logger.getLogger(TripleCryptReadFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
     private final SDSReadFeature proxy;
 
-    public CryptoReadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSReadFeature proxy) {
+    public TripleCryptReadFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final SDSReadFeature proxy) {
         this.session = session;
         this.nodeid = nodeid;
         this.proxy = proxy;
@@ -70,16 +73,22 @@ public class CryptoReadFeature implements Read {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt to unlock private key %s", privateKey));
             }
-            final Credentials passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
+            final Credentials passphrase;
+            try {
+                passphrase = new TripleCryptKeyPair().unlock(callback, session.getHost(), userKeyPair);
+            }
+            catch(LoginCanceledException e) {
+                throw new AccessDeniedException(LocaleFactory.localizedString("Decryption password required", "SDS"), e);
+            }
             final PlainFileKey plainFileKey = Crypto.decryptFileKey(TripleCryptConverter.toCryptoEncryptedFileKey(key), privateKey, passphrase.getPassword());
-            return new CryptoInputStream(proxy.read(file, status, callback),
-                    Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
+            return new TripleCryptInputStream(proxy.read(file, status, callback),
+                Crypto.createFileDecryptionCipher(plainFileKey), CryptoUtils.stringToByteArray(plainFileKey.getTag()));
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(CryptoException e) {
-            throw new CryptoExceptionMappingService().map("Download {0} failed", e, file);
+            throw new TripleCryptExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 

@@ -61,7 +61,7 @@ public class SingleTransferWorkerTest {
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 //
                 return file;
             }
@@ -122,7 +122,7 @@ public class SingleTransferWorkerTest {
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
@@ -190,7 +190,7 @@ public class SingleTransferWorkerTest {
             public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }

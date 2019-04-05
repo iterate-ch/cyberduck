@@ -40,11 +40,11 @@ import com.dracoon.sdk.crypto.model.PlainDataContainer;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class CryptoOutputStream<VersionId> extends HttpResponseOutputStream<VersionId> {
+public class TripleCryptOutputStream<VersionId> extends HttpResponseOutputStream<VersionId> {
 
     private final StatusOutputStream<VersionId> proxy;
 
-    public CryptoOutputStream(final SDSSession session, final StatusOutputStream<VersionId> proxy, final FileEncryptionCipher cipher, final TransferStatus key) {
+    public TripleCryptOutputStream(final SDSSession session, final StatusOutputStream<VersionId> proxy, final FileEncryptionCipher cipher, final TransferStatus key) {
         super(new MemorySegementingOutputStream(new EncryptingOutputStream(session, proxy, cipher, key),
                 SDSSession.DEFAULT_CHUNKSIZE));
         this.proxy = proxy;

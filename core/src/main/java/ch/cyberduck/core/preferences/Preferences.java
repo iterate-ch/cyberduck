@@ -515,7 +515,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("queue.download.wherefrom", String.valueOf(true));
 
         // Segmented concurrent downloads
-        this.setDefault("queue.download.segments", String.valueOf(true));
+        this.setDefault("queue.download.segments", String.valueOf(false));
         this.setDefault("queue.download.segments.threshold", String.valueOf(10L * 1024L * 1024L));
         this.setDefault("queue.download.segments.size", String.valueOf(5L * 1024L * 1024L));
 
@@ -1034,6 +1034,9 @@ public abstract class Preferences implements Locales {
         this.setDefault("archive.command.expand.gz", "gzip -d {0}");
         this.setDefault("archive.command.expand.bz2", "bzip2 -dk {0}");
 
+        this.setDefault("update.feed.nightly.enable", String.valueOf(true));
+        this.setDefault("update.feed.beta.enable", String.valueOf(true));
+
         this.setDefault("update.check", String.valueOf(true));
         final int day = 60 * 60 * 24;
         this.setDefault("update.check.interval", String.valueOf(day)); // periodic update check in seconds
@@ -1058,6 +1061,10 @@ public abstract class Preferences implements Locales {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
+        this.resetLogging();
+    }
+
+    private void resetLogging() {
         final URL configuration;
         final String file = this.getDefault("logging.config");
         if(null == file) {
@@ -1066,6 +1073,7 @@ public abstract class Preferences implements Locales {
         else {
             configuration = Preferences.class.getClassLoader().getResource(file);
         }
+        LogManager.resetConfiguration();
         final Logger root = Logger.getRootLogger();
         if(null != configuration) {
             DOMConfigurator.configure(configuration);
@@ -1097,6 +1105,14 @@ public abstract class Preferences implements Locales {
                 java.util.logging.Logger.getLogger(logger.getName()).setLevel(map.get(logger.getLevel()));
             }
         }
+    }
+
+    public void enableDebugLogging() {
+        Logger.getRootLogger().setLevel(Level.DEBUG);
+    }
+
+    public void disableDebugLogging() {
+        this.resetLogging();
     }
 
     /**

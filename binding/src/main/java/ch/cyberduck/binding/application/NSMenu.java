@@ -155,6 +155,8 @@ public abstract class NSMenu extends NSObject implements NSCopying {
      */
     public abstract void removeItem(NSMenuItem item);
 
+    public abstract void removeAllItems();
+
     /**
      * Original signature : <code>void setSubmenu(NSMenu*, NSMenuItem*)</code><br>
      * <i>native declaration : :69</i>

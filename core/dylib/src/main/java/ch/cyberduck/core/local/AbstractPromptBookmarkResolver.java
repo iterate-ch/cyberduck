@@ -48,6 +48,9 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
 
     private final Proxy proxy = new Proxy();
 
+    private static final Local TEMPORARY = new TemporarySupportDirectoryFinder().find();
+    private static final Local GROUP_CONTAINER = new SecurityApplicationGroupSupportDirectoryFinder().find();
+
     /**
      * @param create  Create options
      * @param resolve Resolve options
@@ -85,18 +88,18 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
 
     @Override
     public NSURL resolve(final Local file, final boolean interactive) throws AccessDeniedException {
+        if(file.isChild(TEMPORARY)) {
+            // Skip prompt for file in temporary folder where access is not sandboxed
+            return null;
+        }
+        if(file.isChild(GROUP_CONTAINER)) {
+            // Skip prompt for file in application group folder where access is not sandboxed
+            return null;
+        }
         final NSData bookmark;
         if(null == file.getBookmark()) {
             if(interactive) {
                 if(!file.exists()) {
-                    return null;
-                }
-                if(file.isChild(new TemporarySupportDirectoryFinder().find())) {
-                    // Skip prompt for file in temporary folder where access is not sandboxed
-                    return null;
-                }
-                if(file.isChild(new SecurityApplicationGroupSupportDirectoryFinder().find())) {
-                    // Skip prompt for file in application group folder where access is not sandboxed
                     return null;
                 }
                 // Prompt user if no bookmark reference is available

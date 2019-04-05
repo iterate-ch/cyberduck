@@ -121,6 +121,8 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DuplicateFile;
         event ValidateCommand ValidateDuplicateFile;
         event VoidHandler OpenUrl;
+        event VoidHandler CreateShareLink;
+        event ValidateCommand ValidateCreateShareLink;
         event ValidateCommand ValidateOpenWebUrl;
         event ValidateCommand ValidateEditWith;
         event EditorsHandler GetEditorsForSelection;

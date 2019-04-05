@@ -27,11 +27,14 @@ import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.EnumSet;
 import java.util.Objects;
 
 public class CreateDirectoryWorker extends Worker<Path> {
+    private static final Logger log = Logger.getLogger(CreateDirectoryWorker.class);
 
     private final Path folder;
     private final String region;
@@ -44,6 +47,9 @@ public class CreateDirectoryWorker extends Worker<Path> {
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
         final Directory feature = session.getFeature(Directory.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         final TransferStatus status = new TransferStatus();
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {

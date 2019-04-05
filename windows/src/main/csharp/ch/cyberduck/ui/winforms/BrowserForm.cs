@@ -47,6 +47,8 @@ using org.apache.log4j;
 using Application = ch.cyberduck.core.local.Application;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
+using StructureMap;
+using Ch.Cyberduck.Ui.Core.Contracts;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -285,6 +287,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ValidateCommand ValidateDuplicateFile;
         public event ValidateCommand ValidateOpenWebUrl;
         public event ValidateCommand ValidateEditWith;
+        public event ValidateCommand ValidateCreateShareLink;
+        public event VoidHandler CreateShareLink;
         public event ValidateCommand ValidateDelete;
         public event ArchivesHandler GetArchives;
         public event CopyUrlHandler GetCopyUrls;
@@ -1234,6 +1238,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
+        void IView.BringToFront()
+        {
+            var desktopManager = ObjectFactory.GetInstance<IVirtualDesktopManager>();
+            desktopManager.BringToCurrentDesktop(this);
+
+            this.BringToFront();
+        }
+
         private void SetShortcutText(MenuItem target, ToolStripMenuItem source, string shortCutText)
         {
             if (-1 == target.Text.IndexOf('\t'))
@@ -1627,7 +1639,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Font f;
             switch (size)
             {
-                case BookmarkController.SmallBookmarkSize:
+                case BookmarkController<IBookmarkView>.SmallBookmarkSize:
                     r = new SmallBookmarkRenderer();
                     r.NicknameFont = new Font(bookmarkListView.Font, FontStyle.Bold);
 
@@ -1635,14 +1647,14 @@ namespace Ch.Cyberduck.Ui.Winforms
                     imageColumn.Width = 25;
                     f = new Font(bookmarkListView.Font.FontFamily, bookmarkListView.Font.Size - 1);
                     break;
-                case BookmarkController.MediumBookmarkSize:
+                case BookmarkController<IBookmarkView>.MediumBookmarkSize:
                     r = new MediumBookmarkRenderer();
                     l.RowHeight = 42;
                     imageColumn.Width = 40;
                     f = new Font(bookmarkListView.Font.FontFamily, bookmarkListView.Font.Size - 2);
 
                     break;
-                case BookmarkController.LargeBookmarkSize:
+                case BookmarkController<IBookmarkView>.LargeBookmarkSize:
                 default:
                     r = new LargeBookmarkRenderer();
 
@@ -2051,6 +2063,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 new ToolStripItem[] {infoToolStripMenuItem, infoToolStripButton, infoContextToolStripMenuItem},
                 new[] {infoMainMenuItem, infoBrowserContextMenuItem}, (sender, args) => ShowInspector(),
                 () => ValidateShowInspector());
+            Commands.Add(
+                new ToolStripItem[] { shareToolStripMenuItem, shareContextToolStripMenuItem },
+                new[] { shareMainMenuItem, shareBrowserContextMenuItem }, (sender, args) => CreateShareLink(),
+                () => ValidateCreateShareLink());
             Commands.Add(new ToolStripItem[] {downloadToolStripMenuItem, downloadContextToolStripMenuItem},
                 new[] {downloadMainMenuItem, downloadBrowserContextMenuItem}, (sender, args) => Download(),
                 () => ValidateDownload());

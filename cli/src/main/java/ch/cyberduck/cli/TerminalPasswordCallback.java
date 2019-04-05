@@ -55,7 +55,7 @@ public class TerminalPasswordCallback implements PasswordCallback {
     }
 
     protected Credentials prompt(final LoginOptions options, final Credentials credentials) {
-        if(options.save && options.keychain) {
+        if(options.keychain) {
             if(!PreferencesFactory.get().getBoolean("keychain.secure")) {
                 console.printf(String.format("WARNING! Passwords are stored in plain text in %s.",
                     LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "credentials").getAbbreviatedPath()));
@@ -63,7 +63,7 @@ public class TerminalPasswordCallback implements PasswordCallback {
             credentials.setSaved(prompt.prompt(LocaleFactory.get().localize("Save password", "Credentials")));
         }
         else {
-            credentials.setSaved(options.save);
+            credentials.setSaved(false);
         }
         return credentials;
     }

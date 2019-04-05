@@ -157,12 +157,14 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             // not the MD5 of the object data.
             attributes.setChecksum(Checksum.parse(object.getETag()));
         }
-        final HashMap<String, String> metadata = new HashMap<String, String>();
-        final Map<String, Object> source = object.getModifiableMetadata();
-        for(Map.Entry<String, Object> entry : source.entrySet()) {
-            metadata.put(entry.getKey(), entry.getValue().toString());
+        if(!object.getModifiableMetadata().isEmpty()) {
+            final HashMap<String, String> metadata = new HashMap<String, String>();
+            final Map<String, Object> source = object.getModifiableMetadata();
+            for(Map.Entry<String, Object> entry : source.entrySet()) {
+                metadata.put(entry.getKey(), entry.getValue().toString());
+            }
+            attributes.setMetadata(metadata);
         }
-        attributes.setMetadata(metadata);
         return attributes;
     }
 }

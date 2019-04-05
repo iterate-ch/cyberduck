@@ -64,6 +64,7 @@ public class SDSDelegatingMoveFeature implements Move {
             // Delete source file after copy is complete
             final Delete delete = session.getFeature(Delete.class);
             if(delete.isSupported(source)) {
+                log.warn(String.format("Delete source %s copied to %s", source, target));
                 delete.delete(Collections.singletonList(source), connectionCallback, callback);
             }
             return c;

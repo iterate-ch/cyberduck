@@ -96,5 +96,6 @@ public abstract class SheetController extends WindowController implements SheetC
     // Handle keyboard esc event when not running as sheet
     public void cancel(ID sender) {
         callback.callback(SheetCallback.CANCEL_OPTION);
+        application.endSheet(window, SheetCallback.CANCEL_OPTION);
     }
 }

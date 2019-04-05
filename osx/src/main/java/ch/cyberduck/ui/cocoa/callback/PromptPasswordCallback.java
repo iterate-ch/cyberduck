@@ -44,7 +44,7 @@ public class PromptPasswordCallback implements PasswordCallback {
         if(suppressed) {
             throw new LoginCanceledException();
         }
-        final Credentials credentials = new Credentials().withSaved(options.save);
+        final Credentials credentials = new Credentials().withSaved(options.keychain);
         final PasswordController controller = new PasswordController(bookmark, credentials, title, reason, options);
         if(options.oauth) {
             final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();

@@ -102,17 +102,17 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.5.7</version>
+                <version>4.5.8</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient-win</artifactId>
-                <version>4.5.7</version>
+                <version>4.5.8</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpmime</artifactId>
-                <version>4.5.7</version>
+                <version>4.5.8</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
@@ -243,27 +243,26 @@
                 <groupId>com.google.oauth-client</groupId>
                 <artifactId>google-oauth-client</artifactId>
                 <version>1.28.0</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.http-client</groupId>
-                        <artifactId>google-http-client</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
-                <groupId>ch.iterate.google-http-client</groupId>
-                <artifactId>google-http-client-gson</artifactId>
-                <version>1.24.2</version>
+                <groupId>com.google.api-client</groupId>
+                <artifactId>google-api-client</artifactId>
+                <version>1.28.0</version>
             </dependency>
             <dependency>
-                <groupId>ch.iterate.google-http-client</groupId>
+                <groupId>com.google.http-client</groupId>
                 <artifactId>google-http-client-jackson2</artifactId>
-                <version>1.24.2</version>
+                <version>1.28.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.http-client</groupId>
+                <artifactId>google-http-client-apache</artifactId>
+                <version>2.0.0</version>
             </dependency>
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.505</version>
+                <version>1.11.530</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -275,7 +274,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>27.0.1-jre</version>
+                <version>27.1-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.joyent.util</groupId>

@@ -65,7 +65,7 @@ public class LoginController extends ConnectionController {
 
     public void setIconView(NSImageView iconView) {
         this.iconView = iconView;
-        this.iconView.setImage(IconCacheFactory.<NSImage>get().iconNamed(options.icon));
+        this.iconView.setImage(IconCacheFactory.<NSImage>get().iconNamed(options.icon, 64));
     }
 
     public void setTitleField(NSTextField titleField) {

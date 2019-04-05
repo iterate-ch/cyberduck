@@ -20,6 +20,7 @@ import ch.cyberduck.binding.Outlet;
 import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.BookmarkNameProvider;
@@ -27,9 +28,13 @@ import ch.cyberduck.core.DefaultCharsetProvider;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.ui.LoginInputValidator;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 
@@ -40,6 +45,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 public class DefaultBookmarkController extends BookmarkController {
+    private static final Logger log = Logger.getLogger(DefaultBookmarkController.class);
 
     private static final String TIMEZONE_CONTINENT_PREFIXES =
         "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
@@ -55,16 +61,18 @@ public class DefaultBookmarkController extends BookmarkController {
     @Outlet
     private NSPopUpButton encodingPopup;
 
+    private final KeychainX509KeyManager x509KeyManager = new KeychainX509KeyManager(bookmark);
+
     public DefaultBookmarkController(final Host bookmark) {
-        this(bookmark, new LoginOptions(bookmark.getProtocol()).password(false));
+        this(bookmark, new LoginOptions(bookmark.getProtocol()));
     }
 
     public DefaultBookmarkController(final Host bookmark, final LoginOptions options) {
-        super(bookmark, options.password(false));
+        super(bookmark, options);
     }
 
     public DefaultBookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
-        super(bookmark, validator, options.password(false));
+        super(bookmark, validator, options);
     }
 
     @Override
@@ -93,6 +101,41 @@ public class DefaultBookmarkController extends BookmarkController {
         this.update();
     }
 
+    @Override
+    public void setPasswordField(final NSSecureTextField field) {
+        super.setPasswordField(field);
+        this.notificationCenter.addObserver(this.id(),
+            Foundation.selector("passwordFieldTextDidEndEditing:"),
+            NSControl.NSControlTextDidEndEditingNotification,
+            field.id());
+    }
+
+    @Action
+    public void passwordFieldTextDidEndEditing(NSNotification notification) {
+        if(options.keychain && options.password) {
+            if(StringUtils.isBlank(bookmark.getHostname())) {
+                return;
+            }
+            if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+                return;
+            }
+            if(StringUtils.isBlank(passwordField.stringValue())) {
+                return;
+            }
+            try {
+                PasswordStoreFactory.get().addPassword(bookmark.getProtocol().getScheme(),
+                    bookmark.getPort(),
+                    bookmark.getHostname(),
+                    bookmark.getCredentials().getUsername(),
+                    passwordField.stringValue()
+                );
+            }
+            catch(LocalAccessDeniedException e) {
+                log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e.getDetail()));
+            }
+        }
+    }
+
     public void setCertificatePopup(final NSPopUpButton button) {
         this.certificatePopup = button;
         this.certificatePopup.setTarget(this.id());
@@ -106,7 +149,7 @@ public class DefaultBookmarkController extends BookmarkController {
                 certificatePopup.addItemWithTitle(LocaleFactory.localizedString("None"));
                 if(options.certificate) {
                     certificatePopup.menu().addItem(NSMenuItem.separatorItem());
-                    for(String certificate : new KeychainX509KeyManager(bookmark).list()) {
+                    for(String certificate : x509KeyManager.list()) {
                         certificatePopup.addItemWithTitle(certificate);
                         certificatePopup.lastItem().setRepresentedObject(certificate);
                     }

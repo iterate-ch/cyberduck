@@ -25,7 +25,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
@@ -362,14 +361,13 @@ public abstract class Transfer implements Serializable {
      * @param options            Quarantine option
      * @param status             Transfer status
      * @param connectionCallback Prompt
-     * @param passwordCallback   Prompt
      * @param progressListener   Listener
      * @param streamListener     Listener
      * @return Target file
      */
     public abstract Path transfer(Session<?> source, Session<?> destination, Path file, Local local,
                                   TransferOptions options, TransferStatus status,
-                                  ConnectionCallback connectionCallback, PasswordCallback passwordCallback,
+                                  ConnectionCallback connectionCallback,
                                   ProgressListener progressListener,
                                   StreamListener streamListener) throws BackgroundException;
 

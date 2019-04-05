@@ -29,9 +29,9 @@ public class MappingMimeTypeService implements MimeTypeService {
     private static final Logger log = Logger.getLogger(MappingMimeTypeService.class);
 
     private static final Mimetypes types
-            = Mimetypes.getInstance();
+        = Mimetypes.getInstance();
 
-    private static final String MIME_FILE = "mime.types";
+    private static final String MIME_FILE = "core.mime.types";
 
     static {
         try {
@@ -50,7 +50,7 @@ public class MappingMimeTypeService implements MimeTypeService {
             }
         }
         catch(IOException e) {
-            log.error(String.format("Failure loading mime.types. %s", e.getMessage()));
+            log.error(String.format("Failure loading core.mime.types. %s", e.getMessage()));
         }
     }
 
@@ -59,7 +59,7 @@ public class MappingMimeTypeService implements MimeTypeService {
         if(StringUtils.startsWith(filename, "._")) {
             return DEFAULT_CONTENT_TYPE;
         }
-        // Reads from mime.types in classpath
+        // Reads from core.mime.types in classpath
         return types.getMimetype(StringUtils.lowerCase(filename));
     }
 }

@@ -19,7 +19,6 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -71,14 +70,14 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
             new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
             new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
@@ -108,7 +107,7 @@ public class DefaultDownloadFeatureTest extends AbstractSFTPTest {
             new DefaultDownloadFeature(new SFTPReadFeature(session)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();

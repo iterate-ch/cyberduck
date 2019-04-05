@@ -120,4 +120,9 @@ public class PathNormalizerTest {
             assertEquals("/path/to/file", path.getAbsolute());
         }
     }
+
+    @Test
+    public void testNormalizeNameWithBackslash() {
+        assertEquals("file\\name", PathNormalizer.name("/path/to/file\\name"));
+    }
 }

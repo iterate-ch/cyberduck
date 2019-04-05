@@ -17,6 +17,7 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.Outlet;
@@ -63,7 +64,6 @@ import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BrowserTransferBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
-import ch.cyberduck.core.threading.TransferBackgroundAction;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
@@ -72,11 +72,9 @@ import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
-import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferCallback;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
-import ch.cyberduck.core.transfer.TransferProgress;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -86,6 +84,7 @@ import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
 import ch.cyberduck.core.worker.CreateVaultWorker;
+import ch.cyberduck.core.worker.DownloadShareWorker;
 import ch.cyberduck.core.worker.MountWorker;
 import ch.cyberduck.core.worker.SearchWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
@@ -591,8 +590,7 @@ public class BrowserController extends WindowController
         }
         if(downloads.size() > 0) {
             final Transfer download = new DownloadTransfer(pool.getHost(), downloads);
-            final TransferOptions options = new TransferOptions();
-            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, options, downloads));
+            this.background(new QuicklookTransferBackgroundAction(this, quicklook, pool, download, downloads));
         }
     }
 
@@ -2443,6 +2441,50 @@ public class BrowserController extends WindowController
     }
 
     @Action
+    public void shareFileButtonClicked(final ID sender) {
+        final Path file = this.getSelectedPath();
+        this.background(new WorkerBackgroundAction<DescriptiveUrl>(this, pool,
+                new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this)) {
+                    @Override
+                    public void cleanup(final DescriptiveUrl url) {
+                        // Display
+                        if(!DescriptiveUrl.EMPTY.equals(url)) {
+                            final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Create Download Share", "Share"),
+                                MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
+                                LocaleFactory.localizedString("Continue", "Credentials"),
+                                LocaleFactory.localizedString("Copy", "Main"),
+                                null)) {
+                                @Override
+                                public void callback(final int returncode) {
+                                    switch(returncode) {
+                                        case SheetCallback.CANCEL_OPTION:
+                                            final NSPasteboard pboard = NSPasteboard.generalPasteboard();
+                                            pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+                                            if(!pboard.setStringForType(url.getUrl(), NSPasteboard.StringPboardType)) {
+                                                log.error(String.format("Error writing URL to %s", NSPasteboard.StringPboardType));
+                                            }
+                                    }
+                                }
+
+                                @Override
+                                public NSView getAccessoryView(final NSAlert alert) {
+                                    final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
+                                    field.setEditable(false);
+                                    field.setSelectable(true);
+                                    field.cell().setWraps(false);
+                                    field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                                    return field;
+                                }
+                            };
+                            alert.beginSheet(BrowserController.this);
+                        }
+                    }
+                }
+            )
+        );
+    }
+
+    @Action
     public void downloadToButtonClicked(final ID sender) {
         downloadToPanel = NSOpenPanel.openPanel();
         downloadToPanel.setCanChooseDirectories(true);
@@ -2558,8 +2600,8 @@ public class BrowserController extends WindowController
         uploadPanel = NSOpenPanel.openPanel();
         uploadPanel.setCanChooseDirectories(true);
         uploadPanel.setCanChooseFiles(pool.getFeature(Touch.class).isSupported(
-            new UploadTargetFinder(workdir).find(this.getSelectedPath())
-        ));
+            new UploadTargetFinder(workdir).find(this.getSelectedPath()),
+            StringUtils.EMPTY));
         uploadPanel.setCanCreateDirectories(false);
         uploadPanel.setTreatsFilePackagesAsDirectories(true);
         uploadPanel.setAllowsMultipleSelection(true);
@@ -3674,18 +3716,18 @@ public class BrowserController extends WindowController
         }
     }
 
-    private final class QuicklookTransferBackgroundAction extends TransferBackgroundAction {
+    private final class QuicklookTransferBackgroundAction extends BrowserTransferBackgroundAction {
         private final QuickLook quicklook;
         private final List<TransferItem> downloads;
 
         public QuicklookTransferBackgroundAction(final Controller controller, final QuickLook quicklook, final SessionPool session, final Transfer download,
-                                                 final TransferOptions options, final List<TransferItem> downloads) {
-            super(controller, session, SessionPool.DISCONNECTED, new TransferAdapter() {
+                                                 final List<TransferItem> downloads) {
+            super(controller, session, download, new TransferCallback() {
                 @Override
-                public void transferDidProgress(final Transfer transfer, final TransferProgress status) {
-                    controller.message(status.getProgress());
+                public void complete(final Transfer transfer) {
+                    //
                 }
-            }, controller, download, options, new TransferPrompt() {
+            }, new TransferPrompt() {
                 @Override
                 public TransferAction prompt(final TransferItem item) {
                     return TransferAction.comparison;
@@ -3700,7 +3742,7 @@ public class BrowserController extends WindowController
                 public void message(final String message) {
                     controller.message(message);
                 }
-            }, new DisabledTransferErrorCallback());
+            });
             this.quicklook = quicklook;
             this.downloads = downloads;
         }

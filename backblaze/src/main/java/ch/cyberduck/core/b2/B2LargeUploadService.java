@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -222,7 +223,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             @Override
             public B2UploadPartResponse call() throws BackgroundException {
                 if(overall.isCanceled()) {
-                    throw new ConnectionCanceledException();
+                    throw new TransferCanceledException();
                 }
                 final TransferStatus status = new TransferStatus()
                     .length(length)

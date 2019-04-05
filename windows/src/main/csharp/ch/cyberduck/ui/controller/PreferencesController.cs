@@ -1035,11 +1035,11 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateBookmarkSize()
         {
             List<KeyValuePair<int, string>> sizes = new List<KeyValuePair<int, string>>();
-            sizes.Add(new KeyValuePair<int, string>(BookmarkController.SmallBookmarkSize,
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController<IBookmarkView>.SmallBookmarkSize,
                 LocaleFactory.localizedString("Use Small Icons", "Preferences")));
-            sizes.Add(new KeyValuePair<int, string>(BookmarkController.MediumBookmarkSize,
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController<IBookmarkView>.MediumBookmarkSize,
                 LocaleFactory.localizedString("Use Medium Icons", "Preferences")));
-            sizes.Add(new KeyValuePair<int, string>(BookmarkController.LargeBookmarkSize,
+            sizes.Add(new KeyValuePair<int, string>(BookmarkController<IBookmarkView>.LargeBookmarkSize,
                 LocaleFactory.localizedString("Use Large Icons", "Preferences")));
             View.PopulateBookmarkSize(sizes);
         }
@@ -1060,8 +1060,12 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList<KeyValuePair<string, string>> feeds = new List<KeyValuePair<string, string>>();
             feeds.Add(new KeyValuePair<string, string>("release", LocaleFactory.localizedString("Release")));
-            feeds.Add(new KeyValuePair<string, string>("beta", LocaleFactory.localizedString("Beta")));
-            feeds.Add(new KeyValuePair<string, string>("nightly", LocaleFactory.localizedString("Snapshot Builds")));
+            if(PreferencesFactory.get().getBoolean("update.feed.beta.enable")) {
+                feeds.Add(new KeyValuePair<string, string>("beta", LocaleFactory.localizedString("Beta")));
+            }
+            if(PreferencesFactory.get().getBoolean("update.feed.nightly.enable")) {
+                feeds.Add(new KeyValuePair<string, string>("nightly", LocaleFactory.localizedString("Snapshot Builds")));
+            }
             View.PopulateUpdateFeeds(feeds);
         }
 

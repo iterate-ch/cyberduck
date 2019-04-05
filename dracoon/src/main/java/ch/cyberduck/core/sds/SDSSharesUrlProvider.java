@@ -35,8 +35,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.sds.io.swagger.client.model.KeyValueEntry;
 import ch.cyberduck.core.sds.io.swagger.client.model.UploadShare;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
-import ch.cyberduck.core.sds.triplecrypt.CryptoExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
 
 import org.apache.commons.lang3.StringUtils;
@@ -112,6 +112,9 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
     public DescriptiveUrl toDownloadUrl(final Path file, final CreateDownloadShareRequest options,
                                         final PasswordCallback callback) throws BackgroundException {
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create download share for %s", file));
+            }
             final Long fileid = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
             if(nodeid.isEncrypted(file)) {
                 // get existing file key associated with the sharing user
@@ -155,13 +158,16 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
             throw new SDSExceptionMappingService().map(e);
         }
         catch(CryptoException e) {
-            throw new CryptoExceptionMappingService().map(e);
+            throw new TripleCryptExceptionMappingService().map(e);
         }
     }
 
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final CreateUploadShareRequest options, final PasswordCallback callback) throws BackgroundException {
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create upload share for %s", file));
+            }
             final UploadShare share = new SharesApi(session.getClient()).createUploadShare(
                 options.targetId(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()))), StringUtils.EMPTY, null);
             final String help;

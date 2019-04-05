@@ -48,6 +48,7 @@ using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
 using java.lang;
+using java.text;
 using java.util;
 using org.apache.log4j;
 using StructureMap;
@@ -152,6 +153,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateDuplicateFile += View_ValidateDuplicateFile;
             View.OpenUrl += View_OpenUrl;
             View.ValidateOpenWebUrl += View_ValidateOpenWebUrl;
+            View.CreateShareLink += View_CreateShareLink;
+            View.ValidateCreateShareLink += View_ValidateCreateShareLink;
             View.ValidateEditWith += View_ValidateEditWith;
             View.ShowInspector += View_ShowInspector;
             View.ValidateShowInspector += View_ValidateShowInspector;
@@ -303,6 +306,27 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Exit += View_Exit;
             View.SetBookmarkModel(_bookmarkCollection, null);
             SetNavigation(false);
+        }
+
+        private void View_CreateShareLink()
+        {
+            ShareLinkAction share = new ShareLinkAction(this, SelectedPath);
+            Background(share);
+        }
+
+        private bool View_ValidateCreateShareLink()
+        {
+            if (IsMounted() && SelectedPaths.Count == 1)
+            {
+                if (null == SelectedPath)
+                {
+                    return false;
+                }
+
+                PromptUrlProvider feature = (PromptUrlProvider) Session.getFeature(typeof(PromptUrlProvider));
+                return feature != null && feature.isSupported(SelectedPath, PromptUrlProvider.Type.download);
+            }
+            return false;
         }
 
         public BrowserController() : this(ObjectFactory.GetInstance<IBrowserView>())
@@ -949,7 +973,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         return;
                 }
                 Touch feature = (Touch) Session.getFeature(typeof(Touch));
-                if (!feature.isSupported(destination))
+                if (!feature.isSupported(destination, String.Empty))
                 {
                     args.Effect = DragDropEffects.None;
                     args.DropTargetLocation = DropTargetLocation.None;
@@ -1229,7 +1253,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.SelectedBookmarks.Count == 1)
             {
-                BookmarkController<IBookmarkView>.Factory.Create(View.SelectedBookmark).View.Show(View);
+                DefaultBookmarkController.Factory.Create(View.SelectedBookmark).View.Show(View);
             }
         }
 
@@ -1275,7 +1299,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.SelectBookmark(item);
             View.EnsureBookmarkVisible(item);
-            BookmarkController<IBookmarkView>.Factory.Create(item).View.Show(View);
+            DefaultBookmarkController.Factory.Create(item).View.Show(View);
         }
 
         private void View_DeleteBookmark()
@@ -1758,14 +1782,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return IsMounted() &&
                    ((Touch) Session.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath));
+                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
         private bool View_ValidateUpload()
         {
             return IsMounted() &&
                    ((Touch) Session.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath));
+                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
         private void View_Upload()
@@ -1773,7 +1797,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Due to the limited functionality of the OpenFileDialog class it is
             // currently not possible to select a folder. May be we should provide
             // a second menu item which allows to select a folder to upload
-            string[] paths = View.UploadDialog(null);
+            string[] paths = View.UploadDialog(new UploadDirectoryFinder().find(Session.getHost()));
             if (null == paths || paths.Length == 0) return;
 
             bool parentFound = false;
@@ -2128,7 +2152,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             return;
                     }
                     Touch feature = (Touch) Session.getFeature(typeof(Touch));
-                    if (!feature.isSupported(destination))
+                    if (!feature.isSupported(destination, String.Empty))
                     {
                         Log.trace("Session does not allow file creation");
                         args.Effect = DragDropEffects.None;
@@ -3484,6 +3508,51 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     IList<Path> files = (IList<Path>) Utils.ConvertFromJavaList<Path>((List) result);
                     _controller.Reload(_controller.Workdir, files, files);
+                }
+            }
+        }
+
+        private class ShareLinkAction : WorkerBackgroundAction
+        {
+            public ShareLinkAction(BrowserController controller, Path file)
+                : base(controller, controller.Session, new InnerDownloadShareWorker(controller, file))
+            {
+            }
+
+            private class InnerDownloadShareWorker : DownloadShareWorker
+            {
+                private readonly BrowserController _controller;
+                private readonly Path _file;
+
+                public InnerDownloadShareWorker(BrowserController controller, Path file)
+                    : base(file, null, PasswordCallbackFactory.get(controller))
+                {
+                    _controller = controller;
+                    _file = file;
+                }
+
+                public override void cleanup(object result)
+                {
+                    DescriptiveUrl url = (DescriptiveUrl) result;
+                    // Display
+                    if (!DescriptiveUrl.EMPTY.@equals(url))
+                    {
+                        string title = LocaleFactory.localizedString("Create Download Share", "Share");
+                        string commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
+                            LocaleFactory.localizedString("Copy", "Main"));
+                        _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()), 
+                            commandButtons,
+                            false, null, TaskDialogIcon.Information,
+                            delegate (int option, System.Boolean verificationChecked)
+                            {
+                                switch (option)
+                                {
+                                    case 1:
+                                        Clipboard.SetText(url.getUrl());
+                                        break;
+                                }
+                            });
+                    }
                 }
             }
         }

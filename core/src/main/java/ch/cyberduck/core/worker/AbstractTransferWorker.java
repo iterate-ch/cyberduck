@@ -233,7 +233,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             this.release(source, Connection.source, null);
             this.release(destination, Connection.destination, null);
             if(transfer.isReset()) {
-                notification.notify(transfer.isComplete() ?
+                notification.notify(transfer.getName(), transfer.getUuid(), transfer.isComplete() ?
                     String.format("%s complete", StringUtils.capitalize(transfer.getType().name())) :
                     "Transfer incomplete", transfer.getName());
             }
@@ -424,7 +424,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             transfer.transfer(s, d,
                                 segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                 segment.getRename().local != null ? segment.getRename().local : item.local,
-                                options, segment, connectionCallback, passwordCallback, progress, stream);
+                                options, segment, connectionCallback, progress, stream);
                         }
                         catch(ConnectionCanceledException e) {
                             log.warn(String.format("Canceled transfer of %s", item));

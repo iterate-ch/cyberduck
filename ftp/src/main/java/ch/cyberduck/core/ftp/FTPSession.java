@@ -57,6 +57,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPCmd;
 import org.apache.commons.net.ftp.FTPReply;
@@ -261,7 +262,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Reset parser to timezone %s", zone));
                 }
-                String system = null; //Unknown
+                String system = StringUtils.EMPTY; //Unknown
                 try {
                     system = client.getSystemType();
                     if(system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {

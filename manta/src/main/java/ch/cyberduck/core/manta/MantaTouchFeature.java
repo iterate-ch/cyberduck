@@ -56,7 +56,7 @@ public class MantaTouchFeature implements Touch {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String filename) {
         return session.isUserWritable(workdir);
     }
 

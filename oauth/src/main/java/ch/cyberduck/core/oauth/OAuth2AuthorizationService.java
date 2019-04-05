@@ -54,7 +54,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 
 public class OAuth2AuthorizationService {
     private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
@@ -63,7 +63,7 @@ public class OAuth2AuthorizationService {
     private static final String CYBERDUCK_REDIRECT_URI = "x-cyberduck-action:oauth";
 
     private final JsonFactory json
-        = new GsonFactory();
+        = new JacksonFactory();
 
     private final String tokenServerUrl;
     private final String authorizationServerUrl;
@@ -120,8 +120,14 @@ public class OAuth2AuthorizationService {
                 }
             }
             else {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Returned saved OAuth tokens %s for %s", saved, bookmark));
+                }
                 return saved;
             }
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Start new OAuth flow for %s", bookmark));
         }
         // Start OAuth2 flow within browser
         final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
@@ -142,6 +148,9 @@ public class OAuth2AuthorizationService {
 
         // Direct the user to an authorization page to grant access to their protected data.
         final String url = authorizationCodeRequestUrl.build();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Open browser with URL %s", url));
+        }
         if(!browser.open(url)) {
             log.warn(String.format("Failed to launch web browser for %s", url));
         }
@@ -155,6 +164,9 @@ public class OAuth2AuthorizationService {
         try {
             if(StringUtils.isBlank(input.getPassword())) {
                 throw new LoginCanceledException();
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Request tokens for authentication code %s", input.getPassword()));
             }
             // Swap the given authorization token for access/refresh tokens
             final TokenResponse response = flow.newTokenRequest(input.getPassword())
