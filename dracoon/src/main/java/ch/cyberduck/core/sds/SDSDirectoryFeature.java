@@ -30,10 +30,12 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 
 public class SDSDirectoryFeature implements Directory<VersionId> {
+    private static final Logger log = Logger.getLogger(SDSDirectoryFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -79,6 +81,7 @@ public class SDSDirectoryFeature implements Directory<VersionId> {
     @Override
     public boolean isSupported(final Path workdir, final String name) {
         if(!new SDSTouchFeature(session, nodeid).validate(name)) {
+            log.warn(String.format("Validation failed for target name %s", name));
             return false;
         }
         return new SDSPermissionsFeature(session, nodeid).containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE);
