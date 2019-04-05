@@ -72,7 +72,7 @@ public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void
                 log.debug(String.format("Create temporary upload link for %s", file));
             }
             final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryUploadLink(new CommitInfo(file.getAbsolute())).getLink();
-            return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.http, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3")));
+            return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3")));
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);

@@ -50,12 +50,12 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
             final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient()).createSharedLinkWithSettings(file.getAbsolute(),
                 SharedLinkSettings.newBuilder().withRequestedVisibility(RequestedVisibility.PASSWORD).withLinkPassword(callback.prompt(
                     session.getHost(), LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions().user(false).password(true)
+                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions().icon(session.getHost().getProtocol().disk())
                 ).getPassword()).build());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Created shared link %s", share));
             }
-            return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.http,
+            return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                     LocaleFactory.localizedString("Password Share", "Dropbox"))
             );
