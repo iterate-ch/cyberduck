@@ -47,7 +47,7 @@ public class DescriptiveUrlBag extends LinkedHashSet<DescriptiveUrl> {
      * @param types Include
      * @return Copy of modified list
      */
-    public DescriptiveUrlBag filter(DescriptiveUrl.Type... types) {
+    public DescriptiveUrlBag filter(final DescriptiveUrl.Type... types) {
         final DescriptiveUrlBag filtered = new DescriptiveUrlBag(this);
         for(Iterator<DescriptiveUrl> iter = filtered.iterator(); iter.hasNext(); ) {
             final DescriptiveUrl url = iter.next();
