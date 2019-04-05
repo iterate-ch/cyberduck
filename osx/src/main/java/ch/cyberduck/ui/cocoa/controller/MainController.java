@@ -391,7 +391,7 @@ public class MainController extends BundleController implements NSApplication.De
                 final List<BrowserController> b = MainController.getBrowsers();
                 for(BrowserController controller : b) {
                     if(controller.window().isKeyWindow()) {
-                        List<Path> selected = controller.getSelectedPaths();
+                        final List<Path> selected = controller.getSelectedPaths();
                         if(selected.isEmpty()) {
                             if(controller.isMounted()) {
                                 return Collections.singletonList(controller.workdir());
@@ -427,7 +427,7 @@ public class MainController extends BundleController implements NSApplication.De
                 final List<BrowserController> b = MainController.getBrowsers();
                 for(BrowserController controller : b) {
                     if(controller.window().isKeyWindow()) {
-                        List<Path> selected = controller.getSelectedPaths();
+                        final List<Path> selected = controller.getSelectedPaths();
                         if(selected.isEmpty()) {
                             if(controller.isMounted()) {
                                 return Collections.singletonList(controller.workdir());
