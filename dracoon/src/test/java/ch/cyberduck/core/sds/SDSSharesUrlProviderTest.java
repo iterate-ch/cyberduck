@@ -24,8 +24,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateDownloadShareRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateUploadShareRequest;
@@ -252,14 +252,13 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final String password = new AlphanumericRandomStringService().random();
         final DescriptiveUrl url = new SDSSharesUrlProvider(session, nodeid).toDownloadUrl(test,
             new CreateDownloadShareRequest()
                 .expiration(new ObjectExpiration().enableExpiration(false))
                 .notifyCreator(false)
                 .sendMail(false)
                 .sendSms(false)
-                .password(password)
+                .password(null)
                 .mailRecipients(null)
                 .mailSubject(null)
                 .mailBody(null)
@@ -275,7 +274,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test(expected = LoginCanceledException.class)
     public void testEncryptedMissingPassword() throws Exception {
         final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
@@ -291,12 +290,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                     .mailRecipients(null)
                     .mailSubject(null)
                     .mailBody(null)
-                    .maxDownloads(null), new PasswordCallback() {
-                    @Override
-                    public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                        return new VaultCredentials("aiW3iem#uaviTeh");
-                    }
-                });
+                    .maxDownloads(null), new DisabledPasswordCallback());
         }
         finally {
             new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
