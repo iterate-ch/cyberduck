@@ -33,7 +33,7 @@
         <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLLOCATION]" KeyPath="yes" />
       </Component>
       <Component Id="ProductExe" Guid="6D84843D-842B-4462-BF91-803D195AD0DB">
-        <File Source="$(var.CLI.TargetPath)" KeyPath="yes" Checksum="yes" />
+        <File Id="product.exe" Source="$(var.CLI.TargetPath)" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="license" Guid="DF374856-F6F7-4520-A332-803CB0826593">
         <File Source="$(var.CLI.TargetDir)/License.txt" KeyPath="yes" Checksum="yes" />
