@@ -12,7 +12,8 @@
     <RootNamespace>Ch.Cyberduck</RootNamespace>
     <AssemblyName>Cyberduck</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
-    <TargetPlatformVersion>10.0.15063.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.17763.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>cyberduck-application.ico</ApplicationIcon>
     <TargetZone>LocalIntranet</TargetZone>
