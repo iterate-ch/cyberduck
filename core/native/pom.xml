@@ -96,30 +96,6 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>msvcp120</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>12.0.21005.1</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>msvcr120</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>12.0.21005.1</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>vccorlib120</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>12.0.21005.1</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
             <groupId>nunit</groupId>
             <artifactId>nunit.framework</artifactId>
             <classifier>native</classifier>

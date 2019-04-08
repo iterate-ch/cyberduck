@@ -55,8 +55,6 @@
   </Resources>
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.15063.0" MaxVersionTested="10.0.17134.0" />
-    <PackageDependency Name="Microsoft.VCLibs.120.00.UWPDesktop" MinVersion="12.0.40652.5"
-     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
    </Dependencies>
    <Capabilities>
     <rescap:Capability Name="runFullTrust" />
