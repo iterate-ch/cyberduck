@@ -11,7 +11,7 @@
     <util:RegistrySearch Id="PreviousInstallFolderSearch" Root="HKLM" Key="Software\[WixBundleManufacturer]\[WixBundleName]" Value="InstallDir" Variable="PreviousInstallFolder" />
     <util:DirectorySearch Path="[PreviousInstallFolder]" Variable="InstallFolder" After="PreviousInstallFolderSearch" Condition="PreviousInstallFolder" />
     <Chain>
-      <PackageGroupRef Id="NetFx45Web" />
+      <PackageGroupRef Id="NetFx47Web" />
       <RollbackBoundary />
       <MsiPackage
         Id="Setup"
