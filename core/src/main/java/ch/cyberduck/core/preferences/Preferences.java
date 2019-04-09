@@ -814,6 +814,8 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("webdav.metadata.default", StringUtils.EMPTY);
 
+        this.setDefault("webdav.microsoftiis.header.translate", String.valueOf(true));
+
         this.setDefault("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
         this.setDefault("analytics.provider.qloudstat.iam.policy",
             "{\n" +
