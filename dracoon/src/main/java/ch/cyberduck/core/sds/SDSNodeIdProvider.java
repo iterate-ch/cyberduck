@@ -115,6 +115,11 @@ public class SDSNodeIdProvider implements IdProvider {
         if(file.isRoot()) {
             return false;
         }
+        final Path parent = file.getParent();
+        if(parent.getType().contains(Path.Type.decrypted)) {
+            // Backward compatibility where flag is missing in room
+            return true;
+        }
         final Path container = new SDSPathContainerService().getContainer(file);
         return container.getType().contains(Path.Type.decrypted);
     }
