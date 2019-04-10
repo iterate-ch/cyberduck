@@ -1,32 +1,36 @@
 ﻿// 
 // Copyright (c) 2010-2019 Yves Langisch. All rights reserved.
-// http://cyberduck.io/
-//
+// https://cyberduck.io/
+// 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-//
+// 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-//
+// 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 // 
 
-using System.Diagnostics;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using ch.cyberduck.core;
 using ch.cyberduck.core.diagnostics;
+using java.lang;
+using org.apache.log4j;
+using Process = System.Diagnostics.Process;
 
 namespace Ch.Cyberduck.Core.Diagnostics
 {
     public class TcpReachability : Reachability
     {
+        private static readonly Logger Log = Logger.getLogger(typeof(TcpReachability).FullName);
+
         public bool isReachable(Host h)
         {
             if (h.getProtocol().getScheme().name().Equals("http") ||
@@ -35,12 +39,22 @@ namespace Ch.Cyberduck.Core.Diagnostics
                 try
                 {
                     WebRequest.DefaultWebProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
-                    WebRequest request =
-                        WebRequest.Create(new HostUrlProvider().withUsername(false).withPath(true).get(h));
+                    var url = new HostUrlProvider().withUsername(false).withPath(true).get(h);
+                    if (Log.isDebugEnabled())
+                    {
+                        Log.debug($"Reachability test with url {url}");
+                    }
+
+                    WebRequest request = WebRequest.Create(url);
                     request.GetResponse();
                 }
                 catch (WebException e)
                 {
+                    if (Log.isDebugEnabled())
+                    {
+                        Log.debug($"WebException thrown with status {e.Status}");
+                    }
+
                     switch (e.Status)
                     {
                         case WebExceptionStatus.ProtocolError:
@@ -51,11 +65,21 @@ namespace Ch.Cyberduck.Core.Diagnostics
 
                     return false;
                 }
+                catch (Exception e)
+                {
+                    Log.error("Generic exception while checking for reachability", e);
+                    return false;
+                }
             }
             else
             {
                 try
                 {
+                    if (Log.isDebugEnabled())
+                    {
+                        Log.debug($"Try TCP connection to {h.getHostname()}:{h.getPort()}");
+                    }
+
                     TcpClient c = new TcpClient(h.getHostname(), h.getPort());
                     c.Close();
                 }
