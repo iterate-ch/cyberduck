@@ -48,7 +48,11 @@ namespace Ch.Cyberduck.Core.Diagnostics
                     }
 
                     WebRequest request = WebRequest.Create(url);
-                    request.GetResponse();
+                    request.Timeout = 10000;
+                    using (request.GetResponse())
+                    {
+                        return true;
+                    }
                 }
                 catch (WebException e)
                 {
@@ -73,25 +77,22 @@ namespace Ch.Cyberduck.Core.Diagnostics
                     return false;
                 }
             }
-            else
+
+            try
             {
-                try
+                if (Log.isDebugEnabled())
                 {
-                    if (Log.isDebugEnabled())
-                    {
-                        Log.debug($"Try TCP connection to {h.getHostname()}:{h.getPort()}");
-                    }
+                    Log.debug($"Try TCP connection to {h.getHostname()}:{h.getPort()}");
+                }
 
-                    TcpClient c = new TcpClient(h.getHostname(), h.getPort());
-                    c.Close();
-                }
-                catch (SocketException e)
-                {
-                    return false;
-                }
+                TcpClient c = new TcpClient(h.getHostname(), h.getPort());
+                c.Close();
+                return true;
             }
-
-            return true;
+            catch (SocketException e)
+            {
+                return false;
+            }
         }
 
         public void diagnose(Host h)
