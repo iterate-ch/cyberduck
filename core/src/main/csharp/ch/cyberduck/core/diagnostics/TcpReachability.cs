@@ -17,6 +17,7 @@
 // 
 
 using System.Net;
+using System.Net.Cache;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using ch.cyberduck.core;
@@ -39,6 +40,7 @@ namespace Ch.Cyberduck.Core.Diagnostics
                 try
                 {
                     WebRequest.DefaultWebProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
+                    WebRequest.DefaultCachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
                     var url = new HostUrlProvider().withUsername(false).withPath(true).get(h);
                     if (Log.isDebugEnabled())
                     {
