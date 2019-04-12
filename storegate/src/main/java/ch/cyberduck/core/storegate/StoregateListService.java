@@ -59,6 +59,7 @@ public class StoregateListService implements ListService {
                     final PathAttributes attrs = new PathAttributes();
                     final Path p = new Path(directory, f.getName(), (f.getFlags().getValue() & 1) == 1 ? EnumSet.of(Path.Type.directory) :
                         EnumSet.of(Path.Type.file), attrs);
+                    attrs.setVersionId(f.getId());
                     attrs.setModificationDate(f.getModified().getMillis());
                     attrs.setCreationDate(f.getCreated().getMillis());
                     attrs.setSize(f.getSize());

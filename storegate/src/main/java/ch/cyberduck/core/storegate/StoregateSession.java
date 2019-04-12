@@ -23,6 +23,10 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -30,7 +34,6 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
-import ch.cyberduck.core.storegate.io.swagger.client.ApiClient;
 import ch.cyberduck.core.storegate.io.swagger.client.JSON;
 import ch.cyberduck.core.storegate.provider.HttpComponentsProvider;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -52,18 +55,20 @@ import java.nio.charset.StandardCharsets;
 
 import com.migcomponents.migbase64.Base64;
 
-public class StoregateSession extends HttpSession<ApiClient> {
+public class StoregateSession extends HttpSession<StoregateApiClient> {
     private static final Logger log = Logger.getLogger(StoregateSession.class);
 
     protected StoregateErrorResponseInterceptor retryHandler;
     protected OAuth2RequestInterceptor authorizationService;
+
+    private final StoregateIdProvider fileid = new StoregateIdProvider(this);
 
     public StoregateSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
-    protected ApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
+    protected StoregateApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
             @Override
@@ -80,7 +85,7 @@ public class StoregateSession extends HttpSession<ApiClient> {
 
 
         final CloseableHttpClient apache = configuration.build();
-        final ApiClient client = new ApiClient();
+        final StoregateApiClient client = new StoregateApiClient(apache);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
             null, host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
@@ -106,8 +111,20 @@ public class StoregateSession extends HttpSession<ApiClient> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == IdProvider.class) {
+            return (T) fileid;
+        }
         if(type == ListService.class) {
             return (T) new StoregateListService(this);
+        }
+        if(type == Read.class) {
+            return (T) new StoregateReadFeature(this, fileid);
+        }
+        if(type == Write.class) {
+            return (T) new StoregateWriteFeature(this, fileid);
+        }
+        if(type == Touch.class) {
+            return (T) new StoregateTouchFeature(this, fileid);
         }
         return super._getFeature(type);
     }
