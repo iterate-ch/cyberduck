@@ -65,7 +65,6 @@ import ch.cyberduck.core.sts.STSCredentialsConfigurator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
@@ -199,9 +198,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     @Override
     public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        configuration.setDefaultRequestConfig(
-            RequestConfig.copy(builder.createRequestConfig(preferences.getInteger("connection.timeout.seconds") * 1000)).
-                setNormalizeUri(false).build());
         // Only for AWS
         if(S3Session.isAwsHostname(host.getHostname())) {
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this, prompt));

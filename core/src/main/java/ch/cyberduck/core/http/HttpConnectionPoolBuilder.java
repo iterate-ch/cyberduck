@@ -229,6 +229,7 @@ public class HttpConnectionPoolBuilder {
             // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
             .setConnectionRequestTimeout(preferences.getInteger("http.manager.timeout"))
             .setSocketTimeout(timeout)
+            .setNormalizeUri(preferences.getBoolean("http.request.uri.normalize"))
             .build();
     }
 
