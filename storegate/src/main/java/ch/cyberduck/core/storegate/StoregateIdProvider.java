@@ -24,6 +24,9 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
+import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
+import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,13 +54,16 @@ public class StoregateIdProvider implements IdProvider {
                 }
             }
         }
-        final Path found = new StoregateListService(session).withCache(cache).list(file.getParent(), listener).find(
-            new SimplePathPredicate(file)
-        );
-        if(null == found) {
-            throw new NotfoundException(file.getAbsolute());
+        try {
+            final File f = new FilesApi(session.getClient()).filesGet_1(file.getAbsolute());
+            if(null == f) {
+                throw new NotfoundException(file.getAbsolute());
+            }
+            return this.set(file, new StoregateAttributesFinderFeature(session).toAttributes(f).getVersionId());
         }
-        return this.set(file, found.attributes().getVersionId());
+        catch(ApiException e) {
+            throw new StoregateExceptionMappingService().map(e);
+        }
     }
 
     protected String set(final Path file, final String id) {

@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
@@ -22,6 +23,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
@@ -33,48 +35,48 @@ public class StoregateListService implements ListService {
 
     private final StoregateSession session;
 
-    private final Integer PAGE_SIZE = 1000;
-
     public StoregateListService(final StoregateSession session) {
         this.session = session;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return this.list(directory, listener, PreferencesFactory.get().getInteger("storegate.listing.chunksize"));
+    }
+
+    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
+            final StoregateAttributesFinderFeature feature = new StoregateAttributesFinderFeature(session);
             int pageIndex = 0;
-            int rows = 0;
+            FileContents files;
             do {
-                final FileContents files = new FilesApi(this.session.getClient()).filesGet(
-                    directory.getAbsolute(),
+                files = new FilesApi(this.session.getClient()).filesGet(
+                    String.format("/Home%s", directory.getAbsolute()), //TODO handle team folder
                     pageIndex,
-                    PAGE_SIZE,
+                    chunksize,
                     "Name asc",
                     0, // All
                     true,
                     false
                 );
                 for(File f : files.getFiles()) {
-                    final PathAttributes attrs = new PathAttributes();
-                    final Path p = new Path(directory, f.getName(), (f.getFlags().getValue() & 1) == 1 ? EnumSet.of(Path.Type.directory) :
-                        EnumSet.of(Path.Type.file), attrs);
-                    attrs.setVersionId(f.getId());
-                    attrs.setModificationDate(f.getModified().getMillis());
-                    attrs.setCreationDate(f.getCreated().getMillis());
-                    attrs.setSize(f.getSize());
+                    final PathAttributes attrs = feature.toAttributes(f);
+                    final EnumSet<AbstractPath.Type> type = (f.getFlags() & File.FlagsEnum.Folder.getValue()) == 1 ?
+                        EnumSet.of(Path.Type.directory) :
+                        EnumSet.of(Path.Type.file);
+                    final Path p = new Path(directory, f.getName(), type, attrs);
                     children.add(p);
+                    listener.chunk(directory, children);
                 }
-                rows = files.getTotalRowCount();
                 pageIndex++;
             }
-            while(rows == PAGE_SIZE);
+            while(files.getTotalRowCount() == chunksize);
             return children;
         }
         catch(ApiException e) {
-            //TODO Exception handling
+            throw new StoregateExceptionMappingService().map(e);
         }
-        return AttributedList.emptyList();
     }
 
     @Override
