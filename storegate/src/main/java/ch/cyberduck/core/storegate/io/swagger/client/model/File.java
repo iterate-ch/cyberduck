@@ -47,6 +47,9 @@ public class File {
   @JsonProperty("versions")
   private Integer versions = null;
 
+  @JsonProperty("flags")
+  private Integer flags = null;
+
   /**
    * Included if the item supports permission
    */
@@ -117,57 +120,54 @@ public class File {
   @JsonProperty("uploaded")
   private DateTime uploaded = null;
 
-  /**
-   * Indicates the item type.
-   */
-  public enum FlagsEnum {
-    NUMBER_0(0),
+    /**
+     * Indicates the item type.
+     */
+    public enum FlagsEnum {
+        None(0),
 
-    NUMBER_1(1),
+        Folder(1),
 
-    NUMBER_2(2),
+        Shared(2),
 
-    NUMBER_4(4),
+        Locked(4),
 
-    NUMBER_8(8),
+        Image(8),
 
-    NUMBER_16(16),
+        Streamable(16),
 
-    NUMBER_32(32),
+        Video(32),
 
-    NUMBER_64(64),
+        Doc(64),
 
-    NUMBER_128(128);
+        StreamableDoc(128);
 
-    private Integer value;
+        private Integer value;
 
-    FlagsEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static FlagsEnum fromValue(String text) {
-      for (FlagsEnum b : FlagsEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
+        FlagsEnum(Integer value) {
+            this.value = value;
         }
-      }
-      return null;
-    }
-  }
 
-  @JsonProperty("flags")
-  private FlagsEnum flags = null;
+        @JsonValue
+        public Integer getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+
+        @JsonCreator
+        public static FlagsEnum fromValue(String text) {
+            for(FlagsEnum b : FlagsEnum.values()) {
+                if(String.valueOf(b.value).equals(text)) {
+                    return b;
+                }
+            }
+            return null;
+        }
+    }
 
   @JsonProperty("ownerId")
   private String ownerId = null;
@@ -352,7 +352,7 @@ public class File {
     this.uploaded = uploaded;
   }
 
-  public File flags(FlagsEnum flags) {
+  public File flags(Integer flags) {
     this.flags = flags;
     return this;
   }
@@ -362,11 +362,11 @@ public class File {
    * @return flags
   **/
   @ApiModelProperty(value = "Indicates the item type.")
-  public FlagsEnum getFlags() {
+  public Integer getFlags() {
     return flags;
   }
 
-  public void setFlags(FlagsEnum flags) {
+  public void setFlags(Integer flags) {
     this.flags = flags;
   }
 

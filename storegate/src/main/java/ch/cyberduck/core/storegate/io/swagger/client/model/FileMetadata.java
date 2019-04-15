@@ -52,57 +52,8 @@ public class FileMetadata {
   @JsonProperty("attributes")
   private Integer attributes = null;
 
-  /**
-   * The file Flags
-   */
-  public enum FlagsEnum {
-    NUMBER_0(0),
-    
-    NUMBER_1(1),
-    
-    NUMBER_2(2),
-    
-    NUMBER_4(4),
-    
-    NUMBER_8(8),
-    
-    NUMBER_16(16),
-    
-    NUMBER_32(32),
-    
-    NUMBER_64(64),
-    
-    NUMBER_128(128);
-
-    private Integer value;
-
-    FlagsEnum(Integer value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public Integer getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static FlagsEnum fromValue(String text) {
-      for (FlagsEnum b : FlagsEnum.values()) {
-        if (String.valueOf(b.value).equals(text)) {
-          return b;
-        }
-      }
-      return null;
-    }
-  }
-
   @JsonProperty("flags")
-  private FlagsEnum flags = null;
+  private Integer flags = null;
 
   @JsonProperty("lockId")
   private String lockId = null;
@@ -251,7 +202,7 @@ public class FileMetadata {
     this.attributes = attributes;
   }
 
-  public FileMetadata flags(FlagsEnum flags) {
+  public FileMetadata flags(Integer flags) {
     this.flags = flags;
     return this;
   }
@@ -261,11 +212,11 @@ public class FileMetadata {
    * @return flags
   **/
   @ApiModelProperty(value = "The file Flags")
-  public FlagsEnum getFlags() {
+  public Integer getFlags() {
     return flags;
   }
 
-  public void setFlags(FlagsEnum flags) {
+  public void setFlags(Integer flags) {
     this.flags = flags;
   }
 
