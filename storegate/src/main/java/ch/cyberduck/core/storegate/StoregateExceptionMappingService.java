@@ -17,11 +17,14 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
+
+import org.apache.http.client.HttpResponseException;
 
 public class StoregateExceptionMappingService extends AbstractExceptionMappingService<ApiException> {
     @Override
     public BackgroundException map(final ApiException exception) {
-        return new BackgroundException(exception);
+        return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(exception.getCode(), exception.getMessage()));
     }
 }
