@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
@@ -56,9 +55,6 @@ public class StoregateIdProvider implements IdProvider {
         }
         try {
             final File f = new FilesApi(session.getClient()).filesGet_1(file.getAbsolute());
-            if(null == f) {
-                throw new NotfoundException(file.getAbsolute());
-            }
             return this.set(file, new StoregateAttributesFinderFeature(session).toAttributes(f).getVersionId());
         }
         catch(ApiException e) {
