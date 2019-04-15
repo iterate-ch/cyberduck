@@ -611,6 +611,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("http.manager.timeout", String.valueOf(0)); // Infinite
         this.setDefault("http.socket.buffer", String.valueOf(8192));
         this.setDefault("http.credentials.charset", "ISO-8859-1");
+        this.setDefault("http.request.uri.normalize", String.valueOf(false));
 
         /*
           Enable or disable verification that the remote host taking part
