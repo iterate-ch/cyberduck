@@ -217,10 +217,12 @@ public class DAVSession extends HttpSession<DAVClient> {
                                 log.debug("Microsoft-IIS backend detected");
                             }
                             list = new MicrosoftIISDAVListService(DAVSession.this, new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this));
-                            read = new MicrosoftIISDAVReadFeature(DAVSession.this);
                             timestamp = new MicrosoftIISDAVTimestampFeature(DAVSession.this);
                             attributes = new MicrosoftIISDAVAttributesFinderFeature(DAVSession.this);
-                            find = new MicrosoftIISDAVFindFeature(DAVSession.this);
+                            if(preferences.getBoolean("webdav.microsoftiis.header.translate")) {
+                                read = new MicrosoftIISDAVReadFeature(DAVSession.this);
+                                find = new MicrosoftIISDAVFindFeature(DAVSession.this);
+                            }
                         }
                         this.validateResponse(response);
                         return null;
