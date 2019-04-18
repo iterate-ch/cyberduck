@@ -271,12 +271,8 @@
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="64">
                                     <font key="font" metaFont="system"/>
                                     <segments>
-                                        <segment image="nav-backward" width="35">
-                                            <nil key="label"/>
-                                        </segment>
-                                        <segment image="nav-forward" width="35" tag="1">
-                                            <nil key="label"/>
-                                        </segment>
+                                        <segment image="nav-backward" width="35"/>
+                                        <segment image="nav-forward" width="35" tag="1"/>
                                     </segments>
                                 </segmentedCell>
                             </segmentedControl>
@@ -299,18 +295,10 @@
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="54">
                                     <font key="font" metaFont="system"/>
                                     <segments>
-                                        <segment image="outline" imageScaling="none" width="35" tag="-1">
-                                            <nil key="label"/>
-                                        </segment>
-                                        <segment image="bookmarks" width="35" selected="YES">
-                                            <nil key="label"/>
-                                        </segment>
-                                        <segment image="history" width="35">
-                                            <nil key="label"/>
-                                        </segment>
-                                        <segment image="NSBonjour" width="35">
-                                            <nil key="label"/>
-                                        </segment>
+                                        <segment image="outline" imageScaling="none" width="35" tag="-1"/>
+                                        <segment image="bookmarks" width="35" selected="YES"/>
+                                        <segment image="history" width="35"/>
+                                        <segment image="NSBonjour" width="35"/>
                                     </segments>
                                 </segmentedCell>
                             </segmentedControl>
@@ -446,7 +434,7 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Apri URL" id="95"/>
                 </menuItem>
-                <menuItem title="Share…" id="NBw-Mh-zlT">
+                <menuItem title="Condividi..." id="NBw-Mh-zlT">
                     <connections>
                         <action selector="shareFileButtonClicked:" target="-1" id="iI0-ew-cyt"/>
                     </connections>

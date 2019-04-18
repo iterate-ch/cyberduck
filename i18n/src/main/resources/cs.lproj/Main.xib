@@ -95,7 +95,7 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="File" id="243">
+                <menuItem title="Soubor" id="243">
                     <attributedString key="attributedTitle">
                         <fragment content="File">
                             <attributes>
@@ -130,7 +130,7 @@
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Nové Šifrované úložiště…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="Nové šifrované úložiště…" keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
@@ -231,10 +231,10 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Xdd-Sj-x3y"/>
-                            <menuItem title="Otevřít webové sídlo" id="256">
-                                <menu key="submenu" title="Otevřít webové sídlo" id="257"/>
+                            <menuItem title="Otevřít URL" id="256">
+                                <menu key="submenu" title="Otevřít URL" id="257"/>
                             </menuItem>
-                            <menuItem title="Share…" id="Dp0-uw-cX3">
+                            <menuItem title="Sdílet…" id="Dp0-uw-cX3">
                                 <connections>
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
                                 </connections>
