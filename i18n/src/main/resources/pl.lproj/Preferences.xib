@@ -148,7 +148,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Zewnętrzny edytor" identifier="pencil" id="12">
+                            <tabViewItem label="Edytor" identifier="pencil" id="12">
                                 <view key="view" id="13">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -178,7 +178,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Bandwidth" identifier="bandwidth" id="22">
+                            <tabViewItem label="Pasmo" identifier="bandwidth" id="22">
                                 <view key="view" id="23">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -202,7 +202,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Language" identifier="language" id="28">
+                            <tabViewItem label="Język" identifier="language" id="28">
                                 <view key="view" id="29">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -240,7 +240,7 @@
                             <button id="36">
                                 <rect key="frame" x="10" y="72" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Otwórz okno przeglądarki przy starcie" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="37">
+                                <buttonCell key="cell" type="check" title="Otwórz nową przeglądarkę przy starcie" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="37">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -265,7 +265,7 @@
                             <textField verticalHuggingPriority="750" id="42">
                                 <rect key="frame" x="9" y="96" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Will save all open browsers when quitting and restore the connections upon relaunch." id="43">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Zapisuje wszystkie otwarte przeglądarki podczas zamykania i przywraca połączenia po ponownym uruchomieniu." id="43">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -274,7 +274,7 @@
                             <textField verticalHuggingPriority="750" id="44">
                                 <rect key="frame" x="9" y="12" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Open a empty browser when opening the application. A connection to the selected bookmark is opened for a new browser." id="45">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Otwórz pustą przeglądarkę podczas otwierania aplikacji. Połączenie z wybraną zakładką jest otwierane dla nowej przeglądarki." id="45">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -331,7 +331,7 @@
                             <textField verticalHuggingPriority="750" id="57">
                                 <rect key="frame" x="9" y="123" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Search for passwords in the Keychain. Save passwords upon successfull login in the Keychain by default." id="58">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Wyszukaj hasła w Keychain. Domyślnie zapisz hasła po pomyślnym zalogowaniu się." id="58">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -340,7 +340,7 @@
                             <textField verticalHuggingPriority="750" id="59">
                                 <rect key="frame" x="9" y="65" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Ask before closing a connected browser window." id="60">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Pytaj przed zamknięciem podłączonego okna przeglądarki." id="60">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -355,7 +355,7 @@
             <rect key="frame" x="0.0" y="0.0" width="573" height="422"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Bookmarks" id="62">
+                <box title="Zakładki" id="62">
                     <rect key="frame" x="17" y="16" width="539" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="h51-aZ-jAv">
@@ -365,14 +365,14 @@
                             <popUpButton verticalHuggingPriority="750" id="63">
                                 <rect key="frame" x="9" y="8" width="197" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                                <popUpButtonCell key="cell" type="push" title="Use Small Icons" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="66" id="64">
+                                <popUpButtonCell key="cell" type="push" title="Użyj małych ikon" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="66" id="64">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" title="Inne widoki" id="65">
                                         <items>
-                                            <menuItem title="Use Small Icons" state="on" id="66"/>
-                                            <menuItem title="Use Medium Icons" tag="1" id="67"/>
-                                            <menuItem title="Use Large Icons" tag="2" id="68"/>
+                                            <menuItem title="Użyj małych ikon" state="on" id="66"/>
+                                            <menuItem title="Użyj średnich ikon" tag="1" id="67"/>
+                                            <menuItem title="Użyj dużych ikon" tag="2" id="68"/>
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
@@ -380,7 +380,7 @@
                             <textField verticalHuggingPriority="750" id="69">
                                 <rect key="frame" x="9" y="40" width="449" height="28"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="When using small icons, only the nickname of the bookmark is displayed in the bookmark drawer." id="70">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Podczas używania małych widoczny jest tylko pseudonim zakładki." id="70">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -389,7 +389,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Interfejs" id="71">
+                <box title="Wygląd" id="71">
                     <rect key="frame" x="17" y="117" width="539" height="95"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="PyB-9Z-fc6">
@@ -399,7 +399,7 @@
                             <button id="72">
                                 <rect key="frame" x="10" y="50" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Użyj zmiennego podkładu rzędów" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
+                                <buttonCell key="cell" type="check" title="Użyj naprzemiennego tła wiersza" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -433,7 +433,7 @@
                             <button id="79">
                                 <rect key="frame" x="10" y="140" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Pokaż pliki zaczynające się na '.'" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
+                                <buttonCell key="cell" type="check" title="Pokaż ukryte pliki" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="80">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -441,7 +441,7 @@
                             <button id="81">
                                 <rect key="frame" x="10" y="120" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Dwuklik otwiera plik w zewnętrznym edytorze" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
+                                <buttonCell key="cell" type="check" title="Podwójne kliknięcie otwiera plik w zewnętrznym edytorze" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
