@@ -30,6 +30,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,6 +82,24 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
         attributes.setCustom(custom);
         return attributes;
+    }
+
+    public EnumSet<Path.Type> toType(final Node node) {
+        final EnumSet<Path.Type> type;
+        switch(node.getType()) {
+            case ROOM:
+                type = EnumSet.of(Path.Type.directory, Path.Type.volume);
+                break;
+            case FOLDER:
+                type = EnumSet.of(Path.Type.directory);
+                break;
+            default:
+                type = EnumSet.of(Path.Type.file);
+        }
+        if(node.getIsEncrypted()) {
+            type.add(Path.Type.decrypted);
+        }
+        return type;
     }
 
     private Permission toPermission(final Node node) throws BackgroundException {
