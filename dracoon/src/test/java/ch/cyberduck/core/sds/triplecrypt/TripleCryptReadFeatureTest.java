@@ -68,7 +68,7 @@ public class TripleCryptReadFeatureTest extends AbstractSDSTest {
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
-        final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, new SDSWriteFeature(session, nodeid));
+        final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSWriteFeature(session, nodeid));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
