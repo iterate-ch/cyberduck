@@ -1251,7 +1251,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Action
     public void handleGetURLEvent_withReplyEvent(NSAppleEventDescriptor event, NSAppleEventDescriptor reply) {
-        log.debug("Received URL from Apple Event:" + event);
+        log.debug(String.format("Received URL from event %s", event));
         final NSAppleEventDescriptor param = event.paramDescriptorForKeyword(keyAEResult);
         if(null == param) {
             log.error("No URL parameter");
