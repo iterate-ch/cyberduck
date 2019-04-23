@@ -115,6 +115,12 @@ public class B2Session extends HttpSession<B2ApiClient> {
         if(type == Delete.class) {
             return (T) new B2DeleteFeature(this, fileid);
         }
+        if(type == Copy.class) {
+            return (T) new B2CopyFeature(this, fileid);
+        }
+        if(type == Move.class) {
+            return (T) new B2MoveFeature(this, fileid);
+        }
         if(type == UrlProvider.class) {
             return (T) new B2UrlProvider(this);
         }
