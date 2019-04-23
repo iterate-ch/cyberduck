@@ -27,10 +27,12 @@ import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class SDSTouchFeature implements Touch<VersionId> {
+    private static final Logger log = Logger.getLogger(SDSTouchFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -64,6 +66,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
             return false;
         }
         if(!this.validate(filename)) {
+            log.warn(String.format("Validation failed for target name %s", filename));
             return false;
         }
         // for existing files the delete role is also needed but at this point we don't know if it exists or not

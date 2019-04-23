@@ -30,6 +30,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +38,6 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     public static final String KEY_CNT_DOWNLOADSHARES = "count_downloadshares";
     public static final String KEY_CNT_UPLOADSHARES = "count_uploadshares";
-    public static final String KEY_ENCRYPTED = "encrypted";
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -80,9 +80,26 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         if(null != node.getCntUploadShares()) {
             custom.put(SDSAttributesFinderFeature.KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
         }
-        custom.put(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(node.getIsEncrypted()));
         attributes.setCustom(custom);
         return attributes;
+    }
+
+    public EnumSet<Path.Type> toType(final Node node) {
+        final EnumSet<Path.Type> type;
+        switch(node.getType()) {
+            case ROOM:
+                type = EnumSet.of(Path.Type.directory, Path.Type.volume);
+                break;
+            case FOLDER:
+                type = EnumSet.of(Path.Type.directory);
+                break;
+            default:
+                type = EnumSet.of(Path.Type.file);
+        }
+        if(node.getIsEncrypted()) {
+            type.add(Path.Type.triplecrypt);
+        }
+        return type;
     }
 
     private Permission toPermission(final Node node) throws BackgroundException {

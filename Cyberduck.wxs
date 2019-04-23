@@ -155,15 +155,6 @@
       <Component Id="WinSparkle">
         <File Source="$(var.cyberduck.TargetDir)/WinSparkle.dll" KeyPath="yes" Checksum="yes"/>
       </Component>
-      <Component Id="msvcr120">
-        <File Source="$(var.cyberduck.TargetDir)/msvcr120.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="msvcp120">
-        <File Source="$(var.cyberduck.TargetDir)/msvcp120.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
-      <Component Id="vccorlib120">
-        <File Source="$(var.cyberduck.TargetDir)/vccorlib120.dll" KeyPath="yes" Checksum="yes" />
-      </Component>
       <Component Id="msvcr100">
         <File Source="$(var.cyberduck.TargetDir)/msvcr100.dll" KeyPath="yes" Checksum="yes" />
       </Component>

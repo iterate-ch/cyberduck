@@ -40,7 +40,7 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
     public void testCreateDirectory() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         final Path test = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNotNull(test.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(test));
@@ -53,7 +53,7 @@ public class SDSDirectoryFeatureTest extends AbstractSDSTest {
         final RandomStringService randomStringService = new AlphanumericRandomStringService();
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)), null, new TransferStatus());
         assertNotNull(room.attributes().getVersionId());
         assertTrue(new DefaultFindFeature(session).find(room));
         new SDSDeleteFeature(session, nodeid).delete(Collections.<Path>singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());

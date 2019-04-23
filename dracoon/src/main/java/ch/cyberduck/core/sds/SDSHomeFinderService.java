@@ -16,35 +16,51 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class SDSHomeFinderService extends DefaultHomeFinderService {
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
 
-    public SDSHomeFinderService(final SDSSession session) {
+    public SDSHomeFinderService(final SDSSession session, final SDSNodeIdProvider nodeid) {
         super(session);
         this.session = session;
+        this.nodeid = nodeid;
     }
 
     @Override
     public Path find() throws BackgroundException {
-        final Path path = super.find();
-        if(path.isRoot()) {
+        final Path directory = super.find();
+        if(directory.isRoot()) {
             // We need to map user roles to ACLs in order to decide if creating a top-level room is allowed
             final Acl acl = new Acl();
             if(session.userAccount().isUserInRole(SDSPermissionsFeature.ROOM_MANAGER_ROLE)) {
                 final Acl.User user = new Acl.CanonicalUser();
                 acl.addAll(user, SDSPermissionsFeature.CREATE_ROLE);
             }
-            path.attributes().setAcl(acl);
+            directory.attributes().setAcl(acl);
         }
         else {
-            final Acl acl = new SDSPermissionsFeature(session, new SDSNodeIdProvider(session)).getPermission(path);
-            path.attributes().setAcl(acl);
+            final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
+            try {
+                final Node node = new NodesApi(session.getClient()).getFsNode(
+                    Long.parseLong(nodeid.getFileid(directory, new DisabledListProgressListener())), StringUtils.EMPTY, null);
+                directory.setAttributes(feature.toAttributes(node));
+                directory.setType(feature.toType(node));
+            }
+            catch(ApiException e) {
+                throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, directory);
+            }
         }
-        return path;
+        return directory;
     }
 }

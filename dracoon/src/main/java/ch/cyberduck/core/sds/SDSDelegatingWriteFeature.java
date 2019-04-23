@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.MultipartWrite;
@@ -34,9 +33,6 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     private final SDSNodeIdProvider nodeid;
     private final Write<VersionId> proxy;
 
-    private final PathContainerService containerService
-            = new SDSPathContainerService();
-
     public SDSDelegatingWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<VersionId> proxy) {
         this.session = session;
         this.nodeid = nodeid;
@@ -47,7 +43,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     public StatusOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
             // File key is set in encryption bulk feature if container is encrypted
-            return new TripleCryptWriteFeature(session, proxy).write(file, status, callback);
+            return new TripleCryptWriteFeature(session, nodeid, proxy).write(file, status, callback);
         }
         return proxy.write(file, status, callback);
     }
@@ -55,7 +51,7 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     @Override
     public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
         if(nodeid.isEncrypted(file)) {
-            return new TripleCryptWriteFeature(session, proxy).append(file, length, cache);
+            return new TripleCryptWriteFeature(session, nodeid, proxy).append(file, length, cache);
         }
         return proxy.append(file, length, cache);
     }
@@ -72,8 +68,8 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
 
     @Override
     public ChecksumCompute checksum(final Path file) {
-        if(Boolean.valueOf(containerService.getContainer(file).attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED))) {
-            return new TripleCryptWriteFeature(session, proxy).checksum(file);
+        if(nodeid.isEncrypted(file)) {
+            return new TripleCryptWriteFeature(session, nodeid, proxy).checksum(file);
         }
         return proxy.checksum(file);
     }

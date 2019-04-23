@@ -271,12 +271,8 @@
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="momentary" id="64">
                                     <font key="font" metaFont="system"/>
                                     <segments>
-                                        <segment image="nav-backward" width="35">
-                                            <nil key="label"/>
-                                        </segment>
-                                        <segment image="nav-forward" width="35" tag="1">
-                                            <nil key="label"/>
-                                        </segment>
+                                        <segment image="nav-backward" width="35"/>
+                                        <segment image="nav-forward" width="35" tag="1"/>
                                     </segments>
                                 </segmentedCell>
                             </segmentedControl>
@@ -299,18 +295,10 @@
                                 <segmentedCell key="cell" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="54">
                                     <font key="font" metaFont="system"/>
                                     <segments>
-                                        <segment image="outline" imageScaling="none" width="35" tag="-1">
-                                            <nil key="label"/>
-                                        </segment>
-                                        <segment image="bookmarks" width="35" selected="YES">
-                                            <nil key="label"/>
-                                        </segment>
-                                        <segment image="history" width="35">
-                                            <nil key="label"/>
-                                        </segment>
-                                        <segment image="NSBonjour" width="35">
-                                            <nil key="label"/>
-                                        </segment>
+                                        <segment image="outline" imageScaling="none" width="35" tag="-1"/>
+                                        <segment image="bookmarks" width="35" selected="YES"/>
+                                        <segment image="history" width="35"/>
+                                        <segment image="NSBonjour" width="35"/>
                                     </segments>
                                 </segmentedCell>
                             </segmentedControl>
@@ -345,7 +333,7 @@
                         <action selector="createFileButtonClicked:" target="-1" id="173"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Symbolic Link…" id="83">
+                <menuItem title="קיצור דרך חדש..." id="83">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="createSymlinkButtonClicked:" target="-1" id="184"/>
@@ -427,8 +415,8 @@ CA
                 <menuItem isSeparatorItem="YES" id="87">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Crea un archivio" id="88">
-                    <menu key="submenu" title="Crea un archivio" id="89"/>
+                <menuItem title="צור ארכיון" id="88">
+                    <menu key="submenu" title="צור ארכיון" id="89"/>
                 </menuItem>
                 <menuItem title="Expand Archive" id="90">
                     <connections>
@@ -440,13 +428,13 @@ CA
                 </menuItem>
                 <menuItem title="Copy URL" id="92">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Copy URL" id="93"/>
+                    <menu key="submenu" title="העתק כתובת" id="93"/>
                 </menuItem>
                 <menuItem title="פתח כתובת" id="94">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="פתח כתובת" id="95"/>
                 </menuItem>
-                <menuItem title="Share…" id="NBw-Mh-zlT">
+                <menuItem title="שתף..." id="NBw-Mh-zlT">
                     <connections>
                         <action selector="shareFileButtonClicked:" target="-1" id="iI0-ew-cyt"/>
                     </connections>

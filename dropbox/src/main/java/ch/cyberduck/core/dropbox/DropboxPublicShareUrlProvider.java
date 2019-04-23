@@ -51,7 +51,7 @@ public class DropboxPublicShareUrlProvider implements PromptUrlProvider<Void, Vo
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Created shared link %s", share));
             }
-            return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.http,
+            return new DescriptiveUrl(URI.create(share.getUrl()), DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"),
                     LocaleFactory.localizedString("Public Share", "Dropbox"))
             );

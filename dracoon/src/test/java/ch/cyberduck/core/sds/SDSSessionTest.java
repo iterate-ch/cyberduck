@@ -98,6 +98,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
+    @Ignore
     @Test(expected = ConnectionTimeoutException.class)
     public void testLoginRadius() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));

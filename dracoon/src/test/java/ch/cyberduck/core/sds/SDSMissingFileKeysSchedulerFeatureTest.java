@@ -54,7 +54,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testMissingKeys() throws Exception {
-        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -62,7 +62,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
-        final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, new SDSWriteFeature(session, nodeid));
+        final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSWriteFeature(session, nodeid));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -74,7 +74,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("ahbic3Ae");
+                return new VaultCredentials("aiW3iem#uaviTeh");
             }
         }, test);
         assertFalse(processed.isEmpty());
