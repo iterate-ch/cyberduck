@@ -53,7 +53,7 @@ public class PromptPasswordCallback implements PasswordCallback {
                 public void callback(final String param) {
                     log.warn(String.format("Callback with code %s", param));
                     credentials.setPassword(param);
-                    controller.closeSheet(SheetCallback.CANCEL_OPTION);
+                    controller.closeSheetWithOption(SheetCallback.CANCEL_OPTION);
                 }
             });
         }
