@@ -289,7 +289,7 @@ CA
                                     <action selector="paste:" target="-1" id="398"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Kiválaszt mindent" keyEquivalent="a" id="289">
+                            <menuItem title="Mindent kiválaszt" keyEquivalent="a" id="289">
                                 <connections>
                                     <action selector="selectAll:" target="-1" id="399"/>
                                 </connections>
