@@ -117,12 +117,12 @@ public class SDSNodeIdProvider implements IdProvider {
             return false;
         }
         final Path parent = file.getParent();
-        if(parent.getType().contains(Path.Type.decrypted)) {
+        if(parent.getType().contains(Path.Type.triplecrypt)) {
             // Backward compatibility where flag is missing in room
             return true;
         }
         final Path container = new PathContainerService().getContainer(file);
-        return container.getType().contains(Path.Type.decrypted);
+        return container.getType().contains(Path.Type.triplecrypt);
     }
 
     public void setFileKey(final TransferStatus status) throws BackgroundException {

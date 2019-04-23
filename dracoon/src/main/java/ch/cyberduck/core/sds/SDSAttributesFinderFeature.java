@@ -97,7 +97,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
                 type = EnumSet.of(Path.Type.file);
         }
         if(node.getIsEncrypted()) {
-            type.add(Path.Type.decrypted);
+            type.add(Path.Type.triplecrypt);
         }
         return type;
     }
