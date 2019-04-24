@@ -234,7 +234,7 @@ CA
                             <menuItem title="URL 열기" id="256">
                                 <menu key="submenu" title="URL 열기" id="257"/>
                             </menuItem>
-                            <menuItem title="Share…" id="Dp0-uw-cX3">
+                            <menuItem title="공유..." id="Dp0-uw-cX3">
                                 <connections>
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
                                 </connections>

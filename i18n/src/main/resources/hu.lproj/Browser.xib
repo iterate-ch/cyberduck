@@ -168,7 +168,7 @@
                                     </subviews>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Körvonal" identifier="1" id="37">
+                            <tabViewItem label="Vázlat" identifier="1" id="37">
                                 <view key="view" id="38">
                                     <rect key="frame" x="0.0" y="0.0" width="601" height="397"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -501,7 +501,7 @@ DQ
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Host neve" keyEquivalent="2" id="110">
+                            <menuItem title="Hosztnév" keyEquivalent="2" id="110">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByHostname:" target="-1" id="187"/>

@@ -1183,7 +1183,7 @@
                                     <button id="256">
                                         <rect key="frame" x="9" y="301" width="364" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="A normál kifejezést tartozó fájlok átugrása:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="257">
+                                        <buttonCell key="cell" type="check" title="A következő kifejezést tartalmazó fájlok átugrása:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="257">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -1191,7 +1191,7 @@
                                     <button id="258">
                                         <rect key="frame" x="9" y="171" width="364" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="A normál kifejezést tartozó fájlok átugrása:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="259">
+                                        <buttonCell key="cell" type="check" title="A következő kifejezést tartalmazó fájlok átugrása:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="259">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -1437,7 +1437,7 @@
                             <button id="304">
                                 <rect key="frame" x="10" y="62" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Ismételje meg a sikertelen hálózati feladatokat" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="305">
+                                <buttonCell key="cell" type="check" title="Ismételje meg a sikertelen hálózati folyamatokat" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="305">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
