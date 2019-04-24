@@ -265,7 +265,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 .maxDownloads(null), new PasswordCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                    return new VaultCredentials("aiW3iem#uaviTeh");
+                    return new VaultCredentials("eth[oh8uv4Eesij");
                 }
             });
         assertNotEquals(DescriptiveUrl.EMPTY, url);

@@ -145,7 +145,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("aiW3iem#uaviTeh");
+                return new VaultCredentials("eth[oh8uv4Eesij");
             }
         });
         assertEquals(1, session.getMetrics().get(Copy.class));
@@ -161,7 +161,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("aiW3iem#uaviTeh");
+                return new VaultCredentials("eth[oh8uv4Eesij");
             }
         });
         IOUtils.readFully(stream, compare);
@@ -201,7 +201,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("aiW3iem#uaviTeh");
+                return new VaultCredentials("eth[oh8uv4Eesij");
             }
         });
         IOUtils.readFully(stream, compare);
@@ -241,7 +241,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("aiW3iem#uaviTeh");
+                return new VaultCredentials("eth[oh8uv4Eesij");
             }
         });
         test.attributes().setVersionId(null);
@@ -256,7 +256,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
 
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("aiW3iem#uaviTeh");
+                return new VaultCredentials("eth[oh8uv4Eesij");
             }
         });
         IOUtils.readFully(stream, compare);

@@ -74,7 +74,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
-                return new VaultCredentials("aiW3iem#uaviTeh");
+                return new VaultCredentials("eth[oh8uv4Eesij");
             }
         }, test);
         assertFalse(processed.isEmpty());
