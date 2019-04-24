@@ -38,6 +38,7 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -276,6 +277,7 @@ public class SpectraBulkServiceTest {
         session.close();
     }
 
+    @Ignore
     @Test
     public void testSPECTRA67() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
