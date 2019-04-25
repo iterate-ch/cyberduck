@@ -75,9 +75,9 @@ public class DriveReadFeature implements Read {
                 return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
             else {
-                final String base = session.getClient().getRootUrl();
-                final HttpUriRequest request = new HttpGet(String.format(String.format("%%s/drive/v3/files/%%s?alt=media&supportsTeamDrives=%s", PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")), base,
-                    fileid.getFileid(file, new DisabledListProgressListener())));
+                final HttpUriRequest request = new HttpGet(String.format("%s/drive/v3/files/%s?alt=media&supportsTeamDrives=%s",
+                    session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
+                    PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
                 request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);
@@ -103,7 +103,7 @@ public class DriveReadFeature implements Read {
                         return new HttpMethodReleaseInputStream(response);
                     default:
                         throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                            response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                 }
             }
         }
