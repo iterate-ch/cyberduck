@@ -101,12 +101,12 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
             @Override
             public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    final String base = session.getClient().getRootUrl();
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
                         final String fileid = DriveWriteFeature.this.fileid.getFileid(file, new DisabledListProgressListener());
-                        request = new HttpPatch(String.format("%s/upload/drive/v3/files/%s?supportsTeamDrives=true", base, fileid));
+                        request = new HttpPatch(String.format("%supload/drive/v3/files/%s?supportsTeamDrives=true",
+                            session.getClient().getRootUrl(), fileid));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             request.setHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
                         }
@@ -114,7 +114,8 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                         request.setEntity(entity);
                     }
                     else {
-                        request = new HttpPost(String.format(String.format("%%s/upload/drive/v3/files?uploadType=resumable&supportsTeamDrives=%s", PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")), base));
+                        request = new HttpPost(String.format("%supload/drive/v3/files?uploadType=resumable&supportsTeamDrives=%s",
+                            session.getClient().getRootUrl(), PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
                         request.setEntity(new StringEntity("{\"name\": \""
                             + file.getName() + "\", \"parents\": [\""
                             + fileid.getFileid(file.getParent(), new DisabledListProgressListener()) + "\"]}",
