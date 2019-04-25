@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-  <Product Id="*" Name="Cyberduck CLI" Language="1033" Version="1.0.0.0" Manufacturer="iterate GmbH"
+  <Product Id="*" Name="Cyberduck CLI" Language="1033" Version="!(bind.FileVersion.product.exe)" Manufacturer="iterate GmbH"
            UpgradeCode="98B2B672-3720-4CAC-BF3E-220757500AE0">
     <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
 
@@ -33,7 +33,7 @@
         <RegistryValue Root="HKLM" Key="Software\[Manufacturer]\[ProductName]" Name="InstallDir" Type="string" Value="[INSTALLLOCATION]" KeyPath="yes" />
       </Component>
       <Component Id="ProductExe" Guid="6D84843D-842B-4462-BF91-803D195AD0DB">
-        <File Source="$(var.CLI.TargetPath)" KeyPath="yes" Checksum="yes" />
+        <File Id="product.exe" Source="$(var.CLI.TargetPath)" KeyPath="yes" Checksum="yes" />
       </Component>
       <Component Id="license" Guid="DF374856-F6F7-4520-A332-803CB0826593">
         <File Source="$(var.CLI.TargetDir)/License.txt" KeyPath="yes" Checksum="yes" />

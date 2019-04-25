@@ -35,7 +35,6 @@ public class AclDictionary {
     public <T> Acl deserialize(T serialized) {
         final Deserializer<?> dict = deserializer.create(serialized);
         final Acl acl = new Acl();
-
         final List<String> keys = dict.keys();
         for(String key : keys) {
             final List<Object> rolesObj = dict.listForKey(key);

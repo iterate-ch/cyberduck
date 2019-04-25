@@ -62,23 +62,7 @@ public class SDSListService implements ListService {
                     null, null, "name:asc", offset, chunksize, StringUtils.EMPTY, null);
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = feature.toAttributes(node);
-                    final EnumSet<AbstractPath.Type> type;
-                    switch(node.getType()) {
-                        case ROOM:
-                            type = EnumSet.of(Path.Type.directory, Path.Type.volume);
-                            break;
-                        case FOLDER:
-                            type = EnumSet.of(Path.Type.directory);
-                            if(node.getIsEncrypted()) {
-                                type.add(Path.Type.decrypted);
-                            }
-                            break;
-                        default:
-                            type = EnumSet.of(Path.Type.file);
-                            if(node.getIsEncrypted()) {
-                                type.add(Path.Type.decrypted);
-                            }
-                    }
+                    final EnumSet<AbstractPath.Type> type = feature.toType(node);
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     children.add(file);
                     listener.chunk(directory, children);

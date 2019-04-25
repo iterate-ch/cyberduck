@@ -28,6 +28,7 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -70,6 +71,9 @@ public class AzureReadFeature implements Read {
         try {
             final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                     .getBlobReferenceFromServer(containerService.getKey(file));
+            if(0L == blob.getProperties().getLength()) {
+                return new NullInputStream(0L);
+            }
             final BlobRequestOptions options = new BlobRequestOptions();
             options.setConcurrentRequestCount(1);
             final BlobInputStream in = blob.openInputStream(AccessCondition.generateEmptyCondition(), options, context);

@@ -29,6 +29,8 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.UnixPermission;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class WritePermissionWorker extends Worker<Boolean> {
+    private static final Logger log = Logger.getLogger(WritePermissionWorker.class);
 
     /**
      * Selected files.
@@ -51,7 +54,6 @@ public class WritePermissionWorker extends Worker<Boolean> {
      * Descend into directories
      */
     private final RecursiveCallback<Permission> callback;
-
     private final ProgressListener listener;
 
     public WritePermissionWorker(final List<Path> files,
@@ -83,6 +85,9 @@ public class WritePermissionWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final UnixPermission feature = session.getFeature(UnixPermission.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();

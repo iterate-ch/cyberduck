@@ -17,6 +17,7 @@ package ch.cyberduck.ui.cocoa.controller;
 
 import ch.cyberduck.binding.AbstractTableDelegate;
 import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.DisabledSheetCallback;
 import ch.cyberduck.binding.Outlet;
@@ -83,6 +84,7 @@ import ch.cyberduck.core.worker.CopyWorker;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.CreateSymlinkWorker;
 import ch.cyberduck.core.worker.CreateVaultWorker;
+import ch.cyberduck.core.worker.DownloadShareWorker;
 import ch.cyberduck.core.worker.MountWorker;
 import ch.cyberduck.core.worker.SearchWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
@@ -2436,6 +2438,50 @@ public class BrowserController extends WindowController
     @Action
     public void deleteFileButtonClicked(final ID sender) {
         new DeleteController(this).delete(this.getSelectedPaths());
+    }
+
+    @Action
+    public void shareFileButtonClicked(final ID sender) {
+        final Path file = this.getSelectedPath();
+        this.background(new WorkerBackgroundAction<DescriptiveUrl>(this, pool,
+                new DownloadShareWorker<Void>(file, null, PasswordCallbackFactory.get(this)) {
+                    @Override
+                    public void cleanup(final DescriptiveUrl url) {
+                        // Display
+                        if(!DescriptiveUrl.EMPTY.equals(url)) {
+                            final AlertController alert = new AlertController(NSAlert.alert(LocaleFactory.localizedString("Create Download Share", "Share"),
+                                MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS"), file.getName()),
+                                LocaleFactory.localizedString("Continue", "Credentials"),
+                                LocaleFactory.localizedString("Copy", "Main"),
+                                null)) {
+                                @Override
+                                public void callback(final int returncode) {
+                                    switch(returncode) {
+                                        case SheetCallback.CANCEL_OPTION:
+                                            final NSPasteboard pboard = NSPasteboard.generalPasteboard();
+                                            pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+                                            if(!pboard.setStringForType(url.getUrl(), NSPasteboard.StringPboardType)) {
+                                                log.error(String.format("Error writing URL to %s", NSPasteboard.StringPboardType));
+                                            }
+                                    }
+                                }
+
+                                @Override
+                                public NSView getAccessoryView(final NSAlert alert) {
+                                    final NSTextField field = NSTextField.textfieldWithFrame(new NSRect(0, 22));
+                                    field.setEditable(false);
+                                    field.setSelectable(true);
+                                    field.cell().setWraps(false);
+                                    field.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                                    return field;
+                                }
+                            };
+                            alert.beginSheet(BrowserController.this);
+                        }
+                    }
+                }
+            )
+        );
     }
 
     @Action

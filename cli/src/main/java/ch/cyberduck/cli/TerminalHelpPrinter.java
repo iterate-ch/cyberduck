@@ -107,27 +107,31 @@ public final class TerminalHelpPrinter {
 
     private static void append(final Protocol protocol, final StringBuilder builder) {
         final String url;
+
+        String format = "%s:";
+        if(protocol.isHostnameConfigurable()) {
+            if(StringUtils.isBlank(protocol.getDefaultHostname())) {
+                format += "//<hostname>";
+            }
+            else {
+                format += "(//<hostname>)";
+            }
+        }
+
         switch(protocol.getType()) {
             case b2:
             case s3:
             case googlestorage:
             case swift:
             case azure:
-                url = String.format("%s://<container>/<key>", getScheme(protocol));
+                format += "/<container>/<key>";
                 break;
             default:
-                if(protocol.isHostnameConfigurable()) {
-                    url = String.format("%s://<hostname>/<folder>/<file>", getScheme(protocol));
-                }
-                else {
-                    // case file:
-                    // case googledrive:
-                    // case dropbox:
-                    // case onedrive:
-                    url = String.format("%s://<folder>/<file>", getScheme(protocol));
-                }
+                format += "/<folder>/<file>";
                 break;
         }
+        url = String.format(format, getScheme(protocol));
+
         builder
             .append(String.format("%s %s", StringUtils.leftPad(protocol.getDescription(), 50), url))
             .append(StringUtils.LF);

@@ -77,12 +77,27 @@ public abstract class AbstractPath {
                 return 0;
             }
         },
+        /**
+         * File from encrypted data room
+         */
+        triplecrypt {
+            @Override
+            public int legacy() {
+                return 0;
+            }
+        },
+        /**
+         * Encrypted file in Cryptomator Vault
+         */
         encrypted {
             @Override
             public int legacy() {
                 return 0;
             }
         },
+        /**
+         * Decrypted file in Cryptomator Vault
+         */
         decrypted {
             @Override
             public int legacy() {
@@ -90,7 +105,7 @@ public abstract class AbstractPath {
             }
         },
         /**
-         * File is internal part of a secure vault
+         * Cryptomator Vault. File is internal part of a secure vault
          */
         vault {
             @Override

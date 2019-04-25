@@ -19,6 +19,7 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -51,8 +52,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class MicrosoftIISDAVReadFeatureTest extends AbstractDAVTest {
@@ -78,6 +78,8 @@ public class MicrosoftIISDAVReadFeatureTest extends AbstractDAVTest {
             test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
             new TransferStatus().length(content.length),
             new DisabledConnectionCallback());
+        assertTrue(new MicrosoftIISDAVFindFeature(session).find(test));
+        assertEquals(content.length, new MicrosoftIISDAVListService(session, new MicrosoftIISDAVAttributesFinderFeature(session)).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final InputStream in = new MicrosoftIISDAVReadFeature(session).read(test, status, new DisabledConnectionCallback());

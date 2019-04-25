@@ -27,11 +27,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Redundancy;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 
 public class WriteRedundancyWorker extends Worker<Boolean> {
+    private static final Logger log = Logger.getLogger(WriteRedundancyWorker.class);
 
     /**
      * Selected files.
@@ -70,6 +73,9 @@ public class WriteRedundancyWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Redundancy feature = session.getFeature(Redundancy.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();

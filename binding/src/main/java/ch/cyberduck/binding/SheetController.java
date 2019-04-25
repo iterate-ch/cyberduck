@@ -78,8 +78,12 @@ public abstract class SheetController extends WindowController implements SheetC
             log.debug(String.format("Close sheet with button %s", sender.title()));
         }
         final int option = new AlertSheetReturnCodeMapper().getOption(sender);
+        this.closeSheetWithOption(option);
+    }
+
+    public void closeSheetWithOption(final int option) {
+        window.endEditingFor(null);
         if(option == SheetCallback.DEFAULT_OPTION || option == SheetCallback.ALTERNATE_OPTION) {
-            window.endEditingFor(null);
             if(!this.validate()) {
                 AppKitFunctionsLibrary.beep();
                 return;
@@ -91,6 +95,6 @@ public abstract class SheetController extends WindowController implements SheetC
 
     // Handle keyboard esc event when not running as sheet
     public void cancel(ID sender) {
-        callback.callback(SheetCallback.CANCEL_OPTION);
+        this.closeSheetWithOption(SheetCallback.CANCEL_OPTION);
     }
 }

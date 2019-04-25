@@ -28,7 +28,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -90,23 +89,17 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
      * Read invalid JSON format.
      */
     protected void read(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
-            try {
-                String l;
-                while((l = in.readLine()) != null) {
-                    Matcher array = Pattern.compile("\\[(.*?)\\]").matcher(l);
-                    while(array.find()) {
-                        Matcher entries = Pattern.compile("\\{(.*?)\\}").matcher(array.group(1));
-                        while(entries.find()) {
-                            final String entry = entries.group(1);
-                            this.read(protocols, entry);
-                        }
+        try (final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")))) {
+            String l;
+            while((l = in.readLine()) != null) {
+                Matcher array = Pattern.compile("\\[(.*?)\\]").matcher(l);
+                while(array.find()) {
+                    Matcher entries = Pattern.compile("\\{(.*?)\\}").matcher(array.group(1));
+                    while(entries.find()) {
+                        final String entry = entries.group(1);
+                        this.read(protocols, entry);
                     }
                 }
-            }
-            finally {
-                IOUtils.closeQuietly(in);
             }
         }
         catch(IOException e) {
@@ -117,7 +110,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
     private void read(final ProtocolFactory protocols, final String entry) {
         final Host current = new Host(protocols.forScheme(Scheme.ftp));
         current.getCredentials().setUsername(
-                PreferencesFactory.get().getProperty("connection.login.anon.name"));
+            PreferencesFactory.get().getProperty("connection.login.anon.name"));
         for(String attribute : entry.split(", ")) {
             Scanner scanner = new Scanner(attribute);
             scanner.useDelimiter(":");

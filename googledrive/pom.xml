@@ -25,6 +25,17 @@
     <properties>
         <google-api-services-drive-version>v3-rev156-1.25.0</google-api-services-drive-version>
     </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <skipITs>true</skipITs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>

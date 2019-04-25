@@ -23,6 +23,7 @@ import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSSession;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -40,10 +41,12 @@ public class TripleCryptWriteFeature implements Write<VersionId> {
     private static final Logger log = Logger.getLogger(TripleCryptWriteFeature.class);
 
     private final SDSSession session;
+    private final SDSNodeIdProvider nodeid;
     private final Write<VersionId> proxy;
 
-    public TripleCryptWriteFeature(final SDSSession session, final Write<VersionId> proxy) {
+    public TripleCryptWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final Write<VersionId> proxy) {
         this.session = session;
+        this.nodeid = nodeid;
         this.proxy = proxy;
     }
 
@@ -54,9 +57,12 @@ public class TripleCryptWriteFeature implements Write<VersionId> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Read file key for file %s", file));
             }
+            if(null == status.getFilekey()) {
+                nodeid.setFileKey(status);
+            }
             final FileKey fileKey = reader.readValue(status.getFilekey().array());
             return new TripleCryptOutputStream<VersionId>(session, proxy.write(file, status, callback),
-                    Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status
+                Crypto.createFileEncryptionCipher(TripleCryptConverter.toCryptoPlainFileKey(fileKey)), status
             );
         }
         catch(CryptoSystemException | InvalidFileKeyException e) {

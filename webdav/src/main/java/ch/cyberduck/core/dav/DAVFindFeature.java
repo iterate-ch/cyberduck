@@ -30,9 +30,15 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 
+import org.apache.http.Header;
+import org.apache.http.client.methods.HttpHead;
+
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 
 import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.handler.ExistsResponseHandler;
 
 public class DAVFindFeature implements Find {
 
@@ -52,7 +58,11 @@ public class DAVFindFeature implements Find {
         try {
             try {
                 try {
-                    return session.getClient().exists(new DAVPathEncoder().encode(file));
+                    final HttpHead request = new HttpHead(new DAVPathEncoder().encode(file));
+                    for(Header header : this.headers()) {
+                        request.addHeader(header);
+                    }
+                    return session.getClient().execute(request, new ExistsResponseHandler());
                 }
                 catch(SardineException e) {
                     throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -73,6 +83,10 @@ public class DAVFindFeature implements Find {
         catch(LoginFailureException | NotfoundException e) {
             return false;
         }
+    }
+
+    public Set<Header> headers() {
+        return Collections.emptySet();
     }
 
     @Override

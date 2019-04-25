@@ -42,7 +42,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View = ObjectFactory.GetInstance<IPasswordPromptView>();
                 View.Title = title;
-                View.Reason = reason;
+                View.Reason = new StringAppender().append(reason).toString();
                 View.OkButtonText = LocaleFactory.localizedString("Continue", "Credentials");
                 View.IconView = IconCache.Instance.IconForName(options.icon(), 64);
                 View.SavePassword = credentials.isSaved();

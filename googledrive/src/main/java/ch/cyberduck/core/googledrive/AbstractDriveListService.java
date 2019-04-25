@@ -23,6 +23,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.webloc.UrlFileWriter;
@@ -106,6 +107,9 @@ public abstract class AbstractDriveListService implements ListService {
                             ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
 
                     final Path child = new Path(directory, filename, type, properties);
+                    if(children.find(new SimplePathPredicate(child)) != null) {
+                        properties.setDuplicate(true);
+                    }
                     children.add(child);
                 }
                 listener.chunk(directory, children);

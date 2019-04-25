@@ -55,6 +55,9 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
                 return list;
             }
             final ListService service = session.getFeature(ListService.class).withCache(cache);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Run with feature %s", service));
+            }
             return service.list(directory, listener);
         }
         catch(ListCanceledException e) {

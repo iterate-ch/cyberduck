@@ -112,43 +112,17 @@ public class SDSNodeIdProvider implements IdProvider {
         return id;
     }
 
-    public boolean isEncrypted(final Path file) throws BackgroundException {
+    public boolean isEncrypted(final Path file) {
         if(file.isRoot()) {
             return false;
         }
-        if(!session.userAccount().isEncryptionEnabled()) {
-            return false;
+        final Path parent = file.getParent();
+        if(parent.getType().contains(Path.Type.triplecrypt)) {
+            // Backward compatibility where flag is missing in room
+            return true;
         }
-        // Get top level share
         final Path container = new PathContainerService().getContainer(file);
-        if(container.attributes().getCustom().containsKey(SDSAttributesFinderFeature.KEY_ENCRYPTED)) {
-            return Boolean.valueOf(container.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
-        }
-        if(cache.isCached(container.getParent())) {
-            final AttributedList<Path> list = cache.get(container.getParent());
-            final Path found = list.find(new SimplePathPredicate(container));
-            if(null != found) {
-                return Boolean.valueOf(found.attributes().getCustom().get(SDSAttributesFinderFeature.KEY_ENCRYPTED));
-            }
-        }
-        try {
-            // Top-level nodes only
-            final NodeList nodes = new NodesApi(session.getClient()).getFsNodes(0,
-                Long.parseLong(ROOT_NODE_ID), null, String.format("type:eq:%s|name:cn:%s", "room", container.getName()),
-                null, null, null, StringUtils.EMPTY, null);
-            for(Node node : nodes.getItems()) {
-                if(node.getName().equals(container.getName())) {
-                    final Boolean encrypted = node.getIsEncrypted();
-                    container.attributes().withCustom(SDSAttributesFinderFeature.KEY_ENCRYPTED, String.valueOf(encrypted));
-                    return encrypted;
-                }
-            }
-            log.warn(String.format("Unknown room %s", container));
-            return false;
-        }
-        catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-        }
+        return container.getType().contains(Path.Type.triplecrypt);
     }
 
     public void setFileKey(final TransferStatus status) throws BackgroundException {

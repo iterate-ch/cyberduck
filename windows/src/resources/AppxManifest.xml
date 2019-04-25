@@ -8,10 +8,8 @@
   xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   xmlns:rescap3="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities/3"
-  xmlns:com="http://http://schemas.microsoft.com/appx/manifest/com/windows10"
-  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   xmlns:desktop2="http://schemas.microsoft.com/appx/manifest/desktop/windows10/2"
-  IgnorableNamespaces="uap uap2 uap3 uap4 uap5 rescap rescap3 com desktop desktop2">
+  IgnorableNamespaces="uap uap2 uap3 uap4 uap5 rescap rescap3 desktop2">
   <Identity Name="iterate.37637C3DE32E5" ProcessorArchitecture="x86"
     Publisher="CN=F20B9811-19FC-4FBE-A8F6-A39E82A4FDE4" Version="$(Version)" />
   <Properties>
@@ -57,8 +55,6 @@
   </Resources>
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.15063.0" MaxVersionTested="10.0.17134.0" />
-    <PackageDependency Name="Microsoft.VCLibs.120.00.UWPDesktop" MinVersion="12.0.40652.5"
-     Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
    </Dependencies>
    <Capabilities>
     <rescap:Capability Name="runFullTrust" />
@@ -126,17 +122,6 @@
             <uap5:ExecutionAlias Alias="Cyberduck.exe" />
           </uap5:AppExecutionAlias>
         </uap5:Extension>
-        <com:Extension Category="windows.comServer">
-          <com:ComServer>
-            <com:ExeServer Executable="Cyberduck.exe" Arguments="-ToastActivated"
-             DisplayName="Toast activator">
-              <com:Class Id="04FAA434-8D25-4690-AF66-B63B39C1FEDE" DisplayName="Toast activator" />
-            </com:ExeServer>
-          </com:ComServer>
-        </com:Extension>
-        <desktop:Extension Category="windows.toastNotificationActivation">
-          <desktop:ToastNotificationActivation ToastActivatorCLSID="04FAA434-8D25-4690-AF66-B63B39C1FEDE" />
-        </desktop:Extension>
       </Extensions>
     </Application>
   </Applications>

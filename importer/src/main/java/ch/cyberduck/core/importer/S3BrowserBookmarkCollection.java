@@ -26,7 +26,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -59,56 +58,49 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
-        try {
-            final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(),
-                Charset.forName("UTF-8")));
-            try {
-                Host current = null;
-                String line;
-                while((line = in.readLine()) != null) {
-                    if(line.startsWith("[account_")) {
-                        current = new Host(protocols.forScheme(Scheme.s3));
+        try (final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")))) {
+            Host current = null;
+            String line;
+            while((line = in.readLine()) != null) {
+                if(line.startsWith("[account_")) {
+                    current = new Host(protocols.forScheme(Scheme.s3));
+                }
+                else if(StringUtils.isBlank(line)) {
+                    this.add(current);
+                    current = null;
+                }
+                else {
+                    if(null == current) {
+                        log.warn("Failed to detect start of bookmark");
+                        continue;
                     }
-                    else if(StringUtils.isBlank(line)) {
-                        this.add(current);
-                        current = null;
+                    Scanner scanner = new Scanner(line);
+                    scanner.useDelimiter(" = ");
+                    if(!scanner.hasNext()) {
+                        log.warn("Missing key in line:" + line);
+                        continue;
                     }
-                    else {
-                        if(null == current) {
-                            log.warn("Failed to detect start of bookmark");
-                            continue;
-                        }
-                        Scanner scanner = new Scanner(line);
-                        scanner.useDelimiter(" = ");
-                        if(!scanner.hasNext()) {
-                            log.warn("Missing key in line:" + line);
-                            continue;
-                        }
-                        String name = scanner.next().toLowerCase(Locale.ROOT);
-                        if(!scanner.hasNext()) {
-                            log.warn("Missing value in line:" + line);
-                            continue;
-                        }
-                        String value = scanner.next();
-                        switch(name) {
-                            case "name":
-                                current.setNickname(value);
-                                break;
-                            case "comment":
-                                current.setComment(value);
-                                break;
-                            case "access_key":
-                                current.getCredentials().setUsername(value);
-                                break;
-                            case "secret_key":
-                                current.getCredentials().setPassword(value);
-                                break;
-                        }
+                    String name = scanner.next().toLowerCase(Locale.ROOT);
+                    if(!scanner.hasNext()) {
+                        log.warn("Missing value in line:" + line);
+                        continue;
+                    }
+                    String value = scanner.next();
+                    switch(name) {
+                        case "name":
+                            current.setNickname(value);
+                            break;
+                        case "comment":
+                            current.setComment(value);
+                            break;
+                        case "access_key":
+                            current.getCredentials().setUsername(value);
+                            break;
+                        case "secret_key":
+                            current.getCredentials().setPassword(value);
+                            break;
                     }
                 }
-            }
-            finally {
-                IOUtils.closeQuietly(in);
             }
         }
         catch(IOException e) {

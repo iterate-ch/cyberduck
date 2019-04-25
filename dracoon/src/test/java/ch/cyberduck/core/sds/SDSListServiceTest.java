@@ -40,7 +40,7 @@ public class SDSListServiceTest extends AbstractSDSTest {
     public void testList() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         assertTrue(new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).isEmpty());
         new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(1, (new SDSListService(session, nodeid).list(room, new DisabledListProgressListener(), 1).size()));
@@ -57,7 +57,7 @@ public class SDSListServiceTest extends AbstractSDSTest {
     public void testListAlphanumeric() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         assertTrue(new SDSListService(session, nodeid).list(room, new DisabledListProgressListener()).isEmpty());
         new SDSTouchFeature(session, nodeid).touch(new Path(room, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
         new SDSTouchFeature(session, nodeid).touch(new Path(room, "0a", EnumSet.of(Path.Type.file)), new TransferStatus());

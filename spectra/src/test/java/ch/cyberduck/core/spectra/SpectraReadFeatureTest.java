@@ -38,6 +38,7 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.RandomStringGenerator;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -127,6 +128,7 @@ public class SpectraReadFeatureTest {
         assertFalse(new SpectraReadFeature(session).offset(null));
     }
 
+    @Ignore
     @Test
     public void testSPECTRA66() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
