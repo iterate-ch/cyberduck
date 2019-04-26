@@ -60,7 +60,6 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
         this.resolve = resolve;
     }
 
-
     @Override
     public String create(final Local file) throws AccessDeniedException {
         final ObjCObjectByReference error = new ObjCObjectByReference();
@@ -88,13 +87,17 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
 
     @Override
     public NSURL resolve(final Local file, final boolean interactive) throws AccessDeniedException {
-        if(file.isChild(TEMPORARY)) {
-            // Skip prompt for file in temporary folder where access is not sandboxed
-            return null;
+        if(null != TEMPORARY) {
+            if(file.isChild(TEMPORARY)) {
+                // Skip prompt for file in temporary folder where access is not sandboxed
+                return null;
+            }
         }
-        if(file.isChild(GROUP_CONTAINER)) {
-            // Skip prompt for file in application group folder where access is not sandboxed
-            return null;
+        if(null != GROUP_CONTAINER) {
+            if(file.isChild(GROUP_CONTAINER)) {
+                // Skip prompt for file in application group folder where access is not sandboxed
+                return null;
+            }
         }
         final NSData bookmark;
         if(null == file.getBookmark()) {
