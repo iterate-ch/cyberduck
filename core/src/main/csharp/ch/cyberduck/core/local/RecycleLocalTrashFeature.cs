@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Core.Local
                     }
                 }
                 catch(System.Exception e) {
-                    throw new AccessDeniedException(e.Message);
+                    throw new LocalAccessDeniedException(e.Message);
                 }
             }
         }
