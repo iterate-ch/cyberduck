@@ -40,6 +40,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -112,16 +113,17 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
             new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, PathCache.empty(), new DisabledCancelCallback());
         final String name = new AlphanumericRandomStringService().random();
-        final Path container = new Path("zy5pq7b0t1jxjwit66vp4mxe7ictuhxz", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path bucket = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
+            new Path(new S3HomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
-        assertTrue(new S3ObjectListService(session).list(container, new DisabledListProgressListener()).contains(test));
+        assertTrue(new S3ObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
         assertTrue(new S3ObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());
-        assertTrue(new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener()).contains(test));
+        assertTrue(new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).contains(test));
         assertTrue(new S3VersionedObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());
         assertTrue(new DefaultFindFeature(session).find(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new S3DefaultDeleteFeature(session).delete(Arrays.asList(test, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
