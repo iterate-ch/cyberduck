@@ -19,9 +19,17 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordStore;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
@@ -85,6 +93,28 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(b.get());
+        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new S3ObjectListService(session).list(container, new DisabledListProgressListener()).contains(test));
+        assertTrue(new S3ObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener()).contains(test));
+        assertTrue(new S3VersionedObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());
+        assertTrue(new DefaultFindFeature(session).find(test));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testCreatePlaceholderMinio() throws Exception {
+        final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
+            "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
+        ));
+        final S3Session session = new S3Session(host);
+        final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(), new DisabledProgressListener());
+        login.check(session, PathCache.empty(), new DisabledCancelCallback());
+        final String name = new AlphanumericRandomStringService().random();
+        final Path container = new Path("zy5pq7b0t1jxjwit66vp4mxe7ictuhxz", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(test.getType().contains(Path.Type.placeholder));
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new S3ObjectListService(session).list(container, new DisabledListProgressListener()).contains(test));
         assertTrue(new S3ObjectListService(session).list(test, new DisabledListProgressListener()).isEmpty());
