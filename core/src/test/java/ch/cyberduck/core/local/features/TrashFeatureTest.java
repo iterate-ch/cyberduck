@@ -29,6 +29,10 @@ import org.junit.rules.ExpectedException;
 
 import java.io.OutputStream;
 import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 public class TrashFeatureTest {
@@ -76,6 +80,25 @@ public class TrashFeatureTest {
         touch.touch(file);
 
         try (final OutputStream stream = file.getOutputStream(false)) {
+            trash.trash(directory);
+        }
+    }
+
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testTrashOpenDirectoryEnumeration() throws Exception {
+        final Trash trash = LocalTrashFactory.get();
+        final SupportDirectoryFinder finder = new TemporarySupportDirectoryFinder();
+
+        final Local temp = finder.find();
+        final Local directory = LocalFactory.get(temp, UUID.randomUUID().toString());
+        directory.mkdir();
+        final Local sub = LocalFactory.get(directory, UUID.randomUUID().toString());
+        sub.mkdir();
+        final Local file = LocalFactory.get(sub, UUID.randomUUID().toString());
+        final Touch touch = LocalTouchFactory.get();
+        touch.touch(file);
+
+        try (final DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(sub.getAbsolute()))) {
             trash.trash(directory);
         }
     }
