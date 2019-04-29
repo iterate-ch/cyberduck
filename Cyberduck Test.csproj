@@ -77,6 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="core\src\test\csharp\ch\cyberduck\core\credentialmanager\WinCredentialManagerTest.cs" />
+    <Compile Include="core\src\test\csharp\ch\cyberduck\core\local\RecycleTrashFeatureTest.cs" />
     <Compile Include="core\src\test\csharp\ch\cyberduck\core\notifications\AbstractDesktopNotificationServiceTest.cs" />
     <Compile Include="core\src\test\csharp\ch\cyberduck\core\ssl\HostnameVerifierTest.cs" />
     <Compile Include="core\src\test\csharp\ch\cyberduck\core\SystemCertificateStoreTest.cs" />
