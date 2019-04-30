@@ -27,17 +27,19 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.storegate.io.swagger.client.model.File;
+import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
+import ch.cyberduck.core.storegate.io.swagger.client.JSON;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -51,8 +53,7 @@ import org.joda.time.DateTime;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Collections;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
@@ -100,79 +101,76 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
             @Override
             public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
+                    final StoregateApiClient client = session.getClient();
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
-                    request = new HttpPost("/v4/resumable");
-
+                    request = new HttpPost(String.format("%s/v4/upload/resumable", client.getBasePath()));
                     FileMetadata meta = new FileMetadata();
+                    meta.setId("");
+                    meta.setAttributes(0);
+                    meta.setFlags(0);
+                    meta.setLockId("");
                     meta.setFileName(file.getName());
                     meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
-                    meta.setFileSize(0L);
+                    meta.setFileSize(status.getLength());
                     meta.setCreated(new DateTime(file.attributes().getCreationDate()));
                     meta.setModified(new DateTime(file.attributes().getModificationDate()));
-                    request.setEntity(new StringEntity(new ObjectMapper().writeValueAsString(meta),
+                    request.setEntity(new StringEntity(new JSON().getContext(meta.getClass()).writeValueAsString(meta),
                         ContentType.create("application/json", "UTF-8")));
                     request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
-                    final HttpClient client = session.getClient().getClient();
-                    final HttpResponse response = client.execute(request);
+                    final HttpResponse response = client.getClient().execute(request);
                     try {
                         switch(response.getStatusLine().getStatusCode()) {
                             case HttpStatus.SC_OK:
                                 break;
                             default:
-                                //TODO
-                                /*
-                                throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                    response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
-
-                                 */
+                                throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                    EntityUtils.toString(response.getEntity())));
                         }
                     }
                     finally {
                         EntityUtils.consume(response.getEntity());
                     }
-                    if(!status.isExists()) {
-                        if(response.containsHeader(HttpHeaders.LOCATION)) {
-                            final String putTarget = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
-                            // Upload the file
-                            final HttpPut put = new HttpPut(putTarget);
-                            put.setEntity(entity);
-                            final HttpResponse putResponse = client.execute(put);
-                            try {
-                                switch(putResponse.getStatusLine().getStatusCode()) {
-                                    case HttpStatus.SC_OK:
-                                    case HttpStatus.SC_CREATED:
-                                        final File result = new ObjectMapper().readValue(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
-                                            File.class);
-                                        return new VersionId(result.getId());
-                                    default:
-                                        //TODO
-                                        /*
-                                        throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                            putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()));
-
-                                         */
-                                }
-                            }
-                            finally {
-                                EntityUtils.consume(putResponse.getEntity());
-                            }
+                    if(response.containsHeader(HttpHeaders.LOCATION)) {
+                        final String putTarget = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
+                        // Upload the file
+                        final HttpPut put = new HttpPut(putTarget);
+                        put.setEntity(entity);
+                        final String header;
+                        if(status.getLength() == 0) {
+                            // Touch
+                            header = "*/0";
                         }
                         else {
-                            //TODO
-                            /*
-                            throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));*/
+                            final HttpRange range = HttpRange.byLength(0, status.getLength());
+                            header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), status.getLength());
+                        }
+                        put.addHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %s", header));
+                        final HttpResponse putResponse = client.getClient().execute(put);
+                        try {
+                            switch(putResponse.getStatusLine().getStatusCode()) {
+                                case HttpStatus.SC_OK:
+                                case HttpStatus.SC_CREATED:
+                                    final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
+                                        FileMetadata.class);
+                                    return new VersionId(result.getId());
+                                default:
+                                    throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                        EntityUtils.toString(response.getEntity())));
+                            }
+                        }
+                        finally {
+                            EntityUtils.consume(putResponse.getEntity());
                         }
                     }
-                    return null;
+                    else {
+                        throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                            EntityUtils.toString(response.getEntity())));
+                    }
                 }
                 catch(IOException e) {
-                    //TODO
-                    //throw new DriveExceptionMappingService().map("Upload failed", e, file);
+                    throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
                 }
-
-                return null;
             }
 
             @Override
