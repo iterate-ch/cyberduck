@@ -126,7 +126,10 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         finally {
                             EntityUtils.consume(response.getEntity());
                         }
-                        return complete(uploadId, status);
+                        if(status.isComplete()) {
+                            return complete(uploadId, status);
+                        }
+                        return new VersionId(null);
                     }
                     catch(IOException e) {
                         throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
