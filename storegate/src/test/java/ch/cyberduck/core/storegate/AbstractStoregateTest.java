@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
@@ -55,7 +56,7 @@ public class AbstractStoregateTest {
     public void setup() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new StoregateProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
-            this.getClass().getResourceAsStream("/Storegate.cyberduckprofile"));
+            new Local("../profiles/Storegate.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname(), new Credentials("cyberduck"));
         session = new StoregateSession(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
