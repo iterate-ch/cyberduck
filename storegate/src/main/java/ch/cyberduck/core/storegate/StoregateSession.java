@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
@@ -37,7 +38,10 @@ import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.JSON;
+import ch.cyberduck.core.storegate.io.swagger.client.api.UsersApi;
+import ch.cyberduck.core.storegate.io.swagger.client.model.ExtendedUser;
 import ch.cyberduck.core.storegate.provider.HttpComponentsProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -61,10 +65,11 @@ import com.migcomponents.migbase64.Base64;
 public class StoregateSession extends HttpSession<StoregateApiClient> {
     private static final Logger log = Logger.getLogger(StoregateSession.class);
 
-    protected StoregateErrorResponseInterceptor retryHandler;
     protected OAuth2RequestInterceptor authorizationService;
 
     private final StoregateIdProvider fileid = new StoregateIdProvider(this);
+
+    private String username;
 
     public StoregateSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -104,6 +109,17 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     @Override
     public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
+        try {
+            final ExtendedUser me = new UsersApi(this.client).usersGetMe();
+            username = me.getUsername();
+        }
+        catch(ApiException e) {
+            throw new StoregateExceptionMappingService().map(e);
+        }
+    }
+
+    public String username() {
+        return username;
     }
 
     @Override
@@ -125,6 +141,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         }
         if(type == Write.class) {
             return (T) new StoregateWriteFeature(this, fileid);
+        }
+        if(type == MultipartWrite.class) {
+            return (T) new StoregateMultipartWriteFeature(this, fileid);
         }
         if(type == Touch.class) {
             return (T) new StoregateTouchFeature(this, fileid);
