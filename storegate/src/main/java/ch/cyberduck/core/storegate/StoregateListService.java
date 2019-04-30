@@ -52,7 +52,7 @@ public class StoregateListService implements ListService {
             FileContents files;
             do {
                 files = new FilesApi(this.session.getClient()).filesGet(
-                    String.format("/Home%s", directory.getAbsolute()), //TODO handle team folder
+                    String.format("/Home/%s%s", session.username(), directory.getAbsolute()), //TODO handle team folder
                     pageIndex,
                     chunksize,
                     "Name asc",

@@ -54,7 +54,7 @@ public class StoregateIdProvider implements IdProvider {
             }
         }
         try {
-            final File f = new FilesApi(session.getClient()).filesGet_1(file.getAbsolute());
+            final File f = new FilesApi(session.getClient()).filesGet_1(String.format("/Home/%s%s", session.username(), file.getAbsolute())); //TODO handle team folder /Common
             return this.set(file, new StoregateAttributesFinderFeature(session).toAttributes(f).getVersionId());
         }
         catch(ApiException e) {
