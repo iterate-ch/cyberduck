@@ -788,6 +788,9 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("spectra.retry.delay", String.valueOf(60)); // 1 minute
 
+        this.setDefault("storegate.listing.chunksize", String.valueOf(500));
+        this.setDefault("storegate.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
+
         /*
           NTLM Windows Domain
          */
