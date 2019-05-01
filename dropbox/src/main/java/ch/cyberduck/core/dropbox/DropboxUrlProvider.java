@@ -40,7 +40,7 @@ public class DropboxUrlProvider implements UrlProvider {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         list.add(new DescriptiveUrl(URI.create(String.format("%s/home%s",
             new HostUrlProvider().withUsername(false).get(session.getHost()), URIEncoder.encode(file.getAbsolute()))),
-            DescriptiveUrl.Type.provider,
+            DescriptiveUrl.Type.http,
             MessageFormat.format(LocaleFactory.localizedString("{0} URL"), session.getHost().getProtocol().getScheme().toString().toUpperCase(Locale.ROOT))));
         return list;
     }
