@@ -55,6 +55,7 @@ import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.ssl.CertificateStoreX509TrustManager;
 import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.PreferencesX509KeyManager;
+import ch.cyberduck.core.storegate.StoregateProtocol;
 import ch.cyberduck.core.threading.DisconnectBackgroundAction;
 import ch.cyberduck.core.threading.SessionBackgroundAction;
 import ch.cyberduck.core.transfer.CopyTransfer;
@@ -126,7 +127,8 @@ public class Terminal {
             new SharepointProtocol(),
             new LocalProtocol(),
             new SDSProtocol(),
-            new MantaProtocol()
+            new MantaProtocol(),
+            new StoregateProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {
