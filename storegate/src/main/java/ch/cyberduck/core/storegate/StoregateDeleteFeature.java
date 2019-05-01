@@ -39,6 +39,7 @@ public class StoregateDeleteFeature implements Delete {
     public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
             try {
+                callback.delete(file);
                 final FilesApi api = new FilesApi(session.getClient());
                 api.filesDelete(id.getFileid(file, new DisabledListProgressListener()));
             }
