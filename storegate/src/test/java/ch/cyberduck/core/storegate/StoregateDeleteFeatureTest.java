@@ -18,6 +18,7 @@ package ch.cyberduck.core.storegate;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -28,6 +29,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -39,7 +41,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
     public void testDeleteFile() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
@@ -52,7 +54,7 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
     public void testDeleteFolderRoomWithContent() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+            String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(new Path(room,
             new AlphanumericRandomStringService().random().toLowerCase(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
@@ -65,4 +67,10 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
         assertFalse(new DefaultFindFeature(session).find(room));
     }
 
+    @Test(expected = NotfoundException.class)
+    public void testDeleteNotFound() throws Exception {
+        final Path test = new Path(String.format("/Home/mduck/%s", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        test.attributes().setVersionId("n");
+        new StoregateDeleteFeature(session, new StoregateIdProvider(session).withCache(cache)).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }

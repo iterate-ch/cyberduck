@@ -25,6 +25,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
+import static ch.cyberduck.core.AbstractPath.Type.directory;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
@@ -33,8 +34,9 @@ public class StoregateListServiceTest extends AbstractStoregateTest {
 
     @Test
     public void testList() throws Exception {
-        final AttributedList<Path> list = new StoregateListService(session).list(
-            new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final AttributedList<Path> list = new StoregateListService(session, nodeid).list(
+            new Path("/Home/mduck", EnumSet.of(directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list);
         assertFalse(list.isEmpty());
     }
