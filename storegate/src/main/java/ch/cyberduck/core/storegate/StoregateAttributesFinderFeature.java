@@ -27,18 +27,18 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 public class StoregateAttributesFinderFeature implements AttributesFinder {
 
     private final StoregateSession session;
-    private final StoregateIdProvider id;
+    private final StoregateIdProvider fileid;
 
-    public StoregateAttributesFinderFeature(final StoregateSession session, final StoregateIdProvider id) {
+    public StoregateAttributesFinderFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
-        this.id = id;
+        this.fileid = fileid;
     }
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
             final FilesApi files = new FilesApi(session.getClient());
-            return this.toAttributes(files.filesGet_0(id.getFileid(file, new DisabledListProgressListener())));
+            return this.toAttributes(files.filesGet_0(fileid.getFileid(file, new DisabledListProgressListener())));
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);

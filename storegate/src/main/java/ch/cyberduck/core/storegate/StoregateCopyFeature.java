@@ -29,11 +29,11 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class StoregateCopyFeature implements Copy {
 
     private final StoregateSession session;
-    private final StoregateIdProvider nodeid;
+    private final StoregateIdProvider fileid;
 
-    public StoregateCopyFeature(final StoregateSession session, final StoregateIdProvider nodeid) {
+    public StoregateCopyFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
-        this.nodeid = nodeid;
+        this.fileid = fileid;
     }
 
     @Override
@@ -41,12 +41,12 @@ public class StoregateCopyFeature implements Copy {
         try {
             final CopyFileRequest copy = new CopyFileRequest()
                 .name(target.getName())
-                .parentID(nodeid.getFileid(target.getParent(), new DisabledListProgressListener()))
+                .parentID(fileid.getFileid(target.getParent(), new DisabledListProgressListener()))
                 .mode(CopyFileRequest.ModeEnum.NUMBER_1); // Overwrite
             final File file = new FilesApi(session.getClient()).filesCopy(
-                nodeid.getFileid(source, new DisabledListProgressListener()), copy);
+                fileid.getFileid(source, new DisabledListProgressListener()), copy);
             return new Path(target.getParent(), target.getName(), target.getType(),
-                new StoregateAttributesFinderFeature(session, nodeid).toAttributes(file));
+                new StoregateAttributesFinderFeature(session, fileid).toAttributes(file));
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map("Cannot copy {0}", e, source);

@@ -30,11 +30,11 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class StoregateMoveFeature implements Move {
 
     private final StoregateSession session;
-    private final StoregateIdProvider nodeid;
+    private final StoregateIdProvider fileid;
 
-    public StoregateMoveFeature(final StoregateSession session, final StoregateIdProvider nodeid) {
+    public StoregateMoveFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
-        this.nodeid = nodeid;
+        this.fileid = fileid;
     }
 
     @Override
@@ -42,11 +42,11 @@ public class StoregateMoveFeature implements Move {
         try {
             final MoveFileRequest move = new MoveFileRequest()
                 .name(renamed.getName())
-                .parentID(nodeid.getFileid(renamed.getParent(), new DisabledListProgressListener()))
+                .parentID(fileid.getFileid(renamed.getParent(), new DisabledListProgressListener()))
                 .mode(MoveFileRequest.ModeEnum.NUMBER_1); // Overwrite
 
             new FilesApi(session.getClient()).filesMove(
-                nodeid.getFileid(file, new DisabledListProgressListener()), move);
+                fileid.getFileid(file, new DisabledListProgressListener()), move);
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map("Cannot rename {0}", e, file);

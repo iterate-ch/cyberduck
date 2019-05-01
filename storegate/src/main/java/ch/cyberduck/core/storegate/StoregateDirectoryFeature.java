@@ -30,11 +30,11 @@ import ch.cyberduck.core.transfer.TransferStatus;
 public class StoregateDirectoryFeature implements Directory<VersionId> {
 
     private final StoregateSession session;
-    private final StoregateIdProvider id;
+    private final StoregateIdProvider fileid;
 
-    public StoregateDirectoryFeature(final StoregateSession session, final StoregateIdProvider id) {
+    public StoregateDirectoryFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
-        this.id = id;
+        this.fileid = fileid;
     }
 
     @Override
@@ -43,10 +43,10 @@ public class StoregateDirectoryFeature implements Directory<VersionId> {
             final FilesApi files = new FilesApi(session.getClient());
             final CreateFolderRequest request = new CreateFolderRequest();
             request.setName(folder.getName());
-            request.setParentID(id.getFileid(folder.getParent(), new DisabledListProgressListener()));
+            request.setParentID(fileid.getFileid(folder.getParent(), new DisabledListProgressListener()));
             final File f = files.filesCreateFolder(request);
             return new Path(folder.getParent(), folder.getName(), folder.getType(),
-                new StoregateAttributesFinderFeature(session, id).toAttributes(f));
+                new StoregateAttributesFinderFeature(session, fileid).toAttributes(f));
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);

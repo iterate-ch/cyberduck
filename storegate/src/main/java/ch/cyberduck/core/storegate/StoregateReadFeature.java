@@ -42,11 +42,11 @@ public class StoregateReadFeature implements Read {
     private static final Logger log = Logger.getLogger(StoregateReadFeature.class);
 
     private final StoregateSession session;
-    private final StoregateIdProvider id;
+    private final StoregateIdProvider fileid;
 
-    public StoregateReadFeature(final StoregateSession session, final StoregateIdProvider id) {
+    public StoregateReadFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
-        this.id = id;
+        this.fileid = fileid;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class StoregateReadFeature implements Read {
         try {
             final StoregateApiClient client = session.getClient();
             final HttpUriRequest request = new HttpGet(String.format("%s/v4/download/files/%s?stream=true", client.getBasePath(),
-                id.getFileid(file, new DisabledListProgressListener())));
+                fileid.getFileid(file, new DisabledListProgressListener())));
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 final String header;

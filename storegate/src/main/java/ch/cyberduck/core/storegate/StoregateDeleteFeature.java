@@ -28,11 +28,11 @@ import java.util.List;
 public class StoregateDeleteFeature implements Delete {
 
     private final StoregateSession session;
-    private final StoregateIdProvider id;
+    private final StoregateIdProvider fileid;
 
-    public StoregateDeleteFeature(final StoregateSession session, final StoregateIdProvider id) {
+    public StoregateDeleteFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
-        this.id = id;
+        this.fileid = fileid;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class StoregateDeleteFeature implements Delete {
             try {
                 callback.delete(file);
                 final FilesApi api = new FilesApi(session.getClient());
-                api.filesDelete(id.getFileid(file, new DisabledListProgressListener()));
+                api.filesDelete(fileid.getFileid(file, new DisabledListProgressListener()));
             }
             catch(ApiException e) {
                 throw new StoregateExceptionMappingService().map(e);
