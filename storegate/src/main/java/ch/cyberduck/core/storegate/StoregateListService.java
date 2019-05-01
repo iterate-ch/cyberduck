@@ -63,7 +63,7 @@ public class StoregateListService implements ListService {
         else {
             try {
                 final AttributedList<Path> children = new AttributedList<>();
-                final StoregateAttributesFinderFeature feature = new StoregateAttributesFinderFeature(session, fileid);
+                final StoregateAttributesFinderFeature attributes = new StoregateAttributesFinderFeature(session, fileid);
                 int pageIndex = 0;
                 FileContents files;
                 do {
@@ -77,7 +77,7 @@ public class StoregateListService implements ListService {
                         false
                     );
                     for(File f : files.getFiles()) {
-                        final PathAttributes attrs = feature.toAttributes(f);
+                        final PathAttributes attrs = attributes.toAttributes(f);
                         final EnumSet<Path.Type> type = (f.getFlags() & File.FlagsEnum.Folder.getValue()) == 1 ?
                             EnumSet.of(Path.Type.directory) :
                             EnumSet.of(Path.Type.file);
