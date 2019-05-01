@@ -35,7 +35,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
             final FilesApi files = new FilesApi(session.getClient());
-            return this.toAttributes(files.filesGet_1(file.getAbsolute()));
+            return this.toAttributes(files.filesGet_1(String.format("/Home/%s%s", session.username(), file.getAbsolute()))); //TODO /common team folder
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);
