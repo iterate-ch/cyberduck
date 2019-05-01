@@ -20,11 +20,14 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 public class StoregateSessionTest extends AbstractStoregateTest {
 
     @Test
