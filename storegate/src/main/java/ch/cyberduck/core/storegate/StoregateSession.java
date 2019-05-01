@@ -42,8 +42,10 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.JSON;
+import ch.cyberduck.core.storegate.io.swagger.client.api.SettingsApi;
 import ch.cyberduck.core.storegate.io.swagger.client.api.UsersApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.ExtendedUser;
+import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 import ch.cyberduck.core.storegate.provider.HttpComponentsProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
@@ -61,17 +63,18 @@ import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import com.migcomponents.migbase64.Base64;
 
 public class StoregateSession extends HttpSession<StoregateApiClient> {
     private static final Logger log = Logger.getLogger(StoregateSession.class);
 
-    protected OAuth2RequestInterceptor authorizationService;
-
+    private OAuth2RequestInterceptor authorizationService;
     private final StoregateIdProvider fileid = new StoregateIdProvider(this);
 
     private String username;
+    private List<RootFolder> roots;
 
     public StoregateSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -110,9 +113,12 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
         try {
+            // Get username
             final ExtendedUser me = new UsersApi(this.client).usersGetMe();
             username = me.getUsername();
             log.debug(String.format("Set username to %s", username));
+            // Get root folders
+            roots = new SettingsApi(this.client).settingsGetRootfolders();
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);
@@ -121,6 +127,10 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
 
     public String username() {
         return username;
+    }
+
+    public List<RootFolder> roots() {
+        return roots;
     }
 
     @Override
@@ -135,7 +145,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             return (T) fileid;
         }
         if(type == ListService.class) {
-            return (T) new StoregateListService(this);
+            return (T) new StoregateListService(this, fileid);
         }
         if(type == Read.class) {
             return (T) new StoregateReadFeature(this, fileid);
@@ -162,7 +172,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             return (T) new StoregateDeleteFeature(this, fileid);
         }
         if(type == AttributesFinder.class) {
-            return (T) new StoregateAttributesFinderFeature(this);
+            return (T) new StoregateAttributesFinderFeature(this, fileid);
         }
         return super._getFeature(type);
     }

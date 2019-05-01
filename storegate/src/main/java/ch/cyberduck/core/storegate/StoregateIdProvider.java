@@ -20,12 +20,15 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.File;
+import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -54,8 +57,8 @@ public class StoregateIdProvider implements IdProvider {
             }
         }
         try {
-            final File f = new FilesApi(session.getClient()).filesGet_1(String.format("/Home/%s%s", session.username(), file.getAbsolute())); //TODO handle team folder /Common
-            return this.set(file, new StoregateAttributesFinderFeature(session).toAttributes(f).getVersionId());
+            final File f = new FilesApi(session.getClient()).filesGet_1(this.getPrefixedPath(file));
+            return this.set(file, f.getId());
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);
@@ -71,5 +74,16 @@ public class StoregateIdProvider implements IdProvider {
     public StoregateIdProvider withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
+    }
+
+    private String getPrefixedPath(final Path file) {
+        final String root = new PathContainerService().getContainer(file).getAbsolute();
+        final String path = PathRelativizer.relativize(root, file.getAbsolute());
+        for(RootFolder r : session.roots()) {
+            if(root.endsWith(r.getName())) {
+                return String.format("%s/%s", r.getPath(), path);
+            }
+        }
+        return file.getAbsolute();
     }
 }

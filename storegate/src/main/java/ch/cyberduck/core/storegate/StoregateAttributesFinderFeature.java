@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -26,16 +27,18 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 public class StoregateAttributesFinderFeature implements AttributesFinder {
 
     private final StoregateSession session;
+    private final StoregateIdProvider id;
 
-    public StoregateAttributesFinderFeature(final StoregateSession session) {
+    public StoregateAttributesFinderFeature(final StoregateSession session, final StoregateIdProvider id) {
         this.session = session;
+        this.id = id;
     }
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
             final FilesApi files = new FilesApi(session.getClient());
-            return this.toAttributes(files.filesGet_1(String.format("/Home/%s%s", session.username(), file.getAbsolute()))); //TODO /common team folder
+            return this.toAttributes(files.filesGet_0(id.getFileid(file, new DisabledListProgressListener())));
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);
