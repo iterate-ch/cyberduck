@@ -15,7 +15,6 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -79,7 +78,7 @@ public class StoregateListService implements ListService {
                     );
                     for(File f : files.getFiles()) {
                         final PathAttributes attrs = feature.toAttributes(f);
-                        final EnumSet<AbstractPath.Type> type = (f.getFlags() & File.FlagsEnum.Folder.getValue()) == 1 ?
+                        final EnumSet<Path.Type> type = (f.getFlags() & File.FlagsEnum.Folder.getValue()) == 1 ?
                             EnumSet.of(Path.Type.directory) :
                             EnumSet.of(Path.Type.file);
                         final Path p = new Path(directory, f.getName(), type, attrs);
