@@ -92,8 +92,6 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         );
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         configuration.addInterceptorLast(authorizationService);
-
-
         final CloseableHttpClient apache = configuration.build();
         final StoregateApiClient client = new StoregateApiClient(apache);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
