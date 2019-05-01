@@ -152,7 +152,8 @@ public class StoregateMultipartWriteFeature extends AbstractHttpWriteFeature<Ver
                     };
                 }
                 else {
-                    //TODO exception
+                    throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                        EntityUtils.toString(response.getEntity())));
                 }
             }
             return null;
