@@ -40,10 +40,10 @@ public class StoregateMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final MoveFileRequest move = new MoveFileRequest().
-                name(renamed.getName()).
-                parentID(nodeid.getFileid(renamed.getParent(), new DisabledListProgressListener())).
-                mode(MoveFileRequest.ModeEnum.NUMBER_1); // Overwrite
+            final MoveFileRequest move = new MoveFileRequest()
+                .name(renamed.getName())
+                .parentID(nodeid.getFileid(renamed.getParent(), new DisabledListProgressListener()))
+                .mode(MoveFileRequest.ModeEnum.NUMBER_1); // Overwrite
 
             new FilesApi(session.getClient()).filesMove(
                 nodeid.getFileid(file, new DisabledListProgressListener()), move);
