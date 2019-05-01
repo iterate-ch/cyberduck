@@ -24,6 +24,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.IdProvider;
@@ -151,6 +152,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         }
         if(type == Move.class) {
             return (T) new StoregateMoveFeature(this, fileid);
+        }
+        if(type == Copy.class) {
+            return (T) new StoregateCopyFeature(this, fileid);
         }
         if(type == Directory.class) {
             return (T) new StoregateDirectoryFeature(this, fileid);
