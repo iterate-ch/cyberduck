@@ -47,6 +47,7 @@ public class SDSDeleteFeature implements Delete {
     @Override
     public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         for(Path file : files) {
+            callback.delete(file);
             try {
                 new NodesApi(session.getClient()).deleteNode(
                     Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY);
