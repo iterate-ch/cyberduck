@@ -112,6 +112,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         try {
             final ExtendedUser me = new UsersApi(this.client).usersGetMe();
             username = me.getUsername();
+            log.debug(String.format("Set username to %s", username));
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);
