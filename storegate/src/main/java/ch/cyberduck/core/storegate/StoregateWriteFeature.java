@@ -37,6 +37,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.JSON;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -106,10 +107,10 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                     final HttpEntityEnclosingRequestBase request;
                     request = new HttpPost(String.format("%s/v4/upload/resumable", client.getBasePath()));
                     FileMetadata meta = new FileMetadata();
-                    meta.setId("");
+                    meta.setId(StringUtils.EMPTY);
                     meta.setAttributes(0);
                     meta.setFlags(0);
-                    meta.setLockId("");
+                    meta.setLockId(status.getLockId() != null ? status.getLockId().toString() : StringUtils.EMPTY);
                     meta.setFileName(file.getName());
                     meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
                     meta.setFileSize(status.getLength());
