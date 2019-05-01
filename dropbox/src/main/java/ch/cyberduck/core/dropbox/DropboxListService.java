@@ -62,7 +62,7 @@ public class DropboxListService implements ListService {
             return children;
         }
         catch(DbxException e) {
-            throw new DropboxExceptionMappingService().map(e);
+            throw new DropboxExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }
 
