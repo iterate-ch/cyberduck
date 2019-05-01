@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Touch;
@@ -147,6 +148,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         }
         if(type == Touch.class) {
             return (T) new StoregateTouchFeature(this, fileid);
+        }
+        if(type == Move.class) {
+            return (T) new StoregateMoveFeature(this, fileid);
         }
         if(type == Directory.class) {
             return (T) new StoregateDirectoryFeature(this, fileid);
