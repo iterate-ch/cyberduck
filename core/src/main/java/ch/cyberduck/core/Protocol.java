@@ -53,6 +53,7 @@ public interface Protocol extends Comparable<Protocol> {
         b2,
         file,
         dracoon,
+        storegate,
         manta
     }
 
