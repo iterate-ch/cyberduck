@@ -361,7 +361,7 @@
                         <action selector="renameFileButtonClicked:" target="-1" id="176"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Másolat…" keyEquivalent="d" id="73">
+                <menuItem title="Megkettőz…" keyEquivalent="d" id="73">
                     <connections>
                         <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
                     </connections>
@@ -447,7 +447,7 @@ CA
                         <action selector="newBrowserButtonClicked:" target="-1" id="179"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Új könyvjelző" keyEquivalent="B" id="98">
+                <menuItem title="Új könyvjelzö" keyEquivalent="B" id="98">
                     <connections>
                         <action selector="addBookmarkButtonClicked:" target="-1" id="180"/>
                     </connections>
@@ -469,7 +469,7 @@ DQ
                 <menuItem isSeparatorItem="YES" id="101">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Új könyvjelző" keyEquivalent="B" id="102">
+                <menuItem title="Új könyvjelzö" keyEquivalent="B" id="102">
                     <connections>
                         <action selector="addBookmarkButtonClicked:" target="-1" id="169"/>
                     </connections>
@@ -507,7 +507,7 @@ DQ
                                     <action selector="sortBookmarksByHostname:" target="-1" id="187"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Protokol" keyEquivalent="3" id="111">
+                            <menuItem title="Protokoll" keyEquivalent="3" id="111">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByProtocol:" target="-1" id="188"/>
