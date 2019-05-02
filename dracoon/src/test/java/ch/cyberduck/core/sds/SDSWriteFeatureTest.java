@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -80,6 +81,31 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
             assertNotEquals(version, out.getStatus());
         }
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = TransferCanceledException.class)
+    public void testWriteCancel() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus() {
+            @Override
+            public boolean isCanceled() {
+                if(this.getOffset() >= 32768) {
+                    return true;
+                }
+                return super.isCanceled();
+            }
+        };
+        status.setLength(content.length);
+        final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        assertFalse(new DefaultFindFeature(session).find(test));
+        out.getStatus();
     }
 
     @Test(expected = InteroperabilityException.class)
