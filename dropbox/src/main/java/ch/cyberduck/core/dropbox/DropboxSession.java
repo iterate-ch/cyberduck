@@ -21,6 +21,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -146,6 +147,9 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         }
         if(type == Copy.class) {
             return (T) new DropboxCopyFeature(this);
+        }
+        if(type == UrlProvider.class) {
+            return (T) new DropboxUrlProvider(this);
         }
         if(type == PromptUrlProvider.class) {
             return (T) new DropboxTemporaryUrlProvider(this);
