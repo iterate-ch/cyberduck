@@ -102,32 +102,6 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>unpack-jce-unlimited</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>copy</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>com.oracle.java</groupId>
-                                            <artifactId>local_policy</artifactId>
-                                            <type>jar</type>
-                                            <version>8</version>
-                                            <destFileName>local_policy.jar</destFileName>
-                                        </artifactItem>
-                                        <artifactItem>
-                                            <groupId>com.oracle.java</groupId>
-                                            <artifactId>US_export_policy</artifactId>
-                                            <type>jar</type>
-                                            <version>8</version>
-                                            <destFileName>US_export_policy.jar</destFileName>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/PlugIns/Runtime.jre/Contents/Home/lib/security</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
                                 <id>unpack-profiles</id>
                                 <phase>generate-sources</phase>
                                 <goals>
