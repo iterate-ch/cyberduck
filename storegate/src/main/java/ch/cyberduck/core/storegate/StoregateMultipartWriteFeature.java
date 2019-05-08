@@ -139,24 +139,21 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
             finally {
                 EntityUtils.consume(response.getEntity());
             }
-            if(!status.isExists()) {
-                if(response.containsHeader(HttpHeaders.LOCATION)) {
-                    final String location = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
-                    final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);
-                    return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
-                        PreferencesFactory.get().getInteger("storegate.upload.multipart.chunksize"))) {
-                        @Override
-                        public VersionId getStatus() {
-                            return proxy.getVersionId();
-                        }
-                    };
-                }
-                else {
-                    throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                        EntityUtils.toString(response.getEntity())));
-                }
+            if(response.containsHeader(HttpHeaders.LOCATION)) {
+                final String location = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
+                final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);
+                return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
+                    PreferencesFactory.get().getInteger("storegate.upload.multipart.chunksize"))) {
+                    @Override
+                    public VersionId getStatus() {
+                        return proxy.getVersionId();
+                    }
+                };
             }
-            return null;
+            else {
+                throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                    EntityUtils.toString(response.getEntity())));
+            }
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
