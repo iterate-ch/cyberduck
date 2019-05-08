@@ -25,8 +25,8 @@ import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
@@ -67,7 +67,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class StoregateMultipartWriteFeature extends AbstractHttpWriteFeature<VersionId> {
+public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId> {
 
     private static final Logger log = Logger.getLogger(StoregateMultipartWriteFeature.class);
 
@@ -81,7 +81,6 @@ public class StoregateMultipartWriteFeature extends AbstractHttpWriteFeature<Ver
     }
 
     public StoregateMultipartWriteFeature(final StoregateSession session, final StoregateIdProvider fileid, final Find finder, final AttributesFinder attributes) {
-        super(finder, attributes);
         this.session = session;
         this.fileid = fileid;
         this.finder = finder;
