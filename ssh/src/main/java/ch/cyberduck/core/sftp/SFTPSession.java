@@ -231,8 +231,7 @@ public class SFTPSession extends Session<SSHClient> {
         }
         else {
             if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-                switch (Factory.Platform.getDefault())
-                {
+                switch(Factory.Platform.getDefault()) {
                     case windows:
                         methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
                         break;
