@@ -51,9 +51,11 @@ public class PromptPasswordCallback implements PasswordCallback {
             registry.register(new OAuth2TokenListener() {
                 @Override
                 public void callback(final String param) {
-                    log.warn(String.format("Callback with code %s", param));
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Callback with code %s", param));
+                    }
                     credentials.setPassword(param);
-                    controller.closeSheetWithOption(SheetCallback.CANCEL_OPTION);
+                    controller.closeSheetWithOption(SheetCallback.DEFAULT_OPTION);
                 }
             });
         }
