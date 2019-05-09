@@ -23,6 +23,7 @@ import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
+import ch.cyberduck.core.brick.BrickProtocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dropbox.DropboxProtocol;
@@ -97,7 +98,8 @@ public final class MainApplication {
                 new LocalProtocol(),
                 new MantaProtocol(),
                 new SDSProtocol(),
-                new StoregateProtocol()
+                new StoregateProtocol(),
+                new BrickProtocol()
             );
             if(log.isInfoEnabled()) {
                 log.info(String.format("Running version %s", NSBundle.mainBundle()
