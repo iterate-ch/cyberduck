@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
@@ -100,7 +99,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                         hasDirectoryPlaceholder = true;
                         continue;
                     }
-                    final EnumSet<AbstractPath.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
+                    final EnumSet<Path.Type> types = object.getKey().endsWith(String.valueOf(Path.DELIMITER))
                         ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     final Path file;
                     final PathAttributes attr = attributes.toAttributes(object);

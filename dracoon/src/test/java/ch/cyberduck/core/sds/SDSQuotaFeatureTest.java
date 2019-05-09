@@ -50,7 +50,7 @@ public class SDSQuotaFeatureTest extends AbstractSDSTest {
         final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
-        host.setDefaultPath(new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.decrypted)).getAbsolute());
+        host.setDefaultPath(new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)).getAbsolute());
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());

@@ -62,7 +62,7 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
     private Map<Path, Boolean> getRoomEncryptionStatus(final Map<TransferItem, TransferStatus> files) {
         final Map<Path, Boolean> rooms = new HashMap<>();
         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-            final Path container = new SDSPathContainerService().getContainer(entry.getKey().remote);
+            final Path container = new PathContainerService().getContainer(entry.getKey().remote);
             if(rooms.containsKey(container)) {
                 continue;
             }

@@ -15,7 +15,6 @@ package ch.cyberduck.core.cryptomator.impl;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.CacheReference;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.Path;
@@ -68,7 +67,7 @@ public class CryptoDirectoryProvider {
      * @param type        File type
      * @return Encrypted filename
      */
-    public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) throws BackgroundException {
+    public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
             cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
@@ -106,7 +105,7 @@ public class CryptoDirectoryProvider {
             // Intermediate directory
             final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
             // Add encrypted type
-            final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
+            final EnumSet<Path.Type> type = EnumSet.copyOf(directory.getType());
             type.add(Path.Type.encrypted);
             type.remove(Path.Type.decrypted);
             return new Path(intermediate, directoryIdHash.substring(2), type, attributes);

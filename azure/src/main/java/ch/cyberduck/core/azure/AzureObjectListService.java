@@ -18,7 +18,6 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
@@ -100,7 +99,7 @@ public class AzureObjectListService implements ListService {
                         }
                     }
                     // A directory is designated by a delimiter character.
-                    final EnumSet<AbstractPath.Type> types = object instanceof CloudBlobDirectory
+                    final EnumSet<Path.Type> types = object instanceof CloudBlobDirectory
                             ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
                     final Path child = new Path(directory, PathNormalizer.name(object.getUri().getPath()), types, attributes);
                     children.add(child);

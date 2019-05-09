@@ -15,7 +15,6 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
@@ -54,7 +53,7 @@ public class SDSSearchFeature implements Search {
             final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
             for(Node node : list.getItems()) {
                 final PathAttributes attributes = feature.toAttributes(node);
-                final EnumSet<AbstractPath.Type> type;
+                final EnumSet<Path.Type> type;
                 switch(node.getType()) {
                     case ROOM:
                         type = EnumSet.of(Path.Type.directory, Path.Type.volume);

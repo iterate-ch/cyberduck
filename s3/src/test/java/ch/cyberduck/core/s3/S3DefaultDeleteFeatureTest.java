@@ -80,6 +80,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
         }
     }
 
+    @Ignore
     @Test
     public void testDeleteContainer() throws Exception {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));

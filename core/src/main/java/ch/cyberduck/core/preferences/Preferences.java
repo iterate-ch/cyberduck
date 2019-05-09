@@ -515,7 +515,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("queue.download.wherefrom", String.valueOf(true));
 
         // Segmented concurrent downloads
-        this.setDefault("queue.download.segments", String.valueOf(false));
+        this.setDefault("queue.download.segments", String.valueOf(true));
         this.setDefault("queue.download.segments.threshold", String.valueOf(10L * 1024L * 1024L));
         this.setDefault("queue.download.segments.size", String.valueOf(5L * 1024L * 1024L));
 
@@ -779,6 +779,7 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("sds.listing.chunksize", String.valueOf(500));
         this.setDefault("sds.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
+        this.setDefault("sds.upload.transferencoding.chunked", String.valueOf(true));
         // Run missing file keys in bulk feature after upload
         this.setDefault("sds.encryption.missingkeys.upload", String.valueOf(true));
         this.setDefault("sds.encryption.missingkeys.scheduler.period", String.valueOf(120000)); // 2 minutes
@@ -787,6 +788,9 @@ public abstract class Preferences implements Locales {
         this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
 
         this.setDefault("spectra.retry.delay", String.valueOf(60)); // 1 minute
+
+        this.setDefault("storegate.listing.chunksize", String.valueOf(500));
+        this.setDefault("storegate.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
 
         /*
           NTLM Windows Domain

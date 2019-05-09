@@ -31,6 +31,7 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.DelayedHttpMultipartEntity;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
@@ -98,6 +99,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
             final String uploadId = response.getUploadId();
             final DelayedHttpMultipartEntity entity = new DelayedHttpMultipartEntity(file.getName(), status);
+            entity.setChunked(PreferencesFactory.get().getBoolean("sds.upload.transferencoding.chunked"));
             final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
                 @Override
                 public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
@@ -124,7 +126,10 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         finally {
                             EntityUtils.consume(response.getEntity());
                         }
-                        return complete(uploadId, status);
+                        if(status.isComplete()) {
+                            return complete(uploadId, status);
+                        }
+                        return new VersionId(null);
                     }
                     catch(IOException e) {
                         throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);

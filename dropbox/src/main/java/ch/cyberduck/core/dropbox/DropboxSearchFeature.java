@@ -15,7 +15,6 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
@@ -62,7 +61,7 @@ public class DropboxSearchFeature implements Search {
                 final List<SearchMatch> matches = result.getMatches();
                 for(SearchMatch match : matches) {
                     final Metadata metadata = match.getMetadata();
-                    final EnumSet<AbstractPath.Type> type;
+                    final EnumSet<Path.Type> type;
                     if(metadata instanceof FileMetadata) {
                         type = EnumSet.of(Path.Type.file);
                     }

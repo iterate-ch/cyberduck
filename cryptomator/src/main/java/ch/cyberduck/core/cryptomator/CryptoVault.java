@@ -15,7 +15,20 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.features.*;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameProvider;
@@ -92,7 +105,7 @@ public class CryptoVault implements Vault {
         this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault));
         this.pepper = pepper;
         // New vault home with vault flag set for internal use
-        final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(home.getType());
+        final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
         type.add(Path.Type.vault);
         final Path vault = new Path(home.getAbsolute(), type, new PathAttributes(home.attributes()));
         this.filenameProvider = new CryptoFilenameProvider(vault);
@@ -350,7 +363,7 @@ public class CryptoVault implements Vault {
             }
             // Translate file size
             attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
-            final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(file.getType());
+            final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
             type.remove(Path.Type.directory);
             type.remove(Path.Type.decrypted);
             type.add(Path.Type.file);
@@ -410,7 +423,7 @@ public class CryptoVault implements Vault {
                 attributes.setEncrypted(file);
                 // Add reference for vault
                 attributes.setVault(home);
-                final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(file.getType());
+                final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
                 type.remove(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.file : Path.Type.directory);
                 type.add(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file);
                 type.remove(Path.Type.encrypted);

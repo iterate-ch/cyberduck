@@ -44,8 +44,7 @@ public class SDSHomeFinderService extends DefaultHomeFinderService {
             // We need to map user roles to ACLs in order to decide if creating a top-level room is allowed
             final Acl acl = new Acl();
             if(session.userAccount().isUserInRole(SDSPermissionsFeature.ROOM_MANAGER_ROLE)) {
-                final Acl.User user = new Acl.CanonicalUser();
-                acl.addAll(user, SDSPermissionsFeature.CREATE_ROLE);
+                acl.addAll(new Acl.CanonicalUser(), SDSPermissionsFeature.CREATE_ROLE);
             }
             directory.attributes().setAcl(acl);
         }

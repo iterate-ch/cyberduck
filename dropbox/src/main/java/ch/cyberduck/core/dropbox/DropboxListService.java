@@ -15,7 +15,6 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
@@ -63,7 +62,7 @@ public class DropboxListService implements ListService {
             return children;
         }
         catch(DbxException e) {
-            throw new DropboxExceptionMappingService().map(e);
+            throw new DropboxExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }
 
@@ -85,7 +84,7 @@ public class DropboxListService implements ListService {
     }
 
     protected Path parse(final Path directory, final Metadata metadata) {
-        final EnumSet<AbstractPath.Type> type;
+        final EnumSet<Path.Type> type;
         if(metadata instanceof FileMetadata) {
             type = EnumSet.of(Path.Type.file);
         }

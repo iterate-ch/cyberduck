@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -62,7 +61,7 @@ public class SDSListService implements ListService {
                     null, null, "name:asc", offset, chunksize, StringUtils.EMPTY, null);
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = feature.toAttributes(node);
-                    final EnumSet<AbstractPath.Type> type = feature.toType(node);
+                    final EnumSet<Path.Type> type = feature.toType(node);
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     children.add(file);
                     listener.chunk(directory, children);

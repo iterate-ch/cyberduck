@@ -15,7 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -83,7 +82,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
                 final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
-                final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
+                final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 return new Path(folder.getParent(), folder.getName(), type,
                     new B2AttributesFinderFeature(session, fileid).toAttributes((B2FileResponse) out.getStatus()));

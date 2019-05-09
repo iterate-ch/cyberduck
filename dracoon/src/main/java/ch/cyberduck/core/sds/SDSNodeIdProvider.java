@@ -116,6 +116,9 @@ public class SDSNodeIdProvider implements IdProvider {
         if(file.isRoot()) {
             return false;
         }
+        if(file.getType().contains(Path.Type.triplecrypt)) {
+            return true;
+        }
         final Path parent = file.getParent();
         if(parent.getType().contains(Path.Type.triplecrypt)) {
             // Backward compatibility where flag is missing in room

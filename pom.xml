@@ -49,6 +49,7 @@
         <module>hubic</module>
         <module>onedrive</module>
         <module>dracoon</module>
+        <module>storegate</module>
         <module>manta</module>
         <module>protocols</module>
         <module>protocols/dll</module>
@@ -74,6 +75,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <argLine />
         <jna-version>5.2.0</jna-version>
+        <swagger-annotations-version>1.5.20</swagger-annotations-version>
+        <jersey-version>2.25.1</jersey-version>
     </properties>
 
     <dependencyManagement>
@@ -96,7 +99,7 @@
             <dependency>
                 <groupId>ch.iterate.s3</groupId>
                 <artifactId>jets3t</artifactId>
-                <version>0.9.21</version>
+                <version>0.9.22</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
@@ -214,6 +217,11 @@
                 <version>2.9.8</version>
             </dependency>
             <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>2.9.8</version>
+            </dependency>
+            <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
                 <version>2.9.8</version>
@@ -242,6 +250,31 @@
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
                 <version>2.10.1</version>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>${swagger-annotations-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.connectors</groupId>
+                <artifactId>jersey-apache-connector</artifactId>
+                <version>${jersey-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>${jersey-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-multipart</artifactId>
+                <version>${jersey-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.oauth-client</groupId>
@@ -489,6 +522,11 @@
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
                     <version>3.7.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>io.swagger</groupId>
+                    <artifactId>swagger-codegen-maven-plugin</artifactId>
+                    <version>2.4.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
