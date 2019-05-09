@@ -77,7 +77,6 @@ public class LRUCache<Key, Value> {
         if(expireDuration > 0) {
             builder.expireAfterAccess(expireDuration, TimeUnit.MILLISECONDS);
         }
-
         if(loader != null) {
             delegate = builder.build(new CacheLoader<Key, Value>() {
                 @Override
