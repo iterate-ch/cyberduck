@@ -50,6 +50,7 @@
         <module>onedrive</module>
         <module>dracoon</module>
         <module>storegate</module>
+        <module>brick</module>
         <module>manta</module>
         <module>protocols</module>
         <module>protocols/dll</module>
