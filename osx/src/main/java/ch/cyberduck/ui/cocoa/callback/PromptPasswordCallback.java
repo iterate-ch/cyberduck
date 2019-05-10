@@ -45,7 +45,15 @@ public class PromptPasswordCallback implements PasswordCallback {
             throw new LoginCanceledException();
         }
         final Credentials credentials = new Credentials().withSaved(options.keychain);
-        final PasswordController controller = new PasswordController(bookmark, credentials, title, reason, options);
+        final PasswordController controller = new PasswordController(bookmark, credentials, title, reason, options) {
+            @Override
+            public boolean validate() {
+                if(options.oauth) {
+                    return credentials.validate(bookmark.getProtocol(), options);
+                }
+                return super.validate();
+            }
+        };
         if(options.oauth) {
             final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
             registry.register(new OAuth2TokenListener() {
@@ -55,7 +63,7 @@ public class PromptPasswordCallback implements PasswordCallback {
                         log.info(String.format("Callback with code %s", param));
                     }
                     credentials.setPassword(param);
-                    controller.closeSheetWithOption(SheetCallback.DEFAULT_OPTION);
+                    controller.closeSheetWithOption(SheetCallback.ALTERNATE_OPTION);
                 }
             });
         }
