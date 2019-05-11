@@ -1269,9 +1269,9 @@ public class MainController extends BundleController implements NSApplication.De
                     updater.check(false);
                     break;
                 default:
-                    if(StringUtils.startsWith(action, "oauth?token=")) {
+                    if(StringUtils.startsWith(action, "oauth?code=")) {
                         final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
-                        final String token = StringUtils.removeStart(action, "oauth?token=");
+                        final String token = StringUtils.substringBefore(StringUtils.substringAfter(action, "oauth?code="), "&");
                         oauth.notify(token);
                         break;
                     }
