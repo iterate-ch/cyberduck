@@ -131,9 +131,9 @@
 		[hostname drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight, cellFrame.size.width - 5,
 		                                cellFrame.size.height) withAttributes:detailsFont];
     }
-	NSString *url = [bookmark objectForKey:@"URL"];
-	if(url) {
-        [url drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight + detailsFontHeight,
+	NSString *username = [bookmark objectForKey:@"Username"];
+	if(username) {
+        [username drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + nicknameFontHeight + detailsFontHeight,
                                    cellFrame.size.width - 5, cellFrame.size.height) withAttributes:detailsFont];
 	}
     if(MEDIUM_BOOKMARK_SIZE == size) {
