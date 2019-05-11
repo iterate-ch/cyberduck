@@ -136,6 +136,6 @@ public class PasswordController extends AlertController {
 
     @Override
     protected String help() {
-        return ProviderHelpServiceFactory.get().help();
+        return ProviderHelpServiceFactory.get().help(bookmark.getProtocol());
     }
 }
