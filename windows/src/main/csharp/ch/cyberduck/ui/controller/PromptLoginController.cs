@@ -95,7 +95,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 var registry = OAuth2TokenListenerRegistry.get();
 
-                //registry.register(new LoginTokenListener(View, credentials));
+                registry.register(new LoginTokenListener(View, credentials));
             }
 
             AsyncDelegate d = delegate
