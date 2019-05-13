@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
 
-            FormClosing += delegate(object sender, FormClosingEventArgs args)
+            FormClosing += delegate (object sender, FormClosingEventArgs args)
             {
                 bool cancel = DialogResult != DialogResult.Cancel && !ValidateInput();
                 if (cancel)
@@ -215,6 +215,15 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void choosePkButton_Click(object sender, EventArgs e)
         {
             OpenPrivateKeyBrowserEvent();
+        }
+
+        void IView.Close()
+        {
+            if (Modal)
+            {
+                DialogResult = DialogResult.None;
+            }
+            Close();
         }
     }
 }

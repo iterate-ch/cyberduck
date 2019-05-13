@@ -75,6 +75,7 @@ using ch.cyberduck.core.exception;
 using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
+using ch.cyberduck.core.oauth;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -391,6 +392,12 @@ namespace Ch.Cyberduck.Ui.Controller
         void ICyberduck.Connect()
         {
             // Dummy implementation.
+        }
+
+        void ICyberduck.OAuth(string code)
+        {
+            var oauth = OAuth2TokenListenerRegistry.get();
+            oauth.notify(code);
         }
 
         void ICyberduck.NewInstance()

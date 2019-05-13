@@ -8,6 +8,7 @@ using System.ServiceModel;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Contracts;
@@ -62,6 +63,18 @@ namespace Ch.Cyberduck.Ui
                         {
                             switch (result.Scheme.ToLowerInvariant())
                             {
+                                case "x-cyberduck-action":
+                                    if (result.AbsolutePath == "oauth")
+                                    {
+                                        var query = HttpUtility.ParseQueryString(result.Query);
+                                        var code = query.Get("code");
+                                        if (!string.IsNullOrWhiteSpace(code))
+                                        {
+                                            proxy.OAuth(code);
+                                        }
+                                    }
+                                    break;
+
                                 case "file":
                                     var localPath = result.LocalPath;
                                     if (result.IsFile)

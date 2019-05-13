@@ -18,6 +18,9 @@ namespace Ch.Cyberduck.Ui.Core.Contracts
         void NewInstance();
 
         [OperationContract]
+        void OAuth(string code);
+
+        [OperationContract]
         void QuickConnect(string url);
 
         [OperationContract]
