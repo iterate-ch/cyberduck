@@ -160,11 +160,11 @@ namespace Ch.Cyberduck.Core.Urlhandler
 
         public override void setDefaultHandlerForScheme(ch.cyberduck.core.local.Application a, string scheme)
         {
-            if(Scheme.ftp.name().@equals(scheme))
+            if(Scheme.ftp.name().Equals(scheme))
             {
                 this.RegisterFtpProtocol();
             }
-            else if (Scheme.sftp.name().@equals(scheme))
+            else if (Scheme.sftp.name().Equals(scheme))
             {
                 this.RegisterSftpProtocol();
             }
