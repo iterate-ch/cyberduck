@@ -137,7 +137,7 @@ namespace Ch.Cyberduck.Ui.Controller
         static MainController()
         {
             StructureMapBootstrapper.Bootstrap();
-            PreferencesFactory.set(new ApplicationPreferences());
+            
             if (!(Debugger.IsAttached || Utils.IsRunningAsUWP))
             {
                 // Add the event handler for handling UI thread exceptions to the event.

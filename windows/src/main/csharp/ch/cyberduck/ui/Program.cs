@@ -10,8 +10,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
+using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Contracts;
+using Ch.Cyberduck.Ui.Core.Preferences;
 using com.google.api.client.util;
 using OAuth2AuthorizationService = ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 
@@ -25,6 +27,8 @@ namespace Ch.Cyberduck.Ui
             bool newInstance;
             Mutex mutex = new Mutex(true, "iterate/cyberduck.io", out newInstance);
 
+            var preferences = new ApplicationPreferences();
+            PreferencesFactory.set(preferences);
             var argsTask = Task.Run(async () =>
             {
                 using (var channel = new ChannelFactory<ICyberduck>(new NetNamedPipeBinding(), new EndpointAddress("net.pipe://localhost/iterate/cyberduck.io")))
