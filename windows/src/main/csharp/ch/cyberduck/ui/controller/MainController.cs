@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 //
@@ -394,10 +394,10 @@ namespace Ch.Cyberduck.Ui.Controller
             // Dummy implementation.
         }
 
-        void ICyberduck.OAuth(string code)
+        void ICyberduck.OAuth(string state, string code)
         {
             var oauth = OAuth2TokenListenerRegistry.get();
-            oauth.notify(code);
+            oauth.notify(state, code);
         }
 
         void ICyberduck.NewInstance()

@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Contracts;
 using com.google.api.client.util;
+using OAuth2AuthorizationService = ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 
 namespace Ch.Cyberduck.Ui
 {
@@ -63,15 +64,13 @@ namespace Ch.Cyberduck.Ui
                         {
                             switch (result.Scheme.ToLowerInvariant())
                             {
-                                case "x-cyberduck-action":
+                                case OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI:
                                     if (result.AbsolutePath == "oauth")
                                     {
                                         var query = HttpUtility.ParseQueryString(result.Query);
+                                        var state = query.Get("state");
                                         var code = query.Get("code");
-                                        if (!string.IsNullOrWhiteSpace(code))
-                                        {
-                                            proxy.OAuth(code);
-                                        }
+                                        proxy.OAuth(state, code);
                                     }
                                     break;
 

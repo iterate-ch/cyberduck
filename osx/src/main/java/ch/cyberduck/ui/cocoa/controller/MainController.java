@@ -72,6 +72,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
@@ -98,6 +99,8 @@ import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -107,6 +110,8 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.net.URI;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1268,19 +1273,22 @@ public class MainController extends BundleController implements NSApplication.De
             log.error("URL parameter is empty");
             return;
         }
-        if(StringUtils.startsWith(url, "x-cyberduck-action:")) {
-            final String action = StringUtils.removeStart(url, "x-cyberduck-action:");
-            switch(action) {
+        if(StringUtils.startsWith(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI)) {
+            final String action = StringUtils.removeStart(url, String.format("%s:", OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI));
+            switch(URI.create(action).getPath()) {
                 case "update":
                     updater.check(false);
                     break;
-                default:
-                    if(StringUtils.startsWith(action, "oauth?code=")) {
-                        final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
-                        final String token = StringUtils.substringBefore(StringUtils.substringAfter(action, "oauth?code="), "&");
-                        oauth.notify(token);
-                        break;
+                case "oauth":
+                    final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
+                    String state = StringUtils.EMPTY;
+                    String code = StringUtils.EMPTY;
+                    for(NameValuePair pair : pairs) {
+                        state = StringUtils.equals(pair.getName(), "state") ? pair.getValue() : StringUtils.EMPTY;
+                        code = StringUtils.equals(pair.getName(), "code") ? pair.getValue() : StringUtils.EMPTY;
                     }
+                    final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
+                    oauth.notify(state, code);
             }
         }
         else {
