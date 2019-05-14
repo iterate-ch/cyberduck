@@ -142,11 +142,11 @@ public class OAuth2AuthorizationService {
             .build();
         final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
         authorizationCodeRequestUrl.setRedirectUri(redirectUri);
-        authorizationCodeRequestUrl.setState(new AlphanumericRandomStringService().random());
+        final String state = new AlphanumericRandomStringService().random();
+        authorizationCodeRequestUrl.setState(state);
         for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
             authorizationCodeRequestUrl.set(values.getKey(), values.getValue());
         }
-
         // Direct the user to an authorization page to grant access to their protected data.
         final String url = authorizationCodeRequestUrl.build();
         if(log.isDebugEnabled()) {
@@ -155,12 +155,24 @@ public class OAuth2AuthorizationService {
         if(!browser.open(url)) {
             log.warn(String.format("Failed to launch web browser for %s", url));
         }
+        if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
+            final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
+            registry.register(state, new OAuth2TokenListener() {
+                @Override
+                public void callback(final String code) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Callback with code %s", code));
+                    }
+                    credentials.setPassword(code);
+                    prompt.close(code);
+                }
+            });
+        }
         final Credentials input = prompt.prompt(bookmark,
             LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
             LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
-            new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).password(true).oauth(
-                StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)
-            ).passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
+            new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).oauth(true)
+                .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
         );
         try {
             if(StringUtils.isBlank(input.getPassword())) {

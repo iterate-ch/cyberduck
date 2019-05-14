@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.exception;
-using ch.cyberduck.core.oauth;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
 using Ch.Cyberduck.Core;
@@ -90,13 +89,6 @@ namespace Ch.Cyberduck.Ui.Controller
             InitPrivateKeys();
 
             Update(credentials, options);
-
-            if (options.oauth())
-            {
-                var registry = OAuth2TokenListenerRegistry.get();
-
-                registry.register(new LoginTokenListener(View, credentials));
-            }
 
             AsyncDelegate d = delegate
             {
@@ -231,28 +223,6 @@ namespace Ch.Cyberduck.Ui.Controller
             if (options.publickey() && credentials.isPublicKeyAuthentication())
             {
                 View.SelectedPrivateKey = credentials.getIdentity().getAbsolute();
-            }
-        }
-
-        private class LoginTokenListener : OAuth2TokenListener
-        {
-            private readonly ILoginView loginView;
-            private readonly Credentials credentials;
-
-            public LoginTokenListener(ILoginView loginView, Credentials credentials)
-            {
-                this.loginView = loginView;
-                this.credentials = credentials;
-            }
-
-            void OAuth2TokenListener.callback(string token)
-            {
-                if (Log.isInfoEnabled())
-                {
-                    Log.info(string.Format("Callback with code {0}", token));
-                }
-                credentials.setPassword(token);
-                loginView.Close();
             }
         }
     }
