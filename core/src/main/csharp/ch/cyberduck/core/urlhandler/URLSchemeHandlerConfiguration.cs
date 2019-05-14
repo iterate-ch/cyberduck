@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -158,7 +158,7 @@ namespace Ch.Cyberduck.Core.Urlhandler
             }
         }
 
-        public override void setDefaultHandlerForScheme(ch.cyberduck.core.local.Application a, String scheme)
+        public override void setDefaultHandlerForScheme(ch.cyberduck.core.local.Application a, string scheme)
         {
             if(Scheme.ftp.name().@equals(scheme))
             {
