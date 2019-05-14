@@ -82,7 +82,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
             log.debug(String.format("Prompt for credentials for %s", username));
         }
         final Credentials credentials = new Credentials(username).withSaved(options.keychain);
-        final LoginController controller = new LoginController(title, reason, new Host(bookmark).withCredentials(credentials), options);
+        final LoginController controller = new LoginController(new Host(bookmark).withCredentials(credentials), title, reason, options);
         final SheetInvoker sheet = new SheetInvoker(controller, parent, controller);
         final int option = sheet.beginSheet();
         if(option == SheetCallback.CANCEL_OPTION) {
