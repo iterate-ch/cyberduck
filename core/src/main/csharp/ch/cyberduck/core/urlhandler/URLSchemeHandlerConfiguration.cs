@@ -158,19 +158,19 @@ namespace Ch.Cyberduck.Core.Urlhandler
             }
         }
 
-        public override void setDefaultHandlerForScheme(ch.cyberduck.core.local.Application a, Scheme scheme)
+        public override void setDefaultHandlerForScheme(ch.cyberduck.core.local.Application a, String scheme)
         {
-            if(Scheme.ftp.@equals(scheme))
+            if(Scheme.ftp.name().@equals(scheme))
             {
                 this.RegisterFtpProtocol();
             }
-            else if (Scheme.sftp.@equals(scheme))
+            else if (Scheme.sftp.name().@equals(scheme))
             {
                 this.RegisterSftpProtocol();
             }
             else
             {
-                CreateCustomUrlHandler(registry, scheme.name(), "custom handler", Application.ExecutablePath,
+                CreateCustomUrlHandler(registry, scheme, "custom handler", Application.ExecutablePath,
                     Application.ExecutablePath + ",0");
             }
         }

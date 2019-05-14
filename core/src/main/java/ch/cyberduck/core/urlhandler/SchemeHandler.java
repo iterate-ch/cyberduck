@@ -25,25 +25,31 @@ import java.util.List;
 public interface SchemeHandler {
 
     /**
-     * @param scheme      URL scheme
+     * @param scheme      URI scheme
      * @param application Application to set as default handler
      */
     void setDefaultHandler(List<Scheme> scheme, Application application);
 
     /**
-     * @param scheme URL scheme
+     * @param application Application to set as default handler
+     * @param scheme      URI scheme
+     */
+    void setDefaultHandlerForScheme(Application application, String scheme);
+
+    /**
+     * @param scheme URI scheme
      * @return Null if no handler is set
      */
     Application getDefaultHandler(Scheme scheme);
 
     /**
-     * @param scheme URL scheme
+     * @param scheme URI scheme
      * @return True if current application is configured as protocol handler
      */
     boolean isDefaultHandler(List<Scheme> scheme, Application application);
 
     /**
-     * @param scheme URL schemes
+     * @param scheme URI schemes
      * @return True if current application is configured as protocol handler for all schemes
      */
     List<Application> getAllHandlers(Scheme scheme);
