@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -170,7 +170,7 @@ namespace Ch.Cyberduck.Core.Urlhandler
             }
             else
             {
-                CreateCustomUrlHandler(registry, scheme, "custom handler", Application.ExecutablePath,
+                CreateCustomUrlHandler(Registry.CurrentUser, scheme, "custom handler", Application.ExecutablePath,
                     Application.ExecutablePath + ",0");
             }
         }
