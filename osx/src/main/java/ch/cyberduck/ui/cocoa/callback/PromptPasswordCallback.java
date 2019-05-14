@@ -16,7 +16,9 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.WindowController;
+import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
@@ -41,6 +43,7 @@ public class PromptPasswordCallback implements PasswordCallback {
             return;
         }
         controller.setPasswordFieldText(input);
+        controller.passwordFieldTextDidChange(NSNotification.notificationWithName(NSControl.NSControlTextDidChangeNotification, input));
         controller.closeSheetWithOption(SheetCallback.ALTERNATE_OPTION);
     }
 
