@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright (c) 2010-2016 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 //
@@ -572,6 +572,9 @@ namespace Ch.Cyberduck.Ui.Controller
                             }
                         });
                 }
+                // Register OAuth handler
+                string handler = PreferencesFactory.get().getProperty("oauth.handler.uri");
+                handler.setDefaultHandlerForScheme(new Application(System.Windows.Forms.Application.ExecutablePath), handler);
             }
         }
 

@@ -1063,6 +1063,12 @@ public class MainController extends BundleController implements NSApplication.De
                 updater.register();
             }
         }
+        // Register OAuth handler
+        final String handler = preferences.getProperty("oauth.handler.uri");
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Register OAuth handler %s", handler));
+        }
+        SchemeHandlerFactory.get().setDefaultHandlerForScheme(new Application(preferences.getProperty("application.identifier")), handler);
         NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
             this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
     }
