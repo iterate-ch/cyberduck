@@ -163,7 +163,6 @@ public class OAuth2AuthorizationService {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Callback with code %s", code));
                     }
-                    credentials.setPassword(code);
                     prompt.close(code);
                 }
             });
