@@ -573,8 +573,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         });
                 }
                 // Register OAuth handler
-                string handler = PreferencesFactory.get().getProperty("oauth.handler.scheme");
-                handler.setDefaultHandlerForScheme(new Application(System.Windows.Forms.Application.ExecutablePath), handler);
+                handler.setDefaultHandlerForScheme(
+                    new Application(System.Windows.Forms.Application.ExecutablePath), 
+                    PreferencesFactory.get().getProperty("oauth.handler.scheme"));
             }
         }
 
