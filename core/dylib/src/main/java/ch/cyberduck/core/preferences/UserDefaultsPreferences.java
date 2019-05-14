@@ -21,7 +21,6 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSBundle;
-import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSLocale;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -40,9 +39,7 @@ import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.sun.jna.platform.linux.LibC;
 import com.sun.jna.platform.mac.SystemB;
@@ -232,18 +229,6 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         this.setDefault("queue.window.tabbing.identifier", "browser.window.tabbing.identifier");
     }
 
-    /**
-     * Setting default values that must be accessible using [NSUserDefaults standardUserDefaults]
-     *
-     * @param property Initial property name to store default value for.
-     */
-    private void _init(final String property) {
-        if(null == store.objectForKey(property)) {
-            // Set the default value
-            this.setProperty(property, this.getDefault(property));
-        }
-    }
-
     @Override
     public void save() {
         // Saves any modifications to the persistent domains and updates all
@@ -300,18 +285,5 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             list.add(next.toString());
         }
         return list;
-    }
-
-    private Map<String, String> toMap(final NSDictionary dictionary) {
-        if(null == dictionary) {
-            return Collections.emptyMap();
-        }
-        final Map<String, String> map = new HashMap<>();
-        NSEnumerator keys = dictionary.keyEnumerator();
-        NSObject key;
-        while(((key = keys.nextObject()) != null)) {
-            map.put(key.toString(), dictionary.objectForKey(key.toString()).toString());
-        }
-        return map;
     }
 }
