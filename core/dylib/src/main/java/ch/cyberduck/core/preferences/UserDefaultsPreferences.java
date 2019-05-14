@@ -187,6 +187,8 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             }
             this.setDefault("application.receipt.path", String.format("%s/Contents/_MASReceipt", bundle.bundlePath()));
         }
+        this.setDefault("oauth.handler.uri",
+            String.format("x-%s-action", StringUtils.deleteWhitespace(StringUtils.lowerCase(this.getProperty("application.name")))));
 
         this.setDefault("update.feed.release", "https://version.cyberduck.io/changelog.rss");
         this.setDefault("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");
