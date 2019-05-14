@@ -216,14 +216,5 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             OpenPrivateKeyBrowserEvent();
         }
-
-        void IView.Close()
-        {
-            if (Modal)
-            {
-                DialogResult = DialogResult.None;
-            }
-            Close();
-        }
     }
 }
