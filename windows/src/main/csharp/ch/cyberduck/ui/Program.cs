@@ -68,7 +68,7 @@ namespace Ch.Cyberduck.Ui
                         {
                             switch (result.Scheme.ToLowerInvariant())
                             {
-                                case OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI:
+                                case var scheme when scheme == preferences.getProperty("oauth.handler.scheme"):
                                     if (result.AbsolutePath == "oauth")
                                     {
                                         var query = HttpUtility.ParseQueryString(result.Query);
