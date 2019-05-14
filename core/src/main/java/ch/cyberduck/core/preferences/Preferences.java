@@ -613,7 +613,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("http.credentials.charset", "ISO-8859-1");
         this.setDefault("http.request.uri.normalize", String.valueOf(false));
 
-        this.setDefault("oauth.handler.uri", "x-cyberduck-action:oauth");
+        this.setDefault("oauth.handler.scheme", "x-cyberduck-action");
 
         /*
           Enable or disable verification that the remote host taking part

@@ -1069,7 +1069,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
         }
         // Register OAuth handler
-        final String handler = preferences.getProperty("oauth.handler.uri");
+        final String handler = preferences.getProperty("oauth.handler.scheme");
         if(log.isInfoEnabled()) {
             log.info(String.format("Register OAuth handler %s", handler));
         }

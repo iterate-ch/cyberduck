@@ -61,7 +61,7 @@ public class OAuth2AuthorizationService {
     private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
 
     public static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
-    public static final String CYBERDUCK_REDIRECT_URI = PreferencesFactory.get().getProperty("oauth.handler.uri");
+    public static final String CYBERDUCK_REDIRECT_URI = String.format("%s:oauth", PreferencesFactory.get().getProperty("oauth.handler.scheme"));
 
     private final JsonFactory json
         = new JacksonFactory();
