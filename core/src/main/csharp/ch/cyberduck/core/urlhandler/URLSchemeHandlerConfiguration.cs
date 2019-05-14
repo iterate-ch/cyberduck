@@ -164,9 +164,14 @@ namespace Ch.Cyberduck.Core.Urlhandler
             {
                 this.RegisterFtpProtocol();
             }
-            if (Scheme.sftp.@equals(scheme))
+            else if (Scheme.sftp.@equals(scheme))
             {
                 this.RegisterSftpProtocol();
+            }
+            else
+            {
+                CreateCustomUrlHandler(registry, scheme.name(), "custom handler", Application.ExecutablePath,
+                    Application.ExecutablePath + ",0");
             }
         }
 
