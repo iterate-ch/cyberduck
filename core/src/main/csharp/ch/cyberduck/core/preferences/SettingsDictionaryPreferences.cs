@@ -36,6 +36,8 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Windows.Storage;
 using File = System.IO.File;
+using StringUtils = org.apache.commons.lang3.StringUtils;
+
 
 namespace Ch.Cyberduck.Core.Preferences
 {
