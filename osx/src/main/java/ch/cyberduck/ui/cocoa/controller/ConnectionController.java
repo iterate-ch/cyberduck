@@ -99,7 +99,7 @@ public class ConnectionController extends BookmarkController {
     }
 
     @Action
-    public void passwordFieldTextDidChange(NSNotification notification) {
+    public void passwordFieldTextDidChange(final NSNotification notification) {
         bookmark.getCredentials().setPassword(passwordField.stringValue());
     }
 }
