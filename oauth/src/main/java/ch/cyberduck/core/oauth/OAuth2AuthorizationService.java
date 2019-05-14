@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +61,7 @@ public class OAuth2AuthorizationService {
     private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
 
     public static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
-    public static final String CYBERDUCK_REDIRECT_URI = "x-cyberduck-action:oauth";
+    public static final String CYBERDUCK_REDIRECT_URI = PreferencesFactory.get().getProperty("oauth.handler.uri");
 
     private final JsonFactory json
         = new JacksonFactory();
