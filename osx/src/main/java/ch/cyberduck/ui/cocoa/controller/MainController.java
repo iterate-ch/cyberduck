@@ -1273,51 +1273,55 @@ public class MainController extends BundleController implements NSApplication.De
             log.error("URL parameter is empty");
             return;
         }
-        if(StringUtils.startsWith(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI)) {
-            final String action = StringUtils.removeStart(url, String.format("%s:", OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI));
-            switch(URI.create(action).getPath()) {
-                case "update":
-                    updater.check(false);
-                    break;
-                case "oauth":
+        switch(url) {
+            case "x-cyberduck-action:update":
+                updater.check(false);
+                break;
+            default:
+                if(StringUtils.startsWith(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI)) {
+                    final String action = StringUtils.removeStart(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
                     final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
                     String state = StringUtils.EMPTY;
                     String code = StringUtils.EMPTY;
                     for(NameValuePair pair : pairs) {
-                        state = StringUtils.equals(pair.getName(), "state") ? pair.getValue() : StringUtils.EMPTY;
-                        code = StringUtils.equals(pair.getName(), "code") ? pair.getValue() : StringUtils.EMPTY;
+                        if(StringUtils.equals(pair.getName(), "state")) {
+                            state = StringUtils.equals(pair.getName(), "state") ? pair.getValue() : StringUtils.EMPTY;
+                        }
+                        if(StringUtils.equals(pair.getName(), "code")) {
+                            code = StringUtils.equals(pair.getName(), "code") ? pair.getValue() : StringUtils.EMPTY;
+                        }
                     }
                     final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
                     oauth.notify(state, code);
-            }
-        }
-        else {
-            try {
-                final Host h = HostParser.parse(url);
-                h.setCredentials(CredentialsConfiguratorFactory.get(h.getProtocol()).configure(h));
-                if(Path.Type.file == detector.detect(h.getDefaultPath())) {
-                    final Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.file));
-                    TransferControllerFactory.get().start(new DownloadTransfer(h, file,
-                        LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
                 }
                 else {
-                    for(BrowserController browser : MainController.getBrowsers()) {
-                        if(browser.isMounted()) {
-                            if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
-                                new HostUrlProvider().get(h))) {
-                                // Handle browser window already connected to the same host. #4215
-                                browser.window().makeKeyAndOrderFront(null);
-                                return;
+                    try {
+                        final Host h = HostParser.parse(url);
+                        h.setCredentials(CredentialsConfiguratorFactory.get(h.getProtocol()).configure(h));
+                        if(Path.Type.file == detector.detect(h.getDefaultPath())) {
+                            final Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.file));
+                            TransferControllerFactory.get().start(new DownloadTransfer(h, file,
+                                LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
+                        }
+                        else {
+                            for(BrowserController browser : MainController.getBrowsers()) {
+                                if(browser.isMounted()) {
+                                    if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
+                                        new HostUrlProvider().get(h))) {
+                                        // Handle browser window already connected to the same host. #4215
+                                        browser.window().makeKeyAndOrderFront(null);
+                                        return;
+                                    }
+                                }
                             }
+                            final BrowserController browser = newDocument(false);
+                            browser.mount(h);
                         }
                     }
-                    final BrowserController browser = newDocument(false);
-                    browser.mount(h);
+                    catch(HostParserException e) {
+                        log.warn(e.getDetail());
+                    }
                 }
-            }
-            catch(HostParserException e) {
-                log.warn(e.getDetail());
-            }
         }
     }
 
