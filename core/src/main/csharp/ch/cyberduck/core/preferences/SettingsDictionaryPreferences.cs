@@ -165,7 +165,7 @@ namespace Ch.Cyberduck.Core.Preferences
 
             this.setDefault("application.name", Application.ProductName);
             this.setDefault("application.container.name", Application.ProductName);
-            this.setDefault("oauth.handler.uri",
+            this.setDefault("oauth.handler.scheme",
                 String.Format("x-{0}-action", StringUtils.deleteWhitespace(Application.ProductName.ToLower())));
 
             this.setDefault("application.version", ApplicationVersion);
