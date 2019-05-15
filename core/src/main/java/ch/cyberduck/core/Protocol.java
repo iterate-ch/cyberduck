@@ -54,6 +54,7 @@ public interface Protocol extends Comparable<Protocol> {
         file,
         dracoon,
         storegate,
+        brick,
         manta
     }
 
