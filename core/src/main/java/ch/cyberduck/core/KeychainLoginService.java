@@ -181,8 +181,10 @@ public class KeychainLoginService implements LoginService {
             }
             // Flag for successful authentication
             credentials.setPassed(true);
-            // Nullify password.
+            // Nullify password and tokens
             credentials.setPassword(null);
+            credentials.setToken(null);
+            credentials.setOauth(OAuthTokens.EMPTY);
             return true;
         }
         catch(LoginFailureException e) {
