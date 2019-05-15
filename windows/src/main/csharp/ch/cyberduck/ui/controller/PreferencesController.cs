@@ -485,6 +485,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChmodUploadChangedEvent()
         {
             PreferencesFactory.get().setProperty("queue.upload.permissions.change", View.ChmodUpload);
+            PreferencesFactory.get().setProperty("touch.permissions.change", View.ChmodUpload);
             View.ChmodUploadEnabled = View.ChmodUpload;
         }
 

@@ -724,6 +724,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void chmodUploadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
         preferences.setProperty("queue.upload.permissions.change", enabled);
+        preferences.setProperty("touch.permissions.change", enabled);
         this.chmodUploadDefaultCheckbox.setEnabled(enabled);
         this.chmodUploadCustomCheckbox.setEnabled(enabled);
         boolean chmodUploadDefaultChecked = this.chmodUploadDefaultCheckbox.state() == NSCell.NSOnState;
