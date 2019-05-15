@@ -519,6 +519,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("queue.download.segments.threshold", String.valueOf(10L * 1024L * 1024L));
         this.setDefault("queue.download.segments.size", String.valueOf(5L * 1024L * 1024L));
 
+        this.setDefault("touch.permissions.change", String.valueOf(true));
+
         /*
           Open completed downloads
          */
