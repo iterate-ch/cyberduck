@@ -16,7 +16,9 @@ package ch.cyberduck.ui.cocoa.callback;
  */
 
 import ch.cyberduck.binding.WindowController;
+import ch.cyberduck.binding.application.NSControl;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
@@ -28,10 +30,21 @@ public class PromptPasswordCallback implements PasswordCallback {
 
     private final WindowController parent;
 
+    private PasswordController controller;
     private boolean suppressed;
 
     public PromptPasswordCallback(final WindowController parent) {
         this.parent = parent;
+    }
+
+    @Override
+    public void close(final String input) {
+        if(null == controller) {
+            return;
+        }
+        controller.setPasswordFieldText(input);
+        controller.passwordFieldTextDidChange(NSNotification.notificationWithName(NSControl.NSControlTextDidChangeNotification, input));
+        controller.closeSheetWithOption(SheetCallback.ALTERNATE_OPTION);
     }
 
     @Override
@@ -40,7 +53,7 @@ public class PromptPasswordCallback implements PasswordCallback {
             throw new LoginCanceledException();
         }
         final Credentials credentials = new Credentials().withSaved(options.keychain);
-        final PasswordController controller = new PasswordController(bookmark, credentials, title, reason, options);
+        controller = new PasswordController(bookmark, credentials, title, reason, options);
         final int option = controller.beginSheet(parent);
         if(option == SheetCallback.CANCEL_OPTION) {
             if(controller.isSuppressed()) {

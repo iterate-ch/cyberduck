@@ -43,6 +43,11 @@ public class DisabledLoginCallback implements LoginCallback {
     }
 
     @Override
+    public void close(final String input) {
+        //
+    }
+
+    @Override
     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         throw new LoginCanceledException();
     }

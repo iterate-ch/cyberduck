@@ -41,7 +41,7 @@ public class LoginController extends ConnectionController {
     @Outlet
     private NSTextField textField;
 
-    public LoginController(final String title, final String reason, final Host bookmark, final LoginOptions options) {
+    public LoginController(final Host bookmark, final String title, final String reason, final LoginOptions options) {
         super(bookmark, options);
         this.title = title;
         this.reason = reason;

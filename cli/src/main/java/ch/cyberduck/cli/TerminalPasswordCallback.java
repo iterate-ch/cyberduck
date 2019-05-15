@@ -41,6 +41,11 @@ public class TerminalPasswordCallback implements PasswordCallback {
     }
 
     @Override
+    public void close(final String input) {
+        console.printf("%s%n", input);
+    }
+
+    @Override
     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {

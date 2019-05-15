@@ -75,6 +75,7 @@ using ch.cyberduck.core.exception;
 using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
+using ch.cyberduck.core.oauth;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -136,7 +137,7 @@ namespace Ch.Cyberduck.Ui.Controller
         static MainController()
         {
             StructureMapBootstrapper.Bootstrap();
-            PreferencesFactory.set(new ApplicationPreferences());
+            
             if (!(Debugger.IsAttached || Utils.IsRunningAsUWP))
             {
                 // Add the event handler for handling UI thread exceptions to the event.
@@ -393,6 +394,12 @@ namespace Ch.Cyberduck.Ui.Controller
             // Dummy implementation.
         }
 
+        void ICyberduck.OAuth(string state, string code)
+        {
+            var oauth = OAuth2TokenListenerRegistry.get();
+            oauth.notify(state, code);
+        }
+
         void ICyberduck.NewInstance()
         {
             NewBrowser();
@@ -565,6 +572,10 @@ namespace Ch.Cyberduck.Ui.Controller
                             }
                         });
                 }
+                // Register OAuth handler
+                handler.setDefaultHandlerForScheme(
+                    new Application(System.Windows.Forms.Application.ExecutablePath), 
+                    PreferencesFactory.get().getProperty("oauth.handler.scheme"));
             }
         }
 

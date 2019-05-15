@@ -54,8 +54,8 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
      * @param scheme      The protocol identifier
      */
     @Override
-    public void setDefaultHandlerForScheme(final Application application, final Scheme scheme) {
-        this.setDefaultHandler(scheme.name(), application.getIdentifier());
+    public void setDefaultHandlerForScheme(final Application application, final String scheme) {
+        this.setDefaultHandler(scheme, application.getIdentifier());
     }
 
     private native void setDefaultHandler(String scheme, String bundleIdentifier);

@@ -613,6 +613,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("http.credentials.charset", "ISO-8859-1");
         this.setDefault("http.request.uri.normalize", String.valueOf(false));
 
+        this.setDefault("oauth.handler.scheme", "x-cyberduck-action");
+
         /*
           Enable or disable verification that the remote host taking part
           of a data connection is the same as the host to which the control
@@ -988,7 +990,7 @@ public abstract class Preferences implements Locales {
           Default to large icon size
          */
         this.setDefault("bookmark.icon.size", String.valueOf(64));
-        this.setDefault("bookmark.menu.icon.size", String.valueOf(16));
+        this.setDefault("bookmark.menu.icon.size", String.valueOf(32));
 
         /*
           Location of the openssh known_hosts file

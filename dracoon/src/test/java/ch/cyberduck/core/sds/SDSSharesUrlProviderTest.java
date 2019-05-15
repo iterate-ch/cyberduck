@@ -22,7 +22,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -262,7 +261,7 @@ public class SDSSharesUrlProviderTest extends AbstractSDSTest {
                 .mailRecipients(null)
                 .mailSubject(null)
                 .mailBody(null)
-                .maxDownloads(null), new PasswordCallback() {
+                .maxDownloads(null), new DisabledPasswordCallback() {
                 @Override
                 public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                     return new VaultCredentials("eth[oh8uv4Eesij");

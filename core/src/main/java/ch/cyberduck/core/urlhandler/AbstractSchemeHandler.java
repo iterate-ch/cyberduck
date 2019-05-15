@@ -33,11 +33,9 @@ public abstract class AbstractSchemeHandler implements SchemeHandler {
     @Override
     public void setDefaultHandler(final List<Scheme> schemes, final Application application) {
         for(Scheme scheme : schemes) {
-            this.setDefaultHandlerForScheme(application, scheme);
+            this.setDefaultHandlerForScheme(application, scheme.name());
         }
     }
-
-    public abstract void setDefaultHandlerForScheme(Application application, Scheme scheme);
 
     /**
      * @param schemes The protocol identifier

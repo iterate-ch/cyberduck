@@ -36,6 +36,8 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Windows.Storage;
 using File = System.IO.File;
+using StringUtils = org.apache.commons.lang3.StringUtils;
+
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -163,6 +165,8 @@ namespace Ch.Cyberduck.Core.Preferences
 
             this.setDefault("application.name", Application.ProductName);
             this.setDefault("application.container.name", Application.ProductName);
+            this.setDefault("oauth.handler.uri",
+                String.Format("x-{0}-action", StringUtils.deleteWhitespace(Application.ProductName.ToLower())));
 
             this.setDefault("application.version", ApplicationVersion);
             this.setDefault("application.revision", ApplicationRevision);

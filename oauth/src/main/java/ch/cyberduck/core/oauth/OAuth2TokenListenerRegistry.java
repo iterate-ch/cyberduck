@@ -15,14 +15,13 @@ package ch.cyberduck.core.oauth;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.threading.CancelCallback;
+import org.apache.log4j.Logger;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OAuth2TokenListenerRegistry {
+    private static final Logger log = Logger.getLogger(OAuth2TokenListenerRegistry.class);
 
     private static final OAuth2TokenListenerRegistry global = new OAuth2TokenListenerRegistry();
 
@@ -30,31 +29,19 @@ public class OAuth2TokenListenerRegistry {
         return global;
     }
 
-    private final Set<OAuth2TokenListener> listeners = new HashSet<>();
+    private final Map<String, OAuth2TokenListener> listeners = new HashMap<>();
 
-    public void register(final OAuth2TokenListener listener, final CancelCallback cancel) throws ConnectionCanceledException {
-        listeners.add(listener);
-        synchronized(global) {
-            try {
-                while(listeners.contains(listener)) {
-                    // Not yet notified
-                    cancel.verify();
-                    global.wait(500L);
-                }
-            }
-            catch(InterruptedException e) {
-                throw new OAuthInterruptedException();
-            }
-        }
+    public void register(final String state, final OAuth2TokenListener listener) {
+        listeners.put(state, listener);
     }
 
-    public void notify(final String token) {
-        for(Iterator<OAuth2TokenListener> iter = listeners.iterator(); iter.hasNext(); ) {
-            iter.next().callback(token);
-            iter.remove();
+    public void notify(final String state, final String token) {
+        final OAuth2TokenListener listener = listeners.get(state);
+        if(null == listener) {
+            log.error(String.format("Missing listener for state %s", state));
+            return;
         }
-        synchronized(global) {
-            global.notifyAll();
-        }
+        listeners.remove(state);
+        listener.callback(token);
     }
 }

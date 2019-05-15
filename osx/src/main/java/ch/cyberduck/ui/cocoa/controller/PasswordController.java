@@ -119,6 +119,10 @@ public class PasswordController extends AlertController {
         return view;
     }
 
+    public void setPasswordFieldText(final String input) {
+        inputField.setStringValue(input);
+    }
+
     @Override
     protected void focus(final NSAlert alert) {
         super.focus(alert);
@@ -136,6 +140,6 @@ public class PasswordController extends AlertController {
 
     @Override
     protected String help() {
-        return ProviderHelpServiceFactory.get().help();
+        return ProviderHelpServiceFactory.get().help(bookmark.getProtocol());
     }
 }

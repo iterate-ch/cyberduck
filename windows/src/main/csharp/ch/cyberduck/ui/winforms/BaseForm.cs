@@ -177,9 +177,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Validate();
         }
 
-        public new void Close()
+        void IView.Close()
         {
-            base.Close();
+            if (Modal)
+            {
+                DialogResult = DialogResult.None;
+            }
+            Close();
         }
 
         public new bool Visible
