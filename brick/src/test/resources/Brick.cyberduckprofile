@@ -21,15 +21,14 @@
         <string>brick</string>
         <key>Vendor</key>
         <string>Action Verb</string>
+        <key>Description</key>
+        <string>Files.com</string>
         <key>Username Configurable</key>
         <false/>
         <key>Password Configurable</key>
         <false/>
         <key>Token Configurable</key>
         <true/>
-        <string>files.com</string>
-        <key>Description</key>
-        <string>Files.com</string>
         <key>Anonymous Configurable</key>
         <false/>
         <key>Certificate Configurable</key>
