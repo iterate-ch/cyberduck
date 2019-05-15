@@ -24,4 +24,13 @@ public class BrickProtocol extends DAVSSLProtocol {
         return Type.brick;
     }
 
+    @Override
+    public boolean isUsernameConfigurable() {
+        return false;
+    }
+
+    @Override
+    public boolean isPasswordConfigurable() {
+        return false;
+    }
 }
