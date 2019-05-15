@@ -15,25 +15,30 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.Host;
 
-public class BrickProtocol extends DAVSSLProtocol {
+import org.apache.commons.lang3.StringUtils;
+
+public class BrickCredentialsConfigurator implements CredentialsConfigurator {
 
     @Override
-    public Type getType() {
-        return Type.brick;
+    public Credentials configure(final Host host) {
+        final Credentials credentials = new Credentials(host.getCredentials());
+        return this.configure(credentials);
+    }
+
+    public Credentials configure(final Credentials credentials) {
+        if(StringUtils.isBlank(credentials.getToken())) {
+            credentials.setToken(new AlphanumericRandomStringService().random());
+        }
+        return credentials;
     }
 
     @Override
-    public CredentialsConfigurator getCredentialsFinder() {
-        return new BrickCredentialsConfigurator();
-    }
-
-    @Override
-    public boolean validate(final Credentials credentials, final LoginOptions options) {
-        return super.validate(new BrickCredentialsConfigurator().configure(credentials), options);
+    public void reload() {
+        //
     }
 }
