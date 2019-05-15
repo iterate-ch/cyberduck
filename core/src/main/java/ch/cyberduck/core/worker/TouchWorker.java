@@ -22,10 +22,12 @@ import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -62,9 +64,15 @@ public class TouchWorker extends Worker<Path> {
             status.setStorageClass(redundancy.getDefault());
         }
         status.setTimestamp(System.currentTimeMillis());
-        final UnixPermission permission = session.getFeature(UnixPermission.class);
-        if(permission != null) {
-            status.setPermission(permission.getDefault(EnumSet.of(Path.Type.file)));
+        if(PreferencesFactory.get().getBoolean("touch.permissions.change")) {
+            final UnixPermission permission = session.getFeature(UnixPermission.class);
+            if(permission != null) {
+                status.setPermission(permission.getDefault(EnumSet.of(Path.Type.file)));
+            }
+            final AclPermission acl = session.getFeature(AclPermission.class);
+            if(acl != null) {
+                status.setAcl(acl.getDefault(EnumSet.of(Path.Type.file)));
+            }
         }
         return feature.touch(file, status);
     }

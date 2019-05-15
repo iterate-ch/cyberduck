@@ -21,10 +21,12 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
@@ -60,9 +62,15 @@ public class CreateDirectoryWorker extends Worker<Path> {
             status.setStorageClass(redundancy.getDefault());
         }
         status.setTimestamp(System.currentTimeMillis());
-        final UnixPermission permission = session.getFeature(UnixPermission.class);
-        if(permission != null) {
-            status.setPermission(permission.getDefault(EnumSet.of(Path.Type.directory)));
+        if(PreferencesFactory.get().getBoolean("touch.permissions.change")) {
+            final UnixPermission permission = session.getFeature(UnixPermission.class);
+            if(permission != null) {
+                status.setPermission(permission.getDefault(EnumSet.of(Path.Type.directory)));
+            }
+            final AclPermission acl = session.getFeature(AclPermission.class);
+            if(acl != null) {
+                status.setAcl(acl.getDefault(EnumSet.of(Path.Type.directory)));
+            }
         }
         return feature.mkdir(folder, region, status);
     }

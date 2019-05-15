@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.vault.VaultRegistry;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public class VaultRegistryAclPermissionFeature implements AclPermission {
@@ -60,6 +61,11 @@ public class VaultRegistryAclPermissionFeature implements AclPermission {
     @Override
     public Acl getDefault(final Local file) {
         return proxy.getDefault(file);
+    }
+
+    @Override
+    public Acl getDefault(final EnumSet<Path.Type> type) {
+        return proxy.getDefault(type);
     }
 
     @Override
