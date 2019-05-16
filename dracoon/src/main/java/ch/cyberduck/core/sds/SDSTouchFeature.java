@@ -50,7 +50,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
             if(nodeid.isEncrypted(file)) {
                 nodeid.setFileKey(status);
             }
-            final StatusOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
+            final StatusOutputStream<VersionId> out = writer.write(file, status.complete(), new DisabledConnectionCallback());
             out.close();
             return new Path(file.getParent(), file.getName(), file.getType(),
                 new PathAttributes(file.attributes()).withVersionId(out.getStatus().id));
