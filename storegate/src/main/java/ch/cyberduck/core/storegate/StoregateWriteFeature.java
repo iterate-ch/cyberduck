@@ -109,8 +109,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                     FileMetadata meta = new FileMetadata();
                     meta.setId(StringUtils.EMPTY);
                     meta.setAttributes(0);
-                    meta.setFlags(0);
-                    meta.setLockId(status.getLockId() != null ? status.getLockId().toString() : StringUtils.EMPTY);
+                    meta.setFlags(FileMetadata.FlagsEnum.NUMBER_0);
                     meta.setFileName(file.getName());
                     meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
                     meta.setFileSize(status.getLength());
