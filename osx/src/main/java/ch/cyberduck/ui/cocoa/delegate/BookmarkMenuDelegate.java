@@ -151,10 +151,10 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         if(row.intValue() > index + 2) {
             Host h = this.itemForIndex(row);
-            final NSMutableAttributedString title = NSMutableAttributedString.create(String.format("%s\n", BookmarkNameProvider.toString(h)));
+            final NSMutableAttributedString title = NSMutableAttributedString.create(BookmarkNameProvider.toString(h));
             if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.MEDIUM_BOOKMARK_SIZE) {
                 title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
-                    h.getHostname(), BundleController.MENU_HELP_FONT_ATTRIBUTES));
+                    String.format("\n%s", h.getHostname()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
             }
             if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.LARGE_BOOKMARK_SIZE) {
                 title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
