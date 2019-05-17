@@ -18,7 +18,6 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVUploadFeature;
-import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -37,9 +36,6 @@ public class BrickSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        if(type == Copy.class) {
-            return (T) new BrickCopyFeature(this);
-        }
         if(type == Write.class) {
             return (T) new BrickWriteFeature(this);
         }
