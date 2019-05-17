@@ -17,7 +17,9 @@ package ch.cyberduck.core.oauth;
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+
+import org.apache.http.client.HttpResponseException;
 
 import com.google.api.client.auth.oauth2.TokenErrorResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
@@ -31,6 +33,6 @@ public class OAuthExceptionMappingService extends AbstractExceptionMappingServic
         if(null != details) {
             this.append(buffer, details.getErrorDescription());
         }
-        return new LoginFailureException(buffer.toString(), failure);
+        return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getStatusCode(), buffer.toString()));
     }
 }
