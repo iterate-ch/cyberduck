@@ -27,6 +27,10 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate implements CollectionListener<T> {
 
+    public static final int SMALL_ICON_SIZE = 16;
+    public static final int MEDIUM_ICON_SIZE = 32;
+    public static final int LARGE_ICON_SIZE = 48;
+
     private final Collection<T> collection;
 
     public CollectionMenuDelegate(Collection<T> c) {

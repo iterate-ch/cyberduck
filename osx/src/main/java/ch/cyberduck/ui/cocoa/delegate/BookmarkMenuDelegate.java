@@ -19,10 +19,13 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.binding.Action;
+import ch.cyberduck.binding.BundleController;
 import ch.cyberduck.binding.Delegate;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
+import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.FolderBookmarkCollection;
@@ -34,7 +37,9 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.controller.MainController;
+import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
@@ -46,7 +51,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final int BOOKMARKS_INDEX = 8;
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     private final AbstractHostCollection collection;
 
@@ -55,12 +60,10 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private final MenuCallback callback;
 
     private final NSMenu historyMenu = NSMenu.menu();
-
     @Delegate
     private final HistoryMenuDelegate historyMenuDelegate;
 
     private final NSMenu rendezvousMenu = NSMenu.menu();
-
     @Delegate
     private final RendezvousMenuDelegate rendezvousMenuDelegate;
 
@@ -148,9 +151,28 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         if(row.intValue() > index + 2) {
             Host h = this.itemForIndex(row);
-            item.setTitle(BookmarkNameProvider.toString(h));
+            final NSMutableAttributedString title = NSMutableAttributedString.create(String.format("%s\n", BookmarkNameProvider.toString(h)));
+            if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.MEDIUM_BOOKMARK_SIZE) {
+                title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
+                    h.getHostname(), BundleController.MENU_HELP_FONT_ATTRIBUTES));
+            }
+            if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.LARGE_BOOKMARK_SIZE) {
+                title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
+                    String.format("\n%s", StringUtils.isNotBlank(h.getCredentials().getUsername()) ? h.getCredentials().getUsername() : StringUtils.EMPTY), BundleController.MENU_HELP_FONT_ATTRIBUTES));
+            }
+            item.setAttributedTitle(title);
+            switch(preferences.getInteger("bookmark.icon.size")) {
+                default:
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.SMALL_ICON_SIZE));
+                    break;
+                case BookmarkCell.MEDIUM_BOOKMARK_SIZE:
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.MEDIUM_ICON_SIZE));
+                    break;
+                case BookmarkCell.LARGE_BOOKMARK_SIZE:
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.LARGE_ICON_SIZE));
+                    break;
+            }
             item.setTarget(this.id());
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), preferences.getInteger("bookmark.menu.icon.size")));
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
         }

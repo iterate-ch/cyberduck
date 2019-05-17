@@ -35,6 +35,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.ui.cocoa.controller.MainController;
+import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -112,8 +113,11 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
             item.setEnabled(true);
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), preferences.getInteger("bookmark.menu.icon.size")));
-            final NSMutableAttributedString title = NSMutableAttributedString.create(String.format("%s ", BookmarkNameProvider.toString(h)));
+            final NSMutableAttributedString title = NSMutableAttributedString.create(String.format("%s\n", BookmarkNameProvider.toString(h)));
+            if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.LARGE_BOOKMARK_SIZE) {
+                title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
+                    String.format("%s\n", h.getHostname()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
+            }
             final Date timestamp = h.getTimestamp();
             if(null != timestamp) {
                 title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
@@ -124,6 +128,14 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
                     LocaleFactory.localizedString("Unknown"), BundleController.MENU_HELP_FONT_ATTRIBUTES));
             }
             item.setAttributedTitle(title);
+            switch(preferences.getInteger("bookmark.icon.size")) {
+                default:
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.MEDIUM_ICON_SIZE));
+                    break;
+                case BookmarkCell.LARGE_BOOKMARK_SIZE:
+                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.LARGE_ICON_SIZE));
+                    break;
+            }
         }
         else if(row.intValue() == size) {
             menu.removeItemAtIndex(row);
