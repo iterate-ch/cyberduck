@@ -983,7 +983,7 @@ public class InfoController extends ToolbarWindowController {
             }
 
             @Override
-            public void selectionDidChange(NSNotification notification) {
+            public void selectionDidChange(final NSNotification notification) {
                 aclRemoveButton.setEnabled(aclTable.numberOfSelectedRows().intValue() > 0);
             }
 
@@ -1170,7 +1170,7 @@ public class InfoController extends ToolbarWindowController {
             }
 
             @Override
-            public void selectionDidChange(NSNotification notification) {
+            public void selectionDidChange(final NSNotification notification) {
                 metadataRemoveButton.setEnabled(metadataTable.numberOfSelectedRows().intValue() > 0);
             }
 

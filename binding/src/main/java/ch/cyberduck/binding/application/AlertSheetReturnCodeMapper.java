@@ -37,15 +37,13 @@ public final class AlertSheetReturnCodeMapper {
     public int getOption(final int option) {
         switch(option) {
             case NSAlert.NSAlertFirstButtonReturn:
+            case NSPanel.NSOKButton:
                 return SheetCallback.DEFAULT_OPTION;
             case NSAlert.NSAlertSecondButtonReturn:
+            case NSPanel.NSCancelButton:
                 return SheetCallback.CANCEL_OPTION;
             case NSAlert.NSAlertThirdButtonReturn:
                 return SheetCallback.ALTERNATE_OPTION;
-            case NSPanel.NSOKButton:
-                return SheetCallback.DEFAULT_OPTION;
-            case NSPanel.NSCancelButton:
-                return SheetCallback.CANCEL_OPTION;
         }
         log.warn(String.format("Unknown return code %d", option));
         return SheetCallback.DEFAULT_OPTION;

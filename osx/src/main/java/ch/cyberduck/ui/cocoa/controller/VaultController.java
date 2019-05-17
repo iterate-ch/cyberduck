@@ -83,7 +83,7 @@ public class VaultController extends FolderController {
     }
 
     @Action
-    public void passwordFieldTextDidChange(NSNotification notification) {
+    public void passwordFieldTextDidChange(final NSNotification notification) {
         strengthIndicator.setIntValue(passwordStrengthValidator.getScore(passwordField.stringValue()).getScore());
     }
 

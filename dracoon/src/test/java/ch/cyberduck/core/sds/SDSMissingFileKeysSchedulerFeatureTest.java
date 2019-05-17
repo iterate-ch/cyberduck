@@ -18,9 +18,9 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -71,7 +71,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
-        final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
+        final List<UserFileKeySetRequest> processed = background.operate(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("eth[oh8uv4Eesij");
@@ -94,7 +94,7 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
         final AtomicBoolean prompt = new AtomicBoolean();
-        final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
+        final List<UserFileKeySetRequest> processed = background.operate(new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 if(prompt.get()) {

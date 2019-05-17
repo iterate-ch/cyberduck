@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -59,8 +60,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 public class OAuth2AuthorizationService {
     private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
 
-    private static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
-    private static final String CYBERDUCK_REDIRECT_URI = "x-cyberduck-action:oauth";
+    public static final String OOB_REDIRECT_URI = "urn:ietf:wg:oauth:2.0:oob";
+    public static final String CYBERDUCK_REDIRECT_URI = String.format("%s:oauth", PreferencesFactory.get().getProperty("oauth.handler.scheme"));
 
     private final JsonFactory json
         = new JacksonFactory();
@@ -141,11 +142,11 @@ public class OAuth2AuthorizationService {
             .build();
         final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
         authorizationCodeRequestUrl.setRedirectUri(redirectUri);
-        authorizationCodeRequestUrl.setState(new AlphanumericRandomStringService().random());
+        final String state = new AlphanumericRandomStringService().random();
+        authorizationCodeRequestUrl.setState(state);
         for(Map.Entry<String, String> values : additionalParameters.entrySet()) {
             authorizationCodeRequestUrl.set(values.getKey(), values.getValue());
         }
-
         // Direct the user to an authorization page to grant access to their protected data.
         final String url = authorizationCodeRequestUrl.build();
         if(log.isDebugEnabled()) {
@@ -154,23 +155,24 @@ public class OAuth2AuthorizationService {
         if(!browser.open(url)) {
             log.warn(String.format("Failed to launch web browser for %s", url));
         }
+        if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
+            final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
+            registry.register(state, new OAuth2TokenListener() {
+                @Override
+                public void callback(final String code) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Callback with code %s", code));
+                    }
+                    prompt.close(code);
+                }
+            });
+        }
         final Credentials input = prompt.prompt(bookmark,
             LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
             LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
-            new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).password(true)
+            new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).oauth(true)
                 .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
         );
-        if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
-            final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
-            registry.register(new OAuth2TokenListener() {
-                @Override
-                public void callback(final String param) {
-                    log.warn(String.format("Callback with code %s", param));
-                    input.setPassword(param);
-
-                }
-            }, cancel);
-        }
         try {
             if(StringUtils.isBlank(input.getPassword())) {
                 throw new LoginCanceledException();

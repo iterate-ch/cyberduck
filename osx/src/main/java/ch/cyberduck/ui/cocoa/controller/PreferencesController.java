@@ -724,6 +724,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void chmodUploadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
         preferences.setProperty("queue.upload.permissions.change", enabled);
+        preferences.setProperty("touch.permissions.change", enabled);
         this.chmodUploadDefaultCheckbox.setEnabled(enabled);
         this.chmodUploadCustomCheckbox.setEnabled(enabled);
         boolean chmodUploadDefaultChecked = this.chmodUploadDefaultCheckbox.state() == NSCell.NSOnState;
@@ -1412,7 +1413,7 @@ public class PreferencesController extends ToolbarWindowController {
             this.downloadSkipRegexField.id());
     }
 
-    public void downloadSkipRegexFieldDidChange(NSNotification sender) {
+    public void downloadSkipRegexFieldDidChange(final NSNotification sender) {
         String value = this.downloadSkipRegexField.string().trim();
         if(StringUtils.EMPTY.equals(value)) {
             preferences.setProperty("queue.download.skip.enable", false);
@@ -1477,7 +1478,7 @@ public class PreferencesController extends ToolbarWindowController {
             this.uploadSkipRegexField.id());
     }
 
-    public void uploadSkipRegexFieldDidChange(NSNotification sender) {
+    public void uploadSkipRegexFieldDidChange(final NSNotification sender) {
         String value = this.uploadSkipRegexField.string().trim();
         if(StringUtils.EMPTY.equals(value)) {
             preferences.setProperty("queue.upload.skip.enable", false);
@@ -1895,7 +1896,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void protocolComboboxClicked(NSPopUpButton sender) {
         final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
-        preferences.setProperty("connection.protocol.default", selected.getIdentifier());
+        preferences.setProperty("connection.protocol.default", String.format("%s-%s", selected.getIdentifier(), selected.getProvider()));
         preferences.setProperty("connection.port.default", selected.getDefaultPort());
     }
 

@@ -72,6 +72,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
@@ -98,6 +99,8 @@ import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -107,6 +110,8 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.net.URI;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1063,6 +1068,12 @@ public class MainController extends BundleController implements NSApplication.De
                 updater.register();
             }
         }
+        // Register OAuth handler
+        final String handler = preferences.getProperty("oauth.handler.scheme");
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Register OAuth handler %s", handler));
+        }
+        SchemeHandlerFactory.get().setDefaultHandlerForScheme(new Application(preferences.getProperty("application.identifier")), handler);
         NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
             this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
     }
@@ -1262,48 +1273,55 @@ public class MainController extends BundleController implements NSApplication.De
             log.error("URL parameter is empty");
             return;
         }
-        if(StringUtils.startsWith(url, "x-cyberduck-action:")) {
-            final String action = StringUtils.removeStart(url, "x-cyberduck-action:");
-            switch(action) {
-                case "update":
-                    updater.check(false);
-                    break;
-                default:
-                    if(StringUtils.startsWith(action, "oauth?token=")) {
-                        final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
-                        final String token = StringUtils.removeStart(action, "oauth?token=");
-                        oauth.notify(token);
-                        break;
-                    }
-            }
-        }
-        else {
-            try {
-                final Host h = HostParser.parse(url);
-                h.setCredentials(CredentialsConfiguratorFactory.get(h.getProtocol()).configure(h));
-                if(Path.Type.file == detector.detect(h.getDefaultPath())) {
-                    final Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.file));
-                    TransferControllerFactory.get().start(new DownloadTransfer(h, file,
-                        LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
-                }
-                else {
-                    for(BrowserController browser : MainController.getBrowsers()) {
-                        if(browser.isMounted()) {
-                            if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
-                                new HostUrlProvider().get(h))) {
-                                // Handle browser window already connected to the same host. #4215
-                                browser.window().makeKeyAndOrderFront(null);
-                                return;
-                            }
+        switch(url) {
+            case "x-cyberduck-action:update":
+                updater.check(false);
+                break;
+            default:
+                if(StringUtils.startsWith(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI)) {
+                    final String action = StringUtils.removeStart(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
+                    final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
+                    String state = StringUtils.EMPTY;
+                    String code = StringUtils.EMPTY;
+                    for(NameValuePair pair : pairs) {
+                        if(StringUtils.equals(pair.getName(), "state")) {
+                            state = StringUtils.equals(pair.getName(), "state") ? pair.getValue() : StringUtils.EMPTY;
+                        }
+                        if(StringUtils.equals(pair.getName(), "code")) {
+                            code = StringUtils.equals(pair.getName(), "code") ? pair.getValue() : StringUtils.EMPTY;
                         }
                     }
-                    final BrowserController browser = newDocument(false);
-                    browser.mount(h);
+                    final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
+                    oauth.notify(state, code);
                 }
-            }
-            catch(HostParserException e) {
-                log.warn(e.getDetail());
-            }
+                else {
+                    try {
+                        final Host h = HostParser.parse(url);
+                        h.setCredentials(CredentialsConfiguratorFactory.get(h.getProtocol()).configure(h));
+                        if(Path.Type.file == detector.detect(h.getDefaultPath())) {
+                            final Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.file));
+                            TransferControllerFactory.get().start(new DownloadTransfer(h, file,
+                                LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
+                        }
+                        else {
+                            for(BrowserController browser : MainController.getBrowsers()) {
+                                if(browser.isMounted()) {
+                                    if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
+                                        new HostUrlProvider().get(h))) {
+                                        // Handle browser window already connected to the same host. #4215
+                                        browser.window().makeKeyAndOrderFront(null);
+                                        return;
+                                    }
+                                }
+                            }
+                            final BrowserController browser = newDocument(false);
+                            browser.mount(h);
+                        }
+                    }
+                    catch(HostParserException e) {
+                        log.warn(e.getDetail());
+                    }
+                }
         }
     }
 

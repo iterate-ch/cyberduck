@@ -19,6 +19,11 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 
 public interface PasswordCallback {
 
+    /**
+     * Programmatically set input and close input
+     */
+    void close(String input);
+
     Credentials prompt(Host bookmark, String title, String reason, LoginOptions options)
             throws LoginCanceledException;
 }

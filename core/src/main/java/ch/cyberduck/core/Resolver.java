@@ -34,11 +34,13 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public final class Resolver {
     private static final Logger log = Logger.getLogger(Resolver.class);
 
     private final ThreadFactory threadFactory
-            = new NamedThreadFactory("resolver");
+        = new NamedThreadFactory("resolver");
 
     /**
      * This method is blocking until the hostname has been resolved or the lookup
@@ -74,33 +76,27 @@ public final class Resolver {
         resolver.start();
         log.debug(String.format("Waiting for resolving of %s", hostname));
         // Wait for #run to finish
-        try {
-            while(!signal.await(500, TimeUnit.MILLISECONDS)) {
-                try {
-                    callback.verify();
-                }
-                catch(ConnectionCanceledException c) {
-                    throw new ResolveCanceledException(c);
-                }
+        while(!Uninterruptibles.awaitUninterruptibly(signal, 500, TimeUnit.MILLISECONDS)) {
+            try {
+                callback.verify();
             }
-        }
-        catch(InterruptedException e) {
-            log.error(String.format("Waiting for resolving of %s", hostname), e);
-            throw new ResolveCanceledException(e);
+            catch(ConnectionCanceledException c) {
+                throw new ResolveCanceledException(MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname), c);
+            }
         }
         try {
             callback.verify();
         }
         catch(ConnectionCanceledException c) {
-            throw new ResolveCanceledException(c);
+            throw new ResolveCanceledException(MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname), c);
         }
         if(null == resolved.get()) {
             if(null == failure.get()) {
                 log.warn(String.format("Canceled resolving %s", hostname));
-                throw new ResolveCanceledException();
+                throw new ResolveCanceledException(MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname));
             }
             throw new ResolveFailedException(
-                    MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname), failure.get());
+                MessageFormat.format(LocaleFactory.localizedString("DNS lookup for {0} failed", "Error"), hostname), failure.get());
         }
         return resolved.get();
     }

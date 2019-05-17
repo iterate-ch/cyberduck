@@ -485,6 +485,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChmodUploadChangedEvent()
         {
             PreferencesFactory.get().setProperty("queue.upload.permissions.change", View.ChmodUpload);
+            PreferencesFactory.get().setProperty("touch.permissions.change", View.ChmodUpload);
             View.ChmodUploadEnabled = View.ChmodUpload;
         }
 
@@ -789,7 +790,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_DefaultProtocolChangedEvent()
         {
             Protocol selected = View.DefaultProtocol;
-            PreferencesFactory.get().setProperty("connection.protocol.default", selected.getIdentifier());
+            PreferencesFactory.get().setProperty("connection.protocol.default", String.Format("{0}-{1}", selected.getIdentifier(), selected.getProvider()));
             PreferencesFactory.get().setProperty("connection.port.default", selected.getDefaultPort());
         }
 

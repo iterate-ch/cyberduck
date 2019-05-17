@@ -35,9 +35,13 @@ public class LocaleFactory extends Factory<Locale> {
      */
     public static synchronized Locale get() {
         if(null == locale) {
-            locale = new LocaleFactory().create();
+            set(new LocaleFactory().create());
         }
         return locale;
+    }
+
+    public static synchronized void set(Locale l) {
+        locale = l;
     }
 
     /**

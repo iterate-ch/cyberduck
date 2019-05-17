@@ -35,6 +35,12 @@ namespace Ch.Cyberduck.Ui.Controller
             _browser = c;
         }
 
+        public void close(string input)
+        {
+            View.InputText = input;
+            View.Close();
+        }
+
         public Credentials prompt(Host bookmark, string title, string reason, LoginOptions options)
         {
             Credentials credentials = new Credentials().withSaved(options.keychain());

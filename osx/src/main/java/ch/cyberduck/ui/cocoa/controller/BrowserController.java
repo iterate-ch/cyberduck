@@ -1550,7 +1550,7 @@ public class BrowserController extends WindowController
             }
 
             @Override
-            public void selectionDidChange(NSNotification notification) {
+            public void selectionDidChange(final NSNotification notification) {
                 addBookmarkButton.setEnabled(bookmarkModel.getSource().allowsAdd());
                 final int selected = bookmarkTable.numberOfSelectedRows().intValue();
                 editBookmarkButton.setEnabled(bookmarkModel.getSource().allowsEdit() && selected == 1);
@@ -1708,7 +1708,7 @@ public class BrowserController extends WindowController
     }
 
     @Action
-    public void searchFieldTextDidChange(NSNotification notification) {
+    public void searchFieldTextDidChange(final NSNotification notification) {
         final String input = searchField.stringValue();
         switch(this.getSelectedTabView()) {
             case bookmarks:
@@ -3656,7 +3656,7 @@ public class BrowserController extends WindowController
         }
 
         @Override
-        public void selectionDidChange(NSNotification notification) {
+        public void selectionDidChange(final NSNotification notification) {
             final List<Path> selected = getSelectedPaths();
             if(quicklook.isOpen()) {
                 updateQuickLookSelection(selected);

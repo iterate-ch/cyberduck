@@ -132,5 +132,10 @@
             <artifactId>storegate</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>brick</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
