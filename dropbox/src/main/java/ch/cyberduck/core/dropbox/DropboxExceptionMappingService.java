@@ -34,6 +34,7 @@ import java.time.Duration;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.NetworkIOException;
+import com.dropbox.core.ProtocolException;
 import com.dropbox.core.RetryException;
 import com.dropbox.core.ServerException;
 import com.dropbox.core.v2.files.*;
@@ -60,6 +61,13 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(failure instanceof ServerException) {
             return new ConnectionRefusedException(buffer.toString(), failure);
         }
+        if(failure instanceof ProtocolException) {
+            return new InteroperabilityException(buffer.toString(), failure);
+        }
+        if(failure instanceof NetworkIOException) {
+            return new DefaultIOExceptionMappingService().map(((NetworkIOException) failure).getCause());
+        }
+        // API failure
         if(failure instanceof GetMetadataErrorException) {
             final GetMetadataError error = ((GetMetadataErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
@@ -219,9 +227,6 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
             }
-        }
-        if(failure instanceof NetworkIOException) {
-            return new DefaultIOExceptionMappingService().map(((NetworkIOException) failure).getCause());
         }
         return new InteroperabilityException(buffer.toString(), failure);
     }
