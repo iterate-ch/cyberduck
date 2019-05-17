@@ -53,6 +53,7 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -65,6 +66,7 @@ import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
 
 public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
+    private static final Logger log = Logger.getLogger(SDSWriteFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -132,6 +134,15 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         return new VersionId(null);
                     }
                     catch(IOException e) {
+                        try {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Cancel failed upload %s for %s", uploadId, file));
+                            }
+                            new NodesApi(session.getClient()).cancelFileUpload(uploadId, StringUtils.EMPTY);
+                        }
+                        catch(ApiException f) {
+                            throw new SDSExceptionMappingService().map(f);
+                        }
                         throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
                     }
                     catch(ApiException e) {
