@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -32,6 +33,7 @@ import java.time.Duration;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.InvalidAccessTokenException;
+import com.dropbox.core.NetworkIOException;
 import com.dropbox.core.RetryException;
 import com.dropbox.core.ServerException;
 import com.dropbox.core.v2.files.*;
@@ -217,6 +219,9 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
             }
+        }
+        if(failure instanceof NetworkIOException) {
+            return new DefaultIOExceptionMappingService().map(((NetworkIOException) failure).getCause());
         }
         return new InteroperabilityException(buffer.toString(), failure);
     }
