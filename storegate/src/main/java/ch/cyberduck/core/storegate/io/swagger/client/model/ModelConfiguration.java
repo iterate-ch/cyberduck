@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class ModelConfiguration {
   @JsonProperty("hasMulti")
   private Boolean hasMulti = null;
@@ -94,7 +94,7 @@ public class ModelConfiguration {
   private Boolean hideSplash = null;
 
   /**
-   * 
+   * What features are available in settings
    */
   public enum UserAccountModeEnum {
     NUMBER_0(0),
@@ -156,16 +156,19 @@ public class ModelConfiguration {
   @JsonProperty("hasWebDavPasswords")
   private Boolean hasWebDavPasswords = null;
 
+  @JsonProperty("hasShareBankIDAuth")
+  private Boolean hasShareBankIDAuth = null;
+
   public ModelConfiguration hasMulti(Boolean hasMulti) {
     this.hasMulti = hasMulti;
     return this;
   }
 
    /**
-   * 
+   * Does the account have Multi/Team
    * @return hasMulti
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Does the account have Multi/Team")
   public Boolean isHasMulti() {
     return hasMulti;
   }
@@ -180,10 +183,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Is Common enabled
    * @return hasCommon
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Is Common enabled")
   public Boolean isHasCommon() {
     return hasCommon;
   }
@@ -198,10 +201,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Is permissions enabled
    * @return hasPermissions
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Is permissions enabled")
   public Boolean isHasPermissions() {
     return hasPermissions;
   }
@@ -216,10 +219,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Is permissions pas first level in Common enabled
    * @return hasExtendedPermissions
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Is permissions pas first level in Common enabled")
   public Boolean isHasExtendedPermissions() {
     return hasExtendedPermissions;
   }
@@ -234,10 +237,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Is sync of the common folder allowed
    * @return hasTeamSync
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Is sync of the common folder allowed")
   public Boolean isHasTeamSync() {
     return hasTeamSync;
   }
@@ -252,10 +255,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Does the account have groups
    * @return hasGroups
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Does the account have groups")
   public Boolean isHasGroups() {
     return hasGroups;
   }
@@ -270,10 +273,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Can users hav a quota
    * @return hasQuota
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Can users hav a quota")
   public Boolean isHasQuota() {
     return hasQuota;
   }
@@ -288,10 +291,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Can admin inspect users
    * @return hasInspection
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Can admin inspect users")
   public Boolean isHasInspection() {
     return hasInspection;
   }
@@ -306,10 +309,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Does the account have Backup
    * @return hasBackup
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Does the account have Backup")
   public Boolean isHasBackup() {
     return hasBackup;
   }
@@ -324,10 +327,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Is it unlimited backup
    * @return hasUnlimitedBackup
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Is it unlimited backup")
   public Boolean isHasUnlimitedBackup() {
     return hasUnlimitedBackup;
   }
@@ -342,10 +345,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Is it KLS backup
    * @return hasKlsBackup
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Is it KLS backup")
   public Boolean isHasKlsBackup() {
     return hasKlsBackup;
   }
@@ -360,10 +363,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Does the account have Albums
    * @return hasMedia
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Does the account have Albums")
   public Boolean isHasMedia() {
     return hasMedia;
   }
@@ -378,10 +381,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Does the accont have Sync
    * @return hasSync
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Does the accont have Sync")
   public Boolean isHasSync() {
     return hasSync;
   }
@@ -396,10 +399,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Does the account have Autostore
    * @return hasAutostore
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Does the account have Autostore")
   public Boolean isHasAutostore() {
     return hasAutostore;
   }
@@ -414,10 +417,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Is Office Online (WOPI) enabled
    * @return hasOfficeOnline
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Is Office Online (WOPI) enabled")
   public Boolean isHasOfficeOnline() {
     return hasOfficeOnline;
   }
@@ -432,10 +435,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Is the recycle bin enabled
    * @return hasRecycleBin
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Is the recycle bin enabled")
   public Boolean isHasRecycleBin() {
     return hasRecycleBin;
   }
@@ -450,10 +453,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Show or hide hidden files
    * @return showHiddenFiles
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Show or hide hidden files")
   public Boolean isShowHiddenFiles() {
     return showHiddenFiles;
   }
@@ -468,10 +471,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Show the username
    * @return showUsername
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Show the username")
   public Boolean isShowUsername() {
     return showUsername;
   }
@@ -486,10 +489,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Selected start page
    * @return startPage
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Selected start page")
   public String getStartPage() {
     return startPage;
   }
@@ -504,10 +507,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Language
    * @return locale
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Language")
   public String getLocale() {
     return locale;
   }
@@ -522,10 +525,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * What theme to use
    * @return theme
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "What theme to use")
   public String getTheme() {
     return theme;
   }
@@ -540,10 +543,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Show or hide the splash screen
    * @return hideSplash
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Show or hide the splash screen")
   public Boolean isHideSplash() {
     return hideSplash;
   }
@@ -558,10 +561,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * What features are available in settings
    * @return userAccountMode
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "What features are available in settings")
   public UserAccountModeEnum getUserAccountMode() {
     return userAccountMode;
   }
@@ -594,10 +597,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Is account events (GDPR) available
    * @return hasEvents
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Is account events (GDPR) available")
   public Boolean isHasEvents() {
     return hasEvents;
   }
@@ -612,10 +615,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Does the account have file versioning
    * @return hasVersioning
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Does the account have file versioning")
   public Boolean isHasVersioning() {
     return hasVersioning;
   }
@@ -630,10 +633,10 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Does the account have access to WebDAV
    * @return hasWebDav
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Does the account have access to WebDAV")
   public Boolean isHasWebDav() {
     return hasWebDav;
   }
@@ -648,16 +651,34 @@ public class ModelConfiguration {
   }
 
    /**
-   * 
+   * Does the account need to use other password(s) for WebDAV
    * @return hasWebDavPasswords
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Does the account need to use other password(s) for WebDAV")
   public Boolean isHasWebDavPasswords() {
     return hasWebDavPasswords;
   }
 
   public void setHasWebDavPasswords(Boolean hasWebDavPasswords) {
     this.hasWebDavPasswords = hasWebDavPasswords;
+  }
+
+  public ModelConfiguration hasShareBankIDAuth(Boolean hasShareBankIDAuth) {
+    this.hasShareBankIDAuth = hasShareBankIDAuth;
+    return this;
+  }
+
+   /**
+   * Can public shares be protected by BankID (Sweden only)
+   * @return hasShareBankIDAuth
+  **/
+  @ApiModelProperty(value = "Can public shares be protected by BankID (Sweden only)")
+  public Boolean isHasShareBankIDAuth() {
+    return hasShareBankIDAuth;
+  }
+
+  public void setHasShareBankIDAuth(Boolean hasShareBankIDAuth) {
+    this.hasShareBankIDAuth = hasShareBankIDAuth;
   }
 
 
@@ -697,12 +718,13 @@ public class ModelConfiguration {
         Objects.equals(this.hasEvents, _configuration.hasEvents) &&
         Objects.equals(this.hasVersioning, _configuration.hasVersioning) &&
         Objects.equals(this.hasWebDav, _configuration.hasWebDav) &&
-        Objects.equals(this.hasWebDavPasswords, _configuration.hasWebDavPasswords);
+        Objects.equals(this.hasWebDavPasswords, _configuration.hasWebDavPasswords) &&
+        Objects.equals(this.hasShareBankIDAuth, _configuration.hasShareBankIDAuth);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(hasMulti, hasCommon, hasPermissions, hasExtendedPermissions, hasTeamSync, hasGroups, hasQuota, hasInspection, hasBackup, hasUnlimitedBackup, hasKlsBackup, hasMedia, hasSync, hasAutostore, hasOfficeOnline, hasRecycleBin, showHiddenFiles, showUsername, startPage, locale, theme, hideSplash, userAccountMode, allowShare, hasEvents, hasVersioning, hasWebDav, hasWebDavPasswords);
+    return Objects.hash(hasMulti, hasCommon, hasPermissions, hasExtendedPermissions, hasTeamSync, hasGroups, hasQuota, hasInspection, hasBackup, hasUnlimitedBackup, hasKlsBackup, hasMedia, hasSync, hasAutostore, hasOfficeOnline, hasRecycleBin, showHiddenFiles, showUsername, startPage, locale, theme, hideSplash, userAccountMode, allowShare, hasEvents, hasVersioning, hasWebDav, hasWebDavPasswords, hasShareBankIDAuth);
   }
 
 
@@ -739,6 +761,7 @@ public class ModelConfiguration {
     sb.append("    hasVersioning: ").append(toIndentedString(hasVersioning)).append("\n");
     sb.append("    hasWebDav: ").append(toIndentedString(hasWebDav)).append("\n");
     sb.append("    hasWebDavPasswords: ").append(toIndentedString(hasWebDavPasswords)).append("\n");
+    sb.append("    hasShareBankIDAuth: ").append(toIndentedString(hasShareBankIDAuth)).append("\n");
     sb.append("}");
     return sb.toString();
   }

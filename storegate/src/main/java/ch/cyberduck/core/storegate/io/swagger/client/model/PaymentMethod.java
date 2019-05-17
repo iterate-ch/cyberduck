@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class PaymentMethod {
   @JsonProperty("id")
   private String id = null;
@@ -34,7 +34,7 @@ public class PaymentMethod {
   private String name = null;
 
   /**
-   * 
+   * Payment method type
    */
   public enum TypeEnum {
     NUMBER_0(0),
@@ -79,10 +79,10 @@ public class PaymentMethod {
   }
 
    /**
-   * 
+   * Payment method Id
    * @return id
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Payment method Id")
   public String getId() {
     return id;
   }
@@ -97,10 +97,10 @@ public class PaymentMethod {
   }
 
    /**
-   * 
+   * Payment method name
    * @return name
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Payment method name")
   public String getName() {
     return name;
   }
@@ -115,10 +115,10 @@ public class PaymentMethod {
   }
 
    /**
-   * 
+   * Payment method type
    * @return type
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Payment method type")
   public TypeEnum getType() {
     return type;
   }

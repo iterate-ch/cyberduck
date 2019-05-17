@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class CampaignPrice {
   @JsonProperty("startFee")
   private Double startFee = null;
@@ -42,10 +42,10 @@ public class CampaignPrice {
   }
 
    /**
-   * 
+   * The campaign start fee
    * @return startFee
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The campaign start fee")
   public Double getStartFee() {
     return startFee;
   }
@@ -60,10 +60,10 @@ public class CampaignPrice {
   }
 
    /**
-   * 
+   * The campaign monthly fee
    * @return monthlyFee
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The campaign monthly fee")
   public Double getMonthlyFee() {
     return monthlyFee;
   }
@@ -78,10 +78,10 @@ public class CampaignPrice {
   }
 
    /**
-   * 
+   * Length of the campaign
    * @return length
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Length of the campaign")
   public Integer getLength() {
     return length;
   }

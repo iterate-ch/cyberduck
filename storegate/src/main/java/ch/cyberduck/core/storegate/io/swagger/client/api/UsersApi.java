@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class UsersApi {
   private ApiClient apiClient;
 
@@ -535,7 +535,7 @@ public class UsersApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Create a new user
+   * Create a new user with username and password
    * 
    * @param createUserRequest The CreateUserRequest (required)
    * @return ExtendedUser
@@ -546,7 +546,7 @@ public class UsersApi {
       }
 
   /**
-   * Create a new user
+   * Create a new user with username and password
    * 
    * @param createUserRequest The CreateUserRequest (required)
    * @return ApiResponse&lt;ExtendedUser&gt;
@@ -587,7 +587,7 @@ public class UsersApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Create a new user
+   * Create a new user via invite
    * 
    * @param createUserRequest The CreateUserRequest (required)
    * @return ExtendedUser
@@ -598,7 +598,7 @@ public class UsersApi {
       }
 
   /**
-   * Create a new user
+   * Create a new user via invite
    * 
    * @param createUserRequest The CreateUserRequest (required)
    * @return ApiResponse&lt;ExtendedUser&gt;
@@ -749,5 +749,64 @@ public class UsersApi {
 
 
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  }
+  /**
+   * Enable/disable sub admin permissions
+   * 
+   * @param id The id to the specific user (required)
+   * @param subadmin True or false (required)
+   * @throws ApiException if fails to make API call
+   */
+  public void usersSubUserSubAdmin(String id, Boolean subadmin) throws ApiException {
+
+    usersSubUserSubAdminWithHttpInfo(id, subadmin);
+  }
+
+  /**
+   * Enable/disable sub admin permissions
+   * 
+   * @param id The id to the specific user (required)
+   * @param subadmin True or false (required)
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<Void> usersSubUserSubAdminWithHttpInfo(String id, Boolean subadmin) throws ApiException {
+    Object localVarPostBody = subadmin;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling usersSubUserSubAdmin");
+    }
+    
+    // verify the required parameter 'subadmin' is set
+    if (subadmin == null) {
+      throw new ApiException(400, "Missing the required parameter 'subadmin' when calling usersSubUserSubAdmin");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4/users/{id}/subadmin"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json", "text/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+
+    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
 }

@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Update a accounts multi settings. Properties that are null/undefined/missing are not updated
  */
 @ApiModel(description = "Update a accounts multi settings. Properties that are null/undefined/missing are not updated")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class UpdateMultiSettings {
   @JsonProperty("officeOnline")
   private Boolean officeOnline = null;
@@ -87,6 +87,9 @@ public class UpdateMultiSettings {
 
   @JsonProperty("allowShare")
   private Boolean allowShare = null;
+
+  @JsonProperty("forceTwoFactor")
+  private Boolean forceTwoFactor = null;
 
   public UpdateMultiSettings officeOnline(Boolean officeOnline) {
     this.officeOnline = officeOnline;
@@ -196,6 +199,24 @@ public class UpdateMultiSettings {
     this.allowShare = allowShare;
   }
 
+  public UpdateMultiSettings forceTwoFactor(Boolean forceTwoFactor) {
+    this.forceTwoFactor = forceTwoFactor;
+    return this;
+  }
+
+   /**
+   * Force TwoFactor for all users
+   * @return forceTwoFactor
+  **/
+  @ApiModelProperty(value = "Force TwoFactor for all users")
+  public Boolean isForceTwoFactor() {
+    return forceTwoFactor;
+  }
+
+  public void setForceTwoFactor(Boolean forceTwoFactor) {
+    this.forceTwoFactor = forceTwoFactor;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -211,12 +232,13 @@ public class UpdateMultiSettings {
         Objects.equals(this.versions, updateMultiSettings.versions) &&
         Objects.equals(this.commonRootPermission, updateMultiSettings.commonRootPermission) &&
         Objects.equals(this.extendedPermissions, updateMultiSettings.extendedPermissions) &&
-        Objects.equals(this.allowShare, updateMultiSettings.allowShare);
+        Objects.equals(this.allowShare, updateMultiSettings.allowShare) &&
+        Objects.equals(this.forceTwoFactor, updateMultiSettings.forceTwoFactor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(officeOnline, recycleBin, versions, commonRootPermission, extendedPermissions, allowShare);
+    return Objects.hash(officeOnline, recycleBin, versions, commonRootPermission, extendedPermissions, allowShare, forceTwoFactor);
   }
 
 
@@ -231,6 +253,7 @@ public class UpdateMultiSettings {
     sb.append("    commonRootPermission: ").append(toIndentedString(commonRootPermission)).append("\n");
     sb.append("    extendedPermissions: ").append(toIndentedString(extendedPermissions)).append("\n");
     sb.append("    allowShare: ").append(toIndentedString(allowShare)).append("\n");
+    sb.append("    forceTwoFactor: ").append(toIndentedString(forceTwoFactor)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class AccountStorage {
   @JsonProperty("usedMyFiles")
   private Long usedMyFiles = null;
@@ -63,10 +63,10 @@ public class AccountStorage {
   }
 
    /**
-   * 
+   * Used in Files
    * @return usedMyFiles
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Used in Files")
   public Long getUsedMyFiles() {
     return usedMyFiles;
   }
@@ -81,10 +81,10 @@ public class AccountStorage {
   }
 
    /**
-   * 
+   * Used in Backup
    * @return usedBackup
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Used in Backup")
   public Long getUsedBackup() {
     return usedBackup;
   }
@@ -99,10 +99,10 @@ public class AccountStorage {
   }
 
    /**
-   * 
+   * Used by versions
    * @return usedVersions
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Used by versions")
   public Long getUsedVersions() {
     return usedVersions;
   }
@@ -117,10 +117,10 @@ public class AccountStorage {
   }
 
    /**
-   * 
+   * Used in the recycle bin
    * @return usedRecyclebin
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Used in the recycle bin")
   public Long getUsedRecyclebin() {
     return usedRecyclebin;
   }
@@ -135,10 +135,10 @@ public class AccountStorage {
   }
 
    /**
-   * 
+   * The accountId
    * @return accountId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The accountId")
   public String getAccountId() {
     return accountId;
   }

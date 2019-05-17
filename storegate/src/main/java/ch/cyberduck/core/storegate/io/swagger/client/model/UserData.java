@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class UserData {
   @JsonProperty("requireOrganizationNumber")
   private Boolean requireOrganizationNumber = null;
@@ -60,10 +60,10 @@ public class UserData {
   }
 
    /**
-   * 
+   * Is organization number required
    * @return requireOrganizationNumber
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Is organization number required")
   public Boolean isRequireOrganizationNumber() {
     return requireOrganizationNumber;
   }
@@ -78,10 +78,10 @@ public class UserData {
   }
 
    /**
-   * 
+   * Is social security number required
    * @return requireSocialSecurityNumber
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Is social security number required")
   public Boolean isRequireSocialSecurityNumber() {
     return requireSocialSecurityNumber;
   }
@@ -96,10 +96,10 @@ public class UserData {
   }
 
    /**
-   * 
+   * Show the registration agreement
    * @return showAgreement
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Show the registration agreement")
   public Boolean isShowAgreement() {
     return showAgreement;
   }
@@ -114,10 +114,10 @@ public class UserData {
   }
 
    /**
-   * 
+   * Company name
    * @return company
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Company name")
   public String getCompany() {
     return company;
   }
@@ -132,10 +132,10 @@ public class UserData {
   }
 
    /**
-   * 
+   * Organization number
    * @return organizationNumber
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Organization number")
   public String getOrganizationNumber() {
     return organizationNumber;
   }
@@ -150,10 +150,10 @@ public class UserData {
   }
 
    /**
-   * 
+   * Social security number
    * @return socialSecurityNumber
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Social security number")
   public String getSocialSecurityNumber() {
     return socialSecurityNumber;
   }
@@ -168,10 +168,10 @@ public class UserData {
   }
 
    /**
-   * 
+   * Country code (ISO 3166-1 alpha-2)
    * @return countryCode
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Country code (ISO 3166-1 alpha-2)")
   public String getCountryCode() {
     return countryCode;
   }
@@ -186,10 +186,10 @@ public class UserData {
   }
 
    /**
-   * 
+   * VAT number
    * @return vatNumber
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "VAT number")
   public String getVatNumber() {
     return vatNumber;
   }
@@ -204,10 +204,10 @@ public class UserData {
   }
 
    /**
-   * 
+   * Subscribe to newsletter
    * @return newsletter
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Subscribe to newsletter")
   public Boolean isNewsletter() {
     return newsletter;
   }

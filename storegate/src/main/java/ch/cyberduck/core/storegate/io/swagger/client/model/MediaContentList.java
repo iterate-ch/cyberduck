@@ -15,26 +15,26 @@ package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.storegate.io.swagger.client.model.Content;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class MediaContentList {
   @JsonProperty("locale")
   private String locale = null;
 
   @JsonProperty("media")
-  private List<Content> media = null;
+  private Map<String, String> media = null;
 
   public MediaContentList locale(String locale) {
     this.locale = locale;
@@ -54,16 +54,16 @@ public class MediaContentList {
     this.locale = locale;
   }
 
-  public MediaContentList media(List<Content> media) {
+  public MediaContentList media(Map<String, String> media) {
     this.media = media;
     return this;
   }
 
-  public MediaContentList addMediaItem(Content mediaItem) {
+  public MediaContentList putMediaItem(String key, String mediaItem) {
     if (this.media == null) {
-      this.media = new ArrayList<Content>();
+      this.media = new HashMap<String, String>();
     }
-    this.media.add(mediaItem);
+    this.media.put(key, mediaItem);
     return this;
   }
 
@@ -72,11 +72,11 @@ public class MediaContentList {
    * @return media
   **/
   @ApiModelProperty(value = "")
-  public List<Content> getMedia() {
+  public Map<String, String> getMedia() {
     return media;
   }
 
-  public void setMedia(List<Content> media) {
+  public void setMedia(Map<String, String> media) {
     this.media = media;
   }
 

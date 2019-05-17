@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class SubscriptionApi {
   private ApiClient apiClient;
 
@@ -130,7 +130,7 @@ public class SubscriptionApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Get current subscription end date
+   * Get a list of available upgrades
    * 
    * @return List&lt;UpgradeSalepackage&gt;
    * @throws ApiException if fails to make API call
@@ -140,7 +140,7 @@ public class SubscriptionApi {
       }
 
   /**
-   * Get current subscription end date
+   * Get a list of available upgrades
    * 
    * @return ApiResponse&lt;List&lt;UpgradeSalepackage&gt;&gt;
    * @throws ApiException if fails to make API call

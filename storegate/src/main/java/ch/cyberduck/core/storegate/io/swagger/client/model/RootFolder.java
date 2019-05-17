@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * A rootfolder is folder that contains part of the account. An account usally have multiple root folders, like \&quot;home\&quot; and \&quot;backup\&quot;.
  */
 @ApiModel(description = "A rootfolder is folder that contains part of the account. An account usally have multiple root folders, like \"home\" and \"backup\".")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class RootFolder {
   @JsonProperty("path")
   private String path = null;
@@ -88,6 +88,9 @@ public class RootFolder {
 
   @JsonProperty("uploaded")
   private DateTime uploaded = null;
+
+  @JsonProperty("accessed")
+  private DateTime accessed = null;
 
   /**
    * Indicates the item type.
@@ -288,6 +291,24 @@ public class RootFolder {
     this.uploaded = uploaded;
   }
 
+  public RootFolder accessed(DateTime accessed) {
+    this.accessed = accessed;
+    return this;
+  }
+
+   /**
+   * The date and time the item was last accessed.
+   * @return accessed
+  **/
+  @ApiModelProperty(value = "The date and time the item was last accessed.")
+  public DateTime getAccessed() {
+    return accessed;
+  }
+
+  public void setAccessed(DateTime accessed) {
+    this.accessed = accessed;
+  }
+
   public RootFolder flags(FlagsEnum flags) {
     this.flags = flags;
     return this;
@@ -342,13 +363,14 @@ public class RootFolder {
         Objects.equals(this.created, rootFolder.created) &&
         Objects.equals(this.modified, rootFolder.modified) &&
         Objects.equals(this.uploaded, rootFolder.uploaded) &&
+        Objects.equals(this.accessed, rootFolder.accessed) &&
         Objects.equals(this.flags, rootFolder.flags) &&
         Objects.equals(this.ownerId, rootFolder.ownerId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(path, rootFolderType, id, name, size, created, modified, uploaded, flags, ownerId);
+    return Objects.hash(path, rootFolderType, id, name, size, created, modified, uploaded, accessed, flags, ownerId);
   }
 
 
@@ -365,6 +387,7 @@ public class RootFolder {
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
     sb.append("    modified: ").append(toIndentedString(modified)).append("\n");
     sb.append("    uploaded: ").append(toIndentedString(uploaded)).append("\n");
+    sb.append("    accessed: ").append(toIndentedString(accessed)).append("\n");
     sb.append("    flags: ").append(toIndentedString(flags)).append("\n");
     sb.append("    ownerId: ").append(toIndentedString(ownerId)).append("\n");
     sb.append("}");

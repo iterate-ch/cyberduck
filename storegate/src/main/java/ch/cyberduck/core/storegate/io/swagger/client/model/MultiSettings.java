@@ -27,7 +27,7 @@ import java.util.List;
  * A accounts multi settings. Properties that are null/undefined/missing are not available
  */
 @ApiModel(description = "A accounts multi settings. Properties that are null/undefined/missing are not available")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class MultiSettings {
   @JsonProperty("versionsAvailable")
   private List<Integer> versionsAvailable = null;
@@ -37,6 +37,9 @@ public class MultiSettings {
 
   @JsonProperty("idProviderCode")
   private String idProviderCode = null;
+
+  @JsonProperty("showForceTwoFactor")
+  private Boolean showForceTwoFactor = null;
 
   @JsonProperty("officeOnline")
   private Boolean officeOnline = null;
@@ -99,6 +102,9 @@ public class MultiSettings {
   @JsonProperty("allowShare")
   private Boolean allowShare = null;
 
+  @JsonProperty("forceTwoFactor")
+  private Boolean forceTwoFactor = null;
+
   public MultiSettings versionsAvailable(List<Integer> versionsAvailable) {
     this.versionsAvailable = versionsAvailable;
     return this;
@@ -159,6 +165,24 @@ public class MultiSettings {
 
   public void setIdProviderCode(String idProviderCode) {
     this.idProviderCode = idProviderCode;
+  }
+
+  public MultiSettings showForceTwoFactor(Boolean showForceTwoFactor) {
+    this.showForceTwoFactor = showForceTwoFactor;
+    return this;
+  }
+
+   /**
+   * Show Force TwoFactor for all users
+   * @return showForceTwoFactor
+  **/
+  @ApiModelProperty(value = "Show Force TwoFactor for all users")
+  public Boolean isShowForceTwoFactor() {
+    return showForceTwoFactor;
+  }
+
+  public void setShowForceTwoFactor(Boolean showForceTwoFactor) {
+    this.showForceTwoFactor = showForceTwoFactor;
   }
 
   public MultiSettings officeOnline(Boolean officeOnline) {
@@ -269,6 +293,24 @@ public class MultiSettings {
     this.allowShare = allowShare;
   }
 
+  public MultiSettings forceTwoFactor(Boolean forceTwoFactor) {
+    this.forceTwoFactor = forceTwoFactor;
+    return this;
+  }
+
+   /**
+   * Force TwoFactor for all users
+   * @return forceTwoFactor
+  **/
+  @ApiModelProperty(value = "Force TwoFactor for all users")
+  public Boolean isForceTwoFactor() {
+    return forceTwoFactor;
+  }
+
+  public void setForceTwoFactor(Boolean forceTwoFactor) {
+    this.forceTwoFactor = forceTwoFactor;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -282,17 +324,19 @@ public class MultiSettings {
     return Objects.equals(this.versionsAvailable, multiSettings.versionsAvailable) &&
         Objects.equals(this.idProvider, multiSettings.idProvider) &&
         Objects.equals(this.idProviderCode, multiSettings.idProviderCode) &&
+        Objects.equals(this.showForceTwoFactor, multiSettings.showForceTwoFactor) &&
         Objects.equals(this.officeOnline, multiSettings.officeOnline) &&
         Objects.equals(this.recycleBin, multiSettings.recycleBin) &&
         Objects.equals(this.versions, multiSettings.versions) &&
         Objects.equals(this.commonRootPermission, multiSettings.commonRootPermission) &&
         Objects.equals(this.extendedPermissions, multiSettings.extendedPermissions) &&
-        Objects.equals(this.allowShare, multiSettings.allowShare);
+        Objects.equals(this.allowShare, multiSettings.allowShare) &&
+        Objects.equals(this.forceTwoFactor, multiSettings.forceTwoFactor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(versionsAvailable, idProvider, idProviderCode, officeOnline, recycleBin, versions, commonRootPermission, extendedPermissions, allowShare);
+    return Objects.hash(versionsAvailable, idProvider, idProviderCode, showForceTwoFactor, officeOnline, recycleBin, versions, commonRootPermission, extendedPermissions, allowShare, forceTwoFactor);
   }
 
 
@@ -304,12 +348,14 @@ public class MultiSettings {
     sb.append("    versionsAvailable: ").append(toIndentedString(versionsAvailable)).append("\n");
     sb.append("    idProvider: ").append(toIndentedString(idProvider)).append("\n");
     sb.append("    idProviderCode: ").append(toIndentedString(idProviderCode)).append("\n");
+    sb.append("    showForceTwoFactor: ").append(toIndentedString(showForceTwoFactor)).append("\n");
     sb.append("    officeOnline: ").append(toIndentedString(officeOnline)).append("\n");
     sb.append("    recycleBin: ").append(toIndentedString(recycleBin)).append("\n");
     sb.append("    versions: ").append(toIndentedString(versions)).append("\n");
     sb.append("    commonRootPermission: ").append(toIndentedString(commonRootPermission)).append("\n");
     sb.append("    extendedPermissions: ").append(toIndentedString(extendedPermissions)).append("\n");
     sb.append("    allowShare: ").append(toIndentedString(allowShare)).append("\n");
+    sb.append("    forceTwoFactor: ").append(toIndentedString(forceTwoFactor)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class RegistrationApi {
   private ApiClient apiClient;
 
@@ -42,9 +42,9 @@ public class RegistrationApi {
   }
 
   /**
-   * IsUsernameAvailable. No authorisation header needed.
+   * Check if the username is available
    * 
-   * @param usernameRequest The username request. Use JSON.Stringify() (required)
+   * @param usernameRequest The username request. (required)
    * @return Boolean
    * @throws ApiException if fails to make API call
    */
@@ -53,9 +53,9 @@ public class RegistrationApi {
       }
 
   /**
-   * IsUsernameAvailable. No authorisation header needed.
+   * Check if the username is available
    * 
-   * @param usernameRequest The username request. Use JSON.Stringify() (required)
+   * @param usernameRequest The username request. (required)
    * @return ApiResponse&lt;Boolean&gt;
    * @throws ApiException if fails to make API call
    */
@@ -229,7 +229,7 @@ public class RegistrationApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Register a new account.
+   * Register a new account with campaign.
    * 
    * @param createAccountRequest RegisterAccountRequest (required)
    * @param code  (required)
@@ -241,7 +241,7 @@ public class RegistrationApi {
       }
 
   /**
-   * Register a new account.
+   * Register a new account with campaign.
    * 
    * @param createAccountRequest RegisterAccountRequest (required)
    * @param code  (required)
@@ -342,7 +342,7 @@ public class RegistrationApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Register a new account.
+   * Register a new account with signup.
    * 
    * @param createAccountRequest RegisterAccountRequest (required)
    * @param signupId  (required)
@@ -354,7 +354,7 @@ public class RegistrationApi {
       }
 
   /**
-   * Register a new account.
+   * Register a new account with signup.
    * 
    * @param createAccountRequest RegisterAccountRequest (required)
    * @param signupId  (required)
@@ -402,7 +402,7 @@ public class RegistrationApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Register a new account.
+   * Get information on sub user registration
    * 
    * @param userid  (required)
    * @return RegistrationInformationSubuser
@@ -413,7 +413,7 @@ public class RegistrationApi {
       }
 
   /**
-   * Register a new account.
+   * Get information on sub user registration
    * 
    * @param userid  (required)
    * @return ApiResponse&lt;RegistrationInformationSubuser&gt;
@@ -455,7 +455,7 @@ public class RegistrationApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Register a new account.
+   * Register a new sub account.
    * 
    * @param createAccountRequest RegisterAccountRequest (required)
    * @param userid  (required)
@@ -467,7 +467,7 @@ public class RegistrationApi {
       }
 
   /**
-   * Register a new account.
+   * Register a new sub account.
    * 
    * @param createAccountRequest RegisterAccountRequest (required)
    * @param userid  (required)

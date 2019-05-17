@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * A CreateFolderRequest object
  */
 @ApiModel(description = "A CreateFolderRequest object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class CreateFolderRequest {
   @JsonProperty("parentID")
   private String parentID = null;
@@ -45,9 +45,6 @@ public class CreateFolderRequest {
 
   @JsonProperty("attributes")
   private Integer attributes = null;
-
-  @JsonProperty("lockId")
-  private String lockId = null;
 
   public CreateFolderRequest parentID(String parentID) {
     this.parentID = parentID;
@@ -157,24 +154,6 @@ public class CreateFolderRequest {
     this.attributes = attributes;
   }
 
-  public CreateFolderRequest lockId(String lockId) {
-    this.lockId = lockId;
-    return this;
-  }
-
-   /**
-   * The lock id, if available
-   * @return lockId
-  **/
-  @ApiModelProperty(value = "The lock id, if available")
-  public String getLockId() {
-    return lockId;
-  }
-
-  public void setLockId(String lockId) {
-    this.lockId = lockId;
-  }
-
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -190,13 +169,12 @@ public class CreateFolderRequest {
         Objects.equals(this.modified, createFolderRequest.modified) &&
         Objects.equals(this.created, createFolderRequest.created) &&
         Objects.equals(this.accessed, createFolderRequest.accessed) &&
-        Objects.equals(this.attributes, createFolderRequest.attributes) &&
-        Objects.equals(this.lockId, createFolderRequest.lockId);
+        Objects.equals(this.attributes, createFolderRequest.attributes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(parentID, name, modified, created, accessed, attributes, lockId);
+    return Objects.hash(parentID, name, modified, created, accessed, attributes);
   }
 
 
@@ -211,7 +189,6 @@ public class CreateFolderRequest {
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
     sb.append("    accessed: ").append(toIndentedString(accessed)).append("\n");
     sb.append("    attributes: ").append(toIndentedString(attributes)).append("\n");
-    sb.append("    lockId: ").append(toIndentedString(lockId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

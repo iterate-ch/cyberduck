@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class ImageApi {
   private ApiClient apiClient;
 
@@ -104,15 +104,14 @@ public class ImageApi {
    * 
    * @param shareid The share id (required)
    * @param id The file id (required)
-   * @param accessid Access id (required)
    * @param width Thumbnail width (optional)
    * @param height Thumbnail height (optional)
    * @param rotate Thumbnail rotation (optional)
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String imageGetImageFileShare(String shareid, String id, String accessid, Integer width, Integer height, Integer rotate) throws ApiException {
-    return imageGetImageFileShareWithHttpInfo(shareid, id, accessid, width, height, rotate).getData();
+  public String imageGetImageFileShare(String shareid, String id, Integer width, Integer height, Integer rotate) throws ApiException {
+    return imageGetImageFileShareWithHttpInfo(shareid, id, width, height, rotate).getData();
       }
 
   /**
@@ -120,14 +119,13 @@ public class ImageApi {
    * 
    * @param shareid The share id (required)
    * @param id The file id (required)
-   * @param accessid Access id (required)
    * @param width Thumbnail width (optional)
    * @param height Thumbnail height (optional)
    * @param rotate Thumbnail rotation (optional)
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> imageGetImageFileShareWithHttpInfo(String shareid, String id, String accessid, Integer width, Integer height, Integer rotate) throws ApiException {
+  public ApiResponse<String> imageGetImageFileShareWithHttpInfo(String shareid, String id, Integer width, Integer height, Integer rotate) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'shareid' is set
@@ -140,11 +138,6 @@ public class ImageApi {
       throw new ApiException(400, "Missing the required parameter 'id' when calling imageGetImageFileShare");
     }
     
-    // verify the required parameter 'accessid' is set
-    if (accessid == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessid' when calling imageGetImageFileShare");
-    }
-    
     // create path and map variables
     String localVarPath = "/v4/images/shares/{shareid}/fileid/{id}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()))
@@ -155,7 +148,6 @@ public class ImageApi {
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "accessid", accessid));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "rotate", rotate));
@@ -244,15 +236,14 @@ public class ImageApi {
    * 
    * @param shareid The share id (required)
    * @param mediaid File version (required)
-   * @param accessid Access id (required)
    * @param width Thumbnail width (optional)
    * @param height Thumbnail height (optional)
    * @param rotate Thumbnail rotation (optional)
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String imageGetImageMediaShare(String shareid, String mediaid, String accessid, Integer width, Integer height, Integer rotate) throws ApiException {
-    return imageGetImageMediaShareWithHttpInfo(shareid, mediaid, accessid, width, height, rotate).getData();
+  public String imageGetImageMediaShare(String shareid, String mediaid, Integer width, Integer height, Integer rotate) throws ApiException {
+    return imageGetImageMediaShareWithHttpInfo(shareid, mediaid, width, height, rotate).getData();
       }
 
   /**
@@ -260,14 +251,13 @@ public class ImageApi {
    * 
    * @param shareid The share id (required)
    * @param mediaid File version (required)
-   * @param accessid Access id (required)
    * @param width Thumbnail width (optional)
    * @param height Thumbnail height (optional)
    * @param rotate Thumbnail rotation (optional)
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> imageGetImageMediaShareWithHttpInfo(String shareid, String mediaid, String accessid, Integer width, Integer height, Integer rotate) throws ApiException {
+  public ApiResponse<String> imageGetImageMediaShareWithHttpInfo(String shareid, String mediaid, Integer width, Integer height, Integer rotate) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'shareid' is set
@@ -280,11 +270,6 @@ public class ImageApi {
       throw new ApiException(400, "Missing the required parameter 'mediaid' when calling imageGetImageMediaShare");
     }
     
-    // verify the required parameter 'accessid' is set
-    if (accessid == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessid' when calling imageGetImageMediaShare");
-    }
-    
     // create path and map variables
     String localVarPath = "/v4/images/shares/{shareid}/mediaid/{mediaid}"
       .replaceAll("\\{" + "shareid" + "\\}", apiClient.escapeString(shareid.toString()))
@@ -295,7 +280,6 @@ public class ImageApi {
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "accessid", accessid));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "width", width));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "height", height));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "rotate", rotate));

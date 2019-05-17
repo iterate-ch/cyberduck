@@ -129,11 +129,11 @@
                                 <configuration>
                                     <inputSpec>https://ws1-stage.storegate.se/api/swagger/docs/v4</inputSpec>
                                     <language>java</language>
-                                    <output>${project.build.directory}/generated-sources</output>
+                                    <output>${project.basedir}</output>
                                     <modelPackage>ch.cyberduck.core.storegate.io.swagger.client.model</modelPackage>
                                     <apiPackage>ch.cyberduck.core.storegate.io.swagger.client.api</apiPackage>
                                     <configOptions>
-                                        <sourceFolder>swagger</sourceFolder>
+                                        <sourceFolder>src/main/java</sourceFolder>
                                         <library>jersey2</library>
                                         <dateLibrary>joda</dateLibrary>
                                     </configOptions>

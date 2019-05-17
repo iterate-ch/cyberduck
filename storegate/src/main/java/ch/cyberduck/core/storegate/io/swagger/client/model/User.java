@@ -26,13 +26,16 @@ import org.joda.time.DateTime;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class User {
   @JsonProperty("id")
   private String id = null;
 
   @JsonProperty("isAdmin")
   private Boolean isAdmin = null;
+
+  @JsonProperty("isSubAdmin")
+  private Boolean isSubAdmin = null;
 
   /**
    * Account status
@@ -54,7 +57,9 @@ public class User {
     
     NUMBER_64(64),
     
-    NUMBER_128(128);
+    NUMBER_128(128),
+    
+    NUMBER_256(256);
 
     private Integer value;
 
@@ -141,6 +146,24 @@ public class User {
 
   public void setIsAdmin(Boolean isAdmin) {
     this.isAdmin = isAdmin;
+  }
+
+  public User isSubAdmin(Boolean isSubAdmin) {
+    this.isSubAdmin = isSubAdmin;
+    return this;
+  }
+
+   /**
+   * Is the user Admin
+   * @return isSubAdmin
+  **/
+  @ApiModelProperty(value = "Is the user Admin")
+  public Boolean isIsSubAdmin() {
+    return isSubAdmin;
+  }
+
+  public void setIsSubAdmin(Boolean isSubAdmin) {
+    this.isSubAdmin = isSubAdmin;
   }
 
   public User flags(FlagsEnum flags) {
@@ -299,6 +322,7 @@ public class User {
     User user = (User) o;
     return Objects.equals(this.id, user.id) &&
         Objects.equals(this.isAdmin, user.isAdmin) &&
+        Objects.equals(this.isSubAdmin, user.isSubAdmin) &&
         Objects.equals(this.flags, user.flags) &&
         Objects.equals(this.created, user.created) &&
         Objects.equals(this.lastLogin, user.lastLogin) &&
@@ -311,7 +335,7 @@ public class User {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, isAdmin, flags, created, lastLogin, email, username, firstName, lastName, company);
+    return Objects.hash(id, isAdmin, isSubAdmin, flags, created, lastLogin, email, username, firstName, lastName, company);
   }
 
 
@@ -322,6 +346,7 @@ public class User {
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    isAdmin: ").append(toIndentedString(isAdmin)).append("\n");
+    sb.append("    isSubAdmin: ").append(toIndentedString(isSubAdmin)).append("\n");
     sb.append("    flags: ").append(toIndentedString(flags)).append("\n");
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
     sb.append("    lastLogin: ").append(toIndentedString(lastLogin)).append("\n");

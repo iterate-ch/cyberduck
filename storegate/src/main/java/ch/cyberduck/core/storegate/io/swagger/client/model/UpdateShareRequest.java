@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.cyberduck.core.storegate.io.swagger.client.model.BankIDContact;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -28,7 +29,7 @@ import org.joda.time.DateTime;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class UpdateShareRequest {
   @JsonProperty("password")
   private String password = null;
@@ -56,6 +57,49 @@ public class UpdateShareRequest {
 
   @JsonProperty("allowComments")
   private Boolean allowComments = null;
+
+  @JsonProperty("bankIDContacts")
+  private List<BankIDContact> bankIDContacts = null;
+
+  /**
+   * Share AuthMethod
+   */
+  public enum AuthMethodEnum {
+    NUMBER_0(0),
+    
+    NUMBER_1(1),
+    
+    NUMBER_2(2);
+
+    private Integer value;
+
+    AuthMethodEnum(Integer value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public Integer getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static AuthMethodEnum fromValue(String text) {
+      for (AuthMethodEnum b : AuthMethodEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+  }
+
+  @JsonProperty("authMethod")
+  private AuthMethodEnum authMethod = null;
 
   public UpdateShareRequest password(String password) {
     this.password = password;
@@ -235,6 +279,50 @@ public class UpdateShareRequest {
     this.allowComments = allowComments;
   }
 
+  public UpdateShareRequest bankIDContacts(List<BankIDContact> bankIDContacts) {
+    this.bankIDContacts = bankIDContacts;
+    return this;
+  }
+
+  public UpdateShareRequest addBankIDContactsItem(BankIDContact bankIDContactsItem) {
+    if (this.bankIDContacts == null) {
+      this.bankIDContacts = new ArrayList<BankIDContact>();
+    }
+    this.bankIDContacts.add(bankIDContactsItem);
+    return this;
+  }
+
+   /**
+   * List of receivers
+   * @return bankIDContacts
+  **/
+  @ApiModelProperty(value = "List of receivers")
+  public List<BankIDContact> getBankIDContacts() {
+    return bankIDContacts;
+  }
+
+  public void setBankIDContacts(List<BankIDContact> bankIDContacts) {
+    this.bankIDContacts = bankIDContacts;
+  }
+
+  public UpdateShareRequest authMethod(AuthMethodEnum authMethod) {
+    this.authMethod = authMethod;
+    return this;
+  }
+
+   /**
+   * Share AuthMethod
+   * @return authMethod
+  **/
+  @ApiModelProperty(value = "Share AuthMethod")
+  public AuthMethodEnum getAuthMethod() {
+    return authMethod;
+  }
+
+  public void setAuthMethod(AuthMethodEnum authMethod) {
+    this.authMethod = authMethod;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -253,12 +341,14 @@ public class UpdateShareRequest {
         Objects.equals(this.uploadNotificationEmails, updateShareRequest.uploadNotificationEmails) &&
         Objects.equals(this.uploadHideContents, updateShareRequest.uploadHideContents) &&
         Objects.equals(this.mediaAllowDownload, updateShareRequest.mediaAllowDownload) &&
-        Objects.equals(this.allowComments, updateShareRequest.allowComments);
+        Objects.equals(this.allowComments, updateShareRequest.allowComments) &&
+        Objects.equals(this.bankIDContacts, updateShareRequest.bankIDContacts) &&
+        Objects.equals(this.authMethod, updateShareRequest.authMethod);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(password, sentToEmails, accessLimit, accessUntil, allowUpload, uploadNotificationEmails, uploadHideContents, mediaAllowDownload, allowComments);
+    return Objects.hash(password, sentToEmails, accessLimit, accessUntil, allowUpload, uploadNotificationEmails, uploadHideContents, mediaAllowDownload, allowComments, bankIDContacts, authMethod);
   }
 
 
@@ -276,6 +366,8 @@ public class UpdateShareRequest {
     sb.append("    uploadHideContents: ").append(toIndentedString(uploadHideContents)).append("\n");
     sb.append("    mediaAllowDownload: ").append(toIndentedString(mediaAllowDownload)).append("\n");
     sb.append("    allowComments: ").append(toIndentedString(allowComments)).append("\n");
+    sb.append("    bankIDContacts: ").append(toIndentedString(bankIDContacts)).append("\n");
+    sb.append("    authMethod: ").append(toIndentedString(authMethod)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -28,7 +28,7 @@ import io.swagger.annotations.ApiModelProperty;
  * A CreateAccountRequest object
  */
 @ApiModel(description = "A CreateAccountRequest object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class CreateAccountRequest {
   @JsonProperty("salepackage")
   private CreateAccountSalepackage salepackage = null;
@@ -63,10 +63,10 @@ public class CreateAccountRequest {
   }
 
    /**
-   * 
+   * The salepackage
    * @return salepackage
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The salepackage")
   public CreateAccountSalepackage getSalepackage() {
     return salepackage;
   }
@@ -81,10 +81,10 @@ public class CreateAccountRequest {
   }
 
    /**
-   * 
+   * User information
    * @return userData
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "User information")
   public UserDataRequest getUserData() {
     return userData;
   }
@@ -99,10 +99,10 @@ public class CreateAccountRequest {
   }
 
    /**
-   * 
+   * Payment information
    * @return paymentData
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Payment information")
   public UpdatePaymentRequest getPaymentData() {
     return paymentData;
   }
@@ -117,10 +117,10 @@ public class CreateAccountRequest {
   }
 
    /**
-   * 
+   * Id of the sales person used in direct flow
    * @return saleReference
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Id of the sales person used in direct flow")
   public String getSaleReference() {
     return saleReference;
   }

@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class UploadApi {
   private ApiClient apiClient;
 
@@ -36,9 +36,9 @@ public class UploadApi {
   }
 
   /**
-   * Delete the resumable upload.
+   * Cancel a resumable upload.
    * 
-   * @param uploadId The id associated with the upload (required)
+   * @param uploadId The uploadId (required)
    * @throws ApiException if fails to make API call
    */
   public void uploadDeleteResumable(String uploadId) throws ApiException {
@@ -47,9 +47,9 @@ public class UploadApi {
   }
 
   /**
-   * Delete the resumable upload.
+   * Cancel a resumable upload.
    * 
-   * @param uploadId The id associated with the upload (required)
+   * @param uploadId The uploadId (required)
    * @throws ApiException if fails to make API call
    */
   public ApiResponse<Void> uploadDeleteResumableWithHttpInfo(String uploadId) throws ApiException {
@@ -88,7 +88,7 @@ public class UploadApi {
     return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Uploads a file using a multipart request containing a metadata part and a filedata part.
+   * Upload a file using a multipart request containing first a metadata (see reponse) part and a then the filedata part.
    * 
    * @return FileMetadata
    * @throws ApiException if fails to make API call
@@ -98,7 +98,7 @@ public class UploadApi {
       }
 
   /**
-   * Uploads a file using a multipart request containing a metadata part and a filedata part.
+   * Upload a file using a multipart request containing first a metadata (see reponse) part and a then the filedata part.
    * 
    * @return ApiResponse&lt;FileMetadata&gt;
    * @throws ApiException if fails to make API call
@@ -133,36 +133,29 @@ public class UploadApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Uploads a file to a share using a multipart request containing a metadata part and a filedata part.
+   * Upload a file to a share using a multipart request containing first a metadata (see reponse) part and a then the filedata part.
    * 
-   * @param shareid  (required)
-   * @param accessid  (required)
+   * @param shareid The shareId (required)
    * @return FileMetadata
    * @throws ApiException if fails to make API call
    */
-  public FileMetadata uploadPostMultipartShare(String shareid, String accessid) throws ApiException {
-    return uploadPostMultipartShareWithHttpInfo(shareid, accessid).getData();
+  public FileMetadata uploadPostMultipartShare(String shareid) throws ApiException {
+    return uploadPostMultipartShareWithHttpInfo(shareid).getData();
       }
 
   /**
-   * Uploads a file to a share using a multipart request containing a metadata part and a filedata part.
+   * Upload a file to a share using a multipart request containing first a metadata (see reponse) part and a then the filedata part.
    * 
-   * @param shareid  (required)
-   * @param accessid  (required)
+   * @param shareid The shareId (required)
    * @return ApiResponse&lt;FileMetadata&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileMetadata> uploadPostMultipartShareWithHttpInfo(String shareid, String accessid) throws ApiException {
+  public ApiResponse<FileMetadata> uploadPostMultipartShareWithHttpInfo(String shareid) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'shareid' is set
     if (shareid == null) {
       throw new ApiException(400, "Missing the required parameter 'shareid' when calling uploadPostMultipartShare");
-    }
-    
-    // verify the required parameter 'accessid' is set
-    if (accessid == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessid' when calling uploadPostMultipartShare");
     }
     
     // create path and map variables
@@ -174,7 +167,6 @@ public class UploadApi {
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "accessid", accessid));
 
     
     
@@ -194,23 +186,30 @@ public class UploadApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Starts a resumable upload.
+   * Starts a resumable (chunked) upload.
    * 
+   * @param metadata The metadata (required)
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String uploadPostResumable() throws ApiException {
-    return uploadPostResumableWithHttpInfo().getData();
+  public String uploadPostResumable(FileMetadata metadata) throws ApiException {
+    return uploadPostResumableWithHttpInfo(metadata).getData();
       }
 
   /**
-   * Starts a resumable upload.
+   * Starts a resumable (chunked) upload.
    * 
+   * @param metadata The metadata (required)
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> uploadPostResumableWithHttpInfo() throws ApiException {
-    Object localVarPostBody = null;
+  public ApiResponse<String> uploadPostResumableWithHttpInfo(FileMetadata metadata) throws ApiException {
+    Object localVarPostBody = metadata;
+    
+    // verify the required parameter 'metadata' is set
+    if (metadata == null) {
+      throw new ApiException(400, "Missing the required parameter 'metadata' when calling uploadPostResumable");
+    }
     
     // create path and map variables
     String localVarPath = "/v4/upload/resumable";
@@ -229,7 +228,7 @@ public class UploadApi {
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json", "text/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -239,36 +238,36 @@ public class UploadApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Starts a resumable upload to a share.
+   * Starts a resumable (chunked) upload to a share.
    * 
-   * @param shareid  (required)
-   * @param accessid  (required)
+   * @param shareid The shareId (required)
+   * @param metadata The metadata (required)
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String uploadPostResumableShare(String shareid, String accessid) throws ApiException {
-    return uploadPostResumableShareWithHttpInfo(shareid, accessid).getData();
+  public String uploadPostResumableShare(String shareid, FileMetadata metadata) throws ApiException {
+    return uploadPostResumableShareWithHttpInfo(shareid, metadata).getData();
       }
 
   /**
-   * Starts a resumable upload to a share.
+   * Starts a resumable (chunked) upload to a share.
    * 
-   * @param shareid  (required)
-   * @param accessid  (required)
+   * @param shareid The shareId (required)
+   * @param metadata The metadata (required)
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> uploadPostResumableShareWithHttpInfo(String shareid, String accessid) throws ApiException {
-    Object localVarPostBody = null;
+  public ApiResponse<String> uploadPostResumableShareWithHttpInfo(String shareid, FileMetadata metadata) throws ApiException {
+    Object localVarPostBody = metadata;
     
     // verify the required parameter 'shareid' is set
     if (shareid == null) {
       throw new ApiException(400, "Missing the required parameter 'shareid' when calling uploadPostResumableShare");
     }
     
-    // verify the required parameter 'accessid' is set
-    if (accessid == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessid' when calling uploadPostResumableShare");
+    // verify the required parameter 'metadata' is set
+    if (metadata == null) {
+      throw new ApiException(400, "Missing the required parameter 'metadata' when calling uploadPostResumableShare");
     }
     
     // create path and map variables
@@ -280,7 +279,6 @@ public class UploadApi {
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "accessid", accessid));
 
     
     
@@ -290,7 +288,7 @@ public class UploadApi {
     final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
     final String[] localVarContentTypes = {
-      
+      "application/json", "text/json"
     };
     final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
@@ -300,9 +298,9 @@ public class UploadApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Upload the chunkes to the resumable upload.              Use Content-Length: 0 and Content-Range: *_/Length to query upload status
+   * Upload a chunk to the resumable upload.              Use Content-Length and Content-Range to describe the chunk size and offset.              Use Content-Length &#x3D; 0 and Content-Range &#x3D; *_/Length to query upload status.
    * 
-   * @param uploadId The id associated with the upload (required)
+   * @param uploadId The uploadId (required)
    * @return FileMetadata
    * @throws ApiException if fails to make API call
    */
@@ -311,9 +309,9 @@ public class UploadApi {
       }
 
   /**
-   * Upload the chunkes to the resumable upload.              Use Content-Length: 0 and Content-Range: *_/Length to query upload status
+   * Upload a chunk to the resumable upload.              Use Content-Length and Content-Range to describe the chunk size and offset.              Use Content-Length &#x3D; 0 and Content-Range &#x3D; *_/Length to query upload status.
    * 
-   * @param uploadId The id associated with the upload (required)
+   * @param uploadId The uploadId (required)
    * @return ApiResponse&lt;FileMetadata&gt;
    * @throws ApiException if fails to make API call
    */

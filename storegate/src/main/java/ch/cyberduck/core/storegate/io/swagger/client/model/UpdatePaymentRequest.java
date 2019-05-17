@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class UpdatePaymentRequest {
   @JsonProperty("paymentMethodId")
   private String paymentMethodId = null;
@@ -66,10 +66,10 @@ public class UpdatePaymentRequest {
   }
 
    /**
-   * 
+   * Payment method id
    * @return paymentMethodId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Payment method id")
   public String getPaymentMethodId() {
     return paymentMethodId;
   }
@@ -84,10 +84,10 @@ public class UpdatePaymentRequest {
   }
 
    /**
-   * 
+   * Payment period id
    * @return paymentPeriodId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Payment period id")
   public String getPaymentPeriodId() {
     return paymentPeriodId;
   }
@@ -102,10 +102,10 @@ public class UpdatePaymentRequest {
   }
 
    /**
-   * 
+   * First name
    * @return firstName
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "First name")
   public String getFirstName() {
     return firstName;
   }
@@ -120,10 +120,10 @@ public class UpdatePaymentRequest {
   }
 
    /**
-   * 
+   * Surname
    * @return lastName
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Surname")
   public String getLastName() {
     return lastName;
   }
@@ -138,10 +138,10 @@ public class UpdatePaymentRequest {
   }
 
    /**
-   * 
+   * Company
    * @return company
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Company")
   public String getCompany() {
     return company;
   }
@@ -156,10 +156,10 @@ public class UpdatePaymentRequest {
   }
 
    /**
-   * 
+   * Reference to be displayed on invoice
    * @return reference
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Reference to be displayed on invoice")
   public String getReference() {
     return reference;
   }
@@ -174,10 +174,10 @@ public class UpdatePaymentRequest {
   }
 
    /**
-   * 
+   * CO address
    * @return coAddress
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "CO address")
   public String getCoAddress() {
     return coAddress;
   }
@@ -192,10 +192,10 @@ public class UpdatePaymentRequest {
   }
 
    /**
-   * 
+   * Street address
    * @return address
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Street address")
   public String getAddress() {
     return address;
   }
@@ -210,10 +210,10 @@ public class UpdatePaymentRequest {
   }
 
    /**
-   * 
+   * Zip Code
    * @return zipCode
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Zip Code")
   public String getZipCode() {
     return zipCode;
   }
@@ -228,10 +228,10 @@ public class UpdatePaymentRequest {
   }
 
    /**
-   * 
+   * City
    * @return city
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "City")
   public String getCity() {
     return city;
   }
@@ -246,10 +246,10 @@ public class UpdatePaymentRequest {
   }
 
    /**
-   * 
+   * Return URL for credit card
    * @return url
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Return URL for credit card")
   public String getUrl() {
     return url;
   }

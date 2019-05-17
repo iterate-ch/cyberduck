@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class PublicSharesApi {
   private ApiClient apiClient;
 
@@ -38,10 +38,9 @@ public class PublicSharesApi {
   }
 
   /**
-   * Gets the contensts on a folder/file share. Use the path variable to traverse folders. No authorisation header needed.
+   * Gets the contensts on a folder/file share. Use the path variable to traverse folders.
    * 
    * @param id The share id (required)
-   * @param accessId Access id (required)
    * @param path Path inside the share (required)
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
@@ -51,15 +50,14 @@ public class PublicSharesApi {
    * @return FileContents
    * @throws ApiException if fails to make API call
    */
-  public FileContents publicSharesGetPublicFileShareContents(String id, String accessId, String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeParent) throws ApiException {
-    return publicSharesGetPublicFileShareContentsWithHttpInfo(id, accessId, path, pageIndex, pageSize, sortExpression, filter, includeParent).getData();
+  public FileContents publicSharesGetPublicFileShareContents(String id, String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeParent) throws ApiException {
+    return publicSharesGetPublicFileShareContentsWithHttpInfo(id, path, pageIndex, pageSize, sortExpression, filter, includeParent).getData();
       }
 
   /**
-   * Gets the contensts on a folder/file share. Use the path variable to traverse folders. No authorisation header needed.
+   * Gets the contensts on a folder/file share. Use the path variable to traverse folders.
    * 
    * @param id The share id (required)
-   * @param accessId Access id (required)
    * @param path Path inside the share (required)
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
@@ -69,17 +67,12 @@ public class PublicSharesApi {
    * @return ApiResponse&lt;FileContents&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<FileContents> publicSharesGetPublicFileShareContentsWithHttpInfo(String id, String accessId, String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeParent) throws ApiException {
+  public ApiResponse<FileContents> publicSharesGetPublicFileShareContentsWithHttpInfo(String id, String path, Integer pageIndex, Integer pageSize, String sortExpression, Integer filter, Boolean includeParent) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
     if (id == null) {
       throw new ApiException(400, "Missing the required parameter 'id' when calling publicSharesGetPublicFileShareContents");
-    }
-    
-    // verify the required parameter 'accessId' is set
-    if (accessId == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessId' when calling publicSharesGetPublicFileShareContents");
     }
     
     // verify the required parameter 'path' is set
@@ -121,7 +114,6 @@ public class PublicSharesApi {
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "accessId", accessId));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "path", path));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageIndex", pageIndex));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageSize", pageSize));
@@ -147,36 +139,29 @@ public class PublicSharesApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Gets the root folder/file on a share. No authorisation header needed.
+   * Gets the root folder/file on a share.
    * 
    * @param id The share id (required)
-   * @param accessId Access id (required)
    * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
    * @throws ApiException if fails to make API call
    */
-  public ch.cyberduck.core.storegate.io.swagger.client.model.File publicSharesGetPublicFileShareFile(String id, String accessId) throws ApiException {
-    return publicSharesGetPublicFileShareFileWithHttpInfo(id, accessId).getData();
+  public ch.cyberduck.core.storegate.io.swagger.client.model.File publicSharesGetPublicFileShareFile(String id) throws ApiException {
+    return publicSharesGetPublicFileShareFileWithHttpInfo(id).getData();
       }
 
   /**
-   * Gets the root folder/file on a share. No authorisation header needed.
+   * Gets the root folder/file on a share.
    * 
    * @param id The share id (required)
-   * @param accessId Access id (required)
    * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> publicSharesGetPublicFileShareFileWithHttpInfo(String id, String accessId) throws ApiException {
+  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> publicSharesGetPublicFileShareFileWithHttpInfo(String id) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
     if (id == null) {
       throw new ApiException(400, "Missing the required parameter 'id' when calling publicSharesGetPublicFileShareFile");
-    }
-    
-    // verify the required parameter 'accessId' is set
-    if (accessId == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessId' when calling publicSharesGetPublicFileShareFile");
     }
     
     // create path and map variables
@@ -188,7 +173,6 @@ public class PublicSharesApi {
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "accessId", accessId));
 
     
     
@@ -208,10 +192,9 @@ public class PublicSharesApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Gets the contensts on a media share. No authorisation header needed.
+   * Gets the contensts on a media share.
    * 
    * @param id The share id (required)
-   * @param accessId Access id (required)
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression Name, Description, CreatedDate, ModifiedDate (desc/asc) (required)
@@ -219,15 +202,14 @@ public class PublicSharesApi {
    * @return MediaItemContents
    * @throws ApiException if fails to make API call
    */
-  public MediaItemContents publicSharesGetPublicMediaShareContents(String id, String accessId, Integer pageIndex, Integer pageSize, String sortExpression, Boolean includeParent) throws ApiException {
-    return publicSharesGetPublicMediaShareContentsWithHttpInfo(id, accessId, pageIndex, pageSize, sortExpression, includeParent).getData();
+  public MediaItemContents publicSharesGetPublicMediaShareContents(String id, Integer pageIndex, Integer pageSize, String sortExpression, Boolean includeParent) throws ApiException {
+    return publicSharesGetPublicMediaShareContentsWithHttpInfo(id, pageIndex, pageSize, sortExpression, includeParent).getData();
       }
 
   /**
-   * Gets the contensts on a media share. No authorisation header needed.
+   * Gets the contensts on a media share.
    * 
    * @param id The share id (required)
-   * @param accessId Access id (required)
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param sortExpression Name, Description, CreatedDate, ModifiedDate (desc/asc) (required)
@@ -235,17 +217,12 @@ public class PublicSharesApi {
    * @return ApiResponse&lt;MediaItemContents&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<MediaItemContents> publicSharesGetPublicMediaShareContentsWithHttpInfo(String id, String accessId, Integer pageIndex, Integer pageSize, String sortExpression, Boolean includeParent) throws ApiException {
+  public ApiResponse<MediaItemContents> publicSharesGetPublicMediaShareContentsWithHttpInfo(String id, Integer pageIndex, Integer pageSize, String sortExpression, Boolean includeParent) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
     if (id == null) {
       throw new ApiException(400, "Missing the required parameter 'id' when calling publicSharesGetPublicMediaShareContents");
-    }
-    
-    // verify the required parameter 'accessId' is set
-    if (accessId == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessId' when calling publicSharesGetPublicMediaShareContents");
     }
     
     // verify the required parameter 'pageIndex' is set
@@ -277,7 +254,6 @@ public class PublicSharesApi {
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "accessId", accessId));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageIndex", pageIndex));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageSize", pageSize));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortExpression", sortExpression));
@@ -354,35 +330,28 @@ public class PublicSharesApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Sends an email to the addresses entered on the share. Call this after a upload to the share. No authorisation header needed.
+   * Sends an email to the addresses entered on the share. Call this after a upload to the share.
    * 
    * @param id The share id (required)
-   * @param accessId Access id (required)
    * @throws ApiException if fails to make API call
    */
-  public void publicSharesSendUploadNotification(String id, String accessId) throws ApiException {
+  public void publicSharesSendUploadNotification(String id) throws ApiException {
 
-    publicSharesSendUploadNotificationWithHttpInfo(id, accessId);
+    publicSharesSendUploadNotificationWithHttpInfo(id);
   }
 
   /**
-   * Sends an email to the addresses entered on the share. Call this after a upload to the share. No authorisation header needed.
+   * Sends an email to the addresses entered on the share. Call this after a upload to the share.
    * 
    * @param id The share id (required)
-   * @param accessId Access id (required)
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<Void> publicSharesSendUploadNotificationWithHttpInfo(String id, String accessId) throws ApiException {
+  public ApiResponse<Void> publicSharesSendUploadNotificationWithHttpInfo(String id) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
     if (id == null) {
       throw new ApiException(400, "Missing the required parameter 'id' when calling publicSharesSendUploadNotification");
-    }
-    
-    // verify the required parameter 'accessId' is set
-    if (accessId == null) {
-      throw new ApiException(400, "Missing the required parameter 'accessId' when calling publicSharesSendUploadNotification");
     }
     
     // create path and map variables
@@ -394,7 +363,6 @@ public class PublicSharesApi {
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "accessId", accessId));
 
     
     
@@ -413,64 +381,4 @@ public class PublicSharesApi {
 
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
-  /**
-   * Validate the passord and returns an accessId. No authorisation header needed.
-   * 
-   * @param id The share id (required)
-   * @param password The share password. Use JSON.Stringify() (required)
-   * @return String
-   * @throws ApiException if fails to make API call
-   */
-  public String publicSharesValidatePublicSharePassword(String id, String password) throws ApiException {
-    return publicSharesValidatePublicSharePasswordWithHttpInfo(id, password).getData();
-      }
-
-  /**
-   * Validate the passord and returns an accessId. No authorisation header needed.
-   * 
-   * @param id The share id (required)
-   * @param password The share password. Use JSON.Stringify() (required)
-   * @return ApiResponse&lt;String&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<String> publicSharesValidatePublicSharePasswordWithHttpInfo(String id, String password) throws ApiException {
-    Object localVarPostBody = password;
-    
-    // verify the required parameter 'id' is set
-    if (id == null) {
-      throw new ApiException(400, "Missing the required parameter 'id' when calling publicSharesValidatePublicSharePassword");
-    }
-    
-    // verify the required parameter 'password' is set
-    if (password == null) {
-      throw new ApiException(400, "Missing the required parameter 'password' when calling publicSharesValidatePublicSharePassword");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/v4/publicshares/{id}/validatepassword"
-      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    
-    
-    final String[] localVarAccepts = {
-      "application/json", "text/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      "application/json", "text/json"
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "oauth2" };
-
-    GenericType<String> localVarReturnType = new GenericType<String>() {};
-    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
 }

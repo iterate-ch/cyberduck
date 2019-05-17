@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class GroupsApi {
   private ApiClient apiClient;
 
@@ -354,7 +354,7 @@ public class GroupsApi {
   /**
    * Remove a user from a specific group
    * 
-   * @param id The id to the specific group you want to delete the user (required)
+   * @param id The id to the group you want to delete the user (required)
    * @param userId The id to user you want to delete (required)
    * @throws ApiException if fails to make API call
    */
@@ -366,7 +366,7 @@ public class GroupsApi {
   /**
    * Remove a user from a specific group
    * 
-   * @param id The id to the specific group you want to delete the user (required)
+   * @param id The id to the group you want to delete the user (required)
    * @param userId The id to user you want to delete (required)
    * @throws ApiException if fails to make API call
    */

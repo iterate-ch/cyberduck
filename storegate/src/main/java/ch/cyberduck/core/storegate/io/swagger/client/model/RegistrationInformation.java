@@ -32,7 +32,7 @@ import java.util.List;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class RegistrationInformation {
   @JsonProperty("salepackage")
   private UpgradeSalepackage salepackage = null;
@@ -67,10 +67,10 @@ public class RegistrationInformation {
   }
 
    /**
-   * 
+   * Information about the salepackage
    * @return salepackage
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Information about the salepackage")
   public UpgradeSalepackage getSalepackage() {
     return salepackage;
   }
@@ -85,10 +85,10 @@ public class RegistrationInformation {
   }
 
    /**
-   * 
+   * Length of trial. 0 if not available
    * @return trialLength
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Length of trial. 0 if not available")
   public Integer getTrialLength() {
     return trialLength;
   }
@@ -103,10 +103,10 @@ public class RegistrationInformation {
   }
 
    /**
-   * 
+   * The partnerId
    * @return partnerId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The partnerId")
   public String getPartnerId() {
     return partnerId;
   }
@@ -121,10 +121,10 @@ public class RegistrationInformation {
   }
 
    /**
-   * 
+   * The retailerId
    * @return retailerId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The retailerId")
   public String getRetailerId() {
     return retailerId;
   }
@@ -139,10 +139,10 @@ public class RegistrationInformation {
   }
 
    /**
-   * 
+   * Use the direct flow
    * @return isDirect
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Use the direct flow")
   public Boolean isIsDirect() {
     return isDirect;
   }
@@ -157,10 +157,10 @@ public class RegistrationInformation {
   }
 
    /**
-   * 
+   * User data to be included
    * @return userData
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "User data to be included")
   public UserData getUserData() {
     return userData;
   }
@@ -183,10 +183,10 @@ public class RegistrationInformation {
   }
 
    /**
-   * 
+   * List of countries
    * @return countries
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "List of countries")
   public List<Country> getCountries() {
     return countries;
   }
@@ -209,10 +209,10 @@ public class RegistrationInformation {
   }
 
    /**
-   * 
+   * List of payment medthods
    * @return paymentMethods
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "List of payment medthods")
   public List<PaymentMethod> getPaymentMethods() {
     return paymentMethods;
   }
@@ -235,10 +235,10 @@ public class RegistrationInformation {
   }
 
    /**
-   * 
+   * List of payemnt periods
    * @return paymentPeriods
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "List of payemnt periods")
   public List<PaymentPeriod> getPaymentPeriods() {
     return paymentPeriods;
   }

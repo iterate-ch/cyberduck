@@ -26,16 +26,13 @@ import io.swagger.annotations.ApiModelProperty;
  * Item containing information about a public available share.
  */
 @ApiModel(description = "Item containing information about a public available share.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
 public class PublicShareInfo {
   @JsonProperty("id")
   private String id = null;
 
   @JsonProperty("name")
   private String name = null;
-
-  @JsonProperty("accessId")
-  private String accessId = null;
 
   /**
    * Indicated the sharetype
@@ -97,6 +94,46 @@ public class PublicShareInfo {
   @JsonProperty("retailerId")
   private String retailerId = null;
 
+  /**
+   * 
+   */
+  public enum AuthMethodEnum {
+    NUMBER_0(0),
+    
+    NUMBER_1(1),
+    
+    NUMBER_2(2);
+
+    private Integer value;
+
+    AuthMethodEnum(Integer value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public Integer getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static AuthMethodEnum fromValue(String text) {
+      for (AuthMethodEnum b : AuthMethodEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+  }
+
+  @JsonProperty("authMethod")
+  private AuthMethodEnum authMethod = null;
+
   public PublicShareInfo id(String id) {
     this.id = id;
     return this;
@@ -131,24 +168,6 @@ public class PublicShareInfo {
 
   public void setName(String name) {
     this.name = name;
-  }
-
-  public PublicShareInfo accessId(String accessId) {
-    this.accessId = accessId;
-    return this;
-  }
-
-   /**
-   * The share name.
-   * @return accessId
-  **/
-  @ApiModelProperty(value = "The share name.")
-  public String getAccessId() {
-    return accessId;
-  }
-
-  public void setAccessId(String accessId) {
-    this.accessId = accessId;
   }
 
   public PublicShareInfo type(TypeEnum type) {
@@ -277,6 +296,24 @@ public class PublicShareInfo {
     this.retailerId = retailerId;
   }
 
+  public PublicShareInfo authMethod(AuthMethodEnum authMethod) {
+    this.authMethod = authMethod;
+    return this;
+  }
+
+   /**
+   * 
+   * @return authMethod
+  **/
+  @ApiModelProperty(value = "")
+  public AuthMethodEnum getAuthMethod() {
+    return authMethod;
+  }
+
+  public void setAuthMethod(AuthMethodEnum authMethod) {
+    this.authMethod = authMethod;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -289,19 +326,19 @@ public class PublicShareInfo {
     PublicShareInfo publicShareInfo = (PublicShareInfo) o;
     return Objects.equals(this.id, publicShareInfo.id) &&
         Objects.equals(this.name, publicShareInfo.name) &&
-        Objects.equals(this.accessId, publicShareInfo.accessId) &&
         Objects.equals(this.type, publicShareInfo.type) &&
         Objects.equals(this.fileAllowUpload, publicShareInfo.fileAllowUpload) &&
         Objects.equals(this.contentHidden, publicShareInfo.contentHidden) &&
         Objects.equals(this.mediaAllowDownload, publicShareInfo.mediaAllowDownload) &&
         Objects.equals(this.sharedBy, publicShareInfo.sharedBy) &&
         Objects.equals(this.partnerId, publicShareInfo.partnerId) &&
-        Objects.equals(this.retailerId, publicShareInfo.retailerId);
+        Objects.equals(this.retailerId, publicShareInfo.retailerId) &&
+        Objects.equals(this.authMethod, publicShareInfo.authMethod);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, accessId, type, fileAllowUpload, contentHidden, mediaAllowDownload, sharedBy, partnerId, retailerId);
+    return Objects.hash(id, name, type, fileAllowUpload, contentHidden, mediaAllowDownload, sharedBy, partnerId, retailerId, authMethod);
   }
 
 
@@ -312,7 +349,6 @@ public class PublicShareInfo {
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    accessId: ").append(toIndentedString(accessId)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    fileAllowUpload: ").append(toIndentedString(fileAllowUpload)).append("\n");
     sb.append("    contentHidden: ").append(toIndentedString(contentHidden)).append("\n");
@@ -320,6 +356,7 @@ public class PublicShareInfo {
     sb.append("    sharedBy: ").append(toIndentedString(sharedBy)).append("\n");
     sb.append("    partnerId: ").append(toIndentedString(partnerId)).append("\n");
     sb.append("    retailerId: ").append(toIndentedString(retailerId)).append("\n");
+    sb.append("    authMethod: ").append(toIndentedString(authMethod)).append("\n");
     sb.append("}");
     return sb.toString();
   }
