@@ -268,8 +268,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest();
         encrypt.setIsEncrypted(true);
-        new NodesApi(session.getClient()).encryptRoom(Long.parseLong(new SDSNodeIdProvider(session).withCache(cache).getFileid(room2,
-            new DisabledListProgressListener())), encrypt, StringUtils.EMPTY, null);
+        new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).withCache(cache).getFileid(room2,
+            new DisabledListProgressListener())), StringUtils.EMPTY, null);
         room2.getType().add(Path.Type.triplecrypt);
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
@@ -324,8 +324,8 @@ public class SDSDelegatingCopyFeatureTest extends AbstractSDSTest {
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final EncryptRoomRequest encrypt = new EncryptRoomRequest();
         encrypt.setIsEncrypted(true);
-        new NodesApi(session.getClient()).encryptRoom(Long.parseLong(new SDSNodeIdProvider(session).withCache(cache).getFileid(room2,
-            new DisabledListProgressListener())), encrypt, StringUtils.EMPTY, null);
+        new NodesApi(session.getClient()).encryptRoom(encrypt, Long.parseLong(new SDSNodeIdProvider(session).withCache(cache).getFileid(room2,
+            new DisabledListProgressListener())), StringUtils.EMPTY, null);
         room2.getType().add(Path.Type.triplecrypt);
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();

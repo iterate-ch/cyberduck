@@ -50,11 +50,12 @@ public class SDSCopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final Node node = new NodesApi(session.getClient()).copyNodes(
-                // Target Parent Node ID
-                Long.parseLong(nodeid.getFileid(target.getParent(), new DisabledListProgressListener())),
                 new CopyNodesRequest()
                     .addNodeIdsItem(Long.parseLong(nodeid.getFileid(source, new DisabledListProgressListener())))
-                    .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE), StringUtils.EMPTY, null);
+                    .resolutionStrategy(CopyNodesRequest.ResolutionStrategyEnum.OVERWRITE),
+                // Target Parent Node ID
+                Long.parseLong(nodeid.getFileid(target.getParent(), new DisabledListProgressListener())),
+                StringUtils.EMPTY, null);
             return new Path(target.getParent(), target.getName(), target.getType(),
                 new SDSAttributesFinderFeature(session, nodeid).toAttributes(node));
         }

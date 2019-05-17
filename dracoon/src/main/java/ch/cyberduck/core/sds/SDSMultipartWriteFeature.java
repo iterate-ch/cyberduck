@@ -227,7 +227,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     );
                     body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                 }
-                final Node upload = new NodesApi(session.getClient()).completeFileUpload(uploadId, body, StringUtils.EMPTY, null);
+                final Node upload = new NodesApi(session.getClient()).completeFileUpload(uploadId, StringUtils.EMPTY, null, body);
                 versionId = new VersionId(String.valueOf(upload.getId()));
             }
             catch(ApiException e) {

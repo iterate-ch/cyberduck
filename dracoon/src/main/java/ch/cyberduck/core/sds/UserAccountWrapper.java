@@ -29,7 +29,7 @@ public class UserAccountWrapper {
     }
 
     public boolean isEncryptionEnabled() {
-        final Boolean enabled = account.getIsEncryptionEnabled();
+        final Boolean enabled = account.isIsEncryptionEnabled();
         return enabled != null && enabled;
     }
 

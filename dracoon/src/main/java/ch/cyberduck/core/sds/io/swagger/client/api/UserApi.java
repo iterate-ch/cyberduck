@@ -1,24 +1,11 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-/*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiResponse;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
+import ch.cyberduck.core.sds.io.swagger.client.model.Avatar;
 import ch.cyberduck.core.sds.io.swagger.client.model.ChangeUserPasswordRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CustomerData;
 import ch.cyberduck.core.sds.io.swagger.client.model.EnableCustomerEncryptionRequest;
@@ -30,12 +17,13 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 
 import javax.ws.rs.core.GenericType;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-23T09:31:14.222+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T14:22:07.810+02:00")
 public class UserApi {
   private ApiClient apiClient;
 
@@ -56,352 +44,644 @@ public class UserApi {
   }
 
   /**
-   * Change user password
-   * ### Functional Description: Change the user&#39;s password.  ### Precondition: Valid &#x60;X-Sds-Auth-Token&#x60;.  ### Effects: Password is changed.  ### &amp;#9432; Further Information: Password security configuration applies.
-   * @param body body (required)
+   * Change avatar 🞂 NEW 🞀
+   * ### &amp;#128640; Since version 4.11.0  ### Functional Description: Change the avatar.  ### Precondition: Authenticated user.  ### Effects: Avatar is changed.  ### &amp;#9432; Further Information: None.
+   * @param file File (required)
    * @param xSdsAuthToken Authentication token (optional)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
+   * @return Avatar
    * @throws ApiException if fails to make API call
    */
-  public void changeUserPassword(ChangeUserPasswordRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
-    Object localVarPostBody = body;
-    
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling changeUserPassword");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/account/password";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-if (xSdsDateFormat != null)
-      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
-
-
-    apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+  public Avatar changeAvatar(File file, String xSdsAuthToken) throws ApiException {
+      return changeAvatarWithHttpInfo(file, xSdsAuthToken).getData();
   }
-  /**
-   * Delete OAuth authorization
-   * ### Functional Description: Delete authorizations of an OAuth client.  ### Precondition: * Valid &#x60;X-Sds-Auth-Token&#x60; * Valid client ID.  ### Effects: Authorizations for OAuth client are revoked.  ### &amp;#9432; Further Information: None.
+
+    /**
+     * Change avatar 🞂 NEW 🞀
+     * ### &amp;#128640; Since version 4.11.0  ### Functional Description: Change the avatar.  ### Precondition: Authenticated user.  ### Effects: Avatar is changed.  ### &amp;#9432; Further Information: None.
+     *
+     * @param file          File (required)
+     * @param xSdsAuthToken Authentication token (optional)
+     * @return ApiResponse&lt;Avatar&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Avatar> changeAvatarWithHttpInfo(File file, String xSdsAuthToken) throws ApiException {
+        Object localVarPostBody = null;
+
+        // verify the required parameter 'file' is set
+        if(file == null) {
+            throw new ApiException(400, "Missing the required parameter 'file' when calling changeAvatar");
+        }
+
+        // create path and map variables
+        String localVarPath = "/v4/user/account/avatar";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+        if(xSdsAuthToken != null) {
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        }
+
+        if(file != null) {
+            localVarFormParams.put("file", file);
+        }
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+            "multipart/form-data"
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
+
+        GenericType<Avatar> localVarReturnType = new GenericType<Avatar>() {
+        };
+        return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
+
+    /**
+     * Change user&#39;s password
+     * ### Functional Description: Change the user&#39;s password.  ### Precondition: Authenticated user.  ### Effects: User&#39;s password is changed.  ### &amp;#9432; Further Information: The password **MUST** comply to configured password policies.
+   * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+   * @throws ApiException if fails to make API call
+   */
+    public void changeUserPassword(ChangeUserPasswordRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+
+        changeUserPasswordWithHttpInfo(body, xSdsAuthToken, xSdsDateFormat);
+    }
+
+    /**
+     * Change user&#39;s password
+     * ### Functional Description: Change the user&#39;s password.  ### Precondition: Authenticated user.  ### Effects: User&#39;s password is changed.  ### &amp;#9432; Further Information: The password **MUST** comply to configured password policies.
+     *
+     * @param body           body (required)
+     * @param xSdsAuthToken  Authentication token (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> changeUserPasswordWithHttpInfo(ChangeUserPasswordRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+        Object localVarPostBody = body;
+
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException(400, "Missing the required parameter 'body' when calling changeUserPassword");
+        }
+
+        // create path and map variables
+        String localVarPath = "/v4/user/account/password";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+if (xSdsDateFormat != null)
+    localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
+
+
+        return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    }
+
+    /**
+     * Reset avatar 🞂 NEW 🞀
+     * ### &amp;#128640; Since version 4.11.0  ### Functional Description:   Reset (custom) avatar to default avatar.  ### Precondition: Authenticated user.  ### Effects: - User&#39;s avatar gets deleted.   - Default avatar is set.  ### &amp;#9432; Further Information: None.
+     *
+     * @param xSdsAuthToken Authentication token (optional)
+     * @return Avatar
+     * @throws ApiException if fails to make API call
+     */
+    public Avatar deleteAvatar(String xSdsAuthToken) throws ApiException {
+        return deleteAvatarWithHttpInfo(xSdsAuthToken).getData();
+    }
+
+    /**
+     * Reset avatar 🞂 NEW 🞀
+     * ### &amp;#128640; Since version 4.11.0  ### Functional Description:   Reset (custom) avatar to default avatar.  ### Precondition: Authenticated user.  ### Effects: - User&#39;s avatar gets deleted.   - Default avatar is set.  ### &amp;#9432; Further Information: None.
+     *
+     * @param xSdsAuthToken Authentication token (optional)
+     * @return ApiResponse&lt;Avatar&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Avatar> deleteAvatarWithHttpInfo(String xSdsAuthToken) throws ApiException {
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/v4/user/account/avatar";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+        if(xSdsAuthToken != null) {
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        }
+
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
+
+        GenericType<Avatar> localVarReturnType = new GenericType<Avatar>() {
+        };
+        return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
+
+    /**
+     * Delete OAuth client authorization
+     * ### Functional Description: Delete authorizations of an OAuth client.  ### Precondition: * Authenticated user * Valid client ID  ### Effects: Authorizations for OAuth client are revoked.  ### &amp;#9432; Further Information: None.
    * @param clientId OAuth client ID (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
    */
-  public void deleteOAuthAuthorization(String clientId, String xSdsAuthToken) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // verify the required parameter 'clientId' is set
-    if (clientId == null) {
-      throw new ApiException(400, "Missing the required parameter 'clientId' when calling deleteOAuthAuthorization");
+    public void deleteOAuthAuthorization(String clientId, String xSdsAuthToken) throws ApiException {
+
+        deleteOAuthAuthorizationWithHttpInfo(clientId, xSdsAuthToken);
     }
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/oauth/authorizations/{client_id}"
-      .replaceAll("\\{" + "client_id" + "\\}", apiClient.escapeString(clientId.toString()));
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+    /**
+     * Delete OAuth client authorization
+     * ### Functional Description: Delete authorizations of an OAuth client.  ### Precondition: * Authenticated user * Valid client ID  ### Effects: Authorizations for OAuth client are revoked.  ### &amp;#9432; Further Information: None.
+     *
+     * @param clientId      OAuth client ID (required)
+     * @param xSdsAuthToken Authentication token (optional)
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> deleteOAuthAuthorizationWithHttpInfo(String clientId, String xSdsAuthToken) throws ApiException {
+        Object localVarPostBody = null;
+
+        // verify the required parameter 'clientId' is set
+        if (clientId == null) {
+            throw new ApiException(400, "Missing the required parameter 'clientId' when calling deleteOAuthAuthorization");
+        }
+
+        // create path and map variables
+        String localVarPath = "/v4/user/oauth/authorizations/{client_id}"
+            .replaceAll("\\{" + "client_id" + "\\}", apiClient.escapeString(clientId.toString()));
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
 
-    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
-  /**
-   * Delete profile attribute
-   * 
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
+
+
+        return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    }
+
+    /**
+     * Delete user profile attribute
+     * ### &amp;#128640; Since version 4.7.0  ### Functional Description:   Delete custom user profile attribute.  ### Precondition: None.  ### Effects: Custom user profile attribute gets deleted.  ### &amp;#9432; Further Information: None.
    * @param key Key (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
-   */
-  public void deleteProfileAttribute(String key, String xSdsAuthToken) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // verify the required parameter 'key' is set
-    if (key == null) {
-      throw new ApiException(400, "Missing the required parameter 'key' when calling deleteProfileAttribute");
+     */
+    public void deleteProfileAttribute(String key, String xSdsAuthToken) throws ApiException {
+
+        deleteProfileAttributeWithHttpInfo(key, xSdsAuthToken);
     }
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/profileAttributes/{key}"
-      .replaceAll("\\{" + "key" + "\\}", apiClient.escapeString(key.toString()));
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+    /**
+     * Delete user profile attribute
+     * ### &amp;#128640; Since version 4.7.0  ### Functional Description:   Delete custom user profile attribute.  ### Precondition: None.  ### Effects: Custom user profile attribute gets deleted.  ### &amp;#9432; Further Information: None.
+     * @param key Key (required)
+     * @param xSdsAuthToken Authentication token (optional)
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> deleteProfileAttributeWithHttpInfo(String key, String xSdsAuthToken) throws ApiException {
+        Object localVarPostBody = null;
 
+        // verify the required parameter 'key' is set
+        if (key == null) {
+            throw new ApiException(400, "Missing the required parameter 'key' when calling deleteProfileAttribute");
+        }
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        // create path and map variables
+        String localVarPath = "/v4/user/profileAttributes/{key}"
+            .replaceAll("\\{" + "key" + "\\}", apiClient.escapeString(key.toString()));
 
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
-  /**
-   * Delete user keypair
-   * ### Functional Description:   Delete the user&#39;s keypair.  ### Precondition: Valid &#x60;X-Sds-Auth-Token&#x60;.  ### Effects: None.  ### &amp;#9432; Further Information: This will also remove all file keys that were encrypted with the user&#39;s public key.   If the user had exclusive access to some files, those are removed as well since decrypting them became impossible.
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
+
+
+        return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    }
+
+    /**
+     * Delete user&#39;s key pair
+     * ### Functional Description:   Delete the user&#39;s key pair.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: This will also remove all file keys that were encrypted with the user&#39;s public key.   If the user had exclusive access to some files, those are removed as well since decrypting them became impossible.
    * @param xSdsAuthToken Authentication token (optional)
    * @throws ApiException if fails to make API call
-   */
-  public void deleteUserKeyPair(String xSdsAuthToken) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/account/keypair";
+     */
+    public void deleteUserKeyPair(String xSdsAuthToken) throws ApiException {
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+        deleteUserKeyPairWithHttpInfo(xSdsAuthToken);
+    }
 
+    /**
+     * Delete user&#39;s key pair
+     * ### Functional Description:   Delete the user&#39;s key pair.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: This will also remove all file keys that were encrypted with the user&#39;s public key.   If the user had exclusive access to some files, those are removed as well since decrypting them became impossible.
+     * @param xSdsAuthToken Authentication token (optional)
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> deleteUserKeyPairWithHttpInfo(String xSdsAuthToken) throws ApiException {
+        Object localVarPostBody = null;
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        // create path and map variables
+        String localVarPath = "/v4/user/account/keypair";
 
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
-  /**
-   * Enable encryption for this customer
-   * ### Functional Description:   Activate client-side encryption for whole customer.  ### Precondition: Right _\&quot;change global config\&quot;_ required.  ### Effects: Client-side encryption is enabled.  ### &amp;#9432; Further Information: Sets the ability for this customer to encrypt rooms.   Once enabled on customer level, it cannot be unset.   On activation, a customer resque keypair must be set.
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
+
+
+        return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    }
+
+    /**
+     * Activate client-side encryption for customer
+     * ### Functional Description:   Activate client-side encryption for according customer.  ### Precondition: Right _\&quot;change global config\&quot;_ required.  ### Effects: Client-side encryption is enabled.  ### &amp;#9432; Further Information: Sets the ability for this customer to encrypt rooms.   Once enabled on customer level, it **CANNOT** be unset.   On activation, a customer rescue keypair **MUST** be set.
    * @param body body (required)
    * @param xSdsAuthToken Authentication token (optional)
    * @return CustomerData
    * @throws ApiException if fails to make API call
    */
-  public CustomerData enableCustomerEncryption(EnableCustomerEncryptionRequest body, String xSdsAuthToken) throws ApiException {
-    Object localVarPostBody = body;
-    
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling enableCustomerEncryption");
+    public CustomerData enableCustomerEncryption(EnableCustomerEncryptionRequest body, String xSdsAuthToken) throws ApiException {
+        return enableCustomerEncryptionWithHttpInfo(body, xSdsAuthToken).getData();
     }
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/account/customer";
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+    /**
+     * Activate client-side encryption for customer
+     * ### Functional Description:   Activate client-side encryption for according customer.  ### Precondition: Right _\&quot;change global config\&quot;_ required.  ### Effects: Client-side encryption is enabled.  ### &amp;#9432; Further Information: Sets the ability for this customer to encrypt rooms.   Once enabled on customer level, it **CANNOT** be unset.   On activation, a customer rescue keypair **MUST** be set.
+     *
+     * @param body          body (required)
+     * @param xSdsAuthToken Authentication token (optional)
+     * @return ApiResponse&lt;CustomerData&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<CustomerData> enableCustomerEncryptionWithHttpInfo(EnableCustomerEncryptionRequest body, String xSdsAuthToken) throws ApiException {
+        Object localVarPostBody = body;
+
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException(400, "Missing the required parameter 'body' when calling enableCustomerEncryption");
+        }
+
+        // create path and map variables
+        String localVarPath = "/v4/user/account/customer";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
-    final String[] localVarContentTypes = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        final String[] localVarContentTypes = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    GenericType<CustomerData> localVarReturnType = new GenericType<CustomerData>() {};
-    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Get customer info
-   * ### Functional Description:   Use this API to get:  * customer name * used / free space * used / avaliable * user account info  of a customer.  ### Precondition: Valid &#x60;X-Sds-Auth-Token&#x60;.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+        GenericType<CustomerData> localVarReturnType = new GenericType<CustomerData>() {};
+        return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
+
+    /**
+     * Get avatar 🞂 NEW 🞀
+     * ### &amp;#128640; Since version 4.11.0  ### Functional Description: Get the avatar.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+     *
+     * @param xSdsAuthToken Authentication token (optional)
+     * @return Avatar
+     * @throws ApiException if fails to make API call
+     */
+    public Avatar getAvatar(String xSdsAuthToken) throws ApiException {
+        return getAvatarWithHttpInfo(xSdsAuthToken).getData();
+    }
+
+    /**
+     * Get avatar 🞂 NEW 🞀
+     * ### &amp;#128640; Since version 4.11.0  ### Functional Description: Get the avatar.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+     *
+     * @param xSdsAuthToken Authentication token (optional)
+     * @return ApiResponse&lt;Avatar&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Avatar> getAvatarWithHttpInfo(String xSdsAuthToken) throws ApiException {
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/v4/user/account/avatar";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+        if(xSdsAuthToken != null) {
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        }
+
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
+
+        GenericType<Avatar> localVarReturnType = new GenericType<Avatar>() {
+        };
+        return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
+
+    /**
+     * Get customer information for user
+     * ### Functional Description:   Use this API to get:  * customer name * used / free space * used / avaliable * user account info  of the according customer.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: None.
    * @param xSdsAuthToken Authentication token (optional)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
-   * @return CustomerData
-   * @throws ApiException if fails to make API call
-   */
-  public CustomerData getCustomerInfo(String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/account/customer";
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @return CustomerData
+     * @throws ApiException if fails to make API call
+     */
+    public CustomerData getCustomerInfo(String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+        return getCustomerInfoWithHttpInfo(xSdsAuthToken, xSdsDateFormat).getData();
+    }
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+    /**
+     * Get customer information for user
+     * ### Functional Description:   Use this API to get:  * customer name * used / free space * used / avaliable * user account info  of the according customer.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+     * @param xSdsAuthToken Authentication token (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @return ApiResponse&lt;CustomerData&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<CustomerData> getCustomerInfoWithHttpInfo(String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/v4/user/account/customer";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 if (xSdsDateFormat != null)
-      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+    localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
 
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        final String[] localVarContentTypes = {
 
-    GenericType<CustomerData> localVarReturnType = new GenericType<CustomerData>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Get customer keypair
-   * ### Functional Description:   Retrieve the customer resque keypair.  ### Precondition: Valid &#x60;X-Sds-Auth-Token&#x60;.  ### Effects: None.  ### &amp;#9432; Further Information: The private key is password-based encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+        GenericType<CustomerData> localVarReturnType = new GenericType<CustomerData>() {};
+        return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
+
+    /**
+     * Get customer&#39;s key pair
+     * ### Functional Description:   Retrieve the customer rescue key pair.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: The private key is password-based; encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
    * @param xSdsAuthToken Authentication token (optional)
-   * @return UserKeyPairContainer
-   * @throws ApiException if fails to make API call
-   */
-  public UserKeyPairContainer getCustomerKeyPair(String xSdsAuthToken) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/account/customer/keypair";
+     * @return UserKeyPairContainer
+     * @throws ApiException if fails to make API call
+     */
+    public UserKeyPairContainer getCustomerKeyPair(String xSdsAuthToken) throws ApiException {
+        return getCustomerKeyPairWithHttpInfo(xSdsAuthToken).getData();
+    }
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+    /**
+     * Get customer&#39;s key pair
+     * ### Functional Description:   Retrieve the customer rescue key pair.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: The private key is password-based; encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
+     * @param xSdsAuthToken Authentication token (optional)
+     * @return ApiResponse&lt;UserKeyPairContainer&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<UserKeyPairContainer> getCustomerKeyPairWithHttpInfo(String xSdsAuthToken) throws ApiException {
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/v4/user/account/customer/keypair";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        final String[] localVarContentTypes = {
 
-    GenericType<UserKeyPairContainer> localVarReturnType = new GenericType<UserKeyPairContainer>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Get OAuth client authorizations
-   * ### Functional Description:   Retrieve info about all OAuth client authorizations.  ### Precondition: Valid &#x60;X-Sds-Auth-Token&#x60;.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+        GenericType<UserKeyPairContainer> localVarReturnType = new GenericType<UserKeyPairContainer>() {};
+        return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
+
+    /**
+     * Get list of OAuth client authorizations
+     * ### Functional Description:   Retrieve information about all OAuth client authorizations.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: None.
    * @param xSdsAuthToken Authentication token (optional)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
    * @return List&lt;OAuthAuthorization&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public List<OAuthAuthorization> getOAuthAuthorizations(String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/oauth/authorizations";
+     * @throws ApiException if fails to make API call
+     */
+    public List<OAuthAuthorization> getOAuthAuthorizations(String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+        return getOAuthAuthorizationsWithHttpInfo(xSdsAuthToken, xSdsDateFormat).getData();
+    }
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+    /**
+     * Get list of OAuth client authorizations
+     * ### Functional Description:   Retrieve information about all OAuth client authorizations.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+     * @param xSdsAuthToken Authentication token (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @return ApiResponse&lt;List&lt;OAuthAuthorization&gt;&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<List<OAuthAuthorization>> getOAuthAuthorizationsWithHttpInfo(String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/v4/user/oauth/authorizations";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 if (xSdsDateFormat != null)
-      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+    localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
 
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        final String[] localVarContentTypes = {
 
-    GenericType<List<OAuthAuthorization>> localVarReturnType = new GenericType<List<OAuthAuthorization>>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Get profile attributes
-   * ### Functional Description:   Retrieve a list of Profile Attributes.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;   Example: &gt; &#x60;key:cn:searchString_1|value:cn:searchString_2&#x60;   Filter by attribute key contains &#x60;searchString_1&#x60; **AND** attribute value contains &#x60;searchString_2&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;key&#x60;** | Attribute key | &#x60;cn, eq&#x60; |Attribute key contains / equals search string. | &#x60;search String&#x60; | | **&#x60;value&#x60;** |  Attribute value | &#x60;cn, eq&#x60; | Attribute value contains / equals search string. | &#x60;search String&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are supported.   Example: &gt; &#x60;key:asc|value:desc&#x60;   Sort by &#x60;key&#x60; ascending **AND** by &#x60;value&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;key&#x60;** | Attribute key | | **&#x60;value&#x60;** | Attribute value|
-   * @param offset Range offset (optional)
-   * @param limit Range limit (optional)
-   * @param filter Filter string (optional)
-   * @param sort Sort string (optional)
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+        GenericType<List<OAuthAuthorization>> localVarReturnType = new GenericType<List<OAuthAuthorization>>() {};
+        return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
+
+    /**
+     * Get user profile attributes
+     * ### &amp;#128640; Since version 4.7.0  ### Functional Description:   Retrieve a list of user profile attributes.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;   Example: &gt; &#x60;key:cn:searchString_1|value:cn:searchString_2&#x60;   Filter by attribute key contains &#x60;searchString_1&#x60; **AND** attribute value contains &#x60;searchString_2&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;key&#x60;** | User profile attribute key filter | &#x60;cn, eq, sw&#x60; | Attribute key contains / equals / starts with value. | &#x60;search String&#x60; | | **&#x60;value&#x60;** | User profile attribute value filter | &#x60;cn, eq, sw&#x60; | Attribute value contains / equals / starts with value. | &#x60;search String&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are supported.   Example: &gt; &#x60;key:asc|value:desc&#x60;   Sort by &#x60;key&#x60; ascending **AND** by &#x60;value&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;key&#x60;** | User profile attribute key | | **&#x60;value&#x60;** | User profile attribute value |
+     * @param xSdsAuthToken Authentication token (optional)
+     * @param filter Filter string (optional)
+     * @param limit Range limit (optional)
+     * @param offset Range offset (optional)
+     * @param sort Sort string (optional)
+     * @return ProfileAttributes
+     * @throws ApiException if fails to make API call
+     */
+    public ProfileAttributes getProfileAttributes(String xSdsAuthToken, String filter, Integer limit, Integer offset, String sort) throws ApiException {
+        return getProfileAttributesWithHttpInfo(xSdsAuthToken, filter, limit, offset, sort).getData();
+    }
+
+    /**
+     * Get user profile attributes
+     * ### &amp;#128640; Since version 4.7.0  ### Functional Description:   Retrieve a list of user profile attributes.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Filtering ### &amp;#9888; All filter fields are connected via logical conjunction (**AND**) Filter string syntax: &#x60;FIELD_NAME:OPERATOR:VALUE[:VALUE...]&#x60;   Example: &gt; &#x60;key:cn:searchString_1|value:cn:searchString_2&#x60;   Filter by attribute key contains &#x60;searchString_1&#x60; **AND** attribute value contains &#x60;searchString_2&#x60;.  | &#x60;FIELD_NAME&#x60; | Filter Description | &#x60;OPERATOR&#x60; | Operator Description | &#x60;VALUE&#x60; | | :--- | :--- | :--- | :--- | :--- | | **&#x60;key&#x60;** | User profile attribute key filter | &#x60;cn, eq, sw&#x60; | Attribute key contains / equals / starts with value. | &#x60;search String&#x60; | | **&#x60;value&#x60;** | User profile attribute value filter | &#x60;cn, eq, sw&#x60; | Attribute value contains / equals / starts with value. | &#x60;search String&#x60; |  ### Sorting Sort string syntax: &#x60;FIELD_NAME:ORDER&#x60;   &#x60;ORDER&#x60; can be &#x60;asc&#x60; or &#x60;desc&#x60;.   Multiple sort fields are supported.   Example: &gt; &#x60;key:asc|value:desc&#x60;   Sort by &#x60;key&#x60; ascending **AND** by &#x60;value&#x60; descending.  | &#x60;FIELD_NAME&#x60; | Description | | :--- | :--- | | **&#x60;key&#x60;** | User profile attribute key | | **&#x60;value&#x60;** | User profile attribute value |
    * @param xSdsAuthToken Authentication token (optional)
-   * @return ProfileAttributes
-   * @throws ApiException if fails to make API call
+     * @param filter Filter string (optional)
+     * @param limit Range limit (optional)
+     * @param offset Range offset (optional)
+     * @param sort Sort string (optional)
+     * @return ApiResponse&lt;ProfileAttributes&gt;
+     * @throws ApiException if fails to make API call
    */
-  public ProfileAttributes getProfileAttributes(Integer offset, Integer limit, String filter, String sort, String xSdsAuthToken) throws ApiException {
+  public ApiResponse<ProfileAttributes> getProfileAttributesWithHttpInfo(String xSdsAuthToken, String filter, Integer limit, Integer offset, String sort) throws ApiException {
     Object localVarPostBody = null;
     
     // create path and map variables
@@ -409,12 +689,12 @@ if (xSdsDateFormat != null)
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+      Map<String, String> localVarHeaderParams = new HashMap<String, String>();
     Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "offset", offset));
+      localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "limit", limit));
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "offset", offset));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "sort", sort));
 
     if (xSdsAuthToken != null)
@@ -435,17 +715,31 @@ if (xSdsDateFormat != null)
 
     GenericType<ProfileAttributes> localVarReturnType = new GenericType<ProfileAttributes>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Get user account info
-   * ### Functional Description:   Retrieves all information regarding the current user&#39;s account.  ### Precondition: Valid &#x60;X-Sds-Auth-Token&#x60;.  ### Effects: None.  ### &amp;#9432; Further Information: Setting the query parameter &#x60;more_info&#x60; to &#x60;true&#x60;, causes the API to return more details e.g. the user&#39;s groups.
-   * @param moreInfo Get more info for this user e.g. list of user groups (optional)
-   * @param xSdsAuthToken Authentication token (optional)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
-   * @return UserAccount
-   * @throws ApiException if fails to make API call
+  }
+
+    /**
+     * Get user account information
+     * ### Functional Description:   Retrieves all information regarding the current user&#39;s account.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: Setting the query parameter &#x60;more_info&#x60; to &#x60;true&#x60;, causes the API to return more details e.g. the user&#39;s groups.    &#x60;customer&#x60; (&#x60;CustomerData&#x60;) attribute in &#x60;UserAccount&#x60; response model is **&#x60;DEPRECATED&#x60;**. Please use response from &#x60;GET /user/account/customer&#x60; instead.
+     * @param xSdsAuthToken Authentication token (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @param moreInfo Get more info for this user e.g. list of user groups (optional)
+     * @return UserAccount
+     * @throws ApiException if fails to make API call
+     */
+    public UserAccount getUserInfo(String xSdsAuthToken, String xSdsDateFormat, Boolean moreInfo) throws ApiException {
+        return getUserInfoWithHttpInfo(xSdsAuthToken, xSdsDateFormat, moreInfo).getData();
+    }
+
+    /**
+     * Get user account information
+     * ### Functional Description:   Retrieves all information regarding the current user&#39;s account.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: Setting the query parameter &#x60;more_info&#x60; to &#x60;true&#x60;, causes the API to return more details e.g. the user&#39;s groups.    &#x60;customer&#x60; (&#x60;CustomerData&#x60;) attribute in &#x60;UserAccount&#x60; response model is **&#x60;DEPRECATED&#x60;**. Please use response from &#x60;GET /user/account/customer&#x60; instead.
+     * @param xSdsAuthToken Authentication token (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @param moreInfo Get more info for this user e.g. list of user groups (optional)
+     * @return ApiResponse&lt;UserAccount&gt;
+     * @throws ApiException if fails to make API call
    */
-  public UserAccount getUserInfo(Boolean moreInfo, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+  public ApiResponse<UserAccount> getUserInfoWithHttpInfo(String xSdsAuthToken, String xSdsDateFormat, Boolean moreInfo) throws ApiException {
     Object localVarPostBody = null;
     
     // create path and map variables
@@ -478,304 +772,396 @@ if (xSdsDateFormat != null)
 
     GenericType<UserAccount> localVarReturnType = new GenericType<UserAccount>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Get user keypair
-   * ### Functional Description:   Retrieve the user&#39;s keypair.  ### Precondition: Valid &#x60;X-Sds-Auth-Token&#x60;.  ### Effects: None.  ### &amp;#9432; Further Information: The private key is password-based encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
-   * @param xSdsAuthToken Authentication token (optional)
-   * @return UserKeyPairContainer
-   * @throws ApiException if fails to make API call
-   */
-  public UserKeyPairContainer getUserKeyPair(String xSdsAuthToken) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/account/keypair";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
-
-    GenericType<UserKeyPairContainer> localVarReturnType = new GenericType<UserKeyPairContainer>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Set profile attributes
-   * ### Functional Description:   Set custom profile attributes.  ### Precondition: None. ### Effects: Custom profile attributes gets set.  ### &amp;#9432; Further Information: Batch function.   All existing profile attributes will be deleted.   Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   Characters are case-insensitive.   Maximum key length is 255.   Maximum value length is 4096.
-   * @param body body (required)
-   * @param xSdsAuthToken Authentication token (optional)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
-   * @return ProfileAttributes
-   * @throws ApiException if fails to make API call
-   */
-  public ProfileAttributes setAllProfileAttributes(ProfileAttributesRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
-    Object localVarPostBody = body;
-    
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling setAllProfileAttributes");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/profileAttributes";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-if (xSdsDateFormat != null)
-      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
-
-    GenericType<ProfileAttributes> localVarReturnType = new GenericType<ProfileAttributes>() {};
-    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Add or edit profile attributes
-   * ### Functional Description:   Set custom profile attributes.  ### Precondition: None.  ### Effects: Custom profile attributes get added or edited.  ### &amp;#9432; Further Information: Batch function.   If an entry exists before, it will be overwritten.   Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   Characters are case-insensitive.   Maximum key length is 255.   Maximum value length is 4096.                                                                                     
-   * @param body body (required)
-   * @param xSdsAuthToken Authentication token (optional)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
-   * @return ProfileAttributes
-   * @throws ApiException if fails to make API call
-   */
-  public ProfileAttributes setProfileAttributes(ProfileAttributesRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
-    Object localVarPostBody = body;
-    
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling setProfileAttributes");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/profileAttributes";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-if (xSdsDateFormat != null)
-      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
-
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
-
-    GenericType<ProfileAttributes> localVarReturnType = new GenericType<ProfileAttributes>() {};
-    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Set user keypair
-   * ### Functional Description:   Set the user&#39;s keypair.  ### Precondition: Valid &#x60;X-Sds-Auth-Token&#x60;.  ### Effects: The keypair is set.  ### &amp;#9432; Further Information: Overwriting an existing keypair is not possible.   Please delete the existing keypair first.   The private key is password-based encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
-   * @param body body (required)
-   * @param xSdsAuthToken Authentication token (optional)
-   * @throws ApiException if fails to make API call
-   */
-  public void setUserKeyPair(UserKeyPairContainer body, String xSdsAuthToken) throws ApiException {
-    Object localVarPostBody = body;
-    
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling setUserKeyPair");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/account/keypair";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
-
-
-    apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
-  /**
-   * Update user account
-   * ### Functional Description:   Update current user&#39;s account.  ### Precondition: Valid &#x60;X-Sds-Auth-Token&#x60;.  ### Effects: User updated.  ### &amp;#9432; Further Information: All input fields are limited to **150** characters.   **All** characters are allowed.  ### Authentication Method Options  | Authentication Method | Option Key | Option Value | | :--- | :--- | :--- | | **&#x60;sql&#x60;** | none | none | | **&#x60;active_directory&#x60;** | &#x60;ad_config_id&#x60; (optional) | Active Directory configuration ID | |  | &#x60;username&#x60; | Active Directory username according to authentication setting &#x60;userFilter&#x60; | | **&#x60;radius&#x60;** | &#x60;username&#x60; | RADIUS username | | **&#x60;openid&#x60;** | &#x60;openid_config_id&#x60; | OpenID Connect configuration ID | |  | &#x60;username&#x60; | OpenID Connect username according to authentication setting &#x60;mappingClaim&#x60; |
+
+    /**
+     * Get user&#39;s key pair
+     * ### Functional Description:   Retrieve the user&#39;s key pair.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: The private key is password-based; encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
+   * @param xSdsAuthToken Authentication token (optional)
+     * @return UserKeyPairContainer
+     * @throws ApiException if fails to make API call
+     */
+    public UserKeyPairContainer getUserKeyPair(String xSdsAuthToken) throws ApiException {
+        return getUserKeyPairWithHttpInfo(xSdsAuthToken).getData();
+    }
+
+    /**
+     * Get user&#39;s key pair
+     * ### Functional Description:   Retrieve the user&#39;s key pair.  ### Precondition: Authenticated user.  ### Effects: None.  ### &amp;#9432; Further Information: The private key is password-based; encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
+     * @param xSdsAuthToken Authentication token (optional)
+     * @return ApiResponse&lt;UserKeyPairContainer&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<UserKeyPairContainer> getUserKeyPairWithHttpInfo(String xSdsAuthToken) throws ApiException {
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/v4/user/account/keypair";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+        GenericType<UserKeyPairContainer> localVarReturnType = new GenericType<UserKeyPairContainer>() {};
+        return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
+
+    /**
+     * Set user profile attributes
+     * ### &amp;#128640; Since version 4.7.0  ### Functional Description:   Set custom user profile attributes.  ### Precondition: None.  ### Effects: Custom user profile attributes gets set.  ### &amp;#9432; Further Information: Batch function.   All existing user profile attributes will be deleted.     * Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   * Characters are **case-insensitive**   * Maximum key length is **255**   * Maximum value length is **4096**
+     * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+   * @return ProfileAttributes
+   * @throws ApiException if fails to make API call
+     */
+    public ProfileAttributes setAllProfileAttributes(ProfileAttributesRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+        return setAllProfileAttributesWithHttpInfo(body, xSdsAuthToken, xSdsDateFormat).getData();
+    }
+
+    /**
+     * Set user profile attributes
+     * ### &amp;#128640; Since version 4.7.0  ### Functional Description:   Set custom user profile attributes.  ### Precondition: None.  ### Effects: Custom user profile attributes gets set.  ### &amp;#9432; Further Information: Batch function.   All existing user profile attributes will be deleted.     * Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   * Characters are **case-insensitive**   * Maximum key length is **255**   * Maximum value length is **4096**
+     * @param body body (required)
+     * @param xSdsAuthToken Authentication token (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @return ApiResponse&lt;ProfileAttributes&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ProfileAttributes> setAllProfileAttributesWithHttpInfo(ProfileAttributesRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+        Object localVarPostBody = body;
+
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException(400, "Missing the required parameter 'body' when calling setAllProfileAttributes");
+        }
+
+        // create path and map variables
+        String localVarPath = "/v4/user/profileAttributes";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+if (xSdsDateFormat != null)
+    localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+        GenericType<ProfileAttributes> localVarReturnType = new GenericType<ProfileAttributes>() {};
+        return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
+
+    /**
+     * Add or edit user profile attributes
+     * ### &amp;#128640; Since version 4.7.0  ### Functional Description:   Set custom user profile attributes.  ### Precondition: None.  ### Effects: Custom user profile attributes get added or edited.  ### &amp;#9432; Further Information: Batch function.   If an entry existed before, it will be overwritten.     * Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   * Characters are **case-insensitive**   * Maximum key length is **255**   * Maximum value length is **4096**
+     * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+   * @return ProfileAttributes
+   * @throws ApiException if fails to make API call
+     */
+    public ProfileAttributes setProfileAttributes(ProfileAttributesRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+        return setProfileAttributesWithHttpInfo(body, xSdsAuthToken, xSdsDateFormat).getData();
+    }
+
+    /**
+     * Add or edit user profile attributes
+     * ### &amp;#128640; Since version 4.7.0  ### Functional Description:   Set custom user profile attributes.  ### Precondition: None.  ### Effects: Custom user profile attributes get added or edited.  ### &amp;#9432; Further Information: Batch function.   If an entry existed before, it will be overwritten.     * Allowed characters for keys are: &#x60;[a-zA-Z0-9_-]&#x60;   * Characters are **case-insensitive**   * Maximum key length is **255**   * Maximum value length is **4096**
+     * @param body body (required)
+     * @param xSdsAuthToken Authentication token (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @return ApiResponse&lt;ProfileAttributes&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ProfileAttributes> setProfileAttributesWithHttpInfo(ProfileAttributesRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+        Object localVarPostBody = body;
+
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException(400, "Missing the required parameter 'body' when calling setProfileAttributes");
+        }
+
+        // create path and map variables
+        String localVarPath = "/v4/user/profileAttributes";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+if (xSdsDateFormat != null)
+    localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+        GenericType<ProfileAttributes> localVarReturnType = new GenericType<ProfileAttributes>() {};
+        return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
+
+    /**
+     * Set user&#39;s key pair
+     * ### Functional Description:   Set the user&#39;s key pair.  ### Precondition: Authenticated user.  ### Effects: The key pair is set.  ### &amp;#9432; Further Information: Overwriting an existing key pair is **NOT** possible.   Please delete the existing key pair first.   The private key is password-based; encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
    * @param body body (required)
    * @param xSdsAuthToken Authentication token (optional)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
+     * @throws ApiException if fails to make API call
+     */
+    public void setUserKeyPair(UserKeyPairContainer body, String xSdsAuthToken) throws ApiException {
+
+        setUserKeyPairWithHttpInfo(body, xSdsAuthToken);
+    }
+
+    /**
+     * Set user&#39;s key pair
+     * ### Functional Description:   Set the user&#39;s key pair.  ### Precondition: Authenticated user.  ### Effects: The key pair is set.  ### &amp;#9432; Further Information: Overwriting an existing key pair is **NOT** possible.   Please delete the existing key pair first.   The private key is password-based; encrypted with &#x60;AES256&#x60; / &#x60;PBKDF2&#x60;.
+     * @param body body (required)
+     * @param xSdsAuthToken Authentication token (optional)
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> setUserKeyPairWithHttpInfo(UserKeyPairContainer body, String xSdsAuthToken) throws ApiException {
+        Object localVarPostBody = body;
+
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException(400, "Missing the required parameter 'body' when calling setUserKeyPair");
+        }
+
+        // create path and map variables
+        String localVarPath = "/v4/user/account/keypair";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
+
+
+        return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    }
+
+    /**
+     * Update user account
+     * ### Functional Description:   Update current user&#39;s account.  ### Precondition: Authenticated user.  ### Effects: User&#39;s account updated.  ### &amp;#9432; Further Information: * All input fields are limited to **150** characters.   * **All** characters are allowed.    &#x60;customer&#x60; (&#x60;CustomerData&#x60;) attribute in &#x60;UserAccount&#x60; response model is **&#x60;DEPRECATED&#x60;**. Please use response from &#x60;GET /user/account/customer&#x60; instead.
+     * @param body body (required)
+   * @param xSdsAuthToken Authentication token (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
    * @return UserAccount
-   * @throws ApiException if fails to make API call
-   */
-  public UserAccount updateUserAccount(UpdateUserAccountRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
-    Object localVarPostBody = body;
-    
-    // verify the required parameter 'body' is set
-    if (body == null) {
-      throw new ApiException(400, "Missing the required parameter 'body' when calling updateUserAccount");
+     * @throws ApiException if fails to make API call
+     */
+    public UserAccount updateUserAccount(UpdateUserAccountRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+        return updateUserAccountWithHttpInfo(body, xSdsAuthToken, xSdsDateFormat).getData();
     }
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/account";
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+    /**
+     * Update user account
+     * ### Functional Description:   Update current user&#39;s account.  ### Precondition: Authenticated user.  ### Effects: User&#39;s account updated.  ### &amp;#9432; Further Information: * All input fields are limited to **150** characters.   * **All** characters are allowed.    &#x60;customer&#x60; (&#x60;CustomerData&#x60;) attribute in &#x60;UserAccount&#x60; response model is **&#x60;DEPRECATED&#x60;**. Please use response from &#x60;GET /user/account/customer&#x60; instead.
+     * @param body body (required)
+     * @param xSdsAuthToken Authentication token (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @return ApiResponse&lt;UserAccount&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<UserAccount> updateUserAccountWithHttpInfo(UpdateUserAccountRequest body, String xSdsAuthToken, String xSdsDateFormat) throws ApiException {
+        Object localVarPostBody = body;
+
+        // verify the required parameter 'body' is set
+        if (body == null) {
+            throw new ApiException(400, "Missing the required parameter 'body' when calling updateUserAccount");
+        }
+
+        // create path and map variables
+        String localVarPath = "/v4/user/account";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 if (xSdsDateFormat != null)
-      localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+    localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
 
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
-    final String[] localVarContentTypes = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        final String[] localVarContentTypes = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    GenericType<UserAccount> localVarReturnType = new GenericType<UserAccount>() {};
-    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Invalidate authentication token
-   * ### Functional Description:   Logout a user.  ### Precondition: Valid &#x60;X-Sds-Auth-Token&#x60;.  ### Effects: * User is logged out   * &#x60;X-Sds-Auth-Token&#x60; gets invalidated.  ### &amp;#9432; Further Information: None.
-   * @param everywhere Invalidate all tokens (optional)
+        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+
+        GenericType<UserAccount> localVarReturnType = new GenericType<UserAccount>() {};
+        return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
+
+    /**
+     * Invalidate authentication token
+     * ### Functional Description:   Log out a user.  ### Precondition: Authenticated user.  ### Effects: * User is logged out   * Authentication token gets invalidated.  ### &amp;#9432; Further Information: None.
+     * @param xSdsAuthToken Authentication token (optional)
+     * @param everywhere Invalidate all tokens (optional)
+     * @throws ApiException if fails to make API call
+     */
+    public void userLogout(String xSdsAuthToken, Boolean everywhere) throws ApiException {
+
+        userLogoutWithHttpInfo(xSdsAuthToken, everywhere);
+    }
+
+    /**
+     * Invalidate authentication token
+     * ### Functional Description:   Log out a user.  ### Precondition: Authenticated user.  ### Effects: * User is logged out   * Authentication token gets invalidated.  ### &amp;#9432; Further Information: None.
+     * @param xSdsAuthToken Authentication token (optional)
+     * @param everywhere Invalidate all tokens (optional)
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> userLogoutWithHttpInfo(String xSdsAuthToken, Boolean everywhere) throws ApiException {
+        Object localVarPostBody = null;
+
+        // create path and map variables
+        String localVarPath = "/v4/user/logout";
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+        localVarQueryParams.addAll(apiClient.parameterToPairs("", "everywhere", everywhere));
+
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+            "application/json"
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
+
+
+        return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    }
+
+    /**
+     * (authenticated) Ping
+     * ### Functional Description: Test connection to DRACOON Server (while authenticated).  ### Precondition: Authenticated user.  ### Effects: &#x60;200 OK&#x60; with principal information is returned if successful.  ### &amp;#9432; Further Information: None.
    * @param xSdsAuthToken Authentication token (optional)
-   * @throws ApiException if fails to make API call
-   */
-  public void userLogout(Boolean everywhere, String xSdsAuthToken) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/logout";
+     * @return String
+     * @throws ApiException if fails to make API call
+     */
+    public String userPing(String xSdsAuthToken) throws ApiException {
+        return userPingWithHttpInfo(xSdsAuthToken).getData();
+    }
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+    /**
+     * (authenticated) Ping
+     * ### Functional Description: Test connection to DRACOON Server (while authenticated).  ### Precondition: Authenticated user.  ### Effects: &#x60;200 OK&#x60; with principal information is returned if successful.  ### &amp;#9432; Further Information: None.
+     * @param xSdsAuthToken Authentication token (optional)
+     * @return ApiResponse&lt;String&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<String> userPingWithHttpInfo(String xSdsAuthToken) throws ApiException {
+        Object localVarPostBody = null;
 
-    localVarQueryParams.addAll(apiClient.parameterToPairs("", "everywhere", everywhere));
+        // create path and map variables
+        String localVarPath = "/v4/user/ping";
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
-
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      "application/json"
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-    apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
-  }
-  /**
-   * Ping
-   * ### Functional Description: Test connection to DRACOON Server (while authenticated).  ### Precondition: Valid &#x60;X-Sds-Auth-Token&#x60;.  ### Effects: &#x60;200 OK&#x60; with principal information is returned if successful.  ### &amp;#9432; Further Information: None.
-   * @param xSdsAuthToken Authentication token (optional)
-   * @return String
-   * @throws ApiException if fails to make API call
-   */
-  public String userPing(String xSdsAuthToken) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // create path and map variables
-    String localVarPath = "/v4/user/ping";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+        if (xSdsAuthToken != null)
+            localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
 
 
-    if (xSdsAuthToken != null)
-      localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        final String[] localVarAccepts = {
+            "text/plain"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
 
-    
-    final String[] localVarAccepts = {
-      "text/plain"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+        final String[] localVarContentTypes = {
 
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-    String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
 
-    GenericType<String> localVarReturnType = new GenericType<String>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
+        GenericType<String> localVarReturnType = new GenericType<String>() {};
+        return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+    }
 }

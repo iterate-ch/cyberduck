@@ -56,9 +56,9 @@ public class SDSListService implements ListService {
             final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
             NodeList nodes;
             do {
-                nodes = new NodesApi(session.getClient()).getFsNodes(0,
-                    Long.parseLong(nodeid.getFileid(directory, new DisabledListProgressListener())),
-                    null, null, "name:asc", offset, chunksize, StringUtils.EMPTY, null);
+                nodes = new NodesApi(session.getClient()).getFsNodes(StringUtils.EMPTY, null, 0,
+                    null, chunksize, offset, Long.parseLong(nodeid.getFileid(directory, new DisabledListProgressListener())),
+                    false, "name:asc");
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = feature.toAttributes(node);
                     final EnumSet<Path.Type> type = feature.toType(node);

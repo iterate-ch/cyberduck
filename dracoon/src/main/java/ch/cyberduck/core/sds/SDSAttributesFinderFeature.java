@@ -96,7 +96,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             default:
                 type = EnumSet.of(Path.Type.file);
         }
-        if(node.getIsEncrypted()) {
+        if(node.isIsEncrypted()) {
             type.add(Path.Type.triplecrypt);
         }
         return type;
@@ -104,7 +104,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     private Permission toPermission(final Node node) throws BackgroundException {
         final Permission permission = new Permission(Permission.Action.none, Permission.Action.none, Permission.Action.none);
-        if(node.getIsEncrypted() && node.getType() == Node.TypeEnum.FILE) {
+        if(node.isIsEncrypted() && node.getType() == Node.TypeEnum.FILE) {
             if(null != session.keyPair()) {
                 permission.setUser(permission.getUser().or(Permission.Action.read));
             }
@@ -117,7 +117,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             case FOLDER:
                 permission.setUser(permission.getUser().or(Permission.Action.execute));
         }
-        if(node.getPermissions().getChange()) {
+        if(node.getPermissions().isChange()) {
             permission.setUser(permission.getUser().or(Permission.Action.write));
         }
         return permission;
@@ -126,25 +126,25 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     private Acl toAcl(final Node node) {
         final Acl acl = new Acl();
         final Acl.User user = new Acl.CanonicalUser();
-        if(node.getPermissions().getManage()) {
+        if(node.getPermissions().isManage()) {
             acl.addAll(user, SDSPermissionsFeature.MANAGE_ROLE);
         }
-        if(node.getPermissions().getRead()) {
+        if(node.getPermissions().isRead()) {
             acl.addAll(user, SDSPermissionsFeature.READ_ROLE);
         }
-        if(node.getPermissions().getCreate()) {
+        if(node.getPermissions().isCreate()) {
             acl.addAll(user, SDSPermissionsFeature.CREATE_ROLE);
         }
-        if(node.getPermissions().getChange()) {
+        if(node.getPermissions().isChange()) {
             acl.addAll(user, SDSPermissionsFeature.CHANGE_ROLE);
         }
-        if(node.getPermissions().getDelete()) {
+        if(node.getPermissions().isDelete()) {
             acl.addAll(user, SDSPermissionsFeature.DELETE_ROLE);
         }
-        if(node.getPermissions().getManageDownloadShare()) {
+        if(node.getPermissions().isManageDownloadShare()) {
             acl.addAll(user, SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE);
         }
-        if(node.getPermissions().getManageUploadShare()) {
+        if(node.getPermissions().isManageUploadShare()) {
             acl.addAll(user, SDSPermissionsFeature.UPLOAD_SHARE_ROLE);
         }
         return acl;
