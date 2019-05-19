@@ -35,6 +35,8 @@
         <string>Secret Key</string>
         <key>Authorization</key>
         <string>AWS4HMACSHA256</string>
+        <key>Region</key>
+        <string>eu-central-1</string>
         <key>Regions</key>
         <array>
             <string>eu-central-1</string>
