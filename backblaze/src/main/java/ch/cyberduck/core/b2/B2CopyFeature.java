@@ -57,6 +57,11 @@ public class B2CopyFeature implements Copy {
     }
 
     @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return containerService.getContainer(source).equals(containerService.getContainer(target));
+    }
+
+    @Override
     public boolean isRecursive(final Path source, final Path target) {
         return false;
     }
