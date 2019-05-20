@@ -30,7 +30,20 @@ import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSMutableDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.CollectionListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostFilter;
+import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.HostReaderFactory;
+import ch.cyberduck.core.HostWriterFactory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
@@ -256,7 +269,9 @@ public class BookmarkTableDataSource extends ListDataSource {
             final NSMutableDictionary dict = NSMutableDictionary.dictionary();
             dict.setObjectForKey(BookmarkNameProvider.toString(host), "Nickname");
             dict.setObjectForKey(host.getHostname(), "Hostname");
-            dict.setObjectForKey(new HostUrlProvider().withUsername(true).withPath(true).get(host), "URL");
+            if(StringUtils.isNotBlank(host.getCredentials().getUsername())) {
+                dict.setObjectForKey(host.getCredentials().getUsername(), "Username");
+            }
             final String comment = this.getSource().getComment(host);
             if(StringUtils.isNotBlank(comment)) {
                 dict.setObjectForKey(comment, "Comment");
