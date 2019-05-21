@@ -18,11 +18,9 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.dav.DAVClient;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -39,7 +37,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
@@ -69,15 +66,6 @@ public class BrickSession extends DAVSession {
     }
 
     @Override
-    public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
-        String token = host.getCredentials().getToken();
-        if(StringUtils.isEmpty(token)) {
-            host.getCredentials().setToken(new UUIDRandomStringService().random());
-        }
-        return super.connect(proxy, key, prompt);
-    }
-
-    @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         try {
             final Credentials credentials = host.getCredentials();
@@ -85,7 +73,7 @@ public class BrickSession extends DAVSession {
                 final String token = new BrickCredentialsConfigurator().configure(host).getToken();
                 if(!BrowserLauncherFactory.get().open(
                     String.format("https://app.files.com/Login_For_Desktop?Pairing_Key=%s&Platform=%s&Computer=%s", token,
-                        new PreferencesUseragentProvider().get(), InetAddress.getLocalHost().getHostName())
+                        URIEncoder.encode(new PreferencesUseragentProvider().get()), URIEncoder.encode(InetAddress.getLocalHost().getHostName()))
                 )) {
                     throw new LoginCanceledException();
                 }
