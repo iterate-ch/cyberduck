@@ -15,14 +15,13 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.Scheme;
 
-import org.apache.commons.lang3.StringUtils;
-
-public class BrickProtocol extends DAVSSLProtocol {
+public class BrickProtocol extends AbstractProtocol {
 
     @Override
     public Type getType() {
@@ -35,8 +34,13 @@ public class BrickProtocol extends DAVSSLProtocol {
     }
 
     @Override
-    public String getPrefix() {
-        return String.format("%s.%s", DAVSSLProtocol.class.getPackage().getName(), StringUtils.upperCase(Type.dav.name()));
+    public String getDescription() {
+        return "Files.com";
+    }
+
+    @Override
+    public Scheme getScheme() {
+        return Scheme.https;
     }
 
     @Override
