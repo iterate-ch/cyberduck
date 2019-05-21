@@ -84,7 +84,7 @@ public final class ProtocolFactory {
                         registered.add(profile);
                     }
                     catch(AccessDeniedException e) {
-                        log.error(String.format("Failure reading profile from %s. %s", f, e.getMessage()));
+                        log.error(String.format("Failure reading profile from %s. %s", f, e.getDetail()));
                     }
                 }
             }
@@ -110,7 +110,7 @@ public final class ProtocolFactory {
                         registered.add(profile);
                     }
                     catch(AccessDeniedException e) {
-                        log.warn(String.format("Failure reading profile from %s. %s", f, e.getMessage()));
+                        log.warn(String.format("Failure reading profile from %s. %s", f, e.getDetail()));
                     }
                 }
             }
