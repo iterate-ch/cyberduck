@@ -20,6 +20,8 @@ import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class BrickProtocol extends DAVSSLProtocol {
 
     @Override
@@ -28,12 +30,38 @@ public class BrickProtocol extends DAVSSLProtocol {
     }
 
     @Override
+    public String getIdentifier() {
+        return Type.brick.name();
+    }
+
+    @Override
+    public String getPrefix() {
+        return String.format("%s.%s", DAVSSLProtocol.class.getPackage().getName(), StringUtils.upperCase(Type.dav.name()));
+    }
+
+    @Override
     public CredentialsConfigurator getCredentialsFinder() {
         return new BrickCredentialsConfigurator();
     }
 
     @Override
+    public boolean isUsernameConfigurable() {
+        return true;
+    }
+
+    @Override
+    public boolean isPasswordConfigurable() {
+        return true;
+    }
+
+    @Override
+    public boolean isTokenConfigurable() {
+        return true;
+    }
+
+    @Override
     public boolean validate(final Credentials credentials, final LoginOptions options) {
-        return super.validate(new BrickCredentialsConfigurator().configure(credentials), options);
+        // Will get new pairing key if missing credentials
+        return true;
     }
 }

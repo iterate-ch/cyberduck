@@ -24,9 +24,9 @@
         <key>Description</key>
         <string>Files.com</string>
         <key>Username Configurable</key>
-        <false/>
+        <true/>
         <key>Password Configurable</key>
-        <false/>
+        <true/>
         <key>Token Configurable</key>
         <true/>
         <key>Anonymous Configurable</key>
