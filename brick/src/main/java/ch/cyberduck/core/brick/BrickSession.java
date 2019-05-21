@@ -18,12 +18,15 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Copy;
@@ -34,6 +37,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.BackgroundActionPauser;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.io.IOUtils;
@@ -49,6 +53,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.text.MessageFormat;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -111,6 +116,27 @@ public class BrickSession extends DAVSession {
                         switch(e.getStatusCode()) {
                             case HttpStatus.SC_NOT_FOUND:
                                 log.warn(String.format("Missing login for pairing key %s", token));
+                                final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
+                                    @Override
+                                    public boolean isCanceled() {
+                                        try {
+                                            cancel.verify();
+                                            return false;
+                                        }
+                                        catch(ConnectionCanceledException ex) {
+                                            return true;
+                                        }
+                                    }
+
+                                    @Override
+                                    public void progress(final Integer seconds) {
+                                        if(log.isInfoEnabled()) {
+                                            log.info(MessageFormat.format(LocaleFactory.localizedString("Retry again in {0}", "Status"),
+                                                new RemainingPeriodFormatter().format(seconds)));
+                                        }
+                                    }
+                                }, 1);
+                                pause.await();
                                 cancel.verify();
                                 break;
                             default:
