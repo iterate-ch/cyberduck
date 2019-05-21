@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -107,5 +108,47 @@ public class FolderBookmarkCollectionTest {
         assertEquals(a, f.get(0));
         assertEquals(c, f.get(1));
         assertEquals(b, f.get(2));
+    }
+
+    @Test
+    public void testFind() {
+        FolderBookmarkCollection bookmarks = new FolderBookmarkCollection(new NullLocal("", "f"));
+        final Host a = new Host(new TestProtocol(), "a", new Credentials("a"));
+        final Host b = new Host(new TestProtocol(), "b", new Credentials("b"));
+        bookmarks.add(a);
+        bookmarks.add(b);
+        {
+            final Host input = new Host(new TestProtocol(), "a", new Credentials("a"));
+            assertEquals(a, bookmarks.stream().filter(h -> h.compareTo(input) == 0).findFirst()
+                // Matching profile
+                .orElse(bookmarks.stream().filter(h -> Objects.equals(h.getProtocol(), input.getProtocol()) && Objects.equals(h.getHostname(), input.getHostname())).findFirst()
+                    // Matching parent protocol
+                    .orElse(bookmarks.stream().filter(h -> Objects.equals(h.getProtocol().getIdentifier(), input.getProtocol().getIdentifier()) && Objects.equals(h.getHostname(), input.getHostname())).findFirst()
+                        .orElse(null)
+                    )
+                ));
+        }
+        {
+            final Host input = new Host(new TestProtocol(), "b", new Credentials("b"));
+            assertEquals(b, bookmarks.stream().filter(h -> h.compareTo(input) == 0).findFirst()
+                // Matching profile
+                .orElse(bookmarks.stream().filter(h -> Objects.equals(h.getProtocol(), input.getProtocol()) && Objects.equals(h.getHostname(), input.getHostname())).findFirst()
+                    // Matching parent protocol
+                    .orElse(bookmarks.stream().filter(h -> Objects.equals(h.getProtocol().getIdentifier(), input.getProtocol().getIdentifier()) && Objects.equals(h.getHostname(), input.getHostname())).findFirst()
+                        .orElse(null)
+                    )
+                ));
+        }
+        {
+            final Host input = new Host(new TestProtocol(), "a");
+            assertEquals(a, bookmarks.stream().filter(h -> h.compareTo(input) == 0).findFirst()
+                // Matching profile
+                .orElse(bookmarks.stream().filter(h -> Objects.equals(h.getProtocol(), input.getProtocol()) && Objects.equals(h.getHostname(), input.getHostname())).findFirst()
+                    // Matching parent protocol
+                    .orElse(bookmarks.stream().filter(h -> Objects.equals(h.getProtocol().getIdentifier(), input.getProtocol().getIdentifier()) && Objects.equals(h.getHostname(), input.getHostname())).findFirst()
+                        .orElse(null)
+                    )
+                ));
+        }
     }
 }
