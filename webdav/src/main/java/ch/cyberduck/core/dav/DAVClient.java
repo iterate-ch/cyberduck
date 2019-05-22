@@ -19,6 +19,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -40,6 +41,7 @@ import java.util.List;
 
 import com.github.sardine.DavResource;
 import com.github.sardine.impl.SardineImpl;
+import com.github.sardine.impl.handler.MultiStatusResponseHandler;
 import com.github.sardine.impl.handler.VoidResponseHandler;
 import com.github.sardine.impl.methods.HttpPropFind;
 import com.github.sardine.model.Multistatus;
@@ -48,7 +50,6 @@ import com.github.sardine.model.Response;
 import com.github.sardine.util.SardineUtil;
 
 public class DAVClient extends SardineImpl {
-
     private static final Logger log = Logger.getLogger(DAVClient.class);
 
     private final String uri;
@@ -85,7 +86,7 @@ public class DAVClient extends SardineImpl {
         HttpPropFind entity = new HttpPropFind(url);
         entity.setDepth(depth < 0 ? "infinity" : Integer.toString(depth));
         entity.setEntity(new StringEntity(SardineUtil.toXml(body), StandardCharsets.UTF_8));
-        Multistatus multistatus = this.execute(entity, new SaxPropFindResponseHandler());
+        Multistatus multistatus = this.execute(entity, PreferencesFactory.get().getBoolean("webdav.list.handler.sax") ? new SaxPropFindResponseHandler() : new MultiStatusResponseHandler());
         List<Response> responses = multistatus.getResponse();
         List<DavResource> resources = new ArrayList<DavResource>(responses.size());
         for(Response response : responses) {
