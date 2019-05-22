@@ -42,6 +42,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpPost;
@@ -86,6 +87,8 @@ public class BrickSession extends DAVSession {
                     // Query status
                     try {
                         final HttpPost resource = new HttpPost(String.format("https://app.files.com/api/rest/v1/sessions/pairing_key/%s", token));
+                        resource.setHeader(HttpHeaders.ACCEPT, "application/json");
+                        resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Fetch credentials for paring key %s from %s", token, resource));
                         }
