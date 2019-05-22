@@ -77,7 +77,7 @@ public class BrickSession extends DAVSession {
             if(!credentials.isPasswordAuthentication()) {
                 final String token = new BrickCredentialsConfigurator().configure(host).getToken();
                 if(!BrowserLauncherFactory.get().open(
-                    String.format("https://app.files.com/Login_For_Desktop?Pairing_Key=%s&Platform=%s&Computer=%s", token,
+                    String.format("https://app.files.com/login_for_desktop?pairing_key=%s&platform=%s&computer=%s", token,
                         URIEncoder.encode(new PreferencesUseragentProvider().get()), URIEncoder.encode(InetAddress.getLocalHost().getHostName()))
                 )) {
                     throw new LoginCanceledException();
