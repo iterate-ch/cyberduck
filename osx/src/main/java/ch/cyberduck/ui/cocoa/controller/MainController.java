@@ -664,7 +664,7 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                 }
                 catch(AccessDeniedException e) {
-                    log.error(String.format("Failure reading profile from %s. %s", f, e.getMessage()));
+                    log.error(String.format("Failure reading profile from %s. %s", f, e.getDetail()));
                     return false;
                 }
             }
