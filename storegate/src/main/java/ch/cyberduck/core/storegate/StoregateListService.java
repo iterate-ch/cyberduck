@@ -87,7 +87,7 @@ public class StoregateListService implements ListService {
                     }
                     pageIndex++;
                 }
-                while(files.getTotalRowCount() == chunksize);
+                while(children.size() < files.getTotalRowCount());
                 return children;
             }
             catch(ApiException e) {
