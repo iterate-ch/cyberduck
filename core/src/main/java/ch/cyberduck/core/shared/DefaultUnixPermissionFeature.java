@@ -19,24 +19,23 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import java.util.EnumSet;
 
 public abstract class DefaultUnixPermissionFeature implements UnixPermission {
 
+    private final Preferences preferences = PreferencesFactory.get();
+
     @Override
     public Permission getDefault(final EnumSet<Path.Type> type) {
-        if(PreferencesFactory.get().getBoolean("queue.upload.permissions.change")) {
-            if(PreferencesFactory.get().getBoolean("queue.upload.permissions.default")) {
-                if(type.contains(Path.Type.file)) {
-                    return new Permission(
-                        PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
-                }
-                else {
-                    return new Permission(
-                        PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default"));
-                }
+        if(preferences.getBoolean("queue.upload.permissions.default")) {
+            if(type.contains(Path.Type.file)) {
+                return new Permission(preferences.getInteger("queue.upload.permissions.file.default"));
+            }
+            else {
+                return new Permission(preferences.getInteger("queue.upload.permissions.folder.default"));
             }
         }
         return Permission.EMPTY;
@@ -44,7 +43,7 @@ public abstract class DefaultUnixPermissionFeature implements UnixPermission {
 
     @Override
     public Permission getDefault(final Local file) {
-        if(PreferencesFactory.get().getBoolean("queue.upload.permissions.default")) {
+        if(preferences.getBoolean("queue.upload.permissions.default")) {
             return this.getDefault(file.getType());
         }
         else {

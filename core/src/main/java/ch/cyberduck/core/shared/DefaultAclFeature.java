@@ -17,29 +17,41 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.features.AclPermission;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+
+import java.util.EnumSet;
 
 public abstract class DefaultAclFeature implements AclPermission {
 
+    private final Preferences preferences = PreferencesFactory.get();
+
     @Override
-    public Acl getDefault(final Local file) {
-        final Permission permission;
-        if(PreferencesFactory.get().getBoolean("queue.upload.permissions.default")) {
-            if(file.isFile()) {
-                permission = new Permission(
-                        PreferencesFactory.get().getInteger("queue.upload.permissions.file.default"));
+    public Acl getDefault(final EnumSet<Path.Type> type) {
+        if(preferences.getBoolean("queue.upload.permissions.default")) {
+            if(type.contains(Path.Type.file)) {
+                return this.toAcl(new Permission(preferences.getInteger("queue.upload.permissions.file.default")));
             }
             else {
-                permission = new Permission(
-                        PreferencesFactory.get().getInteger("queue.upload.permissions.folder.default"));
+                return this.toAcl(new Permission(preferences.getInteger("queue.upload.permissions.folder.default")));
             }
         }
-        else {
-            // Read permissions from local file
-            permission = file.attributes().getPermission();
+        return Acl.EMPTY;
+    }
+
+    @Override
+    public Acl getDefault(final Local file) {
+        if(preferences.getBoolean("queue.upload.permissions.default")) {
+            return this.getDefault(file.getType());
         }
+        // Read permissions from local file
+        return this.toAcl(file.attributes().getPermission());
+    }
+
+    private Acl toAcl(final Permission permission) {
         final Acl acl = new Acl();
         if(permission.getOther().implies(Permission.Action.read)) {
             acl.addAll(new Acl.GroupUser(Acl.GroupUser.EVERYONE), new Acl.Role(Acl.Role.READ));

@@ -20,6 +20,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public interface AclPermission {
@@ -41,5 +42,15 @@ public interface AclPermission {
      */
     List<Acl.Role> getAvailableAclRoles(List<Path> files);
 
+    /**
+     * @param file File on local disk
+     * @return Default ACL to set for file
+     */
     Acl getDefault(Local file);
+
+    /**
+     * @param type File or folder
+     * @return Default ACL for new file or folder
+     */
+    Acl getDefault(EnumSet<Path.Type> type);
 }

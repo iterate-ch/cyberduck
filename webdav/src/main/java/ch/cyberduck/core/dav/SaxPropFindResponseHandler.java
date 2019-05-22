@@ -15,6 +15,8 @@ package ch.cyberduck.core.dav;
  * GNU General Public License for more details.
  */
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -43,6 +45,7 @@ import com.github.sardine.model.Response;
 import com.github.sardine.util.SardineUtil;
 
 public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
+    private static final Logger log = Logger.getLogger(SaxPropFindResponseHandler.class);
 
     @Override
     protected Multistatus getMultistatus(final InputStream stream) throws IOException {
@@ -113,6 +116,10 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) {
+            if(StringUtils.isBlank(data.toString())) {
+                log.warn(String.format("Missing value for %s", localName));
+                return;
+            }
             if(localName.equals("status")) {
                 propstat.setStatus(data.toString());
             }

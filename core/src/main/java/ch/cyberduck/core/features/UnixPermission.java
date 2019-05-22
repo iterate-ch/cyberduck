@@ -32,7 +32,15 @@ public interface UnixPermission {
 
     void setUnixPermission(Path file, Permission permission) throws BackgroundException;
 
+    /**
+     * @param file File on local disk
+     * @return Default mask to set for file
+     */
     Permission getDefault(Local file);
 
+    /**
+     * @param type File or folder
+     * @return Default mask for new file or folder
+     */
     Permission getDefault(EnumSet<Path.Type> type);
 }

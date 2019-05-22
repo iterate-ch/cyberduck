@@ -89,7 +89,7 @@ public final class ProtocolFactory {
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", bundle, e.getMessage()));
+                log.warn(String.format("Failure reading collection %s %s", bundle, e.getDetail()));
             }
         }
         // Load thirdparty protocols
@@ -115,7 +115,7 @@ public final class ProtocolFactory {
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", library, e.getMessage()));
+                log.warn(String.format("Failure reading collection %s %s", library, e.getDetail()));
             }
         }
     }
