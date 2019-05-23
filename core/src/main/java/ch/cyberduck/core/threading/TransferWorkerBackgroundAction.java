@@ -32,8 +32,8 @@ public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<
     protected final TransferWorker<T> worker;
     protected T result;
 
-    public TransferWorkerBackgroundAction(final Controller controller, final TransferWorker<T> worker) {
-        super(controller, SessionPool.DISCONNECTED);
+    public TransferWorkerBackgroundAction(final Controller controller, final SessionPool session, final TransferWorker<T> worker) {
+        super(controller, session);
         this.worker = worker;
     }
 
