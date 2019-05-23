@@ -96,7 +96,7 @@ public class SingleTransferWorkerTest extends AbstractGoogleStorageTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         byte[] compare = new byte[content.length];
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
         test.attributes().setVersionId(versionId);

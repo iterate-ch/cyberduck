@@ -135,7 +135,7 @@ public class SingleTransferWorkerTest extends AbstractSFTPTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         local.delete();
         assertEquals(98305L, counter.getSent(), 0L);
         assertTrue(failed.get());

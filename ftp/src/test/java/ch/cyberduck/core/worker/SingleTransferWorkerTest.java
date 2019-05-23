@@ -149,7 +149,7 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledConnectionCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), counter, new DisabledNotificationService()
         );
-        assertTrue(worker.run());
+        assertTrue(worker.run(session));
         local.delete();
         assertEquals(98305L, counter.getSent(), 0L);
         assertEquals(98305L, new DefaultAttributesFinderFeature(session).find(test).getSize());

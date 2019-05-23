@@ -183,9 +183,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public Boolean run(final Session<?> source) throws BackgroundException {
         final String lock = sleep.lock();
-        final Session<?> source = this.borrow(Connection.source);
         final Session<?> destination = this.borrow(Connection.destination);
         try {
             if(log.isDebugEnabled()) {

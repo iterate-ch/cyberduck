@@ -203,7 +203,7 @@ public class ConcurrentTransferWorkerTest {
         );
         pool.withMaxTotal(connections);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
-        assertTrue(worker.run());
+        assertTrue(worker.run(session));
         worker.release(session, ConcurrentTransferWorker.Connection.source, null);
         for(int i = 1; i <= files; i++) {
             assertTrue(transferred.contains(new Path("/t" + i, EnumSet.of(Path.Type.file))));

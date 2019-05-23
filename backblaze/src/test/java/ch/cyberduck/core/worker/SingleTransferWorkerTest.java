@@ -131,7 +131,7 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         local.delete();
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFinderFeature(session, fileid).find(test).getSize());

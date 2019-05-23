@@ -121,7 +121,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(dir1));
         assertEquals(content.length, new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
@@ -180,7 +180,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(file1, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localDirectory1.delete();

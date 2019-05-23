@@ -127,7 +127,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         local.delete();
         assertEquals(98305L, counter.getSent(), 0L);
         assertEquals(98305L, new DAVAttributesFinderFeature(session).find(test).getSize());

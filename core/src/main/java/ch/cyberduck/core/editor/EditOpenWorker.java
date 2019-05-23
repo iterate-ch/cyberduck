@@ -95,7 +95,7 @@ public class EditOpenWorker extends Worker<Transfer> {
             = new SingleTransferWorker(session, session, download, options, new TransferSpeedometer(download),
                 new DisabledTransferPrompt(), callback,
             listener, new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), notification);
-        worker.run();
+        worker.run(session);
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file));
         }

@@ -89,7 +89,7 @@ public class EditSaveWorker extends Worker<Transfer> {
             = new SingleTransferWorker(session, session, upload, new TransferOptions(),
                 new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback,
             listener, new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), notification);
-        worker.run();
+        worker.run(session);
         if(!upload.isComplete()) {
             log.warn(String.format("File size changed for %s", editor.getRemote()));
         }

@@ -126,7 +126,7 @@ public class SingleTransferWorkerTest {
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         local.delete();
         assertEquals(2L * 1024L * 1024L, counter.getSent(), 0L);
         assertEquals(2L * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());

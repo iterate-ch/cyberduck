@@ -91,7 +91,7 @@ public class SingleTransferWorkerTest {
                 return null;
             }
         };
-        worker.run();
+        worker.run(session);
         assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
     }
 
@@ -155,7 +155,7 @@ public class SingleTransferWorkerTest {
                 return null;
             }
         };
-        worker.run();
+        worker.run(session);
         assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
         assertTrue(worker.getCache().isEmpty());
     }
@@ -237,7 +237,7 @@ public class SingleTransferWorkerTest {
                 return null;
             }
         };
-        worker.run();
+        worker.run(session);
         assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
         assertTrue(worker.getCache().isEmpty());
     }
@@ -275,7 +275,7 @@ public class SingleTransferWorkerTest {
                     fail();
                     return null;
                 }
-            }.run();
+            }.run(session);
         }
         catch(NotfoundException e) {
             // Expected

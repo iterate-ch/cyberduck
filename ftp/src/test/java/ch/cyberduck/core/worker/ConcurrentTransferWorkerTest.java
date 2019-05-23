@@ -46,7 +46,6 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -58,7 +57,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Ignore
 public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
 
     @Test
@@ -99,7 +97,7 @@ public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
         pool.withMaxTotal(connections);
         final Session<?> s = worker.borrow(ConcurrentTransferWorker.Connection.source);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
-        assertTrue(worker.run());
+        assertTrue(worker.run(session));
         worker.release(session, ConcurrentTransferWorker.Connection.source, null);
         worker.release(s, ConcurrentTransferWorker.Connection.source, null);
         assertEquals(0L, transfer.getTransferred(), 0L);
