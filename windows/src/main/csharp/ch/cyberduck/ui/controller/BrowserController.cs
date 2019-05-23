@@ -1384,7 +1384,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDisconnect()
         {
-            return IsConnected();
+            return !IsIdle() || IsConnected();
         }
 
         private bool View_ValidateStop()

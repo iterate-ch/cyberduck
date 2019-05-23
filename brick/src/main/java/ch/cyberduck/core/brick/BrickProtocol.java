@@ -15,13 +15,57 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.AbstractProtocol;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.CredentialsConfigurator;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.Scheme;
 
-public class BrickProtocol extends DAVSSLProtocol {
+public class BrickProtocol extends AbstractProtocol {
 
     @Override
     public Type getType() {
         return Type.brick;
     }
 
+    @Override
+    public String getIdentifier() {
+        return Type.brick.name();
+    }
+
+    @Override
+    public String getDescription() {
+        return "Files.com";
+    }
+
+    @Override
+    public Scheme getScheme() {
+        return Scheme.https;
+    }
+
+    @Override
+    public CredentialsConfigurator getCredentialsFinder() {
+        return new BrickCredentialsConfigurator();
+    }
+
+    @Override
+    public boolean isUsernameConfigurable() {
+        return true;
+    }
+
+    @Override
+    public boolean isPasswordConfigurable() {
+        return true;
+    }
+
+    @Override
+    public boolean isTokenConfigurable() {
+        return true;
+    }
+
+    @Override
+    public boolean validate(final Credentials credentials, final LoginOptions options) {
+        // Will get new pairing key if missing credentials
+        return true;
+    }
 }

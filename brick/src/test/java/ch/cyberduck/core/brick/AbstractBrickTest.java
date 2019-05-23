@@ -65,6 +65,5 @@ public class AbstractBrickTest {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, PathCache.empty(), new DisabledCancelCallback());
-        session.getHost().getCredentials().setPassword(System.getProperties().getProperty("brick.password"));
     }
 }

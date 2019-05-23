@@ -20,9 +20,15 @@
         <key>Protocol</key>
         <string>brick</string>
         <key>Vendor</key>
-        <string>files.com</string>
+        <string>Action Verb</string>
         <key>Description</key>
         <string>Files.com</string>
+        <key>Username Configurable</key>
+        <true/>
+        <key>Password Configurable</key>
+        <true/>
+        <key>Token Configurable</key>
+        <true/>
         <key>Anonymous Configurable</key>
         <false/>
         <key>Certificate Configurable</key>
