@@ -298,7 +298,9 @@ public class DefaultSessionPool implements SessionPool {
     public String toString() {
         final StringBuilder sb = new StringBuilder("DefaultSessionPool{");
         sb.append("bookmark=").append(bookmark);
-        sb.append(", pool=").append(pool);
+        sb.append(", idle=").append(pool.getNumIdle());
+        sb.append(", active=").append(pool.getNumActive());
+        sb.append(", waiters=").append(pool.getNumWaiters());
         sb.append('}');
         return sb.toString();
     }
