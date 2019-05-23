@@ -46,6 +46,7 @@ import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -57,6 +58,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
 
     @Test
