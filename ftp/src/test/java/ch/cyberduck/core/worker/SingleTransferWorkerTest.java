@@ -147,7 +147,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledConnectionCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), counter, new DisabledNotificationService()
+            new DisabledConnectionCallback(), new DisabledProgressListener(), counter, new DisabledNotificationService()
         );
         assertTrue(worker.run(session));
         local.delete();

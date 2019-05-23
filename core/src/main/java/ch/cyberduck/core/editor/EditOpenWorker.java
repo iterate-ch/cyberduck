@@ -19,7 +19,6 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
@@ -70,7 +69,7 @@ public class EditOpenWorker extends Worker<Transfer> {
         this.quit = quit;
         this.notification = notification;
         this.download = new DownloadTransfer(bookmark, editor.getRemote(), editor.getLocal(),
-                new DownloadDuplicateFilter()) {
+            new DownloadDuplicateFilter()) {
             @Override
             public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                          final TransferPrompt prompt, final ListProgressListener listener) {
@@ -93,8 +92,8 @@ public class EditOpenWorker extends Worker<Transfer> {
         options.open = false;
         final SingleTransferWorker worker
             = new SingleTransferWorker(session, session, download, options, new TransferSpeedometer(download),
-                new DisabledTransferPrompt(), callback,
-            listener, new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), notification);
+            new DisabledTransferPrompt(), callback,
+            listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
         worker.run(session);
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file));
@@ -111,7 +110,7 @@ public class EditOpenWorker extends Worker<Transfer> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
-                editor.getRemote().getName());
+            editor.getRemote().getName());
     }
 
     @Override
