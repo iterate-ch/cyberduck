@@ -39,8 +39,7 @@ public class BrowserTransferBackgroundAction extends TransferBackgroundAction {
     public BrowserTransferBackgroundAction(final Controller controller, final SessionPool pool,
                                            final Transfer transfer, final TransferCallback callback, final TransferPrompt prompt) {
         super(controller,
-            // Need new pool for transfer filter and prompt if using stateful session pool with lock
-            transfer.getSource().getProtocol().isStateful() ? SessionPoolFactory.create(controller, pool.getCache(), transfer.getSource()) : pool,
+            pool,
             transfer.getType() == Transfer.Type.copy ? SessionPoolFactory.create(controller, pool.getCache(), transfer.getDestination()) : SessionPool.DISCONNECTED,
             new BrowserTransferAdapter(controller), controller, transfer, new TransferOptions(), prompt);
         this.transfer = transfer;

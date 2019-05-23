@@ -1,6 +1,19 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -73,7 +86,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -91,7 +104,7 @@ public class SingleTransferWorkerTest {
                 return null;
             }
         };
-        worker.run();
+        worker.run(session);
         assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
     }
 
@@ -144,7 +157,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -155,7 +168,7 @@ public class SingleTransferWorkerTest {
                 return null;
             }
         };
-        worker.run();
+        worker.run(session);
         assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
         assertTrue(worker.getCache().isEmpty());
     }
@@ -224,7 +237,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -237,7 +250,7 @@ public class SingleTransferWorkerTest {
                 return null;
             }
         };
-        worker.run();
+        worker.run(session);
         assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
         assertTrue(worker.getCache().isEmpty());
     }
@@ -268,14 +281,14 @@ public class SingleTransferWorkerTest {
                     return TransferAction.overwrite;
                 }
             }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
                 @Override
                 public Future<TransferStatus> transfer(final TransferItem file, final TransferAction action) {
                     // Expected not found
                     fail();
                     return null;
                 }
-            }.run();
+            }.run(session);
         }
         catch(NotfoundException e) {
             // Expected
