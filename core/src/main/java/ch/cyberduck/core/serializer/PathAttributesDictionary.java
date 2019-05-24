@@ -53,6 +53,10 @@ public class PathAttributesDictionary {
         if(revisionObj != null) {
             attributes.setRevision(Long.parseLong(revisionObj));
         }
+        final String etagObj = dict.stringForKey("ETag");
+        if(etagObj != null) {
+            attributes.setETag(dict.stringForKey("ETag"));
+        }
         final Object permissionObj = dict.objectForKey("Permission");
         if(permissionObj != null) {
             attributes.setPermission(new PermissionDictionary().deserialize(permissionObj));
