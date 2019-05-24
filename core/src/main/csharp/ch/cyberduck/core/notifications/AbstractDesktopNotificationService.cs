@@ -18,6 +18,11 @@ namespace Ch.Cyberduck.Core.Notifications
 
         protected abstract string AumID { get; }
 
+        public void notify(string group, string identifier, string title, string description, string action)
+        {
+            notify(group, identifier, title, description);
+        }
+
         public void notify(string group, string identifier, string title, string description)
         {
             var toastContent = new ToastContent

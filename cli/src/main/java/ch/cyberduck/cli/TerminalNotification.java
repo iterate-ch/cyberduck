@@ -36,7 +36,17 @@ public class TerminalNotification implements NotificationService {
     }
 
     @Override
+    public void addListener(final Listener listener) {
+        //
+    }
+
+    @Override
     public void notify(final String identifier, final String group, final String title, final String description) {
-        console.message(title);
+        console.message(String.format("%s. %s", title, description));
+    }
+
+    @Override
+    public void notify(final String group, final String identifier, final String title, final String description, final String action) {
+        console.message(String.format("%s. %s", title, description));
     }
 }

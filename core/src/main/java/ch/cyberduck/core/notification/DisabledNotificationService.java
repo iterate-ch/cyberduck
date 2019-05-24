@@ -34,9 +34,19 @@ public final class DisabledNotificationService implements NotificationService {
     }
 
     @Override
+    public void addListener(final Listener listener) {
+        //
+    }
+
+    @Override
     public void notify(final String group, final String identifier, final String title, final String description) {
         if(log.isInfoEnabled()) {
             log.info(String.format("%s. %s", title, description));
         }
+    }
+
+    @Override
+    public void notify(final String group, final String identifier, final String title, final String description, final String action) {
+        log.warn("Notifications disabled");
     }
 }
