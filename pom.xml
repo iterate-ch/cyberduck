@@ -295,7 +295,7 @@
             <dependency>
                 <groupId>com.google.http-client</groupId>
                 <artifactId>google-http-client-jackson2</artifactId>
-                <version>1.28.0</version>
+                <version>1.29.1</version>
             </dependency>
             <dependency>
                 <groupId>com.google.http-client</groupId>
