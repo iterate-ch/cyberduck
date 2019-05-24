@@ -34,35 +34,51 @@ public class LRUCache<Key, Value> {
     private static final Logger log = Logger.getLogger(LRUCache.class);
 
     public static <Key, Value> LRUCache<Key, Value> usingLoader(final Function<Key, Value> loader) {
-        return usingLoader(loader, new NullListener<Key, Value>(), -1L, -1L);
+        return usingLoader(loader, null, -1L, -1L);
+    }
+
+    public static <Key, Value> LRUCache<Key, Value> usingLoader(final Function<Key, Value> loader, final RemovalListener<Key, Value> listener) {
+        return usingLoader(loader, listener, -1L, -1L);
     }
 
     public static <Key, Value> LRUCache<Key, Value> usingLoader(final Function<Key, Value> loader, final long maximumSize) {
-        return usingLoader(loader, new NullListener<Key, Value>(), maximumSize, -1L);
+        return usingLoader(loader, null, maximumSize, -1L);
     }
 
-    public static <Key, Value> LRUCache<Key, Value> usingLoader(final Function<Key, Value> loader, final RemovalListener<Key, Value> listener,
-                                                                final long maximumSize, final long expireDuration) {
+    public static <Key, Value> LRUCache<Key, Value> usingLoader(final Function<Key, Value> loader, final RemovalListener<Key, Value> listener, final long maximumSize) {
+        return usingLoader(loader, listener, maximumSize, -1L);
+    }
+
+    public static <Key, Value> LRUCache<Key, Value> usingLoader(final Function<Key, Value> loader, final RemovalListener<Key, Value> listener, final long maximumSize, final long expireDuration) {
         return new LRUCache<>(loader, listener, maximumSize, expireDuration);
     }
 
     public static <Key, Value> LRUCache<Key, Value> build() {
-        return build(-1L, -1L);
+        return build(null, -1L, -1L);
+    }
+
+    public static <Key, Value> LRUCache<Key, Value> build(final RemovalListener<Key, Value> listener) {
+        return build(listener, -1L, -1L);
     }
 
     public static <Key, Value> LRUCache<Key, Value> build(final long maximumSize) {
-        return build(maximumSize, -1L);
+        return build(null, maximumSize, -1L);
     }
 
-    public static <Key, Value> LRUCache<Key, Value> build(final long maximumSize, final long expireDuration) {
-        return new LRUCache<>(null, new NullListener<>(), maximumSize, expireDuration);
+    public static <Key, Value> LRUCache<Key, Value> build(final RemovalListener<Key, Value> listener, final long maximumSize) {
+        return build(listener, maximumSize, -1L);
+    }
+
+    public static <Key, Value> LRUCache<Key, Value> build(final RemovalListener<Key, Value> listener, final long maximumSize, final long expireDuration) {
+        return new LRUCache<>(null, listener, maximumSize, expireDuration);
     }
 
     private final Cache<Key, Value> delegate;
 
     private LRUCache(final Function<Key, Value> loader, final RemovalListener<Key, Value> listener, final long maximumSize, final long expireDuration) {
-        final CacheBuilder<Key, Value> builder = CacheBuilder.newBuilder()
-            .removalListener(new RemovalListener<Key, Value>() {
+        final CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
+        if(listener != null) {
+            builder.removalListener(new RemovalListener<Key, Value>() {
                 @Override
                 public void onRemoval(final RemovalNotification<Key, Value> notification) {
                     if(log.isDebugEnabled()) {
@@ -71,6 +87,7 @@ public class LRUCache<Key, Value> {
                     listener.onRemoval(notification);
                 }
             });
+        }
         if(maximumSize > 0) {
             builder.maximumSize(maximumSize);
         }
@@ -127,13 +144,5 @@ public class LRUCache<Key, Value> {
 
     public void clear() {
         delegate.invalidateAll();
-    }
-
-    private static class NullListener<Key, Value> implements RemovalListener<Key, Value> {
-
-        @Override
-        public void onRemoval(final RemovalNotification<Key, Value> notification) {
-            //
-        }
     }
 }
