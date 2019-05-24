@@ -78,6 +78,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 DefaultBookmarkController c;
                 if (Open.TryGetValue(host, out c))
                 {
+                    c.Update();
                     return c;
                 }
 
