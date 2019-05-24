@@ -49,21 +49,6 @@ public class BrickProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isUsernameConfigurable() {
-        return true;
-    }
-
-    @Override
-    public boolean isPasswordConfigurable() {
-        return true;
-    }
-
-    @Override
-    public boolean isTokenConfigurable() {
-        return true;
-    }
-
-    @Override
     public boolean validate(final Credentials credentials, final LoginOptions options) {
         // Will get new pairing key if missing credentials
         return true;

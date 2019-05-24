@@ -18,6 +18,7 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -111,6 +112,12 @@ public class BrickSession extends DAVSession {
                         }
                         else {
                             throw new LoginFailureException(String.format("Invalid response for pairing key %s", token));
+                        }
+                        if(json.has("nickname")) {
+                            host.setNickname(json.getAsJsonPrimitive("nickname").getAsString());
+                        }
+                        if(json.has("server")) {
+                            host.setHostname(HostParser.parse(json.getAsJsonPrimitive("server").getAsString()).getHostname());
                         }
                         break;
                     }
