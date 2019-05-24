@@ -792,6 +792,9 @@ public abstract class Preferences implements Locales {
         this.setDefault("storegate.listing.chunksize", String.valueOf(500));
         this.setDefault("storegate.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
 
+        this.setDefault("brick.pairing.nickname.configure", String.valueOf(false));
+        this.setDefault("brick.pairing.hostname.configure", String.valueOf(true));
+
         /*
           NTLM Windows Domain
          */
