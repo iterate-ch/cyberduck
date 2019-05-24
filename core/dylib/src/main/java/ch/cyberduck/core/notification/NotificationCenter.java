@@ -89,7 +89,7 @@ public class NotificationCenter extends ProxyController implements NotificationS
             log.debug(String.format("Did close notification %s with type %s", notification, notification.activationType()));
         }
         for(Listener listener : listeners) {
-            listener.callback(notification.getIdentifier());
+            listener.callback(notification.identifier());
         }
     }
 }
