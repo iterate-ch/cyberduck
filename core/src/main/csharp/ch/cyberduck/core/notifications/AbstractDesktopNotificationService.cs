@@ -18,7 +18,7 @@ namespace Ch.Cyberduck.Core.Notifications
 
         protected abstract string AumID { get; }
 
-        public void addListener(Listener listener)
+        public void addListener(NotificationService.Listener listener)
         {
             //todo
         }
