@@ -18,20 +18,31 @@ package ch.cyberduck.core.notification;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.binding.foundation.NSUserNotification;
 import ch.cyberduck.binding.foundation.NSUserNotificationCenter;
 import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 
-public class NotificationCenter implements NotificationService {
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+public class NotificationCenter extends ProxyController implements NotificationService, NSUserNotificationCenter.Delegate {
+    private static final Logger log = Logger.getLogger(NotificationCenter.class);
 
     private final NSUserNotificationCenter center
         = NSUserNotificationCenter.defaultUserNotificationCenter();
 
+    private final Set<NotificationService.Listener> listeners =
+        Collections.synchronizedSet(new HashSet<NotificationService.Listener>());
+
     @Override
     public NotificationService setup() {
+        center.setDelegate(this.id());
         return this;
     }
 
@@ -40,6 +51,12 @@ public class NotificationCenter implements NotificationService {
         if(center.respondsToSelector(Foundation.selector("removeAllDeliveredNotifications"))) {
             center.removeAllDeliveredNotifications();
         }
+        listeners.clear();
+    }
+
+    @Override
+    public void addListener(final Listener listener) {
+        listeners.add(listener);
     }
 
     @Override
@@ -51,5 +68,28 @@ public class NotificationCenter implements NotificationService {
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
         center.scheduleNotification(notification);
+    }
+
+    @Override
+    public void notify(final String group, final String identifier, final String title, final String description, final String action) {
+        final NSUserNotification notification = NSUserNotification.notification();
+        if(StringUtils.isNotBlank(identifier)) {
+            notification.setIdentifier(identifier);
+        }
+        notification.setTitle(LocaleFactory.localizedString(title, "Status"));
+        notification.setInformativeText(description);
+        notification.setHasActionButton(true);
+        notification.setActionButtonTitle(action);
+        center.scheduleNotification(notification);
+    }
+
+    @Override
+    public void userNotificationCenter_didActivateNotification(final NSUserNotificationCenter center, final NSUserNotification notification) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Did close notification %s with type %s", notification, notification.activationType()));
+        }
+        for(Listener listener : listeners) {
+            listener.callback(notification.identifier());
+        }
     }
 }

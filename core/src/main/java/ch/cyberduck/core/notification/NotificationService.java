@@ -30,11 +30,35 @@ public interface NotificationService {
      */
     void unregister();
 
+    void addListener(Listener listener);
+
     /**
+     * Schedule notification with no action
+     *
      * @param group       Notification group or null
      * @param identifier  Replace previous notifications with same identifier
      * @param title       Non localized title to be looked up in status table
      * @param description Informative text
      */
     void notify(String group, String identifier, String title, String description);
+
+    /**
+     * Schedule notification with callback option
+     *
+     * @param group       Notification group or null
+     * @param identifier  Replace previous notifications with same identifier
+     * @param title       Non localized title to be looked up in status table
+     * @param description Informative text
+     * @param action      Action button title
+     */
+    void notify(String group, String identifier, String title, String description, String action);
+
+    interface Listener {
+        /**
+         * Notification activated
+         *
+         * @param identifier Notification
+         */
+        void callback(String identifier);
+    }
 }
