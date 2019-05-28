@@ -123,7 +123,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             // Get username
             final ExtendedUser me = new UsersApi(client).usersGetMe();
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Authentiated for user %s", me));
+                log.debug(String.format("Authenticated for user %s", me));
             }
             final Credentials credentials = host.getCredentials();
             credentials.setUsername(me.getUsername());
