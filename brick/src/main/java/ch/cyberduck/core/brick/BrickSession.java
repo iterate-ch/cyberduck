@@ -18,7 +18,6 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -55,6 +54,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.URI;
 import java.text.MessageFormat;
 
 import com.google.gson.JsonObject;
@@ -121,7 +121,7 @@ public class BrickSession extends DAVSession {
                         }
                         if(json.has("server")) {
                             if(PreferencesFactory.get().getBoolean("brick.pairing.hostname.configure")) {
-                                host.setHostname(HostParser.parse(json.getAsJsonPrimitive("server").getAsString()).getHostname());
+                                host.setHostname(URI.create(json.getAsJsonPrimitive("server").getAsString()).getHost());
                             }
                         }
                         break;
