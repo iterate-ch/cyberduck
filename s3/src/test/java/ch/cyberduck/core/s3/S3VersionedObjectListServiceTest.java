@@ -72,7 +72,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
                 assertNotEquals(-1L, p.attributes().getSize());
                 assertNotNull(p.attributes().getETag());
                 assertNotNull(p.attributes().getStorageClass());
-                assertNull(p.attributes().getVersionId());
+                assertEquals("null", p.attributes().getVersionId());
             }
         }
     }
