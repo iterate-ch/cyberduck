@@ -15,21 +15,26 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
-public class BrickErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy {
+import java.util.concurrent.atomic.AtomicBoolean;
+
+public class BrickErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy implements CancelCallback {
     private static final Logger log = Logger.getLogger(BrickErrorResponseInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 
     private final BrickSession session;
+    private final AtomicBoolean pairing = new AtomicBoolean();
+    private final AtomicBoolean cancel = new AtomicBoolean();
 
     public BrickErrorResponseInterceptor(final BrickSession session) {
         this.session = session;
@@ -38,18 +43,33 @@ public class BrickErrorResponseInterceptor extends DisabledServiceUnavailableRet
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_UNAUTHORIZED:
+            case HttpStatus.SC_BAD_REQUEST:
                 if(executionCount <= MAX_RETRIES) {
-                    log.warn("Attempt to ");
+                    log.warn(String.format("Attempt to obtain new pairing keys for response %s", response));
                     try {
-                        session.pair(session.getHost().getCredentials(), new DisabledCancelCallback());
+                        if(pairing.get()) {
+                            cancel.set(true);
+                        }
+                        pairing.set(true);
+                        session.pair(session.getHost().getCredentials(), this);
                     }
                     catch(BackgroundException e) {
                         log.warn(String.format("Failure obtaining pairing key. %s", e.getDetail()));
+                    }
+                    finally {
+                        pairing.set(false);
+                        cancel.set(false);
                     }
                     return true;
                 }
         }
         return false;
+    }
+
+    @Override
+    public void verify() throws ConnectionCanceledException {
+        if(cancel.get()) {
+            throw new ConnectionCanceledException();
+        }
     }
 }
