@@ -113,21 +113,22 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
             item.setEnabled(true);
-            final NSMutableAttributedString title = NSMutableAttributedString.create(String.format("%s\n", BookmarkNameProvider.toString(h)));
+            final NSMutableAttributedString title = NSMutableAttributedString.create(BookmarkNameProvider.toString(h));
             if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.LARGE_BOOKMARK_SIZE) {
                 title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
-                    String.format("%s\n", h.getHostname()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
+                    String.format("\n%s", h.getHostname()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
             }
             final Date timestamp = h.getTimestamp();
             if(null != timestamp) {
                 title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
-                    UserDateFormatterFactory.get().getLongFormat(timestamp.getTime()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
+                    String.format("\n%s", UserDateFormatterFactory.get().getLongFormat(timestamp.getTime())), BundleController.MENU_HELP_FONT_ATTRIBUTES));
             }
             else {
                 title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
-                    LocaleFactory.localizedString("Unknown"), BundleController.MENU_HELP_FONT_ATTRIBUTES));
+                    String.format("\n%s", LocaleFactory.localizedString("Unknown")), BundleController.MENU_HELP_FONT_ATTRIBUTES));
             }
             item.setAttributedTitle(title);
+            item.setTitle(BookmarkNameProvider.toString(h));
             switch(preferences.getInteger("bookmark.icon.size")) {
                 default:
                     item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.MEDIUM_ICON_SIZE));

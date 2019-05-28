@@ -151,32 +151,37 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         if(row.intValue() > index + 2) {
             Host h = this.itemForIndex(row);
-            final NSMutableAttributedString title = NSMutableAttributedString.create(BookmarkNameProvider.toString(h));
-            if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.MEDIUM_BOOKMARK_SIZE) {
-                title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
-                    String.format("\n%s", h.getHostname()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
-            }
-            if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.LARGE_BOOKMARK_SIZE) {
-                title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
-                    String.format("\n%s", StringUtils.isNotBlank(h.getCredentials().getUsername()) ? h.getCredentials().getUsername() : StringUtils.EMPTY), BundleController.MENU_HELP_FONT_ATTRIBUTES));
-            }
-            item.setAttributedTitle(title);
-            switch(preferences.getInteger("bookmark.icon.size")) {
-                default:
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.SMALL_ICON_SIZE));
-                    break;
-                case BookmarkCell.MEDIUM_BOOKMARK_SIZE:
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.MEDIUM_ICON_SIZE));
-                    break;
-                case BookmarkCell.LARGE_BOOKMARK_SIZE:
-                    item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.LARGE_ICON_SIZE));
-                    break;
-            }
-            item.setTarget(this.id());
-            item.setAction(this.getDefaultAction());
-            item.setRepresentedObject(h.getUuid());
+            this.build(item, h);
         }
         return super.menuUpdateItemAtIndex(menu, item, row, cancel);
+    }
+
+    private void build(final NSMenuItem item, final Host h) {
+        final NSMutableAttributedString title = NSMutableAttributedString.create(BookmarkNameProvider.toString(h));
+        if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.MEDIUM_BOOKMARK_SIZE) {
+            title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
+                String.format("\n%s", h.getHostname()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
+        }
+        if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.LARGE_BOOKMARK_SIZE) {
+            title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
+                String.format("\n%s", StringUtils.isNotBlank(h.getCredentials().getUsername()) ? h.getCredentials().getUsername() : StringUtils.EMPTY), BundleController.MENU_HELP_FONT_ATTRIBUTES));
+        }
+        item.setAttributedTitle(title);
+        item.setTitle(BookmarkNameProvider.toString(h));
+        switch(preferences.getInteger("bookmark.icon.size")) {
+            default:
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.SMALL_ICON_SIZE));
+                break;
+            case BookmarkCell.MEDIUM_BOOKMARK_SIZE:
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.MEDIUM_ICON_SIZE));
+                break;
+            case BookmarkCell.LARGE_BOOKMARK_SIZE:
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.LARGE_ICON_SIZE));
+                break;
+        }
+        item.setTarget(this.id());
+        item.setAction(this.getDefaultAction());
+        item.setRepresentedObject(h.getUuid());
     }
 
     @Action
