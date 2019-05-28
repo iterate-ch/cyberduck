@@ -43,7 +43,7 @@ public class BrickErrorResponseInterceptor extends DisabledServiceUnavailableRet
     @Override
     public boolean retryRequest(final HttpResponse response, final int executionCount, final HttpContext context) {
         switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_BAD_REQUEST:
+            case HttpStatus.SC_UNAUTHORIZED:
                 if(executionCount <= MAX_RETRIES) {
                     log.warn(String.format("Attempt to obtain new pairing keys for response %s", response));
                     try {
