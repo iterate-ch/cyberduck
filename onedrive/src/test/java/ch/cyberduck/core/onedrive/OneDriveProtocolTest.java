@@ -24,7 +24,8 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class OneDriveProtocolTest {
 
@@ -40,7 +41,7 @@ public class OneDriveProtocolTest {
             this.getClass().getResourceAsStream("/Microsoft OneDrive.cyberduckprofile"));
         assertFalse(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
-        assertTrue(profile.isUsernameConfigurable());
+        assertFalse(profile.isUsernameConfigurable());
         assertFalse(profile.isPasswordConfigurable());
     }
 }
