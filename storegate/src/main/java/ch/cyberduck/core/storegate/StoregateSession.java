@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
@@ -64,6 +65,7 @@ import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 
 import com.migcomponents.migbase64.Base64;
@@ -74,10 +76,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     private static final Logger log = Logger.getLogger(StoregateSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
-    private final StoregateIdProvider fileid = new StoregateIdProvider(this);
+    private List<RootFolder> roots = Collections.emptyList();
 
-    private String username;
-    private List<RootFolder> roots;
+    private final StoregateIdProvider fileid = new StoregateIdProvider(this);
 
     public StoregateSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -120,19 +121,18 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
         try {
             // Get username
-            final ExtendedUser me = new UsersApi(this.client).usersGetMe();
-            username = me.getUsername();
-            log.debug(String.format("Set username to %s", username));
+            final ExtendedUser me = new UsersApi(client).usersGetMe();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Authentiated for user %s", me));
+            }
+            final Credentials credentials = host.getCredentials();
+            credentials.setUsername(me.getUsername());
             // Get root folders
-            roots = new SettingsApi(this.client).settingsGetRootfolders();
+            roots = new SettingsApi(client).settingsGetRootfolders();
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);
         }
-    }
-
-    public String username() {
-        return username;
     }
 
     public List<RootFolder> roots() {
