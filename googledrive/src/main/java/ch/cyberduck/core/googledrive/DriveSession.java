@@ -15,6 +15,7 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -36,6 +37,7 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
@@ -44,8 +46,10 @@ import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.About;
 
 public class DriveSession extends HttpSession<Drive> {
+    private static final Logger log = Logger.getLogger(DriveSession.class);
 
     private ApacheHttpTransport transport;
 
@@ -82,6 +86,18 @@ public class DriveSession extends HttpSession<Drive> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+        final About about;
+        try {
+            about = client.about().get().setFields("user").execute();
+        }
+        catch(IOException e) {
+            throw new DriveExceptionMappingService().map(e);
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Authenticated as user %s", about.getUser()));
+        }
+        final Credentials credentials = host.getCredentials();
+        credentials.setUsername(about.getUser().getEmailAddress());
     }
 
     @Override
