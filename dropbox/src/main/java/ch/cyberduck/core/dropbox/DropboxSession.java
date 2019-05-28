@@ -15,6 +15,7 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -48,17 +49,22 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
 
+import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxHost;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.http.HttpRequestor;
 import com.dropbox.core.v2.DbxRawClientV2;
 import com.dropbox.core.v2.common.PathRoot;
+import com.dropbox.core.v2.users.DbxUserUsersRequests;
+import com.dropbox.core.v2.users.FullAccount;
 
 public class DropboxSession extends HttpSession<DbxRawClientV2> {
+    private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();
@@ -109,6 +115,17 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+        try {
+            final Credentials credentials = host.getCredentials();
+            final FullAccount account = new DbxUserUsersRequests(client).getCurrentAccount();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Authenticated as user %s", account));
+            }
+            credentials.setUsername(account.getEmail());
+        }
+        catch(DbxException e) {
+            throw new DropboxExceptionMappingService().map(e);
+        }
     }
 
     @Override
