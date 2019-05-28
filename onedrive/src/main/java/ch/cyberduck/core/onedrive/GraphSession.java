@@ -64,7 +64,10 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
+import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPI;
+import org.nuxeo.onedrive.client.OneDriveAPIException;
+import org.nuxeo.onedrive.client.OneDriveEmailAccount;
 import org.nuxeo.onedrive.client.OneDriveFile;
 import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
@@ -75,6 +78,8 @@ import java.io.IOException;
 import java.util.Set;
 
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
+    private static final Logger log = Logger.getLogger(GraphSession.class);
+
     private OAuth2RequestInterceptor authorizationService;
 
     protected final GraphFileIdProvider fileIdProvider = new GraphFileIdProvider(this);
@@ -170,7 +175,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
             @Override
             public String getEmailURL() {
-                return null;
+                return this.getBaseURL();
             }
         };
     }
@@ -178,6 +183,19 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+        try {
+            final String account = OneDriveEmailAccount.getCurrentUserEmailAccount(client);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Authenticated as user %s", account));
+            }
+            host.getCredentials().setUsername(account);
+        }
+        catch(OneDriveAPIException e) {
+            throw new GraphExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override
@@ -232,7 +250,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
         if(type == Timestamp.class) {
             return (T) new GraphTimestampFeature(this);
         }
-        if (type == Quota.class) {
+        if(type == Quota.class) {
             return (T) new GraphQuotaFeature(this);
         }
         return super._getFeature(type);

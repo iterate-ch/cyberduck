@@ -55,5 +55,7 @@
         <string>https://cyberduck.io/oauth</string>
         <key>Password Configurable</key>
         <false/>
+        <key>Username Configurable</key>
+        <false/>
     </dict>
 </plist>
