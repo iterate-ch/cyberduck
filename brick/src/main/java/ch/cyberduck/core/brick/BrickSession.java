@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVUploadFeature;
@@ -178,6 +179,9 @@ public class BrickSession extends DAVSession {
         }
         if(type == Upload.class) {
             return (T) new DAVUploadFeature(new BrickWriteFeature(this));
+        }
+        if(type == UrlProvider.class) {
+            return (T) new BrickUrlProvider(host);
         }
         return super._getFeature(type);
     }
