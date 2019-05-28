@@ -24,7 +24,8 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class DropboxProtocolTest {
 
@@ -45,7 +46,7 @@ public class DropboxProtocolTest {
             this.getClass().getResourceAsStream("/Dropbox.cyberduckprofile"));
         assertFalse(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
-        assertTrue(profile.isUsernameConfigurable());
+        assertFalse(profile.isUsernameConfigurable());
         assertFalse(profile.isPasswordConfigurable());
     }
 }
