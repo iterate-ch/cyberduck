@@ -27,6 +27,8 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 
+import org.apache.commons.lang3.StringUtils;
+
 public abstract class ListFilteringFeature {
 
     private final Session<?> session;
@@ -49,10 +51,12 @@ public abstract class ListFilteringFeature {
         else {
             list = cache.get(file.getParent());
         }
-        // Search with specific version and region
-        final Path path = list.find(new DefaultPathPredicate(file));
-        if(path != null) {
-            return path;
+        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
+            // Search with specific version and region
+            final Path path = list.find(new DefaultPathPredicate(file));
+            if(path != null) {
+                return path;
+            }
         }
         // Try to match path only as the version might have changed in the meantime
         return list.find(session.getCase() == Session.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file));
