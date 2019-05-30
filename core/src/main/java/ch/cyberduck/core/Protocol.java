@@ -55,6 +55,7 @@ public interface Protocol extends Comparable<Protocol> {
         dracoon,
         storegate,
         brick,
+        nextcloud,
         manta
     }
 
