@@ -175,7 +175,7 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
             @Override
             public String getEmailURL() {
-                return this.getBaseURL();
+                return String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), "/v1.0/me");
             }
         };
     }
