@@ -19,12 +19,12 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.dav.DAVClient;
 import ch.cyberduck.core.dav.DAVRedirectStrategy;
@@ -61,6 +61,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.URI;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 
@@ -151,7 +152,7 @@ public class BrickSession extends DAVSession {
                 }
                 if(json.has("server")) {
                     if(PreferencesFactory.get().getBoolean("brick.pairing.hostname.configure")) {
-                        host.setHostname(HostParser.parse(json.getAsJsonPrimitive("server").getAsString()).getHostname());
+                        host.setHostname(URI.create(json.getAsJsonPrimitive("server").getAsString()).getHost());
                     }
                 }
                 break;
@@ -202,6 +203,9 @@ public class BrickSession extends DAVSession {
         }
         if(type == Upload.class) {
             return (T) new DAVUploadFeature(new BrickWriteFeature(this));
+        }
+        if(type == UrlProvider.class) {
+            return (T) new BrickUrlProvider(host);
         }
         return super._getFeature(type);
     }

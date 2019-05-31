@@ -542,6 +542,11 @@ public class Host implements Serializable, Comparable<Host> {
         webURL = url;
     }
 
+    public Host withWebURL(final String url) {
+        this.setWebURL(url);
+        return this;
+    }
+
     /**
      * @return The date this bookmark was last accessed.
      */

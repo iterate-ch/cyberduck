@@ -67,6 +67,7 @@ public class NotificationCenter extends ProxyController implements NotificationS
         }
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
+        notification.setHasActionButton(false);
         center.scheduleNotification(notification);
     }
 
