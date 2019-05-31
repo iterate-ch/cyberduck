@@ -33,8 +33,8 @@ import org.apache.log4j.Logger;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class BrickErrorResponseInterceptor extends DisabledServiceUnavailableRetryStrategy implements CancelCallback {
-    private static final Logger log = Logger.getLogger(BrickErrorResponseInterceptor.class);
+public class BrickPairingInterceptor extends DisabledServiceUnavailableRetryStrategy implements CancelCallback {
+    private static final Logger log = Logger.getLogger(BrickPairingInterceptor.class);
 
     private static final int MAX_RETRIES = 1;
 
@@ -42,7 +42,7 @@ public class BrickErrorResponseInterceptor extends DisabledServiceUnavailableRet
     private final AtomicBoolean pairing = new AtomicBoolean();
     private final AtomicBoolean cancel = new AtomicBoolean();
 
-    public BrickErrorResponseInterceptor(final BrickSession session) {
+    public BrickPairingInterceptor(final BrickSession session) {
         this.session = session;
     }
 
