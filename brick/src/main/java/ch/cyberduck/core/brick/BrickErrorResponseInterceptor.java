@@ -15,6 +15,7 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
@@ -22,6 +23,11 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.AuthSchemes;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
@@ -51,7 +57,13 @@ public class BrickErrorResponseInterceptor extends DisabledServiceUnavailableRet
                             cancel.set(true);
                         }
                         pairing.set(true);
-                        session.pair(session.getHost().getCredentials(), this);
+                        final Credentials credentials = session.getHost().getCredentials();
+                        session.pair(credentials, this);
+                        final CredentialsProvider provider = new BasicCredentialsProvider();
+                        provider.setCredentials(
+                            new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
+                            new UsernamePasswordCredentials(credentials.getUsername(), credentials.getPassword()));
+                        session.getClient().setCredentials(provider);
                     }
                     catch(BackgroundException e) {
                         log.warn(String.format("Failure obtaining pairing key. %s", e.getDetail()));
