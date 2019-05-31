@@ -10,7 +10,7 @@ https://cyberduck.io/
 - [Feature] Create shared link for file (Microsoft OneDrive)
 - [Feature] Create download share for file or folder (DRACOON)
 - [Feature] Support to rename and copy files (Backblaze B2)
-- [Feature] Support to open terminal in bash.exe from Windows Linux Subsystem (SFTP, Windows) (#10065)
+- [Feature] Support to open SSH terminal in bash.exe from Windows Linux Subsystem (SFTP, Windows) (#10065)
 
 6.9.5
 - [Bugfix] Existing metadata not displayed (S3) (#10647)
