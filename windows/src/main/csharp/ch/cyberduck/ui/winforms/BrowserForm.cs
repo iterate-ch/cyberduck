@@ -98,7 +98,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 vistaMenu1.SetImage(bonjourMainMenuItem, IconCache.Instance.IconForName("rendezvous", 16));
                 vistaMenu1.SetImage(transfersMainMenuItem, IconCache.Instance.IconForName("queue", 16));
 
-                newFolderToolStripButton.Image = IconCache.Instance.IconForName("newfolder", 32);
+                newFolderToolStripButton.Image = IconCache.Instance.IconForName("folderplus", 32);
             }
 
             toolBar.ContextMenu = toolbarContextMenu1;
@@ -2113,9 +2113,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             vistaMenu1.SetImage(deleteMainMenuItem, IconCache.Instance.IconForName("delete", 16));
             vistaMenu1.SetImage(deleteBrowserContextMenuItem, IconCache.Instance.IconForName("delete", 16));
             deleteContextToolStripMenuItem.Image = IconCache.Instance.IconForName("delete", 16);
-            vistaMenu1.SetImage(newFolderMainMenuItem, IconCache.Instance.IconForName("newfolder", 16));
-            vistaMenu1.SetImage(newFolderBrowserContextMenuItem, IconCache.Instance.IconForName("newfolder", 16));
-            newFolderContextToolStripMenuItem.Image = IconCache.Instance.IconForName("newfolder", 16);
+            vistaMenu1.SetImage(newFolderMainMenuItem, IconCache.Instance.IconForName("folderplus", 16));
+            vistaMenu1.SetImage(newFolderBrowserContextMenuItem, IconCache.Instance.IconForName("folderplus", 16));
+            newFolderContextToolStripMenuItem.Image = IconCache.Instance.IconForName("folderplus", 16);
             vistaMenu1.SetImage(newVaultMainMenuItem, IconCache.Instance.IconForName("cryptomator", 16));
             vistaMenu1.SetImage(newVaultBrowserContextMenuItem, IconCache.Instance.IconForName("cryptomator", 16));
             newVaultContextToolStripMenuItem.Image = IconCache.Instance.IconForName("cryptomator", 16);
