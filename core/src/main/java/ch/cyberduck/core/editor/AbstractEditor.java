@@ -150,13 +150,13 @@ public abstract class AbstractEditor implements Editor {
      * Open the file in the parent directory
      */
     @Override
-    public Worker<Transfer> open(final ApplicationQuitCallback quit, final TransferErrorCallback error,
-                                 final FileWatcherListener listener) {
+    public Worker<Transfer> open(final ApplicationQuitCallback quit, final TransferErrorCallback error, final FileWatcherListener listener) {
         final Worker<Transfer> worker = new EditOpenWorker(session.getHost(), this, error,
             new ApplicationQuitCallback() {
                 @Override
                 public void callback() {
                     quit.callback();
+                    close();
                     delete();
                 }
             }, this.listener, listener, notification) {
@@ -244,6 +244,7 @@ public abstract class AbstractEditor implements Editor {
     @Override
     protected void finalize() throws Throwable {
         try {
+            this.close();
             this.delete();
         }
         finally {
