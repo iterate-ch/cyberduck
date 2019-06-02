@@ -137,5 +137,10 @@
             <artifactId>brick</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ch.cyberduck</groupId>
+            <artifactId>nextcloud</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

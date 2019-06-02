@@ -51,6 +51,7 @@
         <module>dracoon</module>
         <module>storegate</module>
         <module>brick</module>
+        <module>nextcloud</module>
         <module>manta</module>
         <module>protocols</module>
         <module>protocols/dll</module>
