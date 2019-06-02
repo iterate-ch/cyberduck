@@ -510,7 +510,7 @@ namespace Ch.Cyberduck {
         /// </summary>
         public static System.Drawing.Bitmap newfolder {
             get {
-                object obj = ResourceManager.GetObject("newfolder", resourceCulture);
+                object obj = ResourceManager.GetObject("folderplus", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

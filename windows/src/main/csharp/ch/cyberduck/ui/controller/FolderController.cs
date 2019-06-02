@@ -52,7 +52,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public override Bitmap IconView => IconCache.Instance.IconForName("newfolder", 64);
+        public override Bitmap IconView => IconCache.Instance.IconForName("folderplus", 64);
 
         protected bool HasLocation()
         {

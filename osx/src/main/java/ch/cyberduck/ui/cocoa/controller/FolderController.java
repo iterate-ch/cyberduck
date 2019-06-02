@@ -63,7 +63,7 @@ public class FolderController extends FileController {
         alert.setInformativeText(LocaleFactory.localizedString("Enter the name for the new folder", "Folder"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Create", "Folder"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Folder"));
-        alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("newfolder.tiff", 64));
+        alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed("folderplus.tiff", 64));
         super.loadBundle(alert);
     }
 
