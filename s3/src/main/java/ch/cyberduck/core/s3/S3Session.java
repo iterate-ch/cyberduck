@@ -85,7 +85,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         = PreferencesFactory.get();
 
     private Versioning versioning
-        = new S3VersioningFeature(this, new S3AccessControlListFeature(this));
+        = preferences.getBoolean("s3.versioning.enable") ? new S3VersioningFeature(this, new S3AccessControlListFeature(this)) : null;
 
     private Map<Path, Distribution> distributions = Collections.emptyMap();
 
