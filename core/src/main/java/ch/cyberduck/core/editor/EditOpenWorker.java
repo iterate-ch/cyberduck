@@ -68,8 +68,7 @@ public class EditOpenWorker extends Worker<Transfer> {
         this.callback = callback;
         this.quit = quit;
         this.notification = notification;
-        this.download = new DownloadTransfer(bookmark, editor.getRemote(), editor.getLocal(),
-            new DownloadDuplicateFilter()) {
+        this.download = new DownloadTransfer(bookmark, editor.getRemote(), editor.getLocal(), new DownloadDuplicateFilter()) {
             @Override
             public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
                                          final TransferPrompt prompt, final ListProgressListener listener) {

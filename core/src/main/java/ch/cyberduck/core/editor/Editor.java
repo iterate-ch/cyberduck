@@ -31,6 +31,8 @@ public interface Editor {
      */
     void delete();
 
+    void close();
+
     /**
      * Download file and open in editor
      */

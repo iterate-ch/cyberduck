@@ -100,6 +100,11 @@ public class AbstractEditorTest {
         final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(),
                 new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), file, new DisabledProgressListener()) {
             @Override
+            public void close() {
+                //
+            }
+
+            @Override
             protected void edit(final ApplicationQuitCallback quit, final FileWatcherListener listener) {
                 e.set(true);
             }
@@ -123,6 +128,11 @@ public class AbstractEditorTest {
 
         @Override
         protected void watch(final Local local, final FileWatcherListener listener) {
+            //
+        }
+
+        @Override
+        public void close() {
             //
         }
     }
