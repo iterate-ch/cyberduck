@@ -11,8 +11,6 @@ https://cyberduck.io/
 - [Feature] Create download share for file or folder (DRACOON)
 - [Feature] Support to rename and copy files (Backblaze B2)
 - [Feature] Support to open SSH terminal in bash.exe from Windows Linux Subsystem (SFTP, Windows) (#10065)
-
-6.9.5
 - [Bugfix] Existing metadata not displayed (S3) (#10647)
 - [Bugfix] Browser always shows modification time in UTC timezone (Windows) (#10629)
 - [Bugfix] Interoerability with Apache Sling (WebDAV) (#10598)
