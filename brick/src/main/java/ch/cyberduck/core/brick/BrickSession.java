@@ -30,6 +30,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -179,6 +180,9 @@ public class BrickSession extends DAVSession {
         }
         if(type == Upload.class) {
             return (T) new DAVUploadFeature(new BrickWriteFeature(this));
+        }
+        if(type == Timestamp.class) {
+            return (T) new BrickTimestampFeature(this);
         }
         if(type == UrlProvider.class) {
             return (T) new BrickUrlProvider(host);
