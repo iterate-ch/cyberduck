@@ -17,6 +17,7 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -25,6 +26,9 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import java.util.Collections;
 
 public class B2MoveFeature implements Move {
+
+    private final PathContainerService containerService
+        = new B2PathContainerService();
 
     private final B2Session session;
     private final B2FileidProvider fileid;
@@ -39,6 +43,11 @@ public class B2MoveFeature implements Move {
         final Path copy = new B2CopyFeature(session, fileid).copy(source, target, status.length(source.attributes().getSize()), callback);
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(source)), callback, delete);
         return copy;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return !containerService.isContainer(source);
     }
 
     @Override
