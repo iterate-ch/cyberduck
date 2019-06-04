@@ -20,6 +20,7 @@ https://cyberduck.io/
 - [Bugfix] Invalid signature for files with + or * character in key (S3) (#9914, #10679)
 - [Bugfix] Failure uploading files larger than 4GB (OpenStack Swift) (#10657)
 - [Bugfix] Fails to launch in the newly created virtual desktop (Windows) (#10467)
+- [Bugfix] Adding bookmarks for multiple accounts using OAuth (Dropbox, Google Drive, OneDrive) (#10562)
 
 6.9.4
 - [Bugfix] Connect button not working to initiate a connection (#10621)
