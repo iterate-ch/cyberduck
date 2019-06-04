@@ -61,9 +61,10 @@ public class DefaultCopyFeatureTest extends AbstractSDSTest {
         final byte[] content = RandomUtils.nextBytes(524);
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setExists(true);
+        status.setLength(content.length);
         final OutputStream out = new SDSWriteFeature(session, nodeid).write(source, status, new DisabledConnectionCallback());
         assertNotNull(out);
-        new StreamCopier(new TransferStatus(), new TransferStatus()).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         new DefaultCopyFeature(session).copy(source, target, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertTrue(new DefaultFindFeature(session).find(source));
