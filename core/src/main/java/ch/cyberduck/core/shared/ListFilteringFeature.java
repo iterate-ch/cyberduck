@@ -17,6 +17,7 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.CacheReference;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -59,11 +60,32 @@ public abstract class ListFilteringFeature {
             }
         }
         // Try to match path only as the version might have changed in the meantime
-        return list.find(session.getCase() == Session.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file));
+        return list.find(new IgnoreDuplicateFilter(
+            session.getCase() == Session.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file))
+        );
     }
 
     public ListFilteringFeature withCache(final Cache<Path> cache) {
         this.cache = cache;
         return this;
+    }
+
+    /**
+     * Filter previous versions and delete markers
+     */
+    private final class IgnoreDuplicateFilter implements CacheReference<Path> {
+        private final CacheReference<Path> proxy;
+
+        public IgnoreDuplicateFilter(final CacheReference<Path> proxy) {
+            this.proxy = proxy;
+        }
+
+        @Override
+        public boolean test(final Path file) {
+            if(file.attributes().isDuplicate()) {
+                return false;
+            }
+            return proxy.test(file);
+        }
     }
 }
