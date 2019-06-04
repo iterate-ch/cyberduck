@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.SerializerFactory;
@@ -157,7 +158,7 @@ public class TransferDictionaryTest {
                 return true;
             }
         });
-        final NullSession session = new NullSession(host);
+        final NullSession session = new NullTransferSession(host);
         new SingleTransferWorker(session, session, t, new TransferOptions(),
                 new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override

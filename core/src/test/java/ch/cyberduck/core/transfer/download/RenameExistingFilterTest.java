@@ -4,7 +4,7 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -23,7 +23,7 @@ public class RenameExistingFilterTest {
     public void testPrepare() throws Exception {
         final DownloadFilterOptions options = new DownloadFilterOptions();
         options.icon = false;
-        RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())),
+        RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())),
                 options);
         final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t-1") {
             @Override
@@ -45,7 +45,7 @@ public class RenameExistingFilterTest {
     @Test
     public void testPrepareRename() throws Exception {
         final AtomicBoolean r = new AtomicBoolean();
-        RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
+        RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())));
         final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t-2") {
             @Override
             public boolean exists() {

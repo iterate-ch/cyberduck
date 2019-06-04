@@ -1,19 +1,6 @@
 package ch.cyberduck.core.transfer;
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -126,7 +113,7 @@ public class DownloadTransferTest {
         final Host host = new Host(new TestProtocol(), "update.cyberduck.io", new Credentials(
             PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
-        final Session<?> session = new NullSession(host);
+        final Session<?> session = new NullTransferSession(host);
         final Path test = new Path("/Cyberduck-4.6.zip", EnumSet.of(Path.Type.file));
         final Transfer transfer = new DownloadTransfer(new Host(new TestProtocol()), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
@@ -180,7 +167,7 @@ public class DownloadTransferTest {
     @Test
     public void testPrepareDownloadResumeFilter() throws Exception {
         final Host host = new Host(new TestProtocol());
-        final Session<?> session = new NullSession(host);
+        final Session<?> session = new NullTransferSession(host);
         final Path test = new Path("/transfer/test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
         final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer/" + UUID.randomUUID().toString());
@@ -192,7 +179,7 @@ public class DownloadTransferTest {
             @Override
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> d, final TransferAction action, final ProgressListener listener) {
                 return new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                    new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DefaultDownloadFeature(source.getFeature(Read.class)) {
+                    new NullTransferSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DefaultDownloadFeature(source.getFeature(Read.class)) {
                     @Override
                     public boolean offset(final Path file) {
                         return true;

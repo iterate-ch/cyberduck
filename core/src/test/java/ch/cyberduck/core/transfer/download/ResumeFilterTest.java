@@ -5,6 +5,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Read;
@@ -52,7 +53,7 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepareFile() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final NullSession session = new NullTransferSession(new Host(new TestProtocol()));
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
@@ -91,7 +92,7 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepareDirectoryExists() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final NullSession session = new NullTransferSession(new Host(new TestProtocol()));
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
@@ -122,7 +123,7 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepareDirectoryExistsFalse() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final NullSession session = new NullTransferSession(new Host(new TestProtocol()));
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override

@@ -23,6 +23,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.SerializerFactory;
@@ -63,7 +64,7 @@ public class CopyTransferTest {
         CopyTransfer t = new CopyTransfer(target,
                 target,
                 Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-        assertEquals(TransferAction.cancel, t.action(new NullSession(target), new NullSession(target), false, true,
+        assertEquals(TransferAction.cancel, t.action(new NullTransferSession(target), new NullTransferSession(target), false, true,
                 new DisabledTransferPrompt(), new DisabledListProgressListener()));
     }
 
@@ -73,7 +74,7 @@ public class CopyTransferTest {
         CopyTransfer t = new CopyTransfer(new Host(new TestProtocol(), "t"),
                 new Host(new TestProtocol(), "t"),
                 Collections.singletonMap(test, new Path("d", EnumSet.of(Path.Type.file))), new BandwidthThrottle(BandwidthThrottle.UNLIMITED));
-        final NullSession session = new NullSession(new Host(new TestProtocol(), "t"));
+        final NullSession session = new NullTransferSession(new Host(new TestProtocol(), "t"));
         assertEquals(TransferAction.comparison, t.action(session, session, false, true,
                 new DisabledTransferPrompt() {
                     @Override

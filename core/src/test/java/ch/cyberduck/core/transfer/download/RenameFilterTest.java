@@ -4,7 +4,7 @@ import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullLocal;
-import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -21,7 +21,7 @@ public class RenameFilterTest {
 
     @Test
     public void testPrepare() throws Exception {
-        RenameFilter f = new RenameFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
+        RenameFilter f = new RenameFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())));
         final String name = new AsciiRandomStringService().random();
         final NullLocal local = new NullLocal("/tmp", name) {
             @Override
@@ -37,7 +37,7 @@ public class RenameFilterTest {
 
     @Test
     public void testDirectoryDownload() throws Exception {
-        RenameFilter f = new RenameFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
+        RenameFilter f = new RenameFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())));
         final String name = new AsciiRandomStringService().random();
         final NullLocal local = new NullLocal("/tmp", name) {
             @Override
