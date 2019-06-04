@@ -150,7 +150,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
         for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
-            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))) {
+            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());

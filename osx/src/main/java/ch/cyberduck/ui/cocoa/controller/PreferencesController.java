@@ -1869,7 +1869,7 @@ public class PreferencesController extends ToolbarWindowController {
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
         for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
-            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))) {
+            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud)))) {
             this.addProtocol(protocol);
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
