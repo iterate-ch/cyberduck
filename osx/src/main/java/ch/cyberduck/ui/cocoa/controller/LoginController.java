@@ -27,7 +27,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class LoginController extends ConnectionController {
 
@@ -53,7 +53,7 @@ public class LoginController extends ConnectionController {
         if(options.user) {
             window.makeFirstResponder(usernameField);
         }
-        if(options.password && !org.apache.commons.lang3.StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+        if(options.password && !StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
             window.makeFirstResponder(passwordField);
         }
     }
