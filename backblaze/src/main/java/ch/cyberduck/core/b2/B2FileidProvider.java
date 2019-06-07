@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 
 import synapticloop.b2.exception.B2ApiException;
+import synapticloop.b2.response.B2BucketResponse;
 import synapticloop.b2.response.B2FileInfoResponse;
 import synapticloop.b2.response.B2ListFilesResponse;
 
@@ -53,37 +54,32 @@ public class B2FileidProvider implements IdProvider {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             return file.attributes().getVersionId();
         }
-        if(cache.isCached(file.getParent())) {
-            final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new SimplePathPredicate(file));
-            if(null != found) {
-                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    // Cache in file attributes
-                    return set(file, found.attributes().getVersionId());
-                }
-            }
-        }
-        if(containerService.isContainer(file)) {
-            final AttributedList<Path> list = new B2ListService(session, this).list(file.getParent(), listener);
-            cache.put(file.getParent(), list);
-            final Path found = list.find(new SimplePathPredicate(file));
-            if(null == found) {
-                throw new NotfoundException(file.getAbsolute());
-            }
-            // Cache in file attributes
-            return this.set(file, found.attributes().getVersionId());
-        }
-        if(cache.isCached(file.getParent())) {
-            final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new SimplePathPredicate(file));
-            if(null != found) {
-                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    // Cache in file attributes
-                    return this.set(file, found.attributes().getVersionId());
-                }
-            }
-        }
         try {
+            if(cache.isCached(file.getParent())) {
+                final AttributedList<Path> list = cache.get(file.getParent());
+                final Path found = list.find(new SimplePathPredicate(file));
+                if(null != found) {
+                    if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
+                        // Cache in file attributes
+                        return set(file, found.attributes().getVersionId());
+                    }
+                }
+            }
+            if(containerService.isContainer(file)) {
+                final B2BucketResponse info = session.getClient().listBucket(file.getName());
+                // Cache in file attributes
+                return this.set(file, info.getBucketId());
+            }
+            if(cache.isCached(file.getParent())) {
+                final AttributedList<Path> list = cache.get(file.getParent());
+                final Path found = list.find(new SimplePathPredicate(file));
+                if(null != found) {
+                    if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
+                        // Cache in file attributes
+                        return this.set(file, found.attributes().getVersionId());
+                    }
+                }
+            }
             final B2ListFilesResponse response = session.getClient().listFileNames(
                 this.getFileid(containerService.getContainer(file), listener),
                 containerService.getKey(file), 2);
