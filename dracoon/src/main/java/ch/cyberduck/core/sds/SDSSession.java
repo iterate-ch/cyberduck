@@ -304,6 +304,11 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     @Override
+    public Case getCase() {
+        return Case.insensitive;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
