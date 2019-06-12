@@ -5,6 +5,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.TestProtocol;
 
 import org.junit.Test;
@@ -47,8 +48,8 @@ public class DefaultFindFeatureTest {
     public void testCaseInsensitive() throws Exception {
         assertTrue(new DefaultFindFeature(new NullSession(new Host(new TestProtocol())) {
             @Override
-            public Case getCase() {
-                return Case.insensitive;
+            public Protocol.Case getCaseSensitivity() {
+                return Protocol.Case.insensitive;
             }
 
             @Override
@@ -58,8 +59,8 @@ public class DefaultFindFeatureTest {
         }).find(new Path("/a/b", EnumSet.of(Path.Type.file))));
         assertFalse(new DefaultFindFeature(new NullSession(new Host(new TestProtocol())) {
             @Override
-            public Case getCase() {
-                return Case.insensitive;
+            public Protocol.Case getCaseSensitivity() {
+                return Protocol.Case.insensitive;
             }
 
             @Override
@@ -69,8 +70,8 @@ public class DefaultFindFeatureTest {
         }).find(new Path("/a/b", EnumSet.of(Path.Type.file))));
         assertFalse(new DefaultFindFeature(new NullSession(new Host(new TestProtocol())) {
             @Override
-            public Case getCase() {
-                return Case.sensitive;
+            public Protocol.Case getCaseSensitivity() {
+                return Protocol.Case.sensitive;
             }
 
             @Override

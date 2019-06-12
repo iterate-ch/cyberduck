@@ -333,4 +333,9 @@ public abstract class AbstractProtocol implements Protocol {
     public HostnameConfigurator getHostnameFinder() {
         return new DisabledHostnameConfigurator();
     }
+
+    @Override
+    public Case getCaseSensitivity() {
+        return Protocol.Case.sensitive;
+    }
 }

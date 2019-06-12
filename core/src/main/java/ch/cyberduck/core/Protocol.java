@@ -38,6 +38,8 @@ public interface Protocol extends Comparable<Protocol> {
 
     HostnameConfigurator getHostnameFinder();
 
+    Case getCaseSensitivity();
+
     enum Type {
         ftp,
         sftp,
@@ -254,4 +256,9 @@ public interface Protocol extends Comparable<Protocol> {
      * @return Default OAuth 2.0 client secret
      */
     String getOAuthClientSecret();
+
+    enum Case {
+        sensitive,
+        insensitive
+    }
 }
