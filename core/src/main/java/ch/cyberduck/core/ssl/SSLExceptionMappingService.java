@@ -19,7 +19,6 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -77,7 +76,7 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
             }
             if(cause instanceof IOException) {
                 // SSL peer shut down incorrectly
-                return new DefaultIOExceptionMappingService().map((IOException) cause);
+                return this.wrap(failure, buffer);
             }
         }
         final String message = failure.getMessage();
