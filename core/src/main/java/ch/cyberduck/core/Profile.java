@@ -276,6 +276,11 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public Case getCaseSensitivity() {
+        return parent.getCaseSensitivity();
+    }
+
+    @Override
     public Scheme getScheme() {
         final String v = this.value("Scheme");
         if(StringUtils.isBlank(v)) {
