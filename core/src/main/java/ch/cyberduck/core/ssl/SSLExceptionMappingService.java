@@ -74,10 +74,6 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
                 // Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
                 return new DefaultSocketExceptionMappingService().map((SocketException) cause);
             }
-            if(cause instanceof IOException) {
-                // SSL peer shut down incorrectly
-                return this.wrap(failure, buffer);
-            }
         }
         final String message = failure.getMessage();
         for(Alert alert : Alert.values()) {
@@ -97,6 +93,10 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
         if(ExceptionUtils.getRootCause(failure) instanceof GeneralSecurityException) {
             this.append(buffer, ExceptionUtils.getRootCause(failure).getMessage());
             return new InteroperabilityException(buffer.toString(), failure);
+        }
+        if(ExceptionUtils.getRootCause(failure) instanceof IOException) {
+            // SSL peer shut down incorrectly
+            return this.wrap(failure, buffer);
         }
         this.append(buffer, message);
         return new InteroperabilityException(buffer.toString(), failure);
