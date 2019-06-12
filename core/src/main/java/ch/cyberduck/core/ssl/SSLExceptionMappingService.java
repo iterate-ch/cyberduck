@@ -19,6 +19,7 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DefaultSocketExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -31,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
+import java.io.IOException;
 import java.net.SocketException;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
@@ -70,8 +72,12 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
         final StringBuilder buffer = new StringBuilder();
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SocketException) {
-                // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
+                // Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
                 return new DefaultSocketExceptionMappingService().map((SocketException) cause);
+            }
+            if(cause instanceof IOException) {
+                // SSL peer shut down incorrectly
+                return new DefaultIOExceptionMappingService().map((IOException) cause);
             }
         }
         final String message = failure.getMessage();
