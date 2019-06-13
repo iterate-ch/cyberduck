@@ -126,7 +126,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     );
 
                 try {
-                    authorizationService.withParameter("user_agent_info", org.bouncycastle.util.encoders.Base64.toBase64String(InetAddress.getLocalHost().getHostName().getBytes()));
+                    authorizationService.withParameter("user_agent_info", Base64.encodeToString(InetAddress.getLocalHost().getHostName().getBytes(StandardCharsets.UTF_8), false));
                 }
                 catch(UnknownHostException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
