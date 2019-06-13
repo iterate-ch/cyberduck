@@ -53,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
             AsyncDelegate d = delegate
             {
                 _browser.CommandBox(title, title, message, String.Format("{0}|{1}", continueButton, disconnectButton),
-                    false, LocaleFactory.localizedString("Don't show again", "Credentials"), TaskDialogIcon.Question,
+                    false, Utils.IsNotBlank(preference) ? LocaleFactory.localizedString("Don't show again", "Credentials") : null, TaskDialogIcon.Question,
                     ProviderHelpServiceFactory.get().help(bookmark.getProtocol().getScheme()),
                     delegate(int option, Boolean verificationChecked)
                     {
