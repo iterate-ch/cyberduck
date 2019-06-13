@@ -15,6 +15,7 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -39,11 +40,13 @@ public class BrickPairingInterceptor extends DisabledServiceUnavailableRetryStra
     private static final int MAX_RETRIES = 1;
 
     private final BrickSession session;
+    private final ConnectionCallback prompt;
     private final AtomicBoolean pairing = new AtomicBoolean();
     private final AtomicBoolean cancel = new AtomicBoolean();
 
-    public BrickPairingInterceptor(final BrickSession session) {
+    public BrickPairingInterceptor(final BrickSession session, final ConnectionCallback prompt) {
         this.session = session;
+        this.prompt = prompt;
     }
 
     @Override
@@ -57,8 +60,7 @@ public class BrickPairingInterceptor extends DisabledServiceUnavailableRetryStra
                             cancel.set(true);
                         }
                         pairing.set(true);
-                        final Credentials credentials = session.getHost().getCredentials();
-                        session.pair(credentials, this);
+                        final Credentials credentials = session.pair(session.getHost(), prompt, this);
                         final CredentialsProvider provider = new BasicCredentialsProvider();
                         provider.setCredentials(
                             new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT, AuthScope.ANY_REALM, AuthSchemes.BASIC),
