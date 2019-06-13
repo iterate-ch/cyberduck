@@ -21,6 +21,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.shared.AbstractSchedulerFeature;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
@@ -82,7 +84,17 @@ public class BrickPairingSchedulerFeature extends AbstractSchedulerFeature<Crede
             });
             final Credentials credentials = host.getCredentials();
             if(json.has("username")) {
-                credentials.setUsername(json.getAsJsonPrimitive("username").getAsString());
+                if(StringUtils.isBlank(credentials.getUsername())) {
+                    credentials.setUsername(json.getAsJsonPrimitive("username").getAsString());
+                }
+                else {
+                    if(StringUtils.equals(credentials.getUsername(), json.getAsJsonPrimitive("username").getAsString())) {
+                        log.warn(String.format("Mismatch of username. Previously authorized as %s and now paired as %s",
+                            credentials.getUsername(), json.getAsJsonPrimitive("username").getAsString()));
+                        callback.close(null);
+                        throw new LoginCanceledException();
+                    }
+                }
             }
             else {
                 throw new LoginFailureException(String.format("Invalid response for pairing key %s", token));
@@ -104,8 +116,6 @@ public class BrickPairingSchedulerFeature extends AbstractSchedulerFeature<Crede
                 }
             }
             callback.close(credentials.getUsername());
-            // Self shutdown
-            this.shutdown();
             return credentials;
         }
         catch(HttpResponseException e) {
