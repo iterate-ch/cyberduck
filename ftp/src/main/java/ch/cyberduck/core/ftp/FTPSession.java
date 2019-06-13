@@ -23,6 +23,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -78,7 +79,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     private UnixPermission permission;
     private Symlink symlink;
     private FTPListService listService;
-    private Case casesensitivity = Case.sensitive;
+    private Protocol.Case casesensitivity = Protocol.Case.sensitive;
 
     public FTPSession(final Host h) {
         this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -199,7 +200,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public Case getCase() {
+    public Protocol.Case getCaseSensitivity() {
         return casesensitivity;
     }
 
@@ -266,7 +267,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 try {
                     system = client.getSystemType();
                     if(system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
-                        casesensitivity = Case.insensitive;
+                        casesensitivity = Protocol.Case.insensitive;
                     }
                 }
                 catch(IOException e) {

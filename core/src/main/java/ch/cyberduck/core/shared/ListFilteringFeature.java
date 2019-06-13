@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -61,7 +62,7 @@ public abstract class ListFilteringFeature {
         }
         // Try to match path only as the version might have changed in the meantime
         return list.find(new IgnoreDuplicateFilter(
-            session.getCase() == Session.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file))
+            session.getCaseSensitivity() == Protocol.Case.insensitive ? new CaseInsensitivePathPredicate(file) : new SimplePathPredicate(file))
         );
     }
 

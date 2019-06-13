@@ -82,6 +82,11 @@ public class SDSProtocol extends AbstractProtocol {
         return true;
     }
 
+    @Override
+    public Case getCaseSensitivity() {
+        return Case.insensitive;
+    }
+
     public enum Authorization {
         sql,
         radius,
