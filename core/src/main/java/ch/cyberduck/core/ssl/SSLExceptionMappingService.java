@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
+import java.io.IOException;
 import java.net.SocketException;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
@@ -70,7 +71,7 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
         final StringBuilder buffer = new StringBuilder();
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
             if(cause instanceof SocketException) {
-                // Map Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
+                // Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe
                 return new DefaultSocketExceptionMappingService().map((SocketException) cause);
             }
         }
@@ -86,6 +87,10 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
                 log.warn(String.format("Ignore certificate failure %s and drop connection", failure.getMessage()));
                 // Server certificate not accepted
                 return new ConnectionCanceledException(failure);
+            }
+            if(ExceptionUtils.getRootCause(failure) instanceof IOException) {
+                // SSL peer shut down incorrectly
+                return this.wrap(failure, buffer);
             }
             return new SSLNegotiateException(buffer.toString(), failure);
         }
@@ -156,15 +161,15 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
             @Override
             public String getDescription() {
                 return String.format("%s. A valid certificate chain or partial chain was received, but " +
-                        "the certificate was not accepted because the certificate authority certificate could not be located " +
-                        "or couldn't be matched with a known, trusted certificate authority.", super.getDescription());
+                    "the certificate was not accepted because the certificate authority certificate could not be located " +
+                    "or couldn't be matched with a known, trusted certificate authority.", super.getDescription());
             }
         },
         access_denied(49) {
             @Override
             public String getDescription() {
                 return String.format("%s. A valid certificate was received, but when access control was " +
-                        "applied, the server decided not to proceed with negotiation.", super.getDescription());
+                    "applied, the server decided not to proceed with negotiation.", super.getDescription());
             }
         },
         decode_error(50),
