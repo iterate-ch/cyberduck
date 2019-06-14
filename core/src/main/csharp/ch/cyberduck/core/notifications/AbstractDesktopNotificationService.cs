@@ -18,8 +18,6 @@ namespace Ch.Cyberduck.Core.Notifications
 
         private Action<string> listeners;
 
-        public int TagMaxLength { get; } = Utils.OSVersion.IsVersion(Utils.OSVersion.Windows10.V1703) ? 64 : 16;
-
         protected abstract string AumID { get; }
 
         public void addListener(NotificationService.Listener listener)
@@ -130,19 +128,13 @@ namespace Ch.Cyberduck.Core.Notifications
             var toast = new ToastNotification(doc);
             if (!string.IsNullOrWhiteSpace(identifier))
             {
-                if (identifier.Length > TagMaxLength)
-                {
-                    toast.Tag = identifier.GetHashCode().ToString("X");
+                toast.Tag = identifier.GetHashCode().ToString("X");
 
-                    toast.Data = new NotificationData(new Dictionary<string, string>()
-                    {
-                        ["identifier"] = identifier
-                    });
-                }
-                else
+                toast.Data = new NotificationData(new Dictionary<string, string>()
                 {
-                    toast.Tag = identifier;
-                }
+                    ["identifier"] = identifier
+                });
+
                 toast.SuppressPopup = ShouldSuppressPopup(toast);
             }
 
