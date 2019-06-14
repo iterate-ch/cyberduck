@@ -17,6 +17,7 @@ namespace Ch.Cyberduck.Core.Notifications
         private ToastNotificationHistory history;
 
         private Action<string> listeners;
+
         protected abstract string AumID { get; }
 
         public void addListener(NotificationService.Listener listener)
@@ -127,7 +128,13 @@ namespace Ch.Cyberduck.Core.Notifications
             var toast = new ToastNotification(doc);
             if (!string.IsNullOrWhiteSpace(identifier))
             {
-                toast.Tag = identifier;
+                toast.Tag = identifier.GetHashCode().ToString("X");
+
+                toast.Data = new NotificationData(new Dictionary<string, string>()
+                {
+                    ["identifier"] = identifier
+                });
+
                 toast.SuppressPopup = ShouldSuppressPopup(toast);
             }
 
@@ -149,6 +156,14 @@ namespace Ch.Cyberduck.Core.Notifications
             notifier.Show(toast);
         }
 
-        private void Toast_Activated(ToastNotification sender, object args) => listeners(sender.Tag);
+        private void Toast_Activated(ToastNotification sender, object args)
+        {
+            string tag = string.Empty;
+            if (sender.Data?.Values.TryGetValue("identifier", out tag) != true)
+            {
+                tag = sender.Tag;
+            }
+            listeners(tag);
+        }
     }
 }
