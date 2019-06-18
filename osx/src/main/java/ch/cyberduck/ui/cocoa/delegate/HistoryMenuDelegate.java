@@ -114,7 +114,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setRepresentedObject(h.getUuid());
             item.setEnabled(true);
             final NSMutableAttributedString title = NSMutableAttributedString.create(BookmarkNameProvider.toString(h));
-            if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.LARGE_BOOKMARK_SIZE) {
+            if(preferences.getInteger("bookmark.menu.icon.size") >= BookmarkCell.LARGE_BOOKMARK_SIZE) {
                 title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
                     String.format("\n%s", h.getHostname()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
             }
@@ -129,7 +129,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
             }
             item.setAttributedTitle(title);
             item.setTitle(BookmarkNameProvider.toString(h));
-            switch(preferences.getInteger("bookmark.icon.size")) {
+            switch(preferences.getInteger("bookmark.menu.icon.size")) {
                 default:
                     item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.MEDIUM_ICON_SIZE));
                     break;

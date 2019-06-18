@@ -412,12 +412,15 @@ public class PreferencesController extends ToolbarWindowController {
     public void bookmarkSizePopupClicked(NSPopUpButton sender) {
         if(sender.indexOfSelectedItem().intValue() == 0) {
             preferences.setProperty("bookmark.icon.size", BookmarkCell.SMALL_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.menu.icon.size", BookmarkCell.SMALL_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem().intValue() == 1) {
             preferences.setProperty("bookmark.icon.size", BookmarkCell.MEDIUM_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.menu.icon.size", BookmarkCell.MEDIUM_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem().intValue() == 2) {
             preferences.setProperty("bookmark.icon.size", BookmarkCell.LARGE_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.menu.icon.size", BookmarkCell.LARGE_BOOKMARK_SIZE);
         }
         BrowserController.updateBookmarkTableRowHeight();
     }

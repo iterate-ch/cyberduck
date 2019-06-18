@@ -158,17 +158,17 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
 
     private void build(final NSMenuItem item, final Host h) {
         final NSMutableAttributedString title = NSMutableAttributedString.create(BookmarkNameProvider.toString(h));
-        if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.MEDIUM_BOOKMARK_SIZE) {
+        if(preferences.getInteger("bookmark.menu.icon.size") >= BookmarkCell.MEDIUM_BOOKMARK_SIZE) {
             title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
                 String.format("\n%s", h.getHostname()), BundleController.MENU_HELP_FONT_ATTRIBUTES));
         }
-        if(preferences.getInteger("bookmark.icon.size") >= BookmarkCell.LARGE_BOOKMARK_SIZE) {
+        if(preferences.getInteger("bookmark.menu.icon.size") >= BookmarkCell.LARGE_BOOKMARK_SIZE) {
             title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
                 String.format("\n%s", StringUtils.isNotBlank(h.getCredentials().getUsername()) ? h.getCredentials().getUsername() : StringUtils.EMPTY), BundleController.MENU_HELP_FONT_ATTRIBUTES));
         }
         item.setAttributedTitle(title);
         item.setTitle(BookmarkNameProvider.toString(h));
-        switch(preferences.getInteger("bookmark.icon.size")) {
+        switch(preferences.getInteger("bookmark.menu.icon.size")) {
             default:
                 item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), CollectionMenuDelegate.SMALL_ICON_SIZE));
                 break;
