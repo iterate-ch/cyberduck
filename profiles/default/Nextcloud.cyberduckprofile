@@ -20,9 +20,11 @@
         <key>Protocol</key>
         <string>nextcloud</string>
         <key>Vendor</key>
-        <string>nextcloud</string>
+        <string>iterate GmbH</string>
+        <key>Bundled</key>
+        <true/>
         <key>Description</key>
-        <string>Nextcloud</string>
+        <string>Nextcloud &amp; ownCloud</string>
         <key>Default Nickname</key>
         <string>Nextcloud</string>
         <key>Default Path</key>

@@ -35,6 +35,7 @@ using ch.cyberduck.core.b2;
 using ch.cyberduck.core.manta;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.brick;
+using ch.cyberduck.core.nextcloud;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.dropbox;
 using ch.cyberduck.core.ftp;
@@ -157,7 +158,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
                 new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(),
-                new MantaProtocol(), new SDSProtocol(), new StoregateProtocol(), new BrickProtocol());
+                new MantaProtocol(), new SDSProtocol(), new StoregateProtocol(), new BrickProtocol(), new NextcloudProtocol());
             ProtocolFactory.get().loadDefaultProfiles();
         }
 

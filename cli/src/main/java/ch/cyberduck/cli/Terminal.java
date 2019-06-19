@@ -42,6 +42,7 @@ import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.ApplicationQuitCallback;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.manta.MantaProtocol;
+import ch.cyberduck.core.nextcloud.NextcloudProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
 import ch.cyberduck.core.onedrive.OneDriveProtocol;
 import ch.cyberduck.core.onedrive.SharepointProtocol;
@@ -130,7 +131,8 @@ public class Terminal {
             new SDSProtocol(),
             new MantaProtocol(),
             new StoregateProtocol(),
-            new BrickProtocol()
+            new BrickProtocol(),
+            new NextcloudProtocol()
         );
         this.options = options;
         if(log.isInfoEnabled()) {
