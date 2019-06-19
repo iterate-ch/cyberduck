@@ -24,7 +24,7 @@
         <key>Bundled</key>
         <true/>
         <key>Description</key>
-        <string>Nextcloud</string>
+        <string>Nextcloud &amp; ownCloud</string>
         <key>Default Nickname</key>
         <string>Nextcloud</string>
         <key>Default Path</key>
