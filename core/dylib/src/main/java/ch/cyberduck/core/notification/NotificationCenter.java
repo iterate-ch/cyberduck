@@ -19,10 +19,13 @@ package ch.cyberduck.core.notification;
  */
 
 import ch.cyberduck.binding.ProxyController;
+import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.foundation.NSUserNotification;
 import ch.cyberduck.binding.foundation.NSUserNotificationCenter;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.resources.IconCacheFactory;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -64,6 +67,9 @@ public class NotificationCenter extends ProxyController implements NotificationS
         final NSUserNotification notification = NSUserNotification.notification();
         if(StringUtils.isNotBlank(identifier)) {
             notification.setIdentifier(identifier);
+            if(StringUtils.isNotBlank(FilenameUtils.getExtension(identifier))) {
+                notification.setContentImage(IconCacheFactory.<NSImage>get().documentIcon(FilenameUtils.getExtension(identifier), 32));
+            }
         }
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
@@ -76,6 +82,9 @@ public class NotificationCenter extends ProxyController implements NotificationS
         final NSUserNotification notification = NSUserNotification.notification();
         if(StringUtils.isNotBlank(identifier)) {
             notification.setIdentifier(identifier);
+            if(StringUtils.isNotBlank(FilenameUtils.getExtension(identifier))) {
+                notification.setContentImage(IconCacheFactory.<NSImage>get().documentIcon(FilenameUtils.getExtension(identifier), 32));
+            }
         }
         notification.setTitle(LocaleFactory.localizedString(title, "Status"));
         notification.setInformativeText(description);
