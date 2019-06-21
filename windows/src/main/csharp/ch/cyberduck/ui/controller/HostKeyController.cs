@@ -42,13 +42,13 @@ namespace Ch.Cyberduck.Ui.Controller
             _parent = c;
         }
 
-        protected override bool isUnknownKeyAccepted(string hostname, PublicKey key)
+        protected override bool isUnknownKeyAccepted(Host host, PublicKey key)
         {
             AsyncController.AsyncDelegate d = delegate
             {
                 _parent.CommandBox(
-                    String.Format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), hostname),
-                    String.Format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), hostname),
+                    String.Format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), host.getHostname()),
+                    String.Format(LocaleFactory.localizedString("Unknown fingerprint", "Sftp"), host.getHostname()),
                     String.Format(
                         LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.",
                             "Sftp"), new SSHFingerprintGenerator().fingerprint(key), KeyType.fromKey(key).name()),
@@ -61,7 +61,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         switch (option)
                         {
                             case 0:
-                                allow(hostname, key, verificationChecked);
+                                allow(host, key, verificationChecked);
                                 break;
                             case 1:
                                 Log.warn("Cannot continue without a valid host key");
@@ -73,13 +73,13 @@ namespace Ch.Cyberduck.Ui.Controller
             return true;
         }
 
-        protected override bool isChangedKeyAccepted(string hostname, PublicKey key)
+        protected override bool isChangedKeyAccepted(Host host, PublicKey key)
         {
             AsyncController.AsyncDelegate d = delegate
             {
                 _parent.CommandBox(
-                    String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname),
-                    String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), hostname),
+                    String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), host.getHostname()),
+                    String.Format(LocaleFactory.localizedString("Changed fingerprint", "Sftp"), host.getHostname()),
                     String.Format(
                         LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.",
                             "Sftp"), new SSHFingerprintGenerator().fingerprint(key), KeyType.fromKey(key).name()),
@@ -92,7 +92,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         switch (option)
                         {
                             case 0:
-                                allow(hostname, key, verificationChecked);
+                                allow(host, key, verificationChecked);
                                 break;
                             case 1:
                                 Log.warn("Cannot continue without a valid host key");

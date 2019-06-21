@@ -159,7 +159,7 @@ public class SFTPSession extends Session<SSHClient> {
             @Override
             public boolean verify(String hostname, int port, PublicKey publicKey) {
                 try {
-                    return key.verify(hostname, port, publicKey);
+                    return key.verify(host, publicKey);
                 }
                 catch(ConnectionCanceledException | ChecksumException e) {
                     return false;

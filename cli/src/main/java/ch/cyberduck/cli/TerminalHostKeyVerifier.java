@@ -18,6 +18,7 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.ChecksumException;
@@ -41,36 +42,36 @@ public class TerminalHostKeyVerifier extends OpenSSHHostKeyVerifier {
 
     public TerminalHostKeyVerifier(final TerminalPromptReader prompt) {
         super(LocalFactory.get(PreferencesFactory.get().getProperty("ssh.knownhosts")).withBookmark(
-                PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
+            PreferencesFactory.get().getProperty("ssh.knownhosts.bookmark")
         ));
         this.prompt = prompt;
     }
 
     @Override
-    protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+    protected boolean isUnknownKeyAccepted(final Host host, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
         final String message = String.format("%s. %s %s?", LocaleFactory.localizedString("Unknown fingerprint", "Sftp"),
-                MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                        new SSHFingerprintGenerator().fingerprint(key),
-                        KeyType.fromKey(key).name()),
-                LocaleFactory.localizedString("Continue", "Credentials"));
+            MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
+                new SSHFingerprintGenerator().fingerprint(key),
+                KeyType.fromKey(key).name()),
+            LocaleFactory.localizedString("Continue", "Credentials"));
         if(!prompt.prompt(message)) {
             throw new ConnectionCanceledException();
         }
-        this.allow(hostname, key, true);
+        this.allow(host, key, true);
         return true;
     }
 
     @Override
-    protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+    protected boolean isChangedKeyAccepted(final Host host, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
         final String message = String.format("%s. %s %s?", LocaleFactory.localizedString("Changed fingerprint", "Sftp"),
-                MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
-                        new SSHFingerprintGenerator().fingerprint(key),
-                        KeyType.fromKey(key).name()),
-                LocaleFactory.localizedString("Continue", "Credentials"));
+            MessageFormat.format(LocaleFactory.localizedString("The fingerprint for the {1} key sent by the server is {0}.", "Sftp"),
+                new SSHFingerprintGenerator().fingerprint(key),
+                KeyType.fromKey(key).name()),
+            LocaleFactory.localizedString("Continue", "Credentials"));
         if(!prompt.prompt(message)) {
             throw new ConnectionCanceledException();
         }
-        this.allow(hostname, key, true);
+        this.allow(host, key, true);
         return true;
     }
 }

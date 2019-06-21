@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.net.UnknownHostException;
-import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
@@ -183,13 +182,7 @@ public class S3SessionTest extends AbstractS3Test {
                 }
             }
         });
-        session.open(Proxy.DIRECT, new HostKeyCallback() {
-            @Override
-            public boolean verify(final String hostname, final int port, final PublicKey key) {
-                assertEquals("cyberduck.io", hostname);
-                return true;
-            }
-        }, new DisabledLoginCallback());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         try {
             session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         }
