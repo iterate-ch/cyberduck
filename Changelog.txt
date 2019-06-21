@@ -3,6 +3,7 @@ https://cyberduck.io/
 
 7.0.1
 - [Feature] Default protocol selection for NextCloud & ownCloud
+- [Feature] Create share links in NextCloud & ownCloud
 - [Bugfix] Connect with application key restricted to single bucket (Backblaze B2) (#10725)
 - [Bugfix] Missing files when previously trashed and restored (Google Drive)
 
