@@ -153,7 +153,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         try {
             session.open(Proxy.DIRECT, new HostKeyCallback() {
                 @Override
-                public boolean verify(String hostname, int port, PublicKey key) throws ConnectionCanceledException {
+                public boolean verify(Host hostname, PublicKey key) throws ConnectionCanceledException {
                     verify.set(true);
                     throw new ConnectionCanceledException();
                 }
@@ -277,19 +277,19 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         try {
             assertNotNull(session.open(Proxy.DIRECT, new OpenSSHHostKeyVerifier(f) {
                 @Override
-                public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                public boolean verify(final Host hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
                     fingerprint.set(new SSHFingerprintGenerator().fingerprint(key));
-                    return super.verify(hostname, port, key);
+                    return super.verify(hostname, key);
                 }
 
                 @Override
-                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
+                protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key) {
                     this.allow(hostname, key, true);
                     return true;
                 }
 
                 @Override
-                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
+                protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) {
                     fail();
                     return false;
                 }
@@ -297,18 +297,18 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             session.close();
             assertNotNull(session.open(Proxy.DIRECT, new OpenSSHHostKeyVerifier(f) {
                 @Override
-                public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                public boolean verify(final Host hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
                     assertEquals(fingerprint.get(), new SSHFingerprintGenerator().fingerprint(key));
-                    return super.verify(hostname, port, key);
+                    return super.verify(hostname, key);
                 }
 
                 @Override
-                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
+                protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key) {
                     return false;
                 }
 
                 @Override
-                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
+                protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) {
                     return false;
                 }
             }, new DisabledLoginCallback()));

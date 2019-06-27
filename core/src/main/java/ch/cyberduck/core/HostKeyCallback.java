@@ -27,7 +27,6 @@ import java.security.PublicKey;
 
 public interface HostKeyCallback {
 
-    boolean verify(String hostname, int port, PublicKey key)
-            throws ConnectionCanceledException, ChecksumException;
+    boolean verify(Host hostname, PublicKey key) throws ConnectionCanceledException, ChecksumException;
 
 }

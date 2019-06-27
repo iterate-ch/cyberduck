@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa.callback;
 import ch.cyberduck.binding.AlertController;
 import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.SheetCallback;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.exception.ChecksumException;
@@ -52,10 +53,10 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     }
 
     @Override
-    protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key)
+    protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key)
             throws ConnectionCanceledException, ChecksumException {
         final String fingerprint = new SSHFingerprintGenerator().fingerprint(key);
-        final AlertController alert = new UnknownHostKeyAlertController(hostname, fingerprint, key);
+        final AlertController alert = new UnknownHostKeyAlertController(hostname.getHostname(), fingerprint, key);
         switch(alert.beginSheet(controller)) {
             case SheetCallback.DEFAULT_OPTION:
                 this.allow(hostname, key, alert.isSuppressed());
@@ -66,10 +67,10 @@ public class PromptHostKeyCallback extends OpenSSHHostKeyVerifier {
     }
 
     @Override
-    protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key)
+    protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key)
             throws ConnectionCanceledException, ChecksumException {
         final String fingerprint = new SSHFingerprintGenerator().fingerprint(key);
-        final AlertController alert = new ChangedHostKeyAlertController(hostname, fingerprint, key);
+        final AlertController alert = new ChangedHostKeyAlertController(hostname.getHostname(), fingerprint, key);
         switch(alert.beginSheet(controller)) {
             case SheetCallback.DEFAULT_OPTION:
                 this.allow(hostname, key, alert.isSuppressed());
