@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
@@ -50,5 +51,11 @@ public class GraphItemListServiceTest extends AbstractOneDriveTest {
         assertEquals(new SimplePathPredicate(f1), new SimplePathPredicate(list.get(0)));
         assertEquals(new SimplePathPredicate(f2), new SimplePathPredicate(list.get(1)));
         new GraphDeleteFeature(session).delete(Arrays.asList(f1, f2, directory), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = NotfoundException.class)
+    public void testNotFound() throws Exception {
+        final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        new GraphItemListService(session).list(directory, new DisabledListProgressListener());
     }
 }
