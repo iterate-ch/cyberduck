@@ -29,12 +29,7 @@ public final class PathNormalizer {
 
     private static final boolean IS_ENABLED = PreferencesFactory.get().getBoolean("path.normalize");
 
-    private static final UnicodeNormalizer UNICODE_NORMALIZER = PreferencesFactory.get().getBoolean("path.normalize.unicode") ? new NFCNormalizer() : new UnicodeNormalizer() {
-        @Override
-        public CharSequence normalize(final CharSequence name) {
-            return name;
-        }
-    };
+    private static final UnicodeNormalizer UNICODE_NORMALIZER = PreferencesFactory.get().getBoolean("path.normalize.unicode") ? new NFCNormalizer() : UnicodeNormalizer.DISABLED;
 
     private PathNormalizer() {
         //
