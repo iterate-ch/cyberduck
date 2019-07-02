@@ -17,4 +17,11 @@ package ch.cyberduck.core.unicode;
 
 public interface UnicodeNormalizer {
     CharSequence normalize(CharSequence name);
+
+    UnicodeNormalizer DISABLED = new UnicodeNormalizer() {
+        @Override
+        public CharSequence normalize(final CharSequence name) {
+            return name;
+        }
+    };
 }
