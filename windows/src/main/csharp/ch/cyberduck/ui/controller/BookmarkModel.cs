@@ -101,10 +101,10 @@ namespace Ch.Cyberduck.Ui.Controller
             return ((Host) host).getHostname();
         }
 
-        public object GetUrl(object host)
+        public object GetUsername(object host)
         {
             Host h = (Host) host;
-            return new HostUrlProvider(false, true).get(h);
+            return h.getCredentials().getUsername();
         }
 
         public object GetNotes(object host)

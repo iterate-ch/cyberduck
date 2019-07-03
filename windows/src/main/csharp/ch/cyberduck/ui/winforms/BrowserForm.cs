@@ -931,9 +931,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { ((AbstractBookmarkRenderer) bookmarkDescriptionColumn.Renderer).HostnameAspectGetter = value; }
         }
 
-        public AspectGetterDelegate BookmarkUrlGetter
+        public AspectGetterDelegate BookmarkUsernameGetter
         {
-            set { ((AbstractBookmarkRenderer) bookmarkDescriptionColumn.Renderer).UrlAspectGetter = value; }
+            set { ((AbstractBookmarkRenderer) bookmarkDescriptionColumn.Renderer).UsernameAspectGetter = value; }
         }
 
         public AspectGetterDelegate BookmarkNotesGetter
@@ -1684,7 +1684,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 r.HostnameAspectGetter = previous.HostnameAspectGetter;
                 r.NotesAspectGetter = previous.NotesAspectGetter;
-                r.UrlAspectGetter = previous.UrlAspectGetter;
+                r.UsernameAspectGetter = previous.UsernameAspectGetter;
                 l.RebuildColumns();
             }
         }

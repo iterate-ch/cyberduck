@@ -29,7 +29,7 @@ namespace Ch.Cyberduck.Ui.Controller
         ImageGetterDelegate BookmarkImageGetter { set; }
         AspectGetterDelegate BookmarkNicknameGetter { set; }
         AspectGetterDelegate BookmarkHostnameGetter { set; }
-        AspectGetterDelegate BookmarkUrlGetter { set; }
+        AspectGetterDelegate BookmarkUsernameGetter { set; }
         AspectGetterDelegate BookmarkNotesGetter { set; }
         ImageGetterDelegate BookmarkStatusImageGetter { set; }
         void SetBookmarkModel(IEnumerable hosts, Host selected);
