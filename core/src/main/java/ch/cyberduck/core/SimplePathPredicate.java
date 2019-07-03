@@ -19,13 +19,10 @@ import java.util.Objects;
 
 public class SimplePathPredicate implements CacheReference<Path> {
 
-    protected final Path file;
-
     private final Path.Type type;
     private final String path;
 
     public SimplePathPredicate(final Path file) {
-        this.file = file;
         this.type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
         this.path = file.getAbsolute();
     }
@@ -49,5 +46,14 @@ public class SimplePathPredicate implements CacheReference<Path> {
     @Override
     public boolean test(final Path test) {
         return this.hashCode() == new SimplePathPredicate(test).hashCode();
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("SimplePathPredicate{");
+        sb.append("type=").append(type);
+        sb.append(", path='").append(path).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
