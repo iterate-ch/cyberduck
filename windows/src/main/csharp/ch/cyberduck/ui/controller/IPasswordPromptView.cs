@@ -24,6 +24,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string Reason { set; }
         string OkButtonText { set; }
 
-        bool SavePassword { get; set; }
+        bool SavePasswordState { get; set; }
+        bool SavePasswordEnabled { set; }
     }
 }
