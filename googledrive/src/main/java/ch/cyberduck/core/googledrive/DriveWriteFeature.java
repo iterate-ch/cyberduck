@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -133,8 +134,8 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                             case HttpStatus.SC_OK:
                                 break;
                             default:
-                                throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                    response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                                throw new DefaultHttpResponseExceptionMappingService().map(
+                                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
                     finally {
@@ -165,8 +166,8 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                                         }
                                         break;
                                     default:
-                                        throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                            putResponse.getStatusLine().getStatusCode(), putResponse.getStatusLine().getReasonPhrase()));
+                                        throw new DefaultHttpResponseExceptionMappingService().map(
+                                            new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                                 }
                             }
                             finally {
@@ -174,8 +175,8 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                             }
                         }
                         else {
-                            throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                            throw new DefaultHttpResponseExceptionMappingService().map(
+                                new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
                     return new VersionId(DriveWriteFeature.this.fileid.getFileid(file, new DisabledListProgressListener()));
