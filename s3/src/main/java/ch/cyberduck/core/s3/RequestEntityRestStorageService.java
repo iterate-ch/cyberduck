@@ -217,9 +217,6 @@ public class RequestEntityRestStorageService extends RestS3Service {
             log.warn(String.format("Switched authentication signature version to %s", forceRequestSignatureVersion));
             session.setSignatureVersion(authenticationHeaderSignatureVersion);
         }
-        if(session.authorize(httpMethod, this.getProviderCredentials())) {
-            return;
-        }
         super.authorizeHttpRequest(httpMethod, context, forceRequestSignatureVersion);
     }
 
