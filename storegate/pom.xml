@@ -142,6 +142,7 @@
                                     <importMappings>
                                         <importMapping>File=ch.cyberduck.core.storegate.io.swagger.client.model.File</importMapping>
                                         <importMapping>UpdatePermissionRequest=ch.cyberduck.core.storegate.io.swagger.client.model.UpdatePermissionRequest</importMapping>
+                                        <importMapping>FileMetadata=ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata</importMapping>
                                     </importMappings>
                                 </configuration>
                             </execution>

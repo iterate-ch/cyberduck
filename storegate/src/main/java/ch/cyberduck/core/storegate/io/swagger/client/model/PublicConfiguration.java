@@ -25,10 +25,13 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class PublicConfiguration {
   @JsonProperty("theme")
   private String theme = null;
+
+  @JsonProperty("locale")
+  private String locale = null;
 
   public PublicConfiguration theme(String theme) {
     this.theme = theme;
@@ -36,16 +39,34 @@ public class PublicConfiguration {
   }
 
    /**
-   * 
+   * What theme to use
    * @return theme
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "What theme to use")
   public String getTheme() {
     return theme;
   }
 
   public void setTheme(String theme) {
     this.theme = theme;
+  }
+
+  public PublicConfiguration locale(String locale) {
+    this.locale = locale;
+    return this;
+  }
+
+   /**
+   * What locale to use
+   * @return locale
+  **/
+  @ApiModelProperty(value = "What locale to use")
+  public String getLocale() {
+    return locale;
+  }
+
+  public void setLocale(String locale) {
+    this.locale = locale;
   }
 
 
@@ -58,12 +79,13 @@ public class PublicConfiguration {
       return false;
     }
     PublicConfiguration publicConfiguration = (PublicConfiguration) o;
-    return Objects.equals(this.theme, publicConfiguration.theme);
+    return Objects.equals(this.theme, publicConfiguration.theme) &&
+        Objects.equals(this.locale, publicConfiguration.locale);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(theme);
+    return Objects.hash(theme, locale);
   }
 
 
@@ -73,6 +95,7 @@ public class PublicConfiguration {
     sb.append("class PublicConfiguration {\n");
     
     sb.append("    theme: ").append(toIndentedString(theme)).append("\n");
+    sb.append("    locale: ").append(toIndentedString(locale)).append("\n");
     sb.append("}");
     return sb.toString();
   }

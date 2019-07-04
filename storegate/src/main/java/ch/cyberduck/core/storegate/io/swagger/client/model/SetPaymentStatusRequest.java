@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class SetPaymentStatusRequest {
   @JsonProperty("transactionId")
   private String transactionId = null;
@@ -42,10 +42,10 @@ public class SetPaymentStatusRequest {
   }
 
    /**
-   * 
+   * Transaction Id
    * @return transactionId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Transaction Id")
   public String getTransactionId() {
     return transactionId;
   }
@@ -60,10 +60,10 @@ public class SetPaymentStatusRequest {
   }
 
    /**
-   * 
+   * Status of the payment
    * @return status
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Status of the payment")
   public String getStatus() {
     return status;
   }
@@ -78,10 +78,10 @@ public class SetPaymentStatusRequest {
   }
 
    /**
-   * 
+   * The Order reference
    * @return orderRef
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The Order reference")
   public String getOrderRef() {
     return orderRef;
   }

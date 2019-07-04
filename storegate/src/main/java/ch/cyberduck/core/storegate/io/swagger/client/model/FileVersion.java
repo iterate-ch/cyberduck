@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * A file version.
  */
 @ApiModel(description = "A file version.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class FileVersion {
   @JsonProperty("version")
   private Integer version = null;
@@ -52,6 +52,9 @@ public class FileVersion {
   @JsonProperty("uploaded")
   private DateTime uploaded = null;
 
+  @JsonProperty("accessed")
+  private DateTime accessed = null;
+
   /**
    * Indicates the item type.
    */
@@ -72,7 +75,9 @@ public class FileVersion {
     
     NUMBER_64(64),
     
-    NUMBER_128(128);
+    NUMBER_128(128),
+    
+    NUMBER_256(256);
 
     private Integer value;
 
@@ -251,6 +256,24 @@ public class FileVersion {
     this.uploaded = uploaded;
   }
 
+  public FileVersion accessed(DateTime accessed) {
+    this.accessed = accessed;
+    return this;
+  }
+
+   /**
+   * The date and time the item was last accessed.
+   * @return accessed
+  **/
+  @ApiModelProperty(value = "The date and time the item was last accessed.")
+  public DateTime getAccessed() {
+    return accessed;
+  }
+
+  public void setAccessed(DateTime accessed) {
+    this.accessed = accessed;
+  }
+
   public FileVersion flags(FlagsEnum flags) {
     this.flags = flags;
     return this;
@@ -305,13 +328,14 @@ public class FileVersion {
         Objects.equals(this.created, fileVersion.created) &&
         Objects.equals(this.modified, fileVersion.modified) &&
         Objects.equals(this.uploaded, fileVersion.uploaded) &&
+        Objects.equals(this.accessed, fileVersion.accessed) &&
         Objects.equals(this.flags, fileVersion.flags) &&
         Objects.equals(this.ownerId, fileVersion.ownerId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(version, uploadedBy, id, name, size, created, modified, uploaded, flags, ownerId);
+    return Objects.hash(version, uploadedBy, id, name, size, created, modified, uploaded, accessed, flags, ownerId);
   }
 
 
@@ -328,6 +352,7 @@ public class FileVersion {
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
     sb.append("    modified: ").append(toIndentedString(modified)).append("\n");
     sb.append("    uploaded: ").append(toIndentedString(uploaded)).append("\n");
+    sb.append("    accessed: ").append(toIndentedString(accessed)).append("\n");
     sb.append("    flags: ").append(toIndentedString(flags)).append("\n");
     sb.append("    ownerId: ").append(toIndentedString(ownerId)).append("\n");
     sb.append("}");

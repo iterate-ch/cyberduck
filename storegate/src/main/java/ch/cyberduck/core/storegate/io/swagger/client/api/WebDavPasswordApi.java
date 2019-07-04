@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class WebDavPasswordApi {
   private ApiClient apiClient;
 
@@ -38,7 +38,7 @@ public class WebDavPasswordApi {
   }
 
   /**
-   * 
+   * Create a WebDAV password.
    * 
    * @param createWebDavPasswordRequest The CreateUserRequest (required)
    * @return WebDavPassword
@@ -49,7 +49,7 @@ public class WebDavPasswordApi {
       }
 
   /**
-   * 
+   * Create a WebDAV password.
    * 
    * @param createWebDavPasswordRequest The CreateUserRequest (required)
    * @return ApiResponse&lt;WebDavPassword&gt;
@@ -90,7 +90,7 @@ public class WebDavPasswordApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * 
+   * Create a WebDAV password and return a list of hostname alias
    * 
    * @param createWebDavPasswordRequest The CreateUserRequest (required)
    * @return WebDavAlias
@@ -101,7 +101,7 @@ public class WebDavPasswordApi {
       }
 
   /**
-   * 
+   * Create a WebDAV password and return a list of hostname alias
    * 
    * @param createWebDavPasswordRequest The CreateUserRequest (required)
    * @return ApiResponse&lt;WebDavAlias&gt;
@@ -142,9 +142,9 @@ public class WebDavPasswordApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
+   * Remove a WebDAV password to stop it from beeing used.
    * 
-   * 
-   * @param id The id to the specific password (required)
+   * @param id The WebDAV password id (required)
    * @throws ApiException if fails to make API call
    */
   public void webDavPasswordDelete(String id) throws ApiException {
@@ -153,9 +153,9 @@ public class WebDavPasswordApi {
   }
 
   /**
+   * Remove a WebDAV password to stop it from beeing used.
    * 
-   * 
-   * @param id The id to the specific password (required)
+   * @param id The WebDAV password id (required)
    * @throws ApiException if fails to make API call
    */
   public ApiResponse<Void> webDavPasswordDeleteWithHttpInfo(String id) throws ApiException {
@@ -194,7 +194,7 @@ public class WebDavPasswordApi {
     return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * 
+   * Get a list of all createtd WebDAV passwords.
    * 
    * @return List&lt;WebDavPassword&gt;
    * @throws ApiException if fails to make API call
@@ -204,7 +204,7 @@ public class WebDavPasswordApi {
       }
 
   /**
-   * 
+   * Get a list of all createtd WebDAV passwords.
    * 
    * @return ApiResponse&lt;List&lt;WebDavPassword&gt;&gt;
    * @throws ApiException if fails to make API call

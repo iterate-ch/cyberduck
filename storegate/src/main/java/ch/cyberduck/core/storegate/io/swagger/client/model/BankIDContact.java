@@ -20,64 +20,53 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 
  */
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
-public class MediaContentList {
-  @JsonProperty("locale")
-  private String locale = null;
+public class BankIDContact {
+  @JsonProperty("name")
+  private String name = null;
 
-  @JsonProperty("media")
-  private Map<String, String> media = null;
+  @JsonProperty("ssn")
+  private String ssn = null;
 
-  public MediaContentList locale(String locale) {
-    this.locale = locale;
+  public BankIDContact name(String name) {
+    this.name = name;
     return this;
   }
 
    /**
    * 
-   * @return locale
+   * @return name
   **/
   @ApiModelProperty(value = "")
-  public String getLocale() {
-    return locale;
+  public String getName() {
+    return name;
   }
 
-  public void setLocale(String locale) {
-    this.locale = locale;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public MediaContentList media(Map<String, String> media) {
-    this.media = media;
-    return this;
-  }
-
-  public MediaContentList putMediaItem(String key, String mediaItem) {
-    if (this.media == null) {
-      this.media = new HashMap<String, String>();
-    }
-    this.media.put(key, mediaItem);
+  public BankIDContact ssn(String ssn) {
+    this.ssn = ssn;
     return this;
   }
 
    /**
    * 
-   * @return media
+   * @return ssn
   **/
   @ApiModelProperty(value = "")
-  public Map<String, String> getMedia() {
-    return media;
+  public String getSsn() {
+    return ssn;
   }
 
-  public void setMedia(Map<String, String> media) {
-    this.media = media;
+  public void setSsn(String ssn) {
+    this.ssn = ssn;
   }
 
 
@@ -89,24 +78,24 @@ public class MediaContentList {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MediaContentList mediaContentList = (MediaContentList) o;
-    return Objects.equals(this.locale, mediaContentList.locale) &&
-        Objects.equals(this.media, mediaContentList.media);
+    BankIDContact bankIDContact = (BankIDContact) o;
+    return Objects.equals(this.name, bankIDContact.name) &&
+        Objects.equals(this.ssn, bankIDContact.ssn);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(locale, media);
+    return Objects.hash(name, ssn);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MediaContentList {\n");
+    sb.append("class BankIDContact {\n");
     
-    sb.append("    locale: ").append(toIndentedString(locale)).append("\n");
-    sb.append("    media: ").append(toIndentedString(media)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    ssn: ").append(toIndentedString(ssn)).append("\n");
     sb.append("}");
     return sb.toString();
   }
