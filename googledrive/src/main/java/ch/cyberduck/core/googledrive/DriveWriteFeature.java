@@ -153,9 +153,6 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                                     case HttpStatus.SC_CREATED:
                                         try (JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8))) {
                                             reader.beginObject();
-                                            String key = null;
-                                            String secret = null;
-                                            String token = null;
                                             while(reader.hasNext()) {
                                                 final String name = reader.nextName();
                                                 final String value = reader.nextString();
