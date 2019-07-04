@@ -1,0 +1,65 @@
+package ch.cyberduck.core.storegate;
+
+/*
+ * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Lock;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
+import ch.cyberduck.core.storegate.io.swagger.client.api.FileLocksApi;
+import ch.cyberduck.core.storegate.io.swagger.client.model.FileLock;
+import ch.cyberduck.core.storegate.io.swagger.client.model.FileLockRequest;
+
+import org.joda.time.DateTime;
+
+public class StoregateLockFeature implements Lock {
+
+    private final StoregateSession session;
+    private StoregateIdProvider fileid;
+
+    public StoregateLockFeature(final StoregateSession session, final StoregateIdProvider fileid) {
+        this.session = session;
+        this.fileid = fileid;
+    }
+
+    @Override
+    public Object lock(final Path file) throws BackgroundException {
+        try {
+            final FileLockRequest request = new FileLockRequest();
+            request.setExpire(new DateTime().plusMillis(PreferencesFactory.get().getInteger("storegate.lock.ttl")));
+            request.setOwner(session.getHost().getCredentials().getUsername());
+            final FileLock lock = new FileLocksApi(this.session.getClient()).fileLocksCreateLock(fileid.getFileid(file,
+                new DisabledListProgressListener()), request);
+            return lock.getLockId();
+        }
+        catch(ApiException e) {
+            throw new StoregateExceptionMappingService().map(e);
+        }
+    }
+
+    @Override
+    public void unlock(final Path file, final Object token) throws BackgroundException {
+        try {
+            new FileLocksApi(this.session.getClient()).fileLocksDeleteLock(fileid.getFileid(file,
+                new DisabledListProgressListener()), (String) token);
+        }
+        catch(ApiException e) {
+            throw new StoregateExceptionMappingService().map(e);
+        }
+    }
+}
