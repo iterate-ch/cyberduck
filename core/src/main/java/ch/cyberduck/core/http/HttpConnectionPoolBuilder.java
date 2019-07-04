@@ -246,7 +246,8 @@ public class HttpConnectionPoolBuilder {
         final PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(registry);
         manager.setMaxTotal(preferences.getInteger("http.connections.total"));
         manager.setDefaultMaxPerRoute(preferences.getInteger("http.connections.route"));
-        manager.setValidateAfterInactivity(5000);
+        // Detect connections that have become stale (half-closed) while kept inactive in the pool
+        manager.setValidateAfterInactivity(preferences.getInteger("http.connections.stale.check.ms"));
         return manager;
     }
 }

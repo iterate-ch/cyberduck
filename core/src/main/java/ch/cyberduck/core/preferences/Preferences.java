@@ -602,6 +602,7 @@ public abstract class Preferences implements Locales {
          */
         this.setDefault("http.connections.route", String.valueOf(10));
         this.setDefault("http.connections.reuse", String.valueOf(true));
+        this.setDefault("http.connections.stale.check.ms", String.valueOf(5000));
         /*
           Total number of connections in the pool
          */
