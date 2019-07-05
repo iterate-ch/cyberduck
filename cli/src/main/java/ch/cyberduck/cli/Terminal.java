@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
@@ -69,9 +70,11 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistryFactory;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.DeleteWorker;
+import ch.cyberduck.core.worker.LoadVaultWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
 
@@ -86,6 +89,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -263,6 +267,24 @@ public class Terminal {
             }
             else {
                 remote = new CommandLinePathParser(input).parse(uri);
+            }
+            if(input.hasOption(TerminalOptionsBuilder.Params.vault.name())) {
+                final Path vault;
+                if(StringUtils.startsWith(input.getOptionValue(action.name()), TildePathExpander.PREFIX)) {
+                    final Home home = source.getFeature(Home.class);
+                    vault = new TildePathExpander(home.find()).expand(new Path(input.getOptionValue(action.name()), EnumSet.of(Path.Type.directory, Path.Type.vault)));
+                }
+                else {
+                    vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory, Path.Type.vault));
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Attempting to load vault from %s", vault));
+                }
+                final LoadVaultWorker worker = new LoadVaultWorker(new LoadingVaultLookupListener(source.getVault(),
+                    PasswordStoreFactory.get(), new TerminalPasswordCallback()), vault);
+                if(!this.execute(new TerminalBackgroundAction<Vault>(controller, source, worker))) {
+                    return Exit.failure;
+                }
             }
             switch(action) {
                 case edit:

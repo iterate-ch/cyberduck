@@ -140,6 +140,10 @@ public final class TerminalOptionsBuilder {
         options.addOption(Option.builder()
             .longOpt(Params.nokeychain.name())
             .desc("Do not save passwords in keychain").build());
+        options.addOption(Option.builder()
+            .longOpt(Params.vault.name())
+            .desc("Unlock vault")
+            .hasArg().argName("path").build());
 
         final StringBuilder actions = new StringBuilder("Transfer actions for existing files").append(StringUtils.LF);
         actions.append("Downloads and uploads:").append(StringUtils.LF);
@@ -189,6 +193,7 @@ public final class TerminalOptionsBuilder {
         throttle,
         nochecksum,
         nokeychain,
+        vault,
         existing,
         verbose,
         quiet,
