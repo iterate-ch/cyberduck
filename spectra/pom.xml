@@ -45,6 +45,12 @@
             <groupId>ch.iterate.spectralogic</groupId>
             <artifactId>ds3-sdk</artifactId>
             <version>5.0.7</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.woodstox</groupId>
+                    <artifactId>woodstox-core-asl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>
