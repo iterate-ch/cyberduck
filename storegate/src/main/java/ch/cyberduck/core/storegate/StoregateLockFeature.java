@@ -27,10 +27,10 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.FileLockRequest;
 
 import org.joda.time.DateTime;
 
-public class StoregateLockFeature implements Lock {
+public class StoregateLockFeature implements Lock<String> {
 
     private final StoregateSession session;
-    private StoregateIdProvider fileid;
+    private final StoregateIdProvider fileid;
 
     public StoregateLockFeature(final StoregateSession session, final StoregateIdProvider fileid) {
         this.session = session;
@@ -38,7 +38,7 @@ public class StoregateLockFeature implements Lock {
     }
 
     @Override
-    public Object lock(final Path file) throws BackgroundException {
+    public String lock(final Path file) throws BackgroundException {
         try {
             final FileLockRequest request = new FileLockRequest();
             request.setExpire(new DateTime().plusMillis(PreferencesFactory.get().getInteger("storegate.lock.ttl")));
@@ -48,18 +48,18 @@ public class StoregateLockFeature implements Lock {
             return lock.getLockId();
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map(e);
+            throw new StoregateExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
     }
 
     @Override
-    public void unlock(final Path file, final Object token) throws BackgroundException {
+    public void unlock(final Path file, final String token) throws BackgroundException {
         try {
             new FileLocksApi(this.session.getClient()).fileLocksDeleteLock(fileid.getFileid(file,
-                new DisabledListProgressListener()), (String) token);
+                new DisabledListProgressListener()), token);
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map(e);
+            throw new StoregateExceptionMappingService().map("Failure to write attributes of {0}", e, file);
         }
     }
 }
