@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import ch.cyberduck.core.storegate.io.swagger.client.model.BankIDContact;
 import ch.cyberduck.core.storegate.io.swagger.client.model.MediaFolder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -29,7 +30,7 @@ import org.joda.time.DateTime;
  * A enhanced shared mediaFolder
  */
 @ApiModel(description = "A enhanced shared mediaFolder")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class MediaShare {
   @JsonProperty("url")
   private String url = null;
@@ -78,6 +79,55 @@ public class MediaShare {
 
   @JsonProperty("allowComments")
   private Boolean allowComments = null;
+
+  @JsonProperty("bankIDContacts")
+  private List<BankIDContact> bankIDContacts = null;
+
+  /**
+   * Share AuthMethod
+   */
+  public enum AuthMethodEnum {
+    NUMBER_0(0),
+    
+    NUMBER_1(1),
+    
+    NUMBER_2(2);
+
+    private Integer value;
+
+    AuthMethodEnum(Integer value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public Integer getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static AuthMethodEnum fromValue(String text) {
+      for (AuthMethodEnum b : AuthMethodEnum.values()) {
+        if (String.valueOf(b.value).equals(text)) {
+          return b;
+        }
+      }
+      return null;
+    }
+  }
+
+  @JsonProperty("authMethod")
+  private AuthMethodEnum authMethod = null;
+
+  @JsonProperty("allowOfficeOnline")
+  private Boolean allowOfficeOnline = null;
+
+  @JsonProperty("allowOfficeOnlineEdit")
+  private Boolean allowOfficeOnlineEdit = null;
 
   public MediaShare url(String url) {
     this.url = url;
@@ -383,6 +433,86 @@ public class MediaShare {
     this.allowComments = allowComments;
   }
 
+  public MediaShare bankIDContacts(List<BankIDContact> bankIDContacts) {
+    this.bankIDContacts = bankIDContacts;
+    return this;
+  }
+
+  public MediaShare addBankIDContactsItem(BankIDContact bankIDContactsItem) {
+    if (this.bankIDContacts == null) {
+      this.bankIDContacts = new ArrayList<BankIDContact>();
+    }
+    this.bankIDContacts.add(bankIDContactsItem);
+    return this;
+  }
+
+   /**
+   * List of receivers
+   * @return bankIDContacts
+  **/
+  @ApiModelProperty(value = "List of receivers")
+  public List<BankIDContact> getBankIDContacts() {
+    return bankIDContacts;
+  }
+
+  public void setBankIDContacts(List<BankIDContact> bankIDContacts) {
+    this.bankIDContacts = bankIDContacts;
+  }
+
+  public MediaShare authMethod(AuthMethodEnum authMethod) {
+    this.authMethod = authMethod;
+    return this;
+  }
+
+   /**
+   * Share AuthMethod
+   * @return authMethod
+  **/
+  @ApiModelProperty(value = "Share AuthMethod")
+  public AuthMethodEnum getAuthMethod() {
+    return authMethod;
+  }
+
+  public void setAuthMethod(AuthMethodEnum authMethod) {
+    this.authMethod = authMethod;
+  }
+
+  public MediaShare allowOfficeOnline(Boolean allowOfficeOnline) {
+    this.allowOfficeOnline = allowOfficeOnline;
+    return this;
+  }
+
+   /**
+   * Allow files to be viewed in Office Online
+   * @return allowOfficeOnline
+  **/
+  @ApiModelProperty(value = "Allow files to be viewed in Office Online")
+  public Boolean isAllowOfficeOnline() {
+    return allowOfficeOnline;
+  }
+
+  public void setAllowOfficeOnline(Boolean allowOfficeOnline) {
+    this.allowOfficeOnline = allowOfficeOnline;
+  }
+
+  public MediaShare allowOfficeOnlineEdit(Boolean allowOfficeOnlineEdit) {
+    this.allowOfficeOnlineEdit = allowOfficeOnlineEdit;
+    return this;
+  }
+
+   /**
+   * Allow files to be edited in Office Online
+   * @return allowOfficeOnlineEdit
+  **/
+  @ApiModelProperty(value = "Allow files to be edited in Office Online")
+  public Boolean isAllowOfficeOnlineEdit() {
+    return allowOfficeOnlineEdit;
+  }
+
+  public void setAllowOfficeOnlineEdit(Boolean allowOfficeOnlineEdit) {
+    this.allowOfficeOnlineEdit = allowOfficeOnlineEdit;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -408,12 +538,16 @@ public class MediaShare {
         Objects.equals(this.uploadNotificationEmails, mediaShare.uploadNotificationEmails) &&
         Objects.equals(this.uploadHideContents, mediaShare.uploadHideContents) &&
         Objects.equals(this.mediaAllowDownload, mediaShare.mediaAllowDownload) &&
-        Objects.equals(this.allowComments, mediaShare.allowComments);
+        Objects.equals(this.allowComments, mediaShare.allowComments) &&
+        Objects.equals(this.bankIDContacts, mediaShare.bankIDContacts) &&
+        Objects.equals(this.authMethod, mediaShare.authMethod) &&
+        Objects.equals(this.allowOfficeOnline, mediaShare.allowOfficeOnline) &&
+        Objects.equals(this.allowOfficeOnlineEdit, mediaShare.allowOfficeOnlineEdit);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(url, mediaFolder, id, created, accessed, lastAccessed, ownerId, password, sentToEmails, accessLimit, accessUntil, allowUpload, uploadNotificationEmails, uploadHideContents, mediaAllowDownload, allowComments);
+    return Objects.hash(url, mediaFolder, id, created, accessed, lastAccessed, ownerId, password, sentToEmails, accessLimit, accessUntil, allowUpload, uploadNotificationEmails, uploadHideContents, mediaAllowDownload, allowComments, bankIDContacts, authMethod, allowOfficeOnline, allowOfficeOnlineEdit);
   }
 
 
@@ -438,6 +572,10 @@ public class MediaShare {
     sb.append("    uploadHideContents: ").append(toIndentedString(uploadHideContents)).append("\n");
     sb.append("    mediaAllowDownload: ").append(toIndentedString(mediaAllowDownload)).append("\n");
     sb.append("    allowComments: ").append(toIndentedString(allowComments)).append("\n");
+    sb.append("    bankIDContacts: ").append(toIndentedString(bankIDContacts)).append("\n");
+    sb.append("    authMethod: ").append(toIndentedString(authMethod)).append("\n");
+    sb.append("    allowOfficeOnline: ").append(toIndentedString(allowOfficeOnline)).append("\n");
+    sb.append("    allowOfficeOnlineEdit: ").append(toIndentedString(allowOfficeOnlineEdit)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class ExtendedUser {
   /**
    * Permission for common root
@@ -86,6 +86,9 @@ public class ExtendedUser {
   @JsonProperty("isAdmin")
   private Boolean isAdmin = null;
 
+  @JsonProperty("isSubAdmin")
+  private Boolean isSubAdmin = null;
+
   /**
    * Account status
    */
@@ -106,7 +109,9 @@ public class ExtendedUser {
     
     NUMBER_64(64),
     
-    NUMBER_128(128);
+    NUMBER_128(128),
+    
+    NUMBER_256(256);
 
     private Integer value;
 
@@ -247,6 +252,24 @@ public class ExtendedUser {
 
   public void setIsAdmin(Boolean isAdmin) {
     this.isAdmin = isAdmin;
+  }
+
+  public ExtendedUser isSubAdmin(Boolean isSubAdmin) {
+    this.isSubAdmin = isSubAdmin;
+    return this;
+  }
+
+   /**
+   * Is the user Admin
+   * @return isSubAdmin
+  **/
+  @ApiModelProperty(value = "Is the user Admin")
+  public Boolean isIsSubAdmin() {
+    return isSubAdmin;
+  }
+
+  public void setIsSubAdmin(Boolean isSubAdmin) {
+    this.isSubAdmin = isSubAdmin;
   }
 
   public ExtendedUser flags(FlagsEnum flags) {
@@ -408,6 +431,7 @@ public class ExtendedUser {
         Objects.equals(this.friendlyUsername, extendedUser.friendlyUsername) &&
         Objects.equals(this.id, extendedUser.id) &&
         Objects.equals(this.isAdmin, extendedUser.isAdmin) &&
+        Objects.equals(this.isSubAdmin, extendedUser.isSubAdmin) &&
         Objects.equals(this.flags, extendedUser.flags) &&
         Objects.equals(this.created, extendedUser.created) &&
         Objects.equals(this.lastLogin, extendedUser.lastLogin) &&
@@ -420,7 +444,7 @@ public class ExtendedUser {
 
   @Override
   public int hashCode() {
-    return Objects.hash(commonRootPermission, reservedSpaceSize, friendlyUsername, id, isAdmin, flags, created, lastLogin, email, username, firstName, lastName, company);
+    return Objects.hash(commonRootPermission, reservedSpaceSize, friendlyUsername, id, isAdmin, isSubAdmin, flags, created, lastLogin, email, username, firstName, lastName, company);
   }
 
 
@@ -434,6 +458,7 @@ public class ExtendedUser {
     sb.append("    friendlyUsername: ").append(toIndentedString(friendlyUsername)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    isAdmin: ").append(toIndentedString(isAdmin)).append("\n");
+    sb.append("    isSubAdmin: ").append(toIndentedString(isSubAdmin)).append("\n");
     sb.append("    flags: ").append(toIndentedString(flags)).append("\n");
     sb.append("    created: ").append(toIndentedString(created)).append("\n");
     sb.append("    lastLogin: ").append(toIndentedString(lastLogin)).append("\n");

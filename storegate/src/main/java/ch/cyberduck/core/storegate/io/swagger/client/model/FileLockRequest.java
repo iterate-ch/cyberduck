@@ -20,64 +20,54 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.joda.time.DateTime;
 
 /**
  * 
  */
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
-public class MediaContentList {
-  @JsonProperty("locale")
-  private String locale = null;
+public class FileLockRequest {
+  @JsonProperty("owner")
+  private String owner = null;
 
-  @JsonProperty("media")
-  private Map<String, String> media = null;
+  @JsonProperty("expire")
+  private DateTime expire = null;
 
-  public MediaContentList locale(String locale) {
-    this.locale = locale;
+  public FileLockRequest owner(String owner) {
+    this.owner = owner;
     return this;
   }
 
    /**
    * 
-   * @return locale
+   * @return owner
   **/
   @ApiModelProperty(value = "")
-  public String getLocale() {
-    return locale;
+  public String getOwner() {
+    return owner;
   }
 
-  public void setLocale(String locale) {
-    this.locale = locale;
+  public void setOwner(String owner) {
+    this.owner = owner;
   }
 
-  public MediaContentList media(Map<String, String> media) {
-    this.media = media;
-    return this;
-  }
-
-  public MediaContentList putMediaItem(String key, String mediaItem) {
-    if (this.media == null) {
-      this.media = new HashMap<String, String>();
-    }
-    this.media.put(key, mediaItem);
+  public FileLockRequest expire(DateTime expire) {
+    this.expire = expire;
     return this;
   }
 
    /**
    * 
-   * @return media
+   * @return expire
   **/
   @ApiModelProperty(value = "")
-  public Map<String, String> getMedia() {
-    return media;
+  public DateTime getExpire() {
+    return expire;
   }
 
-  public void setMedia(Map<String, String> media) {
-    this.media = media;
+  public void setExpire(DateTime expire) {
+    this.expire = expire;
   }
 
 
@@ -89,24 +79,24 @@ public class MediaContentList {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MediaContentList mediaContentList = (MediaContentList) o;
-    return Objects.equals(this.locale, mediaContentList.locale) &&
-        Objects.equals(this.media, mediaContentList.media);
+    FileLockRequest fileLockRequest = (FileLockRequest) o;
+    return Objects.equals(this.owner, fileLockRequest.owner) &&
+        Objects.equals(this.expire, fileLockRequest.expire);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(locale, media);
+    return Objects.hash(owner, expire);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MediaContentList {\n");
+    sb.append("class FileLockRequest {\n");
     
-    sb.append("    locale: ").append(toIndentedString(locale)).append("\n");
-    sb.append("    media: ").append(toIndentedString(media)).append("\n");
+    sb.append("    owner: ").append(toIndentedString(owner)).append("\n");
+    sb.append("    expire: ").append(toIndentedString(expire)).append("\n");
     sb.append("}");
     return sb.toString();
   }

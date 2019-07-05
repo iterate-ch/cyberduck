@@ -14,13 +14,14 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.FileContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileVersion;
 import ch.cyberduck.core.storegate.io.swagger.client.model.MoveFileRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.SearchFileContents;
+import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateFilePropertiesRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class FilesApi {
   private ApiClient apiClient;
 
@@ -581,12 +582,13 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (required)
-   * @param reversed Reverse list with oldest first (optional)
+   * @param sortExpression Sort expression (optional)
+   * @param reversed Reverse list with oldest first (Obsolete, only used if sortExpression is empty) (optional)
    * @return SearchFileContents
    * @throws ApiException if fails to make API call
    */
-  public SearchFileContents filesGetRecent(Integer pageIndex, Integer pageSize, Integer filter, Boolean reversed) throws ApiException {
-    return filesGetRecentWithHttpInfo(pageIndex, pageSize, filter, reversed).getData();
+  public SearchFileContents filesGetRecent(Integer pageIndex, Integer pageSize, Integer filter, String sortExpression, Boolean reversed) throws ApiException {
+    return filesGetRecentWithHttpInfo(pageIndex, pageSize, filter, sortExpression, reversed).getData();
       }
 
   /**
@@ -595,11 +597,12 @@ public class FilesApi {
    * @param pageIndex Index of page (required)
    * @param pageSize Max rows per page (required)
    * @param filter 0&#x3D;All, 1&#x3D;Folder, 2&#x3D;Image, 3&#x3D;Doc, 4&#x3D;Video, 5&#x3D;Media, 6&#x3D;Files (required)
-   * @param reversed Reverse list with oldest first (optional)
+   * @param sortExpression Sort expression (optional)
+   * @param reversed Reverse list with oldest first (Obsolete, only used if sortExpression is empty) (optional)
    * @return ApiResponse&lt;SearchFileContents&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<SearchFileContents> filesGetRecentWithHttpInfo(Integer pageIndex, Integer pageSize, Integer filter, Boolean reversed) throws ApiException {
+  public ApiResponse<SearchFileContents> filesGetRecentWithHttpInfo(Integer pageIndex, Integer pageSize, Integer filter, String sortExpression, Boolean reversed) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'pageIndex' is set
@@ -628,6 +631,7 @@ public class FilesApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageIndex", pageIndex));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "pageSize", pageSize));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "filter", filter));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "sortExpression", sortExpression));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "reversed", reversed));
 
     
@@ -949,5 +953,65 @@ public class FilesApi {
 
     GenericType<SearchFileContents> localVarReturnType = new GenericType<SearchFileContents>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
+  /**
+   * Update file properties
+   * 
+   * @param id  (required)
+   * @param updateFilePropertiesRequest  (required)
+   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
+   * @throws ApiException if fails to make API call
+   */
+  public ch.cyberduck.core.storegate.io.swagger.client.model.File filesUpdateFile(String id, UpdateFilePropertiesRequest updateFilePropertiesRequest) throws ApiException {
+    return filesUpdateFileWithHttpInfo(id, updateFilePropertiesRequest).getData();
+      }
+
+  /**
+   * Update file properties
+   * 
+   * @param id  (required)
+   * @param updateFilePropertiesRequest  (required)
+   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
+   * @throws ApiException if fails to make API call
+   */
+  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> filesUpdateFileWithHttpInfo(String id, UpdateFilePropertiesRequest updateFilePropertiesRequest) throws ApiException {
+    Object localVarPostBody = updateFilePropertiesRequest;
+    
+    // verify the required parameter 'id' is set
+    if (id == null) {
+      throw new ApiException(400, "Missing the required parameter 'id' when calling filesUpdateFile");
+    }
+    
+    // verify the required parameter 'updateFilePropertiesRequest' is set
+    if (updateFilePropertiesRequest == null) {
+      throw new ApiException(400, "Missing the required parameter 'updateFilePropertiesRequest' when calling filesUpdateFile");
+    }
+    
+    // create path and map variables
+    String localVarPath = "/v4/files/{id}"
+      .replaceAll("\\{" + "id" + "\\}", apiClient.escapeString(id.toString()));
+
+    // query params
+    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+    
+    
+    final String[] localVarAccepts = {
+      "application/json", "text/json"
+    };
+    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+    final String[] localVarContentTypes = {
+      "application/json", "text/json"
+    };
+    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+    String[] localVarAuthNames = new String[] { "oauth2" };
+
+    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
+    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
 }

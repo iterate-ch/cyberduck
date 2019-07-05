@@ -20,64 +20,33 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.joda.time.DateTime;
 
 /**
  * 
  */
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
-public class MediaContentList {
-  @JsonProperty("locale")
-  private String locale = null;
+public class UpdateFilePropertiesRequest {
+  @JsonProperty("accessed")
+  private DateTime accessed = null;
 
-  @JsonProperty("media")
-  private Map<String, String> media = null;
-
-  public MediaContentList locale(String locale) {
-    this.locale = locale;
+  public UpdateFilePropertiesRequest accessed(DateTime accessed) {
+    this.accessed = accessed;
     return this;
   }
 
    /**
-   * 
-   * @return locale
+   * The date and time the item was last accessed.
+   * @return accessed
   **/
-  @ApiModelProperty(value = "")
-  public String getLocale() {
-    return locale;
+  @ApiModelProperty(value = "The date and time the item was last accessed.")
+  public DateTime getAccessed() {
+    return accessed;
   }
 
-  public void setLocale(String locale) {
-    this.locale = locale;
-  }
-
-  public MediaContentList media(Map<String, String> media) {
-    this.media = media;
-    return this;
-  }
-
-  public MediaContentList putMediaItem(String key, String mediaItem) {
-    if (this.media == null) {
-      this.media = new HashMap<String, String>();
-    }
-    this.media.put(key, mediaItem);
-    return this;
-  }
-
-   /**
-   * 
-   * @return media
-  **/
-  @ApiModelProperty(value = "")
-  public Map<String, String> getMedia() {
-    return media;
-  }
-
-  public void setMedia(Map<String, String> media) {
-    this.media = media;
+  public void setAccessed(DateTime accessed) {
+    this.accessed = accessed;
   }
 
 
@@ -89,24 +58,22 @@ public class MediaContentList {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    MediaContentList mediaContentList = (MediaContentList) o;
-    return Objects.equals(this.locale, mediaContentList.locale) &&
-        Objects.equals(this.media, mediaContentList.media);
+    UpdateFilePropertiesRequest updateFilePropertiesRequest = (UpdateFilePropertiesRequest) o;
+    return Objects.equals(this.accessed, updateFilePropertiesRequest.accessed);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(locale, media);
+    return Objects.hash(accessed);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class MediaContentList {\n");
+    sb.append("class UpdateFilePropertiesRequest {\n");
     
-    sb.append("    locale: ").append(toIndentedString(locale)).append("\n");
-    sb.append("    media: ").append(toIndentedString(media)).append("\n");
+    sb.append("    accessed: ").append(toIndentedString(accessed)).append("\n");
     sb.append("}");
     return sb.toString();
   }

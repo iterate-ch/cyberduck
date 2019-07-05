@@ -20,32 +20,36 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.DateTime;
 
 /**
- * A CreateMediaItemRequest request object
+ * 
  */
-@ApiModel(description = "A CreateMediaItemRequest request object")
+@ApiModel(description = "")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
-public class CreateMediaItemRequest {
+public class FileLock {
   @JsonProperty("fileId")
   private String fileId = null;
 
-  @JsonProperty("description")
-  private String description = null;
+  @JsonProperty("lockId")
+  private String lockId = null;
 
-  @JsonProperty("transformAngle")
-  private Integer transformAngle = null;
+  @JsonProperty("owner")
+  private String owner = null;
 
-  public CreateMediaItemRequest fileId(String fileId) {
+  @JsonProperty("expire")
+  private DateTime expire = null;
+
+  public FileLock fileId(String fileId) {
     this.fileId = fileId;
     return this;
   }
 
    /**
-   * The Name
+   * 
    * @return fileId
   **/
-  @ApiModelProperty(value = "The Name")
+  @ApiModelProperty(value = "")
   public String getFileId() {
     return fileId;
   }
@@ -54,40 +58,58 @@ public class CreateMediaItemRequest {
     this.fileId = fileId;
   }
 
-  public CreateMediaItemRequest description(String description) {
-    this.description = description;
-    return this;
-  }
-
-   /**
-   * The Description
-   * @return description
-  **/
-  @ApiModelProperty(value = "The Description")
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public CreateMediaItemRequest transformAngle(Integer transformAngle) {
-    this.transformAngle = transformAngle;
+  public FileLock lockId(String lockId) {
+    this.lockId = lockId;
     return this;
   }
 
    /**
    * 
-   * @return transformAngle
+   * @return lockId
   **/
   @ApiModelProperty(value = "")
-  public Integer getTransformAngle() {
-    return transformAngle;
+  public String getLockId() {
+    return lockId;
   }
 
-  public void setTransformAngle(Integer transformAngle) {
-    this.transformAngle = transformAngle;
+  public void setLockId(String lockId) {
+    this.lockId = lockId;
+  }
+
+  public FileLock owner(String owner) {
+    this.owner = owner;
+    return this;
+  }
+
+   /**
+   * 
+   * @return owner
+  **/
+  @ApiModelProperty(value = "")
+  public String getOwner() {
+    return owner;
+  }
+
+  public void setOwner(String owner) {
+    this.owner = owner;
+  }
+
+  public FileLock expire(DateTime expire) {
+    this.expire = expire;
+    return this;
+  }
+
+   /**
+   * 
+   * @return expire
+  **/
+  @ApiModelProperty(value = "")
+  public DateTime getExpire() {
+    return expire;
+  }
+
+  public void setExpire(DateTime expire) {
+    this.expire = expire;
   }
 
 
@@ -99,26 +121,28 @@ public class CreateMediaItemRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    CreateMediaItemRequest createMediaItemRequest = (CreateMediaItemRequest) o;
-    return Objects.equals(this.fileId, createMediaItemRequest.fileId) &&
-        Objects.equals(this.description, createMediaItemRequest.description) &&
-        Objects.equals(this.transformAngle, createMediaItemRequest.transformAngle);
+    FileLock fileLock = (FileLock) o;
+    return Objects.equals(this.fileId, fileLock.fileId) &&
+        Objects.equals(this.lockId, fileLock.lockId) &&
+        Objects.equals(this.owner, fileLock.owner) &&
+        Objects.equals(this.expire, fileLock.expire);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(fileId, description, transformAngle);
+    return Objects.hash(fileId, lockId, owner, expire);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class CreateMediaItemRequest {\n");
+    sb.append("class FileLock {\n");
     
     sb.append("    fileId: ").append(toIndentedString(fileId)).append("\n");
-    sb.append("    description: ").append(toIndentedString(description)).append("\n");
-    sb.append("    transformAngle: ").append(toIndentedString(transformAngle)).append("\n");
+    sb.append("    lockId: ").append(toIndentedString(lockId)).append("\n");
+    sb.append("    owner: ").append(toIndentedString(owner)).append("\n");
+    sb.append("    expire: ").append(toIndentedString(expire)).append("\n");
     sb.append("}");
     return sb.toString();
   }

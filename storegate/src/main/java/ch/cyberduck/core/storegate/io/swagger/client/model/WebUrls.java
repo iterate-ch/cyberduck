@@ -22,10 +22,10 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * An object containing session resources
+ * An list of urls to use
  */
-@ApiModel(description = "An object containing session resources")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@ApiModel(description = "An list of urls to use")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class WebUrls {
   @JsonProperty("filesUrl")
   private String filesUrl = null;
@@ -66,10 +66,10 @@ public class WebUrls {
   }
 
    /**
-   * A preformatted web url: https://{domain.com}/{0}?pid&#x3D;{pid}&amp;amp;rid&#x3D;{pid}
+   * A url to the files page
    * @return filesUrl
   **/
-  @ApiModelProperty(value = "A preformatted web url: https://{domain.com}/{0}?pid={pid}&amp;rid={pid}")
+  @ApiModelProperty(value = "A url to the files page")
   public String getFilesUrl() {
     return filesUrl;
   }
@@ -84,10 +84,10 @@ public class WebUrls {
   }
 
    /**
-   * 
+   * A url to the backup page
    * @return backupUrl
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "A url to the backup page")
   public String getBackupUrl() {
     return backupUrl;
   }
@@ -102,10 +102,10 @@ public class WebUrls {
   }
 
    /**
-   * 
+   * A url to the Common page
    * @return commonUrl
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "A url to the Common page")
   public String getCommonUrl() {
     return commonUrl;
   }
@@ -120,10 +120,10 @@ public class WebUrls {
   }
 
    /**
-   * 
+   * A url to the accounts page
    * @return accountUrl
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "A url to the accounts page")
   public String getAccountUrl() {
     return accountUrl;
   }
@@ -138,10 +138,10 @@ public class WebUrls {
   }
 
    /**
-   * 
+   * A url to the settings page
    * @return settingsUrl
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "A url to the settings page")
   public String getSettingsUrl() {
     return settingsUrl;
   }
@@ -156,10 +156,10 @@ public class WebUrls {
   }
 
    /**
-   * 
+   * A url to the backup management page
    * @return backupManagementUrl
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "A url to the backup management page")
   public String getBackupManagementUrl() {
     return backupManagementUrl;
   }
@@ -174,10 +174,10 @@ public class WebUrls {
   }
 
    /**
-   * 
+   * A url to the sync managemant page
    * @return syncManagementUrl
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "A url to the sync managemant page")
   public String getSyncManagementUrl() {
     return syncManagementUrl;
   }
@@ -192,10 +192,10 @@ public class WebUrls {
   }
 
    /**
-   * 
+   * A url to the support page
    * @return supportUrl
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "A url to the support page")
   public String getSupportUrl() {
     return supportUrl;
   }
@@ -210,10 +210,10 @@ public class WebUrls {
   }
 
    /**
-   * 
+   * A url for use with WOPI
    * @return wopiUrl
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "A url for use with WOPI")
   public String getWopiUrl() {
     return wopiUrl;
   }
@@ -228,10 +228,10 @@ public class WebUrls {
   }
 
    /**
-   * 
+   * A url to the partner information
    * @return partnerUrl
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "A url to the partner information")
   public String getPartnerUrl() {
     return partnerUrl;
   }
@@ -246,10 +246,10 @@ public class WebUrls {
   }
 
    /**
-   * 
+   * A url to the retailer information
    * @return retailerUrl
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "A url to the retailer information")
   public String getRetailerUrl() {
     return retailerUrl;
   }

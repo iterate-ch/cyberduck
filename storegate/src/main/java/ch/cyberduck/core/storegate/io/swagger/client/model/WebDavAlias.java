@@ -27,7 +27,7 @@ import java.util.List;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class WebDavAlias {
   @JsonProperty("id")
   private String id = null;
@@ -47,10 +47,10 @@ public class WebDavAlias {
   }
 
    /**
-   * 
+   * The Id
    * @return id
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The Id")
   public String getId() {
     return id;
   }
@@ -65,10 +65,10 @@ public class WebDavAlias {
   }
 
    /**
-   * 
+   * The username to use with WebDAV
    * @return username
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The username to use with WebDAV")
   public String getUsername() {
     return username;
   }
@@ -83,10 +83,10 @@ public class WebDavAlias {
   }
 
    /**
-   * 
+   * The Password
    * @return password
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The Password")
   public String getPassword() {
     return password;
   }
@@ -109,10 +109,10 @@ public class WebDavAlias {
   }
 
    /**
-   * 
+   * A list of WebDAV hostname alias
    * @return hostnames
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "A list of WebDAV hostname alias")
   public List<String> getHostnames() {
     return hostnames;
   }

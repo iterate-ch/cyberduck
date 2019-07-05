@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * Contains information about a sync client
  */
 @ApiModel(description = "Contains information about a sync client")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class SyncClient {
   @JsonProperty("created")
   private DateTime created = null;

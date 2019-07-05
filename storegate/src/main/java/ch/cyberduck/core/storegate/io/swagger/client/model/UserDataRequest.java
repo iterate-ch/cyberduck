@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class UserDataRequest {
   @JsonProperty("company")
   private String company = null;
@@ -51,10 +51,10 @@ public class UserDataRequest {
   }
 
    /**
-   * 
+   * Company name
    * @return company
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Company name")
   public String getCompany() {
     return company;
   }
@@ -69,10 +69,10 @@ public class UserDataRequest {
   }
 
    /**
-   * 
+   * Organization number
    * @return organizationNumber
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Organization number")
   public String getOrganizationNumber() {
     return organizationNumber;
   }
@@ -87,10 +87,10 @@ public class UserDataRequest {
   }
 
    /**
-   * 
+   * Social security number
    * @return socialSecurityNumber
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Social security number")
   public String getSocialSecurityNumber() {
     return socialSecurityNumber;
   }
@@ -105,10 +105,10 @@ public class UserDataRequest {
   }
 
    /**
-   * 
+   * Country code (ISO 3166-1 alpha-2)
    * @return countryCode
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Country code (ISO 3166-1 alpha-2)")
   public String getCountryCode() {
     return countryCode;
   }
@@ -123,10 +123,10 @@ public class UserDataRequest {
   }
 
    /**
-   * 
+   * VAT number
    * @return vatNumber
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "VAT number")
   public String getVatNumber() {
     return vatNumber;
   }
@@ -141,10 +141,10 @@ public class UserDataRequest {
   }
 
    /**
-   * 
+   * Subscribe to newsletter
    * @return newsletter
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Subscribe to newsletter")
   public Boolean isNewsletter() {
     return newsletter;
   }

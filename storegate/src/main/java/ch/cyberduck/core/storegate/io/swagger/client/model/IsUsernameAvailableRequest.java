@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class IsUsernameAvailableRequest {
   @JsonProperty("partnerId")
   private String partnerId = null;
@@ -42,10 +42,10 @@ public class IsUsernameAvailableRequest {
   }
 
    /**
-   * 
+   * The partnerId
    * @return partnerId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The partnerId")
   public String getPartnerId() {
     return partnerId;
   }
@@ -60,10 +60,10 @@ public class IsUsernameAvailableRequest {
   }
 
    /**
-   * 
+   * The retailerId
    * @return retailerId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The retailerId")
   public String getRetailerId() {
     return retailerId;
   }
@@ -78,10 +78,10 @@ public class IsUsernameAvailableRequest {
   }
 
    /**
-   * 
+   * The username to check
    * @return username
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The username to check")
   public String getUsername() {
     return username;
   }
