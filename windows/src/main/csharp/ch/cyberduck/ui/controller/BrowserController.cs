@@ -276,7 +276,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BookmarkImageGetter = _bookmarkModel.GetBookmarkImage;
             View.BookmarkNicknameGetter = _bookmarkModel.GetNickname;
             View.BookmarkHostnameGetter = _bookmarkModel.GetHostname;
-            View.BookmarkUrlGetter = _bookmarkModel.GetUrl;
+            View.BookmarkUsernameGetter = _bookmarkModel.GetUsername;
             View.BookmarkNotesGetter = _bookmarkModel.GetNotes;
             View.BookmarkStatusImageGetter = _bookmarkModel.GetBookmarkStatusImage;
 
