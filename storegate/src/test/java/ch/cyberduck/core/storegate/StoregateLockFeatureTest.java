@@ -43,7 +43,7 @@ public class StoregateLockFeatureTest extends AbstractStoregateTest {
         final Path fileInRoom = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(fileInRoom, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
-        final Object lock = new StoregateLockFeature(session, nodeid).lock(fileInRoom);
+        final String lock = new StoregateLockFeature(session, nodeid).lock(fileInRoom);
         assertNotNull(lock);
         try {
             new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInRoom), new DisabledLoginCallback(), new Delete.DisabledCallback());
