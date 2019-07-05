@@ -249,6 +249,7 @@ public class Terminal {
             }
             final String uri = input.getOptionValue(action.name());
             final Host host = new CommandLineUriParser(input, protocols).parse(uri);
+            host.setDefaultPath(null);
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input
             ), new TerminalLoginCallback(reader), new TerminalHostKeyVerifier(reader), progress);
             source = SessionPoolFactory.create(connect, transcript, cache, host,
