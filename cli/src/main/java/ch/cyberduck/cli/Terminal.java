@@ -257,7 +257,7 @@ public class Terminal {
                 new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
                 VaultRegistryFactory.create(new TerminalPasswordCallback()));
             final Path remote;
-            if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
+            if(StringUtils.startsWith(new CommandLinePathParser(input).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
                 final Home home = source.getFeature(Home.class);
                 remote = new TildePathExpander(home.find()).expand(new CommandLinePathParser(input).parse(uri));
             }
