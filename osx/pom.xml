@@ -65,7 +65,7 @@
                                     <goal>copy-dependencies</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/Resources</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/Frameworks</outputDirectory>
                                     <includeTypes>jar</includeTypes>
                                     <includeScope>runtime</includeScope>
                                     <stripClassifier>true</stripClassifier>
@@ -100,7 +100,7 @@
                                             <type>${project.packaging}</type>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/Resources</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/Frameworks</outputDirectory>
                                 </configuration>
                             </execution>
                             <execution>
