@@ -38,6 +38,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="$(CyberduckDir)App.config" Link="App.config" />
+    </ItemGroup>
+    
+    <ItemGroup>
         <Reference Include="@(IKVMReferences)" />
         <Reference Include="CustomOpenFileFolderDialog">
             <HintPath>$(TargetBuildDir)CustomOpenFileFolderDialog.dll</HintPath>
