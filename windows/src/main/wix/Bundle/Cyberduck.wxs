@@ -27,8 +27,8 @@
       </Directory>
     </Directory>
 
-    <Icon Id="icon.ico" SourceFile="cyberduck-application.ico"/>
-    <Icon Id="cd_document.ico" SourceFile="cyberduck-document.ico"/>
+    <Icon Id="icon.ico" SourceFile="$(var.cyberduck.TargetDir)/cyberduck-application.ico"/>
+    <Icon Id="cd_document.ico" SourceFile="$(var.cyberduck.TargetDir)/cyberduck-document.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico" />
     <Property Id="AUTOSTART" Value="0"/>
     <Property Id="REINSTALLMODE" Value="dmus"/>
@@ -98,7 +98,7 @@
         <File Source="$(var.cyberduck.TargetDir)/Cyberduck.exe.config" KeyPath="yes" Checksum="yes"/>
       </Component>
       <Component Id="ExceptionReporter.WinForms">
-        <File Source="$(var.cyberduck.TargetDir)/ExceptionReporter.WinForms.dll" KeyPath="yes" Checksum="yes">
+        <File Source="$(var.cyberduck.TargetDir)/ExceptionReporter.NET.dll" KeyPath="yes" Checksum="yes">
           <netfx:NativeImage Id="ngen_ExceptionReporter.WinForms" Platform="32bit" Priority="3" />
         </File>
       </Component>

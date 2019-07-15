@@ -1,31 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>3.9</ProductVersion>
+    <Platform>x86</Platform>
+    <ProductVersion>3.11</ProductVersion>
     <ProjectGuid>00858CE5-437F-46BE-8A2E-519B552DBF7D</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>Cyberduck-Installer-$(Version)</OutputName>
     <OutputType>Bundle</OutputType>
+    <DefineConstants>CyberduckDir=$(CyberduckDir);SetupDir=$(SetupDir)</DefineConstants>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
     <SignOutput>false</SignOutput>
-    <OutputPath>windows/target/debug</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <SignOutput>true</SignOutput>
-    <OutputPath>windows/target/release</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cyberduck Bootstrapper.wxs" />
-    <Compile Include="NetFx47.wxs" />
+    <Compile Include="$(CyberduckDir)NetFx47.wxs">
+      <Link>NetFx47.wxs</Link>
+    </Compile>
   </ItemGroup>
+  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
+  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
+    <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
+  </Target>
   <ItemGroup>
     <WixExtension Include="WixNetFxExtension">
       <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
@@ -41,7 +46,7 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Cyberduck.wixproj">
+    <ProjectReference Include="..\Bundle\Cyberduck.Bundle.wixproj">
       <Name>cyberduck-installer-msi</Name>
       <Project>{65ab4ce3-5af4-411a-928c-7ffd250c6d85}</Project>
       <Private>True</Private>
@@ -50,7 +55,6 @@
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(WixTargetsPath)" />
   <Target Name="UsesFrameworkSdk">
     <GetFrameworkSdkPath>
       <Output TaskParameter="Path" PropertyName="FrameworkSdkPath" />
