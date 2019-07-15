@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   ~ Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
   ~ https://cyberduck.io/
   ~
@@ -15,10 +15,10 @@
 
 <Project Sdk="Microsoft.NET.Sdk" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup>
-    <TargetFramework>net47</TargetFramework>
-      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net47</TargetFramework>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
 
     <ItemGroup>
         <Reference Include="Microsoft.VisualBasic" />
@@ -37,6 +37,35 @@
         <PackageReference Include="ExceptionReporter " />
         <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" />
         <PackageReference Include="Microsoft.Windows.SDK.Contracts" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Update="ch\cyberduck\properties\Settings.Designer.cs">
+            <DesignTimeSharedInput>True</DesignTimeSharedInput>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Settings.settings</DependentUpon>
+        </Compile>
+        <Compile Update="ch\cyberduck\ResourcesBundle.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ResourcesBundle.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Update="ch\cyberduck\ResourcesBundle.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
+            <CustomToolNamespace>Ch.Cyberduck</CustomToolNamespace>
+        </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="ch\cyberduck\properties\Settings.settings">
+            <Generator>SettingsSingleFileGenerator</Generator>
+            <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+            <CustomToolNamespace>Ch.Cyberduck.Properties</CustomToolNamespace>
+        </None>
     </ItemGroup>
 
 </Project>
