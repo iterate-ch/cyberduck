@@ -58,6 +58,9 @@
             <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
             <CustomToolNamespace>Ch.Cyberduck</CustomToolNamespace>
         </EmbeddedResource>
+        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.strings" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
+        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.strings.1" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
+        <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.txt" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
     </ItemGroup>
 
     <ItemGroup>
