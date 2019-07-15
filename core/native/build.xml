@@ -62,7 +62,7 @@
         </msbuild>
     </target>
 
-    <target name="test" depends="version">
+    <target name="test" depends="version" unless="${skip}">
         <!-- Create DLL Cyberduck.Core.Native -->
         <msbuild buildfile="../src/test/csharp/Cyberduck.Core.Test.csproj">
             <target name="Test"/>

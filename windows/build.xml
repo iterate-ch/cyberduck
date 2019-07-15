@@ -84,7 +84,7 @@
         </msbuild>
     </target>
 
-    <target name="test" depends="version">
+    <target name="test" depends="version" unless="${skip}">
         <msbuild buildfile="src/test/csharp/Cyberduck.Test.csproj">
             <target name="test"/>
 
