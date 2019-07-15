@@ -76,4 +76,10 @@
         </COMReference>
     </ItemGroup>
 
+    <ItemGroup>
+        <EmbeddedResource Update="ch\cyberduck\ui\winforms\*.resx">
+            <LogicalName>Ch.Cyberduck.Ui.Winforms.%(Filename).resources</LogicalName>
+        </EmbeddedResource>
+    </ItemGroup>
+
 </Project>
