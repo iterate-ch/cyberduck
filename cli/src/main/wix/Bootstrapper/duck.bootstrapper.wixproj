@@ -1,30 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>3.9</ProductVersion>
+    <Platform>x86</Platform>
+    <ProductVersion>3.11</ProductVersion>
     <ProjectGuid>ef87de0e-bc36-4d3c-8852-c8ad11d01f04</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>duck-$(Version)</OutputName>
     <OutputType>Bundle</OutputType>
-    <SignOutput>true</SignOutput>
-    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
-    <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
+    <DefineConstants>CyberduckDir=$(CyberduckDir);SetupDir=$(SetupDir)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>cli\windows\target\debug\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-    <DefineConstants>Debug</DefineConstants>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+  <SignOutput>false</SignOutput>
+    <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>cli\windows\target\release\</OutputPath>
-    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+  <SignOutput>true</SignOutput>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cyberduck CLI Bundle.wxs" />
-    <Compile Include="NetFx47.wxs" />
+    <Compile Include="$(CyberduckDir)NetFx47.wxs">
+      <Link>NetFx47.wxs</Link>
+    </Compile>
   </ItemGroup>
+  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
+  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
+    <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
+  </Target>
   <ItemGroup>
     <WixExtension Include="WixNetFxExtension">
       <HintPath>$(WixExtDir)\WixNetFxExtension.dll</HintPath>
@@ -40,7 +44,7 @@
     </WixExtension>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="Cyberduck CLI-WiX.wixproj">
+    <ProjectReference Include="..\Bundle\duck.bundle.wixproj">
       <Name>CLI-WiX</Name>
       <Project>{f6975079-f730-4a31-9909-de536e524764}</Project>
       <Private>True</Private>
@@ -49,7 +53,6 @@
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(WixTargetsPath)" />
 
   <Target Name="UsesFrameworkSdk">
     <GetFrameworkSdkPath>
@@ -82,7 +85,7 @@
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundleEngine)&quot;" />
   </Target>
 
-  <Target Name="SignBundle" DependsOnTargets="UsesSignTool">
+  <Target Name="SignBundle" Condition="'$(SignOutput)' == 'true'" DependsOnTargets="UsesSignTool">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;@(SignBundle)&quot;" />
   </Target>
 
