@@ -113,22 +113,6 @@
                                     </tasks>
                                 </configuration>
                             </execution>
-                            <execution>
-                                <id>run-ant-installer-target</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <tasks>
-                                        <property name="home" value="${main.basedir}" />
-                                        <property name="version" value="${project.version}" />
-                                        <property name="revision" value="${git.commitsCount}" />
-                                        <property name="git.revision" value="${git.revision}" />
-                                        <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
-                                    </tasks>
-                                </configuration>
-                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
