@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
+  ~ https://cyberduck.io/
+  ~
+  ~ This program is free software; you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  -->
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup Label="AssemblyInfo">
+        <Company>iterate GmbH</Company>
+        <Copyright>Copyright (c) 2001-2016 David Kocher. Copyright (c) 2011–2016 Yves Langisch</Copyright>
+        <Description>Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows.</Description>
+        <Version>7.0.2-SNAPSHOT</Version>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <CyberduckDir>$(MSBuildThisFileDirectory)</CyberduckDir>
+        <TargetBuildDir>$(ModulePath)target\</TargetBuildDir>
+
+        <BaseIntermediateOutputPath>$(TargetBuildDir)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+        <BaseOutputPath>$(TargetBuildDir)</BaseOutputPath>
+        <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
+        <OutputPath>$(BaseOutputPath)</OutputPath>
+
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    </PropertyGroup>
+
+    <ItemDefinitionGroup>
+        <CyberduckReference />
+    </ItemDefinitionGroup>
+
+    <ItemGroup>
+        <IKVM Include="IKVM.OpenJDK.Beans" />
+        <IKVM Include="IKVM.OpenJDK.Charsets" />
+        <IKVM Include="IKVM.OpenJDK.Core" />
+        <IKVM Include="IKVM.OpenJDK.Jdbc" />
+        <IKVM Include="IKVM.OpenJDK.Localedata" />
+        <IKVM Include="IKVM.OpenJDK.Security" />
+        <IKVM Include="IKVM.OpenJDK.Text" />
+        <IKVM Include="IKVM.OpenJDK.XML.API" />
+        <IKVM Include="IKVM.OpenJDK.XML.Bind" />
+        <IKVM Include="IKVM.OpenJDK.XML.Parse" />
+        <IKVM Include="IKVM.OpenJDK.XML.Transform" />
+        <IKVM Include="IKVM.OpenJDK.XML.XPath" />
+        <IKVM Include="IKVM.Runtime" />
+        <IKVM Include="IKVM.Runtime.JNI" />
+
+        <IKVMReferences Include="@(IKVM)" HintPath="$(TargetBuildDir)ikvm\bin\%(Identity).dll" />
+    </ItemGroup>
+</Project>
