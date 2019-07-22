@@ -28,7 +28,7 @@ import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.features.Home;
+import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
 import ch.cyberduck.core.googledrive.DriveProtocol;
@@ -69,9 +69,12 @@ import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.vault.LoadingVaultLookupListener;
 import ch.cyberduck.core.vault.VaultRegistryFactory;
 import ch.cyberduck.core.worker.CreateDirectoryWorker;
 import ch.cyberduck.core.worker.DeleteWorker;
+import ch.cyberduck.core.worker.HomeFinderWorker;
+import ch.cyberduck.core.worker.LoadVaultWorker;
 import ch.cyberduck.core.worker.SessionListWorker;
 import ch.cyberduck.core.worker.Worker;
 
@@ -86,6 +89,7 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -256,12 +260,33 @@ public class Terminal {
                 new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
                 VaultRegistryFactory.create(new TerminalPasswordCallback()));
             final Path remote;
-            if(new CommandLinePathParser(input).parse(uri).getAbsolute().startsWith(TildePathExpander.PREFIX)) {
-                final Home home = source.getFeature(Home.class);
-                remote = new TildePathExpander(home.find()).expand(new CommandLinePathParser(input).parse(uri));
+            if(StringUtils.startsWith(new CommandLinePathParser(input).parse(uri).getAbsolute(), TildePathExpander.PREFIX)) {
+                final Path home = this.execute(new TerminalBackgroundAction<Path>(controller, source, new HomeFinderWorker()));
+                remote = new TildePathExpander(home).expand(new CommandLinePathParser(input).parse(uri));
             }
             else {
                 remote = new CommandLinePathParser(input).parse(uri);
+            }
+            if(input.hasOption(TerminalOptionsBuilder.Params.vault.name())) {
+                final Path vault;
+                if(StringUtils.startsWith(input.getOptionValue(action.name()), TildePathExpander.PREFIX)) {
+                    final Path home = this.execute(new TerminalBackgroundAction<Path>(controller, source, new HomeFinderWorker()));
+                    vault = new TildePathExpander(home).expand(new Path(input.getOptionValue(action.name()), EnumSet.of(Path.Type.directory, Path.Type.vault)));
+                }
+                else {
+                    vault = new Path(input.getOptionValue(TerminalOptionsBuilder.Params.vault.name()), EnumSet.of(Path.Type.directory, Path.Type.vault));
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Attempting to load vault from %s", vault));
+                }
+                final LoadVaultWorker worker = new LoadVaultWorker(new LoadingVaultLookupListener(source.getVault(),
+                    PasswordStoreFactory.get(), new TerminalPasswordCallback()), vault);
+                try {
+                    this.execute(new TerminalBackgroundAction<Vault>(controller, source, worker));
+                }
+                catch(TerminalBackgroundException e) {
+                    return Exit.failure;
+                }
             }
             switch(action) {
                 case edit:
@@ -379,7 +404,10 @@ public class Terminal {
             input.hasOption(TerminalOptionsBuilder.Params.quiet.name())
                 ? new DisabledStreamListener() : new TerminalStreamListener(meter)
         );
-        if(!this.execute(action)) {
+        try {
+            this.execute(action);
+        }
+        catch(TerminalBackgroundException e) {
             return Exit.failure;
         }
         return Exit.success;
@@ -391,7 +419,10 @@ public class Terminal {
         final SessionBackgroundAction<AttributedList<Path>> action = new TerminalBackgroundAction<AttributedList<Path>>(
             controller,
             session, worker);
-        if(!this.execute(action)) {
+        try {
+            this.execute(action);
+        }
+        catch(TerminalBackgroundException e) {
             return Exit.failure;
         }
         return Exit.success;
@@ -410,7 +441,10 @@ public class Terminal {
             worker = new DeleteWorker(new TerminalLoginCallback(reader), files, cache, progress);
         }
         final SessionBackgroundAction<List<Path>> action = new TerminalBackgroundAction<List<Path>>(controller, session, worker);
-        if(!this.execute(action)) {
+        try {
+            this.execute(action);
+        }
+        catch(TerminalBackgroundException e) {
             return Exit.failure;
         }
         return Exit.success;
@@ -419,7 +453,10 @@ public class Terminal {
     protected Exit mkdir(final SessionPool session, final Path remote, final String region) {
         final CreateDirectoryWorker worker = new CreateDirectoryWorker(remote, region);
         final SessionBackgroundAction<Path> action = new TerminalBackgroundAction<Path>(controller, session, worker);
-        if(!this.execute(action)) {
+        try {
+            this.execute(action);
+        }
+        catch(TerminalBackgroundException e) {
             return Exit.failure;
         }
         return Exit.success;
@@ -452,7 +489,10 @@ public class Terminal {
             }
         }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor));
         final SessionBackgroundAction<Transfer> action = new TerminalBackgroundAction<Transfer>(controller, session, worker);
-        if(!this.execute(action)) {
+        try {
+            this.execute(action);
+        }
+        catch(TerminalBackgroundException e) {
             return Exit.failure;
         }
         Uninterruptibles.awaitUninterruptibly(lock);
@@ -463,24 +503,38 @@ public class Terminal {
         if(session == SessionPool.DISCONNECTED) {
             return;
         }
-        this.execute(new DisconnectBackgroundAction(controller, session) {
-            @Override
-            public void message(final String message) {
-                // No output
-            }
-        });
+        try {
+            this.execute(new DisconnectBackgroundAction(controller, session) {
+                @Override
+                public void message(final String message) {
+                    // No output
+                }
+            });
+        }
+        catch(TerminalBackgroundException e) {
+            // Ignore failure
+        }
     }
 
-    protected <T> boolean execute(final SessionBackgroundAction<T> action) {
+    protected <T> T execute(final SessionBackgroundAction<T> action) throws TerminalBackgroundException {
         try {
-            controller.background(action).get();
+            final T result = controller.background(action).get();
             if(action.hasFailed()) {
-                return false;
+                throw new TerminalBackgroundException();
             }
-            return true;
+            return result;
         }
         catch(InterruptedException | ExecutionException e) {
-            return false;
+            throw new TerminalBackgroundException(e);
+        }
+    }
+
+    private final class TerminalBackgroundException extends BackgroundException {
+        public TerminalBackgroundException() {
+        }
+
+        public TerminalBackgroundException(final Throwable cause) {
+            super(cause);
         }
     }
 
