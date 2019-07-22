@@ -91,7 +91,7 @@ public class BrickSession extends DAVSession {
         final String token = new BrickCredentialsConfigurator().configure(host).getToken();
         final BrickPairingSchedulerFeature scheduler = new BrickPairingSchedulerFeature(this, token, bookmark, cancel);
         // Operate in background until canceled
-        final DisabledConnectionCallback lock = new DisabledConnectionCallback() {
+        final ConnectionCallback lock = new DisabledConnectionCallback() {
             final CountDownLatch lock = new CountDownLatch(1);
 
             @Override

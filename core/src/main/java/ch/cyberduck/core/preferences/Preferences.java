@@ -802,6 +802,7 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("brick.pairing.nickname.configure", String.valueOf(false));
         this.setDefault("brick.pairing.hostname.configure", String.valueOf(true));
+        this.setDefault("brick.pairing.interval.ms", String.valueOf(1000L));
 
         /*
           NTLM Windows Domain
