@@ -338,7 +338,7 @@ public abstract class Session<C> implements TranscriptListener {
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
         }
-        return null;
+        return host.getProtocol().getFeature(type);
     }
 
     @Override

@@ -261,4 +261,7 @@ public interface Protocol extends Comparable<Protocol> {
         sensitive,
         insensitive
     }
+
+    @SuppressWarnings("unchecked")
+    <T> T getFeature(final Class<T> type);
 }

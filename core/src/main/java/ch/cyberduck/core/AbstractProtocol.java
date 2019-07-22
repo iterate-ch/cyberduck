@@ -338,4 +338,9 @@ public abstract class AbstractProtocol implements Protocol {
     public Case getCaseSensitivity() {
         return Protocol.Case.sensitive;
     }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        return null;
+    }
 }

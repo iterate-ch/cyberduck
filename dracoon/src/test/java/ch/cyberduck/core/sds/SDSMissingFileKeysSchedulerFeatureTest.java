@@ -70,8 +70,8 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
-        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
-        final List<UserFileKeySetRequest> processed = background.operate(new DisabledPasswordCallback() {
+        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
+        final List<UserFileKeySetRequest> processed = background.operate(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("eth[oh8uv4Eesij");
@@ -92,9 +92,9 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
     @Test(expected = LoginCanceledException.class)
     public void testWrongPassword() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
+        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
         final AtomicBoolean prompt = new AtomicBoolean();
-        final List<UserFileKeySetRequest> processed = background.operate(new DisabledPasswordCallback() {
+        final List<UserFileKeySetRequest> processed = background.operate(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 if(prompt.get()) {

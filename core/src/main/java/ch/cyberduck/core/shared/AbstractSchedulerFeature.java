@@ -17,16 +17,19 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Scheduler;
+import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.threading.BackgroundActionState;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
+public abstract class AbstractSchedulerFeature<R, Client> implements Scheduler<Void> {
     private static final Logger log = Logger.getLogger(AbstractSchedulerFeature.class);
 
     private final long period;
@@ -36,13 +39,17 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
         this.period = period;
     }
 
-    protected abstract R operate(PasswordCallback callback, Path file) throws BackgroundException;
-
     @Override
-    public R repeat(final PasswordCallback callback) {
+    public Void repeat(final SessionPool pool, final PasswordCallback callback) {
         scheduler.repeat(() -> {
             try {
-                this.operate(callback, null);
+                final Session<Client> session = pool.borrow(BackgroundActionState.running);
+                try {
+                    this.operate(session, callback, null);
+                }
+                finally {
+                    pool.release(session, null);
+                }
             }
             catch(ConnectionCanceledException e) {
                 log.warn("Cancel processing scheduled task. %s", e);
@@ -58,6 +65,8 @@ public abstract class AbstractSchedulerFeature<R> implements Scheduler<R> {
         }, period, TimeUnit.MILLISECONDS);
         return null;
     }
+
+    protected abstract R operate(Session<Client> session, PasswordCallback callback, Path file) throws BackgroundException;
 
     @Override
     public void shutdown() {
