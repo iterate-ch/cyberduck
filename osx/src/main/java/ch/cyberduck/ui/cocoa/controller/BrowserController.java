@@ -3134,7 +3134,7 @@ public class BrowserController extends WindowController
                                 securityLabel.setEnabled(pool.getFeature(X509TrustManager.class) != null);
                                 scheduler = pool.getFeature(Scheduler.class);
                                 if(scheduler != null) {
-                                    scheduler.repeat(PasswordCallbackFactory.get(BrowserController.this));
+                                    scheduler.repeat(pool, PasswordCallbackFactory.get(BrowserController.this));
                                 }
                             }
                         }

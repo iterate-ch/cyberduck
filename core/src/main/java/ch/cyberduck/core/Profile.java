@@ -472,6 +472,11 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public <T> T getFeature(final Class<T> type) {
+        return parent.getFeature(type);
+    }
+
+    @Override
     public boolean isUTCTimezone() {
         return parent.isUTCTimezone();
     }
