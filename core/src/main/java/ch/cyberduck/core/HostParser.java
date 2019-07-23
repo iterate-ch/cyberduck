@@ -457,6 +457,7 @@ public final class HostParser {
             return false;
         }
 
+        builder.append(append);
         return true;
     }
 
