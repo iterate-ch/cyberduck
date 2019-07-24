@@ -4,7 +4,8 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net47</TargetFramework>
         <UseWindowsForms>true</UseWindowsForms>
-        <Platforms>x86</Platforms>
+        <Platforms>x64</Platforms>
+        <PlatformTarget>x64</PlatformTarget>
         <ApplicationIcon>$(CyberduckDir)cyberduck-application.ico</ApplicationIcon>
         <DefaultItemExcludes>$(DefaultItemExcludes);ch/cyberduck/ui/winforms/commondialog/**</DefaultItemExcludes>
         <ApplicationManifest>ch\cyberduck\properties\app.manifest</ApplicationManifest>
@@ -41,7 +42,7 @@
     <ItemGroup>
         <None Include="$(CyberduckDir)App.config" Link="App.config" />
     </ItemGroup>
-    
+
     <ItemGroup>
         <Reference Include="@(IKVMReferences)" />
         <Reference Include="CustomOpenFileFolderDialog">
@@ -73,7 +74,6 @@
             <Lcid>0</Lcid>
             <WrapperTool>tlbimp</WrapperTool>
             <Isolated>False</Isolated>
-            <EmbedInteropTypes>False</EmbedInteropTypes>
         </COMReference>
     </ItemGroup>
 

@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-      <TargetFramework>net47</TargetFramework>
-      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-      <Platforms>x86</Platforms>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net47</TargetFramework>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Platforms>x64</Platforms>
+        <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
 
     <ItemGroup>
         <CyberduckReference Include="Bonjour" />
@@ -12,6 +13,7 @@
 
     <ItemGroup>
         <Reference Include="Microsoft.VisualBasic" />
+        <Reference Include="Microsoft.CSharp" />
         <Reference Include="System.Windows.Forms" />
 
         <Reference Include="@(IKVMReferences)" />
@@ -25,7 +27,6 @@
             <Lcid>0</Lcid>
             <WrapperTool>tlbimp</WrapperTool>
             <Isolated>False</Isolated>
-            <EmbedInteropTypes>False</EmbedInteropTypes>
         </COMReference>
     </ItemGroup>
 
