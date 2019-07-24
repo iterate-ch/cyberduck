@@ -88,11 +88,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.microsoft</groupId>
+            <groupId>net.adoptopenjdk</groupId>
             <artifactId>msvcr100</artifactId>
-            <classifier>native</classifier>
+            <classifier>x86_64</classifier>
             <type>dll</type>
-            <version>10.0.40219.325</version>
+            <version>8u192</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
