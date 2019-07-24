@@ -568,15 +568,14 @@ namespace Ch.Cyberduck.Ui.Controller
                             switch (option)
                             {
                                 case 0:
-                                    handler.setDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
-                                        new Application(System.Windows.Forms.Application.ExecutablePath));
+                                    handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
+                                        Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()));
                                     break;
                             }
                         });
                 }
                 // Register OAuth handler
-                handler.setDefaultHandler(
-                    new Application(System.Windows.Forms.Application.ExecutablePath), 
+                handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
                     Arrays.asList(PreferencesFactory.get().getProperty("oauth.handler.scheme")));
             }
         }
