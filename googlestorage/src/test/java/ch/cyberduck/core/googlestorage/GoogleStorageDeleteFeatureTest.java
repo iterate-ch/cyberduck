@@ -1,12 +1,12 @@
 package ch.cyberduck.core.googlestorage;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,11 +18,6 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3DirectoryFeature;
-import ch.cyberduck.core.s3.S3DisabledMultipartService;
-import ch.cyberduck.core.s3.S3FindFeature;
-import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -37,15 +32,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class S3DefaultDeleteFeatureTest extends AbstractGoogleStorageTest {
+public class GoogleStorageDeleteFeatureTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testDeleteContainer() throws Exception {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("US");
-        new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(container, null, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(container));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session).find(container));
+        new GoogleStorageDirectoryFeature(session).mkdir(container, null, new TransferStatus());
+        assertTrue(new GoogleStorageFindFeature(session).find(container));
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertFalse(new GoogleStorageFindFeature(session).find(container));
     }
 }

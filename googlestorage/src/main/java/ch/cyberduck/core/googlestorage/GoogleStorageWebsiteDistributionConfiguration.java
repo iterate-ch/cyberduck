@@ -32,27 +32,24 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.logging.LoggingConfiguration;
-import ch.cyberduck.core.s3.S3BucketListService;
-import ch.cyberduck.core.s3.S3ExceptionMappingService;
-import ch.cyberduck.core.s3.S3PathContainerService;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jets3t.service.ServiceException;
-import org.jets3t.service.model.GSWebsiteConfig;
-import org.jets3t.service.model.WebsiteConfig;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+
+import com.google.api.services.storage.model.Bucket;
 
 public class GoogleStorageWebsiteDistributionConfiguration implements DistributionConfiguration, Index {
 
     private final GoogleStorageSession session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new GoogleStoragePathContainerService();
 
     public GoogleStorageWebsiteDistributionConfiguration(final GoogleStorageSession session) {
         this.session = session;
@@ -82,10 +79,10 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final Distribution distribution = new Distribution(URI.create(String.format("%s://%s.%s",
-                Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(), this.getHostname())),
-                Distribution.DOWNLOAD, false);
+            Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(), this.getHostname())),
+            Distribution.DOWNLOAD, false);
         distribution.setUrl(URI.create(String.format("%s://%s.%s", Distribution.DOWNLOAD.getScheme(), containerService.getContainer(file).getName(),
-                this.getHostname())));
+            this.getHostname())));
         return new DistributionUrlProvider(distribution).toUrl(file);
     }
 
@@ -94,28 +91,26 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
         final Path container = containerService.getContainer(file);
         final URI origin = URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), this.getHostname()));
         try {
-            final WebsiteConfig configuration = session.getClient().getWebsiteConfigImpl(container.getName());
+            final Bucket configuration = session.getClient().buckets().get(container.getName()).execute();
+            final Bucket.Website website = configuration.getWebsite();
             final Distribution distribution = new Distribution(
-                    origin, method, configuration.isWebsiteConfigActive());
-            distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), this.getHostname())));
-            distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
-            distribution.setIndexDocument(configuration.getIndexDocumentSuffix());
-            final DistributionLogging logging = this.getFeature(DistributionLogging.class, method);
+                origin, method, website != null);
+            if(website != null) {
+                distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), this.getHostname())));
+                distribution.setStatus(LocaleFactory.localizedString("Deployed", "S3"));
+                distribution.setIndexDocument(website.getMainPageSuffix());
+            }
+            final Bucket.Logging logging = configuration.getLogging();
             if(logging != null) {
-                final LoggingConfiguration c = new GoogleStorageLoggingFeature(session).getConfiguration(container);
-                distribution.setLogging(c.isEnabled());
-                distribution.setLoggingContainer(c.getLoggingTarget());
-                distribution.setContainers(new S3BucketListService(session).list(
-                        new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()).toList());
+                distribution.setLogging(logging.getLogObjectPrefix() != null);
+                distribution.setLoggingContainer(logging.getLogBucket());
+                distribution.setContainers(new GoogleStorageBucketListService(session).list(
+                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener()).toList());
             }
             return distribution;
         }
-        catch(ServiceException e) {
-            // Not found. Website configuration is disabled.
-            final Distribution distribution = new Distribution(origin, method, false);
-            distribution.setStatus(e.getErrorMessage());
-            distribution.setUrl(URI.create(String.format("%s://%s.%s", method.getScheme(), container.getName(), this.getHostname())));
-            return distribution;
+        catch(IOException e) {
+            throw new GoogleStorageExceptionMappingService().map("Cannot read CDN configuration", e);
         }
     }
 
@@ -123,26 +118,21 @@ public class GoogleStorageWebsiteDistributionConfiguration implements Distributi
     public void write(final Path file, final Distribution distribution, final LoginCallback prompt) throws BackgroundException {
         final Path container = containerService.getContainer(file);
         try {
-            if(distribution.isEnabled()) {
-                String suffix = "index.html";
-                if(StringUtils.isNotBlank(distribution.getIndexDocument())) {
-                    suffix = PathNormalizer.name(distribution.getIndexDocument());
-                }
-                // Enable website endpoint
-                session.getClient().setWebsiteConfigImpl(container.getName(), new GSWebsiteConfig(suffix));
-                final DistributionLogging logging = this.getFeature(DistributionLogging.class, distribution.getMethod());
-                if(logging != null) {
-                    new GoogleStorageLoggingFeature(session).setConfiguration(container, new LoggingConfiguration(
-                            distribution.isEnabled(), distribution.getLoggingContainer()));
-                }
+            String suffix = "index.html";
+            if(StringUtils.isNotBlank(distribution.getIndexDocument())) {
+                suffix = PathNormalizer.name(distribution.getIndexDocument());
             }
-            else {
-                // Disable website endpoint
-                session.getClient().setWebsiteConfigImpl(container.getName(), new GSWebsiteConfig());
-            }
+            // Enable website endpoint
+            session.getClient().buckets().patch(container.getName(), new Bucket()
+                .setLogging(new Bucket.Logging()
+                    .setLogObjectPrefix(distribution.isEnabled() ? PreferencesFactory.get().getProperty("google.logging.prefix") : null)
+                    .setLogBucket(StringUtils.isNotBlank(distribution.getLoggingContainer()) ? distribution.getLoggingContainer() : container.getName()))
+                .setWebsite(
+                    distribution.isEnabled() ? new Bucket.Website().setMainPageSuffix(suffix) : null
+                )).execute();
         }
-        catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Cannot write website configuration", e);
+        catch(IOException e) {
+            throw new GoogleStorageExceptionMappingService().map("Cannot write website configuration", e);
         }
     }
 

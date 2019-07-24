@@ -29,11 +29,6 @@
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
-            <artifactId>s3</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
             <artifactId>oauth</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -21,11 +21,9 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.s3.S3BucketListService;
-import ch.cyberduck.core.s3.S3LocationFeature;
-import ch.cyberduck.core.s3.S3ObjectListService;
 
 public class GoogleStorageListService implements ListService {
+
     private final GoogleStorageSession session;
 
     public GoogleStorageListService(final GoogleStorageSession session) {
@@ -35,9 +33,9 @@ public class GoogleStorageListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
-            return new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(directory, listener);
+            return new GoogleStorageBucketListService(session).list(directory, listener);
         }
-        return new S3ObjectListService(session).list(directory, listener);
+        return new GoogleStorageObjectListService(session).list(directory, listener);
     }
 
     @Override
