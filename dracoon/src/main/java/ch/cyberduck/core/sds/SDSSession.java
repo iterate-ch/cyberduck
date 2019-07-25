@@ -208,7 +208,10 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
-            credentials.setUsername(account.getLogin());
+            switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
+                case oauth:
+                    credentials.setUsername(account.getLogin());
+            }
             userAccount.set(new UserAccountWrapper(account));
             keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
             final UserPrivateKey privateKey = new UserPrivateKey();
