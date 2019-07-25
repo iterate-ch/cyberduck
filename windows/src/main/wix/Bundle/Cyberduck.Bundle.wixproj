@@ -2,13 +2,12 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>3.11</ProductVersion>
     <ProjectGuid>65ab4ce3-5af4-411a-928c-7ffd250c6d85</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>Cyberduck-Installer-$(Version)</OutputName>
     <OutputType>Package</OutputType>
+    <InstallerPlatform>x64</InstallerPlatform>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <SignOutput>false</SignOutput>

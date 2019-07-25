@@ -9,6 +9,7 @@
         <ApplicationIcon>$(CyberduckDir)cyberduck-application.ico</ApplicationIcon>
         <DefaultItemExcludes>$(DefaultItemExcludes);ch/cyberduck/ui/winforms/commondialog/**</DefaultItemExcludes>
         <ApplicationManifest>ch\cyberduck\properties\app.manifest</ApplicationManifest>
+        <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     </PropertyGroup>
 
     <ItemGroup>

@@ -2,8 +2,6 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform>x86</Platform>
     <ProductVersion>3.11</ProductVersion>
     <ProjectGuid>ef87de0e-bc36-4d3c-8852-c8ad11d01f04</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
