@@ -1920,7 +1920,7 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     private void configureDefaultProtocolHandlerCombobox(final NSPopUpButton defaultProtocolHandlerCombobox, final Scheme protocol) {
-        final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol);
+        final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol.name());
         if(Application.notfound.equals(defaultHandler)) {
             defaultProtocolHandlerCombobox.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
             defaultProtocolHandlerCombobox.setEnabled(false);
@@ -1929,7 +1929,7 @@ public class PreferencesController extends ToolbarWindowController {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Default Protocol Handler for %s:%s", protocol, defaultHandler));
             }
-            for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol)) {
+            for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol.name())) {
                 defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
                 final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
                 item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(handler, 16));
@@ -1955,7 +1955,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
-            Arrays.asList(Scheme.ftp, Scheme.ftps), new Application(bundle)
+            new Application(bundle), Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name())
         );
     }
 
@@ -1973,7 +1973,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
-            Collections.singletonList(Scheme.sftp), new Application(bundle)
+            new Application(bundle), Collections.singletonList(Scheme.sftp.name())
         );
     }
 

@@ -22,7 +22,7 @@
 #import "ApplicationServices/ApplicationServices.h"
 #import <JavaNativeFoundation/JNFString.h>
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_setDefaultHandler
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_setDefaultHandlerForURLScheme
   (JNIEnv *env, jobject this, jstring scheme, jstring bundleIdentifier)
 {
 	LSSetDefaultHandlerForURLScheme(
@@ -31,7 +31,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHan
 	);
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getDefaultHandler
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getDefaultHandlerForURLScheme
   (JNIEnv *env, jobject this, jstring scheme)
 {
     NSString *bundleIdentifier = nil;
@@ -46,7 +46,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesScheme
     return result;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getAllHandlers
+JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getAllHandlersForURLScheme
   (JNIEnv *env, jobject this, jstring scheme)
 {
     NSArray *handlers = [(NSArray *)LSCopyAllHandlersForURLScheme(

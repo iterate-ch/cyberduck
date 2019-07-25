@@ -12,7 +12,7 @@ extern "C" {
  * Method:    setDefaultHandlerForURLScheme
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_setDefaultHandler
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_setDefaultHandlerForURLScheme
   (JNIEnv *, jobject, jstring, jstring);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHan
  * Method:    getDefaultHandlerForURLScheme
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getDefaultHandler
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getDefaultHandlerForURLScheme
   (JNIEnv *, jobject, jstring);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesScheme
  * Method:    getAllHandlersForURLScheme
  * Signature: (Ljava/lang/String;)[Ljava/lang/String;
  */
-JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getAllHandlers
+JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getAllHandlersForURLScheme
   (JNIEnv *, jobject, jstring);
 #ifdef __cplusplus
 }
