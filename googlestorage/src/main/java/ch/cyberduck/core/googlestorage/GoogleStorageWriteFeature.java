@@ -55,6 +55,7 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import com.google.gson.stream.JsonReader;
 
@@ -102,7 +103,21 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                         // POST /upload/storage/v1/b/myBucket/o
                         request = new HttpPost(String.format("%supload/storage/v1/b/%s/o?uploadType=resumable",
                             session.getClient().getRootUrl(), containerService.getContainer(file).getName()));
-                        request.setEntity(new StringEntity(String.format("{\"name\": \"%s\"}", containerService.getKey(file)),
+                        final StringBuilder metadata = new StringBuilder();
+                        metadata.append(String.format("{\"name\": \"%s\"", containerService.getKey(file)));
+                        metadata.append(",\"metadata\": {");
+                        for(Map.Entry<String, String> item : status.getMetadata().entrySet()) {
+                            metadata.append(String.format("\"%s\": \"%s\"", item.getKey(), item.getValue()));
+                        }
+                        metadata.append("}");
+                        if(StringUtils.isNotBlank(status.getMime())) {
+                            metadata.append(String.format(", \"contentType\": \"%s\"", status.getMime()));
+                        }
+                        if(StringUtils.isNotBlank(status.getStorageClass())) {
+                            metadata.append(String.format(", \"storageClass\": \"%s\"", status.getStorageClass()));
+                        }
+                        metadata.append("}");
+                        request.setEntity(new StringEntity(metadata.toString(),
                             ContentType.create("application/json", "UTF-8")));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             // Set to the media MIME type of the upload data to be transferred in subsequent requests.
