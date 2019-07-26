@@ -45,7 +45,7 @@
                                     <goal>copy-dependencies</goal>
                                 </goals>
                                 <configuration>
-                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/Frameworks</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/Resources</outputDirectory>
                                     <includeTypes>jar</includeTypes>
                                     <includeScope>runtime</includeScope>
                                     <stripClassifier>true</stripClassifier>
@@ -80,7 +80,7 @@
                                             <type>${project.packaging}</type>
                                         </artifactItem>
                                     </artifactItems>
-                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/Frameworks</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/duck.bundle/Contents/Resources</outputDirectory>
                                 </configuration>
                             </execution>
                             <execution>
