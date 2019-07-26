@@ -40,7 +40,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
     public void testMove() throws Exception {
         final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
-        assertNotNull(new GoogleStorageTouchFeature(session).touch(test, new TransferStatus().withMime("text/plain")).attributes().getVersionId());
+        assertNotNull(new GoogleStorageTouchFeature(session).touch(test, new TransferStatus().withMetadata(Collections.singletonMap("cyberduck", "set"))).attributes().getVersionId());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertFalse(new GoogleStorageMetadataFeature(session).getMetadata(test).isEmpty());
         final Path renamed = new Path(bucket, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -49,7 +49,7 @@ public class GoogleStorageMoveFeatureTest extends AbstractGoogleStorageTest {
         assertTrue(new GoogleStorageFindFeature(session).find(renamed));
         final Map<String, String> metadata = new GoogleStorageMetadataFeature(session).getMetadata(renamed);
         assertFalse(metadata.isEmpty());
-        assertEquals("text/plain", metadata.get("Content-Type"));
+        assertEquals("set", metadata.get("cyberduck"));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
