@@ -8,7 +8,6 @@ import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
-import ch.cyberduck.core.storegate.io.swagger.client.model.PasswordProtected;
 import ch.cyberduck.core.storegate.io.swagger.client.model.TwoFactorAuthentication;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class TwoFactorApi {
   private ApiClient apiClient;
 
@@ -37,7 +36,7 @@ public class TwoFactorApi {
   }
 
   /**
-   * 
+   * Commit the enabling
    * 
    * @param id The transaction id (required)
    * @throws ApiException if fails to make API call
@@ -48,7 +47,7 @@ public class TwoFactorApi {
   }
 
   /**
-   * 
+   * Commit the enabling
    * 
    * @param id The transaction id (required)
    * @throws ApiException if fails to make API call
@@ -89,7 +88,7 @@ public class TwoFactorApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * 
+   * Cancel the enabling
    * 
    * @param id The transaction id (required)
    * @throws ApiException if fails to make API call
@@ -100,7 +99,7 @@ public class TwoFactorApi {
   }
 
   /**
-   * 
+   * Cancel the enabling
    * 
    * @param id The transaction id (required)
    * @throws ApiException if fails to make API call
@@ -141,23 +140,23 @@ public class TwoFactorApi {
     return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
+   * Disable Two Factor authentication
    * 
-   * 
-   * @param password  (required)
+   * @param password The password (required)
    * @throws ApiException if fails to make API call
    */
-  public void twoFactorDisable(PasswordProtected password) throws ApiException {
+  public void twoFactorDisable(String password) throws ApiException {
 
     twoFactorDisableWithHttpInfo(password);
   }
 
   /**
+   * Disable Two Factor authentication
    * 
-   * 
-   * @param password  (required)
+   * @param password The password (required)
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<Void> twoFactorDisableWithHttpInfo(PasswordProtected password) throws ApiException {
+  public ApiResponse<Void> twoFactorDisableWithHttpInfo(String password) throws ApiException {
     Object localVarPostBody = password;
     
     // verify the required parameter 'password' is set
@@ -192,7 +191,7 @@ public class TwoFactorApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * 
+   * Start the Two Factor authenticatio enabling process
    * 
    * @param password  (required)
    * @return TwoFactorAuthentication
@@ -203,7 +202,7 @@ public class TwoFactorApi {
       }
 
   /**
-   * 
+   * Start the Two Factor authenticatio enabling process
    * 
    * @param password  (required)
    * @return ApiResponse&lt;TwoFactorAuthentication&gt;
@@ -244,7 +243,7 @@ public class TwoFactorApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * 
+   * Validate the enabling
    * 
    * @param id The transaction id (required)
    * @param code the code (required)
@@ -256,7 +255,7 @@ public class TwoFactorApi {
       }
 
   /**
-   * 
+   * Validate the enabling
    * 
    * @param id The transaction id (required)
    * @param code the code (required)

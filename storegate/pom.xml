@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>7.0.2-SNAPSHOT</version>
+        <version>7.0.3-SNAPSHOT</version>
     </parent>
     <artifactId>storegate</artifactId>
 
@@ -142,6 +142,7 @@
                                     <importMappings>
                                         <importMapping>File=ch.cyberduck.core.storegate.io.swagger.client.model.File</importMapping>
                                         <importMapping>UpdatePermissionRequest=ch.cyberduck.core.storegate.io.swagger.client.model.UpdatePermissionRequest</importMapping>
+                                        <importMapping>FileMetadata=ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata</importMapping>
                                     </importMappings>
                                 </configuration>
                             </execution>

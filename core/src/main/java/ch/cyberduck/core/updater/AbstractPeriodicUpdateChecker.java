@@ -52,22 +52,28 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
     @Override
     public Duration register() {
         log.info(String.format("Register update checker hook after %s", delay));
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if(log.isLoggable(Level.FINE)) {
-                    log.fine(String.format("Check for new updates after %s", delay));
-                }
-                PreferencesFactory.get().setProperty("update.check.timestamp", System.currentTimeMillis());
-                controller.invoke(new DefaultMainAction() {
-                    @Override
-                    public void run() {
-                        check(true);
+        try {
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    if(log.isLoggable(Level.FINE)) {
+                        log.fine(String.format("Check for new updates after %s", delay));
                     }
-                });
-            }
-        }, delay.toMillis(), delay.toMillis());
-        return delay;
+                    PreferencesFactory.get().setProperty("update.check.timestamp", System.currentTimeMillis());
+                    controller.invoke(new DefaultMainAction() {
+                        @Override
+                        public void run() {
+                            check(true);
+                        }
+                    });
+                }
+            }, delay.toMillis(), delay.toMillis());
+            return delay;
+        }
+        catch(IllegalStateException e) {
+            log.warning(String.format("Failure scheduling timer. %s", e.getMessage()));
+            return Duration.ZERO;
+        }
     }
 
     @Override

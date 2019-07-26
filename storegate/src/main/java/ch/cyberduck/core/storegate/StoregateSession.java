@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
@@ -179,6 +180,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         }
         if(type == AttributesFinder.class) {
             return (T) new StoregateAttributesFinderFeature(this, fileid);
+        }
+        if(type == Lock.class) {
+            return (T) new StoregateLockFeature(this, fileid);
         }
         return super._getFeature(type);
     }

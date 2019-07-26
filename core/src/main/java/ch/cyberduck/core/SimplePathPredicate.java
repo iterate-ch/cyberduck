@@ -15,16 +15,21 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.unicode.NFCNormalizer;
+import ch.cyberduck.core.unicode.UnicodeNormalizer;
+
 import java.util.Objects;
 
 public class SimplePathPredicate implements CacheReference<Path> {
+
+    private static final UnicodeNormalizer normalizer = new NFCNormalizer();
 
     private final Path.Type type;
     private final String path;
 
     public SimplePathPredicate(final Path file) {
         this.type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
-        this.path = file.getAbsolute();
+        this.path = normalizer.normalize(file.getAbsolute()).toString();
     }
 
     @Override

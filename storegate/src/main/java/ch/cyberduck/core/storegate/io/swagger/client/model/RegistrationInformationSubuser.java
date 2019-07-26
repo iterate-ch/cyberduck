@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class RegistrationInformationSubuser {
   @JsonProperty("partnerId")
   private String partnerId = null;
@@ -57,10 +57,10 @@ public class RegistrationInformationSubuser {
   }
 
    /**
-   * 
+   * The partnerId
    * @return partnerId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The partnerId")
   public String getPartnerId() {
     return partnerId;
   }
@@ -75,10 +75,10 @@ public class RegistrationInformationSubuser {
   }
 
    /**
-   * 
+   * The retailerId
    * @return retailerId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The retailerId")
   public String getRetailerId() {
     return retailerId;
   }
@@ -93,10 +93,10 @@ public class RegistrationInformationSubuser {
   }
 
    /**
-   * 
+   * The name of the admin
    * @return adminName
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The name of the admin")
   public String getAdminName() {
     return adminName;
   }
@@ -111,10 +111,10 @@ public class RegistrationInformationSubuser {
   }
 
    /**
-   * 
+   * The company of the admin
    * @return adminCompany
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "The company of the admin")
   public String getAdminCompany() {
     return adminCompany;
   }
@@ -129,10 +129,10 @@ public class RegistrationInformationSubuser {
   }
 
    /**
-   * 
+   * Salepackage name
    * @return salepackageName
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Salepackage name")
   public String getSalepackageName() {
     return salepackageName;
   }

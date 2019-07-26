@@ -15,26 +15,26 @@ package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.storegate.io.swagger.client.model.Content;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class ContentList {
   @JsonProperty("locale")
   private String locale = null;
 
   @JsonProperty("contents")
-  private List<Content> contents = null;
+  private Map<String, String> contents = null;
 
   public ContentList locale(String locale) {
     this.locale = locale;
@@ -54,16 +54,16 @@ public class ContentList {
     this.locale = locale;
   }
 
-  public ContentList contents(List<Content> contents) {
+  public ContentList contents(Map<String, String> contents) {
     this.contents = contents;
     return this;
   }
 
-  public ContentList addContentsItem(Content contentsItem) {
+  public ContentList putContentsItem(String key, String contentsItem) {
     if (this.contents == null) {
-      this.contents = new ArrayList<Content>();
+      this.contents = new HashMap<String, String>();
     }
-    this.contents.add(contentsItem);
+    this.contents.put(key, contentsItem);
     return this;
   }
 
@@ -72,11 +72,11 @@ public class ContentList {
    * @return contents
   **/
   @ApiModelProperty(value = "")
-  public List<Content> getContents() {
+  public Map<String, String> getContents() {
     return contents;
   }
 
-  public void setContents(List<Content> contents) {
+  public void setContents(Map<String, String> contents) {
     this.contents = contents;
   }
 

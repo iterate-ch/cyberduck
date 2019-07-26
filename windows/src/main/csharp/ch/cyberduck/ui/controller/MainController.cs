@@ -546,7 +546,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 var handler = SchemeHandlerFactory.get();
                 if (
-                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
+                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
                         new Application(System.Windows.Forms.Application.ExecutablePath)))
                 {
                     Core.Utils.CommandBox(LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
@@ -568,16 +568,15 @@ namespace Ch.Cyberduck.Ui.Controller
                             switch (option)
                             {
                                 case 0:
-                                    handler.setDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
-                                        new Application(System.Windows.Forms.Application.ExecutablePath));
+                                    handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
+                                        Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()));
                                     break;
                             }
                         });
                 }
                 // Register OAuth handler
-                handler.setDefaultHandlerForScheme(
-                    new Application(System.Windows.Forms.Application.ExecutablePath), 
-                    PreferencesFactory.get().getProperty("oauth.handler.scheme"));
+                handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
+                    Arrays.asList(PreferencesFactory.get().getProperty("oauth.handler.scheme")));
             }
         }
 

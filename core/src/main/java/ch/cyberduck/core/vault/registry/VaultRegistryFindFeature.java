@@ -70,7 +70,7 @@ public class VaultRegistryFindFeature implements Find {
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Found vault %s", directory));
                         }
-                        return lookup.load(directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER).getFeature(session, Find.class, proxy)
+                        return lookup.load(session, directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER).getFeature(session, Find.class, proxy)
                             .withCache(cache)
                             .find(file);
                     }

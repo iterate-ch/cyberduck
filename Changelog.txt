@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+7.0.2
+- [Bugfix] Failure configuring CloudFront distributions (S3) (#10755)
+- [Bugfix] Failure authenticating with STS (S3, Credentials from AWS Security Token Service) (#10746)
+- [Bugfix] Explicit argument to unlock vault prior an upload (CLI) (#10352)
+
 7.0.1
 - [Feature] Default protocol selection for NextCloud & ownCloud
 - [Feature] Create share links in NextCloud & ownCloud

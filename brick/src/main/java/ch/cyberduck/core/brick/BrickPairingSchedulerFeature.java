@@ -19,14 +19,14 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.AbstractSchedulerFeature;
 import ch.cyberduck.core.threading.CancelCallback;
+import ch.cyberduck.core.threading.ScheduledThreadPool;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,29 +43,48 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class BrickPairingSchedulerFeature extends AbstractSchedulerFeature<Credentials> {
+public class BrickPairingSchedulerFeature {
     private static final Logger log = Logger.getLogger(BrickPairingSchedulerFeature.class);
 
     private final BrickSession session;
     private final String token;
     private final Host host;
     private final CancelCallback cancel;
+    protected final ScheduledThreadPool scheduler = new ScheduledThreadPool();
 
     public BrickPairingSchedulerFeature(final BrickSession session, final String token, final Host host, final CancelCallback cancel) {
-        super(1000L);
         this.session = session;
         this.token = token;
         this.host = host;
         this.cancel = cancel;
     }
 
-    @Override
-    protected Credentials operate(final PasswordCallback callback, final Path file) throws BackgroundException {
-        // Query status
+    public Credentials repeat(final PasswordCallback callback) {
+        scheduler.repeat(() -> {
+            try {
+                this.operate(callback);
+            }
+            catch(ConnectionCanceledException e) {
+                log.warn("Cancel processing scheduled task. %s", e);
+                this.shutdown();
+            }
+            catch(BackgroundException e) {
+                log.warn(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
+            }
+            catch(Exception e) {
+                log.error(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
+                this.shutdown();
+            }
+        }, PreferencesFactory.get().getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS);
+        return null;
+    }
+
+    private Credentials operate(final PasswordCallback callback) throws BackgroundException {
         try {
             final HttpPost resource = new HttpPost(String.format("https://app.files.com/api/rest/v1/sessions/pairing_key/%s", token));
             resource.setHeader(HttpHeaders.ACCEPT, "application/json");
@@ -123,7 +142,7 @@ public class BrickPairingSchedulerFeature extends AbstractSchedulerFeature<Crede
                 case HttpStatus.SC_NOT_FOUND:
                     log.warn(String.format("Missing login for pairing key %s", token));
                     cancel.verify();
-                    break;
+                    return null;
                 default:
                     throw new DefaultHttpResponseExceptionMappingService().map(e);
             }
@@ -131,6 +150,9 @@ public class BrickPairingSchedulerFeature extends AbstractSchedulerFeature<Crede
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-        return null;
+    }
+
+    public void shutdown() {
+        scheduler.shutdown();
     }
 }

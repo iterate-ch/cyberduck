@@ -355,9 +355,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(type == Bulk.class) {
             return (T) new SDSEncryptionBulkFeature(this, nodeid);
         }
-        if(type == Scheduler.class) {
-            return (T) new SDSMissingFileKeysSchedulerFeature(this, nodeid);
-        }
         if(type == UrlProvider.class) {
             return (T) new SDSUrlProvider(this);
         }

@@ -46,4 +46,12 @@ public class HostParserTest {
         assertEquals("/room/key", new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
             "dracoon://duck.dracoon.com/room/key").getDefaultPath());
     }
+
+    @Test
+    public void testParseDefaultPathUmlautPercentEncoding() throws Exception {
+        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new SDSProtocol()))).read(
+            new Local("../profiles/DRACOON (Email Address).cyberduckprofile"));
+        assertEquals("/home/ä-test", new HostParser(new ProtocolFactory(new HashSet<>(Arrays.asList(new SDSProtocol(), profile)))).get(
+            "dracoon://duck.dracoon.com/home%2F%C3%A4-test").getDefaultPath());
+    }
 }

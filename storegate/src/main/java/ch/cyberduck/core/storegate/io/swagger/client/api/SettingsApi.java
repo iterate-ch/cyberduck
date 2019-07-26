@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-04-02T17:31:35.366+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class SettingsApi {
   private ApiClient apiClient;
 
@@ -85,96 +85,6 @@ public class SettingsApi {
     String[] localVarAuthNames = new String[] { "oauth2" };
 
     GenericType<ModelConfiguration> localVarReturnType = new GenericType<ModelConfiguration>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Internal, DO NOT USE
-   * 
-   * @return String
-   * @throws ApiException if fails to make API call
-   */
-  public String settingsGetOldAccountUrl() throws ApiException {
-    return settingsGetOldAccountUrlWithHttpInfo().getData();
-      }
-
-  /**
-   * Internal, DO NOT USE
-   * 
-   * @return ApiResponse&lt;String&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<String> settingsGetOldAccountUrlWithHttpInfo() throws ApiException {
-    Object localVarPostBody = null;
-    
-    // create path and map variables
-    String localVarPath = "/v4/settings/oldaccounturl";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    
-    
-    final String[] localVarAccepts = {
-      "application/json", "text/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "oauth2" };
-
-    GenericType<String> localVarReturnType = new GenericType<String>() {};
-    return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Internal, DO NOT USE
-   * 
-   * @return String
-   * @throws ApiException if fails to make API call
-   */
-  public String settingsGetOldSiteUrl() throws ApiException {
-    return settingsGetOldSiteUrlWithHttpInfo().getData();
-      }
-
-  /**
-   * Internal, DO NOT USE
-   * 
-   * @return ApiResponse&lt;String&gt;
-   * @throws ApiException if fails to make API call
-   */
-  public ApiResponse<String> settingsGetOldSiteUrlWithHttpInfo() throws ApiException {
-    Object localVarPostBody = null;
-    
-    // create path and map variables
-    String localVarPath = "/v4/settings/oldweburl";
-
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    
-    
-    final String[] localVarAccepts = {
-      "application/json", "text/json"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] { "oauth2" };
-
-    GenericType<String> localVarReturnType = new GenericType<String>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**

@@ -18,6 +18,7 @@ package ch.cyberduck.core.vault;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Vault;
 
@@ -26,9 +27,11 @@ import org.apache.log4j.Logger;
 public class VaultFinderListProgressListener extends IndexedListProgressListener {
     private static final Logger log = Logger.getLogger(VaultFinderListProgressListener.class);
 
+    private final Session<?> session;
     private final VaultLookupListener listener;
 
-    public VaultFinderListProgressListener(final VaultLookupListener listener) {
+    public VaultFinderListProgressListener(final Session<?> session, final VaultLookupListener listener) {
+        this.session = session;
         this.listener = listener;
     }
 
@@ -45,7 +48,7 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
                 log.info(String.format("Found master key %s", file));
             }
             try {
-                final Vault vault = listener.load(directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER);
+                final Vault vault = listener.load(session, directory, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, DefaultVaultRegistry.DEFAULT_PEPPER);
                 if(vault.equals(Vault.DISABLED)) {
                     return;
                 }
