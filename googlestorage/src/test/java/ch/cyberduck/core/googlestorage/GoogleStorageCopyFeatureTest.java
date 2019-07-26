@@ -40,14 +40,14 @@ public class GoogleStorageCopyFeatureTest extends AbstractGoogleStorageTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         test.attributes().setSize(0L);
-        new GoogleStorageTouchFeature(session).touch(test, new TransferStatus().withMime("application/cyberduck"));
+        new GoogleStorageTouchFeature(session).touch(test, new TransferStatus().withMime("application/cyberduck").withMetadata(Collections.singletonMap("cyberduck", "set")));
         final Path copy = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         new GoogleStorageCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertTrue(new GoogleStorageFindFeature(session).find(copy));
-        assertEquals("application/cyberduck",
-            new GoogleStorageMetadataFeature(session).getMetadata(copy).get("Content-Type"));
+        assertEquals("set",
+            new GoogleStorageMetadataFeature(session).getMetadata(copy).get("cyberduck"));
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
