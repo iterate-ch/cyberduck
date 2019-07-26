@@ -76,36 +76,38 @@ public class GoogleStorageObjectListService implements ListService {
                     .setDelimiter(String.valueOf(Path.DELIMITER))
                     .setPrefix(this.createPrefix(directory))
                     .execute();
-                for(StorageObject object : response.getItems()) {
-                    final String key = PathNormalizer.normalize(object.getName());
-                    if(String.valueOf(Path.DELIMITER).equals(key)) {
-                        log.warn(String.format("Skipping prefix %s", key));
-                        continue;
+                if(response.getItems() != null) {
+                    for(StorageObject object : response.getItems()) {
+                        final String key = PathNormalizer.normalize(object.getName());
+                        if(String.valueOf(Path.DELIMITER).equals(key)) {
+                            log.warn(String.format("Skipping prefix %s", key));
+                            continue;
+                        }
+                        if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
+                            // Placeholder object, skip
+                            hasDirectoryPlaceholder = true;
+                            continue;
+                        }
+                        if(!StringUtils.equals(lastKey, key)) {
+                            // Reset revision for next file
+                            revision = 0L;
+                        }
+                        final EnumSet<Path.Type> types = object.getName().endsWith(String.valueOf(Path.DELIMITER))
+                            ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
+                        final Path file;
+                        final PathAttributes attr = attributes.toAttributes(object);
+                        attr.setRevision(++revision);
+                        // Copy bucket location
+                        attr.setRegion(bucket.attributes().getRegion());
+                        if(null == delimiter) {
+                            file = new Path(String.format("%s%s", bucket.getAbsolute(), key), types, attr);
+                        }
+                        else {
+                            file = new Path(directory, PathNormalizer.name(key), types, attr);
+                        }
+                        objects.add(file);
+                        lastKey = key;
                     }
-                    if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
-                        // Placeholder object, skip
-                        hasDirectoryPlaceholder = true;
-                        continue;
-                    }
-                    if(!StringUtils.equals(lastKey, key)) {
-                        // Reset revision for next file
-                        revision = 0L;
-                    }
-                    final EnumSet<Path.Type> types = object.getName().endsWith(String.valueOf(Path.DELIMITER))
-                        ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
-                    final Path file;
-                    final PathAttributes attr = attributes.toAttributes(object);
-                    attr.setRevision(++revision);
-                    // Copy bucket location
-                    attr.setRegion(bucket.attributes().getRegion());
-                    if(null == delimiter) {
-                        file = new Path(String.format("%s%s", bucket.getAbsolute(), key), types, attr);
-                    }
-                    else {
-                        file = new Path(directory, PathNormalizer.name(key), types, attr);
-                    }
-                    objects.add(file);
-                    lastKey = key;
                 }
                 if(response.getPrefixes() != null) {
                     for(String prefix : response.getPrefixes()) {
