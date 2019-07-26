@@ -102,7 +102,7 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
                 }
             });
         }
-        attributes.setChecksum(Checksum.parse(object.getCrc32c()));
+        attributes.setChecksum(Checksum.parse(object.getMd5Hash()));
         if(object.getMetadata() != null) {
             attributes.setMetadata(object.getMetadata());
         }
