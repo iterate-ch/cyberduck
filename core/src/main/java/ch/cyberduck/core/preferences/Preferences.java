@@ -717,6 +717,9 @@ public abstract class Preferences implements Locales {
         this.setDefault("google.logging.prefix", "log");
         this.setDefault("cloudfront.logging.prefix", "logs/");
 
+        this.setDefault("googlestorage.storage.class", "multi_regional");
+
+
         this.setDefault("onedrive.listing.chunksize", String.valueOf(1000));
         /*
          * The size of each byte range MUST be a multiple of 320 KiB (327,680 bytes). Using a fragment size that does not

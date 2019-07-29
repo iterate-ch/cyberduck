@@ -19,10 +19,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Redundancy;
-import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-
-import org.jets3t.service.model.S3Object;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -35,8 +32,6 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
 
     private final GoogleStorageSession session;
 
-    private final Preferences preferences = PreferencesFactory.get();
-
     private final PathContainerService containerService
         = new GoogleStoragePathContainerService();
 
@@ -46,17 +41,16 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
 
     @Override
     public String getDefault() {
-        return PreferencesFactory.get().getProperty("s3.storage.class");
+        return PreferencesFactory.get().getProperty("googlestorage.storage.class");
     }
 
     @Override
     public List<String> getClasses() {
         return Arrays.asList(
-            S3Object.STORAGE_CLASS_STANDARD,
-            S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, // This storage class (IA, for infrequent access) is optimized for long-lived and less frequently accessed data
-            "ONEZONE_IA",
-            S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
-            S3Object.STORAGE_CLASS_GLACIER);
+            "MULTI_REGIONAL",
+            "REGIONAL",
+            "NEARLINE",
+            "COLDLINE");
     }
 
     @Override
