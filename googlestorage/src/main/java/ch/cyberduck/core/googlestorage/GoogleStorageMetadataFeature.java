@@ -45,7 +45,7 @@ public class GoogleStorageMetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getDefault(final Local local) {
-        return PreferencesFactory.get().getMap("s3.metadata.default");
+        return PreferencesFactory.get().getMap("googlestorage.metadata.default");
     }
 
     @Override

@@ -718,6 +718,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("cloudfront.logging.prefix", "logs/");
 
         this.setDefault("googlestorage.listing.chunksize", String.valueOf(1000));
+        this.setDefault("googlestorage.metadata.default", StringUtils.EMPTY);
         this.setDefault("googlestorage.storage.class", "multi_regional");
 
 
