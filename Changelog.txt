@@ -1,6 +1,11 @@
 Cyberduck
 https://cyberduck.io/
 
+7.1.0
+- [Feature] Support for storage classes (Google Storage)
+- [Feature] Support to select region (eu, us, asia) for new buckets (Google Storage)
+- [Bugfix] Number of buckets displayed in browser limited to 1000 (Google Storage)
+
 7.0.2
 - [Bugfix] Failure configuring CloudFront distributions (S3) (#10755)
 - [Bugfix] Failure authenticating with STS (S3, Credentials from AWS Security Token Service) (#10746)
