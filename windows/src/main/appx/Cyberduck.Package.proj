@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.Build.NoTargets">
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.Build.NoTargets" />
 
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework>
-    <Platform Condition="'$(Platform)' == ''">x86</Platform>
 
     <PackageName>iterate.37637C3DE32E5</PackageName>
     <Publisher>CN=F20B9811-19FC-4FBE-A8F6-A39E82A4FDE4</Publisher>
@@ -14,7 +14,7 @@
     <PackageDisplayName>Cyberduck</PackageDisplayName>
     <PackagePublisherDisplayName>iterate</PackagePublisherDisplayName>
 
-    <IntermediateOutputPath>$(IntermediateOutputPath)appx/$(Platform)/</IntermediateOutputPath>
+    <IntermediateOutputPath>$(IntermediateOutputPath)appx/</IntermediateOutputPath>
     <PackageFiles>$(IntermediateOutputPath)$(PackageName)/PackageFiles/</PackageFiles>
     <VFS>$(PackageFiles)VFS/</VFS>
     <PackageLayout>$(PackageFiles)</PackageLayout>
@@ -28,7 +28,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputFilename>$(AppxDirectory)Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
+    <OutputFilename>$(AppxDirectory)Cyberduck-$(Version).appx</OutputFilename>
   </PropertyGroup>
 
   <ItemGroup>
@@ -265,11 +265,6 @@
     </PropertyGroup>
   </Target>
 
-  <PropertyGroup>
-    <CoreBuildDependsOn>
-      _CopyAppXFilesToPackageLayout;UpdateAppxManifest;MakeAppx;SignAppx
-    </CoreBuildDependsOn>
-  </PropertyGroup>
   <Target Name="_CopyAppXFilesToPackageLayout">
     <Error Condition="!Exists(%(LayoutFile.FullPath))" Text="LayoutFile does not exist [%(LayoutFile.FullPath)]" />
     <Copy Condition="Exists(%(LayoutFile.Identity))" SourceFiles="@(LayoutFile)" DestinationFiles="@(LayoutFile->'%(PackagePath)')" SkipUnchangedFiles="true" />
@@ -280,10 +275,6 @@
     </ItemGroup>
     <Copy Condition="Exists(%(PdbToCopy.Identity))" SourceFiles="@(PdbToCopy)" DestinationFiles="@(PdbToCopy->'%(PackagePath)')" SkipUnchangedFiles="true" />
   </Target>
-
-  <!-- <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
-  <Target Name="Rebuild" DependsOnTargets="Build" />
-  <Target Name="Clean" /> -->
 
   <Target Name="UpdateAppxManifest">
     <FileUpdate Files="$(PackageLayout)\AppxManifest.xml"
@@ -300,4 +291,11 @@
   <Target Name="SignAppx" Condition="'$(Configuration)' == 'Release'" DependsOnTargets="UsesSignTool">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$(OutputFilename)&quot;"/>
   </Target>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.Build.NoTargets" />
+  <PropertyGroup>
+    <CoreBuildDependsOn>
+      _CopyAppXFilesToPackageLayout;UpdateAppxManifest;MakeAppx;SignAppx
+    </CoreBuildDependsOn>
+  </PropertyGroup>
 </Project>
