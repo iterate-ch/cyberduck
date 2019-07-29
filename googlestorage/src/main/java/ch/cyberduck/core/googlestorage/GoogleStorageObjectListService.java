@@ -73,7 +73,7 @@ public class GoogleStorageObjectListService implements ListService {
                     // lists all versions of an object as distinct results. The default is false
                     .setVersions(false)
                     .setMaxResults((long) chunksize)
-                    .setDelimiter(String.valueOf(Path.DELIMITER))
+                    .setDelimiter(delimiter)
                     .setPrefix(this.createPrefix(directory))
                     .execute();
                 if(response.getItems() != null) {
