@@ -52,7 +52,7 @@ public class GoogleStorageBucketListService implements ListService {
             String page = null;
             do {
                 response = session.getClient().buckets().list(session.getHost().getCredentials().getUsername())
-                    .setMaxResults(preferences.getLong("s3.listing.chunksize"))
+                    .setMaxResults(preferences.getLong("googlestorage.listing.chunksize"))
                     .setPageToken(page)
                     .execute();
                 for(Bucket item : response.getItems()) {

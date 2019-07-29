@@ -41,7 +41,7 @@ public class GoogleStorageSearchFeature implements Search {
         final AttributedList<Path> objects;
         try {
             objects = new GoogleStorageObjectListService(session).list(workdir, listener, null,
-                PreferencesFactory.get().getInteger("s3.listing.chunksize"));
+                PreferencesFactory.get().getInteger("googlestorage.listing.chunksize"));
         }
         catch(NotfoundException e) {
             return AttributedList.emptyList();

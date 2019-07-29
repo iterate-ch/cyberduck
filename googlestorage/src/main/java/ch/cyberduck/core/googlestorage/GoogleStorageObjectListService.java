@@ -55,7 +55,7 @@ public class GoogleStorageObjectListService implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return this.list(directory, listener, String.valueOf(Path.DELIMITER), preferences.getInteger("s3.listing.chunksize"));
+        return this.list(directory, listener, String.valueOf(Path.DELIMITER), preferences.getInteger("googlestorage.listing.chunksize"));
     }
 
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final String delimiter, final int chunksize) throws BackgroundException {
