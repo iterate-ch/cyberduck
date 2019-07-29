@@ -63,12 +63,6 @@
       <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(Win10SDKVerBinPath)x86\signtool.exe')">$(Win10SDKVerBinPath)x86\signtool.exe</SignToolPath>
     </PropertyGroup>
   </Target>
-  <Target Name="UsesSignTool" DependsOnTargets="UsesFrameworkSdk">
-    <PropertyGroup>
-      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(FrameworkSdkPath)bin\signtool.exe')">$(FrameworkSdkPath)bin\signtool.exe</SignToolPath>
-      <SignToolPath Condition="('@(SignToolPath)'=='') and Exists('$(WinSDK)\bin\x86\signtool.exe')">$(WinSDK)\bin\x86\signtool.exe</SignToolPath>
-    </PropertyGroup>
-  </Target>
   <Target Name="SignMsi" DependsOnTargets="UsesSignTool">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck CLI&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;%(SignMsi.FullPath)&quot;" />
   </Target>
