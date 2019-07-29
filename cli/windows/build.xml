@@ -31,14 +31,23 @@
     <property name="chocolatey.source" value="${setup}/chocolatey/duck"/>
     <property name="chocolatey.target" value="${build.deploy}"/>
 
+    <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
+        <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+    </taskdef>
+
+    <target name="restore" depends="version">
+        <msbuild buildfile="../src/main/csharp/duck.csproj">
+            <target name="Restore" />
+        </msbuild>
+        <msbuild buildfile="../src/main/wix/Bundle/duck.bundle.wixproj">
+            <target name="Restore" />
+        </msbuild>
+        <msbuild buildfile="../src/main/wix/Bootstrapper/duck.bootstrapper.wixproj">
+            <target name="Restore" />
+        </msbuild>
+    </target>
+
     <target name="build" depends="version">
-        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
-            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
-        </taskdef>
-
-        <msbuild buildfile="../src/main/csharp/duck.csproj">
-            <target name="Restore" />
-        </msbuild>
         <msbuild buildfile="../src/main/csharp/duck.csproj">
             <target name="Build" />
 
@@ -46,9 +55,9 @@
             <property name="ShortVersion" value="${version} (${revision})" />
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
-        <msbuild buildfile="../src/main/wix/Bundle/duck.bundle.wixproj">
-            <target name="Restore" />
-        </msbuild>
+    </target>
+
+    <target name="package" depends="version">
         <msbuild buildfile="../src/main/wix/Bundle/duck.bundle.wixproj">
             <target name="Build" />
 
@@ -58,9 +67,6 @@
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
         <msbuild buildfile="../src/main/wix/Bootstrapper/duck.bootstrapper.wixproj">
-            <target name="Restore" />
-        </msbuild>
-        <msbuild buildfile="../src/main/wix/Bootstrapper/duck.bootstrapper.wixproj">
             <target name="Build" />
 
             <property name="BuildProjectReferences" value="false" />
@@ -68,7 +74,9 @@
             <property name="ShortVersion" value="${version} (${revision})" />
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
+    </target>
 
+    <target name="deploy" depends="version">
         <foreach target="md5" param="source">
             <fileset dir="${build.deploy}">
                 <include name="*.msi"/>
