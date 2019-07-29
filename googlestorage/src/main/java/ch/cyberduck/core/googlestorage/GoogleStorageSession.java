@@ -169,6 +169,9 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         if(type == Home.class) {
             return (T) new GoogleStorageHomeFinderService(this);
         }
+        if(type == Lifecycle.class) {
+            return (T) new GoogleStorageLifecycleFeature(this);
+        }
         return super._getFeature(type);
     }
 }
