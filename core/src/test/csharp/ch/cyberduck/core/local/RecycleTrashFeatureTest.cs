@@ -63,7 +63,7 @@ namespace Ch.Cyberduck.Core.Local
             }
         }
 
-        [Test, ExpectedException(typeof(LocalAccessDeniedException))]
+        [Ignore, Test, ExpectedException(typeof(LocalAccessDeniedException))]
         public void testTrashOpenDirectoryEnumeration()
         {
             Local trashee = new Local(temp, Path.GetRandomFileName());
