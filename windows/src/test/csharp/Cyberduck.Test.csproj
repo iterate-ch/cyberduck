@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <Target Name="Test">
-    <Exec Command="&quot;$(PkgNUnit_Runners)\Tools\nunit-console.exe&quot; &quot;$(TargetPath)&quot; --framework=net-4.5" WorkingDirectory="$(TargetBuildDir)" />
+    <Exec Command="&quot;$(PkgNUnit_Runners)\Tools\nunit-console.exe&quot; &quot;$(TargetPath)&quot; --framework=net-4.7" WorkingDirectory="$(TargetBuildDir)" />
   </Target>
 
 </Project>
