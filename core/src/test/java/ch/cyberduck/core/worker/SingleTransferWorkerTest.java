@@ -71,12 +71,11 @@ public class SingleTransferWorkerTest {
         };
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
                 //
-                return file;
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol()));
@@ -132,7 +131,7 @@ public class SingleTransferWorkerTest {
         };
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
@@ -142,7 +141,6 @@ public class SingleTransferWorkerTest {
                 else {
                     assertFalse(status.isExists());
                 }
-                return file;
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
@@ -200,7 +198,7 @@ public class SingleTransferWorkerTest {
         };
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
@@ -210,7 +208,6 @@ public class SingleTransferWorkerTest {
                 else {
                     assertFalse(status.isExists());
                 }
-                return file;
             }
 
             @Override

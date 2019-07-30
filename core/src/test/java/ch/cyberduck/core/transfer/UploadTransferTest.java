@@ -139,12 +139,11 @@ public class UploadTransferTest {
         };
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
                 assertTrue(options.resumeRequested);
-                return file;
             }
         };
         final TransferOptions options = new TransferOptions();
@@ -204,12 +203,11 @@ public class UploadTransferTest {
         };
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
                 //
-                return file;
             }
         };
         new SingleTransferWorker(session, null, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -393,12 +391,11 @@ public class UploadTransferTest {
         LocalTouchFactory.get().touch(local);
         final Transfer transfer = new UploadTransfer(host, test, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback, final ProgressListener listener, final StreamListener streamListener) {
                 status.setComplete();
                 set.set(true);
-                return file;
             }
 
             @Override

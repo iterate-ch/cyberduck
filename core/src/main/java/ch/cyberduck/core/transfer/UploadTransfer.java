@@ -228,7 +228,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
+    public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
                          final TransferStatus status, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
@@ -246,7 +246,7 @@ public class UploadTransfer extends Transfer {
                     log.debug(String.format("Create symbolic link from %s to %s", file, target));
                 }
                 feature.symlink(file, target);
-                return file;
+                return;
             }
         }
         if(file.isFile()) {
@@ -254,7 +254,7 @@ public class UploadTransfer extends Transfer {
                     file.getName()));
             // Transfer
             final Upload upload = source.getFeature(Upload.class);
-            upload.upload(file, local, bandwidth, new DelegateStreamListener(streamListener) {
+            final Object reply = upload.upload(file, local, bandwidth, new DelegateStreamListener(streamListener) {
                 @Override
                 public void sent(final long bytes) {
                     addTransferred(bytes);
@@ -267,12 +267,10 @@ public class UploadTransfer extends Transfer {
                 listener.message(MessageFormat.format(LocaleFactory.localizedString("Making directory {0}", "Status"),
                         file.getName()));
                 final Directory feature = source.getFeature(Directory.class);
-                final Path result = feature.mkdir(file, null, status);
+                feature.mkdir(file, null, status);
                 status.setComplete();
-                return result;
             }
         }
-        return file;
     }
 
     @Override

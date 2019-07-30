@@ -218,7 +218,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
+    public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
                          final TransferOptions options, final TransferStatus status, final ConnectionCallback connectionCallback,
                          final ProgressListener progressListener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
@@ -232,7 +232,6 @@ public class SyncTransfer extends Transfer {
                 upload.transfer(source, destination, file, local, options, status, connectionCallback, progressListener, streamListener);
                 break;
         }
-        return file;
     }
 
     /**
