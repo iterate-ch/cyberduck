@@ -20,7 +20,6 @@
         <Company>iterate GmbH</Company>
         <Copyright>Copyright (c) 2001-2016 David Kocher. Copyright (c) 2011–2016 Yves Langisch</Copyright>
         <Description>Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows.</Description>
-        <Version>7.0.2-SNAPSHOT</Version>
     </PropertyGroup>
 
     <PropertyGroup>
