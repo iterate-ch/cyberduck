@@ -1,7 +1,7 @@
 package ch.cyberduck.core.googlestorage;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,6 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.s3.S3ObjectListService;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -29,18 +28,20 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class S3ObjectListServiceTest extends AbstractGoogleStorageTest {
+public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTest {
 
     @Test
-    public void testList() throws Exception {
+    public void testListObjects() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
-        final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
+        final AttributedList<Path> list = new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener());
         for(Path p : list) {
             assertEquals(container, p.getParent());
             if(p.isFile()) {
                 assertNotEquals(-1L, p.attributes().getModificationDate());
                 assertNotEquals(-1L, p.attributes().getSize());
                 assertNotNull(p.attributes().getETag());
+                assertNull(p.attributes().getVersionId());
+                assertFalse(p.attributes().isDuplicate());
             }
         }
     }

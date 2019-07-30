@@ -1,12 +1,12 @@
-package ch.cyberduck.core.googledrive;
+package ch.cyberduck.core.googlestorage;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2019 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -17,9 +17,9 @@ package ch.cyberduck.core.googledrive;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -29,7 +29,9 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -53,47 +55,30 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import com.google.gson.stream.JsonReader;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
-public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> implements Write<VersionId> {
+public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionId> implements Write<VersionId> {
 
-    private final DriveSession session;
-    private final DriveFileidProvider fileid;
+    private final PathContainerService containerService
+        = new GoogleStoragePathContainerService();
+
+    private final GoogleStorageSession session;
     private final Find finder;
     private final AttributesFinder attributes;
 
-    public DriveWriteFeature(final DriveSession session, final DriveFileidProvider fileid) {
-        this(session, fileid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
+    public GoogleStorageWriteFeature(final GoogleStorageSession session) {
+        this(session, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
     }
 
-    public DriveWriteFeature(final DriveSession session, final DriveFileidProvider fileid, final Find finder, final AttributesFinder attributes) {
+    public GoogleStorageWriteFeature(final GoogleStorageSession session, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
-        this.fileid = fileid;
         this.finder = finder;
         this.attributes = attributes;
-    }
-
-    @Override
-    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
-        if(finder.withCache(cache).find(file)) {
-            final PathAttributes attr = attributes.withCache(cache).find(file);
-            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
-        }
-        return Write.notfound;
-    }
-
-    @Override
-    public boolean temporary() {
-        return false;
-    }
-
-    @Override
-    public boolean random() {
-        return false;
     }
 
     @Override
@@ -105,9 +90,9 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                     // Initiate a resumable upload
                     final HttpEntityEnclosingRequestBase request;
                     if(status.isExists()) {
-                        final String fileid = DriveWriteFeature.this.fileid.getFileid(file, new DisabledListProgressListener());
-                        request = new HttpPatch(String.format("%supload/drive/v3/files/%s?supportsTeamDrives=true",
-                            session.getClient().getRootUrl(), fileid));
+                        // PATCH /storage/v1/b/myBucket/o/myObject
+                        request = new HttpPatch(String.format("%sstorage/v1/b/%s/o/%s",
+                            session.getClient().getRootUrl(), containerService.getContainer(file).getName(), containerService.getKey(file)));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             request.setHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
                         }
@@ -115,11 +100,24 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                         request.setEntity(entity);
                     }
                     else {
-                        request = new HttpPost(String.format("%supload/drive/v3/files?uploadType=resumable&supportsTeamDrives=%s",
-                            session.getClient().getRootUrl(), PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
-                        request.setEntity(new StringEntity("{\"name\": \""
-                            + file.getName() + "\", \"parents\": [\""
-                            + fileid.getFileid(file.getParent(), new DisabledListProgressListener()) + "\"]}",
+                        // POST /upload/storage/v1/b/myBucket/o
+                        request = new HttpPost(String.format("%supload/storage/v1/b/%s/o?uploadType=resumable",
+                            session.getClient().getRootUrl(), containerService.getContainer(file).getName()));
+                        final StringBuilder metadata = new StringBuilder();
+                        metadata.append(String.format("{\"name\": \"%s\"", containerService.getKey(file)));
+                        metadata.append(",\"metadata\": {");
+                        for(Map.Entry<String, String> item : status.getMetadata().entrySet()) {
+                            metadata.append(String.format("\"%s\": \"%s\"", item.getKey(), item.getValue()));
+                        }
+                        metadata.append("}");
+                        if(StringUtils.isNotBlank(status.getMime())) {
+                            metadata.append(String.format(", \"contentType\": \"%s\"", status.getMime()));
+                        }
+                        if(StringUtils.isNotBlank(status.getStorageClass())) {
+                            metadata.append(String.format(", \"storageClass\": \"%s\"", status.getStorageClass()));
+                        }
+                        metadata.append("}");
+                        request.setEntity(new StringEntity(metadata.toString(),
                             ContentType.create("application/json", "UTF-8")));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             // Set to the media MIME type of the upload data to be transferred in subsequent requests.
@@ -158,7 +156,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                                                 final String name = reader.nextName();
                                                 final String value = reader.nextString();
                                                 switch(name) {
-                                                    case "id":
+                                                    case "generation":
                                                         return new VersionId(value);
                                                 }
                                             }
@@ -179,10 +177,10 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                                 new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                         }
                     }
-                    return new VersionId(DriveWriteFeature.this.fileid.getFileid(file, new DisabledListProgressListener()));
+                    return new VersionId(null);
                 }
                 catch(IOException e) {
-                    throw new DriveExceptionMappingService().map("Upload failed", e, file);
+                    throw new GoogleStorageExceptionMappingService().map("Upload failed", e, file);
                 }
             }
 
@@ -192,5 +190,29 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
             }
         };
         return this.write(file, status, command);
+    }
+
+    @Override
+    public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+        if(finder.withCache(cache).find(file)) {
+            final PathAttributes attr = attributes.withCache(cache).find(file);
+            return new Append(false, true).withSize(attr.getSize()).withChecksum(attr.getChecksum());
+        }
+        return Write.notfound;
+    }
+
+    @Override
+    public boolean temporary() {
+        return false;
+    }
+
+    @Override
+    public boolean random() {
+        return false;
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file) {
+        return ChecksumComputeFactory.get(HashAlgorithm.sha256);
     }
 }

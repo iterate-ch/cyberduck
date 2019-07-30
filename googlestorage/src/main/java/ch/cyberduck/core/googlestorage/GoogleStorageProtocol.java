@@ -21,8 +21,6 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.s3.S3LocationFeature;
-import ch.cyberduck.core.s3.S3Protocol;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -73,7 +71,7 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     @Override
     public Set<Location.Name> getRegions() {
         return new HashSet<Location.Name>(Arrays.asList(
-                new S3LocationFeature.S3Region("US"), new S3LocationFeature.S3Region("EU")
+            new Location.Name("us"), new Location.Name("eu"), new Location.Name("asia")
         ));
     }
 
@@ -101,10 +99,5 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     public String favicon() {
         // Return static icon as endpoint has no favicon configured
         return this.icon();
-    }
-
-    @Override
-    public String getAuthorization() {
-        return S3Protocol.AuthenticationHeaderSignatureVersion.AWS2.name();
     }
 }

@@ -15,81 +15,75 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
+import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.s3.RequestEntityRestStorageService;
-import ch.cyberduck.core.s3.S3CopyFeature;
-import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
-import ch.cyberduck.core.s3.S3DisabledMultipartService;
-import ch.cyberduck.core.s3.S3MetadataFeature;
-import ch.cyberduck.core.s3.S3MoveFeature;
-import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.s3.S3SingleUploadService;
-import ch.cyberduck.core.s3.S3WriteFeature;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.jets3t.service.Jets3tProperties;
-import org.jets3t.service.ServiceException;
-import org.jets3t.service.acl.AccessControlList;
-import org.jets3t.service.impl.rest.AccessControlListHandler;
-import org.jets3t.service.impl.rest.GSAccessControlListHandler;
-import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
-import org.jets3t.service.model.StorageBucket;
-import org.jets3t.service.model.WebsiteConfig;
-import org.jets3t.service.security.ProviderCredentials;
 
-import java.io.InputStream;
-import java.util.Collections;
+import java.io.IOException;
 
-public class GoogleStorageSession extends S3Session {
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.apache.ApacheHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.storage.Storage;
+
+public class GoogleStorageSession extends HttpSession<Storage> {
+
+    private ApacheHttpTransport transport;
+
+    private final UseragentProvider useragent
+        = new PreferencesUseragentProvider();
 
     private OAuth2RequestInterceptor authorizationService;
 
-    public GoogleStorageSession(final Host h) {
-        super(h);
+    public GoogleStorageSession(final Host host) {
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
 
     public GoogleStorageSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, trust, key);
+        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
-    protected Jets3tProperties configure() {
-        final Jets3tProperties configuration = super.configure();
-        configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
-        configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
-        return configuration;
-    }
-
-    @Override
-    public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
+    public Storage connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
             .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
-        return new OAuth2RequestEntityRestStorageService(this, this.configure(), configuration);
-    }
-
-    @Override
-    protected boolean authorize(final HttpUriRequest request, final ProviderCredentials credentials) {
-        request.setHeader("x-goog-api-version", "2");
-        return true;
+        this.transport = new ApacheHttpTransport(configuration.build());
+        return new Storage.Builder(transport, new JacksonFactory(), new HttpRequestInitializer() {
+            @Override
+            public void initialize(HttpRequest request) {
+                request.setSuppressUserAgentSuffix(true);
+                // OAuth Bearer added in interceptor
+            }
+        })
+            .setApplicationName(useragent.get())
+            .build();
     }
 
     @Override
@@ -99,73 +93,17 @@ public class GoogleStorageSession extends S3Session {
     }
 
     @Override
-    protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
-        return new XmlResponsesSaxParser(this.configure(), false) {
-            @Override
-            public AccessControlListHandler parseAccessControlListResponse(InputStream inputStream) throws ServiceException {
-                return this.parseAccessControlListResponse(inputStream, new GSAccessControlListHandler());
-            }
-
-            @Override
-            public BucketLoggingStatusHandler parseLoggingStatusResponse(InputStream inputStream) throws ServiceException {
-                return super.parseLoggingStatusResponse(inputStream, new GSBucketLoggingStatusHandler());
-            }
-
-            @Override
-            public WebsiteConfig parseWebsiteConfigurationResponse(InputStream inputStream) throws ServiceException {
-                return super.parseWebsiteConfigurationResponse(inputStream, new GSWebsiteConfigurationHandler());
-            }
-        };
+    protected void logout() throws BackgroundException {
+        try {
+            transport.shutdown();
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
-    /**
-     * @return the identifier for the signature algorithm.
-     */
-    @Override
-    protected String getSignatureIdentifier() {
-        return "GOOG1";
-    }
-
-    /**
-     * @return header prefix for general Google Storage headers: x-goog-.
-     */
-    @Override
-    protected String getRestHeaderPrefix() {
-        return "x-goog-";
-    }
-
-    /**
-     * @return header prefix for Google Storage metadata headers: x-goog-meta-.
-     */
-    @Override
-    protected String getRestMetadataPrefix() {
-        return "x-goog-meta-";
-    }
-
-    private final class OAuth2RequestEntityRestStorageService extends RequestEntityRestStorageService {
-        public OAuth2RequestEntityRestStorageService(final GoogleStorageSession session,
-                                                     final Jets3tProperties properties,
-                                                     final HttpClientBuilder configuration) {
-            super(session, properties, configuration);
-        }
-
-        @Override
-        protected StorageBucket createBucketImpl(String bucketName, String location,
-                                                 AccessControlList acl) throws ServiceException {
-            return super.createBucketImpl(bucketName, location, acl,
-                Collections.singletonMap("x-goog-project-id", host.getCredentials().getUsername()));
-        }
-
-        @Override
-        protected StorageBucket[] listAllBucketsImpl() throws ServiceException {
-            return super.listAllBucketsImpl(
-                Collections.singletonMap("x-goog-project-id", host.getCredentials().getUsername()));
-        }
-
-        @Override
-        public boolean isAuthenticatedConnection() {
-            return true;
-        }
+    public HttpClient getHttpClient() {
+        return transport.getHttpClient();
     }
 
     @Override
@@ -174,35 +112,38 @@ public class GoogleStorageSession extends S3Session {
         if(type == ListService.class) {
             return (T) new GoogleStorageListService(this);
         }
-        if(type == Upload.class) {
-            return (T) new S3SingleUploadService(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
+        if(type == Touch.class) {
+            return (T) new GoogleStorageTouchFeature(this);
         }
-        if(type == MultipartWrite.class) {
-            return null;
+        if(type == Read.class) {
+            return (T) new GoogleStorageReadFeature(this);
         }
         if(type == Write.class) {
-            return (T) new S3WriteFeature(this, new S3DisabledMultipartService());
+            return (T) new GoogleStorageWriteFeature(this);
+        }
+        if(type == Find.class) {
+            return (T) new GoogleStorageFindFeature(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new GoogleStorageAttributesFinderFeature(this);
         }
         if(type == Delete.class) {
-            return (T) new S3DefaultDeleteFeature(this);
+            return (T) new GoogleStorageDeleteFeature(this);
         }
         if(type == Directory.class) {
-            return (T) new GoogleStorageDirectoryFeature(this, new S3WriteFeature(this, new S3DisabledMultipartService()));
+            return (T) new GoogleStorageDirectoryFeature(this);
         }
         if(type == Move.class) {
-            return (T) new S3MoveFeature(this, new GoogleStorageAccessControlListFeature(this));
+            return (T) new GoogleStorageMoveFeature(this);
         }
         if(type == Headers.class) {
-            return (T) new S3MetadataFeature(this, new GoogleStorageAccessControlListFeature(this));
+            return (T) new GoogleStorageMetadataFeature(this);
         }
         if(type == Metadata.class) {
-            return (T) new S3MetadataFeature(this, new GoogleStorageAccessControlListFeature(this));
+            return (T) new GoogleStorageMetadataFeature(this);
         }
         if(type == Copy.class) {
-            return (T) new S3CopyFeature(this, new GoogleStorageAccessControlListFeature(this));
-        }
-        if(type == AclPermission.class) {
-            return (T) new GoogleStorageAccessControlListFeature(this);
+            return (T) new GoogleStorageCopyFeature(this);
         }
         if(type == DistributionConfiguration.class) {
             return (T) new GoogleStorageWebsiteDistributionConfiguration(this);
@@ -213,20 +154,23 @@ public class GoogleStorageSession extends S3Session {
         if(type == Logging.class) {
             return (T) new GoogleStorageLoggingFeature(this);
         }
-        if(type == Lifecycle.class) {
-            return null;
-        }
-        if(type == Versioning.class) {
-            return null;
-        }
-        if(type == Encryption.class) {
-            return null;
-        }
-        if(type == Redundancy.class) {
-            return null;
-        }
         if(type == UrlProvider.class) {
             return (T) new GoogleStorageUrlProvider(this);
+        }
+        if(type == Search.class) {
+            return (T) new GoogleStorageSearchFeature(this);
+        }
+        if(type == Versioning.class) {
+            return (T) null;
+        }
+        if(type == Location.class) {
+            return (T) new GoogleStorageLocationFeature(this);
+        }
+        if(type == Home.class) {
+            return (T) new GoogleStorageHomeFinderService(this);
+        }
+        if(type == Lifecycle.class) {
+            return (T) new GoogleStorageLifecycleFeature(this);
         }
         return super._getFeature(type);
     }

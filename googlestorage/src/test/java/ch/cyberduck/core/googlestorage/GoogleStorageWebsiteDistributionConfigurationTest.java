@@ -28,13 +28,12 @@ import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -69,25 +68,14 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
     }
 
     @Test
-    public void testRead() throws Exception {
-        final DistributionConfiguration configuration
-                = new GoogleStorageWebsiteDistributionConfiguration(session);
-        final Distribution website = configuration.read(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory)), Distribution.WEBSITE,
-                new DisabledLoginCallback());
-        assertTrue(website.isEnabled());
-        assertEquals(URI.create("http://test.cyberduck.ch.storage.googleapis.com"), website.getUrl());
-        assertTrue(website.getContainers().contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory))));
-    }
-
-    @Test
     public void testWrite() throws Exception {
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageBucketCreateService(session).create(bucket, "US");
+        new GoogleStorageDirectoryFeature(session).mkdir(bucket, "US", new TransferStatus());
         configuration.write(bucket, new Distribution(null, Distribution.WEBSITE, true), new DisabledLoginCallback());
         assertTrue(configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginCallback()).isEnabled());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
