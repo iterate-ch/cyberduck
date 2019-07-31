@@ -53,6 +53,7 @@
 
             <property name="Version" value="${version}.${revision}" />
             <property name="ShortVersion" value="${version} (${revision})" />
+            <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
     </target>
@@ -64,6 +65,7 @@
             <property name="BuildProjectReferences" value="false" />
             <property name="Version" value="${version}.${revision}" />
             <property name="ShortVersion" value="${version} (${revision})" />
+            <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
         <msbuild buildfile="../src/main/wix/Bootstrapper/duck.bootstrapper.wixproj">
@@ -72,6 +74,7 @@
             <property name="BuildProjectReferences" value="false" />
             <property name="Version" value="${version}.${revision}" />
             <property name="ShortVersion" value="${version} (${revision})" />
+            <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
     </target>

@@ -63,8 +63,8 @@
         <msbuild buildfile="src/main/csharp/Cyberduck.csproj">
             <target name="Build" />
 
-            <property name="Version" value="${normalized.version}.${revision}" />
-            <property name="ShortVersion" value="${version} (${revision})" />
+            <property name="Version" value="${version}.${revision}" />
+            <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
     </target>
@@ -74,8 +74,6 @@
             <target name="Build,Test" />
             
             <property name="BuildProjectReferences" value="false" />
-            <property name="Version" value="${normalized.version}.${revision}" />
-            <property name="ShortVersion" value="${version} (${revision})" />
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
     </target>
@@ -92,6 +90,7 @@
 
             <property name="Version" value="${normalized.version}.${revision}" />
             <property name="ShortVersion" value="${version} (${revision})" />
+            <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
         <msbuild buildfile="src/main/wix/Bundle/Cyberduck.Bundle.wixproj">
@@ -100,6 +99,7 @@
             <property name="BuildProjectReferences" value="false" />
             <property name="Version" value="${normalized.version}.${revision}" />
             <property name="ShortVersion" value="${version} (${revision})" />
+            <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
 
@@ -109,6 +109,7 @@
             <property name="BuildProjectReferences" value="false" />
             <property name="Version" value="${normalized.version}.${revision}" />
             <property name="ShortVersion" value="${version} (${revision})" />
+            <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
         
@@ -116,6 +117,7 @@
             <target name="Build" />
 
             <property name="Version" value="${normalized.version}.0" />
+            <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
         </msbuild>
     </target>
