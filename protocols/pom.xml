@@ -119,11 +119,6 @@
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
-            <artifactId>manta</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
             <artifactId>storegate</artifactId>
             <version>${project.version}</version>
         </dependency>
