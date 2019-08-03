@@ -144,7 +144,7 @@ int launch(int argc, char *argv[]) {
     }
     JLI_Launch_t jli_LaunchFxnPtr = NULL;
     // Locate the JLI_Launch() function
-    NSString *libjliPath = [runtimePath stringByAppendingString:@"/Contents/Home/lib/jli/libjli.dylib"];
+    NSString *libjliPath = [runtimePath stringByAppendingString:@"/Contents/Home/lib/libjli.dylib"];
     void *libJLI = dlopen([libjliPath fileSystemRepresentation], RTLD_LAZY);
     if(libJLI != NULL) {
         jli_LaunchFxnPtr = dlsym(libJLI, "JLI_Launch");

@@ -967,7 +967,7 @@ public abstract class Preferences implements Locales {
         this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(true));
 
         this.setDefault("connection.ssl.provider.bouncycastle.position", String.valueOf(1));
-        this.setDefault("connection.ssl.protocols", "TLSv1.2,TLSv1.1,TLSv1");
+        this.setDefault("connection.ssl.protocols", "TLSv1.3,TLSv1.2,TLSv1.1,TLSv1");
         this.setDefault("connection.ssl.cipher.blacklist", StringUtils.EMPTY);
 
         this.setDefault("connection.ssl.x509.revocation.online", String.valueOf(false));
