@@ -2,6 +2,8 @@ Cyberduck
 https://cyberduck.io/
 
 7.1.0
+- [Feature] Application running as 64-bit (Windows)
+- [Feature] Application package is notarized (macOS)
 - [Feature] Support for storage classes (Google Storage)
 - [Feature] Support to select region (eu, us, asia) for new buckets (Google Storage)
 - [Feature] Support to set lifecycle configuration on bucket (Google Storage)
