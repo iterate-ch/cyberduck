@@ -802,10 +802,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void PopulateEditors(List<KeyValueIconTriple<Application, string>> editors)
         {
-            editorComboBox.DataSource = editors;
             editorComboBox.ValueMember = "Key";
             editorComboBox.DisplayMember = "Value";
             editorComboBox.IconMember = "IconKey";
+            editorComboBox.DataSource = editors;
 
             ImageList imageList = new ImageList();
             foreach (KeyValueIconTriple<Application, string> triple in editors)

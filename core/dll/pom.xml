@@ -95,7 +95,7 @@
                 <dependency>
                     <groupId>net.adoptopenjdk</groupId>
                     <artifactId>sunmscapi</artifactId>
-                    <classifier>x86_32</classifier>
+                    <classifier>x86_64</classifier>
                     <type>dll</type>
                     <version>8u192</version>
                     <scope>runtime</scope>
@@ -109,7 +109,7 @@
                 <dependency>
                     <groupId>net.adoptopenjdk</groupId>
                     <artifactId>sunec</artifactId>
-                    <classifier>x86_32</classifier>
+                    <classifier>x86_64</classifier>
                     <type>dll</type>
                     <version>8u192</version>
                     <scope>runtime</scope>
@@ -123,7 +123,7 @@
                 <dependency>
                     <groupId>net.java.dev.jna</groupId>
                     <artifactId>jnidispatch</artifactId>
-                    <classifier>x86_32</classifier>
+                    <classifier>x86_64</classifier>
                     <type>dll</type>
                     <version>${jna-version}</version>
                     <scope>runtime</scope>

@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.targets"/>
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.Build.NoTargets" />
+
   <PropertyGroup>
-    <Platform Condition="'$(Platform)' == ''">x86</Platform>
+    <TargetFramework>net47</TargetFramework>
 
     <PackageName>iterate.37637C3DE32E5</PackageName>
     <Publisher>CN=F20B9811-19FC-4FBE-A8F6-A39E82A4FDE4</Publisher>
@@ -14,8 +14,7 @@
     <PackageDisplayName>Cyberduck</PackageDisplayName>
     <PackagePublisherDisplayName>iterate</PackagePublisherDisplayName>
 
-    <OutputPath>windows/target/</OutputPath>
-    <IntermediateOutputPath>$(OutputPath)appx/$(Platform)/</IntermediateOutputPath>
+    <IntermediateOutputPath>$(IntermediateOutputPath)appx/</IntermediateOutputPath>
     <PackageFiles>$(IntermediateOutputPath)$(PackageName)/PackageFiles/</PackageFiles>
     <VFS>$(PackageFiles)VFS/</VFS>
     <PackageLayout>$(PackageFiles)</PackageLayout>
@@ -29,20 +28,20 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputFilename>$(AppxDirectory)Cyberduck-$(Version)-$(Platform).appx</OutputFilename>
+    <OutputFilename>$(AppxDirectory)Cyberduck-$(Version).appx</OutputFilename>
   </PropertyGroup>
 
   <ItemGroup>
-    <LayoutFile Include="windows\src\resources\AppxManifest.xml">
+    <LayoutFile Include="$(ModulePath)\src\resources\AppxManifest.xml">
       <PackagePath>$(PackageLayout)\AppxManifest.xml</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="windows\src\resources\CyberduckAppx.44x44.png">
+    <LayoutFile Include="$(ModulePath)\src\resources\CyberduckAppx.44x44.png">
       <PackagePath>$(PackageLayout)\Assets\CyberduckAppx.44x44.png</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="windows\src\resources\CyberduckAppx.50x50.png">
+    <LayoutFile Include="$(ModulePath)\src\resources\CyberduckAppx.50x50.png">
       <PackagePath>$(PackageLayout)\Assets\CyberduckAppx.50x50.png</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="windows\src\resources\CyberduckAppx.150x150.png">
+    <LayoutFile Include="$(ModulePath)\src\resources\CyberduckAppx.150x150.png">
       <PackagePath>$(PackageLayout)\Assets\CyberduckAppx.150x150.png</PackagePath>
     </LayoutFile>
 
@@ -51,12 +50,6 @@
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\Cyberduck.exe.config">
       <PackagePath>$(PackageLayout)\Cyberduck.exe.config</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\ExceptionReporter.WinForms.dll">
-      <PackagePath>$(PackageLayout)\ExceptionReporter.WinForms.dll</PackagePath>
-    </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\CustomOpenFileFolderDialog.dll">
-      <PackagePath>$(PackageLayout)\CustomOpenFileFolderDialog.dll</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\Cyberduck.Core.dll">
       <PackagePath>$(PackageLayout)\Cyberduck.Core.dll</PackagePath>
@@ -160,17 +153,23 @@
     <LayoutFile Include="$(OutputPath)\Microsoft.Toolkit.Uwp.Notifications.dll">
       <PackagePath>$(PackageLayout)\Microsoft.Toolkit.Uwp.Notifications.dll</PackagePath>
     </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\CustomOpenFileFolderDialog.dll">
+      <PackagePath>$(PackageLayout)\CustomOpenFileFolderDialog.dll</PackagePath>
+    </LayoutFile>
     <LayoutFile Include="$(OutputPath)\DotNetZip.dll">
       <PackagePath>$(PackageLayout)\DotNetZip.dll</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="$(OutputPath)\ExceptionReporter.WinForms.dll">
-      <PackagePath>$(PackageLayout)\ExceptionReporter.WinForms.dll</PackagePath>
+    <LayoutFile Include="$(OutputPath)\ExceptionReporter.NET.dll">
+      <PackagePath>$(PackageLayout)\ExceptionReporter.NET.dll</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\SimpleMapi.dll">
       <PackagePath>$(PackageLayout)\SimpleMapi.dll</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\ikvm-native-win32-x86.dll">
       <PackagePath>$(PackageLayout)\ikvm-native-win32-x86.dll</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)\ikvm-native-win32-x64.dll">
+      <PackagePath>$(PackageLayout)\ikvm-native-win32-x64.dll</PackagePath>
     </LayoutFile>
     <LayoutFile Include="$(OutputPath)\jnidispatch.dll">
       <PackagePath>$(PackageLayout)\jnidispatch.dll</PackagePath>
@@ -266,11 +265,6 @@
     </PropertyGroup>
   </Target>
 
-  <PropertyGroup>
-    <BuildDependsOn>
-      _CopyAppXFilesToPackageLayout;UpdateAppxManifest;MakeAppx;SignAppx
-    </BuildDependsOn>
-  </PropertyGroup>
   <Target Name="_CopyAppXFilesToPackageLayout">
     <Error Condition="!Exists(%(LayoutFile.FullPath))" Text="LayoutFile does not exist [%(LayoutFile.FullPath)]" />
     <Copy Condition="Exists(%(LayoutFile.Identity))" SourceFiles="@(LayoutFile)" DestinationFiles="@(LayoutFile->'%(PackagePath)')" SkipUnchangedFiles="true" />
@@ -281,9 +275,6 @@
     </ItemGroup>
     <Copy Condition="Exists(%(PdbToCopy.Identity))" SourceFiles="@(PdbToCopy)" DestinationFiles="@(PdbToCopy->'%(PackagePath)')" SkipUnchangedFiles="true" />
   </Target>
-  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
-  <Target Name="Rebuild" DependsOnTargets="Build" />
-  <Target Name="Clean" />
 
   <Target Name="UpdateAppxManifest">
     <FileUpdate Files="$(PackageLayout)\AppxManifest.xml"
@@ -300,4 +291,11 @@
   <Target Name="SignAppx" Condition="'$(Configuration)' == 'Release'" DependsOnTargets="UsesSignTool">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$(OutputFilename)&quot;"/>
   </Target>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.Build.NoTargets" />
+  <PropertyGroup>
+    <CoreBuildDependsOn>
+      _CopyAppXFilesToPackageLayout;UpdateAppxManifest;MakeAppx;SignAppx
+    </CoreBuildDependsOn>
+  </PropertyGroup>
 </Project>

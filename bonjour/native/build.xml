@@ -24,21 +24,25 @@
     <import file="../../build.xml"/>
 
     <property name="msbuild.configuration" value="release"/>
-    <property name="msbuild.architecture" value="x86"/>
 
-    <target name="dll" if="platform.windows">
-        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
-            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
-        </taskdef>
+    <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
+        <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+    </taskdef>
+
+    <target name="restore" if="platform.windows">
+        <msbuild buildfile="../src/main/csharp/Cyberduck.Bonjour.Native.csproj">
+            <target name="Restore" />
+        </msbuild>
+    </target>
+
+    <target name="dll" if="platform.windows" depends="restore">
         <!-- Create DLL Cyberduck.Core.Native -->
-        <msbuild buildfile="../../Cyberduck Bonjour.csproj">
+        <msbuild buildfile="../src/main/csharp/Cyberduck.Bonjour.Native.csproj">
             <target name="Build"/>
 
             <property name="Version" value="${version}.${revision}"/>
             <property name="ShortVersion" value="${version} (${revision})"/>
             <property name="Configuration" value="${msbuild.configuration}"/>
-            <property name="Platform" value="${msbuild.architecture}"/>
-            <property name="OutputType" value="Library"/>
         </msbuild>
     </target>
 
