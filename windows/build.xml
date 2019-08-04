@@ -40,11 +40,13 @@
 
     <property name="cpack.bin" value="${env.ChocolateyInstall}/bin/cpack"/>
 
-    <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
-        <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
-    </taskdef>
+    <target name="init-msbuild">
+        <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+        </taskdef>
+    </target>
 
-    <target name="restore" depends="version">
+    <target name="restore" depends="init-msbuild, version">
         <msbuild buildfile="src/main/csharp/Cyberduck.csproj">
             <target name="Restore" />
         </msbuild>
@@ -59,7 +61,7 @@
         </msbuild>
     </target>
 
-    <target name="build" depends="version">
+    <target name="build" depends="init-msbuild, version">
         <msbuild buildfile="src/main/csharp/Cyberduck.csproj">
             <target name="Build" />
 
@@ -69,7 +71,7 @@
         </msbuild>
     </target>
 
-    <target name="test" depends="version" unless="${skip}">
+    <target name="test" depends="init-msbuild, version" unless="${skip}">
         <msbuild buildfile="src/test/csharp/Cyberduck.Test.csproj">
             <target name="Build,Test" />
             
@@ -78,7 +80,7 @@
         </msbuild>
     </target>
 
-    <target name="package" depends="version">
+    <target name="package" depends="init-msbuild, version">
         <copy todir="${build}">
             <fileset dir="${home}">
                 <include name="*.ico"/>
