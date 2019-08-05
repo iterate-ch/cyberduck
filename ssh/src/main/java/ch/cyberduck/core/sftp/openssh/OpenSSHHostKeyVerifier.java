@@ -47,7 +47,6 @@ import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.common.SSHRuntimeException;
 import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
-
 public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier {
     private static final Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
 
@@ -110,14 +109,14 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         }
         if(foundApplicableHostEntry) {
             try {
-                return OpenSSHHostKeyVerifier.this.isChangedKeyAccepted(host, key);
+                return this.isChangedKeyAccepted(host, key);
             }
             catch(ConnectionCanceledException | ChecksumException e) {
                 return false;
             }
         }
         try {
-            return OpenSSHHostKeyVerifier.this.isUnknownKeyAccepted(host, key);
+            return this.isUnknownKeyAccepted(host, key);
         }
         catch(ConnectionCanceledException | ChecksumException e) {
             return false;
