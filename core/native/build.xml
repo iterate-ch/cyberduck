@@ -57,7 +57,7 @@
         </msbuild>
     </target>
 
-    <target name="test" depends="init" unless="${skip}">
+    <target name="test" depends="init-msbuild, version" unless="${skip}">
         <msbuild buildfile="../src/test/csharp/Cyberduck.Core.Test.csproj">
             <target name="Build,Test"/>
 
