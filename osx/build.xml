@@ -172,7 +172,7 @@
                     status = plist['notarization-info']['Status']
                     ant.echo "Current status is '${status}'"
                     exit = status != 'in progress'
-                    Thread.sleep(5000)
+                    Thread.sleep(10000)
                 }
                 if (status == 'success') {
                     def stapler = "/usr/bin/xcrun stapler staple -v ${properties.home}/osx/target/Cyberduck.app"
