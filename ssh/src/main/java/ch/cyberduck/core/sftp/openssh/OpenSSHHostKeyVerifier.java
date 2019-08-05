@@ -92,11 +92,10 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         if(type == KeyType.UNKNOWN) {
             return false;
         }
-        final String adjustedHostname = (host.getPort() != 22) ? String.format("[%s]:%d", host.getHostname(), host.getPort()) : host.getHostname();
         boolean foundApplicableHostEntry = false;
         for(OpenSSHKnownHosts.KnownHostEntry entry : database.entries()) {
             try {
-                if(entry.appliesTo(type, adjustedHostname)) {
+                if(entry.appliesTo(type, format(host))) {
                     foundApplicableHostEntry = true;
                     if(entry.verify(key)) {
                         return true;
@@ -134,9 +133,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
             try {
                 // Add the host key to the in-memory database
                 final OpenSSHKnownHosts.HostEntry entry
-                    = new OpenSSHKnownHosts.HostEntry(null, PreferencesFactory.get().getBoolean(
-                    "ssh.knownhosts.hostname.hash") ? hash(host.getHostname()) : host.getHostname(),
-                    KeyType.fromKey(key), key);
+                    = new OpenSSHKnownHosts.HostEntry(null, format(host), KeyType.fromKey(key), key);
                 database.entries().add(entry);
                 if(persist) {
                     if(file.attributes().getPermission().isWritable()) {
@@ -150,6 +147,11 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
                 super.allow(host, key, persist);
             }
         }
+    }
+
+    private static String format(final Host host) throws IOException {
+        final String hostname = host.getPort() != 22 ? String.format("[%s]:%d", host.getHostname(), host.getPort()) : host.getHostname();
+        return PreferencesFactory.get().getBoolean("ssh.knownhosts.hostname.hash") ? hash(hostname) : hostname;
     }
 
     /**
