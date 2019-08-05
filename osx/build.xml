@@ -103,6 +103,94 @@
             <param name="target" value="${app.name}-${version}.${revision}.zip"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>
+        <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy"/>
+        <groovy>
+            <arg line="${env.NOTARIZATION_USER} ${env.NOTARIZATION_PW}"/>
+            <![CDATA[
+                class PlistUtility {
+                    static parseXmlPlistText(String text) {
+                        def parser = new XmlParser(false, false, true)
+                        parser.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD, "all")
+
+                        def xml = parser.parseText(text)
+
+                        assert xml.name() == "plist"
+
+                        def parseNode
+                        parseNode = { node ->
+                            def childNodes = node."*"
+                            switch (node.name()) {
+                                case "dict":
+                                    def dict = [:]
+                                    for (int i = 0; i < childNodes.size(); i += 2) {
+                                        assert childNodes[i].name() == "key"
+                                        dict[childNodes[i].text().trim()] = parseNode(childNodes[i + 1])
+                                    }
+                                    return dict
+                                case "array":
+                                    return childNodes.collect(parseNode)
+                                case "string":
+                                    return node.text()
+                                case "integer":
+                                    return Integer.parseInt(node.text())
+                                case "date":
+                                    return Date.parse("yyyy-MM-dd'T'HH:mm:ss'Z'", node.text())
+                                case "false":
+                                    return false
+                                case "true":
+                                    return true
+                                default:
+                                    assert false
+                            }
+                        }
+                        return parseNode(xml."*"[0])
+                    }
+                }
+
+                def notarize = "/usr/bin/xcrun altool --primary-bundle-id ch.sudo.cyberduck --notarize-app --output-format xml -f ${properties['build.deploy']}/${properties['app.name']}-${properties.version}.${properties.revision}.zip -t osx -u ${args[0]} -p ${args[1]}"
+                def nproc = notarize.execute()
+                nproc.waitFor()
+                if (nproc.exitValue() != 0) {
+                    ant.fail "Error notarizing: ${nproc.err.text}"
+                }
+                def plist = PlistUtility.parseXmlPlistText(nproc.in.text)
+                def requestId = plist['notarization-upload']['RequestUUID']
+                ant.echo "RequestId is ${requestId}"
+
+                def check = "/usr/bin/xcrun altool --notarization-info ${requestId} --output-format xml -u ${args[0]} -p ${args[1]}"
+                def exit = false
+                def status
+                while (!exit){
+                    // poll notarization status
+                    println "Executing ${check}"
+                    def cproc = check.execute()
+                    cproc.waitFor()
+                    if (cproc.exitValue() != 0) {
+                        ant.fail "Error notarizing: ${cproc.err.text}"
+                    }
+                    plist = PlistUtility.parseXmlPlistText(cproc.in.text)
+                    status = plist['notarization-info']['Status']
+                    ant.echo "Current status is ${status}"
+                    exit = status != 'in progress'
+                    Thread.sleep(5000)
+                }
+                if (status == 'success') {
+                    def stapler = "/usr/bin/xcrun stapler staple -v ${properties.home}/osx/target/Cyberduck.app"
+                    def sproc = stapler.execute()
+                    sproc.waitFor()
+                    if (sproc.exitValue() != 0) {
+                        ant.fail "Error stapling: ${sproc.err.text}"
+                    }
+                } else {
+                    ant.fail "Notarization failed with status ${status}"
+                }
+            ]]>
+        </groovy>
+        <antcall target="zip">
+            <param name="directory" value="${build}"/>
+            <param name="target" value="${app.name}-${version}.${revision}.zip"/>
+            <param name="source" value="${app.name}.app"/>
+        </antcall>
         <checksum file="${build.deploy}/${app.name}-${version}.${revision}.zip"
                   algorithm="md5" property="archive.md5"/>
         <echo message="Calculating DSA signature..."/>
