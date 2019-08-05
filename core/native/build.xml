@@ -30,11 +30,14 @@
         <equals arg1="${configuration}" arg2="release" />
     </condition>
 
-    <taskdef name="msbuild" classname="org.apache.ant.dotnet.build.MSBuildTask">
-        <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
-    </taskdef>
+    <target name="init-msbuild">
+        <taskdef name="msbuild"
+                 classname="org.apache.ant.dotnet.build.MSBuildTask">
+            <classpath path="${lib.ext}/ant-dotnet-1.1.jar"/>
+        </taskdef>
+    </target>
 
-    <target name="restore" depends="version">
+    <target name="restore" depends="init-msbuild, version">
         <msbuild buildfile="../src/main/csharp/Cyberduck.Core.Native.csproj">
             <target name="Restore" />
         </msbuild>
@@ -43,7 +46,7 @@
         </msbuild>
     </target>
 
-    <target name="build" depends="version">
+    <target name="build" depends="init-msbuild, version">
         <!-- Create DLL Cyberduck.Core.Native -->
         <msbuild buildfile="../src/main/csharp/Cyberduck.Core.Native.csproj">
             <target name="Build"/>
@@ -54,7 +57,7 @@
         </msbuild>
     </target>
 
-    <target name="test" depends="version" unless="${skip}">
+    <target name="test" depends="init" unless="${skip}">
         <msbuild buildfile="../src/test/csharp/Cyberduck.Core.Test.csproj">
             <target name="Build,Test"/>
 
