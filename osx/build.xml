@@ -176,7 +176,7 @@
                 }
                 if (status == 'success') {
                     ant.echo "Staple ticket"
-                    def stapler = "/usr/bin/xcrun stapler staple -v ${properties.home}/osx/target/Cyberduck.app"
+                    def stapler = "/usr/bin/xcrun stapler staple -v ${properties.home}/osx/target/${app.name}.app"
                     def sproc = stapler.execute()
                     sproc.waitFor()
                     if (sproc.exitValue() != 0) {
