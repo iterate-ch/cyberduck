@@ -147,6 +147,7 @@
                     }
                 }
 
+                ant.echo "Start notarizing"
                 def notarize = "/usr/bin/xcrun altool --primary-bundle-id ch.sudo.cyberduck --notarize-app --output-format xml -f ${properties['build.deploy']}/${properties['app.name']}-${properties.version}.${properties.revision}.zip -t osx -u ${args[0]} -p ${args[1]}"
                 def nproc = notarize.execute()
                 nproc.waitFor()
@@ -162,7 +163,7 @@
                 def status
                 while (!exit){
                     // poll notarization status
-                    println "Executing ${check}"
+                    ant.echo "Poll status"
                     def cproc = check.execute()
                     cproc.waitFor()
                     if (cproc.exitValue() != 0) {
