@@ -158,12 +158,11 @@
                 def requestId = plist['notarization-upload']['RequestUUID']
                 ant.echo "RequestId is ${requestId}"
 
+                ant.echo "Poll status"
                 def check = "/usr/bin/xcrun altool --notarization-info ${requestId} --output-format xml -u ${args[0]} -p ${args[1]}"
                 def exit = false
                 def status
                 while (!exit){
-                    // poll notarization status
-                    ant.echo "Poll status"
                     def cproc = check.execute()
                     cproc.waitFor()
                     if (cproc.exitValue() != 0) {
