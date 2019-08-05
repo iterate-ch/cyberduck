@@ -85,6 +85,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     @Override
     public boolean verify(final Host host, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
         if(null == database) {
+            log.warn(String.format("Missing database %s", database));
             return super.verify(host, key);
         }
         final KeyType type = KeyType.fromKey(key);
@@ -126,6 +127,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     @Override
     public void allow(final Host host, final PublicKey key, final boolean persist) {
         if(null == database) {
+            log.warn(String.format("Missing database %s", database));
             super.allow(host, key, persist);
         }
         else {
