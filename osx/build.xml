@@ -170,7 +170,7 @@
                     }
                     plist = PlistUtility.parseXmlPlistText(cproc.in.text)
                     status = plist['notarization-info']['Status']
-                    ant.echo "Current status is ${status}"
+                    ant.echo "Current status is '${status}'"
                     exit = status != 'in progress'
                     Thread.sleep(5000)
                 }
