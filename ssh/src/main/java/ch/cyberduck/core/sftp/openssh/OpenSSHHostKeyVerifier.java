@@ -47,7 +47,6 @@ import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.common.SSHRuntimeException;
 import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
-
 public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier {
     private static final Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
 
@@ -86,17 +85,17 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     @Override
     public boolean verify(final Host host, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
         if(null == database) {
+            log.warn(String.format("Missing database %s", database));
             return super.verify(host, key);
         }
         final KeyType type = KeyType.fromKey(key);
         if(type == KeyType.UNKNOWN) {
             return false;
         }
-        final String adjustedHostname = (host.getPort() != 22) ? String.format("[%s]:%d", host.getHostname(), host.getPort()) : host.getHostname();
         boolean foundApplicableHostEntry = false;
         for(OpenSSHKnownHosts.KnownHostEntry entry : database.entries()) {
             try {
-                if(entry.appliesTo(type, adjustedHostname)) {
+                if(entry.appliesTo(type, format(host))) {
                     foundApplicableHostEntry = true;
                     if(entry.verify(key)) {
                         return true;
@@ -110,14 +109,14 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         }
         if(foundApplicableHostEntry) {
             try {
-                return OpenSSHHostKeyVerifier.this.isChangedKeyAccepted(host, key);
+                return this.isChangedKeyAccepted(host, key);
             }
             catch(ConnectionCanceledException | ChecksumException e) {
                 return false;
             }
         }
         try {
-            return OpenSSHHostKeyVerifier.this.isUnknownKeyAccepted(host, key);
+            return this.isUnknownKeyAccepted(host, key);
         }
         catch(ConnectionCanceledException | ChecksumException e) {
             return false;
@@ -127,15 +126,14 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     @Override
     public void allow(final Host host, final PublicKey key, final boolean persist) {
         if(null == database) {
+            log.warn(String.format("Missing database %s", database));
             super.allow(host, key, persist);
         }
         else {
             try {
                 // Add the host key to the in-memory database
                 final OpenSSHKnownHosts.HostEntry entry
-                    = new OpenSSHKnownHosts.HostEntry(null, PreferencesFactory.get().getBoolean(
-                    "ssh.knownhosts.hostname.hash") ? hash(host.getHostname()) : host.getHostname(),
-                    KeyType.fromKey(key), key);
+                    = new OpenSSHKnownHosts.HostEntry(null, format(host), KeyType.fromKey(key), key);
                 database.entries().add(entry);
                 if(persist) {
                     if(file.attributes().getPermission().isWritable()) {
@@ -149,6 +147,11 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
                 super.allow(host, key, persist);
             }
         }
+    }
+
+    private static String format(final Host host) throws IOException {
+        final String hostname = host.getPort() != 22 ? String.format("[%s]:%d", host.getHostname(), host.getPort()) : host.getHostname();
+        return PreferencesFactory.get().getBoolean("ssh.knownhosts.hostname.hash") ? hash(hostname) : hostname;
     }
 
     /**
