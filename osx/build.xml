@@ -149,10 +149,11 @@
 
                 ant.echo "Start notarizing"
                 def notarize = "/usr/bin/xcrun altool --primary-bundle-id ch.sudo.cyberduck --notarize-app --output-format xml -f ${properties['build.deploy']}/${properties['app.name']}-${properties.version}.${properties.revision}.zip -t osx -u ${args[0]} -p ${args[1]}"
+                ant.echo "$notarize"
                 def nproc = notarize.execute()
                 nproc.waitFor()
                 if (nproc.exitValue() != 0) {
-                    ant.fail "Error notarizing: ${nproc.err.text}"
+                    ant.fail "Error notarizing (${nproc.exitValue()}) : ${nproc.err.text} - ${nproc.in.text}"
                 }
                 def plist = PlistUtility.parseXmlPlistText(nproc.in.text)
                 def requestId = plist['notarization-upload']['RequestUUID']
@@ -161,6 +162,7 @@
                 Thread.sleep(30000)
                 ant.echo "Start polling status"
                 def check = "/usr/bin/xcrun altool --notarization-info ${requestId} --output-format xml -u ${args[0]} -p ${args[1]}"
+                ant.echo "$check"
                 def exit = false
                 def status
                 while (!exit){
