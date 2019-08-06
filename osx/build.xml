@@ -156,7 +156,7 @@
                 }
                 def plist = PlistUtility.parseXmlPlistText(nproc.in.text)
                 def requestId = plist['notarization-upload']['RequestUUID']
-                ant.echo "RequestId is ${requestId}"
+                ant.echo "RequestUUID is ${requestId}"
 
                 Thread.sleep(30000)
                 ant.echo "Start polling status"
