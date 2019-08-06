@@ -166,7 +166,7 @@
                     def cproc = check.execute()
                     cproc.waitFor()
                     if (cproc.exitValue() != 0) {
-                        ant.fail "Error notarizing: ${cproc.err.text}"
+                        ant.fail "Error notarizing (${cproc.exitValue()}) : ${cproc.err.text} - ${cproc.in.text}"
                     }
                     plist = PlistUtility.parseXmlPlistText(cproc.in.text)
                     status = plist['notarization-info']['Status']
