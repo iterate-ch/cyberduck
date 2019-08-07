@@ -40,7 +40,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
@@ -63,8 +62,7 @@ public class SpectraVersioningFeatureTest {
         final Path bucket = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(bucket, null, new TransferStatus());
         final Versioning feature = new SpectraVersioningFeature(session);
-        feature.getConfiguration(bucket);
-        assertFalse(feature.getConfiguration(bucket).isEnabled());
+        assertTrue(feature.getConfiguration(bucket).isEnabled());
         new SpectraDeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
