@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
@@ -72,6 +73,8 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
             case HttpStatus.SC_GATEWAY_TIMEOUT:
             case HttpStatus.SC_BAD_GATEWAY:
                 return new ConnectionTimeoutException(buffer.toString(), failure);
+            case HttpStatus.SC_LOCKED:
+                return new LockedException(buffer.toString(), failure);
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
             case 429:
