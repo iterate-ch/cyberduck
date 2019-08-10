@@ -324,8 +324,7 @@ public class STSCredentialsConfigurator {
             Map<String, String> properties = allProfileProperties.get(profileName);
 
             if(properties.containsKey(propertyKey)) {
-                throw new IllegalArgumentException(
-                    "Duplicate property values for [" + propertyKey + "].");
+                log.warn("Duplicate property values for [" + propertyKey + "].");
             }
 
             properties.put(propertyKey, propertyValue);
