@@ -234,9 +234,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                                     segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
                                 try {
                                     // Test path length
-                                    Paths.get(segmentFile.getAbsolute());
+                                    Paths.get(segmentFile.getAbsolute()).toRealPath();
                                 }
-                                catch(InvalidPathException e) {
+                                catch(InvalidPathException | IOException e) {
                                     log.error(String.format("Failure to create path for segment %s. %s", segmentFile, e.getMessage()));
                                     segments.clear();
                                     break;
