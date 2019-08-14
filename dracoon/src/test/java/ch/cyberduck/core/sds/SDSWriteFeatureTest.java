@@ -19,8 +19,10 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -79,6 +81,14 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertNotEquals(version, out.getStatus());
+        }
+        // Read with previous version must fail
+        try {
+            new SDSReadFeature(session, nodeid).read(new Path(test.getAbsolute(), test.getType(), new PathAttributes().withVersionId(version.id)), new TransferStatus(), new DisabledConnectionCallback());
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
         }
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
