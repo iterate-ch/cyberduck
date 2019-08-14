@@ -168,8 +168,6 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
 
         private Long offset = 0L;
 
-        private VersionId versionId;
-
         public MultipartOutputStream(final String location, final Path file, final TransferStatus status) {
             this.location = location;
             this.file = file;
@@ -211,7 +209,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
                                     case HttpStatus.SC_CREATED:
                                         final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
                                             FileMetadata.class);
-                                        versionId = new VersionId(result.getId());
+                                        overall.setVersion(new VersionId(result.getId()));
                                     case HttpStatus.SC_NO_CONTENT:
                                         // Upload complete
                                         offset += content.length;
@@ -264,7 +262,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
                             case HttpStatus.SC_CREATED:
                                 final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
                                     FileMetadata.class);
-                                versionId = new VersionId(result.getId());
+                                overall.setVersion(new VersionId(result.getId()));
                             case HttpStatus.SC_NO_CONTENT:
                                 break;
                             default:
@@ -302,7 +300,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
         }
 
         public VersionId getVersionId() {
-            return versionId;
+            return overall.getVersion();
         }
     }
 }

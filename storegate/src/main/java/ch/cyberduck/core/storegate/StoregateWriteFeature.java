@@ -154,7 +154,9 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                                 case HttpStatus.SC_CREATED:
                                     final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
                                         FileMetadata.class);
-                                    return new VersionId(result.getId());
+                                    final VersionId version = new VersionId(result.getId());
+                                    status.setVersion(version);
+                                    return version;
                                 default:
                                     throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                         EntityUtils.toString(response.getEntity())));

@@ -159,7 +159,9 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                                                 final String value = reader.nextString();
                                                 switch(name) {
                                                     case "id":
-                                                        return new VersionId(value);
+                                                        final VersionId version = new VersionId(value);
+                                                        status.setVersion(version);
+                                                        return version;
                                                 }
                                             }
                                             reader.endObject();

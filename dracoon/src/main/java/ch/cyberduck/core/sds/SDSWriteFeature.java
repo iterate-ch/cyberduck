@@ -129,7 +129,9 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                             EntityUtils.consume(response.getEntity());
                         }
                         if(status.isComplete()) {
-                            return complete(uploadId, status);
+                            final VersionId version = complete(uploadId, status);
+                            status.setVersion(version);
+                            return version;
                         }
                         return new VersionId(null);
                     }
