@@ -23,6 +23,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCancelation;
@@ -168,6 +169,10 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private NonceGenerator nonces;
 
     private Object lockId;
+    /**
+     * Version after write
+     */
+    private VersionId version;
 
     public TransferStatus() {
         // Default
@@ -203,6 +208,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.filekey = copy.filekey;
         this.nonces = copy.nonces;
         this.lockId = copy.lockId;
+        this.version = copy.version;
     }
 
     /**
@@ -580,6 +586,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         return this;
     }
 
+    public VersionId getVersion() {
+        return version;
+    }
+
+    public void setVersion(final VersionId version) {
+        this.version = version;
+    }
+
+    public TransferStatus withVersion(final VersionId version) {
+        this.version = version;
+        return this;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
@@ -619,6 +638,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);
         sb.append(", renamed=").append(rename);
+        sb.append(", version=").append(version);
         sb.append('}');
         return sb.toString();
     }
