@@ -556,6 +556,7 @@ public class PathAttributes extends Attributes implements Serializable {
         sb.append(", storageClass='").append(storageClass).append('\'');
         sb.append(", encryption='").append(encryption).append('\'');
         sb.append(", versionId='").append(versionId).append('\'');
+        sb.append(", lockId='").append(lockId).append('\'');
         sb.append(", duplicate=").append(duplicate);
         sb.append(", revision=").append(revision);
         sb.append(", region='").append(region).append('\'');
