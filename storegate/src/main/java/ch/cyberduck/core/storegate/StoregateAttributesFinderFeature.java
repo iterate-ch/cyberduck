@@ -51,6 +51,9 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         attrs.setModificationDate(f.getModified().getMillis());
         attrs.setCreationDate(f.getCreated().getMillis());
         attrs.setSize(f.getSize());
+        if((f.getFlags() & File.FlagsEnum.Locked.getValue()) == File.FlagsEnum.Locked.getValue()) {
+            attrs.setLockId(Boolean.TRUE);
+        }
         return attrs;
     }
 }

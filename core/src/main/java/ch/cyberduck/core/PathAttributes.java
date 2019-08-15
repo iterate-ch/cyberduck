@@ -89,6 +89,11 @@ public class PathAttributes extends Attributes implements Serializable {
     private String versionId;
 
     /**
+     * Lock id
+     */
+    private Object lockId;
+
+    /**
      * Should be hidden in the browser by default
      */
     private Boolean duplicate;
@@ -356,6 +361,15 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public PathAttributes withVersionId(final String versionId) {
         this.setVersionId(versionId);
+        return this;
+    }
+
+    public Object getLockId() {
+        return lockId;
+    }
+
+    public PathAttributes setLockId(final Object lockId) {
+        this.lockId = lockId;
         return this;
     }
 
