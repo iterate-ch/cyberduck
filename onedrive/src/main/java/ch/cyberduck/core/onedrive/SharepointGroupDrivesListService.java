@@ -24,13 +24,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
 
-import org.apache.log4j.Logger;
-import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.onedrive.client.GroupDrivesIterator;
 import org.nuxeo.onedrive.client.resources.GroupItem;
 
 public class SharepointGroupDrivesListService extends AbstractDriveListService {
-    private static final Logger log = Logger.getLogger(SharepointGroupDrivesListService.class);
 
     private final GraphSession session;
     private final IdProvider idProvider;
@@ -49,6 +46,7 @@ public class SharepointGroupDrivesListService extends AbstractDriveListService {
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
+        idProvider.withCache(cache);
         return this;
     }
 }
