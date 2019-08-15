@@ -52,7 +52,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         attrs.setCreationDate(f.getCreated().getMillis());
         attrs.setSize(f.getSize());
         if((f.getFlags() & File.FlagsEnum.Locked.getValue()) == File.FlagsEnum.Locked.getValue()) {
-            attrs.setLockId(Boolean.TRUE);
+            attrs.setLockId(Boolean.TRUE.toString());
         }
         return attrs;
     }
