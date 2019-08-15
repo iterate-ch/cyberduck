@@ -89,6 +89,11 @@ public class PathAttributes extends Attributes implements Serializable {
     private String versionId;
 
     /**
+     * Lock id
+     */
+    private String lockId;
+
+    /**
      * Should be hidden in the browser by default
      */
     private Boolean duplicate;
@@ -151,6 +156,7 @@ public class PathAttributes extends Attributes implements Serializable {
         storageClass = copy.storageClass;
         encryption = copy.encryption;
         versionId = copy.versionId;
+        lockId = copy.lockId;
         duplicate = copy.duplicate;
         revision = copy.revision;
         region = copy.region;
@@ -192,6 +198,9 @@ public class PathAttributes extends Attributes implements Serializable {
         }
         if(StringUtils.isNotBlank(versionId)) {
             dict.setStringForKey(versionId, "Version");
+        }
+        if(StringUtils.isNotBlank(lockId)) {
+            dict.setStringForKey(lockId, "LockId");
         }
         if(duplicate != null) {
             dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
@@ -356,6 +365,15 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public PathAttributes withVersionId(final String versionId) {
         this.setVersionId(versionId);
+        return this;
+    }
+
+    public String getLockId() {
+        return lockId;
+    }
+
+    public PathAttributes setLockId(final String lockId) {
+        this.lockId = lockId;
         return this;
     }
 
@@ -538,6 +556,7 @@ public class PathAttributes extends Attributes implements Serializable {
         sb.append(", storageClass='").append(storageClass).append('\'');
         sb.append(", encryption='").append(encryption).append('\'');
         sb.append(", versionId='").append(versionId).append('\'');
+        sb.append(", lockId='").append(lockId).append('\'');
         sb.append(", duplicate=").append(duplicate);
         sb.append(", revision=").append(revision);
         sb.append(", region='").append(region).append('\'');
