@@ -91,7 +91,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Lock id
      */
-    private Object lockId;
+    private String lockId;
 
     /**
      * Should be hidden in the browser by default
@@ -156,6 +156,7 @@ public class PathAttributes extends Attributes implements Serializable {
         storageClass = copy.storageClass;
         encryption = copy.encryption;
         versionId = copy.versionId;
+        lockId = copy.lockId;
         duplicate = copy.duplicate;
         revision = copy.revision;
         region = copy.region;
@@ -197,6 +198,9 @@ public class PathAttributes extends Attributes implements Serializable {
         }
         if(StringUtils.isNotBlank(versionId)) {
             dict.setStringForKey(versionId, "Version");
+        }
+        if(StringUtils.isNotBlank(lockId)) {
+            dict.setStringForKey(lockId, "LockId");
         }
         if(duplicate != null) {
             dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
@@ -364,11 +368,11 @@ public class PathAttributes extends Attributes implements Serializable {
         return this;
     }
 
-    public Object getLockId() {
+    public String getLockId() {
         return lockId;
     }
 
-    public PathAttributes setLockId(final Object lockId) {
+    public PathAttributes setLockId(final String lockId) {
         this.lockId = lockId;
         return this;
     }
