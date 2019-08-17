@@ -44,9 +44,7 @@ public class NetworkInterfaceAwareSocketFactory extends SocketFactory {
     private static final Logger log = Logger.getLogger(NetworkInterfaceAwareSocketFactory.class);
 
     private final Proxy proxy;
-
     private final List<String> blacklisted;
-
     private final SocketFactory delegate;
 
     public NetworkInterfaceAwareSocketFactory() {
@@ -150,7 +148,7 @@ public class NetworkInterfaceAwareSocketFactory extends SocketFactory {
 
     /**
      * @param network Network interface index
-     * @throws UnknownHostException
+     * @throws UnknownHostException DNS error
      */
     private Inet6Address getByAddressForInterface(final NetworkInterface network, final InetAddress address) throws UnknownHostException {
         // Append network interface. Workaround for issue #8802
