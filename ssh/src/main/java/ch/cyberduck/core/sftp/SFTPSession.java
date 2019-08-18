@@ -226,23 +226,31 @@ public class SFTPSession extends Session<SSHClient> {
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final List<AuthenticationProvider<Boolean>> methods = new ArrayList<AuthenticationProvider<Boolean>>();
         final Credentials credentials = host.getCredentials();
-        if(credentials.isAnonymousLogin()) {
-            methods.add(new SFTPNoneAuthentication(this));
+        if(new SFTPNoneAuthentication(this).authenticate(host, prompt, cancel)) {
+            return;
         }
-        else {
-            if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-                switch(Factory.Platform.getDefault()) {
-                    case windows:
-                        methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
-                        break;
-                    default:
-                        methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
-                        break;
-                }
+        for(String method : client.getUserAuth().getAllowedMethods()) {
+            switch(method) {
+                case "password":
+                    methods.add(new SFTPPasswordAuthentication(this));
+                    break;
+                case "publickey":
+                    if(preferences.getBoolean("ssh.authentication.agent.enable")) {
+                        switch(Factory.Platform.getDefault()) {
+                            case windows:
+                                methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
+                                break;
+                            default:
+                                methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
+                                break;
+                        }
+                    }
+                    methods.add(new SFTPPublicKeyAuthentication(this));
+                    break;
+                case "keyboard-interactive":
+                    methods.add(new SFTPChallengeResponseAuthentication(this));
+                    break;
             }
-            methods.add(new SFTPPublicKeyAuthentication(this));
-            methods.add(new SFTPChallengeResponseAuthentication(this));
-            methods.add(new SFTPPasswordAuthentication(this));
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods", methods.size()));
