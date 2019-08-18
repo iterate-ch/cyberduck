@@ -226,8 +226,13 @@ public class SFTPSession extends Session<SSHClient> {
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final List<AuthenticationProvider<Boolean>> methods = new ArrayList<AuthenticationProvider<Boolean>>();
         final Credentials credentials = host.getCredentials();
-        if(new SFTPNoneAuthentication(this).authenticate(host, prompt, cancel)) {
-            return;
+        try {
+            if(new SFTPNoneAuthentication(this).authenticate(host, prompt, cancel)) {
+                return;
+            }
+        }
+        catch(LoginFailureException e) {
+            // Expected. The main purpose of sending this request is to get the list of supported methods from the server
         }
         for(String method : client.getUserAuth().getAllowedMethods()) {
             switch(method) {
