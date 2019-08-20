@@ -100,9 +100,11 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            if(preferences.getBoolean("azure.upload.snapshot")) {
-                session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlobReferenceFromServer(containerService.getKey(file)).createSnapshot();
+            if(status.isExists()) {
+                if(preferences.getBoolean("azure.upload.snapshot")) {
+                    session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                        .getBlobReferenceFromServer(containerService.getKey(file)).createSnapshot();
+                }
             }
             final CloudAppendBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
                 .getAppendBlobReference(containerService.getKey(file));
