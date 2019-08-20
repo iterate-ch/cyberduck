@@ -65,10 +65,10 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     private final OperationContext context;
 
     private final PathContainerService containerService
-            = new AzurePathContainerService();
+        = new AzurePathContainerService();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     public AzureWriteFeature(final AzureSession session, final OperationContext context) {
         super(session);
@@ -100,8 +100,12 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     @Override
     public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
+            if(preferences.getBoolean("azure.upload.snapshot")) {
+                session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                    .getBlobReferenceFromServer(containerService.getKey(file)).createSnapshot();
+            }
             final CloudAppendBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getAppendBlobReference(containerService.getKey(file));
+                .getAppendBlobReference(containerService.getKey(file));
             if(StringUtils.isNotBlank(status.getMime())) {
                 blob.getProperties().setContentType(status.getMime());
             }
