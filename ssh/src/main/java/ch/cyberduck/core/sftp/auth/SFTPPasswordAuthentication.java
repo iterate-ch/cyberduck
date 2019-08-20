@@ -25,7 +25,6 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
-import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.sftp.SFTPExceptionMappingService;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -116,8 +115,7 @@ public class SFTPPasswordAuthentication implements AuthenticationProvider<Boolea
             return session.getClient().isAuthenticated();
         }
         catch(IOException e) {
-            final BackgroundException failure = new SFTPExceptionMappingService().map(e);
-            throw new LoginFailureException(failure.getDetail(), failure);
+            throw new SFTPExceptionMappingService().map(e);
         }
     }
 }
