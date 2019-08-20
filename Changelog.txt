@@ -12,6 +12,7 @@ https://cyberduck.io/
 - [Bugfix] Number of buckets displayed in browser limited to 1000 (Google Storage)
 - [Bugfix] Fails to authenticate where keyboard-interactive mechanism is not supported (SFTP) (#10714)
 - [Bugfix] Errors accessing vault (OneDrive, Cryptomator)
+- [Bugfix] No route to host error with IPv6 only server (macOS)
 
 7.0.2
 - [Bugfix] Failure configuring CloudFront distributions (S3) (#10755)
