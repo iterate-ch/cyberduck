@@ -50,7 +50,8 @@ public class SimplePathPredicate implements CacheReference<Path> {
 
     @Override
     public boolean test(final Path test) {
-        return this.hashCode() == new SimplePathPredicate(test).hashCode();
+        return type.equals(test.isSymbolicLink() ? Path.Type.symboliclink : test.isFile() ? Path.Type.file : Path.Type.directory)
+            && path.equals(normalizer.normalize(test.getAbsolute()).toString());
     }
 
     @Override
