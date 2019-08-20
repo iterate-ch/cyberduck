@@ -224,7 +224,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         this.setDefault("connection.ssl.keystore.type", "KeychainStore");
         this.setDefault("connection.ssl.keystore.provider", "Apple");
 
-        this.setDefault("network.interface.blacklist", "awdl0 utun0");
+        this.setDefault("network.interface.blacklist", "awdl0 utun0 utun1 utun2 utun3 utun4");
 
         this.setDefault("browser.window.tabbing.identifier", "browser.window.tabbing.identifier");
         // Allow to show transfers in browser window as tab
