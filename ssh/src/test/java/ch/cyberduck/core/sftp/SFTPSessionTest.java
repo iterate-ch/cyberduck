@@ -107,7 +107,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                                       String title, String reason, LoginOptions options)
                 throws LoginCanceledException {
                 assertEquals("Login test.cyberduck.ch", title);
-                assertEquals("Login failed. Exhausted available authentication methods. Please contact your web hosting service provider for assistance. Please contact your web hosting service provider for assistance.", reason);
+                assertEquals("Login failed. Exhausted available authentication methods. Please contact your web hosting service provider for assistance.", reason);
                 fail.set(true);
                 throw new LoginCanceledException();
             }
