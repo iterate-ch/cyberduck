@@ -11,6 +11,7 @@ https://cyberduck.io/
 - [Feature] Support for me-south-1 (Bahrain) region (S3)
 - [Bugfix] Number of buckets displayed in browser limited to 1000 (Google Storage)
 - [Bugfix] Fails to authenticate where keyboard-interactive mechanism is not supported (SFTP) (#10714)
+- [Bugfix] Errors accessing vault (OneDrive, Cryptomator)
 
 7.0.2
 - [Bugfix] Failure configuring CloudFront distributions (S3) (#10755)
