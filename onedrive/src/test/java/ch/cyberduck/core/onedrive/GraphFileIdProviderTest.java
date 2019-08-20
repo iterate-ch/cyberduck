@@ -1,9 +1,12 @@
 package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -12,6 +15,7 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
@@ -36,5 +40,7 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
 
         assertEquals(fileId, path33WithId.attributes().getVersionId());
         assertNotEquals(fileId, path2RWithId.attributes().getVersionId());
+
+        new GraphDeleteFeature(session).delete(Arrays.asList(path2RWithId, path33WithId), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
