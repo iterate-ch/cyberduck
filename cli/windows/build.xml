@@ -63,9 +63,7 @@
 
     <target name="package" depends="init-msbuild, version">
         <condition property="msbuild.sign" value="false">
-            <and>
-                <istrue value="${skip}" />
-            </and>
+            <istrue value="${skip}" />
         </condition>
         <property name="msbuild.sign" value="" />
 
