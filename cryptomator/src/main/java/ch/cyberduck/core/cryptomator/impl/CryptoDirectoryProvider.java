@@ -16,7 +16,6 @@ package ch.cyberduck.core.cryptomator.impl;
  */
 
 import ch.cyberduck.core.CacheReference;
-import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
@@ -118,14 +117,14 @@ public class CryptoDirectoryProvider {
             return ROOT_DIR_ID;
         }
         if(StringUtils.isBlank(directoryId)) {
-            if(cache.contains(new DefaultPathPredicate(directory))) {
-                return cache.get(new DefaultPathPredicate(directory));
+            if(cache.contains(new SimplePathPredicate(directory))) {
+                return cache.get(new SimplePathPredicate(directory));
             }
             final String id = this.load(session, directory);
-            cache.put(new DefaultPathPredicate(directory), id);
+            cache.put(new SimplePathPredicate(directory), id);
             return id;
         }
-        cache.put(new DefaultPathPredicate(directory), directoryId);
+        cache.put(new SimplePathPredicate(directory), directoryId);
         return directoryId;
     }
 
@@ -151,7 +150,7 @@ public class CryptoDirectoryProvider {
      * Remove from cache
      */
     public void delete(final Path directory) {
-        cache.remove(new DefaultPathPredicate(directory));
+        cache.remove(new SimplePathPredicate(directory));
     }
 
     public void destroy() {
