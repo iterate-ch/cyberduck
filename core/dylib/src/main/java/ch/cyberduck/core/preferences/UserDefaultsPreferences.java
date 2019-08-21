@@ -75,7 +75,9 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             // Missing in default. Lookup in Info.plist
             NSObject plist = bundle.infoDictionary().objectForKey(property);
             if(null == plist) {
-                log.warn(String.format("No default value for property %s", property));
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("No default value for property %s", property));
+                }
                 return null;
             }
             return plist.toString();
