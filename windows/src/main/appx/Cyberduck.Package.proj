@@ -1,4 +1,4 @@
-<Project>
+<Project TreatAsLocalProperty="SignOutput">
   <Import Project="Sdk.props" Sdk="Microsoft.Build.NoTargets" />
 
   <PropertyGroup>
