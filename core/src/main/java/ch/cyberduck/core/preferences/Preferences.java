@@ -773,6 +773,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("googledrive.list.limit", String.valueOf(1000));
         this.setDefault("googledrive.teamdrive.enable", String.valueOf(true));
         this.setDefault("googledrive.delete.trash", String.valueOf(true));
+        // Limit the number of requests to 10 per second which is equal the user quota
+        this.setDefault("googledrive.limit.requests.second", String.valueOf(10));
 
         this.setDefault("b2.bucket.acl.default", "allPrivate");
         this.setDefault("b2.listing.chunksize", String.valueOf(1000));
