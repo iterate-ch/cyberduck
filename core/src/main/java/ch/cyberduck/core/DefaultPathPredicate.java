@@ -67,6 +67,9 @@ public class DefaultPathPredicate implements CacheReference<Path> {
         return false;
     }
 
+    /**
+     * @return Matches hash code of NSObjectPathReference
+     */
     @Override
     public int hashCode() {
         return reference.hashCode();

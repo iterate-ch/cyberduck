@@ -35,7 +35,9 @@ public final class CaseInsensitivePathPredicate implements CacheReference<Path> 
             return false;
         }
         if(o instanceof CacheReference) {
-            return this.hashCode() == o.hashCode();
+            if(this.hashCode() == o.hashCode()) {
+                return this.toString().equals(o.toString());
+            }
         }
         return false;
     }
@@ -47,6 +49,11 @@ public final class CaseInsensitivePathPredicate implements CacheReference<Path> 
 
     @Override
     public boolean test(final Path test) {
-        return this.hashCode() == new CaseInsensitivePathPredicate(test).hashCode();
+        return this.equals(new CaseInsensitivePathPredicate(test));
+    }
+
+    @Override
+    public String toString() {
+        return "[" + type + "]" + "-" + path;
     }
 }
