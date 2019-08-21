@@ -13,10 +13,10 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
-    <SignOutput>false</SignOutput>
+    <SignOutput Condition=" '$(SignOutput)' == '' ">false</SignOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <SignOutput>true</SignOutput>
+    <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cyberduck Bootstrapper.wxs" />

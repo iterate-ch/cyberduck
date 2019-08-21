@@ -22,9 +22,11 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <AppxDirectory>$(OutputPath)debug\</AppxDirectory>
+    <SignOutput Condition=" '$(SignOutput)' == '' ">false</SignOutput>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <AppxDirectory>$(OutputPath)release\</AppxDirectory>
+    <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -288,7 +290,7 @@
     <Exec Command="MakeAppx pack /d &quot;$(PackageFiles)&quot; /p &quot;$(OutputFilename)&quot; /v /o"/>
   </Target>
   
-  <Target Name="SignAppx" Condition="'$(Configuration)' == 'Release'" DependsOnTargets="UsesSignTool">
+  <Target Name="SignAppx" Condition=" '$(SignOutput)' == 'true' " DependsOnTargets="UsesSignTool">
     <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm &quot;$(OutputFilename)&quot;"/>
   </Target>
 

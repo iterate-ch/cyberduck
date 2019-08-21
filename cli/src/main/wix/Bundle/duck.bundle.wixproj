@@ -12,11 +12,11 @@
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-  <SignOutput>false</SignOutput>
+    <SignOutput Condition=" '$(SignOutput)' == '' ">false</SignOutput>
     <DefineConstants>Debug</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-  <SignOutput>true</SignOutput>
+    <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cyberduck CLI-WiX.wxs" />
