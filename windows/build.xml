@@ -86,10 +86,13 @@
                 <include name="*.ico"/>
             </fileset>
         </copy>
-        
+
         <condition property="msbuild.sign" value="false">
-            <isset property="skip" />
+            <and>
+                <istrue value="${skip}" />
+            </and>
         </condition>
+        <property name="msbuild.sign" value="" />
 
         <msbuild buildfile="src/main/wix/WindowsVersionCustomAction/WindowsVersionCustomAction.vcxproj">
             <target name="Build" />

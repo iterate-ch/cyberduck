@@ -63,8 +63,11 @@
 
     <target name="package" depends="init-msbuild, version">
         <condition property="msbuild.sign" value="false">
-            <isset property="skip" />
+            <and>
+                <istrue value="${skip}" />
+            </and>
         </condition>
+        <property name="msbuild.sign" value="" />
 
         <msbuild buildfile="../src/main/wix/Bundle/duck.bundle.wixproj">
             <target name="Build" />
