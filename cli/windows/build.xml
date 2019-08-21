@@ -62,6 +62,10 @@
     </target>
 
     <target name="package" depends="init-msbuild, version">
+        <condition property="msbuild.sign" value="false">
+            <isset property="skip" />
+        </condition>
+
         <msbuild buildfile="../src/main/wix/Bundle/duck.bundle.wixproj">
             <target name="Build" />
 
@@ -70,6 +74,7 @@
             <property name="ShortVersion" value="${version} (${revision})" />
             <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="SignOutput" value="${msbuild.sign}" />
         </msbuild>
         <msbuild buildfile="../src/main/wix/Bootstrapper/duck.bootstrapper.wixproj">
             <target name="Build" />
@@ -79,6 +84,7 @@
             <property name="ShortVersion" value="${version} (${revision})" />
             <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="SignOutput" value="${msbuild.sign}" />
         </msbuild>
     </target>
 
