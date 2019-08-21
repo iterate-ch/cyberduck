@@ -26,7 +26,7 @@ Libre file transfer client for macOS and Windows. Command line interface (CLI) f
 
 ## Building
 
-Run `mvn verify -DskipTests` to build without running any tests.
+Run `mvn verify -DskipTests -DskipSign` to build without running any tests and skip codesign.
 
 ### Windows
 
