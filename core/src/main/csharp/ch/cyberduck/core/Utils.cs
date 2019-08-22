@@ -581,14 +581,22 @@ namespace Ch.Cyberduck.Core
             {
                 var os = Environment.OSVersion.Version;
 
+                if (os.Major < version.Major)
+                {
+                	return false;
+                }
+
+                if (os.Minor < version.Minor)
+                {
+                	return false;
+                }
+
                 if (version.Build != 0)
                 {
-                    if (os.Build >= version.Build)
-                    {
-                        return true;
-                    }
+					return os.Build >= version.Build;
                 }
-                return os.Major >= version.Major && os.Minor >= version.Minor;
+                
+                return true;
             }
         }
     }
