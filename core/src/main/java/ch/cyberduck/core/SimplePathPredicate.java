@@ -38,7 +38,9 @@ public class SimplePathPredicate implements CacheReference<Path> {
             return false;
         }
         if(o instanceof CacheReference) {
-            return this.hashCode() == o.hashCode();
+            if(this.hashCode() == o.hashCode()) {
+                return this.toString().equals(o.toString());
+            }
         }
         return false;
     }
@@ -50,16 +52,11 @@ public class SimplePathPredicate implements CacheReference<Path> {
 
     @Override
     public boolean test(final Path test) {
-        return type.equals(test.isSymbolicLink() ? Path.Type.symboliclink : test.isFile() ? Path.Type.file : Path.Type.directory)
-            && path.equals(normalizer.normalize(test.getAbsolute()).toString());
+        return this.equals(new SimplePathPredicate(test));
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("SimplePathPredicate{");
-        sb.append("type=").append(type);
-        sb.append(", path='").append(path).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "[" + type + "]" + "-" + path;
     }
 }
