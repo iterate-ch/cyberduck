@@ -575,6 +575,7 @@ namespace Ch.Cyberduck.Core
                 public static readonly System.Version V1709 = new System.Version(10, 0, 16299);
                 public static readonly System.Version V1803 = new System.Version(10, 0, 17134);
                 public static readonly System.Version V1809 = new System.Version(10, 0, 17763);
+                public static readonly System.Version V1903 = new System.Version(10, 0, 18362);
             }
 
             public static bool IsVersion(System.Version version)
