@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" TreatAsLocalProperty="SignOutput" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)'))" />
   <PropertyGroup>
     <ProductVersion>3.11</ProductVersion>
@@ -10,11 +10,11 @@
     <DefineConstants>CyberduckDir=$(CyberduckDir);SetupDir=$(SetupDir)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-  <SignOutput>false</SignOutput>
+    <SignOutput Condition=" '$(SignOutput)' == '' ">false</SignOutput>
     <DefineConstants>Debug;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-  <SignOutput>true</SignOutput>
+  <SignOutput Condition=" '$(SignOutput)' == '' ">true</SignOutput>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Cyberduck CLI Bundle.wxs" />

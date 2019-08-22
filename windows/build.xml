@@ -87,6 +87,11 @@
             </fileset>
         </copy>
 
+        <condition property="msbuild.sign" value="false">
+            <istrue value="${skip}" />
+        </condition>
+        <property name="msbuild.sign" value="" />
+
         <msbuild buildfile="src/main/wix/WindowsVersionCustomAction/WindowsVersionCustomAction.vcxproj">
             <target name="Build" />
 
@@ -94,6 +99,7 @@
             <property name="ShortVersion" value="${version} (${revision})" />
             <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="SignOutput" value="${msbuild.sign}" />
         </msbuild>
         <msbuild buildfile="src/main/wix/Bundle/Cyberduck.Bundle.wixproj">
             <target name="Build" />
@@ -103,6 +109,7 @@
             <property name="ShortVersion" value="${version} (${revision})" />
             <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="SignOutput" value="${msbuild.sign}" />
         </msbuild>
 
         <msbuild buildfile="src/main/wix/Bootstrapper/Cyberduck.Bootstrapper.wixproj">
@@ -113,6 +120,7 @@
             <property name="ShortVersion" value="${version} (${revision})" />
             <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="SignOutput" value="${msbuild.sign}" />
         </msbuild>
         
         <msbuild buildfile="src/main/appx/Cyberduck.Package.proj">
@@ -121,6 +129,7 @@
             <property name="Version" value="${normalized.version}.0" />
             <property name="Copyright" value="${copyright}" />
             <property name="Configuration" value="${msbuild.configuration}" />
+            <property name="SignOutput" value="${msbuild.sign}" />
         </msbuild>
     </target>
 
