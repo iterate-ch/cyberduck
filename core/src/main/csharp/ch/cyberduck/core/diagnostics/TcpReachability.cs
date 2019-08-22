@@ -15,10 +15,6 @@
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 
-// Bug fixes, suggestions and comments should be sent to:
-// feedback@cyberduck.io
-// 
-
 using System;
 using System.Diagnostics;
 using System.Net;
