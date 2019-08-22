@@ -23,7 +23,9 @@ public class RendezvousCollectionTest {
         assertFalse(c.allowsEdit());
         bonjour.init();
         final Host h = new Host(new TestProtocol(Scheme.sftp), "h");
+        h.setUuid("a");
         bonjour.add("h_sftp", h);
+        assertEquals(h, c.lookup("a"));
         assertEquals(1, c.size());
         assertEquals(h, c.get(0));
         assertNotNull(c.get(0).getUuid());
