@@ -14,17 +14,16 @@
 // 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
 
+using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Cache;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using ch.cyberduck.core;
 using ch.cyberduck.core.diagnostics;
-using java.lang;
 using org.apache.log4j;
-using Process = System.Diagnostics.Process;
 
 namespace Ch.Cyberduck.Core.Diagnostics
 {
