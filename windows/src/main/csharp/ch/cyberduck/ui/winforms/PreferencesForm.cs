@@ -70,6 +70,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             defaultProtocolCombobox.ICImageList = ProtocolIconsImageList();
 
             showDownloadFolderDialogButton.Text = LocaleFactory.localizedString("Choose") + "…";
+            retriesUpDown.Maximum = PreferencesFactory.get().getInteger("connection.retry.max");
 
             #region Font Settings
 
