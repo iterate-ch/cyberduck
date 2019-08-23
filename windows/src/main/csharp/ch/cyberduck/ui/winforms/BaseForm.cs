@@ -500,7 +500,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             ImageList images = new ImageList();
             images.ImageSize = new Size(16, 16);
             images.ColorDepth = ColorDepth.Depth32Bit;
-            foreach (var icon in IconCache.Instance.GetProtocolIcons())
+            foreach (var icon in IconCache.Instance.GetProtocolIcons(16))
             {
                 images.Images.Add(icon.Key, icon.Value);
             }

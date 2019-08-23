@@ -69,10 +69,8 @@ namespace Ch.Cyberduck.Core.Resources
         private readonly Dictionary<int, IDictionary<String, Bitmap>> _protocolImages =
             new Dictionary<int, IDictionary<String, Bitmap>>();
 
-        /// <summary>
-        /// 16x16 protocol icons
-        /// </summary>
-        private IDictionary<String, Bitmap> _protocolIcons;
+        private readonly Dictionary<int, Dictionary<string, Bitmap>> _protocolIcons = new Dictionary<int, Dictionary<string, Bitmap>>();
+
 
         public static IconCache Instance
         {
@@ -384,17 +382,21 @@ namespace Ch.Cyberduck.Core.Resources
             return dict;
         }
 
-        public IDictionary<String, Bitmap> GetProtocolIcons()
+        public IDictionary<String, Bitmap> GetProtocolIcons(int size)
         {
-            if (null == _protocolIcons)
+            if (!_protocolIcons.TryGetValue(size, out var dict))
             {
-                _protocolIcons = new Dictionary<string, Bitmap>();
-                foreach (Protocol p in ProtocolFactory.get().find().toArray(new Protocol[] {}))
+                dict = new Dictionary<string, Bitmap>();
+
+                foreach (Protocol p in ProtocolFactory.get().find().toArray(new Protocol[] { }))
                 {
-                    _protocolIcons[p.disk()] = IconForName(p.icon(), 16);
+                    dict[p.icon()] = IconForName(p.icon(), size);
                 }
+
+                _protocolIcons.Add(size, dict);
             }
-            return _protocolIcons;
+
+            return dict;
         }
 
         private Icon GetFileIconFromExtension(string filename, bool isFolder, IconSize size, bool linkOverlay)
