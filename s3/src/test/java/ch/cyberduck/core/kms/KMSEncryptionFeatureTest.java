@@ -112,7 +112,7 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
 
     @Test(expected = ConnectionTimeoutException.class)
     public void testTimeout() throws Exception {
-        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, 1);
+        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session);
         try {
             kms.getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
             fail();
