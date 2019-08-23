@@ -601,6 +601,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.connectionRetryNumberStepper.setTarget(this.id());
         this.connectionRetryNumberStepper.setAction(Foundation.selector("connectionRetryNumberStepperClicked:"));
         this.connectionRetryNumberStepper.setIntValue(preferences.getInteger("connection.retry"));
+        this.connectionRetryNumberStepper.setMinValue(1);
+        this.connectionRetryNumberStepper.setMaxValue(preferences.getInteger("connection.retry.max"));
     }
 
     @Action
