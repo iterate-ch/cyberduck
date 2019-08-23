@@ -22,12 +22,28 @@ import ch.cyberduck.core.Resolver;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.ResolveCanceledException;
 import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.proxy.ProxyFinder;
+import ch.cyberduck.core.proxy.ProxySocketFactory;
+import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
+import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
+import ch.cyberduck.core.ssl.KeychainX509KeyManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
+import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
+import org.apache.http.HttpHost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
+
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 
 import com.amazonaws.ClientConfiguration;
@@ -63,5 +79,35 @@ public class CustomClientConfiguration extends ClientConfiguration {
                 this.setProxyHost(proxy.getHostname());
                 this.setProxyPort(proxy.getPort());
         }
+        final ThreadLocalHostnameDelegatingTrustManager trust = new ThreadLocalHostnameDelegatingTrustManager(
+            new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)), bookmark.getHostname());
+        this.getApacheHttpClientConfig().setSslSocketFactory(
+            new SSLConnectionSocketFactory(
+                new CustomTrustSSLProtocolSocketFactory(trust,
+                    new KeychainX509KeyManager(bookmark)),
+                new DisabledX509HostnameVerifier()
+            ) {
+                @Override
+                public Socket createSocket(final HttpContext context) throws IOException {
+                    return new ProxySocketFactory(bookmark.getProtocol(), new TrustManagerHostnameCallback() {
+                        @Override
+                        public String getTarget() {
+                            return ((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName();
+                        }
+                    }, proxyFinder).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
+                }
+
+                @Override
+                public Socket connectSocket(final int connectTimeout,
+                                            final Socket socket,
+                                            final HttpHost host,
+                                            final InetSocketAddress remoteAddress,
+                                            final InetSocketAddress localAddress,
+                                            final HttpContext context) throws IOException {
+                    trust.setTarget(remoteAddress.getHostName());
+                    return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
+                }
+            }
+        );
     }
 }
