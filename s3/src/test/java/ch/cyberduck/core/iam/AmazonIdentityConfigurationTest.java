@@ -65,7 +65,7 @@ public class AmazonIdentityConfigurationTest {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
             System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
-        final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host, 1);
+        final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host);
         final String username = UUID.randomUUID().toString();
         try {
             iam.create(username, "{}", new DisabledLoginCallback());
