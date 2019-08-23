@@ -20,6 +20,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -37,6 +38,9 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.model.StorageObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
 public class S3ObjectListService extends S3AbstractListService implements ListService {
@@ -89,7 +93,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
 
                 final StorageObject[] objects = chunk.getObjects();
                 for(StorageObject object : objects) {
-                    final String key = PathNormalizer.normalize(object.getKey());
+                    final String key = PathNormalizer.normalize(URLDecoder.decode(object.getKey(), StandardCharsets.UTF_8.name()));
                     if(String.valueOf(Path.DELIMITER).equals(key)) {
                         log.warn(String.format("Skipping prefix %s", key));
                         continue;
@@ -142,6 +146,9 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 throw new NotfoundException(directory.getAbsolute());
             }
             return children;
+        }
+        catch(UnsupportedEncodingException e) {
+            throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);

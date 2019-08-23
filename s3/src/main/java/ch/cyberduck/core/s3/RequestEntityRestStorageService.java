@@ -36,13 +36,22 @@ import org.jets3t.service.Constants;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.StorageObjectsChunk;
+import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
+import org.jets3t.service.impl.rest.httpclient.HttpMethodReleaseInputStream;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
+import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.model.WebsiteConfig;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RequestEntityRestStorageService extends RestS3Service {
@@ -143,6 +152,212 @@ public class RequestEntityRestStorageService extends RestS3Service {
                                        Map<String, String> requestParameters) throws ServiceException {
         return super.getObjectImpl(headOnly, bucketName, objectKey, ifModifiedSince, ifUnmodifiedSince, ifMatchTags, ifNoneMatchTags, byteRangeStart, byteRangeEnd,
             versionId, requestHeaders, requestParameters);
+    }
+
+    @Override
+    protected StorageObjectsChunk listObjectsInternal(
+        String bucketName, String prefix, String delimiter, long maxListingLength,
+        boolean automaticallyMergeChunks, String priorLastKey) throws ServiceException {
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("encoding-type", "url");
+        if(prefix != null) {
+            parameters.put("prefix", prefix);
+        }
+        if(delimiter != null) {
+            parameters.put("delimiter", delimiter);
+        }
+        if(maxListingLength > 0) {
+            parameters.put("max-keys", String.valueOf(maxListingLength));
+        }
+
+        List<StorageObject> objects = new ArrayList<StorageObject>();
+        List<String> commonPrefixes = new ArrayList<String>();
+
+        boolean incompleteListing = true;
+        int ioErrorRetryCount = 0;
+
+        while(incompleteListing) {
+            if(priorLastKey != null) {
+                parameters.put("marker", priorLastKey);
+            }
+            else {
+                parameters.remove("marker");
+            }
+
+            HttpResponse httpResponse = performRestGet(bucketName, null, parameters, null);
+            XmlResponsesSaxParser.ListBucketHandler listBucketHandler;
+
+            try {
+                listBucketHandler = getXmlResponseSaxParser()
+                    .parseListBucketResponse(
+                        new HttpMethodReleaseInputStream(httpResponse));
+                ioErrorRetryCount = 0;
+            }
+            catch(ServiceException e) {
+                if(e.getCause() instanceof IOException && ioErrorRetryCount < 5) {
+                    ioErrorRetryCount++;
+                    log.warn("Retrying bucket listing failure due to IO error", e);
+                    continue;
+                }
+                else {
+                    throw e;
+                }
+            }
+
+            StorageObject[] partialObjects = listBucketHandler.getObjects();
+            if(log.isDebugEnabled()) {
+                log.debug("Found " + partialObjects.length + " objects in one batch");
+            }
+            objects.addAll(Arrays.asList(partialObjects));
+
+            String[] partialCommonPrefixes = listBucketHandler.getCommonPrefixes();
+            if(log.isDebugEnabled()) {
+                log.debug("Found " + partialCommonPrefixes.length + " common prefixes in one batch");
+            }
+            commonPrefixes.addAll(Arrays.asList(partialCommonPrefixes));
+
+            incompleteListing = listBucketHandler.isListingTruncated();
+            if(incompleteListing) {
+                priorLastKey = listBucketHandler.getMarkerForNextListing();
+                if(log.isDebugEnabled()) {
+                    log.debug("Yet to receive complete listing of bucket contents, "
+                        + "last key for prior chunk: " + priorLastKey);
+                }
+            }
+            else {
+                priorLastKey = null;
+            }
+
+            if(!automaticallyMergeChunks) {
+                break;
+            }
+        }
+        if(automaticallyMergeChunks) {
+            if(log.isDebugEnabled()) {
+                log.debug("Found " + objects.size() + " objects in total");
+            }
+            return new StorageObjectsChunk(
+                prefix, delimiter,
+                objects.toArray(new StorageObject[objects.size()]),
+                commonPrefixes.toArray(new String[commonPrefixes.size()]),
+                null);
+        }
+        else {
+            return new StorageObjectsChunk(
+                prefix, delimiter,
+                objects.toArray(new StorageObject[objects.size()]),
+                commonPrefixes.toArray(new String[commonPrefixes.size()]),
+                priorLastKey);
+        }
+    }
+
+    @Override
+    protected VersionOrDeleteMarkersChunk listVersionedObjectsInternal(
+        String bucketName, String prefix, String delimiter, long maxListingLength,
+        boolean automaticallyMergeChunks, String nextKeyMarker, String nextVersionIdMarker) throws S3ServiceException {
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("encoding-type", "url");
+        parameters.put("versions", null);
+        if(prefix != null) {
+            parameters.put("prefix", prefix);
+        }
+        if(delimiter != null) {
+            parameters.put("delimiter", delimiter);
+        }
+        if(maxListingLength > 0) {
+            parameters.put("max-keys", String.valueOf(maxListingLength));
+        }
+
+        List<BaseVersionOrDeleteMarker> items = new ArrayList<BaseVersionOrDeleteMarker>();
+        List<String> commonPrefixes = new ArrayList<String>();
+
+        boolean incompleteListing = true;
+        int ioErrorRetryCount = 0;
+
+        while(incompleteListing) {
+            if(nextKeyMarker != null) {
+                parameters.put("key-marker", nextKeyMarker);
+            }
+            else {
+                parameters.remove("key-marker");
+            }
+            if(nextVersionIdMarker != null) {
+                parameters.put("version-id-marker", nextVersionIdMarker);
+            }
+            else {
+                parameters.remove("version-id-marker");
+            }
+
+            HttpResponse httpResponse;
+            try {
+                httpResponse = performRestGet(bucketName, null, parameters, null);
+            }
+            catch(ServiceException se) {
+                throw new S3ServiceException(se);
+            }
+            XmlResponsesSaxParser.ListVersionsResultsHandler handler;
+
+            try {
+                handler = getXmlResponseSaxParser()
+                    .parseListVersionsResponse(
+                        new HttpMethodReleaseInputStream(httpResponse));
+                ioErrorRetryCount = 0;
+            }
+            catch(ServiceException se) {
+                if(se.getCause() instanceof IOException && ioErrorRetryCount < 5) {
+                    ioErrorRetryCount++;
+                    log.warn("Retrying bucket listing failure due to IO error", se);
+                    continue;
+                }
+                else {
+                    throw new S3ServiceException(se);
+                }
+            }
+
+            BaseVersionOrDeleteMarker[] partialItems = handler.getItems();
+            if(log.isDebugEnabled()) {
+                log.debug("Found " + partialItems.length + " items in one batch");
+            }
+            items.addAll(Arrays.asList(partialItems));
+
+            String[] partialCommonPrefixes = handler.getCommonPrefixes();
+            if(log.isDebugEnabled()) {
+                log.debug("Found " + partialCommonPrefixes.length + " common prefixes in one batch");
+            }
+            commonPrefixes.addAll(Arrays.asList(partialCommonPrefixes));
+
+            incompleteListing = handler.isListingTruncated();
+            nextKeyMarker = handler.getNextKeyMarker();
+            nextVersionIdMarker = handler.getNextVersionIdMarker();
+            if(incompleteListing) {
+                if(log.isDebugEnabled()) {
+                    log.debug("Yet to receive complete listing of bucket versions, "
+                        + "continuing with key-marker=" + nextKeyMarker
+                        + " and version-id-marker=" + nextVersionIdMarker);
+                }
+            }
+
+            if(!automaticallyMergeChunks) {
+                break;
+            }
+        }
+        if(automaticallyMergeChunks) {
+            if(log.isDebugEnabled()) {
+                log.debug("Found " + items.size() + " items in total");
+            }
+            return new VersionOrDeleteMarkersChunk(
+                prefix, delimiter,
+                items.toArray(new BaseVersionOrDeleteMarker[items.size()]),
+                commonPrefixes.toArray(new String[commonPrefixes.size()]),
+                null, null);
+        }
+        else {
+            return new VersionOrDeleteMarkersChunk(
+                prefix, delimiter,
+                items.toArray(new BaseVersionOrDeleteMarker[items.size()]),
+                commonPrefixes.toArray(new String[commonPrefixes.size()]),
+                nextKeyMarker, nextVersionIdMarker);
+        }
     }
 
     @Override

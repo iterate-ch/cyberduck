@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -40,6 +41,9 @@ import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import org.jets3t.service.model.S3Version;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -94,7 +98,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 // Amazon S3 returns object versions in the order in which they were
                 // stored, with the most recently stored returned first.
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {
-                    final String key = PathNormalizer.normalize(marker.getKey());
+                    final String key = PathNormalizer.normalize(URLDecoder.decode(marker.getKey(), StandardCharsets.UTF_8.name()));
                     if(String.valueOf(Path.DELIMITER).equals(key)) {
                         log.warn(String.format("Skipping prefix %s", key));
                         continue;
@@ -168,6 +172,9 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 throw new NotfoundException(directory.getAbsolute());
             }
             return children;
+        }
+        catch(UnsupportedEncodingException e) {
+            throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);
