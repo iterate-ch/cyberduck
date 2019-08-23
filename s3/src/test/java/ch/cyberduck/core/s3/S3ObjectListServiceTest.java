@@ -137,6 +137,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         container.attributes().setRegion("us-east-1");
         final Path placeholder = new S3TouchFeature(session).touch(
             new Path(container, String.format("<%%%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        assertTrue(new S3ObjectListService(session).list(container, new DisabledListProgressListener()).contains(placeholder));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
