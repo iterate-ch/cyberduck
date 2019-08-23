@@ -931,6 +931,7 @@ public abstract class Preferences implements Locales {
           Retry to connect after a I/O failure automatically
          */
         this.setDefault("connection.retry", String.valueOf(1));
+        this.setDefault("connection.retry.max", String.valueOf(20));
         /*
           In seconds
          */
