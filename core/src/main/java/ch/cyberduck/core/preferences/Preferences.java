@@ -117,6 +117,8 @@ public abstract class Preferences implements Locales {
         // TTL for DNS queries
         Security.setProperty("networkaddress.cache.ttl", "10");
         Security.setProperty("networkaddress.cache.negative.ttl", "5");
+        // Failure loading default key store with bouncycastle provider
+        System.setProperty("javax.net.ssl.trustStoreType", "JKS");
         // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
         final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
