@@ -240,6 +240,9 @@ namespace Ch.Cyberduck.Ui.Core.Resources
             return OverlayImages(image, icon);
         }
 
+        [Obsolete]
+        public static Image ResizeImage(Image image, int size) => _ResizeImage(image, size);
+
         private static Image GetCachedIconImage(string key, Func<Icon> iconGetter, Func<Image> defaultHandler)
         {
             if (!iconCache.TryGetValue(key, out var icon))
