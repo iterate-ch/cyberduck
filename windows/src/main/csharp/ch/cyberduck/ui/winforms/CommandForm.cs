@@ -19,8 +19,8 @@
 using System;
 using System.Drawing;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Core.Resources;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -33,7 +33,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitializeComponent();
 
             pictureBox.Image =
-                IconCache.Instance.ExtractIconFromExecutable(
+                IconCache.GetAppImage(
                     Environment.ExpandEnvironmentVariables(@"%windir%\system32\cmd.exe"), IconCache.IconSize.Large);
         }
 

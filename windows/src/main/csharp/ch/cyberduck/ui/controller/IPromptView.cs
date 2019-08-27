@@ -24,7 +24,7 @@ namespace Ch.Cyberduck.Ui.Controller
     public interface IPromptView : IView
     {
         string InputText { set; get; }
-        Bitmap IconView { set; }
+        Image IconView { set; }
 
         event ValidateInputHandler ValidateInput;
     }

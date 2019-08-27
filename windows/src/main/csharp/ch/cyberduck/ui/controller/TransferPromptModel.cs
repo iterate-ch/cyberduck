@@ -28,7 +28,7 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.worker;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Core.Date;
 using java.util;
@@ -55,7 +55,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /**
           * Transfer status determined by filters
           */
-        protected Bitmap AlertIcon = IconCache.Instance.IconForName("alert");
+        protected Image AlertIcon = IconCache.IconForName("alert");
 
         protected TransferPromptModel(TransferPromptController controller, SessionPool source, SessionPool destination, Transfer transfer)
         {
@@ -133,7 +133,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetIcon(TransferItem item)
         {
-            return IconCache.Instance.IconForPath(item.remote, IconCache.IconSize.Small);
+            return IconCache.IconForPath(item.remote, IconCache.IconSize.Small);
         }
 
         public bool IsSelected(TransferItem item)
