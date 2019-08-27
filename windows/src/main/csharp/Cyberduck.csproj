@@ -84,4 +84,20 @@
         </EmbeddedResource>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="ch\cyberduck\ResourcesBundle.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ResourcesBundle.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="ch\cyberduck\ResourcesBundle.resx">
+        <CustomToolNamespace>Ch.Cyberduck</CustomToolNamespace>
+        <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
+        <Generator>PublicResXFileCodeGenerator</Generator>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>
