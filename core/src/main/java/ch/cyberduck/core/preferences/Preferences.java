@@ -69,6 +69,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
+import ch.cyberduck.core.updater.DisabledUpdateCheckerArguments;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 import ch.cyberduck.core.vault.DisabledVault;
 import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
@@ -1066,6 +1067,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("archive.command.expand.gz", "gzip -d {0}");
         this.setDefault("archive.command.expand.bz2", "bzip2 -dk {0}");
 
+        this.setDefault("update.feed", "release");
         this.setDefault("update.feed.nightly.enable", String.valueOf(true));
         this.setDefault("update.feed.beta.enable", String.valueOf(true));
 
@@ -1317,6 +1319,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("factory.browserlauncher.class", DisabledBrowserLauncher.class.getName());
         this.setDefault("factory.reachability.class", DefaultInetAddressReachability.class.getName());
         this.setDefault("factory.updater.class", DisabledPeriodicUpdater.class.getName());
+        this.setDefault("factory.updater.arguments.class", DisabledUpdateCheckerArguments.class.getName());
         this.setDefault("factory.threadpool.class", DefaultThreadPool.class.getName());
         this.setDefault("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
         this.setDefault("factory.vault.class", DisabledVault.class.getName());

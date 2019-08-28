@@ -178,8 +178,6 @@ namespace Ch.Cyberduck.Core.Preferences
             this.setDefault("update.feed.beta", "https://version.cyberduck.io/windows/beta/changelog.rss");
             this.setDefault("update.feed.nightly", "https://version.cyberduck.io/windows/nightly/changelog.rss");
 
-            this.setDefault("update.feed", "release");
-
             // Importers
             this.setDefault("bookmark.import.winscp.location",
                 Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WinSCP.ini"));
