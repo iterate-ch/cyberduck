@@ -16,6 +16,7 @@ package ch.cyberduck.core.updater;
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -23,6 +24,7 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 import org.apache.log4j.Logger;
 
 import java.time.Duration;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -90,6 +92,14 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
 
     protected String getFeedUrl() {
         final StringBuilder url = new StringBuilder(preferences.getProperty(String.format("update.feed.%s", preferences.getProperty("update.feed"))));
+        final UpdateCheckerArguments arguments = UpdateCheckerArgumentsFactory.get();
+        final Map<String, String> set = arguments.build();
+        if(!set.isEmpty()) {
+            url.append("?");
+        }
+        for(Map.Entry<String, String> arg : set.entrySet()) {
+            url.append(URIEncoder.encode(arg.getKey())).append("=").append(URIEncoder.encode(arg.getValue()));
+        }
         if(log.isInfoEnabled()) {
             log.info(String.format("Setting update feed to %s", url));
         }
