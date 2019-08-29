@@ -428,7 +428,11 @@ public class CryptoVault implements Vault {
                 type.add(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file);
                 type.remove(Path.Type.encrypted);
                 type.add(Path.Type.decrypted);
-                return new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
+                final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
+                if(type.contains(Path.Type.symboliclink)) {
+                    decrypted.setSymlinkTarget(file.getSymlinkTarget());
+                }
+                return decrypted;
             }
             catch(AuthenticationFailedException e) {
                 throw new CryptoAuthenticationException(
