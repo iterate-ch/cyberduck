@@ -193,7 +193,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
             View.ToolbarS3Label = session.getHost().getProtocol().getName();
-            View.ToolbarS3Image = IconCache.GetProtocolDisk(session.getHost().getProtocol(), 32);
+            View.ToolbarS3Image = IconCache.GetProtocolIcon(session.getHost().getProtocol(), 32);
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof(AclPermission)) != null;
             if (anonymous)
@@ -209,7 +209,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (anonymous)
             {
                 View.ToolbarDistributionEnabled = false;
-                View.ToolbarDistributionImage = IconCache.GetProtocolDisk(new S3Protocol(), 32);
+                View.ToolbarDistributionImage = IconCache.GetProtocolIcon(new S3Protocol(), 32);
             }
             else
             {
@@ -217,11 +217,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.ToolbarDistributionEnabled = distribution;
                 if (distribution)
                 {
-                    View.ToolbarDistributionImage = IconCache.GetProtocolDisk(session.getHost().getProtocol(), 32);
+                    View.ToolbarDistributionImage = IconCache.GetProtocolIcon(session.getHost().getProtocol(), 32);
                 }
                 else
                 {
-                    View.ToolbarDistributionImage = IconCache.GetProtocolDisk(new S3Protocol(), 32);
+                    View.ToolbarDistributionImage = IconCache.GetProtocolIcon(new S3Protocol(), 32);
                 }
             }
             if (anonymous)
