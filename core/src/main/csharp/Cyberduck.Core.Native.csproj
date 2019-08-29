@@ -45,19 +45,9 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>Settings.settings</DependentUpon>
         </Compile>
-        <Compile Update="ch\cyberduck\ResourcesBundle.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ResourcesBundle.resx</DependentUpon>
-        </Compile>
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Update="ch\cyberduck\ResourcesBundle.resx">
-            <Generator>PublicResXFileCodeGenerator</Generator>
-            <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
-            <CustomToolNamespace>Ch.Cyberduck</CustomToolNamespace>
-        </EmbeddedResource>
         <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.strings" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
         <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.strings.1" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />
         <EmbeddedResource Include="$(CyberduckDir)i18n\src\main\resources\*.lproj\*.txt" Link="i18n/%(RecursiveDir)%(Filename)%(Extension)" />

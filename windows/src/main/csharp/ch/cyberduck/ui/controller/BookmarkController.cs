@@ -33,7 +33,7 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.util;
 using org.apache.log4j;
@@ -95,7 +95,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.OptionsVisible = PreferencesFactory.get().getBoolean(ToggleProperty);
 
             //set default favicon
-            View.Favicon = IconCache.Instance.IconForName("site", 16);
+            View.Favicon = IconCache.IconForName("site", 16);
 
             InitProtocols();
             InitPrivateKeys();
@@ -722,7 +722,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    _controller.View.Favicon = IconCache.Instance.IconForName("site", 16);
+                    _controller.View.Favicon = IconCache.IconForName("site", 16);
                 }
             }
         }

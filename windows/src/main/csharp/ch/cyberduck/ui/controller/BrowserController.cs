@@ -43,9 +43,9 @@ using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
-using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms;
 using java.lang;
 using java.text;
@@ -2245,30 +2245,19 @@ namespace Ch.Cyberduck.Ui.Controller
                     string editCommand = app != null ? app.getIdentifier() : null;
                     if (Utils.IsNotBlank(editCommand))
                     {
-                        try
-                        {
-                            Icon fileIconFromExecutable = IconCache.Instance.GetFileIconFromExecutable(
-                                WindowsApplicationLauncher.GetExecutableCommand(editCommand),
+                        View.EditIcon = IconCache.GetAppImage(
+                            WindowsApplicationLauncher.GetExecutableCommand(editCommand),
                                 IconCache.IconSize.Large);
-
-                            if (null != fileIconFromExecutable)
-                            {
-                                View.EditIcon = fileIconFromExecutable.ToBitmap();
-                                return;
-                            }
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                        }
+                        return;
                     }
                 }
             }
-            View.EditIcon = IconCache.Instance.IconForName("pencil", 32);
+            View.EditIcon = IconCache.IconForName("pencil", 32);
         }
 
         private void UpdateOpenIcon()
         {
-            View.OpenIcon = IconCache.Instance.GetDefaultBrowserIcon();
+            View.OpenIcon = IconCache.GetDefaultBrowserIcon();
         }
 
         private void View_BrowserSelectionChanged()

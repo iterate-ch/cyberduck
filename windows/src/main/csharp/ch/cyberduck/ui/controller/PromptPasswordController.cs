@@ -21,7 +21,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.vault;
 using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -50,7 +50,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Title = title;
                 View.Reason = new StringAppender().append(reason).toString();
                 View.OkButtonText = LocaleFactory.localizedString("Continue", "Credentials");
-                View.IconView = IconCache.Instance.IconForName(options.icon(), 64);
+                View.IconView = IconCache.IconForName(options.icon(), 64);
                 View.SavePasswordEnabled = options.keychain();
                 View.SavePasswordState = credentials.isSaved();
 

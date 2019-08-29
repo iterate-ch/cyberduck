@@ -24,9 +24,9 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
+using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Utils = Ch.Cyberduck.Core.Utils;
@@ -52,8 +52,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             ConfigureToolbar();
 
-            bandwithSplitButton.Image = IconCache.Instance.IconForName("bandwidth", 16);
-            showToolStripButton.Image = IconCache.Instance.IconForName("reveal");
+            bandwithSplitButton.Image = IconCache.IconForName("bandwidth", 16);
+            showToolStripButton.Image = IconCache.IconForName("reveal");
 
             transferListView.FullRowSelect = false;
             transferListView.HeaderStyle = ColumnHeaderStyle.None;
@@ -157,7 +157,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                             {
                                 if (!_currentImage.Equals("bandwidth"))
                                 {
-                                    bandwithSplitButton.Image = IconCache.Instance.IconForName("bandwidth", 16);
+                                    bandwithSplitButton.Image = IconCache.IconForName("bandwidth", 16);
                                     _currentImage = "bandwidth";
                                 }
                             }
@@ -165,7 +165,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                             {
                                 if (!_currentImage.Equals("turtle"))
                                 {
-                                    bandwithSplitButton.Image = IconCache.Instance.IconForName("turtle");
+                                    bandwithSplitButton.Image = IconCache.IconForName("turtle");
                                     _currentImage = "turtle";
                                 }
                             }
