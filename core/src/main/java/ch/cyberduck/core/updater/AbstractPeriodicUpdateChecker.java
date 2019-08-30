@@ -98,6 +98,9 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
             url.append("?");
         }
         for(Map.Entry<String, String> arg : set.entrySet()) {
+            if(!url.toString().endsWith("?")) {
+                url.append("&");
+            }
             url.append(URIEncoder.encode(arg.getKey())).append("=").append(URIEncoder.encode(arg.getValue()));
         }
         if(log.isInfoEnabled()) {
