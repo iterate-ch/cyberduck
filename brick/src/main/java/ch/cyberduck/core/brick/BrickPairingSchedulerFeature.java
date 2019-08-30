@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.CancelCallback;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
@@ -47,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 public class BrickPairingSchedulerFeature {
     private static final Logger log = Logger.getLogger(BrickPairingSchedulerFeature.class);
@@ -56,6 +58,8 @@ public class BrickPairingSchedulerFeature {
     private final Host host;
     private final CancelCallback cancel;
     protected final ScheduledThreadPool scheduler = new ScheduledThreadPool();
+
+    private Preferences preferences = PreferencesFactory.get();
 
     public BrickPairingSchedulerFeature(final BrickSession session, final String token, final Host host, final CancelCallback cancel) {
         this.session = session;
@@ -80,7 +84,7 @@ public class BrickPairingSchedulerFeature {
                 log.error(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
                 this.shutdown();
             }
-        }, PreferencesFactory.get().getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS);
+        }, preferences.getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS);
         return null;
     }
 
@@ -101,19 +105,23 @@ public class BrickPairingSchedulerFeature {
                     return parser.parse(new InputStreamReader(new ByteArrayInputStream(out.toByteArray()))).getAsJsonObject();
                 }
             });
+            if(json.has("nickname")) {
+                if(preferences.getBoolean("brick.pairing.nickname.configure")) {
+                    final JsonPrimitive nickname = json.getAsJsonPrimitive("nickname");
+                    if(StringUtils.isNotBlank(host.getNickname())) {
+                        if(!StringUtils.equals(host.getNickname(), nickname.getAsString())) {
+                            log.warn(String.format("Mismatch of nickname. Previously authorized as %s and now paired as %s",
+                                host.getNickname(), nickname.getAsString()));
+                            callback.close(null);
+                            throw new LoginCanceledException();
+                        }
+                    }
+                    host.setNickname(nickname.getAsString());
+                }
+            }
             final Credentials credentials = host.getCredentials();
             if(json.has("username")) {
-                if(StringUtils.isBlank(credentials.getUsername())) {
-                    credentials.setUsername(json.getAsJsonPrimitive("username").getAsString());
-                }
-                else {
-                    if(StringUtils.equals(credentials.getUsername(), json.getAsJsonPrimitive("username").getAsString())) {
-                        log.warn(String.format("Mismatch of username. Previously authorized as %s and now paired as %s",
-                            credentials.getUsername(), json.getAsJsonPrimitive("username").getAsString()));
-                        callback.close(null);
-                        throw new LoginCanceledException();
-                    }
-                }
+                credentials.setUsername(json.getAsJsonPrimitive("username").getAsString());
             }
             else {
                 throw new LoginFailureException(String.format("Invalid response for pairing key %s", token));
@@ -124,13 +132,8 @@ public class BrickPairingSchedulerFeature {
             else {
                 throw new LoginFailureException(String.format("Invalid response for pairing key %s", token));
             }
-            if(json.has("nickname")) {
-                if(PreferencesFactory.get().getBoolean("brick.pairing.nickname.configure")) {
-                    host.setNickname(json.getAsJsonPrimitive("nickname").getAsString());
-                }
-            }
             if(json.has("server")) {
-                if(PreferencesFactory.get().getBoolean("brick.pairing.hostname.configure")) {
+                if(preferences.getBoolean("brick.pairing.hostname.configure")) {
                     host.setHostname(URI.create(json.getAsJsonPrimitive("server").getAsString()).getHost());
                 }
             }
