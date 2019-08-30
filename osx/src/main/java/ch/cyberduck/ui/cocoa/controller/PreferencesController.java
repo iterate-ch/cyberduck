@@ -43,7 +43,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
@@ -178,7 +177,7 @@ public class PreferencesController extends ToolbarWindowController {
         views.put(new Label(PreferencesToolbarItem.bandwidth.name(), PreferencesToolbarItem.bandwidth.label()), panelBandwidth);
         views.put(new Label(PreferencesToolbarItem.connection.name(), PreferencesToolbarItem.connection.label()), panelAdvanced);
         views.put(new Label(PreferencesToolbarItem.cryptomator.name(), PreferencesToolbarItem.cryptomator.label()), panelCryptomator);
-        if(null != Updater.getFeed()) {
+        if(null != preferences.getDefault("SUExpectsDSASignature")) {
             views.put(new Label(PreferencesToolbarItem.update.name(), PreferencesToolbarItem.update.label()), panelUpdate);
         }
         views.put(new Label(PreferencesToolbarItem.language.name(), PreferencesToolbarItem.language.label()), panelLanguage);
@@ -2079,21 +2078,20 @@ public class PreferencesController extends ToolbarWindowController {
         this.updateFeedPopup.removeAllItems();
         this.updateFeedPopup.setAction(Foundation.selector("updateFeedPopupClicked:"));
         this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Release"));
-        this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.release"));
+        this.updateFeedPopup.lastItem().setRepresentedObject("release");
         if(preferences.getBoolean("update.feed.beta.enable")) {
             this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Beta"));
-            this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.beta"));
+            this.updateFeedPopup.lastItem().setRepresentedObject("beta");
         }
         if(preferences.getBoolean("update.feed.nightly.enable")) {
             this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Snapshot Builds"));
-            this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.nightly"));
+            this.updateFeedPopup.lastItem().setRepresentedObject("nightly");
         }
-        final String feed = preferences.getProperty(Updater.PROPERTY_FEED_URL);
+        final String feed = preferences.getProperty("update.feed");
         NSInteger selected = this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(feed);
         if(-1 == selected.intValue()) {
-            log.warn(String.format("Invalid feed setting:%s", feed));
-            this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(
-                preferences.getProperty("update.feed.release")));
+            log.warn(String.format("Invalid feed setting %s", feed));
+            this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject("release"));
         }
         else {
             this.updateFeedPopup.selectItemAtIndex(selected);
@@ -2102,15 +2100,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void updateFeedPopupClicked(NSPopUpButton sender) {
-        // Update sparkle feed property. Default is in Info.plist
-        String selected = sender.selectedItem().representedObject();
-        if(null == selected || preferences.getDefault(Updater.PROPERTY_FEED_URL).equals(selected)) {
-            // Remove custom value
-            preferences.deleteProperty(Updater.PROPERTY_FEED_URL);
-        }
-        else {
-            preferences.setProperty(Updater.PROPERTY_FEED_URL, selected);
-        }
+        preferences.setProperty("update.feed", sender.selectedItem().representedObject());
     }
 
     @Outlet

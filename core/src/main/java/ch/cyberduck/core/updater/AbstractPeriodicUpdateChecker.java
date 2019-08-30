@@ -16,14 +16,17 @@ package ch.cyberduck.core.updater;
  */
 
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
+import org.apache.log4j.Logger;
+
 import java.time.Duration;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChecker {
     private static final Logger log = Logger.getLogger(AbstractPeriodicUpdateChecker.class.getName());
@@ -31,6 +34,7 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
     private final Controller controller;
     private final Duration delay;
     private final Timer timer = new Timer("updater", true);
+    private final Preferences preferences = PreferencesFactory.get();
 
     /**
      * Defaults to 24 hours
@@ -56,8 +60,8 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
             timer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-                    if(log.isLoggable(Level.FINE)) {
-                        log.fine(String.format("Check for new updates after %s", delay));
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Check for new updates after %s", delay));
                     }
                     PreferencesFactory.get().setProperty("update.check.timestamp", System.currentTimeMillis());
                     controller.invoke(new DefaultMainAction() {
@@ -71,7 +75,7 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
             return delay;
         }
         catch(IllegalStateException e) {
-            log.warning(String.format("Failure scheduling timer. %s", e.getMessage()));
+            log.warn(String.format("Failure scheduling timer. %s", e.getMessage()));
             return Duration.ZERO;
         }
     }
@@ -84,5 +88,21 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
     @Override
     public boolean isUpdateInProgress() {
         return false;
+    }
+
+    protected String getFeedUrl() {
+        final StringBuilder url = new StringBuilder(preferences.getProperty(String.format("update.feed.%s", preferences.getProperty("update.feed"))));
+        final UpdateCheckerArguments arguments = UpdateCheckerArgumentsFactory.get();
+        final Map<String, String> set = arguments.build();
+        if(!set.isEmpty()) {
+            url.append("?");
+        }
+        for(Map.Entry<String, String> arg : set.entrySet()) {
+            url.append(URIEncoder.encode(arg.getKey())).append("=").append(URIEncoder.encode(arg.getValue()));
+        }
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Setting update feed to %s", url));
+        }
+        return url.toString();
     }
 }

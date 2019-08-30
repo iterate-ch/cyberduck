@@ -195,11 +195,6 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         this.setDefault("update.feed.release", "https://version.cyberduck.io/changelog.rss");
         this.setDefault("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");
         this.setDefault("update.feed.nightly", "https://version.cyberduck.io/nightly/changelog.rss");
-        // Fix #9395
-        if(!StringUtils.startsWith(this.getProperty(Updater.PROPERTY_FEED_URL), Scheme.https.name())) {
-            this.deleteProperty(Updater.PROPERTY_FEED_URL);
-            this.save();
-        }
 
         this.setDefault("bookmark.import.filezilla.location", "~/.config/filezilla/sitemanager.xml");
         this.setDefault("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");

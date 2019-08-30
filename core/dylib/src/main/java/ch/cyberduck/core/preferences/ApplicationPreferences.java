@@ -74,7 +74,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.terminalservice.class", ApplescriptTerminalService.class.getName());
         this.setDefault("factory.badgelabeler.class", WorkspaceApplicationBadgeLabeler.class.getName());
         this.setDefault("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
-        if(null == Updater.getFeed()) {
+        if(null == this.getDefault("SUExpectsDSASignature")) {
             this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
         }
         if(!Factory.Platform.osversion.matches("10\\.(5|6|7).*")) {

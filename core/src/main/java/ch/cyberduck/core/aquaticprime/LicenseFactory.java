@@ -157,7 +157,7 @@ public abstract class LicenseFactory extends Factory<License> {
 
         @Override
         public String getValue(String property) {
-            return null;
+            return LocaleFactory.localizedString("Unknown");
         }
 
         @Override

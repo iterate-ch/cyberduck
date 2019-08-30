@@ -22,7 +22,6 @@ package ch.cyberduck.core.sparkle;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.rococoa.ID;
@@ -31,23 +30,19 @@ import org.rococoa.ObjCClass;
 public abstract class Updater extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("SUUpdater", _Class.class);
 
-    public static final String PROPERTY_FEED_URL = "SUFeedURL";
-
-    public static Updater create() {
+    public static Updater create(final String useragent) {
         if(null == CLASS) {
             return null;
         }
         final Updater updater = CLASS.sharedUpdater();
-        updater.setUserAgentString(new PreferencesUseragentProvider().get());
+        updater.setAutomaticallyChecksForUpdates(false);
+        updater.setUserAgentString(useragent);
+        updater.setSendsSystemProfile(false);
         return updater;
     }
 
     public interface _Class extends ObjCClass {
         Updater sharedUpdater();
-    }
-
-    public static String getFeed() {
-        return PreferencesFactory.get().getDefault(PROPERTY_FEED_URL);
     }
 
     public abstract Updater init();
