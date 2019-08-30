@@ -41,6 +41,7 @@ import org.jets3t.service.model.StorageObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 public class S3ObjectListService extends S3AbstractListService implements ListService {
@@ -143,7 +144,15 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
             }
             while(priorLastKey != null);
             if(!hasDirectoryPlaceholder && children.isEmpty()) {
-                throw new NotfoundException(directory.getAbsolute());
+                // Only for AWS
+                if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                    throw new NotfoundException(directory.getAbsolute());
+                }
+                final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
+                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()), delimiter, 1, null);
+                if(!Arrays.asList(chunk.getCommonPrefixes()).contains(this.createPrefix(directory))) {
+                    throw new NotfoundException(directory.getAbsolute());
+                }
             }
             return children;
         }
