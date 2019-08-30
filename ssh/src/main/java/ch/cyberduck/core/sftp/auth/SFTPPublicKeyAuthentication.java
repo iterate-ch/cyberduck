@@ -34,7 +34,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.hierynomus.sshj.userauth.keyprovider.OpenSSHKeyV1KeyFile;
@@ -71,7 +71,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
             final AtomicBoolean canceled = new AtomicBoolean();
             try {
                 final KeyFormat format = KeyProviderUtil.detectKeyFileFormat(
-                    new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), true);
+                    new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8), true);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Reading private key %s with key format %s", identity, format));
                 }
@@ -94,7 +94,7 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
                     default:
                         throw new InteroperabilityException(String.format("Unknown key format for file %s", identity.getName()));
                 }
-                provider.init(new InputStreamReader(identity.getInputStream(), Charset.forName("UTF-8")), new PasswordFinder() {
+                provider.init(new InputStreamReader(identity.getInputStream(), StandardCharsets.UTF_8), new PasswordFinder() {
                     @Override
                     public char[] reqPassword(Resource<?> resource) {
                         if(StringUtils.isEmpty(credentials.getIdentityPassphrase())) {

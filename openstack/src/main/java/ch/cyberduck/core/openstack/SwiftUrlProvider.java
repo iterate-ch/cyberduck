@@ -40,7 +40,7 @@ import org.jets3t.service.Constants;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
@@ -160,12 +160,12 @@ public class SwiftUrlProvider implements UrlProvider {
     protected String sign(final String secret, final String body) {
         try {
             // Acquire an HMAC/SHA1 from the raw key bytes.
-            final SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(Charset.forName("UTF-8")),
+            final SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8),
                     Constants.HMAC_SHA1_ALGORITHM);
             // Acquire the MAC instance and initialize with the signing key.
             final Mac mac = Mac.getInstance(Constants.HMAC_SHA1_ALGORITHM);
             mac.init(signingKey);
-            return Hex.encodeHexString(mac.doFinal(body.getBytes(Charset.forName("UTF-8"))));
+            return Hex.encodeHexString(mac.doFinal(body.getBytes(StandardCharsets.UTF_8)));
         }
         catch(NoSuchAlgorithmException | InvalidKeyException e) {
             log.error(String.format("Error signing %s %s", body, e.getMessage()));

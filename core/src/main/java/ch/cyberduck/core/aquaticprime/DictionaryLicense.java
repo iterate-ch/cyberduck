@@ -31,7 +31,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
@@ -97,7 +97,7 @@ public abstract class DictionaryLicense extends AbstractLicense {
             values.append(dictionary.objectForKey(key).toString());
         }
         byte[] signaturebytes = signature.bytes();
-        byte[] plainbytes = values.toString().getBytes(Charset.forName("UTF-8"));
+        byte[] plainbytes = values.toString().getBytes(StandardCharsets.UTF_8);
         try {
             final BigInteger modulus = new BigInteger(StringUtils.removeStart(publicKey, "0x"), 16);
             final BigInteger exponent = new BigInteger(Base64.decodeBase64("Aw=="));

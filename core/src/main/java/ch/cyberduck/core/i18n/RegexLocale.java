@@ -29,7 +29,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -100,7 +100,7 @@ public class RegexLocale implements Locale {
     }
 
     private void load(final String table, final File file) throws IOException {
-        try (final LineNumberReader reader = new LineNumberReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-16")))) {
+        try (final LineNumberReader reader = new LineNumberReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_16))) {
             String line;
             while((line = reader.readLine()) != null) {
                 final Matcher matcher = pattern.matcher(line);

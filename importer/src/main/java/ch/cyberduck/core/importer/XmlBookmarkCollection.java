@@ -34,7 +34,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static final Logger log = Logger.getLogger(XmlBookmarkCollection.class);
@@ -84,7 +84,7 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
     protected void read(final ProtocolFactory protocols, final Local child) throws AccessDeniedException {
         try {
             final BufferedReader in = new BufferedReader(new InputStreamReader(child.getInputStream(),
-                    Charset.forName("UTF-8")));
+                StandardCharsets.UTF_8));
             AbstractHandler handler = this.getHandler(protocols);
             final XMLReader xr = XMLReaderFactory.createXMLReader();
             xr.setContentHandler(handler);
