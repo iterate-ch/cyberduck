@@ -124,7 +124,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                         log.warn(String.format("Skipping prefix %s", common));
                         continue;
                     }
-                    final String key = PathNormalizer.normalize(common);
+                    final String key = PathNormalizer.normalize(URLDecoder.decode(common, StandardCharsets.UTF_8.name()));
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
