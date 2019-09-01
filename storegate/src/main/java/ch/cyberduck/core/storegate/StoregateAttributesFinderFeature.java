@@ -48,8 +48,18 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
     public PathAttributes toAttributes(final File f) throws BackgroundException {
         final PathAttributes attrs = new PathAttributes();
         attrs.setVersionId(f.getId());
-        attrs.setModificationDate(f.getModified().getMillis());
-        attrs.setCreationDate(f.getCreated().getMillis());
+        if(0 != f.getModified().getMillis()) {
+            attrs.setModificationDate(f.getModified().getMillis());
+        }
+        else {
+            attrs.setModificationDate(f.getUploaded().getMillis());
+        }
+        if(0 != f.getCreated().getMillis()) {
+            attrs.setCreationDate(f.getCreated().getMillis());
+        }
+        else {
+            attrs.setCreationDate(f.getUploaded().getMillis());
+        }
         attrs.setSize(f.getSize());
         if((f.getFlags() & File.FlagsEnum.Locked.getValue()) == File.FlagsEnum.Locked.getValue()) {
             attrs.setLockId(Boolean.TRUE.toString());
