@@ -60,6 +60,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -235,6 +236,9 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                                 try {
                                     // Test path length
                                     Paths.get(segmentFile.getAbsolute()).toRealPath();
+                                }
+                                catch(NoSuchFileException e) {
+                                    // Continue
                                 }
                                 catch(InvalidPathException | IOException e) {
                                     log.error(String.format("Failure to create path for segment %s. %s", segmentFile, e.getMessage()));
