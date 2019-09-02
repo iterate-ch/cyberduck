@@ -7,7 +7,6 @@ https://cyberduck.io/
 - [Feature] Support for storage classes (Google Storage)
 - [Feature] Support to select region (eu, us, asia) for new buckets (Google Storage)
 - [Feature] Support to set lifecycle configuration on bucket (Google Storage)
-- [Feature] Support for Transport Layer Security (TLS) 1.3
 - [Feature] Support for me-south-1 (Bahrain) region (S3)
 - [Bugfix] Number of buckets displayed in browser limited to 1000 (Google Storage)
 - [Bugfix] Fails to authenticate where keyboard-interactive mechanism is not supported (SFTP) (#10714)
