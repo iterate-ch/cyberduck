@@ -46,8 +46,6 @@
         ul li ul li {
             list-style-type: disc;
         }
-
-
     </style>
 </head>
 
@@ -81,6 +79,21 @@
     </li>
     <li><span class="label label-warning">Bugfix</span> Errors accessing Cryptomator vault (Google Drive, OneDrive)</li>
     <li><span class="label label-warning">Bugfix</span> No route to host error with IPv6 only server (macOS)</li>
+    <li><span class="label label-warning">Bugfix</span> Allow to access files with non printable characters in key name
+        (S3))
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Use AWS4 signature for pre-signed URLs for AWS in region
+        us-east-1 (S3))
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Rate limit number of requests (Google Drive) (<a
+        href="https://trac.cyberduck.io/ticket/10103">#10103</a>))
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Repeated prompt to validate host key when connecting to non
+        standard port (SFTP) (<a href="https://trac.cyberduck.io/ticket/10772">10772</a>))
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Segmented downloads fail with longer filenames (<a
+        href="https://trac.cyberduck.io/ticket/10726">#10726</a>))
+    </li>
 </ul>
 
 <p>

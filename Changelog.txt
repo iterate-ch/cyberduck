@@ -13,6 +13,11 @@ https://cyberduck.io/
 - [Bugfix] Fails to authenticate where keyboard-interactive mechanism is not supported (SFTP) (#10714)
 - [Bugfix] Errors accessing Cryptomator vault (Google Drive, OneDrive)
 - [Bugfix] No route to host error with IPv6 only server (macOS)
+- [Bugfix] Allow to access files with non printable characters in key name (S3)
+- [Bugfix] Use AWS4 signature for pre-signed URLs for AWS in region us-east-1 (S3)
+- [Bugfix] Rate limit number of requests (Google Drive) (#10103)
+- [Bugfix] Repeated prompt to validate host key when connecting to non standard port (SFTP) (#10772)
+- [Bugfix] Segmented downloads fail with longer filenames (#10726)
 
 7.0.2
 - [Bugfix] Failure configuring CloudFront distributions (S3) (#10755)
