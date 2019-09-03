@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
@@ -146,7 +145,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
-                completed.add(new DefaultRetryCallable<MultipartPart>(new BackgroundExceptionCallable<MultipartPart>() {
+                completed.add(new DefaultRetryCallable<MultipartPart>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
                     @Override
                     public MultipartPart call() throws BackgroundException {
                         final Map<String, String> parameters = new HashMap<String, String>();

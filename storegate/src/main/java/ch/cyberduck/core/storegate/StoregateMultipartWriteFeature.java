@@ -183,7 +183,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
                 final byte[] content = Arrays.copyOfRange(b, off, len);
-                new DefaultRetryCallable<Void>(new BackgroundExceptionCallable<Void>() {
+                new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
                         final StoregateApiClient client = session.getClient();

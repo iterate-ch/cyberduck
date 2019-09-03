@@ -252,7 +252,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             throw new TransferCanceledException();
         }
         if(prompt.isSelected(new TransferItem(file, local))) {
-            return this.submit(new RetryTransferCallable() {
+            return this.submit(new RetryTransferCallable(transfer.getDestination()) {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     if(parent.isCanceled()) {
@@ -370,7 +370,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 if(segment.isComplete()) {
                     continue;
                 }
-                this.submit(new RetryTransferCallable() {
+                this.submit(new RetryTransferCallable(transfer.getDestination()) {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         if(status.isCanceled()) {

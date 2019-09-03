@@ -147,7 +147,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     .setBoundary(DelayedHttpMultipartEntity.DEFAULT_BOUNDARY)
                     .addPart("file", new ByteArrayBody(content, file.getName()))
                     .build();
-                new DefaultRetryCallable<Void>(new BackgroundExceptionCallable<Void>() {
+                new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
                         final SDSApiClient client = session.getClient();
