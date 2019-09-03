@@ -202,7 +202,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private Future<StorageObject> submit(final ThreadPool pool, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) {
-        return pool.execute(new DefaultRetryCallable<StorageObject>(new BackgroundExceptionCallable<StorageObject>() {
+        return pool.execute(new DefaultRetryCallable<StorageObject>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
                 if(overall.isCanceled()) {

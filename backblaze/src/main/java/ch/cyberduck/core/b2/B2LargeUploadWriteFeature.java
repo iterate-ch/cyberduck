@@ -169,7 +169,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Write segment %d for upload %s", segment, overall.getVersion()));
                     }
-                    completed.add(new DefaultRetryCallable<B2UploadPartResponse>(new BackgroundExceptionCallable<B2UploadPartResponse>() {
+                    completed.add(new DefaultRetryCallable<B2UploadPartResponse>(session.getHost(), new BackgroundExceptionCallable<B2UploadPartResponse>() {
                         @Override
                         public B2UploadPartResponse call() throws BackgroundException {
                             final TransferStatus status = new TransferStatus().length(len);

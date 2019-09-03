@@ -16,6 +16,7 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -27,15 +28,16 @@ public class DefaultRetryCallable<T> extends AbstractRetryCallable<T> {
     private final ProgressListener listener;
     private final BackgroundActionState cancel;
 
-    public DefaultRetryCallable(final BackgroundExceptionCallable<T> delegate, final TransferStatus status) {
-        this(delegate, new TransferBackgroundActionState(status));
+    public DefaultRetryCallable(final Host host, final BackgroundExceptionCallable<T> delegate, final TransferStatus status) {
+        this(host, delegate, new TransferBackgroundActionState(status));
     }
 
-    public DefaultRetryCallable(final BackgroundExceptionCallable<T> delegate, final BackgroundActionState cancel) {
-        this(delegate, new DisabledProgressListener(), cancel);
+    public DefaultRetryCallable(final Host host, final BackgroundExceptionCallable<T> delegate, final BackgroundActionState cancel) {
+        this(host, delegate, new DisabledProgressListener(), cancel);
     }
 
-    public DefaultRetryCallable(final BackgroundExceptionCallable<T> delegate, final ProgressListener listener, final BackgroundActionState cancel) {
+    public DefaultRetryCallable(final Host host, final BackgroundExceptionCallable<T> delegate, final ProgressListener listener, final BackgroundActionState cancel) {
+        super(host);
         this.delegate = delegate;
         this.listener = listener;
         this.cancel = cancel;
