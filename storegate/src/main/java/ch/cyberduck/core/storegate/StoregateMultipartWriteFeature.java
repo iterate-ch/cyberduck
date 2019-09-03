@@ -121,8 +121,10 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
             meta.setFileName(file.getName());
             meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
             meta.setFileSize(0L);
-            meta.setCreated(new DateTime(file.attributes().getCreationDate()));
-            meta.setModified(new DateTime(file.attributes().getModificationDate()));
+            meta.setCreated(DateTime.now());
+            if(null != status.getTimestamp()) {
+                meta.setModified(new DateTime(status.getTimestamp()));
+            }
             request.setEntity(new StringEntity(new JSON().getContext(meta.getClass()).writeValueAsString(meta),
                 ContentType.create("application/json", "UTF-8")));
             request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
