@@ -88,7 +88,7 @@ public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
                 host = new HostParser(protocols).get(url);
             }
             catch(HostParserException e) {
-                log.warn(e.getDetail());
+                log.warn(e);
                 continue;
             }
             host.setNickname(reader.stringForKey("Name"));

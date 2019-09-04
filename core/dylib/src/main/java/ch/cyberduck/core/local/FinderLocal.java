@@ -147,7 +147,7 @@ public class FinderLocal extends Local {
                 bookmark = resolver.create(this);
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure resolving bookmark for %s. %s", this, e.getDetail()));
+                log.warn(String.format("Failure resolving bookmark for %s. %s", this, e));
             }
         }
         return bookmark;
@@ -172,7 +172,7 @@ public class FinderLocal extends Local {
             return list;
         }
         catch(LocalAccessDeniedException e) {
-            log.warn(String.format("Failure obtaining lock for %s. %s", this, e.getDetail()));
+            log.warn(String.format("Failure obtaining lock for %s. %s", this, e));
             return super.list(filter);
         }
     }
@@ -187,7 +187,7 @@ public class FinderLocal extends Local {
             }
         }
         catch(LocalAccessDeniedException e) {
-            log.warn(String.format("Failure obtaining lock for %s. %s", this, e.getDetail()));
+            log.warn(String.format("Failure obtaining lock for %s. %s", this, e));
             return super.getOutputStream(append);
         }
         try {
@@ -247,7 +247,7 @@ public class FinderLocal extends Local {
             }
         }
         catch(LocalAccessDeniedException e) {
-            log.warn(String.format("Failure obtaining lock for %s. %s", this, e.getDetail()));
+            log.warn(String.format("Failure obtaining lock for %s. %s", this, e));
             return super.getInputStream();
         }
         final InputStream proxy = super.getInputStream(resolved.path());

@@ -201,7 +201,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         catch(ApiException e) {
             // Precondition: Right "Config Read" required.
-            log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e).getDetail()));
+            log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
             final UserAccount account = new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null);
@@ -234,13 +234,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             throw new TripleCryptExceptionMappingService().map(e);
         }
         catch(ApiException e) {
-            log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e).getDetail()));
+            log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
             softwareVersion.set(new PublicApi(this.getClient()).getSoftwareVersion(null));
         }
         catch(ApiException e) {
-            log.warn(String.format("Ignore failure reading version. %s", new SDSExceptionMappingService().map(e).getDetail()));
+            log.warn(String.format("Ignore failure reading version. %s", new SDSExceptionMappingService().map(e)));
         }
     }
 

@@ -131,7 +131,7 @@ public class DefaultBookmarkController extends BookmarkController {
                 );
             }
             catch(LocalAccessDeniedException e) {
-                log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e.getDetail()));
+                log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e));
             }
         }
     }

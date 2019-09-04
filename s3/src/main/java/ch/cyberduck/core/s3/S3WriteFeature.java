@@ -169,7 +169,7 @@ public class S3WriteFeature extends AbstractHttpWriteFeature<StorageObject> impl
                     }
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e.getDetail()));
+                    log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
                 }
             }
         }

@@ -109,7 +109,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e.getDetail()));
+                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
             }
             final List<MultipartPart> completed = new ArrayList<MultipartPart>();
             // Not found or new upload

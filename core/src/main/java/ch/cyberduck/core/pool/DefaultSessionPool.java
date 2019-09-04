@@ -203,7 +203,7 @@ public class DefaultSessionPool implements SessionPool {
                     session.interrupt();
                 }
                 catch(BackgroundException e) {
-                    log.warn(String.format("Failure interrupting session %s prior releasing to pool. %s", session, e.getDetail()));
+                    log.warn(String.format("Failure interrupting session %s prior releasing to pool. %s", session, e));
                 }
                 finally {
                     try {

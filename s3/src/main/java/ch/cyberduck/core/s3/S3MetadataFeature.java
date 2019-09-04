@@ -93,7 +93,7 @@ public class S3MetadataFeature implements Headers {
                         acl = accessControlListFeature.getPermission(file);
                     }
                     catch(AccessDeniedException | InteroperabilityException e) {
-                        log.warn(String.format("Ignore failure %s", e.getDetail()));
+                        log.warn(String.format("Ignore failure %s", e));
                     }
                     target.setAcl(accessControlListFeature.convert(acl));
                 }

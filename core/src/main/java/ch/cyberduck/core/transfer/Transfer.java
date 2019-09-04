@@ -330,7 +330,7 @@ public abstract class Transfer implements Serializable {
                 }
             }
             catch(LocalAccessDeniedException e) {
-                log.warn(String.format("Failure obtaining lock for %s. %s", item.local, e.getDetail()));
+                log.warn(String.format("Failure obtaining lock for %s. %s", item.local, e));
             }
         }
     }

@@ -466,7 +466,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                                 h = HostParser.parse(url);
                             }
                             catch(HostParserException e) {
-                                log.warn(e.getDetail());
+                                log.warn(e);
                                 continue;
                             }
                             source.add(row.intValue(), h);

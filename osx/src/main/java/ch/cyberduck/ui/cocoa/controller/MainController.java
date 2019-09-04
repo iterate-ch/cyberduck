@@ -664,7 +664,7 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                 }
                 catch(AccessDeniedException e) {
-                    log.error(String.format("Failure reading profile from %s. %s", f, e.getDetail()));
+                    log.error(String.format("Failure reading profile from %s. %s", f, e));
                     return false;
                 }
             }
@@ -1319,7 +1319,7 @@ public class MainController extends BundleController implements NSApplication.De
                         }
                     }
                     catch(HostParserException e) {
-                        log.warn(e.getDetail());
+                        log.warn(e);
                     }
                 }
         }

@@ -1678,7 +1678,7 @@ public class BrowserController extends WindowController
             this.mount(HostParser.parse(input));
         }
         catch(HostParserException e) {
-            log.warn(e.getDetail());
+            log.warn(e);
         }
     }
 

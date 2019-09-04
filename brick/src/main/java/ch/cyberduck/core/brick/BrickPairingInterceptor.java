@@ -68,7 +68,7 @@ public class BrickPairingInterceptor extends DisabledServiceUnavailableRetryStra
                         session.getClient().setCredentials(provider);
                     }
                     catch(BackgroundException e) {
-                        log.warn(String.format("Failure obtaining pairing key. %s", e.getDetail()));
+                        log.warn(String.format("Failure obtaining pairing key. %s", e));
                     }
                     finally {
                         pairing.set(false);
