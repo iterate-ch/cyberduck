@@ -88,6 +88,11 @@ public class SDSProtocol extends AbstractProtocol {
         return Case.insensitive;
     }
 
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
+
     public enum Authorization {
         sql,
         radius,

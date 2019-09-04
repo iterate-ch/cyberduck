@@ -340,6 +340,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
+    }
+
+    @Override
     public <T> T getFeature(final Class<T> type) {
         return null;
     }

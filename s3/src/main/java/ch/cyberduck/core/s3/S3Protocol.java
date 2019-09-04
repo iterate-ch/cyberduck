@@ -168,4 +168,9 @@ public class S3Protocol extends AbstractProtocol {
     public CredentialsConfigurator getCredentialsFinder() {
         return credentials;
     }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
 }

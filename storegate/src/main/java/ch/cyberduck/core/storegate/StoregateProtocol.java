@@ -63,4 +63,9 @@ public class StoregateProtocol extends AbstractProtocol {
     public boolean isUsernameConfigurable() {
         return false;
     }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
 }
