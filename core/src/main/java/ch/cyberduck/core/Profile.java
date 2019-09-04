@@ -281,6 +281,11 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return parent.getDirectoryTimestamp();
+    }
+
+    @Override
     public Scheme getScheme() {
         final String v = this.value("Scheme");
         if(StringUtils.isBlank(v)) {
