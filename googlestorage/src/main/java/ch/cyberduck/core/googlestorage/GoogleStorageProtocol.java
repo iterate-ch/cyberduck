@@ -100,4 +100,9 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
         // Return static icon as endpoint has no favicon configured
         return this.icon();
     }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
 }

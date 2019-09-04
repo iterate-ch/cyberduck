@@ -35,4 +35,9 @@ public class OneDriveProtocol extends GraphProtocol {
     public String getPrefix() {
         return String.format("%s.%s", OneDriveProtocol.class.getPackage().getName(), "OneDrive");
     }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
 }

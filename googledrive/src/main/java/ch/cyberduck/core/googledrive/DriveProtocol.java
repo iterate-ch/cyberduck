@@ -71,4 +71,9 @@ public class DriveProtocol extends AbstractProtocol {
     public Scheme getScheme() {
         return Scheme.https;
     }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
 }

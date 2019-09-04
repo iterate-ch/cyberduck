@@ -38,28 +38,12 @@ public interface Protocol extends Comparable<Protocol> {
 
     HostnameConfigurator getHostnameFinder();
 
+    /**
+     * @return Case sensitivity of system
+     */
     Case getCaseSensitivity();
 
-    enum Type {
-        ftp,
-        sftp,
-        s3,
-        googlestorage,
-        dropbox,
-        googledrive,
-        swift,
-        dav,
-        azure,
-        onedrive,
-        irods,
-        b2,
-        file,
-        dracoon,
-        storegate,
-        brick,
-        nextcloud,
-        manta
-    }
+    DirectoryTimestamp getDirectoryTimestamp();
 
     boolean isStateful();
 
@@ -77,10 +61,13 @@ public interface Protocol extends Comparable<Protocol> {
      * @return True if password is required
      */
     boolean isPasswordConfigurable();
+
     boolean isTokenConfigurable();
 
     boolean isOAuthConfigurable();
+
     boolean isCertificateConfigurable();
+
     boolean isPrivateKeyConfigurable();
 
     /**
@@ -257,9 +244,41 @@ public interface Protocol extends Comparable<Protocol> {
      */
     String getOAuthClientSecret();
 
+    enum Type {
+        ftp,
+        sftp,
+        s3,
+        googlestorage,
+        dropbox,
+        googledrive,
+        swift,
+        dav,
+        azure,
+        onedrive,
+        irods,
+        b2,
+        file,
+        dracoon,
+        storegate,
+        brick,
+        nextcloud,
+        manta
+    }
+
     enum Case {
         sensitive,
         insensitive
+    }
+
+    enum DirectoryTimestamp {
+        /**
+         * Timestamp on directory is only updated when set explicitly using API
+         */
+        explicit,
+        /**
+         * Timestamp on directory changes implicitly when its contents changes
+         */
+        implicit
     }
 
     @SuppressWarnings("unchecked")
