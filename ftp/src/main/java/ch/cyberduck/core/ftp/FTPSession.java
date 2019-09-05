@@ -65,6 +65,7 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -252,7 +253,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     // Negotiate data connection security
                     client.execPROT(preferences.getProperty("ftp.tls.datachannel"));
                 }
-                if("UTF-8".equals(host.getEncoding())) {
+                if(StandardCharsets.UTF_8.name().equals(host.getEncoding())) {
                     if(client.hasFeature("UTF8")) {
                         if(!FTPReply.isPositiveCompletion(client.sendCommand("OPTS UTF8 ON"))) {
                             log.warn(String.format("Failed to negotiate UTF-8 charset %s", client.getReplyString()));

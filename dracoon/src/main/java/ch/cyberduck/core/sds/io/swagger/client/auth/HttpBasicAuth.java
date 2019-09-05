@@ -31,6 +31,7 @@ package ch.cyberduck.core.sds.io.swagger.client.auth;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,7 @@ public class HttpBasicAuth implements Authentication {
     }
     String str = (username == null ? "" : username) + ":" + (password == null ? "" : password);
     try {
-      headerParams.put("Authorization", "Basic " + Base64.encodeToString(str.getBytes("UTF-8"), false));
+        headerParams.put("Authorization", "Basic " + Base64.encodeToString(str.getBytes(StandardCharsets.UTF_8.name()), false));
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }

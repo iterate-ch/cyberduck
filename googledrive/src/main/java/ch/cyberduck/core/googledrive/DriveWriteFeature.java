@@ -120,7 +120,7 @@ public class DriveWriteFeature extends AbstractHttpWriteFeature<VersionId> imple
                         request.setEntity(new StringEntity("{\"name\": \""
                             + file.getName() + "\", \"parents\": [\""
                             + fileid.getFileid(file.getParent(), new DisabledListProgressListener()) + "\"]}",
-                            ContentType.create("application/json", "UTF-8")));
+                            ContentType.create("application/json", StandardCharsets.UTF_8.name())));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             // Set to the media MIME type of the upload data to be transferred in subsequent requests.
                             request.addHeader("X-Upload-Content-Type", status.getMime());

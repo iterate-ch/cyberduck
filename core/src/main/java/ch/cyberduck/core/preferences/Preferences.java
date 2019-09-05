@@ -84,6 +84,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Collections;
@@ -372,7 +373,7 @@ public abstract class Preferences implements Locales {
           Show hidden files in browser by default
          */
         this.setDefault("browser.showHidden", String.valueOf(false));
-        this.setDefault("browser.charset.encoding", "UTF-8");
+        this.setDefault("browser.charset.encoding", StandardCharsets.UTF_8.name());
         /*
           Edit double clicked files instead of downloading
          */

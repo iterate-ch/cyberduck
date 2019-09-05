@@ -119,7 +119,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         meta.setModified(new DateTime(status.getTimestamp()));
                     }
                     request.setEntity(new StringEntity(new JSON().getContext(meta.getClass()).writeValueAsString(meta),
-                        ContentType.create("application/json", "UTF-8")));
+                        ContentType.create("application/json", StandardCharsets.UTF_8.name())));
                     request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                     final HttpResponse response = client.getClient().execute(request);
                     try {

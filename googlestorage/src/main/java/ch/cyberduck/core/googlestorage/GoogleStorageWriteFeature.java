@@ -118,7 +118,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                         }
                         metadata.append("}");
                         request.setEntity(new StringEntity(metadata.toString(),
-                            ContentType.create("application/json", "UTF-8")));
+                            ContentType.create("application/json", StandardCharsets.UTF_8.name())));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             // Set to the media MIME type of the upload data to be transferred in subsequent requests.
                             request.addHeader("X-Upload-Content-Type", status.getMime());
