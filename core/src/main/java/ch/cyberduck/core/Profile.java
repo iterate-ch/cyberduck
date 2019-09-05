@@ -85,8 +85,8 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
-    public boolean isStateful() {
-        return parent.isStateful();
+    public Statefulness getStatefulness() {
+        return parent.getStatefulness();
     }
 
     @Override

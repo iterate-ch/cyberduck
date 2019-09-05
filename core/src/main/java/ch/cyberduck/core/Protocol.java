@@ -45,7 +45,10 @@ public interface Protocol extends Comparable<Protocol> {
 
     DirectoryTimestamp getDirectoryTimestamp();
 
-    boolean isStateful();
+    /**
+     * @return By default a protocol is considered stateless
+     */
+    Statefulness getStatefulness();
 
     /**
      * @return True if anonymous login is possible.
@@ -279,6 +282,11 @@ public interface Protocol extends Comparable<Protocol> {
          * Timestamp on directory changes implicitly when its contents changes
          */
         implicit
+    }
+
+    enum Statefulness {
+        stateful,
+        stateless
     }
 
     @SuppressWarnings("unchecked")

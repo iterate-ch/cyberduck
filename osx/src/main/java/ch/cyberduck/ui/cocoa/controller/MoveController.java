@@ -23,6 +23,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallbackFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.SessionPoolFactory;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
@@ -71,7 +72,7 @@ public class MoveController extends ProxyController {
             @Override
             public void run() {
                 final SessionPool pool = parent.getSession();
-                final MoveWorker move = new MoveWorker(selected, pool.getHost().getProtocol().isStateful() ? SessionPoolFactory.create(parent, cache, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
+                final MoveWorker move = new MoveWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(parent, cache, pool.getHost()) : pool, cache, parent, LoginCallbackFactory.get(parent)) {
                     @Override
                     public void cleanup(final Map<Path, Path> result) {
                         final List<Path> changed = new ArrayList<>();
