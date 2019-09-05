@@ -45,7 +45,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    public PathAttributes toAttributes(final File f) throws BackgroundException {
+    public PathAttributes toAttributes(final File f) {
         final PathAttributes attrs = new PathAttributes();
         attrs.setVersionId(f.getId());
         if(0 != f.getModified().getMillis()) {
