@@ -22,7 +22,6 @@ package ch.cyberduck.core.sparkle;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
