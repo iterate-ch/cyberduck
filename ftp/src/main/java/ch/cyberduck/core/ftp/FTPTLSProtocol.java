@@ -41,8 +41,8 @@ public class FTPTLSProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isStateful() {
-        return true;
+    public Statefulness getStatefulness() {
+        return Statefulness.stateful;
     }
 
     @Override

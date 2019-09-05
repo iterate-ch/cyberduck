@@ -2292,7 +2292,7 @@ public class BrowserController extends WindowController
                     @Override
                     public void run() {
                         background(new WorkerBackgroundAction<Map<Path, Path>>(BrowserController.this, pool,
-                            new CopyWorker(selected, pool.getHost().getProtocol().isStateful() ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool, cache,
+                            new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool, cache,
                                 BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
                                     @Override
                                     public void cleanup(final Map<Path, Path> result) {

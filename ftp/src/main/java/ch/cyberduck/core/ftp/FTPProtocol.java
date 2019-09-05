@@ -37,8 +37,8 @@ public class FTPProtocol extends AbstractProtocol {
     }
 
     @Override
-    public boolean isStateful() {
-        return true;
+    public Statefulness getStatefulness() {
+        return Statefulness.stateful;
     }
 
     @Override
