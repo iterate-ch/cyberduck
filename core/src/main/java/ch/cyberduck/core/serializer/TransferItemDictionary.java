@@ -40,10 +40,15 @@ public class TransferItemDictionary {
         if(null == remote) {
             return null;
         }
+        final TransferItem item = new TransferItem(remote);
         final Object localObj = dict.objectForKey("Local Dictionary");
         if(localObj != null) {
-            return new TransferItem(remote, new LocalDictionary(deserializer).deserialize((localObj)));
+            item.setLocal(new LocalDictionary(deserializer).deserialize((localObj)));
         }
-        return new TransferItem(remote);
+        final Object lockObj = dict.objectForKey("Lock Id");
+        if(lockObj != null) {
+            item.setLockId(lockObj.toString());
+        }
+        return item;
     }
 }

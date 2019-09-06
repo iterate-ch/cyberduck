@@ -30,6 +30,7 @@ public class TransferItem implements Referenceable, Serializable {
 
     public Path remote;
     public Local local;
+    public String lockId;
 
     public TransferItem(final Path remote) {
         this(remote, null);
@@ -50,6 +51,9 @@ public class TransferItem implements Referenceable, Serializable {
         if(local != null) {
             dict.setObjectForKey(local, "Local Dictionary");
         }
+        if(lockId != null) {
+            dict.setObjectForKey(local, "Lock Id");
+        }
         return dict.getSerialized();
     }
 
@@ -59,6 +63,10 @@ public class TransferItem implements Referenceable, Serializable {
 
     public void setRemote(Path remote) {
         this.remote = remote;
+    }
+
+    public void setLockId(final String lockId) {
+        this.lockId = lockId;
     }
 
     @Override
