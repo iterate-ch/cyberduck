@@ -17,6 +17,8 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -25,7 +27,8 @@ import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertNotEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest {
@@ -38,6 +41,10 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
             new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotEquals(0L, new StoregateAttributesFinderFeature(session, nodeid).find(test).getModificationDate());
+        final PathAttributes attr = new StoregateAttributesFinderFeature(session, nodeid).find(test);
+        assertNotEquals(0L, attr.getModificationDate());
+        assertEquals(Checksum.NONE, attr.getChecksum());
+        assertNull(attr.getETag());
+        assertNotNull(attr.getVersionId());
     }
 }
