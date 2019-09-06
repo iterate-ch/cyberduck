@@ -71,7 +71,7 @@ public class PathAttributesDictionary {
         }
         attributes.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));
         attributes.setVersionId(dict.stringForKey("Version"));
-        attributes.setLockId(dict.stringForKey("LockId"));
+        attributes.setLockId(dict.stringForKey("Lock Id"));
         final String duplicateObj = dict.stringForKey("Duplicate");
         if(duplicateObj != null) {
             attributes.setDuplicate(Boolean.valueOf(duplicateObj));

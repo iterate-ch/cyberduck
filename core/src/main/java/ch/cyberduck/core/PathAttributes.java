@@ -200,7 +200,7 @@ public class PathAttributes extends Attributes implements Serializable {
             dict.setStringForKey(versionId, "Version");
         }
         if(StringUtils.isNotBlank(lockId)) {
-            dict.setStringForKey(lockId, "LockId");
+            dict.setStringForKey(lockId, "Lock Id");
         }
         if(duplicate != null) {
             dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
