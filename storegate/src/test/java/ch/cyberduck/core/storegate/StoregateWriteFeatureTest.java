@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -78,6 +79,34 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
         }
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteWithLock() throws Exception {
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
+            new Path(String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()),
+                EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final Path test = new StoregateTouchFeature(session, nodeid).touch(
+            new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
+        try {
+            final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+            fail();
+        }
+        catch(LockedException e) {
+            //
+        }
+        status.setLockId(lockId);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        out.close();
+        new StoregateLockFeature(session, nodeid).unlock(test, lockId);
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
