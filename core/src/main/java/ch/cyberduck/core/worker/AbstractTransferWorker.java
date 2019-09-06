@@ -211,7 +211,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
             // Calculate information about the files in advance to give progress information
             for(TransferItem next : transfer.getRoots()) {
-                this.prepare(next.remote, next.local, new TransferStatus().exists(true), action);
+                this.prepare(next.remote, next.local, new TransferStatus().exists(true).withLockId(next.lockId), action);
             }
             this.await();
             meter.reset();
