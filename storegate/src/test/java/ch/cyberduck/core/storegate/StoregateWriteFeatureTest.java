@@ -63,6 +63,8 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         }
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
+        final String versionId = new StoregateAttributesFinderFeature(session, nodeid).find(test).getVersionId();
+        assertNotNull(versionId);
         final byte[] compare = new byte[content.length];
         final InputStream stream = new StoregateReadFeature(session, nodeid).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
@@ -78,6 +80,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
         }
+        assertNotEquals(versionId, new StoregateAttributesFinderFeature(session, nodeid).find(test).getVersionId());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
