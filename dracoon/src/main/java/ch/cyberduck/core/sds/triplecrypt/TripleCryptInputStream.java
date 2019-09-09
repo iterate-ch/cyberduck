@@ -67,6 +67,10 @@ public class TripleCryptInputStream extends ProxyInputStream {
             final int location = len - remaining;
             final int count = this.read(dest, off + location, remaining);
             if(IOUtils.EOF == count) {
+                if(remaining == len) {
+                    // nothing read before
+                    return IOUtils.EOF;
+                }
                 break;
             }
             dest.get(dst, off + location, count);
