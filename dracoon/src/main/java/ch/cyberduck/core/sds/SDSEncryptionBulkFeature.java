@@ -86,7 +86,9 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                             final Path file = entry.getKey().remote;
                             final Path container = new PathContainerService().getContainer(file);
                             if(rooms.get(container)) {
-                                background.operate(session, callback, file.withAttributes(new PathAttributes(file.attributes()).withVersionId(null)));
+                                background.operate(session, callback, file.withAttributes(new PathAttributes(file.attributes()).withVersionId(
+                                    entry.getValue().getVersion().id
+                                )));
                             }
                         }
                     }
