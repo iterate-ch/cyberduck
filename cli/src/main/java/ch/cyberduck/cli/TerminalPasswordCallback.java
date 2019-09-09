@@ -27,6 +27,8 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class TerminalPasswordCallback implements PasswordCallback {
 
     private final Console console = new Console();
@@ -51,7 +53,7 @@ public class TerminalPasswordCallback implements PasswordCallback {
         try {
             final char[] input = console.readPassword("%n%s: ", options.getPasswordPlaceholder());
             final Credentials credentials = new Credentials();
-            credentials.setPassword(String.valueOf(input));
+            credentials.setPassword(StringUtils.strip(String.valueOf(input)));
             return this.prompt(options, credentials);
         }
         catch(ConnectionCanceledException e) {
