@@ -79,8 +79,8 @@ public class SDSReadFeature implements Read {
                 case HttpStatus.SC_PARTIAL_CONTENT:
                     return new HttpMethodReleaseInputStream(response);
                 default:
-                    throw new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(
-                            response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                    throw new DefaultHttpResponseExceptionMappingService().map("Download {0} failed", new HttpResponseException(
+                        response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()), file);
             }
         }
         catch(IOException e) {
