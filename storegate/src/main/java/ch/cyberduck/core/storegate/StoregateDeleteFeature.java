@@ -51,6 +51,6 @@ public class StoregateDeleteFeature implements Delete {
 
     @Override
     public boolean isRecursive() {
-        return false;
+        return true;
     }
 }
