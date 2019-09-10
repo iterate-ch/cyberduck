@@ -81,6 +81,7 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertNotEquals(version, out.getStatus());
+            new SDSReadFeature(session, nodeid).read(test.withAttributes(new PathAttributes().withVersionId(out.getStatus().id)), new TransferStatus(), new DisabledConnectionCallback()).close();
         }
         // Read with previous version must fail
         try {
