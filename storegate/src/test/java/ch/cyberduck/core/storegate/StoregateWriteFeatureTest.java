@@ -108,6 +108,7 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         status.setLockId(lockId);
         final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         new StoregateLockFeature(session, nodeid).unlock(test, lockId);
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
