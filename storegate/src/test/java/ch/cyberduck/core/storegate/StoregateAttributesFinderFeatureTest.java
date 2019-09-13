@@ -37,7 +37,7 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
     public void testFind() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()),
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
             new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());

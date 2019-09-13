@@ -50,7 +50,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
     public void testReadWrite() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()),
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524289);
         final TransferStatus status = new TransferStatus();
@@ -75,7 +75,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
     public void testWriteWithLock() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()),
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new StoregateTouchFeature(session, nodeid).touch(
@@ -104,7 +104,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
     public void testWriteCancel() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()),
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
@@ -130,7 +130,7 @@ public class StoregateMultipartWriteFeatureTest extends AbstractStoregateTest {
     public void testWriteZeroLength() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()),
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final TransferStatus status = new TransferStatus();
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));

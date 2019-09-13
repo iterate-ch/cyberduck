@@ -39,7 +39,7 @@ public class StoregateDirectoryFeatureTest extends AbstractStoregateTest {
     public void testCreateDirectory() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(folder));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(folder));

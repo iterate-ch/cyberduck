@@ -72,7 +72,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         writeStatus.setLength(content.length);
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()),
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(folder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
@@ -99,7 +99,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
     public void testReadRange() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path folder = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()),
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(test, new TransferStatus());
@@ -133,7 +133,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
     public void testReadRangeUnknownLength() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()),
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new StoregateTouchFeature(session, nodeid).touch(test, new TransferStatus());
@@ -171,7 +171,7 @@ public class StoregateReadFeatureTest extends AbstractStoregateTest {
         writeStatus.setLength(content.length);
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
-            new Path(String.format("/Home/mduck/%s", new AlphanumericRandomStringService().random()),
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
                 EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
