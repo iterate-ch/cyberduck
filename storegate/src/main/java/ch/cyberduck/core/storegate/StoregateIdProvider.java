@@ -76,12 +76,19 @@ public class StoregateIdProvider implements IdProvider {
         return this;
     }
 
+    /**
+     * Mapping of path "/Home/mduck" to "My files"
+     * Mapping of path "/Common" to "Common files"
+     */
     private String getPrefixedPath(final Path file) {
-        final String root = new PathContainerService().getContainer(file).getAbsolute();
-        final String path = PathRelativizer.relativize(root, file.getAbsolute());
+        final PathContainerService service = new PathContainerService();
+        final String root = service.getContainer(file).getAbsolute();
         for(RootFolder r : session.roots()) {
             if(root.endsWith(r.getName())) {
-                return String.format("%s/%s", r.getPath(), path);
+                if(service.isContainer(file)) {
+                    return r.getPath();
+                }
+                return String.format("%s/%s", r.getPath(), PathRelativizer.relativize(root, file.getAbsolute()));
             }
         }
         return file.getAbsolute();
