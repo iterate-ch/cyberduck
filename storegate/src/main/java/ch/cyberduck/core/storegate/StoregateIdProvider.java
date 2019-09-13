@@ -23,6 +23,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathRelativizer;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
@@ -57,7 +58,7 @@ public class StoregateIdProvider implements IdProvider {
             }
         }
         try {
-            final File f = new FilesApi(session.getClient()).filesGet_1(this.getPrefixedPath(file));
+            final File f = new FilesApi(session.getClient()).filesGet_1(URIEncoder.encode(this.getPrefixedPath(file)));
             return this.set(file, f.getId());
         }
         catch(ApiException e) {
@@ -80,7 +81,7 @@ public class StoregateIdProvider implements IdProvider {
      * Mapping of path "/Home/mduck" to "My files"
      * Mapping of path "/Common" to "Common files"
      */
-    private String getPrefixedPath(final Path file) {
+    protected String getPrefixedPath(final Path file) {
         final PathContainerService service = new PathContainerService();
         final String root = service.getContainer(file).getAbsolute();
         for(RootFolder r : session.roots()) {

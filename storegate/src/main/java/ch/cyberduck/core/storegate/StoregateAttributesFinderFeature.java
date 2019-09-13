@@ -15,9 +15,9 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
@@ -38,7 +38,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
             final FilesApi files = new FilesApi(session.getClient());
-            return this.toAttributes(files.filesGet_0(fileid.getFileid(file, new DisabledListProgressListener())));
+            return this.toAttributes(files.filesGet_1(URIEncoder.encode(fileid.getPrefixedPath(file))));
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map("Failure to read attributes of {0}", e, file);

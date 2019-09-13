@@ -17,12 +17,12 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
@@ -70,8 +70,7 @@ public class StoregateListService implements ListService {
                 int pageIndex = 0;
                 FileContents files;
                 do {
-                    files = new FilesApi(this.session.getClient()).filesGetById(
-                        fileid.getFileid(directory, new DisabledListProgressListener()),
+                    files = new FilesApi(this.session.getClient()).filesGet(URIEncoder.encode(fileid.getPrefixedPath(directory)),
                         pageIndex,
                         chunksize,
                         "Name asc",
