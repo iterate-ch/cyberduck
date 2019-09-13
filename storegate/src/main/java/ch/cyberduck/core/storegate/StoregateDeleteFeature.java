@@ -44,7 +44,7 @@ public class StoregateDeleteFeature implements Delete {
                 api.filesDelete(fileid.getFileid(file, new DisabledListProgressListener()));
             }
             catch(ApiException e) {
-                throw new StoregateExceptionMappingService().map(e);
+                throw new StoregateExceptionMappingService().map("Cannot delete {0}", e, file);
             }
         }
     }

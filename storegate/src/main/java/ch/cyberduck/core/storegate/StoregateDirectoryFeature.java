@@ -49,7 +49,7 @@ public class StoregateDirectoryFeature implements Directory<VersionId> {
                 new StoregateAttributesFinderFeature(session, fileid).toAttributes(f));
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map(e);
+            throw new StoregateExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
     }
 

@@ -41,7 +41,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
             return this.toAttributes(files.filesGet_0(fileid.getFileid(file, new DisabledListProgressListener())));
         }
         catch(ApiException e) {
-            throw new StoregateExceptionMappingService().map(e);
+            throw new StoregateExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
