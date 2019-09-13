@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T14:22:07.810+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:08:20.178+02:00")
 public class DownloadsApi {
   private ApiClient apiClient;
 
@@ -33,7 +33,7 @@ public class DownloadsApi {
   }
 
     /**
-     * Download avatar 🞂 NEW 🞀
+     * Download avatar
      * ### &amp;#128640; Since version 4.11.0  ### Functional Description:   Download avatar for given UserID and UUID.  ### Precondition: Valid UUID.  ### Effects: None.  ### &amp;#9432; Further Information: None.
      *
      * @param userId User ID (required)
@@ -46,7 +46,7 @@ public class DownloadsApi {
     }
 
     /**
-     * Download avatar 🞂 NEW 🞀
+     * Download avatar
      * ### &amp;#128640; Since version 4.11.0  ### Functional Description:   Download avatar for given UserID and UUID.  ### Precondition: Valid UUID.  ### Effects: None.  ### &amp;#9432; Further Information: None.
      *
      * @param userId User ID (required)
@@ -94,9 +94,10 @@ public class DownloadsApi {
         };
         return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
-  /**
-   * Download file
-   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
+
+    /**
+     * Download file
+     * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).
    * @param token Download token (required)
    * @param range Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
@@ -110,7 +111,7 @@ public class DownloadsApi {
 
     /**
      * Download file
-     * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
+     * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).
      *
      * @param token           Download token (required)
      * @param range           Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
@@ -134,7 +135,7 @@ public class DownloadsApi {
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
         localVarQueryParams.addAll(apiClient.parameterToPairs("", "generic_mimetype", genericMimetype));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "inline", inline));
@@ -157,10 +158,11 @@ public class DownloadsApi {
 
     GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Download file
-   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
+    }
+
+    /**
+     * Download file
+     * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).
    * @param token Download token (required)
    * @param range Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
@@ -174,7 +176,7 @@ public class DownloadsApi {
 
     /**
      * Download file
-     * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
+     * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).
      *
      * @param token           Download token (required)
      * @param range           Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
@@ -197,10 +199,10 @@ public class DownloadsApi {
 
     // query params
     List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
-        localVarQueryParams.addAll(apiClient.parameterToPairs("", "generic_mimetype", genericMimetype));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "generic_mimetype", genericMimetype));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "inline", inline));
 
     if (range != null)
@@ -236,6 +238,7 @@ public class DownloadsApi {
     /**
      * Download ZIP file(s)
      * ### Functional Description:   Download multiple files in a ZIP archive.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Create a download token with &#x60;POST /nodes/zip&#x60; API.
+     *
      * @param token Download token (required)
      * @return ApiResponse&lt;Integer&gt;
      * @throws ApiException if fails to make API call
@@ -244,7 +247,7 @@ public class DownloadsApi {
         Object localVarPostBody = null;
 
         // verify the required parameter 'token' is set
-        if (token == null) {
+        if(token == null) {
             throw new ApiException(400, "Missing the required parameter 'token' when calling getZipFileByToken");
         }
 
@@ -268,9 +271,10 @@ public class DownloadsApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
+        GenericType<Integer> localVarReturnType = new GenericType<Integer>() {
+        };
         return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-    }
+      }
 }

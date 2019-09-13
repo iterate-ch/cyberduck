@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T14:22:07.810+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:08:20.178+02:00")
 public class SettingsApi {
     private ApiClient apiClient;
 
@@ -36,7 +36,7 @@ public class SettingsApi {
 
     /**
      * Get customer settings
-     * ### Functional Description:   Retrieve customer related settings.   ### Precondition: Right _\&quot;read config\&quot;_ required.   Role _\&quot;user\&quot;_.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Configurable customer settings  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;homeRoomParentName&#x60;** | Name of the container in which all user&#39;s home rooms are located.&lt;br&gt;&#x60;null&#x60; if **&#x60;homeRoomsActive&#x60;** is &#x60;false&#x60;. | &#x60;String&#x60; | | **&#x60;homeRoomQuota&#x60;** | Refers to the quota of each single user&#39;s home room.&lt;br&gt;&#x60;0&#x60; represents no quota.&lt;br&gt;&#x60;null&#x60; if **&#x60;homeRoomsActive&#x60;** is &#x60;false&#x60;. | &#x60;positive Long&#x60; | | **&#x60;homeRoomsActive&#x60;** | If set to &#x60;true&#x60;, every user with an Active Directory account gets a personal homeroom.&lt;br&gt;Once activated, this **CANNOT** be deactivated. | &#x60;true or false&#x60; |
+     * ### Functional Description:   Retrieve customer related settings.   ### Precondition: Right _\&quot;read config\&quot;_ required.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Configurable customer settings  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;homeRoomParentName&#x60;** | Name of the container in which all user&#39;s home rooms are located.&lt;br&gt;&#x60;null&#x60; if **&#x60;homeRoomsActive&#x60;** is &#x60;false&#x60;. | &#x60;String&#x60; | | **&#x60;homeRoomQuota&#x60;** | Refers to the quota of each single user&#39;s home room.&lt;br&gt;&#x60;0&#x60; represents no quota.&lt;br&gt;&#x60;null&#x60; if **&#x60;homeRoomsActive&#x60;** is &#x60;false&#x60;. | &#x60;positive Long&#x60; | | **&#x60;homeRoomsActive&#x60;** | If set to &#x60;true&#x60;, every user with an Active Directory account gets a personal homeroom.&lt;br&gt;Once activated, this **CANNOT** be deactivated. | &#x60;true or false&#x60; |
      *
      * @param xSdsAuthToken Authentication token (optional)
      * @return CustomerSettingsResponse
@@ -48,7 +48,7 @@ public class SettingsApi {
 
     /**
      * Get customer settings
-     * ### Functional Description:   Retrieve customer related settings.   ### Precondition: Right _\&quot;read config\&quot;_ required.   Role _\&quot;user\&quot;_.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Configurable customer settings  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;homeRoomParentName&#x60;** | Name of the container in which all user&#39;s home rooms are located.&lt;br&gt;&#x60;null&#x60; if **&#x60;homeRoomsActive&#x60;** is &#x60;false&#x60;. | &#x60;String&#x60; | | **&#x60;homeRoomQuota&#x60;** | Refers to the quota of each single user&#39;s home room.&lt;br&gt;&#x60;0&#x60; represents no quota.&lt;br&gt;&#x60;null&#x60; if **&#x60;homeRoomsActive&#x60;** is &#x60;false&#x60;. | &#x60;positive Long&#x60; | | **&#x60;homeRoomsActive&#x60;** | If set to &#x60;true&#x60;, every user with an Active Directory account gets a personal homeroom.&lt;br&gt;Once activated, this **CANNOT** be deactivated. | &#x60;true or false&#x60; |
+     * ### Functional Description:   Retrieve customer related settings.   ### Precondition: Right _\&quot;read config\&quot;_ required.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Configurable customer settings  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;homeRoomParentName&#x60;** | Name of the container in which all user&#39;s home rooms are located.&lt;br&gt;&#x60;null&#x60; if **&#x60;homeRoomsActive&#x60;** is &#x60;false&#x60;. | &#x60;String&#x60; | | **&#x60;homeRoomQuota&#x60;** | Refers to the quota of each single user&#39;s home room.&lt;br&gt;&#x60;0&#x60; represents no quota.&lt;br&gt;&#x60;null&#x60; if **&#x60;homeRoomsActive&#x60;** is &#x60;false&#x60;. | &#x60;positive Long&#x60; | | **&#x60;homeRoomsActive&#x60;** | If set to &#x60;true&#x60;, every user with an Active Directory account gets a personal homeroom.&lt;br&gt;Once activated, this **CANNOT** be deactivated. | &#x60;true or false&#x60; |
      *
      * @param xSdsAuthToken Authentication token (optional)
      * @return ApiResponse&lt;CustomerSettingsResponse&gt;

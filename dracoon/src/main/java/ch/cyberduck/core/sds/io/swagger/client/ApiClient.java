@@ -44,7 +44,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T14:22:07.810+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:08:20.178+02:00")
 public class ApiClient {
     protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
     protected String basePath = "https://duck.dracoon.com/api";
@@ -679,7 +679,8 @@ public class ApiClient {
         response = invocationBuilder.put(entity);
       } else if ("DELETE".equals(method)) {
         response = invocationBuilder.delete();
-      } else if("PATCH".equals(method)) {
+      }
+      else if("PATCH".equals(method)) {
           response = invocationBuilder.method("PATCH", entity);
       }
       else if("HEAD".equals(method)) {

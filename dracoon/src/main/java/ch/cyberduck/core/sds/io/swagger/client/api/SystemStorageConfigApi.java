@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T14:22:07.810+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:08:20.178+02:00")
 public class SystemStorageConfigApi {
   private ApiClient apiClient;
 
@@ -63,7 +63,7 @@ public class SystemStorageConfigApi {
         Object localVarPostBody = body;
 
         // verify the required parameter 'body' is set
-        if (body == null) {
+        if(body == null) {
             throw new ApiException(400, "Missing the required parameter 'body' when calling createS3Config");
         }
 
@@ -76,8 +76,9 @@ public class SystemStorageConfigApi {
         Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-        if (xSdsAuthToken != null)
+        if(xSdsAuthToken != null) {
             localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        }
 
 
         final String[] localVarAccepts = {
@@ -90,9 +91,10 @@ public class SystemStorageConfigApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
 
-        GenericType<S3Config> localVarReturnType = new GenericType<S3Config>() {};
+        GenericType<S3Config> localVarReturnType = new GenericType<S3Config>() {
+        };
         return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
@@ -220,8 +222,8 @@ public class SystemStorageConfigApi {
     /**
      * Get S3 storage configuration
      * ### &amp;#128640; Since version 4.3.0  ### Functional Description:   Retrieve S3 configuration.  ### Precondition: Right _\&quot;read global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: None.  ### &amp;#9432; Further Information: None.
-   * @param xSdsAuthToken Authentication token (optional)
-   * @return S3Config
+     * @param xSdsAuthToken Authentication token (optional)
+     * @return S3Config
      * @throws ApiException if fails to make API call
      */
     public S3Config getS3Config(String xSdsAuthToken) throws ApiException {
@@ -231,6 +233,7 @@ public class SystemStorageConfigApi {
     /**
      * Get S3 storage configuration
      * ### &amp;#128640; Since version 4.3.0  ### Functional Description:   Retrieve S3 configuration.  ### Precondition: Right _\&quot;read global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+     *
      * @param xSdsAuthToken Authentication token (optional)
      * @return ApiResponse&lt;S3Config&gt;
      * @throws ApiException if fails to make API call
@@ -247,8 +250,9 @@ public class SystemStorageConfigApi {
         Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-        if (xSdsAuthToken != null)
+        if(xSdsAuthToken != null) {
             localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        }
 
 
         final String[] localVarAccepts = {
@@ -261,9 +265,10 @@ public class SystemStorageConfigApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
 
-        GenericType<S3Config> localVarReturnType = new GenericType<S3Config>() {};
+        GenericType<S3Config> localVarReturnType = new GenericType<S3Config>() {
+        };
         return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
@@ -386,7 +391,7 @@ public class SystemStorageConfigApi {
     /**
      * Update S3 storage configuration
      * ### &amp;#128640; Since version 4.3.0  ### Functional Description:   Update existing S3 configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: S3 configuration is updated.  ### &amp;#9432; Further Information: None.
-   * @param body body (required)
+     * @param body body (required)
      * @param xSdsAuthToken Authentication token (optional)
      * @return S3Config
      * @throws ApiException if fails to make API call
@@ -398,7 +403,8 @@ public class SystemStorageConfigApi {
     /**
      * Update S3 storage configuration
      * ### &amp;#128640; Since version 4.3.0  ### Functional Description:   Update existing S3 configuration.  ### Precondition: Right _\&quot;change global config\&quot;_ required.   Role _Config Manager_ of the Provider Customer.  ### Effects: S3 configuration is updated.  ### &amp;#9432; Further Information: None.
-     * @param body body (required)
+     *
+     * @param body          body (required)
      * @param xSdsAuthToken Authentication token (optional)
      * @return ApiResponse&lt;S3Config&gt;
      * @throws ApiException if fails to make API call
@@ -407,7 +413,7 @@ public class SystemStorageConfigApi {
         Object localVarPostBody = body;
 
         // verify the required parameter 'body' is set
-        if (body == null) {
+        if(body == null) {
             throw new ApiException(400, "Missing the required parameter 'body' when calling updateS3Config");
         }
 
@@ -420,8 +426,9 @@ public class SystemStorageConfigApi {
         Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-        if (xSdsAuthToken != null)
+        if(xSdsAuthToken != null) {
             localVarHeaderParams.put("X-Sds-Auth-Token", apiClient.parameterToString(xSdsAuthToken));
+        }
 
 
         final String[] localVarAccepts = {
@@ -434,9 +441,9 @@ public class SystemStorageConfigApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] { "DRACOON-OAuth" };
+        String[] localVarAuthNames = new String[]{"DRACOON-OAuth"};
 
         GenericType<S3Config> localVarReturnType = new GenericType<S3Config>() {};
-        return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-    }
+    return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
 }

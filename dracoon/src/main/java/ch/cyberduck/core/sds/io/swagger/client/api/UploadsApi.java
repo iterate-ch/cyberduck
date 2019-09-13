@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T14:22:07.810+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:08:20.178+02:00")
 public class UploadsApi {
   private ApiClient apiClient;
 
@@ -58,7 +58,7 @@ public class UploadsApi {
         Object localVarPostBody = null;
 
         // verify the required parameter 'token' is set
-        if (token == null) {
+        if(token == null) {
             throw new ApiException(400, "Missing the required parameter 'token' when calling cancelFileUploadByToken");
         }
 
@@ -91,7 +91,7 @@ public class UploadsApi {
    * Complete file upload
    * ### Functional Description: Finish uploading a file.  ### Precondition: Valid upload token.  ### Effects: File created.  ### &amp;#9432; Further Information: The provided file name might be changed in accordance with the resolution strategy:  * **autorename**: changes the file name and adds a number to avoid conflicts. * **overwrite**: deletes any old file with the same file name. * **fail**: returns an error; in this case, another &#x60;PUT&#x60; request with a different file name may be sent.  Please ensure that all chunks have been transferred correctly before finishing the upload.  ### 200 OK is **NOT** used by this API
    * @param token Upload token (required)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param body The body must be empty if public upload token is used. The &#x60;resolutionStrategy&#x60; in that case will be always &#x60;autorename&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
@@ -105,7 +105,7 @@ public class UploadsApi {
      * ### Functional Description: Finish uploading a file.  ### Precondition: Valid upload token.  ### Effects: File created.  ### &amp;#9432; Further Information: The provided file name might be changed in accordance with the resolution strategy:  * **autorename**: changes the file name and adds a number to avoid conflicts. * **overwrite**: deletes any old file with the same file name. * **fail**: returns an error; in this case, another &#x60;PUT&#x60; request with a different file name may be sent.  Please ensure that all chunks have been transferred correctly before finishing the upload.  ### 200 OK is **NOT** used by this API
      *
      * @param token          Upload token (required)
-     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
      * @param body           The body must be empty if public upload token is used. The &#x60;resolutionStrategy&#x60; in that case will be always &#x60;autorename&#x60; (optional)
      * @return ApiResponse&lt;Node&gt;
      * @throws ApiException if fails to make API call
@@ -150,11 +150,11 @@ public class UploadsApi {
 
     /**
      * Upload file
-     * ### Functional Description:   Upload a (chunk of a) file.  ### Precondition: Valid upload token.  ### Effects: Chunk uploaded.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).    Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * &#x60;application/octet-stream&#x60;    For both file upload types set the correct &#x60;Content-Type&#x60; header and body.   Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * &#x60;application/octet-stream&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: application/octet-stream ...  Body: Content of file.txt &#x60;&#x60;&#x60;
+     * ### Functional Description:   Upload a (chunk of a) file.  ### Precondition: Valid upload token.  ### Effects: Chunk uploaded.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).    Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * &#x60;application/octet-stream&#x60;    For both file upload types set the correct &#x60;Content-Type&#x60; header and body.   Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * &#x60;application/octet-stream&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: application/octet-stream ...  Body: Content of file.txt &#x60;&#x60;&#x60;
      * @param file File (required)
-     * @param token Upload token (required)
+   * @param token Upload token (required)
    * @param contentRange Content-Range e.g. &#x60;bytes 0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
-   * @return ChunkUploadResponse
+     * @return ChunkUploadResponse
      * @throws ApiException if fails to make API call
      */
     public ChunkUploadResponse uploadFileByToken(File file, String token, String contentRange) throws ApiException {
@@ -163,7 +163,7 @@ public class UploadsApi {
 
     /**
      * Upload file
-     * ### Functional Description:   Upload a (chunk of a) file.  ### Precondition: Valid upload token.  ### Effects: Chunk uploaded.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).    Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * &#x60;application/octet-stream&#x60;    For both file upload types set the correct &#x60;Content-Type&#x60; header and body.   Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * &#x60;application/octet-stream&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: application/octet-stream ...  Body: Content of file.txt &#x60;&#x60;&#x60;
+     * ### Functional Description:   Upload a (chunk of a) file.  ### Precondition: Valid upload token.  ### Effects: Chunk uploaded.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).    Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * &#x60;application/octet-stream&#x60;    For both file upload types set the correct &#x60;Content-Type&#x60; header and body.   Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * &#x60;application/octet-stream&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: application/octet-stream ...  Body: Content of file.txt &#x60;&#x60;&#x60;
      *
      * @param file         File (required)
      * @param token        Upload token (required)
@@ -172,17 +172,17 @@ public class UploadsApi {
      * @throws ApiException if fails to make API call
      */
     public ApiResponse<ChunkUploadResponse> uploadFileByTokenWithHttpInfo(File file, String token, String contentRange) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // verify the required parameter 'file' is set
-        if (file == null) {
+        Object localVarPostBody = null;
+
+        // verify the required parameter 'file' is set
+        if(file == null) {
             throw new ApiException(400, "Missing the required parameter 'file' when calling uploadFileByToken");
         }
 
         // verify the required parameter 'token' is set
         if(token == null) {
             throw new ApiException(400, "Missing the required parameter 'token' when calling uploadFileByToken");
-        }
+    }
     
     // create path and map variables
     String localVarPath = "/v4/uploads/{token}"

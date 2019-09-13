@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T14:22:07.810+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:08:20.178+02:00")
 public class PublicApi {
   private ApiClient apiClient;
 
@@ -58,12 +58,12 @@ public class PublicApi {
         Object localVarPostBody = null;
 
         // verify the required parameter 'accessKey' is set
-        if (accessKey == null) {
+        if(accessKey == null) {
             throw new ApiException(400, "Missing the required parameter 'accessKey' when calling cancelShareUpload");
         }
 
         // verify the required parameter 'uploadId' is set
-        if (uploadId == null) {
+        if(uploadId == null) {
             throw new ApiException(400, "Missing the required parameter 'uploadId' when calling cancelShareUpload");
         }
 
@@ -95,7 +95,7 @@ public class PublicApi {
     }
   /**
    * Complete file upload
-   * ### Functional Description: Finalize (chunked) upload via Upload Share.  ### Precondition: Valid upload ID.  ### Effects: Finalizes upload.  ### &amp;#9432; Further Information: Chunked uploads (range requests) are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).    Please ensure that all chunks have been transferred correctly before finishing the upload.   If file hash has been created in time a &#x60;201 Created&#x60; will be responded and hash will be part of response, otherwise it will be a &#x60;202 Accepted&#x60; without it.  ### 200 OK is NOT used by this API
+   * ### Functional Description: Finalize (chunked) upload via Upload Share.  ### Precondition: * Valid upload ID.    If container is encrypted, the fileKeys can only be set for users that have permission _\&quot;manage\&quot;_, _\&quot;read\&quot;_, _\&quot;manageDownloadShare\&quot;_ or _\&quot;manageUploadShare\&quot;_.  ### Effects: Finalizes upload.  ### &amp;#9432; Further Information: Chunked uploads (range requests) are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).    Please ensure that all chunks have been transferred correctly before finishing the upload.   If file hash has been created in time a &#x60;201 Created&#x60; will be responded and hash will be part of response, otherwise it will be a &#x60;202 Accepted&#x60; without it.  ### 200 OK is NOT used by this API 
    * @param accessKey Access key (required)
    * @param uploadId Upload channel ID (required)
    * @param body Mandatory for encrypted shares (optional)
@@ -108,7 +108,7 @@ public class PublicApi {
 
     /**
      * Complete file upload
-     * ### Functional Description: Finalize (chunked) upload via Upload Share.  ### Precondition: Valid upload ID.  ### Effects: Finalizes upload.  ### &amp;#9432; Further Information: Chunked uploads (range requests) are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).    Please ensure that all chunks have been transferred correctly before finishing the upload.   If file hash has been created in time a &#x60;201 Created&#x60; will be responded and hash will be part of response, otherwise it will be a &#x60;202 Accepted&#x60; without it.  ### 200 OK is NOT used by this API
+     * ### Functional Description: Finalize (chunked) upload via Upload Share.  ### Precondition: * Valid upload ID.    If container is encrypted, the fileKeys can only be set for users that have permission _\&quot;manage\&quot;_, _\&quot;read\&quot;_, _\&quot;manageDownloadShare\&quot;_ or _\&quot;manageUploadShare\&quot;_.  ### Effects: Finalizes upload.  ### &amp;#9432; Further Information: Chunked uploads (range requests) are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).    Please ensure that all chunks have been transferred correctly before finishing the upload.   If file hash has been created in time a &#x60;201 Created&#x60; will be responded and hash will be part of response, otherwise it will be a &#x60;202 Accepted&#x60; without it.  ### 200 OK is NOT used by this API
      *
      * @param accessKey Access key (required)
      * @param uploadId  Upload channel ID (required)
@@ -120,12 +120,12 @@ public class PublicApi {
         Object localVarPostBody = body;
 
         // verify the required parameter 'accessKey' is set
-        if (accessKey == null) {
+        if(accessKey == null) {
             throw new ApiException(400, "Missing the required parameter 'accessKey' when calling completeShareUpload");
         }
 
         // verify the required parameter 'uploadId' is set
-        if (uploadId == null) {
+        if(uploadId == null) {
             throw new ApiException(400, "Missing the required parameter 'uploadId' when calling completeShareUpload");
         }
 
@@ -150,9 +150,10 @@ public class PublicApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<PublicUploadedFileData> localVarReturnType = new GenericType<PublicUploadedFileData>() {};
+        GenericType<PublicUploadedFileData> localVarReturnType = new GenericType<PublicUploadedFileData>() {
+        };
         return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
@@ -163,7 +164,7 @@ public class PublicApi {
    * @param body body (required)
    * @return PublicDownloadTokenGenerateResponse
    * @throws ApiException if fails to make API call
-   */
+     */
     public PublicDownloadTokenGenerateResponse createPublicDownloadShareToken(String accessKey, PublicDownloadTokenGenerateRequest body) throws ApiException {
         return createPublicDownloadShareTokenWithHttpInfo(accessKey, body).getData();
     }
@@ -181,12 +182,12 @@ public class PublicApi {
         Object localVarPostBody = body;
 
         // verify the required parameter 'accessKey' is set
-        if (accessKey == null) {
+        if(accessKey == null) {
             throw new ApiException(400, "Missing the required parameter 'accessKey' when calling createPublicDownloadShareToken");
         }
 
         // verify the required parameter 'body' is set
-        if (body == null) {
+        if(body == null) {
             throw new ApiException(400, "Missing the required parameter 'body' when calling createPublicDownloadShareToken");
         }
 
@@ -210,9 +211,10 @@ public class PublicApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<PublicDownloadTokenGenerateResponse> localVarReturnType = new GenericType<PublicDownloadTokenGenerateResponse>() {};
+        GenericType<PublicDownloadTokenGenerateResponse> localVarReturnType = new GenericType<PublicDownloadTokenGenerateResponse>() {
+        };
         return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
@@ -222,8 +224,8 @@ public class PublicApi {
    * @param accessKey Access key (required)
    * @param body body (required)
    * @return CreateShareUploadChannelResponse
-   * @throws ApiException if fails to make API call
-   */
+     * @throws ApiException if fails to make API call
+     */
     public CreateShareUploadChannelResponse createShareUpload(String accessKey, CreateShareUploadChannelRequest body) throws ApiException {
         return createShareUploadWithHttpInfo(accessKey, body).getData();
     }
@@ -241,12 +243,12 @@ public class PublicApi {
         Object localVarPostBody = body;
 
         // verify the required parameter 'accessKey' is set
-        if (accessKey == null) {
+        if(accessKey == null) {
             throw new ApiException(400, "Missing the required parameter 'accessKey' when calling createShareUpload");
         }
 
         // verify the required parameter 'body' is set
-        if (body == null) {
+        if(body == null) {
             throw new ApiException(400, "Missing the required parameter 'body' when calling createShareUpload");
         }
 
@@ -270,11 +272,12 @@ public class PublicApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<CreateShareUploadChannelResponse> localVarReturnType = new GenericType<CreateShareUploadChannelResponse>() {};
+        GenericType<CreateShareUploadChannelResponse> localVarReturnType = new GenericType<CreateShareUploadChannelResponse>() {
+        };
         return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-    }
+      }
   /**
    * Get Active Directory authentication information
    * ### Functional Description:   Provides information about Active Directory authentication options.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
@@ -318,17 +321,18 @@ public class PublicApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<ActiveDirectoryAuthInfo> localVarReturnType = new GenericType<ActiveDirectoryAuthInfo>() {};
+        GenericType<ActiveDirectoryAuthInfo> localVarReturnType = new GenericType<ActiveDirectoryAuthInfo>() {
+        };
         return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Get branding information
      * ## &amp;#9888; Deprecated since version 4.10.0  ### Functional Description:   Provides information about branding settings.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Branding settings  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;brandingProviderUrl&#x60;** | Access URL to to the Branding Portal | &#x60;String&#x60; | | **&#x60;brandingQualifier&#x60;** | Branding UUID | &#x60;String&#x60; |
-   * @return BrandingConfig
-   * @throws ApiException if fails to make API call
+     * @return BrandingConfig
+     * @throws ApiException if fails to make API call
      * @deprecated
      */
     @Deprecated
@@ -339,6 +343,7 @@ public class PublicApi {
     /**
      * Get branding information
      * ## &amp;#9888; Deprecated since version 4.10.0  ### Functional Description:   Provides information about branding settings.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.  ### Branding settings  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;brandingProviderUrl&#x60;** | Access URL to to the Branding Portal | &#x60;String&#x60; | | **&#x60;brandingQualifier&#x60;** | Branding UUID | &#x60;String&#x60; |
+     *
      * @return ApiResponse&lt;BrandingConfig&gt;
      * @throws ApiException if fails to make API call
      * @deprecated
@@ -366,9 +371,10 @@ public class PublicApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<BrandingConfig> localVarReturnType = new GenericType<BrandingConfig>() {};
+        GenericType<BrandingConfig> localVarReturnType = new GenericType<BrandingConfig>() {
+        };
         return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
@@ -376,7 +382,7 @@ public class PublicApi {
      * Get branding information
      * ## &amp;#9888; Deprecated since version 4.6.0  ### Functional Description:   Public branding information.  ### Precondition: None.  ### Effects: If &#x60;brandingServerBrandingId&#x60; is set, &#x60;brandingServerCustomer&#x60; is **NOT** supplied.  ### &amp;#9432; Further Information: None.
      * @return BrandingServerInfo
-   * @throws ApiException if fails to make API call
+     * @throws ApiException if fails to make API call
      * @deprecated
      */
     @Deprecated
@@ -387,6 +393,7 @@ public class PublicApi {
     /**
      * Get branding information
      * ## &amp;#9888; Deprecated since version 4.6.0  ### Functional Description:   Public branding information.  ### Precondition: None.  ### Effects: If &#x60;brandingServerBrandingId&#x60; is set, &#x60;brandingServerCustomer&#x60; is **NOT** supplied.  ### &amp;#9432; Further Information: None.
+     *
      * @return ApiResponse&lt;BrandingServerInfo&gt;
      * @throws ApiException if fails to make API call
      * @deprecated
@@ -414,11 +421,12 @@ public class PublicApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<BrandingServerInfo> localVarReturnType = new GenericType<BrandingServerInfo>() {};
+        GenericType<BrandingServerInfo> localVarReturnType = new GenericType<BrandingServerInfo>() {
+        };
         return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-    }
+      }
   /**
    * Get OpenID Connect provider authentication information
    * ### Functional Description:   Provides information about OpenID Connect authentication options.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
@@ -433,6 +441,7 @@ public class PublicApi {
     /**
      * Get OpenID Connect provider authentication information
      * ### Functional Description:   Provides information about OpenID Connect authentication options.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
+     *
      * @param isGlobalAvailable Show only global available items (optional)
      * @return ApiResponse&lt;OpenIdAuthInfo&gt;
      * @throws ApiException if fails to make API call
@@ -461,16 +470,17 @@ public class PublicApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<OpenIdAuthInfo> localVarReturnType = new GenericType<OpenIdAuthInfo>() {};
+        GenericType<OpenIdAuthInfo> localVarReturnType = new GenericType<OpenIdAuthInfo>() {
+        };
         return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-    }
+      }
   /**
    * Get public Download Share information
    * ### Functional Description:   Retrieve the public information of a Download Share.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
    * @param accessKey Access key (required)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @return PublicDownloadShare
    * @throws ApiException if fails to make API call
    */
@@ -483,7 +493,7 @@ public class PublicApi {
      * ### Functional Description:   Retrieve the public information of a Download Share.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
      *
      * @param accessKey      Access key (required)
-     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
      * @return ApiResponse&lt;PublicDownloadShare&gt;
      * @throws ApiException if fails to make API call
      */
@@ -491,7 +501,7 @@ public class PublicApi {
         Object localVarPostBody = null;
 
         // verify the required parameter 'accessKey' is set
-        if (accessKey == null) {
+        if(accessKey == null) {
             throw new ApiException(400, "Missing the required parameter 'accessKey' when calling getPublicDownloadShare");
         }
 
@@ -505,8 +515,9 @@ public class PublicApi {
         Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-        if (xSdsDateFormat != null)
+        if(xSdsDateFormat != null) {
             localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+        }
 
 
         final String[] localVarAccepts = {
@@ -519,39 +530,40 @@ public class PublicApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<PublicDownloadShare> localVarReturnType = new GenericType<PublicDownloadShare>() {};
+        GenericType<PublicDownloadShare> localVarReturnType = new GenericType<PublicDownloadShare>() {
+        };
         return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
-  /**
-   * Download file with token
-   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
+
+    /**
+     * Download file with token
+     * ### Functional Description:   Download a file (or zip archive if target is a folder or room).  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).   Range requests are not allowed for zip archive download.
    * @param accessKey Access key (required)
    * @param token Download token (required)
    * @param range Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
    * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
    * @return Integer
-   * @throws ApiException if fails to make API call
-   */
-  public Integer getPublicFileData(String accessKey, String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
-      return getPublicFileDataWithHttpInfo(accessKey, token, range, genericMimetype, inline).getData();
-  }
+     * @throws ApiException if fails to make API call
+     */
+    public Integer getPublicFileData(String accessKey, String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
+        return getPublicFileDataWithHttpInfo(accessKey, token, range, genericMimetype, inline).getData();
+    }
 
     /**
      * Download file with token
-     * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
-     *
-     * @param accessKey       Access key (required)
-     * @param token           Download token (required)
-     * @param range           Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+     * ### Functional Description:   Download a file (or zip archive if target is a folder or room).  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).   Range requests are not allowed for zip archive download.
+     * @param accessKey Access key (required)
+     * @param token Download token (required)
+     * @param range Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
      * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
-     * @param inline          Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
+     * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
      * @return ApiResponse&lt;Integer&gt;
      * @throws ApiException if fails to make API call
-     */
-    public ApiResponse<Integer> getPublicFileDataWithHttpInfo(String accessKey, String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
+   */
+  public ApiResponse<Integer> getPublicFileDataWithHttpInfo(String accessKey, String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'accessKey' is set
@@ -569,10 +581,10 @@ public class PublicApi {
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()))
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+      // query params
+      List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "generic_mimetype", genericMimetype));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "inline", inline));
@@ -595,32 +607,33 @@ public class PublicApi {
 
     GenericType<Integer> localVarReturnType = new GenericType<Integer>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Download file with token
-   * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
+  }
+
+    /**
+     * Download file with token
+     * ### Functional Description:   Download a file (or zip archive if target is a folder or room).  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).   Range requests are not allowed for zip archive download.
    * @param accessKey Access key (required)
    * @param token Download token (required)
    * @param range Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
    * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
    * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
    * @return Integer
-   * @throws ApiException if fails to make API call
-   */
-  public Integer getPublicFileData1(String accessKey, String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
-      return getPublicFileData1WithHttpInfo(accessKey, token, range, genericMimetype, inline).getData();
-  }
+     * @throws ApiException if fails to make API call
+     */
+    public Integer getPublicFileData1(String accessKey, String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
+        return getPublicFileData1WithHttpInfo(accessKey, token, range, genericMimetype, inline).getData();
+    }
 
     /**
      * Download file with token
-     * ### Functional Description:   Download a file.  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
+     * ### Functional Description:   Download a file (or zip archive if target is a folder or room).  ### Precondition: Valid download token.  ### Effects: None.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).   Range requests are not allowed for zip archive download.
      * @param accessKey Access key (required)
      * @param token Download token (required)
      * @param range Range e.g. &#x60;bytes&#x3D;0-999&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
      * @param genericMimetype Always return &#x60;application/octet-stream&#x60; instead of specific mimetype (optional)
-     * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
-     * @return ApiResponse&lt;Integer&gt;
-     * @throws ApiException if fails to make API call
+   * @param inline Use Content-Disposition: &#x60;inline&#x60; instead of &#x60;attachment&#x60; (optional)
+   * @return ApiResponse&lt;Integer&gt;
+   * @throws ApiException if fails to make API call
    */
   public ApiResponse<Integer> getPublicFileData1WithHttpInfo(String accessKey, String token, String range, Boolean genericMimetype, Boolean inline) throws ApiException {
     Object localVarPostBody = null;
@@ -640,10 +653,10 @@ public class PublicApi {
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()))
       .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
+      // query params
+      List<Pair> localVarQueryParams = new ArrayList<Pair>();
     Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-      Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "generic_mimetype", genericMimetype));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "inline", inline));
@@ -670,10 +683,10 @@ public class PublicApi {
 
     /**
      * Get public Upload Share information
-     * ### Functional Description:   Provides information about the desired Upload Share.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: If no password is set, the returned information is reduced to the following attributes (if available):  * **&#x60;name&#x60;** * **&#x60;maxSlots&#x60;** * **&#x60;createdAt&#x60;** * **&#x60;isProtected&#x60;** * **&#x60;isEncrypted&#x60;** * **&#x60;showUploadedFiles&#x60;** * **&#x60;userUserPublicKeyList&#x60;** (if parent is end-to-end encrypted)  Only if the password is transmitted as &#x60;X-Sds-Share-Password&#x60; header, all values are returned.
-     * @param accessKey Access key (required)
-     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
-   * @param xSdsSharePassword Upload share password. Should be base64-encoded. Plain X-Sds-Share-Passwords are *deprecated* and will be removed in the future (optional)
+     * ### Functional Description:   Provides information about the desired Upload Share.  ### Precondition: Only userUserPublicKeyList is returned to the users who owns one of the following permissions * *&#x60;manage&#x60;* * *&#x60;read&#x60;* * *&#x60;manageDownloadShare&#x60;* * *&#x60;manageUploadShare&#x60;*  ### Effects: None.  ### &amp;#9432; Further Information: If no password is set, the returned information is reduced to the following attributes (if available):  * **&#x60;name&#x60;** * **&#x60;maxSlots&#x60;** * **&#x60;createdAt&#x60;** * **&#x60;isProtected&#x60;** * **&#x60;isEncrypted&#x60;** * **&#x60;showUploadedFiles&#x60;** * **&#x60;userUserPublicKeyList&#x60;** (if parent is end-to-end encrypted)  Only if the password is transmitted as &#x60;X-Sds-Share-Password&#x60; header, all values are returned.
+   * @param accessKey Access key (required)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
+     * @param xSdsSharePassword Upload share password. Should be base64-encoded. Plain X-Sds-Share-Passwords are *deprecated* and will be removed in the future (optional)
      * @return PublicUploadShare
      * @throws ApiException if fails to make API call
      */
@@ -683,12 +696,12 @@ public class PublicApi {
 
     /**
      * Get public Upload Share information
-     * ### Functional Description:   Provides information about the desired Upload Share.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: If no password is set, the returned information is reduced to the following attributes (if available):  * **&#x60;name&#x60;** * **&#x60;maxSlots&#x60;** * **&#x60;createdAt&#x60;** * **&#x60;isProtected&#x60;** * **&#x60;isEncrypted&#x60;** * **&#x60;showUploadedFiles&#x60;** * **&#x60;userUserPublicKeyList&#x60;** (if parent is end-to-end encrypted)  Only if the password is transmitted as &#x60;X-Sds-Share-Password&#x60; header, all values are returned.
+     * ### Functional Description:   Provides information about the desired Upload Share.  ### Precondition: Only userUserPublicKeyList is returned to the users who owns one of the following permissions * *&#x60;manage&#x60;* * *&#x60;read&#x60;* * *&#x60;manageDownloadShare&#x60;* * *&#x60;manageUploadShare&#x60;*  ### Effects: None.  ### &amp;#9432; Further Information: If no password is set, the returned information is reduced to the following attributes (if available):  * **&#x60;name&#x60;** * **&#x60;maxSlots&#x60;** * **&#x60;createdAt&#x60;** * **&#x60;isProtected&#x60;** * **&#x60;isEncrypted&#x60;** * **&#x60;showUploadedFiles&#x60;** * **&#x60;userUserPublicKeyList&#x60;** (if parent is end-to-end encrypted)  Only if the password is transmitted as &#x60;X-Sds-Share-Password&#x60; header, all values are returned.
      * @param accessKey Access key (required)
-     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
      * @param xSdsSharePassword Upload share password. Should be base64-encoded. Plain X-Sds-Share-Passwords are *deprecated* and will be removed in the future (optional)
-     * @return ApiResponse&lt;PublicUploadShare&gt;
-     * @throws ApiException if fails to make API call
+   * @return ApiResponse&lt;PublicUploadShare&gt;
+   * @throws ApiException if fails to make API call
    */
   public ApiResponse<PublicUploadShare> getPublicUploadShareWithHttpInfo(String accessKey, String xSdsDateFormat, String xSdsSharePassword) throws ApiException {
     Object localVarPostBody = null;
@@ -702,14 +715,15 @@ public class PublicApi {
     String localVarPath = "/v4/public/shares/uploads/{access_key}"
       .replaceAll("\\{" + "access_key" + "\\}", apiClient.escapeString(accessKey.toString()));
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+      // query params
+      List<Pair> localVarQueryParams = new ArrayList<Pair>();
+      Map<String, String> localVarHeaderParams = new HashMap<String, String>();
       Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-      if(xSdsDateFormat != null)
+      if(xSdsDateFormat != null) {
           localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+      }
       if(xSdsSharePassword != null) {
           localVarHeaderParams.put("X-Sds-Share-Password", apiClient.parameterToString(xSdsSharePassword));
       }
@@ -734,7 +748,8 @@ public class PublicApi {
     /**
      * Get system time
      * ### Functional Description:   Retrieve the actual server time.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     *
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
      * @return SdsServerTime
      * @throws ApiException if fails to make API call
      */
@@ -745,7 +760,8 @@ public class PublicApi {
     /**
      * Get system time
      * ### Functional Description:   Retrieve the actual server time.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: None.
-     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     *
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
      * @return ApiResponse&lt;SdsServerTime&gt;
      * @throws ApiException if fails to make API call
      */
@@ -761,8 +777,9 @@ public class PublicApi {
         Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-        if (xSdsDateFormat != null)
+        if(xSdsDateFormat != null) {
             localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+        }
 
 
         final String[] localVarAccepts = {
@@ -775,15 +792,16 @@ public class PublicApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<SdsServerTime> localVarReturnType = new GenericType<SdsServerTime>() {};
+        GenericType<SdsServerTime> localVarReturnType = new GenericType<SdsServerTime>() {
+        };
         return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-    }
+      }
   /**
    * Get software version information
    * ### Functional Description:   Public software version information.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: The version of DRACOON Server consists of two components: * **API** * **Core** (referred to as _\&quot;Server\&quot;_)  that are versioned individually.
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @return SoftwareVersionData
    * @throws ApiException if fails to make API call
    */
@@ -794,7 +812,8 @@ public class PublicApi {
     /**
      * Get software version information
      * ### Functional Description:   Public software version information.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: The version of DRACOON Server consists of two components: * **API** * **Core** (referred to as _\&quot;Server\&quot;_)  that are versioned individually.
-     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
+     *
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
      * @return ApiResponse&lt;SoftwareVersionData&gt;
      * @throws ApiException if fails to make API call
      */
@@ -810,8 +829,9 @@ public class PublicApi {
         Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-        if (xSdsDateFormat != null)
+        if(xSdsDateFormat != null) {
             localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+        }
 
 
         final String[] localVarAccepts = {
@@ -824,16 +844,17 @@ public class PublicApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<SoftwareVersionData> localVarReturnType = new GenericType<SoftwareVersionData>() {};
+        GenericType<SoftwareVersionData> localVarReturnType = new GenericType<SoftwareVersionData>() {
+        };
         return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
     /**
      * Get system information
-     * ### Functional Description:   Provides information about system.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: Authentication methods are sorted by **priority** attribute.   Smaller values have higher priority.   Authentication method with highest priority is considered as default.  ### System information  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;languageDefault&#x60;** | Defines which language should be default.&lt;br&gt;cf. [RFC 5646](https://tools.ietf.org/html/rfc5646) for ISO 639-1 codes | &#x60;ISO 639-1 code&#x60; |  ### Authentication methods  | Authentication Method | Description | | :--- | :--- | | **&#x60;basic&#x60;** | **Basic** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their credentials stored in the database.&lt;br&gt;Formerly known as **&#x60;sql&#x60;**. | | **&#x60;active_directory&#x60;** | **Active Directory** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their Active Directory credentials. | | **&#x60;radius&#x60;** | **RADIUS** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their RADIUS username, their PIN and a token password. | | **&#x60;openid&#x60;** | **OpenID Connect** authentication globally allowed.This option **MUST** be activated to allow users to log in with their OpenID Connect identity. |
-   * @param isEnabled Show only enabled authentication methods (optional)
+     * ### Functional Description:   Provides information about system.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: Authentication methods are sorted by **priority** attribute.   Smaller values have higher priority.   Authentication method with highest priority is considered as default.  ### System information  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;languageDefault&#x60;** | Defines which language should be default.&lt;br&gt;cf. [RFC 5646](https://tools.ietf.org/html/rfc5646) for ISO 639-1 codes | &#x60;ISO 639-1 code&#x60; |  ### Authentication methods  | Authentication Method | Description | | :--- | :--- | | **&#x60;basic&#x60;** | **Basic** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their credentials stored in the database.&lt;br&gt;Formerly known as **&#x60;sql&#x60;**. | | **&#x60;active_directory&#x60;** | **Active Directory** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their Active Directory credentials. | | **&#x60;radius&#x60;** | **RADIUS** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their RADIUS username, their PIN and a token password. | | **&#x60;openid&#x60;** | **OpenID Connect** authentication globally allowed.This option **MUST** be activated to allow users to log in with their OpenID Connect identity. | | **&#x60;hideLoginInputFields&#x60;** | Determines whether input fields for login should be enabled | &#x60;true or false&#x60; |
+     * @param isEnabled Show only enabled authentication methods (optional)
      * @return SystemInfo
      * @throws ApiException if fails to make API call
      */
@@ -843,7 +864,8 @@ public class PublicApi {
 
     /**
      * Get system information
-     * ### Functional Description:   Provides information about system.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: Authentication methods are sorted by **priority** attribute.   Smaller values have higher priority.   Authentication method with highest priority is considered as default.  ### System information  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;languageDefault&#x60;** | Defines which language should be default.&lt;br&gt;cf. [RFC 5646](https://tools.ietf.org/html/rfc5646) for ISO 639-1 codes | &#x60;ISO 639-1 code&#x60; |  ### Authentication methods  | Authentication Method | Description | | :--- | :--- | | **&#x60;basic&#x60;** | **Basic** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their credentials stored in the database.&lt;br&gt;Formerly known as **&#x60;sql&#x60;**. | | **&#x60;active_directory&#x60;** | **Active Directory** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their Active Directory credentials. | | **&#x60;radius&#x60;** | **RADIUS** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their RADIUS username, their PIN and a token password. | | **&#x60;openid&#x60;** | **OpenID Connect** authentication globally allowed.This option **MUST** be activated to allow users to log in with their OpenID Connect identity. |
+     * ### Functional Description:   Provides information about system.  ### Precondition: None.  ### Effects: None.  ### &amp;#9432; Further Information: Authentication methods are sorted by **priority** attribute.   Smaller values have higher priority.   Authentication method with highest priority is considered as default.  ### System information  | Setting | Description | Value | | :--- | :--- | :--- | | **&#x60;languageDefault&#x60;** | Defines which language should be default.&lt;br&gt;cf. [RFC 5646](https://tools.ietf.org/html/rfc5646) for ISO 639-1 codes | &#x60;ISO 639-1 code&#x60; |  ### Authentication methods  | Authentication Method | Description | | :--- | :--- | | **&#x60;basic&#x60;** | **Basic** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their credentials stored in the database.&lt;br&gt;Formerly known as **&#x60;sql&#x60;**. | | **&#x60;active_directory&#x60;** | **Active Directory** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their Active Directory credentials. | | **&#x60;radius&#x60;** | **RADIUS** authentication globally allowed.&lt;br&gt;This option **MUST** be activated to allow users to log in with their RADIUS username, their PIN and a token password. | | **&#x60;openid&#x60;** | **OpenID Connect** authentication globally allowed.This option **MUST** be activated to allow users to log in with their OpenID Connect identity. | | **&#x60;hideLoginInputFields&#x60;** | Determines whether input fields for login should be enabled | &#x60;true or false&#x60; |
+     *
      * @param isEnabled Show only enabled authentication methods (optional)
      * @return ApiResponse&lt;SystemInfo&gt;
      * @throws ApiException if fails to make API call
@@ -872,9 +894,10 @@ public class PublicApi {
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+        String[] localVarAuthNames = new String[]{};
 
-        GenericType<SystemInfo> localVarReturnType = new GenericType<SystemInfo>() {};
+        GenericType<SystemInfo> localVarReturnType = new GenericType<SystemInfo>() {
+        };
         return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
     }
 
@@ -927,12 +950,13 @@ public class PublicApi {
 
     /**
      * Upload file
-     * ### Functional Description:   Chunked upload of files via Upload Share.  ### Precondition: Valid upload ID.  ### Effects: Chunk of file is uploaded.  ### &amp;#9432; Further Information: Chunked uploads (range requests) are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).  Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * &#x60;application/octet-stream&#x60;    For both file upload types set the correct &#x60;Content-Type&#x60; header and body.   Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/public/shares/uploads/{access_key}{upload_id} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * &#x60;application/octet-stream&#x60; &#x60;&#x60;&#x60; POST /api/v4/public/shares/uploads/{access_key}{upload_id} HTTP/1.1  Header: ... Content-Type: application/octet-stream ...  Body: Content of file.txt &#x60;&#x60;&#x60;
-     * @param accessKey Access key (required)
-     * @param uploadId Upload channel ID (required)
-     * @param contentRange Content-Range e.g. &#x60;bytes 0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
-     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
-     * @param file File (optional)
+     * ### Functional Description:   Chunked upload of files via Upload Share.  ### Precondition: Valid upload ID.  ### Effects: Chunk of file is uploaded.  ### &amp;#9432; Further Information: Chunked uploads (range requests) are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).  Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * &#x60;application/octet-stream&#x60;    For both file upload types set the correct &#x60;Content-Type&#x60; header and body.   Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/public/shares/uploads/{access_key}{upload_id} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * &#x60;application/octet-stream&#x60; &#x60;&#x60;&#x60; POST /api/v4/public/shares/uploads/{access_key}{upload_id} HTTP/1.1  Header: ... Content-Type: application/octet-stream ...  Body: Content of file.txt &#x60;&#x60;&#x60;
+     *
+     * @param accessKey      Access key (required)
+     * @param uploadId       Upload channel ID (required)
+     * @param contentRange   Content-Range e.g. &#x60;bytes 0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
+     * @param file           File (optional)
      * @return ChunkUploadResponse
      * @throws ApiException if fails to make API call
      */
@@ -942,12 +966,13 @@ public class PublicApi {
 
     /**
      * Upload file
-     * ### Functional Description:   Chunked upload of files via Upload Share.  ### Precondition: Valid upload ID.  ### Effects: Chunk of file is uploaded.  ### &amp;#9432; Further Information: Chunked uploads (range requests) are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).  Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * &#x60;application/octet-stream&#x60;    For both file upload types set the correct &#x60;Content-Type&#x60; header and body.   Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/public/shares/uploads/{access_key}{upload_id} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * &#x60;application/octet-stream&#x60; &#x60;&#x60;&#x60; POST /api/v4/public/shares/uploads/{access_key}{upload_id} HTTP/1.1  Header: ... Content-Type: application/octet-stream ...  Body: Content of file.txt &#x60;&#x60;&#x60;
-     * @param accessKey Access key (required)
-     * @param uploadId Upload channel ID (required)
-     * @param contentRange Content-Range e.g. &#x60;bytes 0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
-     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)) (optional)
-     * @param file File (optional)
+     * ### Functional Description:   Chunked upload of files via Upload Share.  ### Precondition: Valid upload ID.  ### Effects: Chunk of file is uploaded.  ### &amp;#9432; Further Information: Chunked uploads (range requests) are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).  Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * &#x60;application/octet-stream&#x60;    For both file upload types set the correct &#x60;Content-Type&#x60; header and body.   Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/public/shares/uploads/{access_key}{upload_id} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * &#x60;application/octet-stream&#x60; &#x60;&#x60;&#x60; POST /api/v4/public/shares/uploads/{access_key}{upload_id} HTTP/1.1  Header: ... Content-Type: application/octet-stream ...  Body: Content of file.txt &#x60;&#x60;&#x60;
+     *
+     * @param accessKey      Access key (required)
+     * @param uploadId       Upload channel ID (required)
+     * @param contentRange   Content-Range e.g. &#x60;bytes 0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
+     * @param file           File (optional)
      * @return ApiResponse&lt;ChunkUploadResponse&gt;
      * @throws ApiException if fails to make API call
      */
@@ -955,12 +980,12 @@ public class PublicApi {
         Object localVarPostBody = null;
 
         // verify the required parameter 'accessKey' is set
-        if (accessKey == null) {
+        if(accessKey == null) {
             throw new ApiException(400, "Missing the required parameter 'accessKey' when calling uploadShare");
         }
 
         // verify the required parameter 'uploadId' is set
-        if (uploadId == null) {
+        if(uploadId == null) {
             throw new ApiException(400, "Missing the required parameter 'uploadId' when calling uploadShare");
         }
 
@@ -975,13 +1000,16 @@ public class PublicApi {
         Map<String, Object> localVarFormParams = new HashMap<String, Object>();
 
 
-        if (contentRange != null)
+        if(contentRange != null) {
             localVarHeaderParams.put("Content-Range", apiClient.parameterToString(contentRange));
-if (xSdsDateFormat != null)
-    localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+        }
+        if(xSdsDateFormat != null) {
+            localVarHeaderParams.put("X-Sds-Date-Format", apiClient.parameterToString(xSdsDateFormat));
+        }
 
-        if (file != null)
+        if(file != null) {
             localVarFormParams.put("file", file);
+        }
 
         final String[] localVarAccepts = {
             "application/json;charset=UTF-8"
@@ -993,9 +1021,9 @@ if (xSdsDateFormat != null)
         };
         final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
 
-        String[] localVarAuthNames = new String[] {  };
+    String[] localVarAuthNames = new String[] {  };
 
-        GenericType<ChunkUploadResponse> localVarReturnType = new GenericType<ChunkUploadResponse>() {};
-        return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-    }
+    GenericType<ChunkUploadResponse> localVarReturnType = new GenericType<ChunkUploadResponse>() {};
+    return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
+      }
 }
