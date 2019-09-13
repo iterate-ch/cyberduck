@@ -13,23 +13,21 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import ch.cyberduck.core.storegate.io.swagger.client.model.Product;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.joda.time.DateTime;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
 public class SalepackageProduct {
   @JsonProperty("currentId")
   private String currentId = null;
@@ -104,7 +102,7 @@ public class SalepackageProduct {
 
   public SalepackageProduct addAvailableItem(Product availableItem) {
     if (this.available == null) {
-      this.available = new ArrayList<Product>();
+        this.available = new ArrayList<>();
     }
     this.available.add(availableItem);
     return this;
