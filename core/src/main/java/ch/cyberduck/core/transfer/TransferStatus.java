@@ -253,6 +253,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     /**
      * @return True if marked for interrupt
      */
+    @Override
     public boolean isCanceled() {
         return canceled.get();
     }
