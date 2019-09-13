@@ -117,7 +117,9 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
             meta.setId(StringUtils.EMPTY);
             meta.setAttributes(0);
             meta.setFlags(0);
-            meta.setLockId(status.getLockId() != null ? status.getLockId().toString() : StringUtils.EMPTY);
+            if(status.getLockId() != null) {
+                request.addHeader("X-Lock-Id", status.getLockId().toString());
+            }
             meta.setFileName(file.getName());
             meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
             meta.setFileSize(0L);
