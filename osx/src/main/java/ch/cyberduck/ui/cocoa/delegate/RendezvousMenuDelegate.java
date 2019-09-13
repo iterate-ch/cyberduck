@@ -80,7 +80,7 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setTitle(BookmarkNameProvider.toString(h));
             item.setTarget(this.id());
             item.setEnabled(true);
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), preferences.getInteger("bookmark.menu.icon.size")));
+            item.setImage(IconCacheFactory.<NSImage>get().iconNamed(h.getProtocol().icon(), 16));
             item.setTarget(this.id());
             item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());

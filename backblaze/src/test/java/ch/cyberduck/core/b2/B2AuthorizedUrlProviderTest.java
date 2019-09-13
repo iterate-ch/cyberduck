@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -42,7 +43,7 @@ public class B2AuthorizedUrlProviderTest extends AbstractB2Test {
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         new B2TouchFeature(session, fileid).touch(test, new TransferStatus());
         final B2AuthorizedUrlProvider provider = new B2AuthorizedUrlProvider(session, fileid);
-        assertEquals(DescriptiveUrl.EMPTY, provider.toDownloadUrl(bucket, null, new DisabledPasswordCallback()));
+        assertFalse(provider.isSupported(bucket, PromptUrlProvider.Type.download));
         final DescriptiveUrl url = provider.toDownloadUrl(test, null, new DisabledPasswordCallback());
         assertNotEquals(DescriptiveUrl.EMPTY, url);
         assertNotNull(url.getUrl());

@@ -19,7 +19,6 @@ package ch.cyberduck.core.worker;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -45,8 +44,8 @@ public class SingleTransferWorker extends AbstractTransferWorker {
                                 final TransferSpeedometer meter, final TransferPrompt prompt,
                                 final TransferErrorCallback error,
                                 final ProgressListener listener, final StreamListener streamListener,
-                                final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback, final NotificationService notification) {
-        super(transfer, options, prompt, meter, error, listener, streamListener, connectionCallback, passwordCallback, notification);
+                                final ConnectionCallback connect, final NotificationService notification) {
+        super(transfer, options, prompt, meter, error, listener, streamListener, connect, notification);
         this.source = source;
         this.destination = destination;
     }

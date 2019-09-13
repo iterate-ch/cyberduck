@@ -173,7 +173,7 @@ public class B2ObjectListService implements ListService {
                 attributes.setSize(-1L);
                 break;
             default:
-                attributes.setSize(response.getSize());
+                attributes.setSize(response.getContentLength());
         }
         return attributes;
     }

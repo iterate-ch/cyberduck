@@ -168,7 +168,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                         credentials.getPassword());
                 }
                 catch(LocalAccessDeniedException e) {
-                    log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e.getDetail()));
+                    log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e));
                 }
             }
             else if(!credentials.isAnonymousLogin()) {
@@ -177,7 +177,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
                         bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
                 }
                 catch(LocalAccessDeniedException e) {
-                    log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e.getDetail()));
+                    log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e));
                 }
                 // Reset password in memory
                 credentials.setPassword(null);

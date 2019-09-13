@@ -107,7 +107,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                                       String title, String reason, LoginOptions options)
                 throws LoginCanceledException {
                 assertEquals("Login test.cyberduck.ch", title);
-                assertEquals("Login failed. Exhausted available authentication methods. Please contact your web hosting service provider for assistance. Please contact your web hosting service provider for assistance.", reason);
+                assertEquals("Login failed. Exhausted available authentication methods. Please contact your web hosting service provider for assistance.", reason);
                 fail.set(true);
                 throw new LoginCanceledException();
             }
@@ -153,7 +153,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         try {
             session.open(Proxy.DIRECT, new HostKeyCallback() {
                 @Override
-                public boolean verify(String hostname, int port, PublicKey key) throws ConnectionCanceledException {
+                public boolean verify(Host hostname, PublicKey key) throws ConnectionCanceledException {
                     verify.set(true);
                     throw new ConnectionCanceledException();
                 }
@@ -190,7 +190,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                                       String title, String reason, LoginOptions options)
                 throws LoginCanceledException {
                 assertEquals("Login test.cyberduck.ch", title);
-                assertEquals("Login test.cyberduck.ch – SFTP with username and password. No login credentials could be found in the Keychain.", reason);
+                assertEquals("Login test.cyberduck.ch – SFTP with username and password. Select the private key in PEM or PuTTY format. No login credentials could be found in the Keychain.", reason);
                 change.set(true);
                 throw new LoginCanceledException();
             }
@@ -277,19 +277,19 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         try {
             assertNotNull(session.open(Proxy.DIRECT, new OpenSSHHostKeyVerifier(f) {
                 @Override
-                public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                public boolean verify(final Host hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
                     fingerprint.set(new SSHFingerprintGenerator().fingerprint(key));
-                    return super.verify(hostname, port, key);
+                    return super.verify(hostname, key);
                 }
 
                 @Override
-                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
+                protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key) {
                     this.allow(hostname, key, true);
                     return true;
                 }
 
                 @Override
-                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
+                protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) {
                     fail();
                     return false;
                 }
@@ -297,18 +297,18 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             session.close();
             assertNotNull(session.open(Proxy.DIRECT, new OpenSSHHostKeyVerifier(f) {
                 @Override
-                public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                public boolean verify(final Host hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
                     assertEquals(fingerprint.get(), new SSHFingerprintGenerator().fingerprint(key));
-                    return super.verify(hostname, port, key);
+                    return super.verify(hostname, key);
                 }
 
                 @Override
-                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) {
+                protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key) {
                     return false;
                 }
 
                 @Override
-                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) {
+                protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) {
                     return false;
                 }
             }, new DisabledLoginCallback()));

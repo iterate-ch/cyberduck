@@ -24,6 +24,7 @@ import ch.cyberduck.binding.application.NSColor;
 import ch.cyberduck.binding.application.NSFont;
 import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSImageView;
+import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
 import ch.cyberduck.binding.application.NSProgressIndicator;
 import ch.cyberduck.binding.application.NSTextField;
@@ -252,8 +253,8 @@ public class ProgressController extends BundleController implements TransferList
 
     private void setMenuHighlighted(boolean highlighted) {
         for(int i = 0; i < filesPopup.numberOfItems().intValue(); i++) {
-            filesPopup.itemAtIndex(new NSInteger(i)).setAttributedTitle(
-                NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(i)).title(),
+            final NSMenuItem item = filesPopup.itemAtIndex(new NSInteger(i));
+            item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(item.title(),
                     highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : NORMAL_FONT_ATTRIBUTES)
             );
         }

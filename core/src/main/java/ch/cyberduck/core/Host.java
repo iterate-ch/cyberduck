@@ -542,6 +542,11 @@ public class Host implements Serializable, Comparable<Host> {
         webURL = url;
     }
 
+    public Host withWebURL(final String url) {
+        this.setWebURL(url);
+        return this;
+    }
+
     /**
      * @return The date this bookmark was last accessed.
      */
@@ -630,11 +635,13 @@ public class Host implements Serializable, Comparable<Host> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Host{");
-        sb.append("credentials=").append(credentials);
-        sb.append(", hostname='").append(hostname).append('\'');
-        sb.append(", defaultpath='").append(defaultpath).append('\'');
+        sb.append("protocol=").append(protocol);
         sb.append(", port=").append(port);
-        sb.append(", protocol=").append(protocol);
+        sb.append(", hostname='").append(hostname).append('\'');
+        sb.append(", credentials=").append(credentials);
+        sb.append(", uuid='").append(uuid).append('\'');
+        sb.append(", nickname='").append(nickname).append('\'');
+        sb.append(", defaultpath='").append(defaultpath).append('\'');
         sb.append('}');
         return sb.toString();
     }

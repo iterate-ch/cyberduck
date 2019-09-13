@@ -59,7 +59,7 @@ public class SharepointListService implements ListService {
                 return new SharepointGroupListService(session).list(directory, listener);
             }
             else if(GROUPS_NAME.equals(directory.getParent())) {
-                return new SharepointGroupDrivesListService(session).list(directory, listener);
+                return new SharepointGroupDrivesListService(session, idProvider).list(directory, listener);
             }
             return new GraphItemListService(session).list(directory, listener);
         }

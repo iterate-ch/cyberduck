@@ -15,14 +15,14 @@ package ch.cyberduck.core.storegate.io.swagger.client.auth;
 
 import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+
 import com.migcomponents.migbase64.Base64;
 
-import java.util.Map;
-import java.util.List;
-
-import java.io.UnsupportedEncodingException;
-
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class HttpBasicAuth implements Authentication {
   private String username;
   private String password;
@@ -50,7 +50,7 @@ public class HttpBasicAuth implements Authentication {
     }
     String str = (username == null ? "" : username) + ":" + (password == null ? "" : password);
     try {
-      headerParams.put("Authorization", "Basic " + Base64.encodeToString(str.getBytes("UTF-8"), false));
+        headerParams.put("Authorization", "Basic " + Base64.encodeToString(str.getBytes(StandardCharsets.UTF_8.name()), false));
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }

@@ -94,14 +94,12 @@ public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         pool.withMaxTotal(connections);
-        final Session<?> s = worker.borrow(ConcurrentTransferWorker.Connection.source);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
-        assertTrue(worker.run());
+        assertTrue(worker.run(session));
         worker.release(session, ConcurrentTransferWorker.Connection.source, null);
-        worker.release(s, ConcurrentTransferWorker.Connection.source, null);
         assertEquals(0L, transfer.getTransferred(), 0L);
         worker.cleanup(true);
     }

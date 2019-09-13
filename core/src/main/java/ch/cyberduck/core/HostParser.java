@@ -164,13 +164,14 @@ public final class HostParser {
         boolean isPort = false;
         boolean bracketFlag = false;
         while(!reader.endOfString()) {
-            final char c = (char) reader.read();
+            final char c = (char) reader.peek();
 
             if('/' == c) {
-                reader.skip(-1);
                 break;
             }
-            else if(bracketFlag) {
+
+            if(bracketFlag) {
+                reader.skip(1);
                 if(c == '[') {
                     throw new HostParserException("Illegal character '[' inside IPv6 address");
                 }
@@ -185,21 +186,21 @@ public final class HostParser {
                 }
             }
             else {
-                if(c == ']') {
-                    throw new HostParserException("Illegal character ']' outside IPv6 address");
-                }
-                else if(c == '[') {
-                    bracketFlag = true;
-                }
-                else if(c == '%') {
-                    buffer.append(readPercentCharacter(reader));
-                }
-                else if(c == ':') {
-                    isPort = true;
-                    break;
-                }
-                else {
-                    buffer.append(c);
+                if(!readPercentEscapedSequence(reader, buffer)) {
+                    reader.skip(1);
+                    if(c == ']') {
+                        throw new HostParserException("Illegal character ']' outside IPv6 address");
+                    }
+                    else if(c == '[') {
+                        bracketFlag = true;
+                    }
+                    else if(c == ':') {
+                        isPort = true;
+                        break;
+                    }
+                    else {
+                        buffer.append(c);
+                    }
                 }
             }
         }
@@ -275,41 +276,40 @@ public final class HostParser {
 
         boolean atSignFlag = false;
         while(!reader.endOfString()) {
-            final char c = (char) reader.read();
-            if('@' == c) {
-                if(atSignFlag) {
-                    buffer.insert(0, c);
+            if(!readPercentEscapedSequence(reader, buffer)) {
+                final char c = (char) reader.read();
+                if('@' == c) {
+                    if(atSignFlag) {
+                        buffer.insert(0, c);
+                    }
+                    atSignFlag = true;
+                    final int length = buffer.length();
+                    for(int i = 0; i < length; i++) {
+                        char t = buffer.charAt(i);
+                        if(t == ' ') {
+                            throw new HostParserException(
+                                String.format("Space character in user info part of URL at %d", reader.position));
+                        }
+                        if(t == ':' && passwordBuilder == null) {
+                            passwordBuilder = new StringBuilder();
+                            continue;
+                        }
+                        if(passwordBuilder != null) {
+                            passwordBuilder.append(t);
+                        }
+                        else {
+                            userBuilder.append(t);
+                        }
+                    }
+                    tracker = reader.position;
+                    buffer.setLength(0);
                 }
-                atSignFlag = true;
-                final int length = buffer.length();
-                for(int i = 0; i < length; i++) {
-                    char t = buffer.charAt(i);
-                    if(t == ' ') {
-                        throw new HostParserException(String.format("Space character in user info part of URL at %d", reader.position));
-                    }
-                    if(t == '%') {
-                        t = (char) Integer.parseInt(buffer.substring(i + 1, i + 3), 16);
-                        i += 2;
-                    }
-                    if(t == ':' && passwordBuilder == null) {
-                        passwordBuilder = new StringBuilder();
-                        continue;
-                    }
-                    if(passwordBuilder != null) {
-                        passwordBuilder.append(t);
-                    }
-                    else {
-                        userBuilder.append(t);
-                    }
+                else if(c == '/') {
+                    break;
                 }
-                tracker = reader.position;
-                buffer.setLength(0);
-            }
-            else if(c == '/') {
-                break;
-            }
-            else {
-                buffer.append(c);
+                else {
+                    buffer.append(c);
+                }
             }
         }
         reader.skip(tracker - reader.position);
@@ -357,14 +357,9 @@ public final class HostParser {
             }
         }
         while(!reader.endOfString()) {
-            final char c = (char) reader.read();
-
-            if(c == '%') {
-                pathBuilder.append(readPercentCharacter(reader));
-            }
-            else {
+            if(!readPercentEscapedSequence(reader, pathBuilder)) {
                 // This is a violation of RFC.
-                pathBuilder.append(c);
+                pathBuilder.append((char) reader.read());
             }
         }
         if(pathBuilder.length() > 0) {
@@ -424,19 +419,105 @@ public final class HostParser {
         return isUnreservedCharacter(c) || isSubDelimsCharacter(c) || c == ':';
     }
 
-    private static String readPercentCharacter(final StringReader reader) {
-        final StringBuilder string = new StringBuilder();
-        for(int i = 0; i < 2 && !reader.endOfString(); i++) {
-            final char c = (char) reader.read();
-            if(c == '%') {
-                return "%%";
+    private static boolean readPercentEscapedSequence(final StringReader reader, final StringBuilder builder) {
+        Integer b = readPercentCharacter(reader);
+        if(b == null) {
+            return false;
+        }
+        final char append;
+        if(b < 0x80) {
+            append = (char) b.byteValue();
+        }
+        else if((b & 0xE0) == 0xC0) {
+            final Character c = handleTwoByteSequence(b.byteValue(), reader);
+            if(c == null) {
+                return false;
             }
-            string.append(c);
+            append = c;
         }
-        if(string.length() != 2) {
-            return Character.toString(Character.MIN_VALUE);
+        else if((b & 0xF0) == 0xE0) {
+            final Character c = handleThreeByteSequence(b.byteValue(), reader);
+            if(c == null) {
+                return false;
+            }
+            append = c;
         }
-        return Character.toString((char) Integer.parseUnsignedInt(string.toString(), 16));
+        else if((b & 0xf8) == 0xf0 && b <= 0xf4) {
+            final Character c = handleFourByteSequence(b.byteValue(), reader);
+            if(c == null) {
+                return false;
+            }
+            append = c;
+        }
+        else {
+            return false;
+        }
+        if(append >= 0xD800 && append <= 0xDFFF) {
+            // surrogate
+            return false;
+        }
+
+        builder.append(append);
+        return true;
+    }
+
+    private static Character handleTwoByteSequence(final byte b, final StringReader reader) {
+        final Integer b2 = readPercentCharacter(reader);
+        if(b2 == null) {
+            return null;
+        }
+
+        return (char) ((b & 0x1f) << 6 | (b2.byteValue() & 0x3f));
+    }
+
+    private static Character handleThreeByteSequence(final byte b, final StringReader reader) {
+        final Integer b2 = readPercentCharacter(reader);
+        if(b2 == null) {
+            return null;
+        }
+        final Integer b3 = readPercentCharacter(reader);
+        if(b3 == null) {
+            return null;
+        }
+
+        return (char) ((b & 0x0f) << 12 | (b2.byteValue() & 0x3f) << 6 | (b3.byteValue() & 0x3f));
+    }
+
+    private static Character handleFourByteSequence(final byte b, final StringReader reader) {
+        final Integer b2 = readPercentCharacter(reader);
+        if(b2 == null) {
+            return null;
+        }
+        final Integer b3 = readPercentCharacter(reader);
+        if(b3 == null) {
+            return null;
+        }
+        final Integer b4 = readPercentCharacter(reader);
+        if(b4 == null) {
+            return null;
+        }
+
+        return (char) ((b & 0x07) << 18 | (b2.byteValue() & 0x3f) << 12 | (b3.byteValue() & 0x3f) << 6
+            | (b4.byteValue() & 0x4f));
+    }
+
+    private static Integer readPercentCharacter(final StringReader reader) {
+        int start = reader.position;
+        if(reader.read() != '%') {
+            reader.skip(start - reader.position);
+            return null;
+        }
+
+        int value = 0;
+        for(int i = 0; i < 2 && !reader.endOfString(); i++) {
+            final int cv = Character.digit((char) reader.read(), 16);
+            if(cv < 0) {
+                reader.skip(start - reader.position);
+                return null;
+            }
+            value = value * 16 + cv;
+        }
+        return value;
     }
 
     private static final Pattern IPV6_STD_PATTERN = Pattern.compile(

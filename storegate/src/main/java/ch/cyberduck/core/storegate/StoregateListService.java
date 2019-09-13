@@ -36,7 +36,7 @@ import java.util.EnumSet;
 public class StoregateListService implements ListService {
 
     private final StoregateSession session;
-    private StoregateIdProvider fileid;
+    private final StoregateIdProvider fileid;
 
     private final int chunksize = PreferencesFactory.get().getInteger("storegate.listing.chunksize");
 
@@ -87,7 +87,7 @@ public class StoregateListService implements ListService {
                     }
                     pageIndex++;
                 }
-                while(files.getTotalRowCount() == chunksize);
+                while(children.size() < files.getTotalRowCount());
                 return children;
             }
             catch(ApiException e) {

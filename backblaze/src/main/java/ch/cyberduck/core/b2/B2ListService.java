@@ -27,6 +27,8 @@ public class B2ListService implements ListService {
     private final B2BucketListService buckets;
     private final B2ObjectListService objects;
 
+    private Path bucket;
+
     public B2ListService(final B2Session session, final B2FileidProvider fileid) {
         buckets = new B2BucketListService(session);
         objects = new B2ObjectListService(session, fileid);
@@ -35,11 +37,22 @@ public class B2ListService implements ListService {
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
+            if(bucket != null) {
+                final AttributedList<Path> buckets = new AttributedList<Path>();
+                buckets.add(bucket);
+                return buckets;
+            }
             return buckets.list(directory, listener);
         }
-        else {
-            return objects.list(directory, listener);
-        }
+        return objects.list(directory, listener);
+    }
+
+    /**
+     * @param bucket When present, access is restricted to one bucket.
+     */
+    public B2ListService withBucket(final Path bucket) {
+        this.bucket = bucket;
+        return this;
     }
 
     @Override

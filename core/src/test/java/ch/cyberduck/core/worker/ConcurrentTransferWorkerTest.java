@@ -68,7 +68,7 @@ public class ConcurrentTransferWorkerTest {
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
             pool, SessionPool.DISCONNECTED, t, new TransferOptions(),
             new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-            new DisabledConnectionCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            new DisabledConnectionCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
         worker.release(session, ConcurrentTransferWorker.Connection.source, null);
@@ -88,7 +88,7 @@ public class ConcurrentTransferWorkerTest {
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
             pool, SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t),
             new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         assertNotSame(worker.borrow(ConcurrentTransferWorker.Connection.source), worker.borrow(ConcurrentTransferWorker.Connection.source));
         worker.cleanup(true);
@@ -106,7 +106,7 @@ public class ConcurrentTransferWorkerTest {
             PathCache.empty(), new DisabledTranscriptListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
             pool.withMaxTotal(1), SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         // Override default transfer queue size
         pool.withMaxTotal(1);
@@ -152,13 +152,12 @@ public class ConcurrentTransferWorkerTest {
         ) {
 
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
                                  final ProgressListener listener, final StreamListener streamListener) {
                 assertNotNull(source);
                 transferred.add(file);
-                return file;
             }
 
             @Override
@@ -199,11 +198,11 @@ public class ConcurrentTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         pool.withMaxTotal(connections);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
-        assertTrue(worker.run());
+        assertTrue(worker.run(session));
         worker.release(session, ConcurrentTransferWorker.Connection.source, null);
         for(int i = 1; i <= files; i++) {
             assertTrue(transferred.contains(new Path("/t" + i, EnumSet.of(Path.Type.file))));
@@ -222,7 +221,7 @@ public class ConcurrentTransferWorkerTest {
             new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                 new DefaultVaultRegistry(new DisabledPasswordCallback()),
                 PathCache.empty(), new DisabledTranscriptListener(), host), SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
         assertNotNull(session);
@@ -253,7 +252,7 @@ public class ConcurrentTransferWorkerTest {
             new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
                 new DefaultVaultRegistry(new DisabledPasswordCallback()),
                 PathCache.empty(), new DisabledTranscriptListener(), host), SessionPool.DISCONNECTED, transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         int workers = 1000;
         final CountDownLatch entry = new CountDownLatch(workers);

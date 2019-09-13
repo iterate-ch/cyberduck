@@ -16,13 +16,16 @@ package ch.cyberduck.core.sparkle;
  */
 
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Controller;
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.updater.AbstractPeriodicUpdateChecker;
 
 public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker {
 
     @Outlet
-    private final Updater updater = Updater.create();
+    private final Updater updater = Updater.create(
+        new PreferencesUseragentProvider().get());
 
     public SparklePeriodicUpdateChecker(final Controller controller) {
         super(controller);
@@ -31,6 +34,7 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
     @Override
     public void check(boolean background) {
         if(this.hasUpdatePrivileges()) {
+            updater.setFeedURL(NSURL.URLWithString(this.getFeedUrl()));
             if(background) {
                 updater.checkForUpdatesInBackground();
             }

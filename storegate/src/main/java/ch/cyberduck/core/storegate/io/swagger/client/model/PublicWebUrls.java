@@ -25,13 +25,16 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class PublicWebUrls {
   @JsonProperty("supportUrl")
   private String supportUrl = null;
 
   @JsonProperty("partnerUrl")
   private String partnerUrl = null;
+
+  @JsonProperty("wopiUrl")
+  private String wopiUrl = null;
 
   public PublicWebUrls supportUrl(String supportUrl) {
     this.supportUrl = supportUrl;
@@ -69,6 +72,24 @@ public class PublicWebUrls {
     this.partnerUrl = partnerUrl;
   }
 
+  public PublicWebUrls wopiUrl(String wopiUrl) {
+    this.wopiUrl = wopiUrl;
+    return this;
+  }
+
+   /**
+   * A url for use with WOPI
+   * @return wopiUrl
+  **/
+  @ApiModelProperty(value = "A url for use with WOPI")
+  public String getWopiUrl() {
+    return wopiUrl;
+  }
+
+  public void setWopiUrl(String wopiUrl) {
+    this.wopiUrl = wopiUrl;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -80,12 +101,13 @@ public class PublicWebUrls {
     }
     PublicWebUrls publicWebUrls = (PublicWebUrls) o;
     return Objects.equals(this.supportUrl, publicWebUrls.supportUrl) &&
-        Objects.equals(this.partnerUrl, publicWebUrls.partnerUrl);
+        Objects.equals(this.partnerUrl, publicWebUrls.partnerUrl) &&
+        Objects.equals(this.wopiUrl, publicWebUrls.wopiUrl);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(supportUrl, partnerUrl);
+    return Objects.hash(supportUrl, partnerUrl, wopiUrl);
   }
 
 
@@ -96,6 +118,7 @@ public class PublicWebUrls {
     
     sb.append("    supportUrl: ").append(toIndentedString(supportUrl)).append("\n");
     sb.append("    partnerUrl: ").append(toIndentedString(partnerUrl)).append("\n");
+    sb.append("    wopiUrl: ").append(toIndentedString(wopiUrl)).append("\n");
     sb.append("}");
     return sb.toString();
   }

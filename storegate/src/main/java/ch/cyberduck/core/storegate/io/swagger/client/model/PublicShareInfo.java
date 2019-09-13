@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Item containing information about a public available share.
  */
 @ApiModel(description = "Item containing information about a public available share.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class PublicShareInfo {
   @JsonProperty("id")
   private String id = null;
@@ -133,6 +133,12 @@ public class PublicShareInfo {
 
   @JsonProperty("authMethod")
   private AuthMethodEnum authMethod = null;
+
+  @JsonProperty("fileAllowOfficeOnline")
+  private Boolean fileAllowOfficeOnline = null;
+
+  @JsonProperty("fileAllowOfficeOnlineEdit")
+  private Boolean fileAllowOfficeOnlineEdit = null;
 
   public PublicShareInfo id(String id) {
     this.id = id;
@@ -314,6 +320,42 @@ public class PublicShareInfo {
     this.authMethod = authMethod;
   }
 
+  public PublicShareInfo fileAllowOfficeOnline(Boolean fileAllowOfficeOnline) {
+    this.fileAllowOfficeOnline = fileAllowOfficeOnline;
+    return this;
+  }
+
+   /**
+   * Is view in Office Online allowed
+   * @return fileAllowOfficeOnline
+  **/
+  @ApiModelProperty(value = "Is view in Office Online allowed")
+  public Boolean isFileAllowOfficeOnline() {
+    return fileAllowOfficeOnline;
+  }
+
+  public void setFileAllowOfficeOnline(Boolean fileAllowOfficeOnline) {
+    this.fileAllowOfficeOnline = fileAllowOfficeOnline;
+  }
+
+  public PublicShareInfo fileAllowOfficeOnlineEdit(Boolean fileAllowOfficeOnlineEdit) {
+    this.fileAllowOfficeOnlineEdit = fileAllowOfficeOnlineEdit;
+    return this;
+  }
+
+   /**
+   * Is edit in Office Online allowed
+   * @return fileAllowOfficeOnlineEdit
+  **/
+  @ApiModelProperty(value = "Is edit in Office Online allowed")
+  public Boolean isFileAllowOfficeOnlineEdit() {
+    return fileAllowOfficeOnlineEdit;
+  }
+
+  public void setFileAllowOfficeOnlineEdit(Boolean fileAllowOfficeOnlineEdit) {
+    this.fileAllowOfficeOnlineEdit = fileAllowOfficeOnlineEdit;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -333,12 +375,14 @@ public class PublicShareInfo {
         Objects.equals(this.sharedBy, publicShareInfo.sharedBy) &&
         Objects.equals(this.partnerId, publicShareInfo.partnerId) &&
         Objects.equals(this.retailerId, publicShareInfo.retailerId) &&
-        Objects.equals(this.authMethod, publicShareInfo.authMethod);
+        Objects.equals(this.authMethod, publicShareInfo.authMethod) &&
+        Objects.equals(this.fileAllowOfficeOnline, publicShareInfo.fileAllowOfficeOnline) &&
+        Objects.equals(this.fileAllowOfficeOnlineEdit, publicShareInfo.fileAllowOfficeOnlineEdit);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, type, fileAllowUpload, contentHidden, mediaAllowDownload, sharedBy, partnerId, retailerId, authMethod);
+    return Objects.hash(id, name, type, fileAllowUpload, contentHidden, mediaAllowDownload, sharedBy, partnerId, retailerId, authMethod, fileAllowOfficeOnline, fileAllowOfficeOnlineEdit);
   }
 
 
@@ -357,6 +401,8 @@ public class PublicShareInfo {
     sb.append("    partnerId: ").append(toIndentedString(partnerId)).append("\n");
     sb.append("    retailerId: ").append(toIndentedString(retailerId)).append("\n");
     sb.append("    authMethod: ").append(toIndentedString(authMethod)).append("\n");
+    sb.append("    fileAllowOfficeOnline: ").append(toIndentedString(fileAllowOfficeOnline)).append("\n");
+    sb.append("    fileAllowOfficeOnlineEdit: ").append(toIndentedString(fileAllowOfficeOnlineEdit)).append("\n");
     sb.append("}");
     return sb.toString();
   }

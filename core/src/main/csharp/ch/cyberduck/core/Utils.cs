@@ -572,23 +572,32 @@ namespace Ch.Cyberduck.Core
                 public static readonly System.Version V1511 = new System.Version(10, 0, 10586);
                 public static readonly System.Version V1607 = new System.Version(10, 0, 14393);
                 public static readonly System.Version V1703 = new System.Version(10, 0, 15063);
-                public static readonly System.Version V1709 = new System.Version(10, 0, 19266);
+                public static readonly System.Version V1709 = new System.Version(10, 0, 16299);
                 public static readonly System.Version V1803 = new System.Version(10, 0, 17134);
                 public static readonly System.Version V1809 = new System.Version(10, 0, 17763);
+                public static readonly System.Version V1903 = new System.Version(10, 0, 18362);
             }
 
             public static bool IsVersion(System.Version version)
             {
                 var os = Environment.OSVersion.Version;
 
+                if (os.Major < version.Major)
+                {
+                	return false;
+                }
+
+                if (os.Minor < version.Minor)
+                {
+                	return false;
+                }
+
                 if (version.Build != 0)
                 {
-                    if (os.Build >= version.Build)
-                    {
-                        return true;
-                    }
+					return os.Build >= version.Build;
                 }
-                return os.Major >= version.Major && os.Minor >= version.Minor;
+                
+                return true;
             }
         }
     }

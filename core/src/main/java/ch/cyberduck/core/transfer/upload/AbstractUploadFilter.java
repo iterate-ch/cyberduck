@@ -118,7 +118,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLockId(parent.getLockId());
         // Read remote attributes first
         if(parent.isExists()) {
             if(find.withCache(cache).find(file)) {

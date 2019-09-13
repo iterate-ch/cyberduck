@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;/*
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.features.Scheduler;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -82,10 +83,29 @@ public class SDSProtocol extends AbstractProtocol {
         return true;
     }
 
+    @Override
+    public Case getCaseSensitivity() {
+        return Case.insensitive;
+    }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
+
     public enum Authorization {
         sql,
         radius,
         active_directory,
         oauth
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getFeature(final Class<T> type) {
+        if(type == Scheduler.class) {
+            return (T) new SDSMissingFileKeysSchedulerFeature();
+        }
+        return super.getFeature(type);
     }
 }

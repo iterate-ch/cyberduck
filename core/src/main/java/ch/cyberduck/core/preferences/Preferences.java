@@ -69,6 +69,7 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.updater.DisabledPeriodicUpdater;
+import ch.cyberduck.core.updater.DisabledUpdateCheckerArguments;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 import ch.cyberduck.core.vault.DisabledVault;
 import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
@@ -83,6 +84,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Collections;
@@ -117,6 +119,8 @@ public abstract class Preferences implements Locales {
         // TTL for DNS queries
         Security.setProperty("networkaddress.cache.ttl", "10");
         Security.setProperty("networkaddress.cache.negative.ttl", "5");
+        // Failure loading default key store with bouncycastle provider
+        System.setProperty("javax.net.ssl.trustStoreType", "JKS");
         // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
         final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
@@ -369,7 +373,7 @@ public abstract class Preferences implements Locales {
           Show hidden files in browser by default
          */
         this.setDefault("browser.showHidden", String.valueOf(false));
-        this.setDefault("browser.charset.encoding", "UTF-8");
+        this.setDefault("browser.charset.encoding", StandardCharsets.UTF_8.name());
         /*
           Edit double clicked files instead of downloading
          */
@@ -519,8 +523,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("queue.download.segments.threshold", String.valueOf(10L * 1024L * 1024L));
         this.setDefault("queue.download.segments.size", String.valueOf(5L * 1024L * 1024L));
 
-        this.setDefault("touch.permissions.change", String.valueOf(true));
-
         /*
           Open completed downloads
          */
@@ -604,6 +606,7 @@ public abstract class Preferences implements Locales {
          */
         this.setDefault("http.connections.route", String.valueOf(10));
         this.setDefault("http.connections.reuse", String.valueOf(true));
+        this.setDefault("http.connections.stale.check.ms", String.valueOf(5000));
         /*
           Total number of connections in the pool
          */
@@ -614,8 +617,6 @@ public abstract class Preferences implements Locales {
         this.setDefault("http.socket.buffer", String.valueOf(8192));
         this.setDefault("http.credentials.charset", "ISO-8859-1");
         this.setDefault("http.request.uri.normalize", String.valueOf(false));
-
-        this.setDefault("oauth.handler.scheme", "x-cyberduck-action");
 
         /*
           Enable or disable verification that the remote host taking part
@@ -711,6 +712,8 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("s3.accelerate.prompt", String.valueOf(false));
 
+        this.setDefault("s3.versioning.enable", String.valueOf(true));
+
         /*
           A prefix to apply to log file names
          */
@@ -718,7 +721,16 @@ public abstract class Preferences implements Locales {
         this.setDefault("google.logging.prefix", "log");
         this.setDefault("cloudfront.logging.prefix", "logs/");
 
+        this.setDefault("googlestorage.listing.chunksize", String.valueOf(1000));
+        this.setDefault("googlestorage.metadata.default", StringUtils.EMPTY);
+        this.setDefault("googlestorage.storage.class", "multi_regional");
+
+
         this.setDefault("onedrive.listing.chunksize", String.valueOf(1000));
+        /*
+         * The size of each byte range MUST be a multiple of 320 KiB (327,680 bytes). Using a fragment size that does not
+         * divide evenly by 320 KiB will result in errors committing some files.
+         */
         this.setDefault("onedrive.upload.multipart.partsize.minimum", String.valueOf(320 * 1024));
 
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
@@ -737,6 +749,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("azure.metadata.default", StringUtils.EMPTY);
         this.setDefault("azure.listing.chunksize", String.valueOf(1000));
         this.setDefault("azure.upload.md5", String.valueOf(false));
+        this.setDefault("azure.upload.snapshot", String.valueOf(false));
 
         // Legacy authentication
 //        this.setDefault("openstack.authentication.context", "/v1.0");
@@ -765,6 +778,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("googledrive.list.limit", String.valueOf(1000));
         this.setDefault("googledrive.teamdrive.enable", String.valueOf(true));
         this.setDefault("googledrive.delete.trash", String.valueOf(true));
+        // Limit the number of requests to 10 per second which is equal the user quota
+        this.setDefault("googledrive.limit.requests.second", String.valueOf(100));
 
         this.setDefault("b2.bucket.acl.default", "allPrivate");
         this.setDefault("b2.listing.chunksize", String.valueOf(1000));
@@ -782,7 +797,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("b2.metadata.default", StringUtils.EMPTY);
 
         this.setDefault("sds.listing.chunksize", String.valueOf(500));
-        this.setDefault("sds.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
+        this.setDefault("sds.upload.multipart.chunksize", String.valueOf(2 * 1024L * 1024L));
         this.setDefault("sds.upload.transferencoding.chunked", String.valueOf(true));
         // Run missing file keys in bulk feature after upload
         this.setDefault("sds.encryption.missingkeys.upload", String.valueOf(true));
@@ -795,6 +810,11 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("storegate.listing.chunksize", String.valueOf(500));
         this.setDefault("storegate.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
+        this.setDefault("storegate.lock.ttl", String.valueOf(24 * 3600000)); // 24 hours
+
+        this.setDefault("brick.pairing.nickname.configure", String.valueOf(false));
+        this.setDefault("brick.pairing.hostname.configure", String.valueOf(true));
+        this.setDefault("brick.pairing.interval.ms", String.valueOf(1000L));
 
         /*
           NTLM Windows Domain
@@ -824,6 +844,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("webdav.metadata.default", StringUtils.EMPTY);
 
         this.setDefault("webdav.microsoftiis.header.translate", String.valueOf(true));
+
+        this.setDefault("webdav.list.handler.sax", String.valueOf(true));
 
         this.setDefault("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
         this.setDefault("analytics.provider.qloudstat.iam.policy",
@@ -913,6 +935,7 @@ public abstract class Preferences implements Locales {
           Retry to connect after a I/O failure automatically
          */
         this.setDefault("connection.retry", String.valueOf(1));
+        this.setDefault("connection.retry.max", String.valueOf(20));
         /*
           In seconds
          */
@@ -992,7 +1015,7 @@ public abstract class Preferences implements Locales {
           Default to large icon size
          */
         this.setDefault("bookmark.icon.size", String.valueOf(64));
-        this.setDefault("bookmark.menu.icon.size", String.valueOf(32));
+        this.setDefault("bookmark.menu.icon.size", String.valueOf(64));
 
         /*
           Location of the openssh known_hosts file
@@ -1045,6 +1068,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("archive.command.expand.gz", "gzip -d {0}");
         this.setDefault("archive.command.expand.bz2", "bzip2 -dk {0}");
 
+        this.setDefault("update.feed", "release");
         this.setDefault("update.feed.nightly.enable", String.valueOf(true));
         this.setDefault("update.feed.beta.enable", String.valueOf(true));
 
@@ -1296,6 +1320,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("factory.browserlauncher.class", DisabledBrowserLauncher.class.getName());
         this.setDefault("factory.reachability.class", DefaultInetAddressReachability.class.getName());
         this.setDefault("factory.updater.class", DisabledPeriodicUpdater.class.getName());
+        this.setDefault("factory.updater.arguments.class", DisabledUpdateCheckerArguments.class.getName());
         this.setDefault("factory.threadpool.class", DefaultThreadPool.class.getName());
         this.setDefault("factory.urlfilewriter.class", InternetShortcutFileWriter.class.getName());
         this.setDefault("factory.vault.class", DisabledVault.class.getName());

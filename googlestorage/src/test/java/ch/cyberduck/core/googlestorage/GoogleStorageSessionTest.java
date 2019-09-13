@@ -33,11 +33,11 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -145,13 +145,14 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testFeatures() {
-        assertNotNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(AclPermission.class));
-        assertNotNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(DistributionConfiguration.class));
-        assertNotNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(IdentityConfiguration.class));
-        assertNotNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(Logging.class));
-        assertNotNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(Headers.class));
-        assertNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(Lifecycle.class));
-        assertNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(Versioning.class));
+        assertNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(Versioning.class));
+        assertNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(AclPermission.class));
+        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(Lifecycle.class));
+        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(DistributionConfiguration.class));
+        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(IdentityConfiguration.class));
+        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(Logging.class));
+        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(Metadata.class));
+        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(Headers.class));
     }
 
     @Test(expected = LoginCanceledException.class)

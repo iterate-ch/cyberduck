@@ -120,7 +120,7 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
                         this.add(new HostParser(protocols, protocol).get(url));
                     }
                     catch(HostParserException e) {
-                        log.warn(e.getDetail());
+                        log.warn(e);
                     }
                 }
             }

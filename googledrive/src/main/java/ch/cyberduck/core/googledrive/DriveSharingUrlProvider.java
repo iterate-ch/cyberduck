@@ -41,7 +41,7 @@ public class DriveSharingUrlProvider implements PromptUrlProvider {
     public boolean isSupported(final Path file, final Type type) {
         switch(type) {
             case download:
-                return file.isFile();
+                return true;
         }
         return false;
     }

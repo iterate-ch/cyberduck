@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * A rootfolder is folder that contains part of the account. An account usally have multiple root folders, like \&quot;home\&quot; and \&quot;backup\&quot;.
  */
 @ApiModel(description = "A rootfolder is folder that contains part of the account. An account usally have multiple root folders, like \"home\" and \"backup\".")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class RootFolder {
   @JsonProperty("path")
   private String path = null;
@@ -112,7 +112,9 @@ public class RootFolder {
     
     NUMBER_64(64),
     
-    NUMBER_128(128);
+    NUMBER_128(128),
+    
+    NUMBER_256(256);
 
     private Integer value;
 

@@ -18,15 +18,15 @@ public class LaunchServicesSchemeHandlerTest {
     public void testSetDefaultHandlerForURLScheme() {
         final SchemeHandler l = new LaunchServicesSchemeHandler(new LaunchServicesApplicationFinder());
         l.setDefaultHandler(
-                Collections.singletonList(Scheme.ftp), new Application("none.app", null)
+            new Application("none.app", null), Collections.singletonList(Scheme.ftp.name())
         );
-        assertEquals(Application.notfound, l.getDefaultHandler(Scheme.ftp));
-        assertFalse(l.isDefaultHandler(Collections.singletonList(Scheme.ftp), new Application("other.app", null)));
+        assertEquals(Application.notfound, l.getDefaultHandler(Scheme.ftp.name()));
+        assertFalse(l.isDefaultHandler(Collections.singletonList(Scheme.ftp.name()), new Application("other.app", null)));
         l.setDefaultHandler(
-                Collections.singletonList(Scheme.ftp), new Application("ch.sudo.cyberduck", null)
+            new Application("ch.sudo.cyberduck", null), Collections.singletonList(Scheme.ftp.name())
         );
-        assertEquals("ch.sudo.cyberduck", l.getDefaultHandler(Scheme.ftp).getIdentifier());
-        assertNotSame("ch.sudo.cyberduck", l.getDefaultHandler(Scheme.http).getIdentifier());
-        assertTrue(l.isDefaultHandler(Collections.singletonList(Scheme.ftp), new Application("ch.sudo.cyberduck", null)));
+        assertEquals("ch.sudo.cyberduck", l.getDefaultHandler(Scheme.ftp.name()).getIdentifier());
+        assertNotSame("ch.sudo.cyberduck", l.getDefaultHandler(Scheme.http.name()).getIdentifier());
+        assertTrue(l.isDefaultHandler(Collections.singletonList(Scheme.ftp.name()), new Application("ch.sudo.cyberduck", null)));
     }
 }

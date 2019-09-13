@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ExpiringObjectHolder;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -45,6 +46,7 @@ import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.KeyValueEntry;
 import ch.cyberduck.core.sds.io.swagger.client.model.LoginRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.SoftwareVersionData;
+import ch.cyberduck.core.sds.io.swagger.client.model.UserAccount;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
@@ -68,6 +70,8 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +109,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     }
 
     @Override
-    protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) {
+    protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
@@ -115,11 +119,18 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                         request.addHeader(HttpHeaders.AUTHORIZATION,
                             String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
                     }
-                }).build(),
-                    host).withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
-                    Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
-                        host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
-                );
+                }).build(), host)
+                    .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
+                        Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
+                            host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
+                    );
+
+                try {
+                    authorizationService.withParameter("user_agent_info", Base64.encodeToString(InetAddress.getLocalHost().getHostName().getBytes(StandardCharsets.UTF_8), false));
+                }
+                catch(UnknownHostException e) {
+                    throw new DefaultIOExceptionMappingService().map(e);
+                }
                 configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
                 configuration.addInterceptorLast(authorizationService);
                 configuration.addInterceptorLast(new HttpRequestInterceptor() {
@@ -137,6 +148,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         final CloseableHttpClient apache = configuration.build();
         final SDSApiClient client = new SDSApiClient(apache);
+        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+        client.setConnectTimeout(timeout);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
             null, host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
@@ -151,8 +164,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
-        final String login = host.getCredentials().getUsername();
-        final String password = host.getCredentials().getPassword();
+        final Credentials credentials = host.getCredentials();
+        final String login = credentials.getUsername();
+        final String password = credentials.getPassword();
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
@@ -187,10 +201,18 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         catch(ApiException e) {
             // Precondition: Right "Config Read" required.
-            log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e).getDetail()));
+            log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
-            userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false)));
+            final UserAccount account = new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Authenticated as user %s", account));
+            }
+            switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
+                case oauth:
+                    credentials.setUsername(account.getLogin());
+            }
+            userAccount.set(new UserAccountWrapper(account));
             keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
             final UserPrivateKey privateKey = new UserPrivateKey();
             final UserKeyPairContainer keyPairContainer = keyPair.get();
@@ -212,13 +234,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             throw new TripleCryptExceptionMappingService().map(e);
         }
         catch(ApiException e) {
-            log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e).getDetail()));
+            log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
             softwareVersion.set(new PublicApi(this.getClient()).getSoftwareVersion(null));
         }
         catch(ApiException e) {
-            log.warn(String.format("Ignore failure reading version. %s", new SDSExceptionMappingService().map(e).getDetail()));
+            log.warn(String.format("Ignore failure reading version. %s", new SDSExceptionMappingService().map(e)));
         }
     }
 
@@ -335,9 +357,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Bulk.class) {
             return (T) new SDSEncryptionBulkFeature(this, nodeid);
-        }
-        if(type == Scheduler.class) {
-            return (T) new SDSMissingFileKeysSchedulerFeature(this, nodeid);
         }
         if(type == UrlProvider.class) {
             return (T) new SDSUrlProvider(this);

@@ -233,13 +233,8 @@ public abstract class Session<C> implements TranscriptListener {
     /**
      * @return Case sensitivity of the underlying remote file system
      */
-    public Case getCase() {
-        return Case.sensitive;
-    }
-
-    public enum Case {
-        sensitive,
-        insensitive
+    public Protocol.Case getCaseSensitivity() {
+        return host.getProtocol().getCaseSensitivity();
     }
 
 
@@ -343,7 +338,7 @@ public abstract class Session<C> implements TranscriptListener {
         if(type == Quota.class) {
             return (T) new DisabledQuotaFeature();
         }
-        return null;
+        return host.getProtocol().getFeature(type);
     }
 
     @Override

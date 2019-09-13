@@ -22,7 +22,7 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.features;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -33,9 +33,9 @@ namespace Ch.Cyberduck.Ui.Controller
             PrefilledText = browserController.Workdir.getAbsolute();
         }
 
-        public override Bitmap IconView
+        public override Image IconView
         {
-            get { return IconCache.Instance.IconForFolder(IconCache.IconSize.Large); }
+            get { return IconCache.IconForFolder(IconCache.IconSize.Large); }
         }
 
         public override void Callback(DialogResult result)

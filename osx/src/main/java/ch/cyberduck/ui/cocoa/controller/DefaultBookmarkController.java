@@ -127,11 +127,12 @@ public class DefaultBookmarkController extends BookmarkController {
                     bookmark.getPort(),
                     bookmark.getHostname(),
                     bookmark.getCredentials().getUsername(),
-                    passwordField.stringValue()
+                    // Remove control characters (char &lt;= 32) from both ends
+                    StringUtils.strip(passwordField.stringValue())
                 );
             }
             catch(LocalAccessDeniedException e) {
-                log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e.getDetail()));
+                log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e));
             }
         }
     }

@@ -105,10 +105,11 @@ public class BackgroundException extends Exception {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder(this.getClass().getName()).append("{");
-        sb.append("detail='").append(detail).append('\'');
-        sb.append(", cause='").append(this.getCause()).append('\'');
+        final StringBuilder sb = new StringBuilder("BackgroundException{");
+        sb.append("file=").append(file);
         sb.append(", message='").append(message).append('\'');
+        sb.append(", detail='").append(detail).append('\'');
+        sb.append(", cause='").append(this.getCause()).append('\'');
         sb.append('}');
         return sb.toString();
     }

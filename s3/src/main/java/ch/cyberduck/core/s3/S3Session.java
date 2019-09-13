@@ -65,7 +65,6 @@ import ch.cyberduck.core.sts.STSCredentialsConfigurator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
@@ -73,7 +72,6 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.AWSSessionCredentials;
-import org.jets3t.service.security.ProviderCredentials;
 
 import java.util.Collections;
 import java.util.Map;
@@ -85,7 +83,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         = PreferencesFactory.get();
 
     private Versioning versioning
-        = new S3VersioningFeature(this, new S3AccessControlListFeature(this));
+        = preferences.getBoolean("s3.versioning.enable") ? new S3VersioningFeature(this, new S3AccessControlListFeature(this)) : null;
 
     private Map<Path, Distribution> distributions = Collections.emptyMap();
 
@@ -112,10 +110,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map(e);
         }
-    }
-
-    protected boolean authorize(HttpUriRequest httpMethod, ProviderCredentials credentials) {
-        return false;
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {

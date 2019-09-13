@@ -1,6 +1,34 @@
 Cyberduck
 https://cyberduck.io/
 
+7.1.0
+- [Feature] Application running as 64-bit (Windows)
+- [Feature] Application package is notarized (macOS)
+- [Feature] Support for storage classes (Google Storage)
+- [Feature] Support to select region (eu, us, asia) for new buckets (Google Storage)
+- [Feature] Support to set lifecycle configuration on bucket (Google Storage)
+- [Feature] Support for me-south-1 (Bahrain) region (S3)
+- [Bugfix] Number of buckets displayed in browser limited to 1000 (Google Storage)
+- [Bugfix] Fails to authenticate where keyboard-interactive mechanism is not supported (SFTP) (#10714)
+- [Bugfix] Errors accessing Cryptomator vault (Google Drive, OneDrive)
+- [Bugfix] No route to host error with IPv6 only server (macOS)
+- [Bugfix] Allow to access files with non printable characters in key name (S3)
+- [Bugfix] Use AWS4 signature for pre-signed URLs for AWS in region us-east-1 (S3)
+- [Bugfix] Rate limit number of requests (Google Drive) (#10103)
+- [Bugfix] Repeated prompt to validate host key when connecting to non standard port (SFTP) (#10772)
+- [Bugfix] Segmented downloads fail with longer filenames (#10726)
+
+7.0.2
+- [Bugfix] Failure configuring CloudFront distributions (S3) (#10755)
+- [Bugfix] Failure authenticating with STS (S3, Credentials from AWS Security Token Service) (#10746)
+- [Bugfix] Explicit argument to unlock vault prior an upload (CLI) (#10352)
+
+7.0.1
+- [Feature] Default protocol selection for NextCloud & ownCloud
+- [Feature] Create share links in NextCloud & ownCloud
+- [Bugfix] Connect with application key restricted to single bucket (Backblaze B2) (#10725)
+- [Bugfix] Missing files when previously trashed and restored (Google Drive)
+
 7.0.0
 - [Feature] Segmented downloads with multiple connections per file (#10115)
 - [Feature] Allow password input in bookmark window
@@ -8,8 +36,19 @@ https://cyberduck.io/
 - [Feature] Make a file public and copy URL to share (Google Drive)
 - [Feature] Create temporary link (4 hours) for file to share (Dropbox)
 - [Feature] Create shared link for file (Microsoft OneDrive)
+- [Feature] Create download share for file or folder (DRACOON)
+- [Feature] Support to rename and copy files (Backblaze B2)
+- [Feature] Support to open SSH terminal in bash.exe from Windows Linux Subsystem (SFTP, Windows) (#10065)
 - [Bugfix] Existing metadata not displayed (S3) (#10647)
 - [Bugfix] Browser always shows modification time in UTC timezone (Windows) (#10629)
+- [Bugfix] Interoerability with Apache Sling (WebDAV) (#10598)
+- [Bugfix] Interoerability with SAP NetWeaver Application Server (WebDAV)
+- [Bugfix] Upload fails with 400 error reply (Google Drive)
+- [Bugfix] Wrong MIME type set for uploaded files (S3)
+- [Bugfix] Invalid signature for files with + or * character in key (S3) (#9914, #10679)
+- [Bugfix] Failure uploading files larger than 4GB (OpenStack Swift) (#10657)
+- [Bugfix] Fails to launch in the newly created virtual desktop (Windows) (#10467)
+- [Bugfix] Adding bookmarks for multiple accounts using OAuth (Dropbox, Google Drive, OneDrive) (#10562)
 
 6.9.4
 - [Bugfix] Connect button not working to initiate a connection (#10621)

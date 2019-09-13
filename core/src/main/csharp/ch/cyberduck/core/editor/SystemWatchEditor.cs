@@ -58,11 +58,10 @@ namespace Ch.Cyberduck.Core.Editor
             _watcher.EnableRaisingEvents = true;
         }
 
-        public override void delete()
+        public override void close()
         {
             _watcher.EnableRaisingEvents = false;
             _watcher.Dispose();
-            base.delete();
         }
     }
 }

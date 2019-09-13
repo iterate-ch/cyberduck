@@ -19,6 +19,7 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
@@ -39,12 +40,12 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
     private static final Logger log = Logger.getLogger(PreferencesHostKeyVerifier.class);
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     @Override
-    public boolean verify(final String hostname, final int port, final PublicKey key)
-            throws ConnectionCanceledException, ChecksumException {
-        final String lookup = preferences.getProperty(this.getFormat(hostname, key));
+    public boolean verify(final Host host, final PublicKey key)
+        throws ConnectionCanceledException, ChecksumException {
+        final String lookup = preferences.getProperty(this.getFormat(host, key));
         if(StringUtils.equals(Base64.toBase64String(key.getEncoded()), lookup)) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Accepted host key %s matching %s", key, lookup));
@@ -53,22 +54,22 @@ public abstract class PreferencesHostKeyVerifier extends AbstractHostKeyCallback
         }
         final boolean accept;
         if(null == lookup) {
-            accept = this.isUnknownKeyAccepted(hostname, key);
+            accept = this.isUnknownKeyAccepted(host, key);
         }
         else {
-            accept = this.isChangedKeyAccepted(hostname, key);
+            accept = this.isChangedKeyAccepted(host, key);
         }
         return accept;
     }
 
-    private String getFormat(final String hostname, final PublicKey key) {
-        return String.format("ssh.hostkey.%s.%s", KeyType.fromKey(key), hostname);
+    private String getFormat(final Host host, final PublicKey key) {
+        return String.format("ssh.hostkey.%s.%s", KeyType.fromKey(key), host.getHostname());
     }
 
     @Override
-    protected void allow(final String hostname, final PublicKey key, final boolean persist) {
+    protected void allow(final Host host, final PublicKey key, final boolean persist) {
         if(persist) {
-            preferences.setProperty(this.getFormat(hostname, key), Base64.toBase64String(key.getEncoded()));
+            preferences.setProperty(this.getFormat(host, key), Base64.toBase64String(key.getEncoded()));
         }
     }
 }

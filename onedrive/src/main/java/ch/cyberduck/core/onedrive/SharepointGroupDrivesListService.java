@@ -17,33 +17,36 @@ package ch.cyberduck.core.onedrive;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.IdProvider;
 
-import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.GroupDrivesIterator;
 import org.nuxeo.onedrive.client.resources.GroupItem;
 
 public class SharepointGroupDrivesListService extends AbstractDriveListService {
-    private static final Logger log = Logger.getLogger(SharepointGroupDrivesListService.class);
 
     private final GraphSession session;
+    private final IdProvider idProvider;
 
-    public SharepointGroupDrivesListService(final GraphSession session) {
+    public SharepointGroupDrivesListService(final GraphSession session, final IdProvider idProvider) {
         this.session = session;
+        this.idProvider = idProvider;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final GroupItem group = new GroupItem(session.getClient(), directory.attributes().getVersionId());
+        final GroupItem group = new GroupItem(session.getClient(), idProvider.getFileid(directory, new DisabledListProgressListener()));
         final GroupDrivesIterator iterator = new GroupDrivesIterator(session.getClient(), group);
         return this.iterate(iterator, directory, listener);
     }
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
+        idProvider.withCache(cache);
         return this;
     }
 }

@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class Salepackage {
   @JsonProperty("id")
   private String id = null;
@@ -48,6 +48,9 @@ public class Salepackage {
 
   @JsonProperty("sync")
   private SalepackageProduct sync = null;
+
+  @JsonProperty("bankID")
+  private SalepackageProduct bankID = null;
 
   @JsonProperty("currency")
   private String currency = null;
@@ -181,6 +184,24 @@ public class Salepackage {
     this.sync = sync;
   }
 
+  public Salepackage bankID(SalepackageProduct bankID) {
+    this.bankID = bankID;
+    return this;
+  }
+
+   /**
+   * 
+   * @return bankID
+  **/
+  @ApiModelProperty(value = "")
+  public SalepackageProduct getBankID() {
+    return bankID;
+  }
+
+  public void setBankID(SalepackageProduct bankID) {
+    this.bankID = bankID;
+  }
+
   public Salepackage currency(String currency) {
     this.currency = currency;
     return this;
@@ -234,13 +255,14 @@ public class Salepackage {
         Objects.equals(this.multi, salepackage.multi) &&
         Objects.equals(this.backup, salepackage.backup) &&
         Objects.equals(this.sync, salepackage.sync) &&
+        Objects.equals(this.bankID, salepackage.bankID) &&
         Objects.equals(this.currency, salepackage.currency) &&
         Objects.equals(this.isInclVAT, salepackage.isInclVAT);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, monthlyFee, storage, multi, backup, sync, currency, isInclVAT);
+    return Objects.hash(id, name, monthlyFee, storage, multi, backup, sync, bankID, currency, isInclVAT);
   }
 
 
@@ -256,6 +278,7 @@ public class Salepackage {
     sb.append("    multi: ").append(toIndentedString(multi)).append("\n");
     sb.append("    backup: ").append(toIndentedString(backup)).append("\n");
     sb.append("    sync: ").append(toIndentedString(sync)).append("\n");
+    sb.append("    bankID: ").append(toIndentedString(bankID)).append("\n");
     sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
     sb.append("    isInclVAT: ").append(toIndentedString(isInclVAT)).append("\n");
     sb.append("}");

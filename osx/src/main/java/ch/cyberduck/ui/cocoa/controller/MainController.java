@@ -664,7 +664,7 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                 }
                 catch(AccessDeniedException e) {
-                    log.error(String.format("Failure reading profile from %s. %s", f, e.getMessage()));
+                    log.error(String.format("Failure reading profile from %s. %s", f, e));
                     return false;
                 }
             }
@@ -998,8 +998,7 @@ public class MainController extends BundleController implements NSApplication.De
         bonjour.addListener(new NotificationRendezvousListener(bonjour));
         if(preferences.getBoolean("defaulthandler.reminder")
             && preferences.getInteger("uses") > 0) {
-            if(!SchemeHandlerFactory.get().isDefaultHandler(
-                Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
+            if(!SchemeHandlerFactory.get().isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
                 new Application(preferences.getProperty("application.identifier")))) {
                 final NSAlert alert = NSAlert.alert(
                     LocaleFactory.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
@@ -1019,8 +1018,8 @@ public class MainController extends BundleController implements NSApplication.De
                 }
                 if(choice == SheetCallback.DEFAULT_OPTION) {
                     SchemeHandlerFactory.get().setDefaultHandler(
-                        Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
-                        new Application(preferences.getProperty("application.identifier"))
+                        new Application(preferences.getProperty("application.identifier")),
+                        Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name())
                     );
                 }
             }
@@ -1073,7 +1072,8 @@ public class MainController extends BundleController implements NSApplication.De
         if(log.isInfoEnabled()) {
             log.info(String.format("Register OAuth handler %s", handler));
         }
-        SchemeHandlerFactory.get().setDefaultHandlerForScheme(new Application(preferences.getProperty("application.identifier")), handler);
+        SchemeHandlerFactory.get().setDefaultHandler(new Application(preferences.getProperty("application.identifier")),
+            Collections.singletonList(handler));
         NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
             this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
     }
@@ -1319,7 +1319,7 @@ public class MainController extends BundleController implements NSApplication.De
                         }
                     }
                     catch(HostParserException e) {
-                        log.warn(e.getDetail());
+                        log.warn(e);
                     }
                 }
         }

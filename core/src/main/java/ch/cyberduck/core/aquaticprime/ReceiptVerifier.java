@@ -181,7 +181,7 @@ public class ReceiptVerifier implements LicenseVerifier {
                     log.error(String.format("Missing bundle identifier in ASN.1 set %s", asn));
                     return false;
                 }
-                digest.update(bundleIdentifier.getBytes(Charset.forName("UTF-8")));
+                digest.update(bundleIdentifier.getBytes(StandardCharsets.UTF_8));
                 final byte[] result = digest.digest();
                 if(Arrays.equals(result, hash)) {
                     if(log.isInfoEnabled()) {

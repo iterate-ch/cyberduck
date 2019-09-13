@@ -117,13 +117,18 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
             meta.setId(StringUtils.EMPTY);
             meta.setAttributes(0);
             meta.setFlags(FileMetadata.FlagsEnum.NUMBER_0);
+            if(status.getLockId() != null) {
+                request.addHeader("X-Lock-Id", status.getLockId().toString());
+            }
             meta.setFileName(file.getName());
             meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
             meta.setFileSize(0L);
-            meta.setCreated(new DateTime(file.attributes().getCreationDate()));
-            meta.setModified(new DateTime(file.attributes().getModificationDate()));
+            meta.setCreated(DateTime.now());
+            if(null != status.getTimestamp()) {
+                meta.setModified(new DateTime(status.getTimestamp()));
+            }
             request.setEntity(new StringEntity(new JSON().getContext(meta.getClass()).writeValueAsString(meta),
-                ContentType.create("application/json", "UTF-8")));
+                ContentType.create("application/json", StandardCharsets.UTF_8.name())));
             request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
             final HttpResponse response = client.getClient().execute(request);
             try {
@@ -167,8 +172,6 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
 
         private Long offset = 0L;
 
-        private VersionId versionId;
-
         public MultipartOutputStream(final String location, final Path file, final TransferStatus status) {
             this.location = location;
             this.file = file;
@@ -184,7 +187,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
                 final byte[] content = Arrays.copyOfRange(b, off, len);
-                new DefaultRetryCallable<Void>(new BackgroundExceptionCallable<Void>() {
+                new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
                         final StoregateApiClient client = session.getClient();
@@ -210,7 +213,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
                                     case HttpStatus.SC_CREATED:
                                         final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
                                             FileMetadata.class);
-                                        versionId = new VersionId(result.getId());
+                                        overall.setVersion(new VersionId(result.getId()));
                                     case HttpStatus.SC_NO_CONTENT:
                                         // Upload complete
                                         offset += content.length;
@@ -263,7 +266,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
                             case HttpStatus.SC_CREATED:
                                 final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
                                     FileMetadata.class);
-                                versionId = new VersionId(result.getId());
+                                overall.setVersion(new VersionId(result.getId()));
                             case HttpStatus.SC_NO_CONTENT:
                                 break;
                             default:
@@ -301,7 +304,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
         }
 
         public VersionId getVersionId() {
-            return versionId;
+            return overall.getVersion();
         }
     }
 }

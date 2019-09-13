@@ -249,7 +249,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
+    public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
                          final TransferStatus status, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
@@ -265,7 +265,7 @@ public class DownloadTransfer extends Transfer {
                 }
                 final Symlink symlink = LocalSymlinkFactory.get();
                 symlink.symlink(local, target);
-                return file;
+                return;
             }
         }
         if(file.isFile()) {
@@ -293,7 +293,6 @@ public class DownloadTransfer extends Transfer {
                 status.setComplete();
             }
         }
-        return file;
     }
 
     @Override

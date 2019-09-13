@@ -15,6 +15,7 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
@@ -28,6 +29,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Read;
@@ -36,6 +38,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -63,6 +66,7 @@ import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 
 import com.migcomponents.migbase64.Base64;
@@ -73,10 +77,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     private static final Logger log = Logger.getLogger(StoregateSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
-    private final StoregateIdProvider fileid = new StoregateIdProvider(this);
+    private List<RootFolder> roots = Collections.emptyList();
 
-    private String username;
-    private List<RootFolder> roots;
+    private final StoregateIdProvider fileid = new StoregateIdProvider(this);
 
     public StoregateSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
@@ -100,6 +103,8 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         configuration.addInterceptorLast(authorizationService);
         final CloseableHttpClient apache = configuration.build();
         final StoregateApiClient client = new StoregateApiClient(apache);
+        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
+        client.setConnectTimeout(timeout);
         client.setBasePath(new HostUrlProvider().withUsername(false).withPath(true).get(host.getProtocol().getScheme(), host.getPort(),
             null, host.getHostname(), host.getProtocol().getContext()));
         client.setHttpClient(ClientBuilder.newClient(new ClientConfig()
@@ -117,19 +122,18 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
         try {
             // Get username
-            final ExtendedUser me = new UsersApi(this.client).usersGetMe();
-            username = me.getUsername();
-            log.debug(String.format("Set username to %s", username));
+            final ExtendedUser me = new UsersApi(client).usersGetMe();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Authenticated for user %s", me));
+            }
+            final Credentials credentials = host.getCredentials();
+            credentials.setUsername(me.getUsername());
             // Get root folders
-            roots = new SettingsApi(this.client).settingsGetRootfolders();
+            roots = new SettingsApi(client).settingsGetRootfolders();
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);
         }
-    }
-
-    public String username() {
-        return username;
     }
 
     public List<RootFolder> roots() {
@@ -176,6 +180,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         }
         if(type == AttributesFinder.class) {
             return (T) new StoregateAttributesFinderFeature(this, fileid);
+        }
+        if(type == Lock.class) {
+            return (T) new StoregateLockFeature(this, fileid);
         }
         return super._getFeature(type);
     }

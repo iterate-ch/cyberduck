@@ -43,9 +43,9 @@ using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
-using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms;
 using java.lang;
 using java.text;
@@ -276,7 +276,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BookmarkImageGetter = _bookmarkModel.GetBookmarkImage;
             View.BookmarkNicknameGetter = _bookmarkModel.GetNickname;
             View.BookmarkHostnameGetter = _bookmarkModel.GetHostname;
-            View.BookmarkUrlGetter = _bookmarkModel.GetUrl;
+            View.BookmarkUsernameGetter = _bookmarkModel.GetUsername;
             View.BookmarkNotesGetter = _bookmarkModel.GetNotes;
             View.BookmarkStatusImageGetter = _bookmarkModel.GetBookmarkStatusImage;
 
@@ -1384,7 +1384,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDisconnect()
         {
-            return IsConnected();
+            return !IsIdle() || IsConnected();
         }
 
         private bool View_ValidateStop()
@@ -2245,30 +2245,19 @@ namespace Ch.Cyberduck.Ui.Controller
                     string editCommand = app != null ? app.getIdentifier() : null;
                     if (Utils.IsNotBlank(editCommand))
                     {
-                        try
-                        {
-                            Icon fileIconFromExecutable = IconCache.Instance.GetFileIconFromExecutable(
-                                WindowsApplicationLauncher.GetExecutableCommand(editCommand),
+                        View.EditIcon = IconCache.GetAppImage(
+                            WindowsApplicationLauncher.GetExecutableCommand(editCommand),
                                 IconCache.IconSize.Large);
-
-                            if (null != fileIconFromExecutable)
-                            {
-                                View.EditIcon = fileIconFromExecutable.ToBitmap();
-                                return;
-                            }
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                        }
+                        return;
                     }
                 }
             }
-            View.EditIcon = IconCache.Instance.IconForName("pencil", 32);
+            View.EditIcon = IconCache.IconForName("pencil", 32);
         }
 
         private void UpdateOpenIcon()
         {
-            View.OpenIcon = IconCache.Instance.GetDefaultBrowserIcon();
+            View.OpenIcon = IconCache.GetDefaultBrowserIcon();
         }
 
         private void View_BrowserSelectionChanged()
@@ -3375,7 +3364,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.View.CertBasedConnection = _pool.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
                         _controller._scheduler = (Scheduler) _pool.getFeature(typeof(Scheduler));
-                        _controller._scheduler?.repeat(PasswordCallbackFactory.get(_controller));
+                        _controller._scheduler?.repeat(_pool, PasswordCallbackFactory.get(_controller));
                     }
                 }
             }
@@ -3395,7 +3384,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerMoveWorker(BrowserController controller, Map files, PathCache cache)
                     : base(files,
-                        controller.Session.getHost().getProtocol().isStateful()
+                        controller.Session.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful
                             ? SessionPoolFactory.create(controller, cache, controller.Session.getHost())
                             : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
 {
@@ -3428,7 +3417,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerCopyWorker(BrowserController controller, Map files, PathCache cache)
                     : base(files,
-                        controller.Session.getHost().getProtocol().isStateful()
+                        controller.Session.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful
                             ? SessionPoolFactory.create(controller, cache, controller.Session.getHost())
                             : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
                 {

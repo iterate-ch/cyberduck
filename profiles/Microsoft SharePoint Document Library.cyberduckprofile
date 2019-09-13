@@ -43,6 +43,7 @@
         <array>
             <string>sites.readwrite.all</string>
             <string>files.readwrite.all</string>
+            <string>user.read</string>
             <string>group.read.all</string>
             <string>offline_access</string>
         </array>
@@ -53,6 +54,8 @@
         <key>OAuth Redirect Url</key>
         <string>https://cyberduck.io/oauth</string>
         <key>Password Configurable</key>
+        <false/>
+        <key>Username Configurable</key>
         <false/>
     </dict>
 </plist>

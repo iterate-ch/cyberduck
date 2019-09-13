@@ -29,7 +29,7 @@ import org.joda.time.DateTime;
  * A CreateMediaShareRequest object
  */
 @ApiModel(description = "A CreateMediaShareRequest object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class CreateMediaShareRequest {
   @JsonProperty("mediaFolderId")
   private String mediaFolderId = null;
@@ -103,6 +103,12 @@ public class CreateMediaShareRequest {
 
   @JsonProperty("authMethod")
   private AuthMethodEnum authMethod = null;
+
+  @JsonProperty("allowOfficeOnline")
+  private Boolean allowOfficeOnline = null;
+
+  @JsonProperty("allowOfficeOnlineEdit")
+  private Boolean allowOfficeOnlineEdit = null;
 
   public CreateMediaShareRequest mediaFolderId(String mediaFolderId) {
     this.mediaFolderId = mediaFolderId;
@@ -344,6 +350,42 @@ public class CreateMediaShareRequest {
     this.authMethod = authMethod;
   }
 
+  public CreateMediaShareRequest allowOfficeOnline(Boolean allowOfficeOnline) {
+    this.allowOfficeOnline = allowOfficeOnline;
+    return this;
+  }
+
+   /**
+   * Allow files to be viewed in Office Online
+   * @return allowOfficeOnline
+  **/
+  @ApiModelProperty(value = "Allow files to be viewed in Office Online")
+  public Boolean isAllowOfficeOnline() {
+    return allowOfficeOnline;
+  }
+
+  public void setAllowOfficeOnline(Boolean allowOfficeOnline) {
+    this.allowOfficeOnline = allowOfficeOnline;
+  }
+
+  public CreateMediaShareRequest allowOfficeOnlineEdit(Boolean allowOfficeOnlineEdit) {
+    this.allowOfficeOnlineEdit = allowOfficeOnlineEdit;
+    return this;
+  }
+
+   /**
+   * Allow files to be edited in Office Online
+   * @return allowOfficeOnlineEdit
+  **/
+  @ApiModelProperty(value = "Allow files to be edited in Office Online")
+  public Boolean isAllowOfficeOnlineEdit() {
+    return allowOfficeOnlineEdit;
+  }
+
+  public void setAllowOfficeOnlineEdit(Boolean allowOfficeOnlineEdit) {
+    this.allowOfficeOnlineEdit = allowOfficeOnlineEdit;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -365,12 +407,14 @@ public class CreateMediaShareRequest {
         Objects.equals(this.mediaAllowDownload, createMediaShareRequest.mediaAllowDownload) &&
         Objects.equals(this.allowComments, createMediaShareRequest.allowComments) &&
         Objects.equals(this.bankIDContacts, createMediaShareRequest.bankIDContacts) &&
-        Objects.equals(this.authMethod, createMediaShareRequest.authMethod);
+        Objects.equals(this.authMethod, createMediaShareRequest.authMethod) &&
+        Objects.equals(this.allowOfficeOnline, createMediaShareRequest.allowOfficeOnline) &&
+        Objects.equals(this.allowOfficeOnlineEdit, createMediaShareRequest.allowOfficeOnlineEdit);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(mediaFolderId, password, sentToEmails, accessLimit, accessUntil, allowUpload, uploadNotificationEmails, uploadHideContents, mediaAllowDownload, allowComments, bankIDContacts, authMethod);
+    return Objects.hash(mediaFolderId, password, sentToEmails, accessLimit, accessUntil, allowUpload, uploadNotificationEmails, uploadHideContents, mediaAllowDownload, allowComments, bankIDContacts, authMethod, allowOfficeOnline, allowOfficeOnlineEdit);
   }
 
 
@@ -391,6 +435,8 @@ public class CreateMediaShareRequest {
     sb.append("    allowComments: ").append(toIndentedString(allowComments)).append("\n");
     sb.append("    bankIDContacts: ").append(toIndentedString(bankIDContacts)).append("\n");
     sb.append("    authMethod: ").append(toIndentedString(authMethod)).append("\n");
+    sb.append("    allowOfficeOnline: ").append(toIndentedString(allowOfficeOnline)).append("\n");
+    sb.append("    allowOfficeOnlineEdit: ").append(toIndentedString(allowOfficeOnlineEdit)).append("\n");
     sb.append("}");
     return sb.toString();
   }

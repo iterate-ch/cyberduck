@@ -25,7 +25,6 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
@@ -73,8 +72,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
      * Error prompt
      */
     private final TransferErrorCallback error;
-    private final ConnectionCallback connectionCallback;
-    private final PasswordCallback passwordCallback;
+    private final ConnectionCallback connect;
     private final TransferOptions options;
     private final TransferSpeedometer meter;
     /**
@@ -93,10 +91,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final TransferErrorCallback error,
                                   final ProgressListener progress,
                                   final StreamListener stream,
-                                  final ConnectionCallback connectionCallback,
-                                  final PasswordCallback passwordCallback,
+                                  final ConnectionCallback connect,
                                   final NotificationService notification) {
-        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, new TransferItemCache(Integer.MAX_VALUE));
+        this(transfer, options, prompt, meter, error, progress, stream, connect, notification, new TransferItemCache(Integer.MAX_VALUE));
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -104,10 +101,10 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final TransferErrorCallback error,
                                   final ProgressListener progress,
                                   final StreamListener stream,
-                                  final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
+                                  final ConnectionCallback connect,
                                   final NotificationService notification,
                                   final Cache<TransferItem> cache) {
-        this(transfer, options, prompt, meter, error, progress, stream, connectionCallback, passwordCallback, notification, cache, new ConcurrentHashMap<TransferItem, TransferStatus>());
+        this(transfer, options, prompt, meter, error, progress, stream, connect, notification, cache, new ConcurrentHashMap<TransferItem, TransferStatus>());
     }
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
@@ -115,8 +112,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                   final TransferErrorCallback error,
                                   final ProgressListener progress,
                                   final StreamListener stream,
-                                  final ConnectionCallback connectionCallback,
-                                  final PasswordCallback passwordCallback,
+                                  final ConnectionCallback connect,
                                   final NotificationService notification,
                                   final Cache<TransferItem> cache,
                                   final Map<TransferItem, TransferStatus> table) {
@@ -127,8 +123,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
         this.error = new SynchronizingTransferErrorCallback(error);
         this.progress = progress;
         this.stream = stream;
-        this.connectionCallback = connectionCallback;
-        this.passwordCallback = passwordCallback;
+        this.connect = connect;
         this.notification = notification;
         this.cache = cache;
         this.table = table;
@@ -183,9 +178,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     }
 
     @Override
-    public Boolean run() throws BackgroundException {
+    public Boolean run(final Session<?> source) throws BackgroundException {
         final String lock = sleep.lock();
-        final Session<?> source = this.borrow(Connection.source);
         final Session<?> destination = this.borrow(Connection.destination);
         try {
             if(log.isDebugEnabled()) {
@@ -217,17 +211,17 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
             // Calculate information about the files in advance to give progress information
             for(TransferItem next : transfer.getRoots()) {
-                this.prepare(next.remote, next.local, new TransferStatus().exists(true), action);
+                this.prepare(next.remote, next.local, new TransferStatus().exists(true).withLockId(next.lockId), action);
             }
             this.await();
             meter.reset();
-            transfer.pre(source, destination, table, connectionCallback);
+            transfer.pre(source, destination, table, connect);
             // Transfer all files sequentially
             for(TransferItem next : transfer.getRoots()) {
                 this.transfer(next, action);
             }
             this.await();
-            transfer.post(source, destination, table, connectionCallback);
+            transfer.post(source, destination, table, connect);
         }
         finally {
             this.release(source, Connection.source, null);
@@ -258,7 +252,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             throw new TransferCanceledException();
         }
         if(prompt.isSelected(new TransferItem(file, local))) {
-            return this.submit(new RetryTransferCallable() {
+            return this.submit(new RetryTransferCallable(transfer.getSource()) {
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     if(parent.isCanceled()) {
@@ -376,7 +370,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 if(segment.isComplete()) {
                     continue;
                 }
-                this.submit(new RetryTransferCallable() {
+                this.submit(new RetryTransferCallable(transfer.getSource()) {
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         if(status.isCanceled()) {
@@ -424,7 +418,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             transfer.transfer(s, d,
                                 segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                 segment.getRename().local != null ? segment.getRename().local : item.local,
-                                options, segment, connectionCallback, progress, stream);
+                                options, segment, connect, progress, stream);
                         }
                         catch(ConnectionCanceledException e) {
                             log.warn(String.format("Canceled transfer of %s", item));
@@ -434,7 +428,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                         catch(BackgroundException e) {
                             release(s, Connection.source, e);
                             release(d, Connection.destination, e);
-                            log.warn(String.format("Failure transferring %s. %s", item, e.getDetail()));
+                            log.warn(String.format("Failure transferring %s. %s", item, e));
                             if(this.retry(e, progress, new TransferBackgroundActionState(status))) {
                                 final Session<?> source = borrow(Connection.source);
                                 final Session<?> destination = borrow(Connection.destination);

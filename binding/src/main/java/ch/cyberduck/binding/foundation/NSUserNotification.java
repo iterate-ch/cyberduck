@@ -61,7 +61,7 @@ public abstract class NSUserNotification extends NSObject {
     /**
      * Available in OS X v10.9 and later.
      */
-    public abstract String getIdentifier();
+    public abstract String identifier();
 
     /**
      * This identifier is unique to a notification. A notification delivered with the same identifier

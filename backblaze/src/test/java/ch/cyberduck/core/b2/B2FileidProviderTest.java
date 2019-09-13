@@ -18,9 +18,11 @@ package ch.cyberduck.core.b2;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -58,5 +60,27 @@ public class B2FileidProviderTest extends AbstractB2Test {
         final Path folder = new B2DirectoryFeature(session, fileid).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNotNull(fileid.getFileid(folder, new DisabledListProgressListener()));
         new B2DeleteFeature(session, fileid).delete(Arrays.asList(folder, bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testFileIdCollision() throws Exception {
+        final B2FileidProvider idProvider = new B2FileidProvider(session);
+        final Path bucket = new B2DirectoryFeature(session, idProvider).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path path2R = new Path(bucket, "2R", EnumSet.of(Path.Type.directory));
+        final Path path33 = new Path(bucket, "33", EnumSet.of(Path.Type.directory));
+
+        final Directory directoryFeature = new B2DirectoryFeature(session, idProvider);
+        final Path path2RWithId = directoryFeature.mkdir(path2R, null, new TransferStatus());
+        assertNotNull(path2RWithId.attributes().getVersionId());
+        final Path path33WithId = directoryFeature.mkdir(path33, null, new TransferStatus());
+        assertNotNull(path33WithId.attributes().getVersionId());
+        assertNotEquals(path2RWithId.attributes().getVersionId(), path33WithId.attributes().getVersionId());
+
+        final String fileId = idProvider.getFileid(path33, new DisabledListProgressListener());
+
+        assertEquals(fileId, path33WithId.attributes().getVersionId());
+        assertNotEquals(fileId, path2RWithId.attributes().getVersionId());
+
+        new B2DeleteFeature(session, idProvider).delete(Arrays.asList(path2RWithId, path33WithId, bucket), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

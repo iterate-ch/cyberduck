@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -111,8 +112,8 @@ public class TransferBackgroundActionTest {
         };
         final AtomicBoolean start = new AtomicBoolean();
         final AtomicBoolean stop = new AtomicBoolean();
-        final Session session = new NullSession(host);
-        final Session destination = new NullSession(host);
+        final Session session = new NullTransferSession(host);
+        final Session destination = new NullTransferSession(host);
         final TransferBackgroundAction action = new TransferBackgroundAction(controller,
                 new StatelessSessionPool(
                         new TestLoginConnectionService(), session, PathCache.empty(),
@@ -151,8 +152,8 @@ public class TransferBackgroundActionTest {
 
     @Test
     public void testCopyBetweenHosts() throws Exception {
-        final Session session = new NullSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
-        final Session destination = new NullSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
+        final Session session = new NullTransferSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
+        final Session destination = new NullTransferSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
 
         final Path directory = new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory));
         final Path test = new Path(directory, "test", EnumSet.of(Path.Type.file));

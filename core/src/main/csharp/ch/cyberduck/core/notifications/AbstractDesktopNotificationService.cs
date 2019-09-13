@@ -16,52 +16,35 @@ namespace Ch.Cyberduck.Core.Notifications
     {
         private ToastNotificationHistory history;
 
+        private Action<string> listeners;
+
         protected abstract string AumID { get; }
 
-        public void notify(string group, string identifier, string title, string description)
+        public void addListener(NotificationService.Listener listener)
         {
-            var toastContent = new ToastContent
+            listeners += listener.callback;
+        }
+
+        public void notify(string group, string identifier, string title, string description, string action)
+        {
+            var toastContent = GetToast(title, description);
+
+            toastContent.Actions = new ToastActionsCustom()
             {
-                Visual = new ToastVisual()
+                Buttons =
                 {
-                    BindingGeneric = new ToastBindingGeneric()
-                    {
-                        Children =
-                        {
-                            new AdaptiveText()
-                            {
-                                Text = title
-                            },
-                            new AdaptiveText()
-                            {
-                                Text = description
-                            }
-                        }
-                    }
+                    new ToastButton(action, string.Empty)
                 }
             };
 
-            var doc = new XmlDocument();
-            doc.LoadXml(toastContent.GetContent());
+            Toast(toastContent, identifier, true);
+        }
 
-            var toast = new ToastNotification(doc);
-            if (!string.IsNullOrWhiteSpace(identifier))
-            {
-                toast.Tag = identifier;
-                toast.SuppressPopup = ShouldSuppressPopup(toast);
-            }
+        public void notify(string group, string identifier, string title, string description)
+        {
+            var toastContent = GetToast(title, description);
 
-            ToastNotifier notifier;
-            if (Utils.IsRunningAsUWP)
-            {
-                notifier = ToastNotificationManager.CreateToastNotifier();
-            }
-            else
-            {
-                notifier = ToastNotificationManager.CreateToastNotifier(AumID);
-            }
-
-            notifier.Show(toast);
+            Toast(toastContent, identifier, false);
         }
 
         NotificationService NotificationService.setup()
@@ -99,6 +82,30 @@ namespace Ch.Cyberduck.Core.Notifications
             };
         }
 
+        private ToastContent GetToast(string title, string description)
+        {
+            return new ToastContent
+            {
+                Visual = new ToastVisual()
+                {
+                    BindingGeneric = new ToastBindingGeneric()
+                    {
+                        Children =
+                        {
+                            new AdaptiveText()
+                            {
+                                Text = title
+                            },
+                            new AdaptiveText()
+                            {
+                                Text = description
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
         private bool ShouldSuppressPopup(ToastNotification toast)
         {
             IReadOnlyList<ToastNotification> toasts;
@@ -111,6 +118,52 @@ namespace Ch.Cyberduck.Core.Notifications
                 toasts = history.GetHistory(AumID);
             }
             return toasts.Any(GetToastComparer(toast));
+        }
+
+        private void Toast(ToastContent toastContent, string identifier, bool handleActivated)
+        {
+            var doc = new XmlDocument();
+            doc.LoadXml(toastContent.GetContent());
+
+            var toast = new ToastNotification(doc);
+            if (!string.IsNullOrWhiteSpace(identifier))
+            {
+                toast.Tag = identifier.GetHashCode().ToString("X");
+
+                toast.Data = new NotificationData(new Dictionary<string, string>()
+                {
+                    ["identifier"] = identifier
+                });
+
+                toast.SuppressPopup = ShouldSuppressPopup(toast);
+            }
+
+            if (handleActivated)
+            {
+                toast.Activated += Toast_Activated;
+            }
+
+            ToastNotifier notifier;
+            if (Utils.IsRunningAsUWP)
+            {
+                notifier = ToastNotificationManager.CreateToastNotifier();
+            }
+            else
+            {
+                notifier = ToastNotificationManager.CreateToastNotifier(AumID);
+            }
+
+            notifier.Show(toast);
+        }
+
+        private void Toast_Activated(ToastNotification sender, object args)
+        {
+            string tag = string.Empty;
+            if (sender.Data?.Values.TryGetValue("identifier", out tag) != true)
+            {
+                tag = sender.Tag;
+            }
+            listeners(tag);
         }
     }
 }

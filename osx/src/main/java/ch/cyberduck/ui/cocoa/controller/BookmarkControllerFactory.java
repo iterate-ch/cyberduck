@@ -50,7 +50,9 @@ public final class BookmarkControllerFactory {
                 c.loadBundle();
                 open.put(host, c);
             }
-            return open.get(host);
+            final BookmarkController controller = open.get(host);
+            controller.update();
+            return controller;
         }
     }
 }

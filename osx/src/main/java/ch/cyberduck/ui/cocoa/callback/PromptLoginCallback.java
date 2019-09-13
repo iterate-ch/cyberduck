@@ -38,6 +38,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.controller.InsecureLoginAlertController;
 import ch.cyberduck.ui.cocoa.controller.LoginController;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
@@ -59,11 +60,13 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     }
 
     @Override
-    public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+    public void warn(final Host bookmark, final String title, final String message,
+                     final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Display insecure connection alert for %s", bookmark));
         }
-        final AlertController alert = new InsecureLoginAlertController(title, message, continueButton, disconnectButton, bookmark.getProtocol());
+        final AlertController alert = new InsecureLoginAlertController(title, message, continueButton, disconnectButton,
+            bookmark.getProtocol(), StringUtils.isNotBlank(preference));
         int option = alert.beginSheet(parent);
         if(alert.isSuppressed()) {
             // Never show again.
@@ -77,7 +80,8 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     }
 
     @Override
-    public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+    public Credentials prompt(final Host bookmark, final String username,
+                              final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prompt for credentials for %s", username));
         }

@@ -47,7 +47,7 @@ public class LoginConnectionServiceTest {
         };
         final LoginConnectionService s = new LoginConnectionService(new DisabledLoginCallback(), new HostKeyCallback() {
             @Override
-            public boolean verify(final String hostname, final int port, final PublicKey key) {
+            public boolean verify(final Host hostname, final PublicKey key) {
                 assertEquals(Session.State.opening, session.getState());
                 return true;
             }

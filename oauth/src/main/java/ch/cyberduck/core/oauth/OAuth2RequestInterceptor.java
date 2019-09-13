@@ -84,7 +84,7 @@ public class OAuth2RequestInterceptor extends OAuth2AuthorizationService impleme
                 tokens = this.refresh(tokens);
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure refreshing OAuth 2 tokens %s. %s", tokens, e.getDetail()));
+                log.warn(String.format("Failure refreshing OAuth 2 tokens %s. %s", tokens, e));
                 // Follow up error 401 handled in error interceptor
             }
         }

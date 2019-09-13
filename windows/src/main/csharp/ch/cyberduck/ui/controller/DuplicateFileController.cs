@@ -21,7 +21,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Core.Date;
 
@@ -46,12 +46,11 @@ namespace Ch.Cyberduck.Ui.Controller
             PrefilledText = proposal.ToString();
         }
 
-        public override Bitmap IconView
+        public override Image IconView
         {
             get
             {
-                return
-                    IconCache.Instance.IconForPath(BrowserController.SelectedPath, IconCache.IconSize.Large);
+                return IconCache.IconForPath(BrowserController.SelectedPath, IconCache.IconSize.Large);
             }
         }
 

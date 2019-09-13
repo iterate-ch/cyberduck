@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     private static final Logger log = Logger.getLogger(CryptoDirectoryFeature.class);
@@ -58,7 +58,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Write metadata %s for folder %s", directoryMetadataFile, folder));
         }
-        new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(Charset.forName("UTF-8")));
+        new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8));
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(intermediate, region, new TransferStatus());

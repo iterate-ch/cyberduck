@@ -24,6 +24,7 @@ import ch.cyberduck.core.DisabledTranscriptListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TestLoginConnectionService;
@@ -72,7 +73,7 @@ public class AbstractEditorTest {
     @Test
     public void testOpen() throws Exception {
         final AtomicBoolean t = new AtomicBoolean();
-        final NullSession session = new NullSession(new Host(new TestProtocol())) {
+        final NullSession session = new NullTransferSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
@@ -100,6 +101,11 @@ public class AbstractEditorTest {
         final AbstractEditor editor = new AbstractEditor(new Application("com.editor"), new StatelessSessionPool(new TestLoginConnectionService(), session, PathCache.empty(),
                 new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), file, new DisabledProgressListener()) {
             @Override
+            public void close() {
+                //
+            }
+
+            @Override
             protected void edit(final ApplicationQuitCallback quit, final FileWatcherListener listener) {
                 e.set(true);
             }
@@ -123,6 +129,11 @@ public class AbstractEditorTest {
 
         @Override
         protected void watch(final Local local, final FileWatcherListener listener) {
+            //
+        }
+
+        @Override
+        public void close() {
             //
         }
     }

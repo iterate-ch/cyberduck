@@ -18,30 +18,30 @@ package ch.cyberduck.core.urlhandler;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.local.Application;
 
 import java.util.Collections;
 import java.util.List;
 
 public final class DisabledSchemeHandler extends AbstractSchemeHandler {
+
     @Override
-    public void setDefaultHandlerForScheme(final Application application, final String scheme) {
+    public void setDefaultHandler(final Application application, final List<String> schemes) {
         //
     }
 
     @Override
-    public Application getDefaultHandler(final Scheme scheme) {
+    public Application getDefaultHandler(final String scheme) {
         return Application.notfound;
     }
 
     @Override
-    public boolean isDefaultHandler(final List<Scheme> scheme, final Application application) {
+    public boolean isDefaultHandler(final List<String> scheme, final Application application) {
         return false;
     }
 
     @Override
-    public List<Application> getAllHandlers(final Scheme scheme) {
+    public List<Application> getAllHandlers(final String scheme) {
         return Collections.emptyList();
     }
 }

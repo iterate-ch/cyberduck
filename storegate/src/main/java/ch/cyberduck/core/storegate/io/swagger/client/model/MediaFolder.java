@@ -27,7 +27,7 @@ import org.joda.time.DateTime;
  * A media folder (or album).
  */
 @ApiModel(description = "A media folder (or album).")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class MediaFolder {
   @JsonProperty("id")
   private String id = null;

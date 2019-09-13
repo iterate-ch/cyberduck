@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class UpdateSubscriptionRequest {
   @JsonProperty("salepackageId")
   private String salepackageId = null;
@@ -44,6 +44,9 @@ public class UpdateSubscriptionRequest {
 
   @JsonProperty("syncId")
   private String syncId = null;
+
+  @JsonProperty("bankIDId")
+  private String bankIDId = null;
 
   public UpdateSubscriptionRequest salepackageId(String salepackageId) {
     this.salepackageId = salepackageId;
@@ -153,6 +156,24 @@ public class UpdateSubscriptionRequest {
     this.syncId = syncId;
   }
 
+  public UpdateSubscriptionRequest bankIDId(String bankIDId) {
+    this.bankIDId = bankIDId;
+    return this;
+  }
+
+   /**
+   * 
+   * @return bankIDId
+  **/
+  @ApiModelProperty(value = "")
+  public String getBankIDId() {
+    return bankIDId;
+  }
+
+  public void setBankIDId(String bankIDId) {
+    this.bankIDId = bankIDId;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -168,12 +189,13 @@ public class UpdateSubscriptionRequest {
         Objects.equals(this.storageId, updateSubscriptionRequest.storageId) &&
         Objects.equals(this.multiId, updateSubscriptionRequest.multiId) &&
         Objects.equals(this.backupId, updateSubscriptionRequest.backupId) &&
-        Objects.equals(this.syncId, updateSubscriptionRequest.syncId);
+        Objects.equals(this.syncId, updateSubscriptionRequest.syncId) &&
+        Objects.equals(this.bankIDId, updateSubscriptionRequest.bankIDId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(salepackageId, campaignId, storageId, multiId, backupId, syncId);
+    return Objects.hash(salepackageId, campaignId, storageId, multiId, backupId, syncId, bankIDId);
   }
 
 
@@ -188,6 +210,7 @@ public class UpdateSubscriptionRequest {
     sb.append("    multiId: ").append(toIndentedString(multiId)).append("\n");
     sb.append("    backupId: ").append(toIndentedString(backupId)).append("\n");
     sb.append("    syncId: ").append(toIndentedString(syncId)).append("\n");
+    sb.append("    bankIDId: ").append(toIndentedString(bankIDId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

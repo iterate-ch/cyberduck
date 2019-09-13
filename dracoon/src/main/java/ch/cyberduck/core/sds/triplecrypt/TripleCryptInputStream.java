@@ -61,6 +61,25 @@ public class TripleCryptInputStream extends ProxyInputStream {
 
     @Override
     public int read(final byte[] dst, final int off, final int len) throws IOException {
+        final ByteBuffer dest = ByteBuffer.allocate(len);
+        int remaining = len;
+        while(remaining > 0) {
+            final int location = len - remaining;
+            final int count = this.read(dest, off + location, remaining);
+            if(IOUtils.EOF == count) {
+                if(remaining == len) {
+                    // nothing read before
+                    return IOUtils.EOF;
+                }
+                break;
+            }
+            dest.get(dst, off + location, count);
+            remaining -= count;
+        }
+        return len - remaining;
+    }
+
+    private int read(final ByteBuffer dst, final int off, final int len) throws IOException {
         if(!buffer.hasRemaining()) {
             final int read = this.readNextChunk();
             if(read == IOUtils.EOF) {
@@ -68,7 +87,8 @@ public class TripleCryptInputStream extends ProxyInputStream {
             }
         }
         final int read = Math.min(len, buffer.remaining());
-        buffer.get(dst, off, read);
+        System.arraycopy(buffer.array(), buffer.position(), dst.array(), off, read);
+        buffer.position(buffer.position() + read);
         return read;
     }
 

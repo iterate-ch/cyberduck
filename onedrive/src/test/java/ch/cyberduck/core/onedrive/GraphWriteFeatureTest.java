@@ -68,6 +68,10 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
+        // Overwrite
+        final HttpResponseOutputStream<Void> overwrite = feature.write(file, status.exists(true), new DisabledConnectionCallback());
+        assertNotNull(overwrite);
+        overwrite.close();
         new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
@@ -157,7 +161,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         catch(OneDriveAPIException e) {
             final BackgroundException failure = new GraphExceptionMappingService().map(e);
             assertTrue(failure.getDetail().contains("Invalid Content-Range header value.")
-                    || failure.getDetail().contains("Bad Request. The Content-Range header is missing or malformed."));
+                || failure.getDetail().contains("Bad Request. The Content-Range header is missing or malformed."));
             throw failure;
         }
     }

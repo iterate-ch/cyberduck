@@ -58,11 +58,10 @@ public class FSEventWatchEditor extends AbstractEditor {
     }
 
     @Override
-    public void delete() {
+    public void close() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Close monitor %s", monitor));
         }
         monitor.close();
-        super.delete();
     }
 }

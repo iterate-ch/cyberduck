@@ -28,7 +28,7 @@ import io.swagger.annotations.ApiModelProperty;
  * A CreateAccountRequest object
  */
 @ApiModel(description = "A CreateAccountRequest object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class CreateAccountRequest {
   @JsonProperty("salepackage")
   private CreateAccountSalepackage salepackage = null;

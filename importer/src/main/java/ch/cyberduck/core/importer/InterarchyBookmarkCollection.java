@@ -89,7 +89,7 @@ public class InterarchyBookmarkCollection extends ThirdpartyBookmarkCollection {
             host = new HostParser(protocols).get(url);
         }
         catch(HostParserException e) {
-            log.warn(e.getDetail());
+            log.warn(e);
             return;
         }
         final String title = bookmark.stringForKey("Title");

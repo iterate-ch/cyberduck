@@ -52,6 +52,7 @@ public abstract class AbstractController implements Controller {
      *
      * @return List of tasks.
      */
+    @Override
     public BackgroundActionRegistry getRegistry() {
         return registry;
     }

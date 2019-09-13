@@ -28,7 +28,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 import com.dd.plist.NSArray;
@@ -46,7 +46,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
         }
         final String content = list.toXMLPropertyList();
         try (final OutputStream out = file.getOutputStream(false)) {
-            IOUtils.write(content, out, Charset.forName("UTF-8"));
+            IOUtils.write(content, out, StandardCharsets.UTF_8);
         }
         catch(IOException e) {
             throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()), e);
@@ -57,7 +57,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
     public void write(final S item, final Local file) throws AccessDeniedException {
         final String content = item.<NSDictionary>serialize(SerializerFactory.get()).toXMLPropertyList();
         try (final OutputStream out = file.getOutputStream(false)) {
-            IOUtils.write(content, out, Charset.forName("UTF-8"));
+            IOUtils.write(content, out, StandardCharsets.UTF_8);
         }
         catch(IOException e) {
             throw new AccessDeniedException(String.format("Cannot create file %s", file.getAbsolute()), e);

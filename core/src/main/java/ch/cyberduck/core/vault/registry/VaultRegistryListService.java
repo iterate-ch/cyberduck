@@ -61,12 +61,12 @@ public class VaultRegistryListService implements ListService {
                 return vault.getFeature(session, ListService.class, proxy).list(directory, listener);
             }
             if(autodetect) {
-                return new VaultFinderListService(session, proxy, new VaultFinderListProgressListener(lookup)).list(directory, listener);
+                return new VaultFinderListService(session, proxy, new VaultFinderListProgressListener(session, lookup)).list(directory, listener);
             }
             return proxy.list(directory, listener);
         }
         catch(VaultUnlockCancelException e) {
-            log.warn(String.format("Canceled loading vault %s. %s", e.getVault(), e.getDetail()));
+            log.warn(String.format("Canceled loading vault %s. %s", e.getVault(), e));
             throw e;
         }
     }

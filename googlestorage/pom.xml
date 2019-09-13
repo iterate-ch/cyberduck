@@ -19,17 +19,13 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>7.0.0-SNAPSHOT</version>
+        <version>7.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>googlestorage</artifactId>
-    <packaging>jar</packaging>
-
+    <properties>
+        <google-api-services-storage-version>v1-rev20190624-1.30.1</google-api-services-storage-version>
+    </properties>
     <dependencies>
-        <dependency>
-            <groupId>ch.cyberduck</groupId>
-            <artifactId>s3</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>
             <artifactId>oauth</artifactId>
@@ -47,6 +43,11 @@
             <artifactId>cryptomator</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-storage</artifactId>
+            <version>${google-api-services-storage-version}</version>
         </dependency>
     </dependencies>
 </project>

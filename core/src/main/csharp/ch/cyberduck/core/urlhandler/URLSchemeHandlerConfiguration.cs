@@ -158,37 +158,41 @@ namespace Ch.Cyberduck.Core.Urlhandler
             }
         }
 
-        public override void setDefaultHandlerForScheme(ch.cyberduck.core.local.Application a, string scheme)
+        public override void setDefaultHandler(ch.cyberduck.core.local.Application a, List schemes)
         {
-            if(Scheme.ftp.name().Equals(scheme))
+            for (int i = 0; i < schemes.size(); i++)
             {
-                this.RegisterFtpProtocol();
-            }
-            else if (Scheme.sftp.name().Equals(scheme))
-            {
-                this.RegisterSftpProtocol();
-            }
-            else
-            {
-                CreateCustomUrlHandler(Registry.CurrentUser, scheme, "custom handler", Application.ExecutablePath,
-                    Application.ExecutablePath + ",0");
+                string scheme = (string) schemes.get(i);
+                if(Scheme.ftp.name().Equals(scheme))
+                {
+                    this.RegisterFtpProtocol();
+                }
+                else if (Scheme.sftp.name().Equals(scheme))
+                {
+                    this.RegisterSftpProtocol();
+                }
+                else
+                {
+                    CreateCustomUrlHandler(Registry.CurrentUser, scheme, "custom handler", Application.ExecutablePath,
+                        Application.ExecutablePath + ",0");
+                }
             }
         }
 
-        public override ch.cyberduck.core.local.Application getDefaultHandler(Scheme scheme)
+        public override ch.cyberduck.core.local.Application getDefaultHandler(string scheme)
         {
-            if (Scheme.ftp.@equals(scheme))
+            if (Scheme.ftp.name().Equals(scheme))
             {
                 if(this.IsDefaultApplicationForFtp()) return new ch.cyberduck.core.local.Application(Application.ExecutablePath);
             }
-            if (Scheme.sftp.@equals(scheme))
+            if (Scheme.sftp.name().Equals(scheme))
             {
                 if(this.IsDefaultApplicationForSftp()) return new ch.cyberduck.core.local.Application(Application.ExecutablePath);
             }
             return ch.cyberduck.core.local.Application.notfound;
         }
 
-        public override List getAllHandlers(Scheme value)
+        public override List getAllHandlers(string scheme)
         {
             return Arrays.asList(new ch.cyberduck.core.local.Application(Application.ExecutablePath));
         }

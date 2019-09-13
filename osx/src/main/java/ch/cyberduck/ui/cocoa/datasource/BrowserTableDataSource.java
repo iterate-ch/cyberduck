@@ -367,7 +367,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                                 controller.mount(HostParser.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
                             }
                             catch(HostParserException e) {
-                                log.warn(e.getDetail());
+                                log.warn(e);
                                 continue;
                             }
                             return true;

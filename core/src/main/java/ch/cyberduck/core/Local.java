@@ -443,7 +443,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             final FileChannel channel = FileChannel.open(Paths.get(path), StandardOpenOption.READ);
             return new SeekableByteChannelInputStream(channel);
         }
-        catch(IOException e) {
+        catch(RuntimeException | IOException e) {
             throw new LocalAccessDeniedException(e.getMessage(), e);
         }
     }
@@ -468,7 +468,7 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             final FileChannel channel = FileChannel.open(Paths.get(path), options);
             return Channels.newOutputStream(channel);
         }
-        catch(IOException e) {
+        catch(RuntimeException | IOException e) {
             throw new LocalAccessDeniedException(e.getMessage(), e);
         }
     }

@@ -5,6 +5,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.TestProtocol;
@@ -49,7 +50,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testPrepare() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
+        OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())));
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
         final TransferStatus status = f.prepare(p, new NullLocal("a"), new TransferStatus(), new DisabledProgressListener());
@@ -58,7 +59,7 @@ public class OverwriteFilterTest {
 
     @Test
     public void testPrepareAttributes() throws Exception {
-        OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullSession(new Host(new TestProtocol())));
+        OverwriteFilter f = new OverwriteFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())));
         final Path p = new Path("a", EnumSet.of(Path.Type.file));
         p.attributes().setSize(8L);
         p.attributes().setModificationDate(1L);

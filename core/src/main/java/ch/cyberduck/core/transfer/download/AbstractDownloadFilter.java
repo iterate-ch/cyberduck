@@ -57,6 +57,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -196,43 +201,67 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         status.setAcl(attributes.getAcl());
         if(options.segments) {
             if(file.isFile()) {
-                // Make segments
-                if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
-                    && status.getLength() > preferences.getLong("queue.download.segments.size")) {
-                    final Download read = session.getFeature(Download.class);
-                    if(read.offset(file)) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Split download %s into segments", local));
-                        }
-                        long remaining = status.getLength();
-                        long offset = 0;
-                        // Part size from default setting of size divided by maximum number of connections
-                        long partsize = Math.max(
-                            preferences.getLong("queue.download.segments.size"),
-                            status.getLength() / preferences.getInteger("queue.connections.limit"));
-                        // Sorted list
-                        final List<TransferStatus> segments = new ArrayList<TransferStatus>();
-                        final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
-                        for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
-                            final Local segmentFile = LocalFactory.get(
-                                segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
-                            boolean skip = false;
-                            // Last part can be less than 5 MB. Adjust part size.
-                            Long length = Math.min(partsize, remaining);
-                            final TransferStatus segmentStatus = new TransferStatus()
-                                .segment(true)
-                                .append(true)
-                                .skip(offset)
-                                .length(length)
-                                .rename(segmentFile);
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
+                // Free space on disk
+                long space = 0L;
+                try {
+                    space = Files.getFileStore(Paths.get(local.getParent().getAbsolute())).getUsableSpace();
+                }
+                catch(IOException e) {
+                    log.warn(String.format("Failure to determine disk space for %s", file.getParent()));
+                }
+                if(status.getLength() * 2 > space) {
+                    log.warn(String.format("Insufficient free disk space %d for segmented download of %s", space, file));
+                }
+                else {
+                    // Make segments
+                    if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
+                        && status.getLength() > preferences.getLong("queue.download.segments.size")) {
+                        final Download read = session.getFeature(Download.class);
+                        if(read.offset(file)) {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Split download %s into segments", local));
                             }
-                            segments.add(segmentStatus);
-                            remaining -= length;
-                            offset += length;
+                            long remaining = status.getLength();
+                            long offset = 0;
+                            // Part size from default setting of size divided by maximum number of connections
+                            long partsize = Math.max(
+                                preferences.getLong("queue.download.segments.size"),
+                                status.getLength() / preferences.getInteger("queue.connections.limit"));
+                            // Sorted list
+                            final List<TransferStatus> segments = new ArrayList<TransferStatus>();
+                            final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
+                            for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
+                                final Local segmentFile = LocalFactory.get(
+                                    segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
+                                try {
+                                    // Test path length
+                                    Paths.get(segmentFile.getAbsolute()).toRealPath();
+                                }
+                                catch(NoSuchFileException e) {
+                                    // Continue
+                                }
+                                catch(InvalidPathException | IOException e) {
+                                    log.error(String.format("Failure to create path for segment %s. %s", segmentFile, e.getMessage()));
+                                    segments.clear();
+                                    break;
+                                }
+                                // Last part can be less than 5 MB. Adjust part size.
+                                Long length = Math.min(partsize, remaining);
+                                final TransferStatus segmentStatus = new TransferStatus()
+                                    .segment(true)
+                                    .append(true)
+                                    .skip(offset)
+                                    .length(length)
+                                    .rename(segmentFile);
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
+                                }
+                                segments.add(segmentStatus);
+                                remaining -= length;
+                                offset += length;
+                            }
+                            status.withSegments(segments);
                         }
-                        status.withSegments(segments);
                     }
                 }
             }
@@ -265,131 +294,129 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
             }
             return;
         }
-        else {
-            if(status.isComplete()) {//todo check if else
-                if(status.isSegmented()) {
-                    // Obtain ordered list of segments to reassemble
-                    final List<TransferStatus> segments = status.getSegments();
+        if(status.isComplete()) {
+            if(status.isSegmented()) {
+                // Obtain ordered list of segments to reassemble
+                final List<TransferStatus> segments = status.getSegments();
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Compile %d segments to file %s", segments.size(), local));
+                }
+                if(local.exists()) {
+                    local.delete();
+                }
+                for(Iterator<TransferStatus> iterator = segments.iterator(); iterator.hasNext(); ) {
+                    final TransferStatus segmentStatus = iterator.next();
+                    // Segment
+                    final Local segmentFile = segmentStatus.getRename().local;
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Compile %d segments to file %s", segments.size(), local));
+                        log.info(String.format("Append segment %s to %s", segmentFile, local));
                     }
-                    if(local.exists()) {
-                        local.delete();
-                    }
-                    for(Iterator<TransferStatus> iterator = segments.iterator(); iterator.hasNext(); ) {
-                        final TransferStatus segmentStatus = iterator.next();
-                        // Segment
-                        final Local segmentFile = segmentStatus.getRename().local;
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Append segment %s to %s", segmentFile, local));
-                        }
-                        segmentFile.copy(local, new Local.CopyOptions().append(true));
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Delete segment %s", segmentFile));
-                        }
-                        segmentFile.delete();
-                        if(!iterator.hasNext()) {
-                            final Local folder = segmentFile.getParent();
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Remove segment folder %s", folder));
-                            }
-                            folder.delete();
-                        }
-                    }
-                }
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Run completion for file %s with status %s", local, status));
-                }
-                if(file.isFile()) {
-                    // Bounce Downloads folder dock icon by sending download finished notification
-                    launcher.bounce(local);
-                    // Remove custom icon if complete. The Finder will display the default icon for this file type
-                    if(this.options.icon) {
-                        icon.set(local, status);
-                        icon.remove(local);
-                    }
-                    final DescriptiveUrl provider = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider);
-                    if(!DescriptiveUrl.EMPTY.equals(provider)) {
-                        try {
-                            if(options.quarantine) {
-                                // Set quarantine attributes
-                                quarantine.setQuarantine(local, new HostUrlProvider().withUsername(false).get(session.getHost()),
-                                    provider.getUrl());
-                            }
-                            if(this.options.wherefrom) {
-                                // Set quarantine attributes
-                                quarantine.setWhereFrom(local, provider.getUrl());
-                            }
-                        }
-                        catch(LocalAccessDeniedException e) {
-                            log.warn(String.format("Failure to quarantine file %s. %s", file, e.getMessage()));
-                        }
-                    }
-                }
-                if(!Permission.EMPTY.equals(status.getPermission())) {
-                    if(file.isDirectory()) {
-                        // Make sure we can read & write files to directory created.
-                        status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write).or(Permission.Action.execute));
-                    }
-                    if(file.isFile()) {
-                        // Make sure the owner can always read and write.
-                        status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write));
-                    }
+                    segmentFile.copy(local, new Local.CopyOptions().append(true));
                     if(log.isInfoEnabled()) {
-                        log.info(String.format("Updating permissions of %s to %s", local, status.getPermission()));
+                        log.info(String.format("Delete segment %s", segmentFile));
                     }
+                    segmentFile.delete();
+                    if(!iterator.hasNext()) {
+                        final Local folder = segmentFile.getParent();
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Remove segment folder %s", folder));
+                        }
+                        folder.delete();
+                    }
+                }
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Run completion for file %s with status %s", local, status));
+            }
+            if(file.isFile()) {
+                // Bounce Downloads folder dock icon by sending download finished notification
+                launcher.bounce(local);
+                // Remove custom icon if complete. The Finder will display the default icon for this file type
+                if(this.options.icon) {
+                    icon.set(local, status);
+                    icon.remove(local);
+                }
+                final DescriptiveUrl provider = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider);
+                if(!DescriptiveUrl.EMPTY.equals(provider)) {
                     try {
-                        local.attributes().setPermission(status.getPermission());
+                        if(options.quarantine) {
+                            // Set quarantine attributes
+                            quarantine.setQuarantine(local, new HostUrlProvider().withUsername(false).get(session.getHost()),
+                                provider.getUrl());
+                        }
+                        if(this.options.wherefrom) {
+                            // Set quarantine attributes
+                            quarantine.setWhereFrom(local, provider.getUrl());
+                        }
                     }
-                    catch(AccessDeniedException e) {
-                        // Ignore
-                        log.warn(e.getMessage());
+                    catch(LocalAccessDeniedException e) {
+                        log.warn(String.format("Failure to quarantine file %s. %s", file, e.getMessage()));
                     }
                 }
-                if(status.getTimestamp() != null) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Updating timestamp of %s to %d", local, status.getTimestamp()));
-                    }
-                    try {
-                        local.attributes().setModificationDate(status.getTimestamp());
-                    }
-                    catch(AccessDeniedException e) {
-                        // Ignore
-                        log.warn(e.getMessage());
-                    }
+            }
+            if(!Permission.EMPTY.equals(status.getPermission())) {
+                if(file.isDirectory()) {
+                    // Make sure we can read & write files to directory created.
+                    status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write).or(Permission.Action.execute));
                 }
                 if(file.isFile()) {
-                    if(this.options.checksum) {
-                        if(file.getType().contains(Path.Type.decrypted)) {
-                            log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
-                        }
-                        else {
-                            final Checksum checksum = status.getChecksum();
-                            if(Checksum.NONE != checksum) {
-                                final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
-                                listener.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
-                                    file.getName()));
-                                final Checksum download = compute.compute(local.getInputStream(), new TransferStatus());
-                                if(!checksum.equals(download)) {
-                                    throw new ChecksumException(
-                                        MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                                        MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of downloaded data and checksum {2} returned by the server", "Error"),
-                                            download.algorithm.toString(), download.hash, checksum.hash));
-                                }
+                    // Make sure the owner can always read and write.
+                    status.getPermission().setUser(status.getPermission().getUser().or(Permission.Action.read).or(Permission.Action.write));
+                }
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Updating permissions of %s to %s", local, status.getPermission()));
+                }
+                try {
+                    local.attributes().setPermission(status.getPermission());
+                }
+                catch(AccessDeniedException e) {
+                    // Ignore
+                    log.warn(e.getMessage());
+                }
+            }
+            if(status.getTimestamp() != null) {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Updating timestamp of %s to %d", local, status.getTimestamp()));
+                }
+                try {
+                    local.attributes().setModificationDate(status.getTimestamp());
+                }
+                catch(AccessDeniedException e) {
+                    // Ignore
+                    log.warn(e.getMessage());
+                }
+            }
+            if(file.isFile()) {
+                if(this.options.checksum) {
+                    if(file.getType().contains(Path.Type.decrypted)) {
+                        log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
+                    }
+                    else {
+                        final Checksum checksum = status.getChecksum();
+                        if(Checksum.NONE != checksum) {
+                            final ChecksumCompute compute = ChecksumComputeFactory.get(checksum.algorithm);
+                            listener.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
+                                file.getName()));
+                            final Checksum download = compute.compute(local.getInputStream(), new TransferStatus());
+                            if(!checksum.equals(download)) {
+                                throw new ChecksumException(
+                                    MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                                    MessageFormat.format(LocaleFactory.localizedString("Mismatch between {0} hash {1} of downloaded data and checksum {2} returned by the server", "Error"),
+                                        download.algorithm.toString(), download.hash, checksum.hash));
                             }
                         }
                     }
                 }
-                if(file.isFile()) {
-                    if(status.getDisplayname().local != null) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Rename file %s to %s", file, status.getDisplayname().local));
-                        }
-                        local.rename(status.getDisplayname().local);
+            }
+            if(file.isFile()) {
+                if(status.getDisplayname().local != null) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Rename file %s to %s", file, status.getDisplayname().local));
                     }
-                    if(options.open) {
-                        launcher.open(local);
-                    }
+                    local.rename(status.getDisplayname().local);
+                }
+                if(options.open) {
+                    launcher.open(local);
                 }
             }
         }

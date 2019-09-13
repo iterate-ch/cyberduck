@@ -26,7 +26,7 @@ import org.joda.time.DateTime;
  * A recyclebin item.
  */
 @ApiModel(description = "A recyclebin item.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class RecycleBinItem {
   @JsonProperty("originalLocation")
   private String originalLocation = null;
@@ -133,7 +133,9 @@ public class RecycleBinItem {
     
     NUMBER_64(64),
     
-    NUMBER_128(128);
+    NUMBER_128(128),
+    
+    NUMBER_256(256);
 
     private Integer value;
 
@@ -264,10 +266,10 @@ public class RecycleBinItem {
   }
 
    /**
-   * 
+   * Only included for SyncClient
    * @return md5
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Only included for SyncClient")
   public String getMd5() {
     return md5;
   }

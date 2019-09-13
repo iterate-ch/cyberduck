@@ -40,8 +40,8 @@ using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
 using ch.cyberduck.core.io;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Threading;
 using java.lang;
 using java.text;
@@ -193,7 +193,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
             View.ToolbarS3Label = session.getHost().getProtocol().getName();
-            View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().icon()];
+            View.ToolbarS3Image = IconCache.GetProtocolIcon(session.getHost().getProtocol(), 32);
             //ACL or permission view
             View.AclPanel = session.getFeature(typeof(AclPermission)) != null;
             if (anonymous)
@@ -209,7 +209,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (anonymous)
             {
                 View.ToolbarDistributionEnabled = false;
-                View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32)[new S3Protocol().icon()];
+                View.ToolbarDistributionImage = IconCache.GetProtocolIcon(new S3Protocol(), 32);
             }
             else
             {
@@ -217,12 +217,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.ToolbarDistributionEnabled = distribution;
                 if (distribution)
                 {
-                    View.ToolbarDistributionImage =
-                        IconCache.Instance.GetProtocolImages(32)[session.getHost().getProtocol().icon()];
+                    View.ToolbarDistributionImage = IconCache.GetProtocolIcon(session.getHost().getProtocol(), 32);
                 }
                 else
                 {
-                    View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32)[new S3Protocol().icon()];
+                    View.ToolbarDistributionImage = IconCache.GetProtocolIcon(new S3Protocol(), 32);
                 }
             }
             if (anonymous)
@@ -1037,11 +1036,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 if (count > 1)
                 {
-                    View.FileIcon = IconCache.Instance.IconForName("multiple");
+                    View.FileIcon = IconCache.IconForName("multiple");
                 }
                 else
                 {
-                    View.FileIcon = IconCache.Instance.IconForPath(_files[0], IconCache.IconSize.Large);
+                    View.FileIcon = IconCache.IconForPath(_files[0], IconCache.IconSize.Large);
                 }
             }
 

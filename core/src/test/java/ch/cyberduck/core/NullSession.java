@@ -8,8 +8,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import java.util.function.Predicate;
-
 public class NullSession extends Session<Void> implements ListService {
 
     public NullSession(Host h) {
@@ -38,25 +36,7 @@ public class NullSession extends Session<Void> implements ListService {
 
     @Override
     public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws BackgroundException {
-        return new AttributedList<Path>() {
-            @Override
-            public boolean contains(final Path file) {
-                return true;
-            }
-
-            @Override
-            public Path find(final Predicate<Path> predicate) {
-                if(predicate instanceof SimplePathPredicate) {
-                    return ((SimplePathPredicate) predicate).file;
-                }
-                return null;
-            }
-
-            @Override
-            public Path get(final Path reference) {
-                return reference;
-            }
-        };
+        return AttributedList.emptyList();
     }
 
     @Override

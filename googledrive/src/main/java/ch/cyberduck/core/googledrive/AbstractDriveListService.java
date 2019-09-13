@@ -106,7 +106,7 @@ public abstract class AbstractDriveListService implements ListService {
                             ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
 
                     final Path child = new Path(directory, filename, type, properties);
-                    if(children.find(new SimplePathPredicate(child)) != null) {
+                    if(children.find(new DriveFileidProvider.IgnoreTrashedPathPredicate(child)) != null) {
                         properties.setDuplicate(true);
                     }
                     children.add(child);

@@ -231,7 +231,7 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public Path transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
+    public void transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
                          final TransferOptions options, final TransferStatus status,
                          final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
@@ -253,7 +253,6 @@ public class CopyTransfer extends Transfer {
             feature.copy(source, mapping.get(source), status, connectionCallback);
             this.addTransferred(status.getLength());
         }
-        return source;
     }
 
     @Override

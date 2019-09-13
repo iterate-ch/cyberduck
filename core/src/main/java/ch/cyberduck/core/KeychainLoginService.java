@@ -172,12 +172,19 @@ public class KeychainLoginService implements LoginService {
                 log.debug(String.format("Login successful for session %s", session));
             }
             listener.message(LocaleFactory.localizedString("Login successful", "Credentials"));
-            // Write credentials to keychain
-            try {
-                keychain.save(bookmark);
+            if(credentials.isSaved()) {
+                // Write credentials to keychain
+                try {
+                    keychain.save(bookmark);
+                }
+                catch(LocalAccessDeniedException e) {
+                    log.error(String.format("Failure saving credentials for %s in keychain. %s", session, e));
+                }
             }
-            catch(LocalAccessDeniedException e) {
-                log.error(String.format("Failure saving credentials for %s in keychain. %s", session, e.getDetail()));
+            else {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skip writing credentials for bookmark %s", bookmark.getHostname()));
+                }
             }
             // Flag for successful authentication
             credentials.setPassed(true);

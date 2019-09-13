@@ -17,6 +17,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -40,6 +41,9 @@ import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import org.jets3t.service.model.S3Version;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -94,7 +98,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 // Amazon S3 returns object versions in the order in which they were
                 // stored, with the most recently stored returned first.
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {
-                    final String key = PathNormalizer.normalize(marker.getKey());
+                    final String key = PathNormalizer.normalize(URLDecoder.decode(marker.getKey(), StandardCharsets.UTF_8.name()));
                     if(String.valueOf(Path.DELIMITER).equals(key)) {
                         log.warn(String.format("Skipping prefix %s", key));
                         continue;
@@ -105,7 +109,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
-                    attributes.setVersionId("null".equals(marker.getVersionId()) ? null : marker.getVersionId());
+                    attributes.setVersionId(marker.getVersionId());
                     if(!StringUtils.equals(lastKey, key)) {
                         // Reset revision for next file
                         revision = 0L;
@@ -137,7 +141,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         log.warn(String.format("Skipping prefix %s", common));
                         continue;
                     }
-                    final String key = PathNormalizer.normalize(common);
+                    final String key = PathNormalizer.normalize(URLDecoder.decode(common, StandardCharsets.UTF_8.name()));
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
@@ -169,6 +173,9 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
             }
             return children;
         }
+        catch(UnsupportedEncodingException e) {
+            throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", e, directory);
+        }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
@@ -182,37 +189,42 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         return pool.execute(new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
-                final PathAttributes attributes = new PathAttributes();
-                attributes.setRegion(bucket.attributes().getRegion());
-                final Path prefix = new Path(String.format("%s%s", bucket.getAbsolute(), PathNormalizer.normalize(common)),
-                    EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                 try {
-                    final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
-                        bucket.getName(), common, null, 1,
-                        null, null, false);
-                    if(versions.getItems().length == 1) {
-                        final BaseVersionOrDeleteMarker version = versions.getItems()[0];
-                        if(version.getKey().equals(common)) {
-                            attributes.setVersionId("null".equals(version.getVersionId()) ? null : version.getVersionId());
-                            if(version.isDeleteMarker()) {
-                                attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                                attributes.setDuplicate(true);
+                    final PathAttributes attributes = new PathAttributes();
+                    attributes.setRegion(bucket.attributes().getRegion());
+                    final Path prefix = new Path(String.format("%s%s", bucket.getAbsolute(), PathNormalizer.normalize(URLDecoder.decode(common, StandardCharsets.UTF_8.name()))),
+                        EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                    try {
+                        final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
+                            bucket.getName(), common, null, 1,
+                            null, null, false);
+                        if(versions.getItems().length == 1) {
+                            final BaseVersionOrDeleteMarker version = versions.getItems()[0];
+                            if(version.getKey().equals(common)) {
+                                attributes.setVersionId(version.getVersionId());
+                                if(version.isDeleteMarker()) {
+                                    attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                                    attributes.setDuplicate(true);
+                                }
+                            }
+                            else {
+                                // no placeholder but objects inside - need to check if all of them are deleted
+                                final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
+                                    null, 1, null, false);
+                                if(unversioned.getObjects().length == 0) {
+                                    attributes.setDuplicate(true);
+                                }
                             }
                         }
-                        else {
-                            // no placeholder but objects inside - need to check if all of them are deleted
-                            final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
-                                null, 1, null, false);
-                            if(unversioned.getObjects().length == 0) {
-                                attributes.setDuplicate(true);
-                            }
-                        }
+                        return prefix;
+                    }
+                    catch(ServiceException e) {
+                        throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, prefix);
                     }
                 }
-                catch(ServiceException e) {
-                    throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, prefix);
+                catch(UnsupportedEncodingException e) {
+                    throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", e, bucket);
                 }
-                return prefix;
             }
         });
     }

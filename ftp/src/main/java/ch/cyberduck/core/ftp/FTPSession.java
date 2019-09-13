@@ -23,6 +23,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -64,6 +65,7 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -78,7 +80,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     private UnixPermission permission;
     private Symlink symlink;
     private FTPListService listService;
-    private Case casesensitivity = Case.sensitive;
+    private Protocol.Case casesensitivity = Protocol.Case.sensitive;
 
     public FTPSession(final Host h) {
         this(h, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -199,7 +201,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     }
 
     @Override
-    public Case getCase() {
+    public Protocol.Case getCaseSensitivity() {
         return casesensitivity;
     }
 
@@ -251,7 +253,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                     // Negotiate data connection security
                     client.execPROT(preferences.getProperty("ftp.tls.datachannel"));
                 }
-                if("UTF-8".equals(host.getEncoding())) {
+                if(StandardCharsets.UTF_8.name().equals(host.getEncoding())) {
                     if(client.hasFeature("UTF8")) {
                         if(!FTPReply.isPositiveCompletion(client.sendCommand("OPTS UTF8 ON"))) {
                             log.warn(String.format("Failed to negotiate UTF-8 charset %s", client.getReplyString()));
@@ -266,7 +268,7 @@ public class FTPSession extends SSLSession<FTPClient> {
                 try {
                     system = client.getSystemType();
                     if(system.toUpperCase(Locale.ROOT).contains(FTPClientConfig.SYST_NT)) {
-                        casesensitivity = Case.insensitive;
+                        casesensitivity = Protocol.Case.insensitive;
                     }
                 }
                 catch(IOException e) {

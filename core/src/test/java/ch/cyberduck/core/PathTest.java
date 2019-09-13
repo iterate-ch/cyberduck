@@ -153,5 +153,6 @@ public class PathTest {
     @Test
     public void testHashcodeCollision() {
         assertNotEquals(new Path("19.vcf.gz", EnumSet.of(Path.Type.file)), new Path("0X.vcf.gz", EnumSet.of(Path.Type.file)));
+        assertNotEquals(new Path("/d/2R", EnumSet.of(Path.Type.directory)), new Path("/d/33", EnumSet.of(Path.Type.directory)));
     }
 }

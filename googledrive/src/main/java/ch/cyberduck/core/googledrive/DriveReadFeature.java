@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -102,8 +103,8 @@ public class DriveReadFeature implements Read {
                     case HttpStatus.SC_PARTIAL_CONTENT:
                         return new HttpMethodReleaseInputStream(response);
                     default:
-                        throw new DriveExceptionMappingService().map(new HttpResponseException(
-                            response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                        throw new DefaultHttpResponseExceptionMappingService().map(
+                            new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                 }
             }
         }

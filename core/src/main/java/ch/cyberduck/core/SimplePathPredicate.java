@@ -15,19 +15,21 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.unicode.NFCNormalizer;
+import ch.cyberduck.core.unicode.UnicodeNormalizer;
+
 import java.util.Objects;
 
 public class SimplePathPredicate implements CacheReference<Path> {
 
-    protected final Path file;
+    private static final UnicodeNormalizer normalizer = new NFCNormalizer();
 
     private final Path.Type type;
     private final String path;
 
     public SimplePathPredicate(final Path file) {
-        this.file = file;
         this.type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
-        this.path = file.getAbsolute();
+        this.path = normalizer.normalize(file.getAbsolute()).toString();
     }
 
     @Override
@@ -36,7 +38,9 @@ public class SimplePathPredicate implements CacheReference<Path> {
             return false;
         }
         if(o instanceof CacheReference) {
-            return this.hashCode() == o.hashCode();
+            if(this.hashCode() == o.hashCode()) {
+                return this.toString().equals(o.toString());
+            }
         }
         return false;
     }
@@ -48,6 +52,11 @@ public class SimplePathPredicate implements CacheReference<Path> {
 
     @Override
     public boolean test(final Path test) {
-        return this.hashCode() == new SimplePathPredicate(test).hashCode();
+        return this.equals(new SimplePathPredicate(test));
+    }
+
+    @Override
+    public String toString() {
+        return "[" + type + "]" + "-" + path;
     }
 }

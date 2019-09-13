@@ -32,9 +32,9 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.azure;
 using ch.cyberduck.core.b2;
-using ch.cyberduck.core.manta;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.brick;
+using ch.cyberduck.core.nextcloud;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.dropbox;
 using ch.cyberduck.core.ftp;
@@ -157,7 +157,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
                 new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(),
-                new MantaProtocol(), new SDSProtocol(), new StoregateProtocol(), new BrickProtocol());
+                new SDSProtocol(), new StoregateProtocol(), new BrickProtocol(), new NextcloudProtocol());
             ProtocolFactory.get().loadDefaultProfiles();
         }
 
@@ -545,7 +545,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 var handler = SchemeHandlerFactory.get();
                 if (
-                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
+                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
                         new Application(System.Windows.Forms.Application.ExecutablePath)))
                 {
                     Core.Utils.CommandBox(LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
@@ -567,16 +567,15 @@ namespace Ch.Cyberduck.Ui.Controller
                             switch (option)
                             {
                                 case 0:
-                                    handler.setDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
-                                        new Application(System.Windows.Forms.Application.ExecutablePath));
+                                    handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
+                                        Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()));
                                     break;
                             }
                         });
                 }
                 // Register OAuth handler
-                handler.setDefaultHandlerForScheme(
-                    new Application(System.Windows.Forms.Application.ExecutablePath), 
-                    PreferencesFactory.get().getProperty("oauth.handler.scheme"));
+                handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
+                    Arrays.asList(PreferencesFactory.get().getProperty("oauth.handler.scheme")));
             }
         }
 

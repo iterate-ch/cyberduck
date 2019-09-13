@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>7.0.0-SNAPSHOT</version>
+        <version>7.1.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>oauth</artifactId>
@@ -37,7 +37,7 @@
         </dependency>
         <dependency>
             <groupId>com.google.http-client</groupId>
-            <artifactId>google-http-client-apache</artifactId>
+            <artifactId>google-http-client-apache-v2</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.http-client</groupId>

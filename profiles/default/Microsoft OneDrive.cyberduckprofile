@@ -46,6 +46,7 @@
             <string>sites.readwrite.all</string>
             <string>files.readwrite.all</string>
             <string>offline_access</string>
+            <string>user.read</string>
         </array>
         <key>OAuth Client ID</key>
         <string>372770ba-bb24-436b-bbd4-19bc86310c0e</string>
@@ -54,6 +55,8 @@
         <key>OAuth Redirect Url</key>
         <string>https://cyberduck.io/oauth</string>
         <key>Password Configurable</key>
+        <false/>
+        <key>Username Configurable</key>
         <false/>
     </dict>
 </plist>

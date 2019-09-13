@@ -148,6 +148,11 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
             }
         }
         switch(failure.getCode()) {
+            case HttpStatus.SC_FORBIDDEN:
+                if(failure.getResponseHeaders().containsKey("X-Forbidden")) {
+                    return new AccessDeniedException(LocaleFactory.localizedString("The AV scanner detected that the file could be malicious", "SDS"));
+                }
+                break;
             case 901:
                 // Server with AV scanners will block transfer attempts of infected files (upload or download) and answer the request 901
                 return new AccessDeniedException(LocaleFactory.localizedString("The AV scanner detected that the file could be malicious", "SDS"));

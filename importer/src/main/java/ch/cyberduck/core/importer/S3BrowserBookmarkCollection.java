@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -58,7 +58,7 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
-        try (final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")))) {
+        try (final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
             Host current = null;
             String line;
             while((line = in.readLine()) != null) {

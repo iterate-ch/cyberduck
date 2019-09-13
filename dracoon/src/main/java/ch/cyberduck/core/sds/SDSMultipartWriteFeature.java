@@ -128,8 +128,6 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
 
         private Long offset = 0L;
 
-        private VersionId versionId;
-
         public MultipartOutputStream(final String uploadId, final Path file, final TransferStatus status) {
             this.uploadId = uploadId;
             this.file = file;
@@ -149,7 +147,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     .setBoundary(DelayedHttpMultipartEntity.DEFAULT_BOUNDARY)
                     .addPart("file", new ByteArrayBody(content, file.getName()))
                     .build();
-                new DefaultRetryCallable<Void>(new BackgroundExceptionCallable<Void>() {
+                new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
                         final SDSApiClient client = session.getClient();
@@ -228,7 +226,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                 }
                 final Node upload = new NodesApi(session.getClient()).completeFileUpload(uploadId, StringUtils.EMPTY, null, body);
-                versionId = new VersionId(String.valueOf(upload.getId()));
+                overall.setVersion(new VersionId(String.valueOf(upload.getId())));
             }
             catch(ApiException e) {
                 throw new IOException(new SDSExceptionMappingService().map("Upload {0} failed", e, file));
@@ -254,7 +252,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
         }
 
         public VersionId getVersionId() {
-            return versionId;
+            return overall.getVersion();
         }
     }
 

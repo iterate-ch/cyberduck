@@ -25,9 +25,13 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.text.NaturalOrderComparator;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.stream.Stream;
 
 public final class RendezvousCollection extends AbstractHostCollection implements RendezvousListener {
     private static final long serialVersionUID = 6468881403370416829L;
@@ -46,7 +50,6 @@ public final class RendezvousCollection extends AbstractHostCollection implement
     }
 
     private final Rendezvous rendezvous;
-
     private final Comparator<String> comparator = new NaturalOrderComparator();
 
     private RendezvousCollection() {
@@ -107,6 +110,27 @@ public final class RendezvousCollection extends AbstractHostCollection implement
     @Override
     public Iterator<Host> iterator() {
         return rendezvous.iterator();
+    }
+
+    @Override
+    public Host lookup(final String uuid) {
+        for(int i = 0; i < rendezvous.numberOfServices(); i++) {
+            final Host host = rendezvous.getService(i);
+            if(StringUtils.equals(uuid, host.getUuid())) {
+                return host;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Spliterator<Host> spliterator() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Stream<Host> stream() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

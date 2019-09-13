@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>7.0.0-SNAPSHOT</version>
+        <version>7.1.1-SNAPSHOT</version>
     </parent>
     <artifactId>osx</artifactId>
     <packaging>jar</packaging>
@@ -133,36 +133,10 @@
                                             <groupId>net.adoptopenjdk</groupId>
                                             <artifactId>jre</artifactId>
                                             <type>zip</type>
-                                            <version>8u192</version>
+                                            <version>12.0.2</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>unpack-jce-unlimited</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>copy</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>com.oracle.java</groupId>
-                                            <artifactId>local_policy</artifactId>
-                                            <type>jar</type>
-                                            <version>8</version>
-                                            <destFileName>local_policy.jar</destFileName>
-                                        </artifactItem>
-                                        <artifactItem>
-                                            <groupId>com.oracle.java</groupId>
-                                            <artifactId>US_export_policy</artifactId>
-                                            <type>jar</type>
-                                            <version>8</version>
-                                            <destFileName>US_export_policy.jar</destFileName>
-                                        </artifactItem>
-                                    </artifactItems>
-                                    <outputDirectory>${project.build.directory}/Cyberduck.app/Contents/PlugIns/Runtime.jre/Contents/Home/lib/security</outputDirectory>
                                 </configuration>
                             </execution>
                             <execution>
@@ -304,6 +278,19 @@
                                 </configuration>
                             </execution>
                         </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.codehaus.groovy</groupId>
+                                <artifactId>groovy-all</artifactId>
+                                <version>2.5.8</version>
+                                <type>pom</type>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.codehaus.groovy</groupId>
+                                <artifactId>groovy-dateutil</artifactId>
+                                <version>2.5.8</version>
+                            </dependency>
+                        </dependencies>
                     </plugin>
                 </plugins>
             </build>

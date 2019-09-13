@@ -24,6 +24,7 @@ using ch.cyberduck.ui;
 using Ch.Cyberduck.Core;
 using java.lang;
 using org.apache.log4j;
+using org.apache.commons.lang3;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -58,7 +59,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _host.getPort(),
                         _host.getHostname(),
                         _host.getCredentials().getUsername(),
-                        View.Password
+                        StringUtils.strip(View.Password)
                     );
                 }
                 catch (LocalAccessDeniedException e)
@@ -78,6 +79,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 DefaultBookmarkController c;
                 if (Open.TryGetValue(host, out c))
                 {
+                    c.Update();
                     return c;
                 }
 

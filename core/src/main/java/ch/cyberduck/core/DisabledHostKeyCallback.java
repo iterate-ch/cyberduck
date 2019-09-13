@@ -23,7 +23,7 @@ import java.security.PublicKey;
 public class DisabledHostKeyCallback implements HostKeyCallback {
 
     @Override
-    public boolean verify(String hostname, int port, PublicKey key) {
+    public boolean verify(Host hostname, PublicKey key) {
         return true;
     }
 }

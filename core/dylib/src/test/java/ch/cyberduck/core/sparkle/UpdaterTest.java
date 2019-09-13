@@ -28,6 +28,6 @@ public class UpdaterTest {
 
     @Test
     public void testCreate() {
-        assertNotNull(Updater.create());
+        assertNotNull(Updater.create("None"));
     }
 }

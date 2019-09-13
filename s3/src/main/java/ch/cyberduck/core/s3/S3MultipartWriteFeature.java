@@ -44,7 +44,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(S3MultipartWriteFeature.class);
@@ -126,7 +125,6 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
-        private final AtomicReference<VersionId> versionId = new AtomicReference();
         private int partNumber;
 
         public MultipartOutputStream(final MultipartUpload multipart, final Path file, final TransferStatus status) {
@@ -136,7 +134,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
         }
 
         public VersionId getVersionId() {
-            return versionId.get();
+            return overall.getVersion();
         }
 
         @Override
@@ -147,7 +145,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
         @Override
         public void write(final byte[] content, final int off, final int len) throws IOException {
             try {
-                completed.add(new DefaultRetryCallable<MultipartPart>(new BackgroundExceptionCallable<MultipartPart>() {
+                completed.add(new DefaultRetryCallable<MultipartPart>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
                     @Override
                     public MultipartPart call() throws BackgroundException {
                         final Map<String, String> parameters = new HashMap<String, String>();
@@ -197,7 +195,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
                 if(completed.isEmpty()) {
                     log.warn(String.format("Abort multipart upload %s with no completed parts", multipart));
                     session.getClient().multipartAbortUpload(multipart);
-                    versionId.set(new VersionId(new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId()));
+                    overall.setVersion(new VersionId(new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId()));
                 }
                 else {
                     final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
@@ -205,7 +203,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
                         log.debug(String.format("Completed multipart upload for %s with checksum %s",
                             complete.getObjectKey(), complete.getEtag()));
                     }
-                    versionId.set(new VersionId(complete.getVersionId()));
+                    overall.setVersion(new VersionId(complete.getVersionId()));
                     if(file.getType().contains(Path.Type.encrypted)) {
                         log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                     }

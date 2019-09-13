@@ -37,8 +37,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import sun.net.util.IPAddressUtil;
-
 /**
  * Override default network interface for IPv6 to en0 instead of awdl0 set in <code>java.net.DefaultInterface#getDefault()</code>.
  */
@@ -46,9 +44,7 @@ public class NetworkInterfaceAwareSocketFactory extends SocketFactory {
     private static final Logger log = Logger.getLogger(NetworkInterfaceAwareSocketFactory.class);
 
     private final Proxy proxy;
-
     private final List<String> blacklisted;
-
     private final SocketFactory delegate;
 
     public NetworkInterfaceAwareSocketFactory() {
@@ -99,8 +95,8 @@ public class NetworkInterfaceAwareSocketFactory extends SocketFactory {
                         final NetworkInterface network = findIPv6Interface((Inet6Address) address.getAddress());
                         if(null != network) {
                             super.connect(new InetSocketAddress(
-                                    NetworkInterfaceAwareSocketFactory.this.getByAddressForInterface(network, address.getAddress()),
-                                    address.getPort()), timeout);
+                                NetworkInterfaceAwareSocketFactory.this.getByAddressForInterface(network, address.getAddress()),
+                                address.getPort()), timeout);
                             return;
                         }
                     }
@@ -152,12 +148,11 @@ public class NetworkInterfaceAwareSocketFactory extends SocketFactory {
 
     /**
      * @param network Network interface index
-     * @throws UnknownHostException
+     * @throws UnknownHostException DNS error
      */
     private Inet6Address getByAddressForInterface(final NetworkInterface network, final InetAddress address) throws UnknownHostException {
         // Append network interface. Workaround for issue #8802
-        return Inet6Address.getByAddress(address.getHostAddress(),
-                IPAddressUtil.textToNumericFormatV6(address.getHostAddress()), network.getIndex());
+        return Inet6Address.getByAddress(address.getHostAddress(), address.getAddress(), network);
     }
 
     private NetworkInterface findIPv6Interface(Inet6Address address) throws IOException {

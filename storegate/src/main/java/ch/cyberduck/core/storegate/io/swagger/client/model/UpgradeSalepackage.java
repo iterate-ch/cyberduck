@@ -27,7 +27,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class UpgradeSalepackage {
   @JsonProperty("description")
   private String description = null;
@@ -61,6 +61,9 @@ public class UpgradeSalepackage {
 
   @JsonProperty("sync")
   private SalepackageProduct sync = null;
+
+  @JsonProperty("bankID")
+  private SalepackageProduct bankID = null;
 
   @JsonProperty("currency")
   private String currency = null;
@@ -266,6 +269,24 @@ public class UpgradeSalepackage {
     this.sync = sync;
   }
 
+  public UpgradeSalepackage bankID(SalepackageProduct bankID) {
+    this.bankID = bankID;
+    return this;
+  }
+
+   /**
+   * 
+   * @return bankID
+  **/
+  @ApiModelProperty(value = "")
+  public SalepackageProduct getBankID() {
+    return bankID;
+  }
+
+  public void setBankID(SalepackageProduct bankID) {
+    this.bankID = bankID;
+  }
+
   public UpgradeSalepackage currency(String currency) {
     this.currency = currency;
     return this;
@@ -323,13 +344,14 @@ public class UpgradeSalepackage {
         Objects.equals(this.multi, upgradeSalepackage.multi) &&
         Objects.equals(this.backup, upgradeSalepackage.backup) &&
         Objects.equals(this.sync, upgradeSalepackage.sync) &&
+        Objects.equals(this.bankID, upgradeSalepackage.bankID) &&
         Objects.equals(this.currency, upgradeSalepackage.currency) &&
         Objects.equals(this.isInclVAT, upgradeSalepackage.isInclVAT);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(description, saleText, startFee, campaignPrice, id, name, monthlyFee, storage, multi, backup, sync, currency, isInclVAT);
+    return Objects.hash(description, saleText, startFee, campaignPrice, id, name, monthlyFee, storage, multi, backup, sync, bankID, currency, isInclVAT);
   }
 
 
@@ -349,6 +371,7 @@ public class UpgradeSalepackage {
     sb.append("    multi: ").append(toIndentedString(multi)).append("\n");
     sb.append("    backup: ").append(toIndentedString(backup)).append("\n");
     sb.append("    sync: ").append(toIndentedString(sync)).append("\n");
+    sb.append("    bankID: ").append(toIndentedString(bankID)).append("\n");
     sb.append("    currency: ").append(toIndentedString(currency)).append("\n");
     sb.append("    isInclVAT: ").append(toIndentedString(isInclVAT)).append("\n");
     sb.append("}");

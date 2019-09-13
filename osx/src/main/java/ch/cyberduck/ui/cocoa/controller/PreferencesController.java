@@ -43,7 +43,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
@@ -178,7 +177,7 @@ public class PreferencesController extends ToolbarWindowController {
         views.put(new Label(PreferencesToolbarItem.bandwidth.name(), PreferencesToolbarItem.bandwidth.label()), panelBandwidth);
         views.put(new Label(PreferencesToolbarItem.connection.name(), PreferencesToolbarItem.connection.label()), panelAdvanced);
         views.put(new Label(PreferencesToolbarItem.cryptomator.name(), PreferencesToolbarItem.cryptomator.label()), panelCryptomator);
-        if(null != Updater.getFeed()) {
+        if(null != preferences.getDefault("SUExpectsDSASignature")) {
             views.put(new Label(PreferencesToolbarItem.update.name(), PreferencesToolbarItem.update.label()), panelUpdate);
         }
         views.put(new Label(PreferencesToolbarItem.language.name(), PreferencesToolbarItem.language.label()), panelLanguage);
@@ -412,12 +411,15 @@ public class PreferencesController extends ToolbarWindowController {
     public void bookmarkSizePopupClicked(NSPopUpButton sender) {
         if(sender.indexOfSelectedItem().intValue() == 0) {
             preferences.setProperty("bookmark.icon.size", BookmarkCell.SMALL_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.menu.icon.size", BookmarkCell.SMALL_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem().intValue() == 1) {
             preferences.setProperty("bookmark.icon.size", BookmarkCell.MEDIUM_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.menu.icon.size", BookmarkCell.MEDIUM_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem().intValue() == 2) {
             preferences.setProperty("bookmark.icon.size", BookmarkCell.LARGE_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.menu.icon.size", BookmarkCell.LARGE_BOOKMARK_SIZE);
         }
         BrowserController.updateBookmarkTableRowHeight();
     }
@@ -598,6 +600,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.connectionRetryNumberStepper.setTarget(this.id());
         this.connectionRetryNumberStepper.setAction(Foundation.selector("connectionRetryNumberStepperClicked:"));
         this.connectionRetryNumberStepper.setIntValue(preferences.getInteger("connection.retry"));
+        this.connectionRetryNumberStepper.setMinValue(1);
+        this.connectionRetryNumberStepper.setMaxValue(preferences.getInteger("connection.retry.max"));
     }
 
     @Action
@@ -1869,7 +1873,7 @@ public class PreferencesController extends ToolbarWindowController {
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
         for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
-            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))) {
+            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud)))) {
             this.addProtocol(protocol);
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
@@ -1917,7 +1921,7 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     private void configureDefaultProtocolHandlerCombobox(final NSPopUpButton defaultProtocolHandlerCombobox, final Scheme protocol) {
-        final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol);
+        final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol.name());
         if(Application.notfound.equals(defaultHandler)) {
             defaultProtocolHandlerCombobox.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
             defaultProtocolHandlerCombobox.setEnabled(false);
@@ -1926,7 +1930,7 @@ public class PreferencesController extends ToolbarWindowController {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Default Protocol Handler for %s:%s", protocol, defaultHandler));
             }
-            for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol)) {
+            for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol.name())) {
                 defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
                 final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
                 item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(handler, 16));
@@ -1952,7 +1956,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
-            Arrays.asList(Scheme.ftp, Scheme.ftps), new Application(bundle)
+            new Application(bundle), Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name())
         );
     }
 
@@ -1970,7 +1974,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
-            Collections.singletonList(Scheme.sftp), new Application(bundle)
+            new Application(bundle), Collections.singletonList(Scheme.sftp.name())
         );
     }
 
@@ -2074,21 +2078,20 @@ public class PreferencesController extends ToolbarWindowController {
         this.updateFeedPopup.removeAllItems();
         this.updateFeedPopup.setAction(Foundation.selector("updateFeedPopupClicked:"));
         this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Release"));
-        this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.release"));
+        this.updateFeedPopup.lastItem().setRepresentedObject("release");
         if(preferences.getBoolean("update.feed.beta.enable")) {
             this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Beta"));
-            this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.beta"));
+            this.updateFeedPopup.lastItem().setRepresentedObject("beta");
         }
         if(preferences.getBoolean("update.feed.nightly.enable")) {
             this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Snapshot Builds"));
-            this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.nightly"));
+            this.updateFeedPopup.lastItem().setRepresentedObject("nightly");
         }
-        final String feed = preferences.getProperty(Updater.PROPERTY_FEED_URL);
+        final String feed = preferences.getProperty("update.feed");
         NSInteger selected = this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(feed);
         if(-1 == selected.intValue()) {
-            log.warn(String.format("Invalid feed setting:%s", feed));
-            this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(
-                preferences.getProperty("update.feed.release")));
+            log.warn(String.format("Invalid feed setting %s", feed));
+            this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject("release"));
         }
         else {
             this.updateFeedPopup.selectItemAtIndex(selected);
@@ -2097,15 +2100,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void updateFeedPopupClicked(NSPopUpButton sender) {
-        // Update sparkle feed property. Default is in Info.plist
-        String selected = sender.selectedItem().representedObject();
-        if(null == selected || preferences.getDefault(Updater.PROPERTY_FEED_URL).equals(selected)) {
-            // Remove custom value
-            preferences.deleteProperty(Updater.PROPERTY_FEED_URL);
-        }
-        else {
-            preferences.setProperty(Updater.PROPERTY_FEED_URL, selected);
-        }
+        preferences.setProperty("update.feed", sender.selectedItem().representedObject());
     }
 
     @Outlet

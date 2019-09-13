@@ -79,13 +79,7 @@ public class S3LocationFeature implements Location {
             final S3Region region;
             if(StringUtils.isBlank(location)) {
                 log.warn(String.format("No region known for bucket %s", container.getName()));
-                // Only for AWS
-                if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-                    region = new S3Region("us-east-1");
-                }
-                else {
-                    region = new S3Region(session.getHost().getProtocol().getRegion());
-                }
+                region = new S3Region("us-east-1");
             }
             else {
                 switch(location) {

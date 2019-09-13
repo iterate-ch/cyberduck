@@ -84,12 +84,12 @@ public final class ProtocolFactory {
                         registered.add(profile);
                     }
                     catch(AccessDeniedException e) {
-                        log.error(String.format("Failure reading profile from %s. %s", f, e.getDetail()));
+                        log.error(String.format("Failure reading profile from %s. %s", f, e));
                     }
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", bundle, e.getDetail()));
+                log.warn(String.format("Failure reading collection %s %s", bundle, e));
             }
         }
         // Load thirdparty protocols
@@ -110,12 +110,12 @@ public final class ProtocolFactory {
                         registered.add(profile);
                     }
                     catch(AccessDeniedException e) {
-                        log.warn(String.format("Failure reading profile from %s. %s", f, e.getDetail()));
+                        log.warn(String.format("Failure reading profile from %s. %s", f, e));
                     }
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", library, e.getDetail()));
+                log.warn(String.format("Failure reading collection %s %s", library, e));
             }
         }
     }

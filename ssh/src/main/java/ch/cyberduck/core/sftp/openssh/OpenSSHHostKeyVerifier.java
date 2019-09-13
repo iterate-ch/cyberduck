@@ -19,6 +19,7 @@ package ch.cyberduck.core.sftp.openssh;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ChecksumException;
@@ -46,7 +47,6 @@ import net.schmizz.sshj.common.KeyType;
 import net.schmizz.sshj.common.SSHRuntimeException;
 import net.schmizz.sshj.transport.verification.OpenSSHKnownHosts;
 
-
 public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier {
     private static final Logger log = Logger.getLogger(OpenSSHHostKeyVerifier.class);
 
@@ -69,7 +69,7 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
                 LocalTouchFactory.get().touch(file);
             }
             in = file.getInputStream();
-            database = new DelegatingOpenSSHKnownHosts(file);
+            database = new OpenSSHKnownHosts(new File(file.getAbsolute()));
         }
         catch(IOException | SSHRuntimeException e) {
             log.error(String.format("Cannot read known hosts file %s", file), e);
@@ -83,26 +83,57 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
     }
 
     @Override
-    public boolean verify(final String hostname, final int port, final PublicKey key)
-        throws ConnectionCanceledException, ChecksumException {
+    public boolean verify(final Host host, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
         if(null == database) {
-            return super.verify(hostname, port, key);
+            log.warn(String.format("Missing database %s", database));
+            return super.verify(host, key);
         }
-        return database.verify(hostname, port, key);
+        final KeyType type = KeyType.fromKey(key);
+        if(type == KeyType.UNKNOWN) {
+            return false;
+        }
+        boolean foundApplicableHostEntry = false;
+        for(OpenSSHKnownHosts.KnownHostEntry entry : database.entries()) {
+            try {
+                if(entry.appliesTo(type, format(host))) {
+                    foundApplicableHostEntry = true;
+                    if(entry.verify(key)) {
+                        return true;
+                    }
+                }
+            }
+            catch(IOException e) {
+                log.error(String.format("Failure verifying host key entry %s. %s", entry, e.getMessage()));
+                return false;
+            }
+        }
+        if(foundApplicableHostEntry) {
+            try {
+                return this.isChangedKeyAccepted(host, key);
+            }
+            catch(ConnectionCanceledException | ChecksumException e) {
+                return false;
+            }
+        }
+        try {
+            return this.isUnknownKeyAccepted(host, key);
+        }
+        catch(ConnectionCanceledException | ChecksumException e) {
+            return false;
+        }
     }
 
     @Override
-    public void allow(final String hostname, final PublicKey key, final boolean persist) {
+    public void allow(final Host host, final PublicKey key, final boolean persist) {
         if(null == database) {
-            super.allow(hostname, key, persist);
+            log.warn(String.format("Missing database %s", database));
+            super.allow(host, key, persist);
         }
         else {
             try {
                 // Add the host key to the in-memory database
                 final OpenSSHKnownHosts.HostEntry entry
-                    = new OpenSSHKnownHosts.HostEntry(null, PreferencesFactory.get().getBoolean(
-                    "ssh.knownhosts.hostname.hash") ? hash(hostname) : hostname,
-                    KeyType.fromKey(key), key);
+                    = new OpenSSHKnownHosts.HostEntry(null, format(host), KeyType.fromKey(key), key);
                 database.entries().add(entry);
                 if(persist) {
                     if(file.attributes().getPermission().isWritable()) {
@@ -113,9 +144,14 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
             }
             catch(IOException e) {
                 log.error(String.format("Failure adding host key to database: %s", e.getMessage()));
-                super.allow(hostname, key, persist);
+                super.allow(host, key, persist);
             }
         }
+    }
+
+    private static String format(final Host host) throws IOException {
+        final String hostname = host.getPort() != 22 ? String.format("[%s]:%d", host.getHostname(), host.getPort()) : host.getHostname();
+        return PreferencesFactory.get().getBoolean("ssh.knownhosts.hostname.hash") ? hash(hostname) : hostname;
     }
 
     /**
@@ -166,31 +202,5 @@ public abstract class OpenSSHHostKeyVerifier extends PreferencesHostKeyVerifier 
         sb.append(", file=").append(file);
         sb.append('}');
         return sb.toString();
-    }
-
-    private final class DelegatingOpenSSHKnownHosts extends OpenSSHKnownHosts {
-        public DelegatingOpenSSHKnownHosts(final Local file) throws IOException {
-            super(new File(file.getAbsolute()));
-        }
-
-        @Override
-        protected boolean hostKeyUnverifiableAction(final String hostname, final PublicKey key) {
-            try {
-                return OpenSSHHostKeyVerifier.this.isUnknownKeyAccepted(hostname, key);
-            }
-            catch(ConnectionCanceledException | ChecksumException e) {
-                return false;
-            }
-        }
-
-        @Override
-        protected boolean hostKeyChangedAction(final String hostname, final PublicKey key) {
-            try {
-                return OpenSSHHostKeyVerifier.this.isChangedKeyAccepted(hostname, key);
-            }
-            catch(ConnectionCanceledException | ChecksumException e) {
-                return false;
-            }
-        }
     }
 }

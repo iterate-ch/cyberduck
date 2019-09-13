@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>7.1.1-SNAPSHOT</version>
 
     <prerequisites>
         <maven>3.0</maven>
@@ -51,6 +51,7 @@
         <module>dracoon</module>
         <module>storegate</module>
         <module>brick</module>
+        <module>nextcloud</module>
         <module>manta</module>
         <module>protocols</module>
         <module>protocols/dll</module>
@@ -75,7 +76,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <argLine/>
-        <jna-version>5.2.0</jna-version>
+        <jna-version>5.3.1</jna-version>
         <jersey-version>2.29</jersey-version>
     </properties>
 
@@ -94,7 +95,7 @@
             <dependency>
                 <groupId>cglib</groupId>
                 <artifactId>cglib</artifactId>
-                <version>3.2.12</version>
+                <version>3.3.0</version>
             </dependency>
             <dependency>
                 <groupId>ch.iterate.s3</groupId>
@@ -104,22 +105,22 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpcore</artifactId>
-                <version>4.4.11</version>
+                <version>4.4.12</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.5.8</version>
+                <version>4.5.10</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient-win</artifactId>
-                <version>4.5.8</version>
+                <version>4.5.10</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpmime</artifactId>
-                <version>4.5.8</version>
+                <version>4.5.10</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
@@ -134,7 +135,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.12</version>
+                <version>1.13</version>
             </dependency>
             <dependency>
                 <groupId>commons-net</groupId>
@@ -159,7 +160,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-collections4</artifactId>
-                <version>4.3</version>
+                <version>4.4</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
@@ -169,7 +170,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-text</artifactId>
-                <version>1.6</version>
+                <version>1.8</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -184,22 +185,27 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.26</version>
+                <version>1.7.28</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>1.7.26</version>
+                <version>1.7.28</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
-                <version>1.7.26</version>
+                <version>1.7.28</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
-                <version>1.7.26</version>
+                <version>1.7.28</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.woodstox</groupId>
+                <artifactId>stax2-api</artifactId>
+                <version>4.2</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -224,7 +230,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.9.9</version>
+                <version>2.9.9.2</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -249,12 +255,12 @@
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
-                <version>2.10.2</version>
+                <version>2.10.3</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-annotations</artifactId>
-                <version>1.5.22</version>
+                <version>1.5.23</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
@@ -284,32 +290,32 @@
             <dependency>
                 <groupId>com.google.oauth-client</groupId>
                 <artifactId>google-oauth-client</artifactId>
-                <version>1.29.0</version>
+                <version>1.30.2</version>
             </dependency>
             <dependency>
                 <groupId>com.google.api-client</groupId>
                 <artifactId>google-api-client</artifactId>
-                <version>1.28.0</version>
+                <version>1.30.2</version>
             </dependency>
             <dependency>
                 <groupId>com.google.http-client</groupId>
                 <artifactId>google-http-client</artifactId>
-                <version>1.28.0</version>
+                <version>1.32.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.http-client</groupId>
                 <artifactId>google-http-client-jackson2</artifactId>
-                <version>1.28.0</version>
+                <version>1.32.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.http-client</groupId>
-                <artifactId>google-http-client-apache</artifactId>
-                <version>2.0.0</version>
+                <artifactId>google-http-client-apache-v2</artifactId>
+                <version>1.32.0</version>
             </dependency>
             <dependency>
                 <groupId>com.amazonaws</groupId>
                 <artifactId>aws-java-sdk-bom</artifactId>
-                <version>1.11.554</version>
+                <version>1.11.570</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -321,7 +327,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>27.1-jre</version>
+                <version>28.1-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.joyent.util</groupId>
@@ -347,7 +353,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.0</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <compilerArgument>-Xlint:unchecked</compilerArgument>
@@ -357,7 +363,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.1.2</version>
                     <configuration>
                         <archive>
                             <index>true</index>
@@ -375,7 +381,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -421,7 +427,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.1.1</version>
                     <configuration>
                         <additionalparam>-Xdoclint:none</additionalparam>
                         <encoding>UTF-8</encoding>
@@ -429,7 +435,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.1</version>
+                    <version>2.22.2</version>
                     <configuration>
                         <argLine>@{argLine} -Djava.library.path=${project.build.directory}</argLine>
                         <systemPropertiesFile>${env.HOME}/test.properties</systemPropertiesFile>
@@ -442,7 +448,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>2.22.1</version>
+                    <version>2.22.2</version>
                     <configuration>
                         <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
                         <encoding>UTF-8</encoding>
@@ -527,7 +533,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.1.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
@@ -536,7 +542,7 @@
                 <plugin>
                     <groupId>io.swagger</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>2.4.5</version>
+                    <version>2.4.8</version>
                 </plugin>
             </plugins>
         </pluginManagement>

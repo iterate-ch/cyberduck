@@ -15,14 +15,44 @@ package ch.cyberduck.core.brick;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.HostUrlProvider;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.URIEncoder;
+import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.dav.DAVClient;
+import ch.cyberduck.core.dav.DAVRedirectStrategy;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.dav.DAVUploadFeature;
-import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.PreferencesRedirectCallback;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+import ch.cyberduck.core.threading.CancelCallback;
+
+import org.apache.http.impl.client.HttpClientBuilder;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.concurrent.CountDownLatch;
+
+import com.google.common.util.concurrent.Uninterruptibles;
+import com.google.gson.JsonParseException;
 
 public class BrickSession extends DAVSession {
 
@@ -35,16 +65,83 @@ public class BrickSession extends DAVSession {
     }
 
     @Override
+    public DAVClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
+        final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        configuration.setRedirectStrategy(new DAVRedirectStrategy(new PreferencesRedirectCallback()));
+        configuration.setServiceUnavailableRetryStrategy(new BrickPairingInterceptor(this, prompt));
+        return new DAVClient(new HostUrlProvider().withUsername(false).get(host), configuration);
+    }
+
+    @Override
+    public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        try {
+            final Credentials credentials = host.getCredentials();
+            if(!credentials.isPasswordAuthentication()) {
+                // No prompt on explicit connect
+                this.pair(host, new DisabledConnectionCallback(), cancel);
+            }
+        }
+        catch(JsonParseException e) {
+            throw new DefaultIOExceptionMappingService().map(new IOException(e.getMessage(), e));
+        }
+        super.login(proxy, prompt, cancel);
+    }
+
+    public Credentials pair(final Host bookmark, final ConnectionCallback prompt, final CancelCallback cancel) throws BackgroundException {
+        final String token = new BrickCredentialsConfigurator().configure(host).getToken();
+        final BrickPairingSchedulerFeature scheduler = new BrickPairingSchedulerFeature(this, token, bookmark, cancel);
+        // Operate in background until canceled
+        final ConnectionCallback lock = new DisabledConnectionCallback() {
+            final CountDownLatch lock = new CountDownLatch(1);
+
+            @Override
+            public void close(final String input) {
+                prompt.close(input);
+                lock.countDown();
+            }
+
+            @Override
+            public void warn(final Host bookmark, final String title, final String message,
+                             final String defaultButton, final String cancelButton, final String preference) throws ConnectionCanceledException {
+                prompt.warn(bookmark, title, message, defaultButton, cancelButton, preference);
+                try {
+                    if(!BrowserLauncherFactory.get().open(
+                        String.format("https://app.files.com/login_from_desktop?pairing_key=%s&platform=%s&computer=%s", token,
+                            URIEncoder.encode(new PreferencesUseragentProvider().get()), URIEncoder.encode(InetAddress.getLocalHost().getHostName()))
+                    )) {
+                        throw new LoginCanceledException();
+                    }
+                }
+                catch(UnknownHostException e) {
+                    throw new ConnectionCanceledException(e);
+                }
+                Uninterruptibles.awaitUninterruptibly(lock);
+            }
+        };
+        scheduler.repeat(lock);
+        // Await reply
+        lock.warn(bookmark, String.format("%s %s", LocaleFactory.localizedString("Login", "Login"), bookmark.getHostname()),
+            LocaleFactory.localizedString("The desktop application session has expired or been revoked.", "Brick"),
+            LocaleFactory.localizedString("Open in Web Browser"), LocaleFactory.localizedString("Cancel"), null);
+        // Not canceled
+        scheduler.shutdown();
+        return bookmark.getCredentials();
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        if(type == Copy.class) {
-            return (T) new BrickCopyFeature(this);
-        }
         if(type == Write.class) {
             return (T) new BrickWriteFeature(this);
         }
         if(type == Upload.class) {
             return (T) new DAVUploadFeature(new BrickWriteFeature(this));
+        }
+        if(type == Timestamp.class) {
+            return (T) new BrickTimestampFeature(this);
+        }
+        if(type == UrlProvider.class) {
+            return (T) new BrickUrlProvider(host);
         }
         return super._getFeature(type);
     }

@@ -1,19 +1,6 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.AbstractController;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TestLoginConnectionService;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.pool.StatelessSessionPool;
@@ -54,7 +41,7 @@ public class SessionListWorkerTest {
     @Test
     public void testCacheNotFoundWithController() throws Exception {
         final Host host = new Host(new TestProtocol(), "localhost");
-        final Session<?> session = new NullSession(host);
+        final Session<?> session = new NullTransferSession(host);
         final PathCache cache = new PathCache(1);
         final SessionListWorker worker = new SessionListWorker(cache,
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
@@ -69,7 +56,6 @@ public class SessionListWorkerTest {
                 new TestLoginConnectionService(), session, PathCache.empty(),
                 new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
         assertTrue(task.get().isEmpty());
-        assertTrue(cache.containsKey(new Path("/home/notfound", EnumSet.of(Path.Type.directory))));
     }
 
     @Test

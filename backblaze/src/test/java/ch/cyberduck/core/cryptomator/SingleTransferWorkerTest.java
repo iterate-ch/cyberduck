@@ -100,9 +100,9 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         assertTrue(new CryptoFindFeature(session, new B2FindFeature(session, fileid), cryptomator).find(dir1));
         assertEquals(content.length, new CryptoAttributesFeature(session, new B2AttributesFinderFeature(session, fileid), cryptomator).find(file1).getSize());

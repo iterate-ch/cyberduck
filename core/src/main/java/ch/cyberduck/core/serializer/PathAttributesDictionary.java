@@ -53,6 +53,10 @@ public class PathAttributesDictionary {
         if(revisionObj != null) {
             attributes.setRevision(Long.parseLong(revisionObj));
         }
+        final String etagObj = dict.stringForKey("ETag");
+        if(etagObj != null) {
+            attributes.setETag(dict.stringForKey("ETag"));
+        }
         final Object permissionObj = dict.objectForKey("Permission");
         if(permissionObj != null) {
             attributes.setPermission(new PermissionDictionary().deserialize(permissionObj));
@@ -67,6 +71,7 @@ public class PathAttributesDictionary {
         }
         attributes.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));
         attributes.setVersionId(dict.stringForKey("Version"));
+        attributes.setLockId(dict.stringForKey("Lock Id"));
         final String duplicateObj = dict.stringForKey("Duplicate");
         if(duplicateObj != null) {
             attributes.setDuplicate(Boolean.valueOf(duplicateObj));

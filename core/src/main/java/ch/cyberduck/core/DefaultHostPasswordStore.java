@@ -165,18 +165,6 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             return;
         }
         final Credentials credentials = bookmark.getCredentials();
-        if(!credentials.isSaved()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skip writing credentials for bookmark %s", bookmark.getHostname()));
-            }
-            return;
-        }
-        if(credentials.isAnonymousLogin()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Do not write anonymous credentials for bookmark %s", bookmark.getHostname()));
-            }
-            return;
-        }
         if(log.isInfoEnabled()) {
             log.info(String.format("Add password for bookmark %s", bookmark));
         }

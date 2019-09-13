@@ -5,6 +5,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.TestProtocol;
@@ -25,7 +26,7 @@ public class SkipFilterTest {
 
     @Test
     public void testAccept() throws Exception {
-        SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
+        SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(Class<T> type) {

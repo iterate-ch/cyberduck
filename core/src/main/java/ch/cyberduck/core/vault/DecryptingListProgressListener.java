@@ -47,7 +47,7 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
             list.set(index, vault.decrypt(session, f));
         }
         catch(BackgroundException e) {
-            log.error(String.format("Failure decrypting %s. %s", f, e.getDetail()));
+            log.error(String.format("Failure decrypting %s. %s", f, e));
             list.remove(index);
         }
     }

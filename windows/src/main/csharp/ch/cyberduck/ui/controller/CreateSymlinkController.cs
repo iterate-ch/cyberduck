@@ -25,7 +25,7 @@ using ch.cyberduck.core.features;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.worker;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -38,9 +38,9 @@ namespace Ch.Cyberduck.Ui.Controller
             view.LinkForFile = browserController.SelectedPath.getName();
         }
 
-        public override Bitmap IconView
+        public override Image IconView
         {
-            get { return IconCache.Instance.OverlayIcon("_unknown", "aliasbadge", IconCache.IconSize.Large); }
+            get { return IconCache.OverlayFilenameIcon("_unknown", "aliasbadge", IconCache.IconSize.Large); }
         }
 
         public override void Callback(DialogResult result)

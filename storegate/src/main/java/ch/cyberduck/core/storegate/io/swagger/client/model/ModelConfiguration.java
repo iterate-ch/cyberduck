@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-05-17T13:54:33.279+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
 public class ModelConfiguration {
   @JsonProperty("hasMulti")
   private Boolean hasMulti = null;
@@ -158,6 +158,9 @@ public class ModelConfiguration {
 
   @JsonProperty("hasShareBankIDAuth")
   private Boolean hasShareBankIDAuth = null;
+
+  @JsonProperty("hasShareOfficeOnline")
+  private Boolean hasShareOfficeOnline = null;
 
   public ModelConfiguration hasMulti(Boolean hasMulti) {
     this.hasMulti = hasMulti;
@@ -681,6 +684,24 @@ public class ModelConfiguration {
     this.hasShareBankIDAuth = hasShareBankIDAuth;
   }
 
+  public ModelConfiguration hasShareOfficeOnline(Boolean hasShareOfficeOnline) {
+    this.hasShareOfficeOnline = hasShareOfficeOnline;
+    return this;
+  }
+
+   /**
+   * Is Office Online (WOPI) enabled on shares
+   * @return hasShareOfficeOnline
+  **/
+  @ApiModelProperty(value = "Is Office Online (WOPI) enabled on shares")
+  public Boolean isHasShareOfficeOnline() {
+    return hasShareOfficeOnline;
+  }
+
+  public void setHasShareOfficeOnline(Boolean hasShareOfficeOnline) {
+    this.hasShareOfficeOnline = hasShareOfficeOnline;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -719,12 +740,13 @@ public class ModelConfiguration {
         Objects.equals(this.hasVersioning, _configuration.hasVersioning) &&
         Objects.equals(this.hasWebDav, _configuration.hasWebDav) &&
         Objects.equals(this.hasWebDavPasswords, _configuration.hasWebDavPasswords) &&
-        Objects.equals(this.hasShareBankIDAuth, _configuration.hasShareBankIDAuth);
+        Objects.equals(this.hasShareBankIDAuth, _configuration.hasShareBankIDAuth) &&
+        Objects.equals(this.hasShareOfficeOnline, _configuration.hasShareOfficeOnline);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(hasMulti, hasCommon, hasPermissions, hasExtendedPermissions, hasTeamSync, hasGroups, hasQuota, hasInspection, hasBackup, hasUnlimitedBackup, hasKlsBackup, hasMedia, hasSync, hasAutostore, hasOfficeOnline, hasRecycleBin, showHiddenFiles, showUsername, startPage, locale, theme, hideSplash, userAccountMode, allowShare, hasEvents, hasVersioning, hasWebDav, hasWebDavPasswords, hasShareBankIDAuth);
+    return Objects.hash(hasMulti, hasCommon, hasPermissions, hasExtendedPermissions, hasTeamSync, hasGroups, hasQuota, hasInspection, hasBackup, hasUnlimitedBackup, hasKlsBackup, hasMedia, hasSync, hasAutostore, hasOfficeOnline, hasRecycleBin, showHiddenFiles, showUsername, startPage, locale, theme, hideSplash, userAccountMode, allowShare, hasEvents, hasVersioning, hasWebDav, hasWebDavPasswords, hasShareBankIDAuth, hasShareOfficeOnline);
   }
 
 
@@ -762,6 +784,7 @@ public class ModelConfiguration {
     sb.append("    hasWebDav: ").append(toIndentedString(hasWebDav)).append("\n");
     sb.append("    hasWebDavPasswords: ").append(toIndentedString(hasWebDavPasswords)).append("\n");
     sb.append("    hasShareBankIDAuth: ").append(toIndentedString(hasShareBankIDAuth)).append("\n");
+    sb.append("    hasShareOfficeOnline: ").append(toIndentedString(hasShareOfficeOnline)).append("\n");
     sb.append("}");
     return sb.toString();
   }

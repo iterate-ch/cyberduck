@@ -15,51 +15,82 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.logging.LoggingConfiguration;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.s3.S3ExceptionMappingService;
-import ch.cyberduck.core.s3.S3LoggingFeature;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jets3t.service.ServiceException;
-import org.jets3t.service.acl.AccessControlList;
-import org.jets3t.service.acl.Permission;
-import org.jets3t.service.acl.gs.GroupByEmailAddressGrantee;
-import org.jets3t.service.model.GSBucketLoggingStatus;
+import org.apache.log4j.Logger;
 
-public class GoogleStorageLoggingFeature extends S3LoggingFeature implements DistributionLogging {
+import java.io.IOException;
+import java.util.EnumSet;
+
+import com.google.api.services.storage.model.Bucket;
+
+public class GoogleStorageLoggingFeature implements Logging, DistributionLogging {
+    private static final Logger log = Logger.getLogger(GoogleStorageLoggingFeature.class);
+
+    private final PathContainerService containerService
+        = new GoogleStoragePathContainerService();
 
     final GoogleStorageSession session;
 
     public GoogleStorageLoggingFeature(final GoogleStorageSession session) {
-        super(session);
         this.session = session;
+    }
+
+    @Override
+    public LoggingConfiguration getConfiguration(final Path file) throws BackgroundException {
+        final Path bucket = containerService.getContainer(file);
+        if(bucket.isRoot()) {
+            return LoggingConfiguration.empty();
+        }
+        try {
+            final Bucket.Logging status = session.getClient().buckets().get(bucket.getName()).execute().getLogging();
+            if(null == status) {
+                return LoggingConfiguration.empty();
+            }
+            final LoggingConfiguration configuration = new LoggingConfiguration(
+                status.getLogObjectPrefix() != null, status.getLogBucket());
+            try {
+                configuration.setContainers(new GoogleStorageBucketListService(session).list(
+                    new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
+                    new DisabledListProgressListener()).toList());
+            }
+            catch(AccessDeniedException | InteroperabilityException e) {
+                log.warn(String.format("Failure listing buckets. %s", e.getMessage()));
+            }
+            return configuration;
+        }
+        catch(IOException e) {
+            try {
+                throw new GoogleStorageExceptionMappingService().map("Failure to read attributes of {0}", e, bucket);
+            }
+            catch(AccessDeniedException | InteroperabilityException l) {
+                log.warn(String.format("Missing permission to read logging configuration for %s %s", bucket.getName(), e.getMessage()));
+                return LoggingConfiguration.empty();
+            }
+        }
     }
 
     @Override
     public void setConfiguration(final Path container, final LoggingConfiguration configuration) throws BackgroundException {
         try {
-            // Logging target bucket
-            final GSBucketLoggingStatus status = new GSBucketLoggingStatus(
-                    StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName(), null);
-            if(configuration.isEnabled()) {
-                status.setLogfilePrefix(PreferencesFactory.get().getProperty("google.logging.prefix"));
-            }
-            // Grant write for Google to logging target bucket
-            final AccessControlList acl = session.getClient().getBucketAcl(container.getName());
-            final GroupByEmailAddressGrantee grantee = new GroupByEmailAddressGrantee(
-                    "cloud-storage-analytics@google.com");
-            if(!acl.getPermissionsForGrantee(grantee).contains(Permission.PERMISSION_WRITE)) {
-                acl.grantPermission(grantee, Permission.PERMISSION_WRITE);
-                session.getClient().putBucketAcl(container.getName(), acl);
-            }
-            session.getClient().setBucketLoggingStatusImpl(container.getName(), status);
+            session.getClient().buckets().patch(container.getName(),
+                new Bucket().setLogging(new Bucket.Logging()
+                    .setLogObjectPrefix(configuration.isEnabled() ? PreferencesFactory.get().getProperty("google.logging.prefix") : null)
+                    .setLogBucket(StringUtils.isNotBlank(configuration.getLoggingTarget()) ? configuration.getLoggingTarget() : container.getName()))
+            ).execute();
         }
-        catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Failure to write attributes of {0}", e);
+        catch(IOException e) {
+            throw new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
     }
 }

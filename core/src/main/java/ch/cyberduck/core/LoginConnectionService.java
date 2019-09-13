@@ -93,10 +93,17 @@ public class LoginConnectionService implements ConnectionService {
         }
         // Obtain password from keychain or prompt
         synchronized(login) {
-            login.validate(bookmark,
-                MessageFormat.format(LocaleFactory.localizedString(
-                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)),
-                prompt, new LoginOptions(bookmark.getProtocol()));
+            final LoginOptions options = new LoginOptions(bookmark.getProtocol());
+            final StringAppender message = new StringAppender();
+            if(options.password) {
+                message.append(MessageFormat.format(LocaleFactory.localizedString(
+                    "Login {0} with username and password", "Credentials"), BookmarkNameProvider.toString(bookmark)));
+            }
+            if(options.publickey) {
+                message.append(LocaleFactory.localizedString(
+                    "Select the private key in PEM or PuTTY format", "Credentials"));
+            }
+            login.validate(bookmark, message.toString(), prompt, options);
         }
         this.connect(session, cache, callback);
         return true;

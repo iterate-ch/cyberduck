@@ -20,6 +20,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.TransferAcceleration;
@@ -93,7 +94,7 @@ public class S3BulkTransferAccelerationFeature implements Bulk<Void> {
                         log.warn(String.format("Transfer acceleration disabled for %s", bucket));
                     }
                 }
-                catch(AccessDeniedException e) {
+                catch(InteroperabilityException | AccessDeniedException e) {
                     log.warn(String.format("Ignore failure reading S3 accelerate configuration. %s", e.getMessage()));
                 }
             }

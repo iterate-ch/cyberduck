@@ -113,12 +113,12 @@ public class DownloadTransferTest {
         final Host host = new Host(new TestProtocol(), "update.cyberduck.io", new Credentials(
             PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
-        final Session<?> session = new NullSession(host);
+        final Session<?> session = new NullTransferSession(host);
         final Path test = new Path("/Cyberduck-4.6.zip", EnumSet.of(Path.Type.file));
         final Transfer transfer = new DownloadTransfer(new Host(new TestProtocol()), test, new NullLocal(UUID.randomUUID().toString(), "transfer"));
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
             new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService());
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(test, new NullLocal(System.getProperty("java.io.tmpdir"), "c"), new TransferStatus().exists(true),
             TransferAction.overwrite
         );
@@ -149,7 +149,7 @@ public class DownloadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService());
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(test, testLocal, new TransferStatus().exists(true),
             TransferAction.overwrite
         );
@@ -167,7 +167,7 @@ public class DownloadTransferTest {
     @Test
     public void testPrepareDownloadResumeFilter() throws Exception {
         final Host host = new Host(new TestProtocol());
-        final Session<?> session = new NullSession(host);
+        final Session<?> session = new NullTransferSession(host);
         final Path test = new Path("/transfer/test", EnumSet.of(Path.Type.file));
         test.attributes().setSize(5L);
         final Local local = new Local(System.getProperty("java.io.tmpdir") + "/transfer/" + UUID.randomUUID().toString());
@@ -179,7 +179,7 @@ public class DownloadTransferTest {
             @Override
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> d, final TransferAction action, final ProgressListener listener) {
                 return new ResumeFilter(new DownloadSymlinkResolver(Collections.singletonList(new TransferItem(test))),
-                    new NullSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DefaultDownloadFeature(source.getFeature(Read.class)) {
+                    new NullTransferSession(new Host(new TestProtocol())), new DownloadFilterOptions(), new DefaultDownloadFeature(source.getFeature(Read.class)) {
                     @Override
                     public boolean offset(final Path file) {
                         return true;
@@ -195,7 +195,7 @@ public class DownloadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService());
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(test, local, new TransferStatus().exists(true), TransferAction.resume);
         final TransferStatus status = new TransferStatus();
         status.setExists(true);

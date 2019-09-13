@@ -110,13 +110,18 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                     meta.setId(StringUtils.EMPTY);
                     meta.setAttributes(0);
                     meta.setFlags(FileMetadata.FlagsEnum.NUMBER_0);
+                    if(status.getLockId() != null) {
+                        request.addHeader("X-Lock-Id", status.getLockId().toString());
+                    }
                     meta.setFileName(file.getName());
                     meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
                     meta.setFileSize(status.getLength());
-                    meta.setCreated(new DateTime(file.attributes().getCreationDate()));
-                    meta.setModified(new DateTime(file.attributes().getModificationDate()));
+                    meta.setCreated(DateTime.now());
+                    if(null != status.getTimestamp()) {
+                        meta.setModified(new DateTime(status.getTimestamp()));
+                    }
                     request.setEntity(new StringEntity(new JSON().getContext(meta.getClass()).writeValueAsString(meta),
-                        ContentType.create("application/json", "UTF-8")));
+                        ContentType.create("application/json", StandardCharsets.UTF_8.name())));
                     request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                     final HttpResponse response = client.getClient().execute(request);
                     try {
@@ -153,7 +158,9 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                                 case HttpStatus.SC_CREATED:
                                     final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8),
                                         FileMetadata.class);
-                                    return new VersionId(result.getId());
+                                    final VersionId version = new VersionId(result.getId());
+                                    status.setVersion(version);
+                                    return version;
                                 default:
                                     throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                                         EntityUtils.toString(response.getEntity())));

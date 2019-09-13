@@ -98,7 +98,7 @@ public class DownloadController extends AlertController {
                     break;
                 }
                 catch(HostParserException e) {
-                    log.warn(e.getDetail());
+                    log.warn(e);
                 }
         }
     }

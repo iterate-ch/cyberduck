@@ -109,7 +109,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e.getDetail()));
+                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
             }
             final List<MultipartPart> completed = new ArrayList<MultipartPart>();
             // Not found or new upload
@@ -240,7 +240,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new DefaultRetryCallable<MultipartPart>(new BackgroundExceptionCallable<MultipartPart>() {
+        return pool.execute(new DefaultRetryCallable<MultipartPart>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
                 if(overall.isCanceled()) {

@@ -85,8 +85,8 @@ public class Profile implements Protocol, Serializable {
     }
 
     @Override
-    public boolean isStateful() {
-        return parent.isStateful();
+    public Statefulness getStatefulness() {
+        return parent.getStatefulness();
     }
 
     @Override
@@ -273,6 +273,16 @@ public class Profile implements Protocol, Serializable {
     @Override
     public HostnameConfigurator getHostnameFinder() {
         return parent.getHostnameFinder();
+    }
+
+    @Override
+    public Case getCaseSensitivity() {
+        return parent.getCaseSensitivity();
+    }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return parent.getDirectoryTimestamp();
     }
 
     @Override
@@ -464,6 +474,11 @@ public class Profile implements Protocol, Serializable {
             return parent.getOAuthClientSecret();
         }
         return v;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        return parent.getFeature(type);
     }
 
     @Override

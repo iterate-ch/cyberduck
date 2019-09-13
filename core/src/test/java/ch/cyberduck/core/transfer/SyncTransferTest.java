@@ -27,6 +27,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
@@ -115,7 +116,7 @@ public class SyncTransferTest {
     public void testFilterMirror() throws Exception {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
         SyncTransfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
-        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final NullSession session = new NullTransferSession(new Host(new TestProtocol()));
         final TransferPathFilter filter = t.filter(session, null, TransferAction.mirror, new DisabledProgressListener());
         assertTrue(filter.accept(new Path(p, "a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
                     @Override

@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 
 public abstract class AbstractHostCollection extends Collection<Host> implements EditableCollection {
     private static final long serialVersionUID = -255801158019850767L;
@@ -132,7 +131,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
             @Override
             public int compare(Host o1, Host o2) {
                 return comparator.compare(
-                        BookmarkNameProvider.toString(o1), BookmarkNameProvider.toString(o2)
+                    BookmarkNameProvider.toString(o1), BookmarkNameProvider.toString(o2)
                 );
             }
         });
@@ -173,12 +172,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
      * @return Null if not found
      */
     public Host lookup(final String uuid) {
-        for(Host bookmark : this) {
-            if(bookmark.getUuid().equals(uuid)) {
-                return bookmark;
-            }
-        }
-        return null;
+        return this.stream().filter(h -> h.getUuid().equals(uuid)).findFirst().orElse(null);
     }
 
     /**
@@ -226,14 +220,6 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
      * @param bookmark Bookmark to find that matches comparison
      */
     public boolean find(final Host bookmark) {
-        return this.stream().anyMatch(new Predicate<Host>() {
-            @Override
-            public boolean test(final Host h) {
-                if(h.compareTo(bookmark) == 0) {
-                    return true;
-                }
-                return false;
-            }
-        });
+        return this.stream().anyMatch(h -> h.compareTo(bookmark) == 0);
     }
 }
