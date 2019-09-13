@@ -152,7 +152,10 @@ namespace Ch.Cyberduck.Ui.Core.Resources
                     image = _ResizeImage(temp, size);
                 }
             }
-
+            if (image.HorizontalResolution != 96 && image is Bitmap rescaleImage)
+            {
+                rescaleImage.SetResolution(96, 96);
+            }
             imageCache.Add(key, image);
             return image;
         }
