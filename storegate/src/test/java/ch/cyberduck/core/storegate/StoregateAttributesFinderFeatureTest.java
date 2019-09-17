@@ -30,7 +30,6 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -48,7 +47,7 @@ public class StoregateAttributesFinderFeatureTest extends AbstractStoregateTest 
         assertNotEquals(0L, attr.getModificationDate());
         assertEquals(Checksum.NONE, attr.getChecksum());
         assertNull(attr.getETag());
-        assertNotNull(attr.getVersionId());
+        assertNull(attr.getVersionId());
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
