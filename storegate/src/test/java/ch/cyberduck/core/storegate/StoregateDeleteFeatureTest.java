@@ -46,7 +46,6 @@ public class StoregateDeleteFeatureTest extends AbstractStoregateTest {
         assertTrue(new DefaultFindFeature(session).find(fileInRoom));
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(fileInRoom), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new DefaultFindFeature(session).find(fileInRoom));
-        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
