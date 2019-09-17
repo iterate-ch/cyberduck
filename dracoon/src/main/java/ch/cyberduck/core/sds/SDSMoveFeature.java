@@ -62,28 +62,28 @@ public class SDSMoveFeature implements Move {
             if(!new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
                 // Change parent node
                 new NodesApi(session.getClient()).moveNodes(
+                    new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.AUTORENAME).addNodeIdsItem(nodeId),
                     Long.parseLong(nodeid.getFileid(renamed.getParent(), new DisabledListProgressListener())),
-                    new MoveNodesRequest().resolutionStrategy(MoveNodesRequest.ResolutionStrategyEnum.AUTORENAME).addNodeIdsItem(
-                        nodeId), StringUtils.EMPTY, null);
+                    StringUtils.EMPTY, null);
             }
             if(!StringUtils.equals(file.getName(), renamed.getName())) {
                 if(containerService.isContainer(file)) {
                     return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new SDSAttributesFinderFeature(session, nodeid).toAttributes(
-                        new NodesApi(session.getClient()).updateRoom(nodeId,
-                            new UpdateRoomRequest().name(renamed.getName()), StringUtils.EMPTY, null)
+                        new NodesApi(session.getClient()).updateRoom(
+                            new UpdateRoomRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null)
                     ));
                 }
                 // Rename
                 else if(file.isDirectory()) {
                     return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new SDSAttributesFinderFeature(session, nodeid).toAttributes(
-                        new NodesApi(session.getClient()).updateFolder(nodeId,
-                            new UpdateFolderRequest().name(renamed.getName()), StringUtils.EMPTY, null)
+                        new NodesApi(session.getClient()).updateFolder(
+                            new UpdateFolderRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null)
                     ));
                 }
                 else {
                     return new Path(renamed.getParent(), renamed.getName(), renamed.getType(), new SDSAttributesFinderFeature(session, nodeid).toAttributes(
-                        new NodesApi(session.getClient()).updateFile(nodeId,
-                            new UpdateFileRequest().name(renamed.getName()), StringUtils.EMPTY, null)
+                        new NodesApi(session.getClient()).updateFile(
+                            new UpdateFileRequest().name(renamed.getName()), nodeId, StringUtils.EMPTY, null)
                     ));
                 }
             }

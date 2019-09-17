@@ -204,7 +204,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
-            final UserAccount account = new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null);
+            final UserAccount account = new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
@@ -271,7 +271,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
-                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(false, StringUtils.EMPTY, null)));
+                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false)));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user info. %s", e.getMessage()));

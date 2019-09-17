@@ -13,24 +13,23 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
+import org.joda.time.DateTime;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Arrays;
-import ch.cyberduck.core.storegate.io.swagger.client.model.BankIDContact;
-import ch.cyberduck.core.storegate.io.swagger.client.model.MediaFolder;
-import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
-import org.joda.time.DateTime;
 
 /**
  * A enhanced shared mediaFolder
  */
 @ApiModel(description = "A enhanced shared mediaFolder")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
 public class MediaShare {
   @JsonProperty("url")
   private String url = null;
@@ -280,7 +279,7 @@ public class MediaShare {
 
   public MediaShare addSentToEmailsItem(String sentToEmailsItem) {
     if (this.sentToEmails == null) {
-      this.sentToEmails = new ArrayList<String>();
+        this.sentToEmails = new ArrayList<>();
     }
     this.sentToEmails.add(sentToEmailsItem);
     return this;
@@ -360,7 +359,7 @@ public class MediaShare {
 
   public MediaShare addUploadNotificationEmailsItem(String uploadNotificationEmailsItem) {
     if (this.uploadNotificationEmails == null) {
-      this.uploadNotificationEmails = new ArrayList<String>();
+        this.uploadNotificationEmails = new ArrayList<>();
     }
     this.uploadNotificationEmails.add(uploadNotificationEmailsItem);
     return this;
@@ -440,7 +439,7 @@ public class MediaShare {
 
   public MediaShare addBankIDContactsItem(BankIDContact bankIDContactsItem) {
     if (this.bankIDContacts == null) {
-      this.bankIDContacts = new ArrayList<BankIDContact>();
+        this.bankIDContacts = new ArrayList<>();
     }
     this.bankIDContacts.add(bankIDContactsItem);
     return this;

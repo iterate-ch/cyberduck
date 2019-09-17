@@ -13,23 +13,21 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
+import org.joda.time.DateTime;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.joda.time.DateTime;
 
 /**
  * Eventitem
  */
 @ApiModel(description = "Eventitem")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
 public class EventItem {
   @JsonProperty("id")
   private String id = null;
@@ -167,7 +165,7 @@ public class EventItem {
 
   public EventItem putDataItem(String key, String dataItem) {
     if (this.data == null) {
-      this.data = new HashMap<String, String>();
+        this.data = new HashMap<>();
     }
     this.data.put(key, dataItem);
     return this;

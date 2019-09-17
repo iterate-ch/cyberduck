@@ -80,8 +80,8 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             final Long fileId = file != null ? Long.parseLong(node.getFileid(file, new DisabledListProgressListener())) : null;
             UserFileKeySetBatchRequest request;
             do {
-                final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).missingFileKeys(
-                    null, null, null, fileId, null, StringUtils.EMPTY);
+                final MissingKeysResponse missingKeys = new NodesApi(session.getClient()).missingFileKeys(StringUtils.EMPTY,
+                    fileId, null, null, null, null);
                 final Map<Long, UserUserPublicKey> publicKeys =
                     missingKeys.getUsers().stream().collect(Collectors.toMap(UserUserPublicKey::getId, Function.identity()));
                 final Map<Long, FileFileKeys> files =

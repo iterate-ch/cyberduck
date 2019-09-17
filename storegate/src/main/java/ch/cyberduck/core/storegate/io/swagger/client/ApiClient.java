@@ -1,5 +1,20 @@
 package ch.cyberduck.core.storegate.io.swagger.client;
 
+import ch.cyberduck.core.storegate.io.swagger.client.auth.ApiKeyAuth;
+import ch.cyberduck.core.storegate.io.swagger.client.auth.Authentication;
+import ch.cyberduck.core.storegate.io.swagger.client.auth.HttpBasicAuth;
+import ch.cyberduck.core.storegate.io.swagger.client.auth.OAuth;
+
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.logging.LoggingFeature;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.MultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -10,47 +25,26 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.client.HttpUrlConnectorProvider;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.MultiPart;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
-
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import org.glassfish.jersey.logging.LoggingFeature;
+import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.TimeZone;
-
-import java.net.URLEncoder;
-
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-
-import java.text.DateFormat;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ch.cyberduck.core.storegate.io.swagger.client.auth.Authentication;
-import ch.cyberduck.core.storegate.io.swagger.client.auth.HttpBasicAuth;
-import ch.cyberduck.core.storegate.io.swagger.client.auth.ApiKeyAuth;
-import ch.cyberduck.core.storegate.io.swagger.client.auth.OAuth;
-
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
 public class ApiClient {
   protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
   protected String basePath = "https://ws1-stage.storegate.se:443/api";

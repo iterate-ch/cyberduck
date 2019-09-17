@@ -75,10 +75,9 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <argLine />
+        <argLine/>
         <jna-version>5.3.1</jna-version>
-        <swagger-annotations-version>1.5.22</swagger-annotations-version>
-        <jersey-version>2.25.1</jersey-version>
+        <jersey-version>2.29.1</jersey-version>
     </properties>
 
     <dependencyManagement>
@@ -284,6 +283,11 @@
                 <version>${jersey-version}</version>
             </dependency>
             <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>${jersey-version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.oauth-client</groupId>
                 <artifactId>google-oauth-client</artifactId>
                 <version>1.30.2</version>
@@ -410,12 +414,12 @@
                             </goals>
                             <configuration>
                                 <tasks>
-                                    <property name="home" value="${main.basedir}" />
-                                    <property name="version" value="${project.version}" />
-                                    <property name="revision" value="${git.commitsCount}" />
-                                    <property name="git.revision" value="${git.revision}" />
-                                    <property name="sparkle.feed" value="${sparkle.feed}" />
-                                    <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
+                                    <property name="home" value="${main.basedir}"/>
+                                    <property name="version" value="${project.version}"/>
+                                    <property name="revision" value="${git.commitsCount}"/>
+                                    <property name="git.revision" value="${git.revision}"/>
+                                    <property name="sparkle.feed" value="${sparkle.feed}"/>
+                                    <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
                                 </tasks>
                             </configuration>
                         </execution>

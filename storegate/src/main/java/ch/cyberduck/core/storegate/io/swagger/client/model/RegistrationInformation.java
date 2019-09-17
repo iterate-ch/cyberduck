@@ -13,26 +13,19 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import ch.cyberduck.core.storegate.io.swagger.client.model.Country;
-import ch.cyberduck.core.storegate.io.swagger.client.model.PaymentMethod;
-import ch.cyberduck.core.storegate.io.swagger.client.model.PaymentPeriod;
-import ch.cyberduck.core.storegate.io.swagger.client.model.UpgradeSalepackage;
-import ch.cyberduck.core.storegate.io.swagger.client.model.UserData;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
 public class RegistrationInformation {
   @JsonProperty("salepackage")
   private UpgradeSalepackage salepackage = null;
@@ -176,7 +169,7 @@ public class RegistrationInformation {
 
   public RegistrationInformation addCountriesItem(Country countriesItem) {
     if (this.countries == null) {
-      this.countries = new ArrayList<Country>();
+        this.countries = new ArrayList<>();
     }
     this.countries.add(countriesItem);
     return this;
@@ -202,7 +195,7 @@ public class RegistrationInformation {
 
   public RegistrationInformation addPaymentMethodsItem(PaymentMethod paymentMethodsItem) {
     if (this.paymentMethods == null) {
-      this.paymentMethods = new ArrayList<PaymentMethod>();
+        this.paymentMethods = new ArrayList<>();
     }
     this.paymentMethods.add(paymentMethodsItem);
     return this;
@@ -228,7 +221,7 @@ public class RegistrationInformation {
 
   public RegistrationInformation addPaymentPeriodsItem(PaymentPeriod paymentPeriodsItem) {
     if (this.paymentPeriods == null) {
-      this.paymentPeriods = new ArrayList<PaymentPeriod>();
+        this.paymentPeriods = new ArrayList<>();
     }
     this.paymentPeriods.add(paymentPeriodsItem);
     return this;

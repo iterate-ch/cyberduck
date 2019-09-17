@@ -1,13 +1,10 @@
 package ch.cyberduck.core.storegate.io.swagger.client.api;
 
-import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiClient;
+import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiResponse;
 import ch.cyberduck.core.storegate.io.swagger.client.Configuration;
 import ch.cyberduck.core.storegate.io.swagger.client.Pair;
-
-import javax.ws.rs.core.GenericType;
-
 import ch.cyberduck.core.storegate.io.swagger.client.model.CopyFileRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateFolderRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileContents;
@@ -16,12 +13,13 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.MoveFileRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.SearchFileContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateFilePropertiesRequest;
 
+import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
 public class FilesApi {
   private ApiClient apiClient;
 

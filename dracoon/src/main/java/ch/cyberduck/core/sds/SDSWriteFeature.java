@@ -180,7 +180,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
             );
             body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
         }
-        final Node upload = new NodesApi(client).completeFileUpload(uploadId, body, StringUtils.EMPTY, null);
+        final Node upload = new NodesApi(client).completeFileUpload(uploadId, StringUtils.EMPTY, null, body);
         return new VersionId(String.valueOf(upload.getId()));
     }
 

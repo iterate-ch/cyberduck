@@ -13,22 +13,19 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
 public class ContentList {
   @JsonProperty("locale")
   private String locale = null;
@@ -61,7 +58,7 @@ public class ContentList {
 
   public ContentList putContentsItem(String key, String contentsItem) {
     if (this.contents == null) {
-      this.contents = new HashMap<String, String>();
+        this.contents = new HashMap<>();
     }
     this.contents.put(key, contentsItem);
     return this;

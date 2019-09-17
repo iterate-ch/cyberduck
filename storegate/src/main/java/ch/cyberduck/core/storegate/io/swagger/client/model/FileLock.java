@@ -13,20 +13,19 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
+import org.joda.time.DateTime;
+
 import java.util.Objects;
-import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.joda.time.DateTime;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
 public class FileLock {
   @JsonProperty("fileId")
   private String fileId = null;
@@ -46,10 +45,10 @@ public class FileLock {
   }
 
    /**
-   * 
+    * The FileId
    * @return fileId
   **/
-  @ApiModelProperty(value = "")
+   @ApiModelProperty(value = "The FileId")
   public String getFileId() {
     return fileId;
   }
@@ -64,10 +63,10 @@ public class FileLock {
   }
 
    /**
-   * 
+    * The LockId, use in future requests
    * @return lockId
   **/
-  @ApiModelProperty(value = "")
+   @ApiModelProperty(value = "The LockId, use in future requests")
   public String getLockId() {
     return lockId;
   }
@@ -82,10 +81,10 @@ public class FileLock {
   }
 
    /**
-   * 
+    * The name of the user locking the item
    * @return owner
   **/
-  @ApiModelProperty(value = "")
+   @ApiModelProperty(value = "The name of the user locking the item")
   public String getOwner() {
     return owner;
   }
@@ -100,10 +99,10 @@ public class FileLock {
   }
 
    /**
-   * 
+    * The lock expire, between now and 1 year
    * @return expire
   **/
-  @ApiModelProperty(value = "")
+   @ApiModelProperty(value = "The lock expire, between now and 1 year")
   public DateTime getExpire() {
     return expire;
   }

@@ -13,22 +13,19 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import java.util.Objects;
-import java.util.Arrays;
-import ch.cyberduck.core.storegate.io.swagger.client.model.AccountStorage;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-07-04T12:02:08.868+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
 public class MultiAccountStorage {
   @JsonProperty("usedCommon")
   private Long usedCommon = null;
@@ -112,7 +109,7 @@ public class MultiAccountStorage {
 
   public MultiAccountStorage addUsersItem(AccountStorage usersItem) {
     if (this.users == null) {
-      this.users = new ArrayList<AccountStorage>();
+        this.users = new ArrayList<>();
     }
     this.users.add(usersItem);
     return this;
