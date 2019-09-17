@@ -66,7 +66,7 @@ public class NotificationCenter extends ProxyController implements NotificationS
     public void notify(final String group, final String identifier, final String title, final String description) {
         final NSUserNotification notification = NSUserNotification.notification();
         if(StringUtils.isNotBlank(identifier)) {
-            if(center.respondsToSelector(Foundation.selector("setIdentifier:"))) {
+            if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
                 notification.setIdentifier(identifier);
             }
             if(StringUtils.isNotBlank(FilenameUtils.getExtension(identifier))) {
@@ -83,7 +83,7 @@ public class NotificationCenter extends ProxyController implements NotificationS
     public void notify(final String group, final String identifier, final String title, final String description, final String action) {
         final NSUserNotification notification = NSUserNotification.notification();
         if(StringUtils.isNotBlank(identifier)) {
-            if(center.respondsToSelector(Foundation.selector("setIdentifier:"))) {
+            if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
                 notification.setIdentifier(identifier);
             }
             if(StringUtils.isNotBlank(FilenameUtils.getExtension(identifier))) {
