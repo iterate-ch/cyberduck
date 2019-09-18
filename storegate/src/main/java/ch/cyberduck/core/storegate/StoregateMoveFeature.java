@@ -53,7 +53,7 @@ public class StoregateMoveFeature implements Move {
         }
         // Copy original file attributes
         return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
-            new PathAttributes(renamed.attributes()).withVersionId(file.attributes().getVersionId()));
+            new PathAttributes(renamed.attributes()));
     }
 
     @Override

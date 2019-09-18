@@ -15,29 +15,21 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathRelativizer;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
-import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
-
-import org.apache.commons.lang3.StringUtils;
 
 public class StoregateIdProvider implements IdProvider {
 
     private final StoregateSession session;
-
-    private Cache<Path> cache = PathCache.empty();
 
     public StoregateIdProvider(final StoregateSession session) {
         this.session = session;
@@ -45,21 +37,8 @@ public class StoregateIdProvider implements IdProvider {
 
     @Override
     public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
-        if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
-            return file.attributes().getVersionId();
-        }
-        if(cache.isCached(file.getParent())) {
-            final AttributedList<Path> list = cache.get(file.getParent());
-            final Path found = list.find(new SimplePathPredicate(file));
-            if(null != found) {
-                if(StringUtils.isNotBlank(found.attributes().getVersionId())) {
-                    return this.set(file, found.attributes().getVersionId());
-                }
-            }
-        }
         try {
-            final File f = new FilesApi(session.getClient()).filesGet_1(URIEncoder.encode(this.getPrefixedPath(file)));
-            return this.set(file, f.getId());
+            return new FilesApi(session.getClient()).filesGet_1(URIEncoder.encode(this.getPrefixedPath(file))).getId();
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -73,7 +52,6 @@ public class StoregateIdProvider implements IdProvider {
 
     @Override
     public StoregateIdProvider withCache(final Cache<Path> cache) {
-        this.cache = cache;
         return this;
     }
 
