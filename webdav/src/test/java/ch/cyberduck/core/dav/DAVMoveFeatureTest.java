@@ -52,6 +52,19 @@ public class DAVMoveFeatureTest extends AbstractDAVTest {
     }
 
     @Test
+    public void testMoveWithLock() throws Exception {
+        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String lock = new DAVLockFeature(session).lock(test);
+        assertEquals(0L, test.attributes().getSize());
+        final Path target = new DAVMoveFeature(session).move(test,
+            new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus().withLockId(lock), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(session.getFeature(Find.class).find(test));
+        assertTrue(session.getFeature(Find.class).find(target));
+        assertEquals(test.attributes(), target.attributes());
+        new DAVDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testMoveDirectory() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         new DAVDirectoryFeature(session).mkdir(test, null, new TransferStatus());
