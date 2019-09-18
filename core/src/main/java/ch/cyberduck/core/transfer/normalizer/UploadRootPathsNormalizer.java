@@ -72,7 +72,7 @@ public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Trans
             // Prunes the list of selected files. Files which are a child of an already included directory
             // are removed from the returned list.
             if(!duplicate) {
-                normalized.add(new TransferItem(upload.remote, upload.local));
+                normalized.add(new TransferItem(upload.remote, upload.local, upload.lockId));
             }
         }
         return normalized;

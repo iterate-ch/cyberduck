@@ -72,7 +72,7 @@ public class DownloadRootPathsNormalizer implements RootPathsNormalizer<List<Tra
             // Prunes the list of selected files. Files which are a child of an already included directory
             // are removed from the returned list.
             if(!duplicate) {
-                normalized.add(new TransferItem(download.remote, download.local));
+                normalized.add(new TransferItem(download.remote, download.local, download.lockId));
             }
         }
         return normalized;

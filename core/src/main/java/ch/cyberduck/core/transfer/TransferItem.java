@@ -41,6 +41,12 @@ public class TransferItem implements Referenceable, Serializable {
         this.local = local;
     }
 
+    public TransferItem(final Path remote, final Local local, final String lockId) {
+        this.remote = remote;
+        this.local = local;
+        this.lockId = lockId;
+    }
+
     public TransferItem getParent() {
         return new TransferItem(remote.getParent(), null == local ? null : local.getParent());
     }
@@ -97,8 +103,9 @@ public class TransferItem implements Referenceable, Serializable {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("TransferItem{");
-        sb.append("local=").append(local);
-        sb.append(", remote=").append(remote);
+        sb.append("remote=").append(remote);
+        sb.append(", local=").append(local);
+        sb.append(", lockId='").append(lockId).append('\'');
         sb.append('}');
         return sb.toString();
     }
