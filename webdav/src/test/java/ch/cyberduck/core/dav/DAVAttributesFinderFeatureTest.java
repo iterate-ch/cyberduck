@@ -1,5 +1,6 @@
 package ch.cyberduck.core.dav;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -11,6 +12,8 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.joda.time.DateTime;
@@ -121,5 +124,16 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
         final PathAttributes attrs = f.toAttributes(mock);
         assertEquals(modified.getTime(), attrs.getModificationDate());
+    }
+
+    @Test
+    public void testFindLock() throws Exception {
+        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
+        assertNull(f.find(test).getLockId());
+        final String lockId = new DAVLockFeature(session).lock(test);
+        assertNotNull(f.find(test).getLockId());
+        new DAVLockFeature(session).unlock(test, lockId);
     }
 }
