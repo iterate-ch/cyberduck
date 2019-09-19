@@ -48,7 +48,7 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
             final Bulk<R> feature = registry.find(session, file.getKey().remote).getFeature(session, Bulk.class, proxy);
             return feature.pre(type, files, callback);
         }
-        return proxy.pre(type, files, callback);
+        return null;
     }
 
     @Override
