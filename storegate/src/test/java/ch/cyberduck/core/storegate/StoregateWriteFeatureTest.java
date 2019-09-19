@@ -115,6 +115,28 @@ public class StoregateWriteFeatureTest extends AbstractStoregateTest {
         new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
+    @Test
+    public void testWriteWithLockAlreadyReleased() throws Exception {
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final Path test = new StoregateTouchFeature(session, nodeid).touch(
+            new Path(room, String.format("%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
+        new StoregateLockFeature(session, nodeid).unlock(test, lockId);
+        final StoregateWriteFeature writer = new StoregateWriteFeature(session, nodeid);
+        status.setLockId(lockId);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
     @Test(expected = TransferCanceledException.class)
     public void testWriteCancel() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
