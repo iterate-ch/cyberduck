@@ -53,7 +53,6 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testAttributes() throws Exception {
-
         final PathCache cache = new PathCache(1);
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
         final String name = UUID.randomUUID().toString();

@@ -86,7 +86,6 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
 
     @Test
     public void testUpload() throws Exception {
-
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
