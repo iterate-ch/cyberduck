@@ -104,6 +104,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     }
                     else {
                         final TransferStatus status = new TransferStatus()
+                            .withLockId(this.getLockId(r.getKey()))
                             .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
                             .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
                             .length(r.getKey().attributes().getSize());
@@ -130,6 +131,10 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
         finally {
             target.release(destination, null);
         }
+    }
+
+    protected String getLockId(final Path file) {
+        return null;
     }
 
     protected Map<Path, Path> compile(final Move move, final ListService list, final Path source, final Path target) throws BackgroundException {
