@@ -84,7 +84,7 @@ public class StoregateMoveFeature implements Move {
             }
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map("Cannot rename {0}", e, file);
+            throw new DefaultIOExceptionMappingService().map(e);
         }
     }
 
