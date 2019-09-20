@@ -66,7 +66,7 @@ public class S3MoveFeature implements Move {
             // Delete marker, copy not supported but we have to retain the delete marker at the target
             copy = new Path(renamed);
             copy.attributes().setVersionId(null);
-            delete.delete(Collections.singletonList(copy), connectionCallback, callback);
+            delete.delete(Collections.singletonMap(copy, status), connectionCallback, callback);
             try {
                 // Find version id of moved delete marker
                 final VersionOrDeleteMarkersChunk marker = session.getClient().listVersionedObjectsChunked(containerService.getContainer(renamed).getName(), containerService.getKey(renamed),
@@ -74,7 +74,7 @@ public class S3MoveFeature implements Move {
                 if(marker.getItems().length == 1) {
                     final BaseVersionOrDeleteMarker markerObject = marker.getItems()[0];
                     copy.attributes().withVersionId(markerObject.getVersionId()).setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                    delete.delete(Collections.singletonList(source), connectionCallback, callback);
+                    delete.delete(Collections.singletonMap(source, status), connectionCallback, callback);
                 }
                 else {
                     throw new NotfoundException(String.format("Unable to find delete marker %s", renamed.getName()));
@@ -88,7 +88,7 @@ public class S3MoveFeature implements Move {
             try {
                 copy = new S3ThresholdCopyFeature(session, accessControlListFeature).copy(source, renamed, status.length(source.attributes().getSize()), connectionCallback);
                 // Copy source path and nullify version id to add a delete marker
-                delete.delete(Collections.singletonList(new Path(source).withAttributes(new PathAttributes(source.attributes()).withVersionId(null))),
+                delete.delete(Collections.singletonMap(new Path(source).withAttributes(new PathAttributes(source.attributes()).withVersionId(null)), status),
                     connectionCallback, callback);
             }
             catch(NotfoundException e) {

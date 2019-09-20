@@ -51,7 +51,7 @@ public class GraphCopyFeature implements Copy {
             copyOperation.rename(target.getName());
         }
         if(status.isExists()) {
-            new GraphDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
+            new GraphDeleteFeature(session).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
         }
 
         final OneDriveFolder targetItem = session.toFolder(target.getParent());

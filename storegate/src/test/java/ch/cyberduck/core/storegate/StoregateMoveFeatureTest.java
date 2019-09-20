@@ -56,6 +56,24 @@ public class StoregateMoveFeatureTest extends AbstractStoregateTest {
     }
 
     @Test
+    public void testMoveWithLock() throws Exception {
+        final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
+        final Path room = new StoregateDirectoryFeature(session, nodeid).mkdir(
+            new Path(String.format("/My files/%s", new AlphanumericRandomStringService().random()),
+                EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new StoregateTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String lockId = new StoregateLockFeature(session, nodeid).lock(test);
+        final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        assertEquals(new StoregateAttributesFinderFeature(session, nodeid).find(test).getVersionId(),
+            new StoregateMoveFeature(session, nodeid).move(test, target, new TransferStatus().withLockId(lockId), new Delete.DisabledCallback(), new DisabledConnectionCallback()).attributes().getVersionId());
+        test.attributes().setVersionId(null);
+        assertFalse(new DefaultFindFeature(session).find(test));
+        assertTrue(new DefaultFindFeature(session).find(target));
+        assertEquals(0, session.getMetrics().get(Copy.class));
+        new StoregateDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testMoveToDifferentFolder() throws Exception {
         final StoregateIdProvider nodeid = new StoregateIdProvider(session).withCache(cache);
         final Path folder1 = new StoregateDirectoryFeature(session, nodeid).mkdir(

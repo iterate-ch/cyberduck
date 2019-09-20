@@ -26,15 +26,12 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
-
 import java.util.Collections;
 
 public class SwiftMoveFeature implements Move {
-    private static final Logger log = Logger.getLogger(SwiftMoveFeature.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final SwiftSession session;
     private final SwiftRegionService regionService;
@@ -54,7 +51,7 @@ public class SwiftMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         final Path copy = new SwiftCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
-        delete.delete(Collections.singletonList(file), connectionCallback, callback);
+        delete.delete(Collections.singletonMap(file, status), connectionCallback, callback);
         return copy;
     }
 

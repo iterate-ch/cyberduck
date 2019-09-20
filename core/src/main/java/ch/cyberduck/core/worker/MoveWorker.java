@@ -104,6 +104,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                     }
                     else {
                         final TransferStatus status = new TransferStatus()
+                            .withLockId(this.getLockId(r.getKey()))
                             .withMime(new MappingMimeTypeService().getMime(r.getValue().getName()))
                             .exists(session.getFeature(Find.class, new DefaultFindFeature(session)).withCache(cache).find(r.getValue()))
                             .length(r.getKey().attributes().getSize());
@@ -121,7 +122,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                     if(r.getKey().isDirectory() && !feature.isRecursive(r.getKey(), r.getValue())) {
                         log.warn(String.format("Delete source directory %s", r.getKey()));
-                        session.getFeature(Delete.class).delete(Collections.singletonList(r.getKey()), callback, new Delete.DisabledCallback());
+                        session.getFeature(Delete.class).delete(Collections.singletonMap(r.getKey(), new TransferStatus().withLockId(this.getLockId(r.getKey()))), callback, new Delete.DisabledCallback());
                     }
                 }
             }
@@ -130,6 +131,10 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
         finally {
             target.release(destination, null);
         }
+    }
+
+    protected String getLockId(final Path file) {
+        return null;
     }
 
     protected Map<Path, Path> compile(final Move move, final ListService list, final Path source, final Path target) throws BackgroundException {

@@ -20,9 +20,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 public class GoogleStorageDeleteFeature implements Delete {
 
@@ -36,9 +37,9 @@ public class GoogleStorageDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         try {
-            for(Path file : files) {
+            for(Path file : files.keySet()) {
                 callback.delete(file);
                 if(containerService.isContainer(file)) {
                     session.getClient().buckets().delete(file.getName()).execute();

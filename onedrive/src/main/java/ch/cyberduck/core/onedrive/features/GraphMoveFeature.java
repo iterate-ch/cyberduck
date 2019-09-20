@@ -50,7 +50,7 @@ public class GraphMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         if(status.isExists()) {
-            delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
+            delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             // Reset version ID for non existing file
             renamed.attributes().setVersionId(null);
         }
@@ -62,7 +62,7 @@ public class GraphMoveFeature implements Move {
             final OneDriveFolder moveTarget = session.toFolder(renamed.getParent());
             patchOperation.move(moveTarget);
         }
-        // Keep curent timestamp set
+        // Keep current timestamp set
         final FileSystemInfoFacet info = new FileSystemInfoFacet();
         info.setLastModifiedDateTime(Instant.ofEpochMilli(file.attributes().getModificationDate()).atOffset(ZoneOffset.UTC));
         patchOperation.facet("fileSystemInfo", info);

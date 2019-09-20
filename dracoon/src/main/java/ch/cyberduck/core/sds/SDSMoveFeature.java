@@ -56,7 +56,7 @@ public class SDSMoveFeature implements Move {
         try {
             if(status.isExists()) {
                 log.warn(String.format("Delete existing file %s", renamed));
-                new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(renamed), connectionCallback, callback);
+                new SDSDeleteFeature(session, nodeid).delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
             final long nodeId = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
             if(!new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {

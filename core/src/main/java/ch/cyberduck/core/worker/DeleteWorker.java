@@ -32,6 +32,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.browser.PathReloadFinder;
 
 import org.apache.log4j.Logger;
@@ -39,10 +40,10 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 public class DeleteWorker extends Worker<List<Path>> {
 
@@ -73,12 +74,12 @@ public class DeleteWorker extends Worker<List<Path>> {
     public List<Path> run(final Session<?> session) throws BackgroundException {
         final Delete delete = session.getFeature(Delete.class);
         final ListService list = session.getFeature(ListService.class);
-        final List<Path> recursive = new ArrayList<Path>();
+        final Map<Path, TransferStatus> recursive = new LinkedHashMap<>();
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            recursive.addAll(this.compile(session.getHost(), delete, list, new WorkerListProgressListener(this, listener), file));
+            recursive.putAll(this.compile(session.getHost(), delete, list, new WorkerListProgressListener(this, listener), file));
         }
         delete.delete(recursive, prompt, new Delete.Callback() {
             @Override
@@ -87,12 +88,12 @@ public class DeleteWorker extends Worker<List<Path>> {
                     file.getName()));
             }
         });
-        return recursive;
+        return new ArrayList<>(recursive.keySet());
     }
 
-    protected Set<Path> compile(final Host host, final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
+    protected Map<Path, TransferStatus> compile(final Host host, final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
         // Compile recursive list
-        final Set<Path> recursive = new LinkedHashSet<>();
+        final Map<Path, TransferStatus> recursive = new LinkedHashMap<>();
         if(file.isFile() || file.isSymbolicLink()) {
             final Path copy = new Path(file);
             switch(host.getProtocol().getType()) {
@@ -105,7 +106,7 @@ public class DeleteWorker extends Worker<List<Path>> {
                         }
                     }
             }
-            recursive.add(copy);
+            recursive.put(copy, new TransferStatus().withLockId(this.getLockId(copy)));
         }
         else if(file.isDirectory()) {
             if(!delete.isRecursive()) {
@@ -113,18 +114,22 @@ public class DeleteWorker extends Worker<List<Path>> {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
                     }
-                    recursive.addAll(this.compile(host, delete, list, listener, child));
+                    recursive.putAll(this.compile(host, delete, list, listener, child));
                 }
             }
             // Add parent after children
-            recursive.add(file);
+            recursive.put(file, new TransferStatus().withLockId(this.getLockId(file)));
         }
         return recursive;
     }
 
+    protected String getLockId(final Path file) {
+        return null;
+    }
+
     @Override
     public void cleanup(final List<Path> deleted) {
-        for(Path folder : new PathReloadFinder().find(deleted)) {
+        for(Path folder : new PathReloadFinder().find(new ArrayList<>(deleted))) {
             cache.invalidate(folder);
         }
     }

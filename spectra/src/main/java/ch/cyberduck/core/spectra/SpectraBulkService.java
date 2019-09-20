@@ -131,7 +131,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     case upload:
                         if(status.isExists()) {
                             log.warn(String.format("Delete existing file %s", file));
-                            delete.delete(Collections.singletonList(file), callback, new Delete.DisabledCallback());
+                            delete.delete(Collections.singletonMap(file, status), callback, new Delete.DisabledCallback());
                         }
                         break;
                 }

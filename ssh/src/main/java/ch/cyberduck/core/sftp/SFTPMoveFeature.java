@@ -48,7 +48,7 @@ public class SFTPMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
-                delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
+                delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
             session.sftp().rename(file.getAbsolute(), renamed.getAbsolute());
             // Copy original file attributes
