@@ -25,12 +25,17 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.message.BasicHeader;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
+import com.github.sardine.impl.handler.VoidResponseHandler;
 
 public class DAVDeleteFeature implements Delete {
 
@@ -43,10 +48,10 @@ public class DAVDeleteFeature implements Delete {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> deleted = new ArrayList<Path>();
-        for(Path file : files.keySet()) {
+        for(Map.Entry<Path, TransferStatus> file : files.entrySet()) {
             boolean skip = false;
             for(Path d : deleted) {
-                if(file.isChild(d)) {
+                if(file.getKey().isChild(d)) {
                     skip = true;
                     break;
                 }
@@ -54,16 +59,21 @@ public class DAVDeleteFeature implements Delete {
             if(skip) {
                 continue;
             }
-            deleted.add(file);
-            callback.delete(file);
+            deleted.add(file.getKey());
+            callback.delete(file.getKey());
             try {
-                session.getClient().delete(new DAVPathEncoder().encode(file));
+                HttpDelete delete = new HttpDelete(new DAVPathEncoder().encode(file.getKey()));
+                if(file.getValue().getLockId() != null) {
+                    // Indicate that the client has knowledge of that state token
+                    delete.addHeader(new BasicHeader(HttpHeaders.IF, String.format("(<%s>)", file.getValue().getLockId())));
+                }
+                session.getClient().execute(delete, new VoidResponseHandler());
             }
             catch(SardineException e) {
-                throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file);
+                throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file.getKey());
             }
             catch(IOException e) {
-                throw new HttpExceptionMappingService().map(e, file);
+                throw new HttpExceptionMappingService().map(e, file.getKey());
             }
         }
     }
