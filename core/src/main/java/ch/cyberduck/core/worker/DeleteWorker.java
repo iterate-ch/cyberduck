@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -74,7 +74,7 @@ public class DeleteWorker extends Worker<List<Path>> {
     public List<Path> run(final Session<?> session) throws BackgroundException {
         final Delete delete = session.getFeature(Delete.class);
         final ListService list = session.getFeature(ListService.class);
-        final Map<Path, TransferStatus> recursive = new HashMap<>();
+        final Map<Path, TransferStatus> recursive = new LinkedHashMap<>();
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
@@ -93,7 +93,7 @@ public class DeleteWorker extends Worker<List<Path>> {
 
     protected Map<Path, TransferStatus> compile(final Host host, final Delete delete, final ListService list, final ListProgressListener listener, final Path file) throws BackgroundException {
         // Compile recursive list
-        final Map<Path, TransferStatus> recursive = new HashMap<>();
+        final Map<Path, TransferStatus> recursive = new LinkedHashMap<>();
         if(file.isFile() || file.isSymbolicLink()) {
             final Path copy = new Path(file);
             switch(host.getProtocol().getType()) {
