@@ -59,13 +59,12 @@ public class SFTPPublicKeyAuthentication implements AuthenticationProvider<Boole
     }
 
     @Override
-    public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel)
-        throws BackgroundException {
+    public Boolean authenticate(final Host bookmark, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Credentials credentials = bookmark.getCredentials();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Login using public key authentication with credentials %s", credentials));
-        }
         if(credentials.isPublicKeyAuthentication()) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Login using public key authentication with credentials %s", credentials));
+            }
             final Local identity = credentials.getIdentity();
             final FileKeyProvider provider;
             final AtomicBoolean canceled = new AtomicBoolean();

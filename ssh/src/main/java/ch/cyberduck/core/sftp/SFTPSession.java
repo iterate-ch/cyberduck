@@ -223,19 +223,17 @@ public class SFTPSession extends Session<SSHClient> {
         }
         // Ordered list of preferred authentication methods
         final List<AuthenticationProvider<Boolean>> methods = new ArrayList<AuthenticationProvider<Boolean>>();
-        if(credentials.isPublicKeyAuthentication()) {
-            if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-                switch(Factory.Platform.getDefault()) {
-                    case windows:
-                        methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
-                        break;
-                    default:
-                        methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
-                        break;
-                }
+        if(preferences.getBoolean("ssh.authentication.agent.enable")) {
+            switch(Factory.Platform.getDefault()) {
+                case windows:
+                    methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
+                    break;
+                default:
+                    methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
+                    break;
             }
-            methods.add(new SFTPPublicKeyAuthentication(this));
         }
+        methods.add(new SFTPPublicKeyAuthentication(this));
         methods.add(new SFTPPasswordAuthentication(this));
         methods.add(new SFTPChallengeResponseAuthentication(this));
         if(log.isDebugEnabled()) {
