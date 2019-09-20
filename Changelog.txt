@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+7.1.1
+- [Bugfix] Failure authenticationg using SSH agent (SFTP) (#10800)
+
 7.1.0
 - [Feature] Application running as 64-bit (Windows)
 - [Feature] Application package is notarized (macOS)
