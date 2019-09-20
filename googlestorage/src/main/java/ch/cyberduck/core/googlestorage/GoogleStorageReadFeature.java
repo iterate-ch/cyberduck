@@ -18,7 +18,6 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -65,7 +64,7 @@ public class GoogleStorageReadFeature implements Read {
         try {
             final StringBuilder uri = new StringBuilder(String.format("%sstorage/v1/b/%s/o/%s?alt=media",
                 session.getClient().getRootUrl(), containerService.getContainer(file).getName(),
-                URIEncoder.encode(containerService.getKey(file))));
+                GoogleStorageUriEncoder.encode(containerService.getKey(file))));
             if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
                 uri.append(String.format("?generation=%s", file.attributes().getVersionId()));
             }

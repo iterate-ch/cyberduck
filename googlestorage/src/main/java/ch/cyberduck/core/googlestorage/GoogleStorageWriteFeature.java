@@ -92,7 +92,8 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     if(status.isExists()) {
                         // PATCH /storage/v1/b/myBucket/o/myObject
                         request = new HttpPatch(String.format("%sstorage/v1/b/%s/o/%s",
-                            session.getClient().getRootUrl(), containerService.getContainer(file).getName(), containerService.getKey(file)));
+                            session.getClient().getRootUrl(), containerService.getContainer(file).getName(),
+                            GoogleStorageUriEncoder.encode(containerService.getKey(file))));
                         if(StringUtils.isNotBlank(status.getMime())) {
                             request.setHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
                         }
