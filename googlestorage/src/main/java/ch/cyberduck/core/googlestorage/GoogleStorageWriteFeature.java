@@ -95,7 +95,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                             session.getClient().getRootUrl(), containerService.getContainer(file).getName(),
                             GoogleStorageUriEncoder.encode(containerService.getKey(file))));
                         if(StringUtils.isNotBlank(status.getMime())) {
-                            request.setHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
+                            request.addHeader("X-Upload-Content-Type", status.getMime());
                         }
                         // Upload the file
                         request.setEntity(entity);
