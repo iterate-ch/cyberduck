@@ -50,7 +50,7 @@ public class GoogleStorageReadFeatureTest extends AbstractGoogleStorageTest {
     public void testReadNotFound() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status, new DisabledConnectionCallback());
+        new GoogleStorageReadFeature(session).read(new Path(container, "nosuchname", EnumSet.of(Path.Type.file)), status.length(2L), new DisabledConnectionCallback());
     }
 
     @Test
