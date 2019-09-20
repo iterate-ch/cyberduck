@@ -44,7 +44,7 @@ public class FTPMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
-                delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
+                delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
             if(!session.getClient().rename(file.getAbsolute(), renamed.getAbsolute())) {
                 throw new FTPException(session.getClient().getReplyCode(), session.getClient().getReplyString());

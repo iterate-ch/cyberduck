@@ -65,7 +65,7 @@ public class SDSDelegatingMoveFeature implements Move {
             final Delete delete = session.getFeature(Delete.class);
             if(delete.isSupported(source)) {
                 log.warn(String.format("Delete source %s copied to %s", source, target));
-                delete.delete(Collections.singletonList(source), connectionCallback, callback);
+                delete.delete(Collections.singletonMap(source, status), connectionCallback, callback);
             }
             return c;
         }

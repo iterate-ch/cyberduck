@@ -39,7 +39,6 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -96,7 +95,7 @@ public class CryptoBulkFeatureTest {
             }
         }, new Delete() {
             @Override
-            public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
+            public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
                 throw new UnsupportedOperationException();
             }
 
@@ -178,7 +177,7 @@ public class CryptoBulkFeatureTest {
             }
         }, new Delete() {
             @Override
-            public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
+            public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
                 throw new UnsupportedOperationException();
             }
 

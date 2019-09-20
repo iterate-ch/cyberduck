@@ -21,11 +21,10 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class VaultRegistryDeleteFeature implements Delete {
@@ -41,21 +40,21 @@ public class VaultRegistryDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        final Map<Vault, List<Path>> vaults = new HashMap<>();
-        for(Path file : files) {
-            final Vault vault = registry.find(session, file);
-            final List<Path> sorted;
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+        final Map<Vault, Map<Path, TransferStatus>> vaults = new HashMap<>();
+        for(Map.Entry<Path, TransferStatus> file : files.entrySet()) {
+            final Vault vault = registry.find(session, file.getKey());
+            final Map<Path, TransferStatus> sorted;
             if(vaults.containsKey(vault)) {
                 sorted = vaults.get(vault);
             }
             else {
-                sorted = new ArrayList<>();
+                sorted = new HashMap<>();
             }
-            sorted.add(file);
+            sorted.put(file.getKey(), file.getValue());
             vaults.put(vault, sorted);
         }
-        for(Map.Entry<Vault, List<Path>> entry : vaults.entrySet()) {
+        for(Map.Entry<Vault, Map<Path, TransferStatus>> entry : vaults.entrySet()) {
             final Vault vault = entry.getKey();
             final Delete feature = vault.getFeature(session, Delete.class, proxy);
             feature.delete(entry.getValue(), prompt, callback);

@@ -23,10 +23,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
 
@@ -39,9 +41,9 @@ public class DAVDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> deleted = new ArrayList<Path>();
-        for(Path file : files) {
+        for(Path file : files.keySet()) {
             boolean skip = false;
             for(Path d : deleted) {
                 if(file.isChild(d)) {

@@ -22,12 +22,14 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.pub.io.IRODSFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class IRODSDeleteFeature implements Delete {
 
@@ -38,9 +40,9 @@ public class IRODSDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> deleted = new ArrayList<Path>();
-        for(Path file : files) {
+        for(Path file : files.keySet()) {
             boolean skip = false;
             for(Path d : deleted) {
                 if(file.isChild(d)) {

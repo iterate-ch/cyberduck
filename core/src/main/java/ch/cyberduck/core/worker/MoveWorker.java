@@ -122,7 +122,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
                 for(Map.Entry<Path, Path> r : recursive.entrySet()) {
                     if(r.getKey().isDirectory() && !feature.isRecursive(r.getKey(), r.getValue())) {
                         log.warn(String.format("Delete source directory %s", r.getKey()));
-                        session.getFeature(Delete.class).delete(Collections.singletonList(r.getKey()), callback, new Delete.DisabledCallback());
+                        session.getFeature(Delete.class).delete(Collections.singletonMap(r.getKey(), new TransferStatus().withLockId(this.getLockId(r.getKey()))), callback, new Delete.DisabledCallback());
                     }
                 }
             }
