@@ -109,6 +109,7 @@ public class BackgroundException extends Exception {
         sb.append("file=").append(file);
         sb.append(", message='").append(message).append('\'');
         sb.append(", detail='").append(detail).append('\'');
+        sb.append(", class='").append(getClass().getName()).append('\'');
         sb.append(", cause='").append(this.getCause()).append('\'');
         sb.append('}');
         return sb.toString();
