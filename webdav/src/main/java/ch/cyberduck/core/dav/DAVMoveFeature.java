@@ -30,6 +30,7 @@ import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
@@ -50,7 +51,7 @@ public class DAVMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(renamed).find(DescriptiveUrl.Type.provider).getUrl();
-            HttpMove move = new HttpMove(new DAVPathEncoder().encode(file), file.isDirectory() ? String.format("%s/", target) : target, true);
+            final HttpRequestBase move = new HttpMove(new DAVPathEncoder().encode(file), file.isDirectory() ? String.format("%s/", target) : target, true);
             if(status.getLockId() != null) {
                 // Indicate that the client has knowledge of that state token
                 move.addHeader(new BasicHeader(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
