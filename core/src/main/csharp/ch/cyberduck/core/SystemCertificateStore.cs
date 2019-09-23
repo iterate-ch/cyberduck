@@ -110,7 +110,7 @@ namespace Ch.Cyberduck.Core
             bool isException = CheckForException(hostName, serverCert);
             if (isException)
             {
-                // Exceptions always have precendence
+                // Exceptions always have precedence
                 return true;
             }
 
