@@ -17,7 +17,6 @@ package ch.cyberduck.core.brick;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -46,13 +45,11 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
 
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.google.gson.JsonParseException;
 
 public class BrickSession extends DAVSession {
 
@@ -74,15 +71,10 @@ public class BrickSession extends DAVSession {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
-        try {
-            final Credentials credentials = host.getCredentials();
-            if(!credentials.isPasswordAuthentication()) {
-                // No prompt on explicit connect
-                this.pair(host, new DisabledConnectionCallback(), cancel);
-            }
-        }
-        catch(JsonParseException e) {
-            throw new DefaultIOExceptionMappingService().map(new IOException(e.getMessage(), e));
+        final Credentials credentials = host.getCredentials();
+        if(!credentials.isPasswordAuthentication()) {
+            // No prompt on explicit connect
+            this.pair(host, new DisabledConnectionCallback(), cancel);
         }
         super.login(proxy, prompt, cancel);
     }

@@ -47,6 +47,7 @@ import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
@@ -139,6 +140,9 @@ public class BrickPairingSchedulerFeature {
             }
             callback.close(credentials.getUsername());
             return credentials;
+        }
+        catch(JsonParseException e) {
+            throw new DefaultIOExceptionMappingService().map(new IOException(e.getMessage(), e));
         }
         catch(HttpResponseException e) {
             switch(e.getStatusCode()) {
