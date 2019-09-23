@@ -20,13 +20,13 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public interface Delete {
     default void delete(List<Path> files, PasswordCallback prompt, Callback callback) throws BackgroundException {
-        final Map<Path, TransferStatus> set = new HashMap<>();
+        final Map<Path, TransferStatus> set = new LinkedHashMap<>();
         for(Path file : files) {
             set.put(file, new TransferStatus());
         }
