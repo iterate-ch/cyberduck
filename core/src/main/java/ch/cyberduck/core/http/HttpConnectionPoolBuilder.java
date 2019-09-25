@@ -32,7 +32,6 @@ import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthSchemeProvider;
@@ -61,6 +60,7 @@ import org.apache.http.protocol.HttpCoreContext;
 import org.apache.log4j.Logger;
 
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLSession;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -93,7 +93,7 @@ public class HttpConnectionPoolBuilder {
             }
         }, new SSLConnectionSocketFactory(
             new CustomTrustSSLProtocolSocketFactory(trust, key),
-            new DisabledX509HostnameVerifier()
+            new CallbackHostnameVerifier(trust)
         ) {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
@@ -118,7 +118,7 @@ public class HttpConnectionPoolBuilder {
         });
     }
 
-    protected HttpConnectionPoolBuilder(final Host host, final X509TrustManager trust, final X509KeyManager key,
+    protected HttpConnectionPoolBuilder(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key,
                                         final SocketFactory socketFactory) {
         this(host, new PlainConnectionSocketFactory() {
             @Override
@@ -127,7 +127,7 @@ public class HttpConnectionPoolBuilder {
             }
         }, new SSLConnectionSocketFactory(
             new CustomTrustSSLProtocolSocketFactory(trust, key),
-            new DisabledX509HostnameVerifier()
+            new CallbackHostnameVerifier(trust)
         ) {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
@@ -141,9 +141,7 @@ public class HttpConnectionPoolBuilder {
                                         final InetSocketAddress remoteAddress,
                                         final InetSocketAddress localAddress,
                                         final HttpContext context) throws IOException {
-                if(trust instanceof ThreadLocalHostnameDelegatingTrustManager) {
-                    ((ThreadLocalHostnameDelegatingTrustManager) trust).setTarget(remoteAddress.getHostName());
-                }
+                trust.setTarget(remoteAddress.getHostName());
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
         });
@@ -249,5 +247,19 @@ public class HttpConnectionPoolBuilder {
         // Detect connections that have become stale (half-closed) while kept inactive in the pool
         manager.setValidateAfterInactivity(preferences.getInteger("http.connections.stale.check.ms"));
         return manager;
+    }
+
+    private static final class CallbackHostnameVerifier extends DisabledX509HostnameVerifier {
+        private final ThreadLocalHostnameDelegatingTrustManager trust;
+
+        public CallbackHostnameVerifier(final ThreadLocalHostnameDelegatingTrustManager trust) {
+            this.trust = trust;
+        }
+
+        @Override
+        public boolean verify(final String host, final SSLSession sslSession) {
+            trust.setTarget(host);
+            return super.verify(host, sslSession);
+        }
     }
 }
