@@ -534,14 +534,15 @@ public class DAVSessionTest extends AbstractDAVTest {
         session.close();
     }
 
-    @Ignore
-    @Test
+    @Test(expected = ConnectionRefusedException.class)
     public void testConnectProxy() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
+        final AtomicBoolean verified = new AtomicBoolean();
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
                 assertNotNull(hostname);
+                verified.set(true);
                 super.verify(hostname, certs, cipher);
             }
         },
@@ -560,11 +561,12 @@ public class DAVSessionTest extends AbstractDAVTest {
             new ProxyFinder() {
                 @Override
                 public Proxy find(final Host target) {
-                    return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
+                    return new Proxy(Proxy.Type.HTTPS, "localhost", 8080);
                 }
             }
         );
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+        assertTrue(verified.get());
         session.close();
     }
 }
