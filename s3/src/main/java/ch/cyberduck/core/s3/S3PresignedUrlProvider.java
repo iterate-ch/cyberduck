@@ -52,8 +52,14 @@ public class S3PresignedUrlProvider {
             }
         }
         else {
-            // Region is required for AWS4-HMAC-SHA256 signature
-            signature = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
+            // Only for AWS
+            if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+                // Region is required for AWS4-HMAC-SHA256 signature
+                signature = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
+            }
+            else {
+                signature = S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
+            }
         }
         return new RestS3Service(new AWSCredentials(StringUtils.strip(user), StringUtils.strip(secret))) {
             @Override
