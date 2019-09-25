@@ -157,7 +157,6 @@ public class DAVSessionTest extends AbstractDAVTest {
 
     @Test
     public void testLoginBasicAuth() throws Exception {
-
         session.close();
     }
 
@@ -175,7 +174,6 @@ public class DAVSessionTest extends AbstractDAVTest {
 
     @Test
     public void testTouch() throws Exception {
-
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
@@ -381,6 +379,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+                assertNotNull(hostname);
                 assertEquals(2, certs.length);
                 super.verify(hostname, certs, cipher);
             }
@@ -417,6 +416,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
             @Override
             public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+                assertNotNull(hostname);
                 assertEquals(2, certs.length);
                 assertEquals("CN=Let's Encrypt Authority X3,O=Let's Encrypt,C=US",
                     certs[1].getSubjectX500Principal().getName());
@@ -538,7 +538,13 @@ public class DAVSessionTest extends AbstractDAVTest {
     @Test
     public void testConnectProxy() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
-        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager(),
+        final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
+            @Override
+            public void verify(final String hostname, final X509Certificate[] certs, final String cipher) throws CertificateException {
+                assertNotNull(hostname);
+                super.verify(hostname, certs, cipher);
+            }
+        },
             new KeychainX509KeyManager(host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
