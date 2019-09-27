@@ -168,6 +168,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     throw new BackgroundException(e.getCause());
                 }
             }
+            listener.chunk(directory, children);
             if(!hasDirectoryPlaceholder && children.isEmpty()) {
                 throw new NotfoundException(directory.getAbsolute());
             }
