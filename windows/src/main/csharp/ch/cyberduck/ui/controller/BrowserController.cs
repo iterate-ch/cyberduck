@@ -1459,14 +1459,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 infoController.View.Close();
             }
-            if (IsConnected())
-            {
-                Background(new DisconnectAction(this, runnable));
-            }
-            else
-            {
-                runnable();
-            }
+            Background(new DisconnectAction(this, runnable));
         }
 
         private void View_SendCustomCommand()
@@ -3309,6 +3302,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 base.cleanup();
+                _controller._pasteboard.clear();
                 _callback();
             }
         }
