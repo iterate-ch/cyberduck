@@ -117,6 +117,8 @@ public class BrickSession extends DAVSession {
             LocaleFactory.localizedString("Open in Web Browser"), LocaleFactory.localizedString("Cancel"), null);
         // Not canceled
         scheduler.shutdown();
+        // When connect attempt is interrupted will throw connection cancel failure
+        cancel.verify();
         return bookmark.getCredentials();
     }
 
