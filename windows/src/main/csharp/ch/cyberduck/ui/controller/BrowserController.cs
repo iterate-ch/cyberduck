@@ -81,7 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private String _dropFolder; // holds the drop folder of the current drag operation
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
-        private PathPasteboard _pasteboard;
+        private PathPasteboard _pasteboard = PathPasteboard.EMPTY;
         private Scheduler _scheduler;
         private bool _showHiddenFiles;
 

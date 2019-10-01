@@ -200,7 +200,7 @@ public class BrowserController extends WindowController
     private boolean showHiddenFiles;
     private Filter<Path> filenameFilter;
 
-    private PathPasteboard pasteboard;
+    private PathPasteboard pasteboard = PathPasteboard.EMPTY;
 
     private final ListProgressListener listener
         = new PromptLimitedListProgressListener(this);
