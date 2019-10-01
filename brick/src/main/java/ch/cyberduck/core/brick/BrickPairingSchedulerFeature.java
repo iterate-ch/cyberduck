@@ -76,6 +76,7 @@ public class BrickPairingSchedulerFeature {
             }
             catch(ConnectionCanceledException e) {
                 log.warn("Cancel processing scheduled task. %s", e);
+                callback.close(null);
                 this.shutdown();
             }
             catch(BackgroundException e) {
@@ -83,6 +84,7 @@ public class BrickPairingSchedulerFeature {
             }
             catch(Exception e) {
                 log.error(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
+                callback.close(null);
                 this.shutdown();
             }
         }, preferences.getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS);
