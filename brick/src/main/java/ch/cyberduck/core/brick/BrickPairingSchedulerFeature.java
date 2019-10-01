@@ -91,6 +91,12 @@ public class BrickPairingSchedulerFeature {
         return null;
     }
 
+    /**
+     * Pool for pairing key from service
+     *
+     * @param callback Callback when service returns 200
+     * @return Pairing keys
+     */
     private Credentials operate(final PasswordCallback callback) throws BackgroundException {
         try {
             final HttpPost resource = new HttpPost(String.format("https://app.files.com/api/rest/v1/sessions/pairing_key/%s", token));
