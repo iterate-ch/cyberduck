@@ -145,7 +145,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
-                    folders.add(this.submit(pool, bucket, common));
+                    folders.add(this.submit(pool, bucket, URLDecoder.decode(common, StandardCharsets.UTF_8.name())));
                 }
                 priorLastKey = chunk.getNextKeyMarker();
                 priorLastVersionId = chunk.getNextVersionIdMarker();
@@ -168,6 +168,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     throw new BackgroundException(e.getCause());
                 }
             }
+            listener.chunk(directory, children);
             if(!hasDirectoryPlaceholder && children.isEmpty()) {
                 throw new NotfoundException(directory.getAbsolute());
             }
