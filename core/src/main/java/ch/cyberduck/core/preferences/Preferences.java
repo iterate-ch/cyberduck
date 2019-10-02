@@ -816,7 +816,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("brick.pairing.hostname.configure", String.valueOf(true));
         this.setDefault("brick.pairing.interval.ms", String.valueOf(1000L));
 
-        this.setDefault("dropbox.upload.chunksize", String.valueOf(5 * 1024L * 1024L));
+        this.setDefault("dropbox.upload.chunksize", String.valueOf(150 * 1024L * 1024L));
 
         /*
           NTLM Windows Domain
