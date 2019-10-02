@@ -91,7 +91,7 @@ namespace Ch.Cyberduck.Core
 
         private bool TryStartBashSSH(Host host, string workdir)
         {
-            if (!PreferencesFactory.get().getBoolean("terminal.enable.wsl"))
+            if (!PreferencesFactory.get().getBoolean("terminal.windowssubsystemlinux.enable"))
             {
                 return false;
             }
@@ -129,7 +129,7 @@ namespace Ch.Cyberduck.Core
 
         private bool TryStartBuiltinOpenSSH(Host host, string workdir)
         {
-            if (!PreferencesFactory.get().getBoolean("terminal.enable.openssh"))
+            if (!PreferencesFactory.get().getBoolean("terminal.openssh.enable"))
             {
                 return false;
             }
