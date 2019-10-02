@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -48,18 +49,13 @@ import com.dropbox.core.v2.files.WriteMode;
 public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     private static final Logger log = Logger.getLogger(DropboxWriteFeature.class);
 
-    private static final long DEFAULT_CHUNK_SIZE = 5 * 1024L * 1024L;
-
     private final DropboxSession session;
-
     private final Find finder;
-
     private final AttributesFinder attributes;
-
     private final Long chunksize;
 
     public DropboxWriteFeature(final DropboxSession session) {
-        this(session, DEFAULT_CHUNK_SIZE);
+        this(session, PreferencesFactory.get().getLong("dropbox.upload.chunksize"));
     }
 
     public DropboxWriteFeature(final DropboxSession session, final Long chunksize) {
