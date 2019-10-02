@@ -18,8 +18,6 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.LoginCallbackFactory;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordCallbackFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.core.TransferPromptControllerFactory;
@@ -120,12 +118,11 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        this(LoginCallbackFactory.get(controller), PasswordCallbackFactory.get(controller),
-                controller, source, destination, listener, progress, transfer, options, prompt, error, meter, stream);
+        this(LoginCallbackFactory.get(controller),
+            controller, source, destination, listener, progress, transfer, options, prompt, error, meter, stream);
     }
 
     public TransferBackgroundAction(final ConnectionCallback callback,
-                                    final PasswordCallback password,
                                     final Controller controller,
                                     final SessionPool source,
                                     final SessionPool destination,
