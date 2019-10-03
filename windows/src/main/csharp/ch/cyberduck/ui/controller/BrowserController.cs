@@ -81,7 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private String _dropFolder; // holds the drop folder of the current drag operation
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
-        private PathPasteboard _pasteboard;
+        private PathPasteboard _pasteboard = PathPasteboard.EMPTY;
         private Scheduler _scheduler;
         private bool _showHiddenFiles;
 
@@ -1459,14 +1459,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 infoController.View.Close();
             }
-            if (IsConnected())
-            {
-                Background(new DisconnectAction(this, runnable));
-            }
-            else
-            {
-                runnable();
-            }
+            Background(new DisconnectAction(this, runnable));
         }
 
         private void View_SendCustomCommand()
@@ -3309,6 +3302,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 base.cleanup();
+                _controller._pasteboard.clear();
                 _callback();
             }
         }

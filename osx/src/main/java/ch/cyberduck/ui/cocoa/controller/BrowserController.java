@@ -200,7 +200,7 @@ public class BrowserController extends WindowController
     private boolean showHiddenFiles;
     private Filter<Path> filenameFilter;
 
-    private PathPasteboard pasteboard;
+    private PathPasteboard pasteboard = PathPasteboard.EMPTY;
 
     private final ListProgressListener listener
         = new PromptLimitedListProgressListener(this);
@@ -3239,19 +3239,15 @@ public class BrowserController extends WindowController
         if(null != c) {
             c.window().close();
         }
-        if(this.isConnected()) {
-            this.background(new DisconnectBackgroundAction(this, pool) {
-                @Override
-                public void cleanup() {
-                    super.cleanup();
-                    window.setDocumentEdited(false);
-                    disconnected.run();
-                }
-            });
-        }
-        else {
-            disconnected.run();
-        }
+        this.background(new DisconnectBackgroundAction(this, pool) {
+            @Override
+            public void cleanup() {
+                super.cleanup();
+                pasteboard.clear();
+                window.setDocumentEdited(false);
+                disconnected.run();
+            }
+        });
     }
 
     @Action
