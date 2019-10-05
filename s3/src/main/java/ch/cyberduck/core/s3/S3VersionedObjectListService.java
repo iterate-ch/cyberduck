@@ -190,41 +190,36 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         return pool.execute(new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
+                final PathAttributes attributes = new PathAttributes();
+                attributes.setRegion(bucket.attributes().getRegion());
+                final Path prefix = new Path(String.format("%s%s", bucket.getAbsolute(), common),
+                    EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                 try {
-                    final PathAttributes attributes = new PathAttributes();
-                    attributes.setRegion(bucket.attributes().getRegion());
-                    final Path prefix = new Path(String.format("%s%s", bucket.getAbsolute(), PathNormalizer.normalize(URLDecoder.decode(common, StandardCharsets.UTF_8.name()))),
-                        EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
-                    try {
-                        final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
-                            bucket.getName(), common, null, 1,
-                            null, null, false);
-                        if(versions.getItems().length == 1) {
-                            final BaseVersionOrDeleteMarker version = versions.getItems()[0];
-                            if(version.getKey().equals(common)) {
-                                attributes.setVersionId(version.getVersionId());
-                                if(version.isDeleteMarker()) {
-                                    attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
-                                    attributes.setDuplicate(true);
-                                }
-                            }
-                            else {
-                                // no placeholder but objects inside - need to check if all of them are deleted
-                                final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
-                                    null, 1, null, false);
-                                if(unversioned.getObjects().length == 0) {
-                                    attributes.setDuplicate(true);
-                                }
+                    final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(
+                        bucket.getName(), common, null, 1,
+                        null, null, false);
+                    if(versions.getItems().length == 1) {
+                        final BaseVersionOrDeleteMarker version = versions.getItems()[0];
+                        if(version.getKey().equals(common)) {
+                            attributes.setVersionId(version.getVersionId());
+                            if(version.isDeleteMarker()) {
+                                attributes.setCustom(ImmutableMap.of(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                                attributes.setDuplicate(true);
                             }
                         }
-                        return prefix;
+                        else {
+                            // no placeholder but objects inside - need to check if all of them are deleted
+                            final StorageObjectsChunk unversioned = session.getClient().listObjectsChunked(bucket.getName(), common,
+                                null, 1, null, false);
+                            if(unversioned.getObjects().length == 0) {
+                                attributes.setDuplicate(true);
+                            }
+                        }
                     }
-                    catch(ServiceException e) {
-                        throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, prefix);
-                    }
+                    return prefix;
                 }
-                catch(UnsupportedEncodingException e) {
-                    throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", e, bucket);
+                catch(ServiceException e) {
+                    throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, prefix);
                 }
             }
         });
