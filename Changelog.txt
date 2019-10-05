@@ -4,6 +4,7 @@ https://cyberduck.io/
 7.1.1
 - [Bugfix] Failure authenticating using SSH agent (SFTP) (#10800)
 - [Bugfix] Failure overwriting existing file (Google Storage)
+- [Bugfix] Missing hostname verification in TLS handshake when connecting through HTTP proxy
 
 7.1.0
 - [Feature] Application running as 64-bit (Windows)
