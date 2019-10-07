@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
@@ -54,9 +55,12 @@ public class SDSMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
+            // Handle case insensitive. Find feature will have reported target to exist if same name with different case
             if(status.isExists()) {
-                log.warn(String.format("Delete existing file %s", renamed));
-                new SDSDeleteFeature(session, nodeid).delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
+                if(!new CaseInsensitivePathPredicate(file).test(renamed)) {
+                    log.warn(String.format("Delete existing file %s", renamed));
+                    new SDSDeleteFeature(session, nodeid).delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
+                }
             }
             final long nodeId = Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener()));
             if(!new SimplePathPredicate(file.getParent()).test(renamed.getParent())) {
