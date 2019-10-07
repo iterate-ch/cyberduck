@@ -15,9 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -33,20 +31,12 @@ public class GoogleStorageUrlProviderTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testGet() {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("google.projectid"), null
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
         assertEquals("https://storage.cloud.google.com/c/f", new GoogleStorageUrlProvider(session).toUrl(
                 new Path("/c/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.authenticated).getUrl());
     }
 
     @Test
     public void testGetEncoded() {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("google.projectid"), null
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
         assertEquals("https://storage.cloud.google.com/container/Screen%20Shot%202013-07-18%20at%2023.55.10.png", new GoogleStorageUrlProvider(session).toUrl(
                 new Path("/container/Screen Shot 2013-07-18 at 23.55.10.png", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.authenticated).getUrl());
     }

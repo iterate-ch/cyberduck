@@ -75,7 +75,6 @@ import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
 import org.apache.http.impl.client.WinHttpClients;
 import org.apache.log4j.Logger;
 
-import javax.net.SocketFactory;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -101,10 +100,6 @@ public class DAVSession extends HttpSession<DAVClient> {
     private AttributesFinder attributes = new DAVAttributesFinderFeature(this);
     private Find find = new DAVFindFeature(this);
 
-    public DAVSession(final Host host) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
-    }
-
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
@@ -116,15 +111,6 @@ public class DAVSession extends HttpSession<DAVClient> {
 
     public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final RedirectCallback redirect) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
-        this.redirect = redirect;
-    }
-
-    public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
-    }
-
-    public DAVSession(final Host host, final X509TrustManager trust, final X509KeyManager key, final SocketFactory socketFactory, final RedirectCallback redirect) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, socketFactory);
         this.redirect = redirect;
     }
 

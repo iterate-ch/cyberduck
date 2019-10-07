@@ -56,10 +56,6 @@ import com.google.common.util.concurrent.Uninterruptibles;
 public class BrickSession extends DAVSession {
     private static final Logger log = Logger.getLogger(BrickSession.class);
 
-    public BrickSession(final Host host) {
-        super(host);
-    }
-
     public BrickSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }

@@ -46,21 +46,18 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private static final Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
 
     private final SSLSocketFactory factory;
-
     /**
      * Shared context
      */
     private final SSLContext context;
-
     private final String[] protocols;
 
     private final AtomicBoolean initializer
-            = new AtomicBoolean(false);
+        = new AtomicBoolean(false);
 
     private final Preferences preferences = PreferencesFactory.get();
 
     private final X509TrustManager trust;
-
     private final X509KeyManager key;
 
     /**
@@ -113,12 +110,12 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                 ((SSLSocket) socket).setEnabledCipherSuites(ciphers.toArray(new String[ciphers.size()]));
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Enabled cipher suites %s",
-                            Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
+                        Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
                     ((SSLSocket) socket).addHandshakeCompletedListener(new HandshakeCompletedListener() {
                         @Override
                         public void handshakeCompleted(final HandshakeCompletedEvent event) {
                             log.info(String.format("Completed handshake with %s and negotiated cipher suite %s",
-                                    event.getSession().getProtocol(), event.getCipherSuite()));
+                                event.getSession().getProtocol(), event.getCipherSuite()));
                             ((SSLSocket) socket).removeHandshakeCompletedListener(this);
                         }
                     });
@@ -182,8 +179,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     @Override
     public Socket createSocket(final String host, final int port,
-                               final InetAddress clientHost, final int clientPort)
-            throws IOException {
+                               final InetAddress clientHost, final int clientPort) throws IOException {
         return this.handshake(new SocketGetter() {
             @Override
             public Socket create() throws IOException {
@@ -224,8 +220,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     }
 
     @Override
-    public Socket createSocket(final Socket socket, final String host, final int port, final boolean autoClose)
-            throws IOException {
+    public Socket createSocket(final Socket socket, final String host, final int port, final boolean autoClose) throws IOException {
         return this.handshake(new SocketGetter() {
             @Override
             public Socket create() throws IOException {

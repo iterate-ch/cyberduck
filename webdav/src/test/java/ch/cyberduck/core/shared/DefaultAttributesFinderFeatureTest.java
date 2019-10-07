@@ -30,6 +30,8 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -78,7 +80,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
     @Test
     public void testFindNoWebDAV() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "update.cyberduck.io");
-        final DAVSession session = new DAVSession(host);
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session);

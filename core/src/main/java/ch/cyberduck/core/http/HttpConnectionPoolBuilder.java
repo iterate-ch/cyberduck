@@ -59,7 +59,6 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
 import org.apache.log4j.Logger;
 
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLSession;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -91,6 +90,12 @@ public class HttpConnectionPoolBuilder {
                     }
                 }, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
             }
+
+            @Override
+            public Socket connectSocket(final int connectTimeout, final Socket socket, final HttpHost host, final InetSocketAddress remoteAddress, final InetSocketAddress localAddress, final HttpContext context) throws IOException {
+                trust.setTarget(remoteAddress.getHostName());
+                return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
+            }
         }, new SSLConnectionSocketFactory(
             new CustomTrustSSLProtocolSocketFactory(trust, key),
             new CallbackHostnameVerifier(trust)
@@ -103,35 +108,6 @@ public class HttpConnectionPoolBuilder {
                         return ((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName();
                     }
                 }, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
-            }
-
-            @Override
-            public Socket connectSocket(final int connectTimeout,
-                                        final Socket socket,
-                                        final HttpHost host,
-                                        final InetSocketAddress remoteAddress,
-                                        final InetSocketAddress localAddress,
-                                        final HttpContext context) throws IOException {
-                trust.setTarget(remoteAddress.getHostName());
-                return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
-            }
-        });
-    }
-
-    protected HttpConnectionPoolBuilder(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key,
-                                        final SocketFactory socketFactory) {
-        this(host, new PlainConnectionSocketFactory() {
-            @Override
-            public Socket createSocket(final HttpContext context) throws IOException {
-                return socketFactory.createSocket();
-            }
-        }, new SSLConnectionSocketFactory(
-            new CustomTrustSSLProtocolSocketFactory(trust, key),
-            new CallbackHostnameVerifier(trust)
-        ) {
-            @Override
-            public Socket createSocket(final HttpContext context) throws IOException {
-                return socketFactory.createSocket();
             }
 
             @Override

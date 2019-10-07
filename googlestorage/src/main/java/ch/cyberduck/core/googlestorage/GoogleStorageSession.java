@@ -32,8 +32,6 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -58,10 +56,6 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         = new PreferencesUseragentProvider();
 
     private OAuth2RequestInterceptor authorizationService;
-
-    public GoogleStorageSession(final Host host) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
-    }
 
     public GoogleStorageSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);

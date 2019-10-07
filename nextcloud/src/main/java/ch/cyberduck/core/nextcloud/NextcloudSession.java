@@ -23,10 +23,6 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 
 public class NextcloudSession extends DAVSession {
 
-    public NextcloudSession(final Host host) {
-        super(host);
-    }
-
     public NextcloudSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
