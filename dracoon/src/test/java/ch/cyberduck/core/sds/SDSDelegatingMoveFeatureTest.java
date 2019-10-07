@@ -388,8 +388,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(target, new TransferStatus());
+        final Path target = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new SDSFindFeature(nodeid).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new SDSFindFeature(nodeid).find(target));
@@ -403,8 +402,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(room, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new SDSTouchFeature(session, nodeid).touch(target, new TransferStatus());
+        final Path target = new SDSTouchFeature(session, nodeid).touch(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         new SDSMoveFeature(session, nodeid).move(test, target, new TransferStatus().exists(true), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new SDSFindFeature(nodeid).find(new Path(room, filename, EnumSet.of(Path.Type.file))));
         assertTrue(new SDSFindFeature(nodeid).find(target));
