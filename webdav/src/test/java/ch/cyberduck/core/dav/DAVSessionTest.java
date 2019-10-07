@@ -524,7 +524,7 @@ public class DAVSessionTest extends AbstractDAVTest {
     }
 
     @Test(expected = ConnectionRefusedException.class)
-    public void testConnectProxy() throws Exception {
+    public void testConnectProxy() throws Throwable {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final AtomicBoolean verified = new AtomicBoolean();
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
@@ -554,13 +554,26 @@ public class DAVSessionTest extends AbstractDAVTest {
                 }
             }
         );
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        assertTrue(verified.get());
-        session.close();
+        try {
+            Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+                    return null;
+                }
+            }).get();
+        }
+        catch(ExecutionException e) {
+            throw e.getCause();
+        }
+        finally {
+            assertTrue(verified.get());
+            session.close();
+        }
     }
 
     @Test(expected = ConnectionRefusedException.class)
-    public void testConnectProxyHttps() throws Exception {
+    public void testConnectProxyHttps() throws Throwable {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final AtomicBoolean verified = new AtomicBoolean();
         final DAVSession session = new DAVSession(host, new DefaultX509TrustManager() {
@@ -590,8 +603,21 @@ public class DAVSessionTest extends AbstractDAVTest {
                 }
             }
         );
-        c.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        assertTrue(verified.get());
-        session.close();
+        try {
+            Executors.newSingleThreadExecutor().submit(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    c.connect(session, PathCache.empty(), new DisabledCancelCallback());
+                    return null;
+                }
+            }).get();
+        }
+        catch(ExecutionException e) {
+            throw e.getCause();
+        }
+        finally {
+            assertTrue(verified.get());
+            session.close();
+        }
     }
 }
