@@ -93,6 +93,7 @@ public class HttpConnectionPoolBuilder {
 
             @Override
             public Socket connectSocket(final int connectTimeout, final Socket socket, final HttpHost host, final InetSocketAddress remoteAddress, final InetSocketAddress localAddress, final HttpContext context) throws IOException {
+                // Must set target hostname for plain socket which may be upgraded later to TLS from HttpClientConnectionOperator#upgrade
                 trust.setTarget(remoteAddress.getHostName());
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
