@@ -16,49 +16,28 @@ package ch.cyberduck.core.spectra;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.s3.S3ListService;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class SpectraListService extends S3ListService {
 
+    private final SpectraSession session;
+
     public SpectraListService(final SpectraSession session) {
         super(session);
+        this.session = session;
     }
 
     @Override
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        return super.list(directory, new IndexedListProgressListener() {
-
-            @Override
-            public void message(final String message) {
-                listener.message(message);
-            }
-
-            @Override
-            public void chunk(final Path folder, final AttributedList<Path> list) throws ConnectionCanceledException {
-                super.chunk(folder, list);
-                listener.chunk(folder, list);
-            }
-
-            @Override
-            public void visit(final AttributedList<Path> list, final int index, final Path p) {
-                if(p.isFile()) {
-                    if(p.attributes().isDuplicate()) {
-                        if(p.attributes().getRevision() == 1) {
-                            final Map<String, String> custom = new HashMap<>(p.attributes().getCustom());
-                            custom.put(SpectraVersioningFeature.KEY_REVERTABLE, Boolean.TRUE.toString());
-                            p.attributes().setCustom(custom);
-                        }
-                    }
-                }
-            }
-        });
+        if(directory.isRoot()) {
+            // List all buckets
+            return new SpectraBucketListService(session).list(directory, listener);
+        }
+        else {
+            return new SpectraObjectListService(session).list(directory, listener);
+        }
     }
 }
