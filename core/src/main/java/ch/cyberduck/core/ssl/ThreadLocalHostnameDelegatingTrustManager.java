@@ -21,15 +21,14 @@ package ch.cyberduck.core.ssl;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ThreadLocalHostnameDelegatingTrustManager implements X509TrustManager, TrustManagerHostnameCallback {
 
     /**
-     * Target hostname of current request
+     * Target hostname of current request stored as thread local
      */
-    private final AtomicReference<String> target
-        = new AtomicReference<String>();
+    private final ThreadLocal<String> target
+        = new ThreadLocal<String>();
 
     private final X509TrustManager delegate;
 
