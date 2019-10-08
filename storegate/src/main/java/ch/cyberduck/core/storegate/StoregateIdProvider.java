@@ -45,11 +45,6 @@ public class StoregateIdProvider implements IdProvider {
         }
     }
 
-    protected String set(final Path file, final String id) {
-        file.attributes().setVersionId(id);
-        return id;
-    }
-
     @Override
     public StoregateIdProvider withCache(final Cache<Path> cache) {
         return this;
