@@ -15,7 +15,7 @@ package ch.cyberduck.core.exception;
  * GNU General Public License for more details.
  */
 
-public class LockedException extends RetriableAccessDeniedException {
+public class LockedException extends AccessDeniedException {
     public LockedException(final String detail) {
         super(detail);
     }
