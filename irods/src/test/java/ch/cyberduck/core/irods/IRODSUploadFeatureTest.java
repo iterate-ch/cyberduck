@@ -173,7 +173,7 @@ public class IRODSUploadFeatureTest {
             },
             status,
             new DisabledConnectionCallback());
-        assertTrue(status.isCanceled());
+        status.validate();
         assertFalse(status.isComplete());
         session.close();
     }

@@ -9,6 +9,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -44,9 +45,9 @@ public class SwiftLargeObjectUploadFeatureTest {
     @Test
     public void testAppendNoPartCompleted() throws Exception {
         final SwiftSession session = new SwiftSession(
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
+            new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                new Credentials(
+                    System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -61,7 +62,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
             new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-                    1 * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+                1 * 1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 long count;
 
                 @Override
@@ -83,9 +84,9 @@ public class SwiftLargeObjectUploadFeatureTest {
 
         final TransferStatus append = new TransferStatus().append(true).length(content.length);
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-                1 * 1024L * 1024L, 1).upload(test, local,
-                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
-                new DisabledLoginCallback());
+            1 * 1024L * 1024L, 1).upload(test, local,
+            new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
+            new DisabledLoginCallback());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
         assertEquals(content.length, append.getOffset(), 0L);
@@ -103,9 +104,9 @@ public class SwiftLargeObjectUploadFeatureTest {
     @Test
     public void testAppendSecondPart() throws Exception {
         final SwiftSession session = new SwiftSession(
-                new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                        new Credentials(
-                                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
+            new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
+                new Credentials(
+                    System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret"))));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -121,7 +122,7 @@ public class SwiftLargeObjectUploadFeatureTest {
         final AtomicBoolean interrupt = new AtomicBoolean();
         try {
             new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-                    1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
+                1024L * 1024L, 1).upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener() {
                 long count;
 
                 @Override
@@ -143,9 +144,9 @@ public class SwiftLargeObjectUploadFeatureTest {
 
         final TransferStatus append = new TransferStatus().append(true).length(1024L * 1024L).skip(1024L * 1024L);
         new SwiftLargeObjectUploadFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)),
-                1024L * 1024L, 1).upload(test, local,
-                new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
-                new DisabledLoginCallback());
+            1024L * 1024L, 1).upload(test, local,
+            new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(), append,
+            new DisabledLoginCallback());
         assertEquals(2 * 1024L * 1024L, append.getOffset(), 0L);
         assertTrue(append.isComplete());
         assertTrue(new SwiftFindFeature(session).find(test));
@@ -163,8 +164,8 @@ public class SwiftLargeObjectUploadFeatureTest {
     @Test
     public void testUpload() throws Exception {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com",
-                new Credentials(
-                        System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
+            new Credentials(
+                System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")));
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final SwiftSession session = new SwiftSession(host);
@@ -187,19 +188,25 @@ public class SwiftLargeObjectUploadFeatureTest {
 
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
-                regionService,
-                new SwiftObjectListService(session, regionService),
-                new SwiftSegmentService(session, ".segments-test/"),
-                new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
+            regionService,
+            new SwiftObjectListService(session, regionService),
+            new SwiftSegmentService(session, ".segments-test/"),
+            new SwiftWriteFeature(session, regionService), (long) (content.length / 2), 4);
 
         final StorageObject object = upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status, new DisabledConnectionCallback());
+            status, new DisabledConnectionCallback());
         assertEquals(Checksum.NONE, Checksum.parse(object.getMd5sum()));
         assertEquals(Checksum.NONE, new SwiftAttributesFinderFeature(session).find(test).getChecksum());
         assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
 
         assertTrue(status.isComplete());
-        assertFalse(status.isCanceled());
+        try {
+            status.validate();
+            fail();
+        }
+        catch(ConnectionCanceledException e) {
+
+        }
         assertEquals(content.length, status.getOffset());
 
         assertTrue(new SwiftFindFeature(session).find(test));

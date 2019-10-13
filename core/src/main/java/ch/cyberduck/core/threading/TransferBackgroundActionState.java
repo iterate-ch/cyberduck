@@ -15,6 +15,7 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public final class TransferBackgroundActionState implements BackgroundActionState {
@@ -26,7 +27,13 @@ public final class TransferBackgroundActionState implements BackgroundActionStat
 
     @Override
     public boolean isCanceled() {
-        return status.isCanceled();
+        try {
+            status.validate();
+        }
+        catch(ConnectionCanceledException e) {
+            return true;
+        }
+        return false;
     }
 
     @Override

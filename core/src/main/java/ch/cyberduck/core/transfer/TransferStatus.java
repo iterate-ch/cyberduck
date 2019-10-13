@@ -24,6 +24,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCancelation;
@@ -251,11 +253,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     }
 
     /**
-     * @return True if marked for interrupt
      */
     @Override
-    public boolean isCanceled() {
-        return canceled.get();
+    public void validate() throws ConnectionCanceledException {
+        if(canceled.get()) {
+            throw new TransferCanceledException();
+        }
     }
 
     /**

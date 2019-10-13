@@ -20,7 +20,6 @@ package ch.cyberduck.core.io;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -97,7 +96,8 @@ public final class StreamCopier {
                     // Cast will work because chunk size is int
                     len = limit.intValue();
                 }
-                while(len > 0 && !cancel.isCanceled()) {
+                while(len > 0) {
+                    cancel.validate();
                     final int read = in.read(buffer, 0, len);
                     if(-1 == read) {
                         if(log.isDebugEnabled()) {
@@ -144,9 +144,7 @@ public final class StreamCopier {
             listener.recv(-recv);
             throw e;
         }
-        if(cancel.isCanceled()) {
-            throw new TransferCanceledException();
-        }
+        cancel.validate();
     }
 
     public static InputStream skip(final InputStream in, final long offset) throws BackgroundException {

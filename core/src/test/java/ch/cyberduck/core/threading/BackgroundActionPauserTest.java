@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import org.junit.Test;
 
@@ -42,8 +43,10 @@ public class BackgroundActionPauserTest {
         }
         new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
             @Override
-            public boolean isCanceled() {
-                return action.isCanceled();
+            public void validate() throws ConnectionCanceledException {
+                if(action.isCanceled()) {
+                    throw new ConnectionCanceledException();
+                }
             }
 
             @Override

@@ -20,6 +20,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -79,7 +80,13 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
         assertEquals(checksum, new B2AttributesFinderFeature(session, fileid).find(test).getChecksum());
 
         assertTrue(status.isComplete());
-        assertFalse(status.isCanceled());
+        try {
+            status.validate();
+            fail();
+        }
+        catch(ConnectionCanceledException e) {
+
+        }
         assertEquals(content.length, status.getOffset());
 
         assertTrue(new DefaultFindFeature(session).find(test));
