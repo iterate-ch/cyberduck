@@ -22,7 +22,6 @@ import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.AppendWriteFeature;
@@ -96,9 +95,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
             @Override
             public void run() {
                 try {
-                    if(status.isCanceled()) {
-                        throw new TransferCanceledException();
-                    }
+                    status.validate();
                     response = command.call(entity);
                 }
                 catch(Exception e) {
@@ -138,9 +135,7 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
              */
             @Override
             public T getStatus() throws BackgroundException {
-                if(status.isCanceled()) {
-                    throw new TransferCanceledException();
-                }
+                status.validate();
                 // Block the calling thread until after the full response from the server
                 // has been consumed.
                 Uninterruptibles.awaitUninterruptibly(exit);

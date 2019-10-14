@@ -17,7 +17,9 @@ package ch.cyberduck.core.io;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+
 public interface StreamCancelation {
 
-    boolean isCanceled();
+    void validate() throws ConnectionCanceledException;
 }

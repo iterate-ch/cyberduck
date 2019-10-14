@@ -21,6 +21,7 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -111,8 +112,10 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
         if(delay > 0) {
             final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
                 @Override
-                public boolean isCanceled() {
-                    return cancel.isCanceled();
+                public void validate() throws ConnectionCanceledException {
+                    if(cancel.isCanceled()) {
+                        throw new ConnectionCanceledException();
+                    }
                 }
 
                 @Override

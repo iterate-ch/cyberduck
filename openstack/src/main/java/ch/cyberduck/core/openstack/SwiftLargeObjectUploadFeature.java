@@ -27,7 +27,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -205,9 +204,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         return pool.execute(new DefaultRetryCallable<StorageObject>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
-                if(overall.isCanceled()) {
-                    throw new TransferCanceledException();
-                }
+                overall.validate();
                 final TransferStatus status = new TransferStatus()
                     .length(length)
                     .skip(offset);

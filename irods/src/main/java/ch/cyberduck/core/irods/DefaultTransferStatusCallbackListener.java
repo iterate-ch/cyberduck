@@ -17,6 +17,7 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -53,19 +54,20 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
                 listener.sent(bytes);
                 break;
         }
-        if(status.isCanceled()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Set canceled for block %s", block));
-            }
-            block.setCancelled(true);
-            return FileStatusCallbackResponse.SKIP;
-        }
-        else {
+        try {
+            status.validate();
             if(!t.isIntraFileStatusReport()) {
                 if(t.getTotalFilesTransferredSoFar() == t.getTotalFilesToTransfer()) {
                     status.setComplete();
                 }
             }
+        }
+        catch(ConnectionCanceledException e) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Set canceled for block %s", block));
+            }
+            block.setCancelled(true);
+            return FileStatusCallbackResponse.SKIP;
         }
         return FileStatusCallbackResponse.CONTINUE;
     }
@@ -77,7 +79,10 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
 
     @Override
     public CallbackResponse transferAsksWhetherToForceOperation(final String irodsAbsolutePath, final boolean isCollection) {
-        if(status.isCanceled()) {
+        try {
+            status.validate();
+        }
+        catch(ConnectionCanceledException e) {
             return CallbackResponse.CANCEL;
         }
         if(status.isAppend()) {
