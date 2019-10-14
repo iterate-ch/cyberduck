@@ -30,11 +30,18 @@ public class TransferSpeedometer extends Speedometer {
     }
 
     public TransferProgress getStatus() {
+        return this.getStatus(transfer.isRunning());
+    }
+
+    /**
+     * @param plain Include transferred size in bytes
+     */
+    public TransferProgress getStatus(boolean plain) {
         final Long transferred = transfer.getTransferred();
         final Long size = transfer.getSize();
         final Double speed = this.getSpeed(transferred, false);
         return new TransferProgress(size, transferred,
-                this.getProgress(transfer.isRunning(), size, transferred, speed), speed);
+            this.getProgress(transfer.isRunning(), size, transferred, plain, speed), speed);
     }
 
     public void reset() {
