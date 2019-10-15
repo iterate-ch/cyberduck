@@ -34,6 +34,7 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.api.UploadsApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
@@ -170,6 +171,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     protected VersionId complete(final String uploadId, final TransferStatus status) throws IOException, InvalidFileKeyException, InvalidKeyPairException, CryptoSystemException, BackgroundException, ApiException {
         final SDSApiClient client = session.getClient();
         final CompleteUploadRequest body = new CompleteUploadRequest()
+            .keepShareLinks(PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep"))
             .resolutionStrategy(status.isExists() ? CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteUploadRequest.ResolutionStrategyEnum.FAIL);
         if(status.getFilekey() != null) {
             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
