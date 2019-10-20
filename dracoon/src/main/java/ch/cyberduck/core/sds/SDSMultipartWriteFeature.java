@@ -215,7 +215,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     return;
                 }
                 final CompleteUploadRequest body = new CompleteUploadRequest()
-                    .keepShareLinks(PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep"))
+                    .keepShareLinks(overall.isExists() ? PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep") : false)
                     .resolutionStrategy(overall.isExists() ? CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteUploadRequest.ResolutionStrategyEnum.FAIL);
                 if(overall.getFilekey() != null) {
                     final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
