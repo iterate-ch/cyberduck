@@ -52,7 +52,7 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
     public void testGetProtocol() {
         final DistributionConfiguration configuration
             = new GoogleStorageWebsiteDistributionConfiguration(session);
-        assertEquals(new GoogleStorageProtocol().getDefaultHostname(), configuration.getHostname());
+        assertEquals("storage.googleapis.com", configuration.getHostname());
     }
 
     @Test
