@@ -523,7 +523,8 @@ public class DAVSessionTest extends AbstractDAVTest {
         session.close();
     }
 
-    @Test(expected = ConnectionRefusedException.class)
+    @Test
+    @Ignore
     public void testConnectProxy() throws Throwable {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final AtomicBoolean verified = new AtomicBoolean();
@@ -572,7 +573,8 @@ public class DAVSessionTest extends AbstractDAVTest {
         }
     }
 
-    @Test(expected = ConnectionRefusedException.class)
+    @Test
+    @Ignore
     public void testConnectProxyHttps() throws Throwable {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final AtomicBoolean verified = new AtomicBoolean();
