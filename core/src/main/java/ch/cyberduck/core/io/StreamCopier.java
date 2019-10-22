@@ -20,6 +20,7 @@ package ch.cyberduck.core.io;
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.log4j.Logger;
@@ -134,6 +135,9 @@ public final class StreamCopier {
                 final StreamCloser c = new DefaultStreamCloser();
                 c.close(in);
             }
+        }
+        catch(ConnectionCanceledException e) {
+            throw e;
         }
         catch(Exception e) {
             // Discard sent bytes if there is an error reply.
