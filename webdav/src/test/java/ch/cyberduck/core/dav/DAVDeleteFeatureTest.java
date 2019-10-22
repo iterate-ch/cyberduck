@@ -2,6 +2,7 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -30,7 +31,7 @@ public class DAVDeleteFeatureTest extends AbstractDAVTest {
         assertFalse(new DAVFindFeature(session).find(test));
     }
 
-    @Test
+    @Test(expected = InteroperabilityException.class)
     public void testDeleteFileWithLock() throws Exception {
         final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DAVTouchFeature(session).touch(test, new TransferStatus());
