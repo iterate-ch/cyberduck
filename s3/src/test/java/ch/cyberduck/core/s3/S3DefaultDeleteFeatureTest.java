@@ -50,7 +50,7 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeletePlaceholder() throws Exception {
-        final Path container = new Path("cyberduck-versioning-eu-central-1", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(new Path(container,
             String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
