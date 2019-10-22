@@ -28,6 +28,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
@@ -130,6 +131,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 }
                 catch(UnknownHostException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
+                }
+                if(new Version(StringUtils.removePattern(this.softwareVersion().getRestApiVersion(), "-.*")).compareTo(new Version("4.15.0")) >= 0) {
+                    authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
                 }
                 configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
                 configuration.addInterceptorLast(authorizationService);
