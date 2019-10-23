@@ -80,7 +80,7 @@ public class StoregateListService implements ListService {
                     );
                     for(File f : files.getFiles()) {
                         final PathAttributes attrs = attributes.toAttributes(f);
-                        final EnumSet<Path.Type> type = (f.getFlags() & File.FlagsEnum.Folder.getValue()) == 1 ?
+                        final EnumSet<Path.Type> type = (f.getFlags() & File.FlagsEnum.Folder.getValue()) == File.FlagsEnum.Folder.getValue() ?
                             EnumSet.of(Path.Type.directory) :
                             EnumSet.of(Path.Type.file);
                         final Path p = new Path(directory, f.getName(), type, attrs);
