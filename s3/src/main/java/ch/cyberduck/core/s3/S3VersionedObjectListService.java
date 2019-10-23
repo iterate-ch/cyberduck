@@ -94,7 +94,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 final VersionOrDeleteMarkersChunk chunk = session.getClient().listVersionedObjectsChunked(
                     bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
                     preferences.getInteger("s3.listing.chunksize"),
-                    priorLastKey, priorLastVersionId, true);
+                    priorLastKey, priorLastVersionId, false);
                 // Amazon S3 returns object versions in the order in which they were
                 // stored, with the most recently stored returned first.
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {
@@ -147,7 +147,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     }
                     folders.add(this.submit(pool, bucket, URLDecoder.decode(common, StandardCharsets.UTF_8.name())));
                 }
-                priorLastKey = chunk.getNextKeyMarker();
+                priorLastKey = null != chunk.getNextKeyMarker() ? URLDecoder.decode(chunk.getNextKeyMarker(), StandardCharsets.UTF_8.name()) : null;
                 priorLastVersionId = chunk.getNextVersionIdMarker();
                 listener.chunk(directory, children);
             }

@@ -90,7 +90,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 // in lexicographic (alphabetical) order.
                 final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
                     PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
-                    chunksize, priorLastKey);
+                    chunksize, priorLastKey, false);
 
                 final StorageObject[] objects = chunk.getObjects();
                 for(StorageObject object : objects) {
@@ -139,7 +139,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                     attributes.setRegion(bucket.attributes().getRegion());
                     children.add(file);
                 }
-                priorLastKey = chunk.getPriorLastKey();
+                priorLastKey = null != chunk.getPriorLastKey() ? URLDecoder.decode(chunk.getPriorLastKey(), StandardCharsets.UTF_8.name()) : null;
                 listener.chunk(directory, children);
             }
             while(priorLastKey != null);
