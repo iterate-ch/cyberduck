@@ -132,9 +132,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                 catch(UnknownHostException e) {
                     throw new DefaultIOExceptionMappingService().map(e);
                 }
-                if(new Version(StringUtils.removePattern(this.softwareVersion().getRestApiVersion(), "-.*")).compareTo(new Version("4.15.0")) >= 0) {
-                    authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
-                }
                 configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
                 configuration.addInterceptorLast(authorizationService);
                 configuration.addInterceptorLast(new HttpRequestInterceptor() {
@@ -174,6 +171,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
+                if(new Version(StringUtils.removePattern(this.softwareVersion().getRestApiVersion(), "-.*")).compareTo(new Version("4.15.0")) >= 0) {
+                    authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
+                }
                 authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
                 break;
             case radius:
@@ -208,7 +208,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
-            final UserAccount account = new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false);
+            final UserAccount account = new UserApi(client).getUserInfo(StringUtils.EMPTY, null, false);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
@@ -217,7 +217,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     credentials.setUsername(account.getLogin());
             }
             userAccount.set(new UserAccountWrapper(account));
-            keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
+            keyPair.set(new UserApi(client).getUserKeyPair(StringUtils.EMPTY));
             final UserPrivateKey privateKey = new UserPrivateKey();
             final UserKeyPairContainer keyPairContainer = keyPair.get();
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
@@ -241,7 +241,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
-            softwareVersion.set(new PublicApi(this.getClient()).getSoftwareVersion(null));
+            softwareVersion.set(new PublicApi(client).getSoftwareVersion(null));
         }
         catch(ApiException e) {
             log.warn(String.format("Ignore failure reading version. %s", new SDSExceptionMappingService().map(e)));
@@ -275,7 +275,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
-                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false)));
+                userAccount.set(new UserAccountWrapper(new UserApi(client).getUserInfo(StringUtils.EMPTY, null, false)));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user info. %s", e.getMessage()));
@@ -288,7 +288,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserKeyPairContainer keyPair() throws BackgroundException {
         if(keyPair.get() == null) {
             try {
-                keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
+                keyPair.set(new UserApi(client).getUserKeyPair(StringUtils.EMPTY));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
@@ -301,7 +301,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public SoftwareVersionData softwareVersion() throws BackgroundException {
         if(softwareVersion.get() == null) {
             try {
-                softwareVersion.set(new PublicApi(this.getClient()).getSoftwareVersion(null));
+                softwareVersion.set(new PublicApi(client).getSoftwareVersion(null));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
