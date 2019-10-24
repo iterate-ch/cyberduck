@@ -53,7 +53,7 @@ public class B2CopyFeature implements Copy {
         catch(B2ApiException e) {
             if(StringUtils.equals("file_state_none", e.getMessage())) {
                 // Pending large file upload
-                return new B2TouchFeature(session, fileid).touch(target, status);
+                return new B2TouchFeature(session, fileid).touch(target, new TransferStatus());
             }
             throw new B2ExceptionMappingService().map("Cannot copy {0}", e, source);
         }
