@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.DelayedHttpMultipartEntity;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -51,7 +50,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
@@ -100,8 +98,6 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         try {
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
             final String uploadId = response.getUploadId();
-            final DelayedHttpMultipartEntity entity = new DelayedHttpMultipartEntity(file.getName(), status);
-            entity.setChunked(PreferencesFactory.get().getBoolean("sds.upload.transferencoding.chunked"));
             final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
                 @Override
                 public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
@@ -110,7 +106,6 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         final HttpPost request = new HttpPost(String.format("%s/v4/nodes/files/uploads/%s", client.getBasePath(), uploadId));
                         request.setEntity(entity);
                         request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
-                        request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
                         final HttpResponse response = client.getClient().execute(request);
                         try {
                             // Validate response
@@ -157,10 +152,10 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 
                 @Override
                 public long getContentLength() {
-                    return entity.getContentLength();
+                    return status.getLength();
                 }
             };
-            return this.write(file, status, command, entity);
+            return this.write(file, status, command);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
