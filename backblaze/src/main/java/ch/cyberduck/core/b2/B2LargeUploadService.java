@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Upload;
@@ -96,7 +97,6 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                                  final ConnectionCallback callback) throws BackgroundException {
         final ThreadPool pool = ThreadPoolFactory.get("largeupload", concurrency);
         try {
-            final String fileid;
             // Get the results of the uploads in the order they were submitted
             // this is important for building the manifest, and is not a problem in terms of performance
             // because we should only continue when all segments have uploaded successfully
@@ -118,17 +118,17 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, this.fileid);
                 final List<B2FileInfoResponse> uploads = partService.find(file);
                 if(uploads.isEmpty()) {
-                    fileid = session.getClient().startLargeFileUpload(this.fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
-                        containerService.getKey(file), status.getMime(), fileinfo).getFileId();
+                    status.setVersion(new VersionId(session.getClient().startLargeFileUpload(this.fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
+                        containerService.getKey(file), status.getMime(), fileinfo).getFileId()));
                 }
                 else {
-                    fileid = uploads.iterator().next().getFileId();
-                    completed.addAll(partService.list(fileid));
+                    status.setVersion(new VersionId(uploads.iterator().next().getFileId()));
+                    completed.addAll(partService.list(status.getVersion().id));
                 }
             }
             else {
-                fileid = session.getClient().startLargeFileUpload(this.fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
-                    containerService.getKey(file), status.getMime(), fileinfo).getFileId();
+                status.setVersion(new VersionId(session.getClient().startLargeFileUpload(this.fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
+                    containerService.getKey(file), status.getMime(), fileinfo).getFileId()));
             }
             // Full size of file
             final long size = status.getLength() + status.getOffset();
@@ -194,7 +194,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             for(B2UploadPartResponse part : completed) {
                 checksums.add(part.getContentSha1());
             }
-            final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(fileid, checksums.toArray(new String[checksums.size()]));
+            final B2FinishLargeFileResponse response = session.getClient().finishLargeFileUpload(status.getVersion().id, checksums.toArray(new String[checksums.size()]));
             if(log.isInfoEnabled()) {
                 log.info(String.format("Finished large file upload %s with %d parts", file, completed.size()));
             }
@@ -229,6 +229,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 status.setNonces(overall.getNonces());
                 status.setChecksum(writer.checksum(file).compute(local.getInputStream(), status));
                 status.setSegment(true);
+                status.setVersion(overall.getVersion());
                 status.setPart(partNumber);
                 return (B2UploadPartResponse) B2LargeUploadService.super.upload(file, local, throttle, listener, status, overall, new StreamProgress() {
                     @Override
