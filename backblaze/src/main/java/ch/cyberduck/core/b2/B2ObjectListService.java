@@ -129,7 +129,7 @@ public class B2ObjectListService implements ListService {
             }
             final PathAttributes attributes = this.parse(info);
             final Long revision;
-            if(revisions.keySet().contains(info.getFileName())) {
+            if(revisions.containsKey(info.getFileName())) {
                 // Later version already found
                 attributes.setDuplicate(true);
                 revision = revisions.get(info.getFileName()) + 1L;
@@ -170,10 +170,11 @@ public class B2ObjectListService implements ListService {
                 // File version marking the file as hidden, so that it will not show up in b2_list_file_names
             case start:
                 // Large file has been started, but not finished or canceled
-                attributes.setSize(-1L);
+                attributes.setDuplicate(true);
                 break;
             default:
                 attributes.setSize(response.getContentLength());
+                break;
         }
         return attributes;
     }

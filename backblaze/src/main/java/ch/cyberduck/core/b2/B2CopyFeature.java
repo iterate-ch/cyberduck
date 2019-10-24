@@ -24,8 +24,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 
 import synapticloop.b2.exception.B2ApiException;
@@ -51,10 +49,6 @@ public class B2CopyFeature implements Copy {
             return new Path(target.getParent(), target.getName(), target.getType(), new B2AttributesFinderFeature(session, fileid).toAttributes(response));
         }
         catch(B2ApiException e) {
-            if(StringUtils.equals("file_state_none", e.getMessage())) {
-                // Pending large file upload
-                return new B2TouchFeature(session, fileid).touch(target, status);
-            }
             throw new B2ExceptionMappingService().map("Cannot copy {0}", e, source);
         }
         catch(IOException e) {
