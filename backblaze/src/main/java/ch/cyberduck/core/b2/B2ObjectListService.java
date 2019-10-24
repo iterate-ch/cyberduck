@@ -129,7 +129,7 @@ public class B2ObjectListService implements ListService {
             }
             final PathAttributes attributes = this.parse(info);
             final Long revision;
-            if(revisions.keySet().contains(info.getFileName())) {
+            if(revisions.containsKey(info.getFileName())) {
                 // Later version already found
                 attributes.setDuplicate(true);
                 revision = revisions.get(info.getFileName()) + 1L;
