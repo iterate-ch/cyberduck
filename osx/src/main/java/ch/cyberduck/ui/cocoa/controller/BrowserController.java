@@ -2808,9 +2808,6 @@ public class BrowserController extends WindowController
     }
 
     public boolean isIdle() {
-        if(pool == SessionPool.DISCONNECTED) {
-            return false;
-        }
         return registry.isEmpty();
     }
 
