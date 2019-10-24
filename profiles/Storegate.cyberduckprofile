@@ -46,7 +46,7 @@
         <key>Password Configurable</key>
         <false/>
         <key>OAuth Authorization Url</key>
-        <string>/identity/core/connect/authorize</string>
+        <string>/identity/core/connect/authorize&amp;prompt=login</string>
         <key>OAuth Token Url</key>
         <string>/identity/core/connect/token</string>
         <key>OAuth Redirect Url</key>
