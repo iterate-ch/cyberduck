@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2014 Yves Langisch. All rights reserved.
-// http://cyberduck.ch/
+// Copyright (c) 2010-2019 Yves Langisch. All rights reserved.
+// https://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,12 +13,13 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@cyberduck.ch
-// 
+// feedback@cyberduck.io
+//
 
 using System;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
+using org.apache.commons.lang3;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Preferences
@@ -27,9 +28,12 @@ namespace Ch.Cyberduck.Core.Preferences
     {
         public ch.cyberduck.core.Local find()
         {
+            var folder = PreferencesFactory.get().getProperty("application.appdata.foldername");
             return
                 LocalFactory.get(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                              PreferencesFactory.get().getProperty("application.container.name")));
+                    StringUtils.isNotEmpty(folder)
+                        ? folder
+                        : PreferencesFactory.get().getProperty("application.container.name")));
         }
     }
 }
