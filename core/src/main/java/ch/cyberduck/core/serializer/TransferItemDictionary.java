@@ -45,10 +45,7 @@ public class TransferItemDictionary {
         if(localObj != null) {
             item.setLocal(new LocalDictionary(deserializer).deserialize((localObj)));
         }
-        final Object lockObj = dict.objectForKey("Lock Id");
-        if(lockObj != null) {
-            item.setLockId(lockObj.toString());
-        }
+        item.setLockId(dict.stringForKey("Lock Id"));
         return item;
     }
 }

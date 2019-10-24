@@ -58,7 +58,7 @@ public class TransferItem implements Referenceable, Serializable {
             dict.setObjectForKey(local, "Local Dictionary");
         }
         if(lockId != null) {
-            dict.setObjectForKey(local, "Lock Id");
+            dict.setStringForKey(lockId, "Lock Id");
         }
         return dict.getSerialized();
     }
