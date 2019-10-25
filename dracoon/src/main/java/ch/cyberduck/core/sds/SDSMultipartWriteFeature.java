@@ -21,7 +21,6 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Version;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -71,8 +70,6 @@ import com.dracoon.sdk.crypto.InvalidKeyPairException;
 import com.dracoon.sdk.crypto.model.EncryptedFileKey;
 import com.fasterxml.jackson.databind.ObjectReader;
 
-import static ch.cyberduck.core.sds.SDSWriteFeature.DEFAULT_CLASSIFICATION;
-
 public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
 
@@ -97,9 +94,6 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
         final CreateFileUploadRequest body = new CreateFileUploadRequest()
             .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
             .name(file.getName());
-        if(new Version(StringUtils.removePattern(session.softwareVersion().getRestApiVersion(), "-.*")).compareTo(new Version("4.9.0")) < 0) {
-            body.classification(DEFAULT_CLASSIFICATION);
-        }
         try {
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
             final String id = response.getUploadId();
