@@ -100,6 +100,8 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
             Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                 host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
         );
+        // Force login even if browser session already exists
+        authorizationService.withParameter("prompt", "login");
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         configuration.addInterceptorLast(authorizationService);
         final CloseableHttpClient apache = configuration.build();
