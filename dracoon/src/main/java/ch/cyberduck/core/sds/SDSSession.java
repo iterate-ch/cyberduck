@@ -330,7 +330,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Write.class) {
-            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSWriteFeature(this, nodeid));
+            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
         }
         if(type == MultipartWrite.class) {
             return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
