@@ -301,6 +301,7 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("application.name", "Cyberduck");
         this.setDefault("application.container.name", "duck");
+        this.setDefault("application.datafolder.name", "duck");
 
         /*
           Lowercase folder name to use when looking for bookmarks in user support directory

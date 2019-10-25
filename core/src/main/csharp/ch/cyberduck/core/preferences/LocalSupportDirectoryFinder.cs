@@ -19,7 +19,6 @@
 using System;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
-using org.apache.commons.lang3;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Core.Preferences
@@ -28,12 +27,9 @@ namespace Ch.Cyberduck.Core.Preferences
     {
         public ch.cyberduck.core.Local find()
         {
-            var folder = PreferencesFactory.get().getProperty("application.appdata.foldername");
             return
                 LocalFactory.get(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    StringUtils.isNotEmpty(folder)
-                        ? folder
-                        : PreferencesFactory.get().getProperty("application.container.name")));
+                    PreferencesFactory.get().getProperty("application.datafoler.name")));
         }
     }
 }
