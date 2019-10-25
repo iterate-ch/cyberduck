@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.DelayedHttpMultipartEntity;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
@@ -53,11 +52,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.ByteArrayBody;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
@@ -143,10 +140,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
                 final byte[] content = Arrays.copyOfRange(b, off, len);
-                final HttpEntity entity = MultipartEntityBuilder.create()
-                    .setBoundary(DelayedHttpMultipartEntity.DEFAULT_BOUNDARY)
-                    .addPart("file", new ByteArrayBody(content, file.getName()))
-                    .build();
+                final HttpEntity entity = EntityBuilder.create().setBinary(content).build();
                 new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
@@ -155,7 +149,6 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                             final HttpPost request = new HttpPost(String.format("%s/v4/nodes/files/uploads/%s", client.getBasePath(), uploadId));
                             request.setEntity(entity);
                             request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
-                            request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
                             if(0L != overall.getLength() && 0 != content.length) {
                                 final HttpRange range = HttpRange.byLength(offset, content.length);
                                 final String header;
