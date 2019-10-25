@@ -25,6 +25,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class VaultRegistryDeleteFeature implements Delete {
@@ -49,7 +50,7 @@ public class VaultRegistryDeleteFeature implements Delete {
                 sorted = vaults.get(vault);
             }
             else {
-                sorted = new HashMap<>();
+                sorted = new LinkedHashMap<>();
             }
             sorted.put(file.getKey(), file.getValue());
             vaults.put(vault, sorted);

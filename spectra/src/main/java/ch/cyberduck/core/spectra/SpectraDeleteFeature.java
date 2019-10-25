@@ -26,8 +26,8 @@ import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.spectralogic.ds3client.Ds3Client;
@@ -50,7 +50,7 @@ public class SpectraDeleteFeature extends S3MultipleDeleteFeature {
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         try {
-            final Map<Path, TransferStatus> filtered = new HashMap<>(files);
+            final Map<Path, TransferStatus> filtered = new LinkedHashMap<>(files);
             for(Iterator<Map.Entry<Path, TransferStatus>> iter = filtered.entrySet().iterator(); iter.hasNext(); ) {
                 final Map.Entry<Path, TransferStatus> file = iter.next();
                 if(containerService.isContainer(file.getKey())) {
