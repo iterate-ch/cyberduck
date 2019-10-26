@@ -60,7 +60,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     private static final Logger log = Logger.getLogger(B2WriteFeature.class);
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+        = new B2PathContainerService();
 
     private final B2Session session;
     private final B2FileidProvider fileid;
@@ -68,7 +68,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     private final AttributesFinder attributes;
 
     private final ThreadLocal<B2GetUploadUrlResponse> urls
-            = new ThreadLocal<B2GetUploadUrlResponse>();
+        = new ThreadLocal<B2GetUploadUrlResponse>();
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -126,7 +126,8 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                                 status.getMime(),
                                 fileinfo);
                         }
-                        catch(B2ApiException e) {
+                        catch(IOException | B2ApiException e) {
+                            // Upload many files to the same upload_url until that URL gives an error
                             urls.remove();
                             throw e;
                         }
