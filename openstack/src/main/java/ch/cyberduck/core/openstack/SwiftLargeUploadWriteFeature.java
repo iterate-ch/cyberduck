@@ -26,7 +26,7 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
-import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -54,7 +54,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     private static final Logger log = Logger.getLogger(SwiftLargeUploadWriteFeature.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final SwiftSession session;
     private final Find finder;
@@ -91,7 +91,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
     public HttpResponseOutputStream<List<StorageObject>> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         final LargeUploadOutputStream proxy = new LargeUploadOutputStream(file, status);
         return new HttpResponseOutputStream<List<StorageObject>>(new MemorySegementingOutputStream(proxy,
-                PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
+            PreferencesFactory.get().getInteger("openstack.upload.largeobject.size.minimum"))) {
             @Override
             public List<StorageObject> getStatus() {
                 return proxy.getCompleted();
@@ -143,7 +143,7 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                     public StorageObject call() throws BackgroundException {
                         final TransferStatus status = new TransferStatus().length(len);
                         status.setChecksum(SwiftLargeUploadWriteFeature.this.checksum(file)
-                                .compute(new ByteArrayInputStream(content, off, len), status)
+                            .compute(new ByteArrayInputStream(content, off, len), status)
                         );
                         // Segment name with left padded segment number
                         final Path segment = segmentService.getSegment(file, status.getLength(), ++segmentNumber);
@@ -152,9 +152,10 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                         final String checksum;
                         try {
                             checksum = session.getClient().storeObject(
-                                    regionService.lookup(file),
-                                    containerService.getContainer(segment).getName(), containerService.getKey(segment),
-                                    entity, headers, Checksum.NONE == status.getChecksum() ? null : status.getChecksum().hash);
+                                regionService.lookup(file),
+                                containerService.getContainer(segment).getName(), containerService.getKey(segment),
+                                entity, headers,
+                                status.getChecksum().algorithm == HashAlgorithm.md5 ? status.getChecksum().hash : null);
                         }
                         catch(GenericException e) {
                             throw new SwiftExceptionMappingService().map("Upload {0} failed", e, file);
@@ -196,10 +197,10 @@ public class SwiftLargeUploadWriteFeature implements MultipartWrite<List<Storage
                         log.debug(String.format("Creating SLO manifest %s for %s", manifest, file));
                     }
                     session.getClient().createSLOManifestObject(regionService.lookup(
-                            containerService.getContainer(file)),
-                            containerService.getContainer(file).getName(),
-                            overall.getMime(),
-                            containerService.getKey(file), manifest, Collections.emptyMap());
+                        containerService.getContainer(file)),
+                        containerService.getContainer(file).getName(),
+                        overall.getMime(),
+                        containerService.getKey(file), manifest, Collections.emptyMap());
                 }
             }
             catch(BackgroundException e) {
