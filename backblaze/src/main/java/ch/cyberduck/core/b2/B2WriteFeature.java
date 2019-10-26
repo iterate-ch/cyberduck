@@ -122,7 +122,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                             }
                             return session.getClient().uploadFile(uploadUrl,
                                 containerService.getKey(file),
-                                entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
+                                entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
                                 status.getMime(),
                                 fileinfo);
                         }
