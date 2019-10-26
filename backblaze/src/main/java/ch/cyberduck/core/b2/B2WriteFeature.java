@@ -121,9 +121,9 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                                 fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
                             }
                             return session.getClient().uploadFile(uploadUrl,
-                                    containerService.getKey(file),
-                                    entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
-                                    status.getMime(),
+                                containerService.getKey(file),
+                                entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
+                                status.getMime(),
                                 fileinfo);
                         }
                         catch(B2ApiException e) {
