@@ -3,6 +3,7 @@ https://cyberduck.io/
 
 7.1.2
 - [Bugfix] Folder showing no more than 1000 files (S3) (#10811)
+- [Bugfix] Failure deleting folder recursively (FTP)
 
 7.1.1
 - [Bugfix] Failure authenticating using SSH agent (SFTP) (#10800)
