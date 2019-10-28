@@ -52,6 +52,7 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
+        status.setMime("text/plain");
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());

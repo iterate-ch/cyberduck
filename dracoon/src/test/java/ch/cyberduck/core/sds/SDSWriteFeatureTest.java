@@ -59,6 +59,7 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
+            status.setMime("text/plain");
             final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
             final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
