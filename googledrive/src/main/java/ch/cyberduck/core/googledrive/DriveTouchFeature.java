@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.Collections;
 
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.DriveList;
 import com.google.api.services.drive.model.File;
 
 public class DriveTouchFeature implements Touch<VersionId> {
@@ -67,7 +66,7 @@ public class DriveTouchFeature implements Touch<VersionId> {
         if(workdir.isRoot()) {
             return false;
         }
-        else if (DriveHomeFinderService.TEAM_DRIVES_NAME.equals(workdir)) {
+        else if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(workdir)) {
             return false;
         }
         return true;
