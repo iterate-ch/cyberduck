@@ -24,6 +24,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.SecureRandomProviderFactory;
 
 import org.apache.log4j.Logger;
+import org.conscrypt.OpenSSLProvider;
 
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.HandshakeCompletedListener;
@@ -37,6 +38,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
@@ -78,7 +80,13 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         this.trust = trust;
         this.key = key;
         try {
-            context = SSLContext.getInstance("TLS");
+            if(preferences.getBoolean("connection.ssl.provider.conscrypt")) {
+                context = SSLContext.getInstance("TLS",  new OpenSSLProvider());
+            }
+            else {
+                // Default provider
+                context = SSLContext.getInstance("TLS");
+            }
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, seeder);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Using SSL context with protocol %s", context.getProtocol()));
@@ -179,7 +187,8 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     @Override
     public Socket createSocket(final String host, final int port,
-                               final InetAddress clientHost, final int clientPort) throws IOException {
+                               final InetAddress clientHost, final int clientPort)
+        throws IOException {
         return this.handshake(new SocketGetter() {
             @Override
             public Socket create() throws IOException {
@@ -220,7 +229,8 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     }
 
     @Override
-    public Socket createSocket(final Socket socket, final String host, final int port, final boolean autoClose) throws IOException {
+    public Socket createSocket(final Socket socket, final String host, final int port, final boolean autoClose)
+        throws IOException {
         return this.handshake(new SocketGetter() {
             @Override
             public Socket create() throws IOException {
