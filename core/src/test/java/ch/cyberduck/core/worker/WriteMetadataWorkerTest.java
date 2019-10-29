@@ -7,7 +7,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Metadata;
 
 import org.junit.Test;
@@ -46,13 +45,13 @@ public class WriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                        public Map<String, String> getMetadata(final Path file) {
                             fail();
                             return null;
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+                        public void setMetadata(final Path file, final Map<String, String> metadata) {
                             fail();
                         }
                     };
@@ -91,12 +90,12 @@ public class WriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                        public Map<String, String> getMetadata(final Path file) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+                        public void setMetadata(final Path file, final Map<String, String> metadata) {
                             fail();
                         }
                     };
@@ -138,12 +137,12 @@ public class WriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                        public Map<String, String> getMetadata(final Path file) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> meta) throws BackgroundException {
+                        public void setMetadata(final Path file, final Map<String, String> meta) {
                             assertTrue(meta.containsKey("nullified"));
                             assertTrue(meta.containsKey("key"));
                             assertEquals("v2", meta.get("key"));
@@ -189,12 +188,12 @@ public class WriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                        public Map<String, String> getMetadata(final Path file) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> meta) throws BackgroundException {
+                        public void setMetadata(final Path file, final Map<String, String> meta) {
                             assertTrue(meta.containsKey("k1"));
                             assertTrue(meta.containsKey("k2"));
                             assertEquals("v1", meta.get("k1"));
@@ -256,12 +255,12 @@ public class WriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public Map<String, String> getMetadata(final Path file) throws BackgroundException {
+                        public Map<String, String> getMetadata(final Path file) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+                        public void setMetadata(final Path file, final Map<String, String> metadata) {
                             assertTrue(metadata.containsKey("equal"));
                             assertTrue(metadata.containsKey("different"));
                             assertEquals("equal-changed", metadata.get("equal"));

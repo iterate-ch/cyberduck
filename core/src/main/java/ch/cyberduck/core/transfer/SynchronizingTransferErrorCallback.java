@@ -17,8 +17,12 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.exception.BackgroundException;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class SynchronizingTransferErrorCallback implements TransferErrorCallback {
     private final TransferErrorCallback proxy;
+    private final Lock lock = new ReentrantLock();
 
     public SynchronizingTransferErrorCallback(final TransferErrorCallback proxy) {
         this.proxy = proxy;
@@ -26,8 +30,12 @@ public class SynchronizingTransferErrorCallback implements TransferErrorCallback
 
     @Override
     public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure) throws BackgroundException {
-        synchronized(this) {
+        lock.lock();
+        try {
             return proxy.prompt(item, status, failure);
+        }
+        finally {
+            lock.unlock();
         }
     }
 }

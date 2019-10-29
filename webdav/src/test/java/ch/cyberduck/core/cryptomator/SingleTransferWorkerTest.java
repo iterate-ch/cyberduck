@@ -26,7 +26,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.NullFilter;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
@@ -43,7 +42,6 @@ import ch.cyberduck.core.dav.DAVDirectoryFeature;
 import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVWriteFeature;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -88,7 +86,6 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
 
     @Test
     public void testUpload() throws Exception {
-
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path dir1 = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -107,9 +104,9 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         out2.close();
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new PasswordCallback() {
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("test");
             }
         }));
@@ -121,9 +118,9 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         assertTrue(new CryptoFindFeature(session, new DAVFindFeature(session), cryptomator).find(dir1));
         assertEquals(content.length, new CryptoAttributesFeature(session, new DAVAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {
@@ -153,9 +150,9 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
-        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new PasswordCallback() {
+        session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("test");
             }
         }));
@@ -180,9 +177,9 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(file1, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localDirectory1.delete();

@@ -10,14 +10,14 @@ import static org.junit.Assert.assertEquals;
 public class ArchiveTest {
 
     @Test
-    public void testForName() throws Exception {
+    public void testForName() {
         assertEquals(Archive.TAR, Archive.forName("tar"));
         assertEquals(Archive.TARGZ, Archive.forName("tar.gz"));
         assertEquals(Archive.ZIP, Archive.forName("zip"));
     }
 
     @Test
-    public void testEscape() throws Exception {
+    public void testEscape() {
         Archive a = Archive.TAR;
         assertEquals("file\\ name", a.escape("file name"));
         assertEquals("file\\(name", a.escape("file(name"));

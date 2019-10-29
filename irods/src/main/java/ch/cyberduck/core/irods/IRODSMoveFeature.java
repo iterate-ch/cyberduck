@@ -50,7 +50,7 @@ public class IRODSMoveFeature implements Move {
                 throw new NotfoundException(String.format("%s doesn't exist", file.getAbsolute()));
             }
             if(status.isExists()) {
-                delete.delete(Collections.singletonList(renamed), connectionCallback, callback);
+                delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
             final IRODSFile d = fs.getIRODSFileFactory().instanceIRODSFile(renamed.getAbsolute());
             s.renameTo(d);

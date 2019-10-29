@@ -4,6 +4,13 @@ target
 !.idea/copyright
 *.iml
 
+# VSCode/Java #
+###############
+.classpath
+.project
+.settings
+.factorypath
+
 # Compiled source #
 ###################
 *.com
@@ -41,6 +48,7 @@ Thumbs.db
 
 # .NET stuff #
 ##############
+.vs/
 *.suo
 *.user
 *.sdf

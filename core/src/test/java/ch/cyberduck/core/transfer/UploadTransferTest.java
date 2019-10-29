@@ -3,7 +3,6 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -55,7 +54,7 @@ public class UploadTransferTest {
     public void testList() throws Exception {
         final NullLocal local = new NullLocal("t") {
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "c"));
                 return l;
@@ -71,7 +70,7 @@ public class UploadTransferTest {
     public void testListSorted() throws Exception {
         final NullLocal local = new NullLocal("t") {
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "c"));
                 l.add(new NullLocal(this.getAbsolute(), "c.html"));
@@ -99,7 +98,7 @@ public class UploadTransferTest {
         final AtomicInteger c = new AtomicInteger();
         final NullLocal local = new NullLocal("t") {
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "a") {
                     @Override
@@ -140,12 +139,11 @@ public class UploadTransferTest {
         };
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 assertTrue(options.resumeRequested);
-                return file;
             }
         };
         final TransferOptions options = new TransferOptions();
@@ -157,7 +155,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()).run();
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()).run(session);
         assertEquals(1, c.get());
     }
 
@@ -166,7 +164,7 @@ public class UploadTransferTest {
         final AtomicInteger c = new AtomicInteger();
         final NullLocal local = new NullLocal("t") {
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "a") {
                     @Override
@@ -205,12 +203,11 @@ public class UploadTransferTest {
         };
         Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 //
-                return file;
             }
         };
         new SingleTransferWorker(session, null, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -219,7 +216,7 @@ public class UploadTransferTest {
                 return TransferAction.rename;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()).run();
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()).run(session);
         assertEquals(1, c.get());
     }
 
@@ -251,7 +248,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService());
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
             TransferAction.overwrite);
         assertEquals(new TransferStatus().exists(true), worker.getStatus().get(new TransferItem(test, local)));
@@ -295,7 +292,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService());
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
         worker.prepare(testDirectory, localDirectory, new TransferStatus().exists(true),
             TransferAction.resume);
         assertEquals(new TransferStatus().exists(true), worker.getStatus().get(new TransferItem(testDirectory, localDirectory)));
@@ -386,7 +383,7 @@ public class UploadTransferTest {
                         }
                     };
                 }
-                return (T) super._getFeature(type);
+                return super._getFeature(type);
             }
         };
         final AtomicBoolean set = new AtomicBoolean();
@@ -394,12 +391,11 @@ public class UploadTransferTest {
         LocalTouchFactory.get().touch(local);
         final Transfer transfer = new UploadTransfer(host, test, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
-                                 final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) {
+                                 final ConnectionCallback connectionCallback, final ProgressListener listener, final StreamListener streamListener) {
                 status.setComplete();
                 set.set(true);
-                return file;
             }
 
             @Override
@@ -415,7 +411,7 @@ public class UploadTransferTest {
                 return null;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 return super.transfer(item, action);

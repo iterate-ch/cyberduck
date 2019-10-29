@@ -21,16 +21,17 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.pool.SessionPool;
 
 import java.text.MessageFormat;
 
 public class DisconnectBackgroundAction extends RegistryBackgroundAction<Void> {
+    private final Controller controller;
     private final SessionPool session;
 
     public DisconnectBackgroundAction(final Controller controller, final SessionPool session) {
         super(controller, session);
+        this.controller = controller;
         this.session = session;
     }
 
@@ -41,11 +42,11 @@ public class DisconnectBackgroundAction extends RegistryBackgroundAction<Void> {
 
     @Override
     public Void run() throws BackgroundException {
-        session.evict();
-        if(session == SessionPool.DISCONNECTED) {
-            throw new ConnectionCanceledException();
+        final BackgroundActionRegistry registry = controller.getRegistry();
+        for(BackgroundAction action : registry) {
+            action.cancel();
         }
-        PathPasteboardFactory.delete(session.getHost());
+        session.evict();
         return null;
     }
 

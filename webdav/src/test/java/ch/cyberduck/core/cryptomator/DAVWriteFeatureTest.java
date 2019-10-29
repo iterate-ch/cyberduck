@@ -66,7 +66,6 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testWrite() throws Exception {
-
         final TransferStatus status = new TransferStatus();
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);

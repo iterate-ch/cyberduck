@@ -28,6 +28,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     private static final Logger log = Logger.getLogger(DelayedHttpEntity.class);
 
@@ -109,13 +111,7 @@ public abstract class DelayedHttpEntity extends AbstractHttpEntity {
             entry.countDown();
         }
         // Wait for signal when content has been written to the pipe
-        try {
-            exit.await();
-        }
-        catch(InterruptedException e) {
-            log.error(String.format("Error waiting for exit signal %s", e.getMessage()));
-            throw new IOException(e);
-        }
+        Uninterruptibles.awaitUninterruptibly(exit);
         // Entity written to server
         consumed = true;
     }

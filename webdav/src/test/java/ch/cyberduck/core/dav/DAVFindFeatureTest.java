@@ -9,6 +9,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -40,7 +42,7 @@ public class DAVFindFeatureTest extends AbstractDAVTest {
         final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.ch", new Credentials(
             PreferencesFactory.get().getProperty("connection.login.anon.name"), null
         ));
-        final DAVSession session = new DAVSession(host);
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertTrue(new DAVFindFeature(session).find(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume))));
@@ -53,6 +55,6 @@ public class DAVFindFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testFindRoot() throws Exception {
-        assertTrue(new DAVFindFeature(new DAVSession(new Host(new DAVProtocol(), "h"))).find(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(new DAVFindFeature(session).find(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 }

@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
@@ -33,12 +34,12 @@ import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpResponseException;
 
-public class HttpResponseExceptionMappingService extends AbstractExceptionMappingService<HttpResponseException> {
+public abstract class HttpResponseExceptionMappingService<E extends HttpResponseException> extends AbstractExceptionMappingService<E> {
 
     @Override
-    public BackgroundException map(final HttpResponseException failure) {
+    public BackgroundException map(final E failure) {
         final StringBuilder buffer = new StringBuilder();
-        this.append(buffer, failure.getMessage());
+        this.append(buffer, failure.getReasonPhrase());
         final int statusCode = failure.getStatusCode();
         return this.map(failure, buffer, statusCode);
     }
@@ -72,6 +73,8 @@ public class HttpResponseExceptionMappingService extends AbstractExceptionMappin
             case HttpStatus.SC_GATEWAY_TIMEOUT:
             case HttpStatus.SC_BAD_GATEWAY:
                 return new ConnectionTimeoutException(buffer.toString(), failure);
+            case HttpStatus.SC_LOCKED:
+                return new LockedException(buffer.toString(), failure);
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
             case 429:

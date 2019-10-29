@@ -18,10 +18,23 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DescriptiveUrlBag;
+import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.KeychainLoginService;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.LoginService;
+import ch.cyberduck.core.PasswordStoreFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
+import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.DistributionUrlProvider;
@@ -39,8 +52,6 @@ import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
@@ -50,7 +61,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.io.IOException;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -62,6 +72,7 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.cloudfront.AmazonCloudFront;
 import com.amazonaws.services.cloudfront.AmazonCloudFrontClientBuilder;
 import com.amazonaws.services.cloudfront.model.*;
@@ -89,23 +100,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
         this.session = session;
         this.bookmark = session.getHost();
         this.distributions = distributions;
-        final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
-        configuration = new ClientConfiguration();
-        configuration.setConnectionTimeout(timeout);
-        configuration.setSocketTimeout(timeout);
-        final UseragentProvider ua = new PreferencesUseragentProvider();
-        configuration.setUserAgentPrefix(ua.get());
-        configuration.setMaxErrorRetry(0);
-        configuration.setMaxConnections(1);
-        configuration.setUseGzip(preferences.getBoolean("http.compression.enable"));
-        final Proxy proxy = ProxyFactory.get().find(bookmark);
-        switch(proxy.getType()) {
-            case HTTP:
-            case HTTPS:
-                configuration.setProxyHost(proxy.getHostname());
-                configuration.setProxyPort(proxy.getPort());
-        }
-        locationFeature = session.getFeature(Location.class);
+        this.configuration = new CustomClientConfiguration(bookmark);
+        this.locationFeature = session.getFeature(Location.class);
     }
 
     private interface Authenticated<T> extends Callable<T> {
@@ -113,12 +109,12 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
-        final LoginOptions options = new LoginOptions(bookmark.getProtocol()).anonymous(false).publickey(false)
+        final LoginOptions options = new LoginOptions(bookmark.getProtocol())
             .usernamePlaceholder(LocaleFactory.localizedString("Access Key ID", "S3"))
             .passwordPlaceholder(LocaleFactory.localizedString("Secret Access Key", "S3"));
         try {
             final LoginService login = new KeychainLoginService(PasswordStoreFactory.get());
-            login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), prompt, options);
+            login.validate(bookmark, LocaleFactory.localizedString("Amazon CloudFront", "S3"), prompt, options);
             return run.call();
         }
         catch(LoginFailureException failure) {
@@ -271,9 +267,6 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 }
                 catch(AmazonClientException e) {
                     throw new AmazonServiceExceptionMappingService().map("Cannot write CDN configuration", e);
-                }
-                catch(IOException e) {
-                    throw new DefaultIOExceptionMappingService().map("Cannot write CDN configuration", e);
                 }
                 return null;
             }
@@ -533,7 +526,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
      * Amazon CloudFront Extension used to enable or disable a distribution configuration and its CNAMESs
      */
     protected UpdateDistributionResult updateDownloadDistribution(final Path container, final Distribution distribution)
-        throws IOException, BackgroundException {
+        throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -562,7 +555,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     protected UpdateStreamingDistributionResult updateStreamingDistribution(final Path container, final Distribution distribution)
-        throws IOException, BackgroundException {
+        throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -590,7 +583,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     protected UpdateDistributionResult updateCustomDistribution(final Path container, final Distribution distribution)
-        throws IOException, BackgroundException {
+        throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -617,7 +610,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     protected void deleteDownloadDistribution(final Path container, final Distribution distribution)
-        throws IOException, BackgroundException {
+        throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -627,7 +620,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     protected void deleteStreamingDistribution(final Path container, final Distribution distribution)
-        throws IOException, BackgroundException {
+        throws BackgroundException {
         final URI origin = this.getOrigin(container, distribution.getMethod());
         if(log.isDebugEnabled()) {
             log.debug(String.format("Update %s distribution with origin %s", distribution.getMethod().toString(), origin));
@@ -723,9 +716,20 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     }
 
     private AmazonCloudFront client(final Path container) throws BackgroundException {
-        return AmazonCloudFrontClientBuilder.standard()
+        final AmazonCloudFrontClientBuilder builder = AmazonCloudFrontClientBuilder.standard()
             .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(bookmark.getCredentials()))
-            .withClientConfiguration(configuration)
-            .withRegion(locationFeature.getLocation(container).getIdentifier()).build();
+            .withClientConfiguration(configuration);
+        final Location.Name region = this.getRegion(container);
+        if(Location.unknown.equals(region)) {
+            builder.withRegion(Regions.DEFAULT_REGION);
+        }
+        else {
+            builder.withRegion(region.getIdentifier());
+        }
+        return builder.build();
+    }
+
+    protected Location.Name getRegion(final Path container) throws BackgroundException {
+        return locationFeature.getLocation(container);
     }
 }

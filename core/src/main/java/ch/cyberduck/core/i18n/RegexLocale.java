@@ -19,10 +19,9 @@ package ch.cyberduck.core.i18n;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 
-import org.apache.commons.collections4.map.LRUMap;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -30,25 +29,28 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexLocale implements Locale {
     private static final Logger log = Logger.getLogger(RegexLocale.class);
 
-    private final Map<Key, String> cache
-            = Collections.synchronizedMap(new LRUMap<Key, String>(1000));
-
+    /**
+     * Loaded tables
+     */
+    private final Set<String> tables = new HashSet<>();
+    private final LRUCache<Key, String> cache = LRUCache.build(1000);
     private final Local resources;
 
     private String locale
-            = java.util.Locale.getDefault().getLanguage();
+        = java.util.Locale.getDefault().getLanguage();
 
     private final Pattern pattern
-            = Pattern.compile("\"(.*)\"\\s*=\\s*\"(.*)\";");
+        = Pattern.compile("\"(.*)\"\\s*=\\s*\"(.*)\";");
 
     public RegexLocale() {
         this(ApplicationResourcesFinderFactory.get().find());
@@ -62,20 +64,26 @@ public class RegexLocale implements Locale {
     public void setDefault(final String language) {
         locale = language;
         cache.clear();
+        tables.clear();
     }
 
     @Override
     public String localize(final String key, final String table) {
         final Key lookup = new Key(table, key);
-        if(!cache.containsKey(lookup)) {
-            try {
-                this.load(table);
-            }
-            catch(IOException e) {
-                log.warn(String.format("Failure loading properties from %s.strings. %s", table, e.getMessage()));
+        if(!cache.contains(lookup)) {
+            if(!tables.contains(table)) {
+                try {
+                    this.load(table);
+                }
+                catch(IOException e) {
+                    log.warn(String.format("Failure loading properties from %s.strings. %s", table, e.getMessage()));
+                }
+                finally {
+                    tables.add(table);
+                }
             }
         }
-        if(cache.containsKey(lookup)) {
+        if(cache.contains(lookup)) {
             return cache.get(lookup);
         }
         return key;
@@ -92,8 +100,7 @@ public class RegexLocale implements Locale {
     }
 
     private void load(final String table, final File file) throws IOException {
-        final LineNumberReader reader = new LineNumberReader(new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-16")));
-        try {
+        try (final LineNumberReader reader = new LineNumberReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_16))) {
             String line;
             while((line = reader.readLine()) != null) {
                 final Matcher matcher = pattern.matcher(line);
@@ -101,9 +108,6 @@ public class RegexLocale implements Locale {
                     cache.put(new Key(table, matcher.group(1)), matcher.group(2));
                 }
             }
-        }
-        finally {
-            IOUtils.closeQuietly(reader);
         }
     }
 
@@ -125,10 +129,10 @@ public class RegexLocale implements Locale {
                 return false;
             }
             final Key key1 = (Key) o;
-            if(key != null ? !key.equals(key1.key) : key1.key != null) {
+            if(!Objects.equals(key, key1.key)) {
                 return false;
             }
-            if(table != null ? !table.equals(key1.table) : key1.table != null) {
+            if(!Objects.equals(table, key1.table)) {
                 return false;
             }
             return true;
@@ -139,6 +143,15 @@ public class RegexLocale implements Locale {
             int result = table != null ? table.hashCode() : 0;
             result = 31 * result + (key != null ? key.hashCode() : 0);
             return result;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Key{");
+            sb.append("table='").append(table).append('\'');
+            sb.append(", key='").append(key).append('\'');
+            sb.append('}');
+            return sb.toString();
         }
     }
 }

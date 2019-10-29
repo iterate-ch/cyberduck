@@ -15,10 +15,11 @@ package ch.cyberduck.core.dav;
  * GNU General Public License for more details.
  */
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -44,6 +45,7 @@ import com.github.sardine.model.Response;
 import com.github.sardine.util.SardineUtil;
 
 public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
+    private static final Logger log = Logger.getLogger(SaxPropFindResponseHandler.class);
 
     @Override
     protected Multistatus getMultistatus(final InputStream stream) throws IOException {
@@ -76,42 +78,48 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
         private Element root;
 
         @Override
-        public void startDocument() throws SAXException {
+        public void startDocument() {
             multistatus = new Multistatus();
             root = SardineUtil.createElement(SardineUtil.createQNameWithCustomNamespace("root"));
         }
 
         @Override
-        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
-            if(localName.equals("response")) {
-                response = new Response();
-                multistatus.getResponse().add(response);
-            }
-            else if(localName.equals("propstat")) {
-                propstat = new Propstat();
-                response.getPropstat().add(propstat);
-            }
-            else if(localName.equals("prop")) {
-                prop = new Prop();
-                propstat.setProp(prop);
-            }
-            else if(localName.equals("resourcetype")) {
-                type = new Resourcetype();
-                prop.setResourcetype(type);
-            }
-            else if(localName.equals("collection")) {
-                type.setCollection(new Collection());
+        public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
+            switch(localName) {
+                case "response":
+                    response = new Response();
+                    multistatus.getResponse().add(response);
+                    break;
+                case "propstat":
+                    propstat = new Propstat();
+                    response.getPropstat().add(propstat);
+                    break;
+                case "prop":
+                    prop = new Prop();
+                    propstat.setProp(prop);
+                    break;
+                case "resourcetype":
+                    type = new Resourcetype();
+                    prop.setResourcetype(type);
+                    break;
+                case "collection":
+                    type.setCollection(new Collection());
+                    break;
             }
             data = new StringBuilder();
         }
 
         @Override
-        public void characters(final char[] ch, final int start, final int length) throws SAXException {
+        public void characters(final char[] ch, final int start, final int length) {
             data.append(new String(ch, start, length));
         }
 
         @Override
-        public void endElement(final String uri, final String localName, final String qName) throws SAXException {
+        public void endElement(final String uri, final String localName, final String qName) {
+            if(StringUtils.isBlank(data.toString())) {
+                log.warn(String.format("Missing value for %s", localName));
+                return;
+            }
             if(localName.equals("status")) {
                 propstat.setStatus(data.toString());
             }

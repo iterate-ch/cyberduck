@@ -44,6 +44,7 @@ public class LocalDictionary {
             return null;
         }
         final Local file = LocalFactory.get(path);
+        // Legacy support. Bookmarks are now saved in user defaults instead.
         if(StringUtils.isNotBlank(dict.stringForKey(String.format("%s Bookmark", PreferencesFactory.get().getProperty("application.name"))))) {
             file.setBookmark(dict.stringForKey(String.format("%s Bookmark", PreferencesFactory.get().getProperty("application.name"))));
         }

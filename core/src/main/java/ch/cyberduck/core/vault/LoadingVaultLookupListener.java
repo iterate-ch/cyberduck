@@ -27,20 +27,18 @@ import org.apache.log4j.Logger;
 public class LoadingVaultLookupListener implements VaultLookupListener {
     private static final Logger log = Logger.getLogger(LoadingVaultLookupListener.class);
 
-    private final Session<?> session;
     private final VaultRegistry registry;
     private final PasswordStore keychain;
     private final PasswordCallback prompt;
 
-    public LoadingVaultLookupListener(final Session<?> session, final VaultRegistry registry, final PasswordStore keychain, final PasswordCallback prompt) {
-        this.session = session;
+    public LoadingVaultLookupListener(final VaultRegistry registry, final PasswordStore keychain, final PasswordCallback prompt) {
         this.registry = registry;
         this.keychain = keychain;
         this.prompt = prompt;
     }
 
     @Override
-    public Vault load(final Path directory, final String masterkey, final byte[] pepper) throws VaultUnlockCancelException {
+    public Vault load(final Session session, final Path directory, final String masterkey, final byte[] pepper) throws VaultUnlockCancelException {
         synchronized(registry) {
             if(registry.contains(directory)) {
                 return registry.find(session, directory);
@@ -53,7 +51,7 @@ public class LoadingVaultLookupListener implements VaultLookupListener {
                 registry.add(vault.load(session, prompt, keychain));
             }
             catch(BackgroundException e) {
-                log.warn(String.format("Failure loading vault %s. %s", vault, e.getDetail()));
+                log.warn(String.format("Failure loading vault %s. %s", vault, e));
                 throw new VaultUnlockCancelException(vault, e);
             }
             return vault;

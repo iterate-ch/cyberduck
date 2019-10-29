@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 public class LaxHostnameDelegatingTrustManagerTest {
 
     @Test
-    public void testSetTarget() throws Exception {
+    public void testSetTarget() {
         assertEquals("s3.amazonaws.com",
             new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), "s3.amazonaws.com").getTarget());
         assertEquals("cyberduck.s3.amazonaws.com",

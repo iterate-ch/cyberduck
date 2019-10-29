@@ -1020,7 +1020,7 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <clipView key="contentView" id="GpH-MS-fG7">
                         <rect key="frame" x="1" y="0.0" width="358" height="135"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" multipleSelection="NO" typeSelect="NO" autosaveName="Metadata" rowHeight="15" headerView="242" id="235">
                                 <rect key="frame" x="0.0" y="0.0" width="358" height="118"/>
@@ -1060,11 +1060,11 @@
                             </tableView>
                         </subviews>
                     </clipView>
-                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="240">
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="240">
                         <rect key="frame" x="-100" y="-100" width="343" height="11"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="241">
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="241">
                         <rect key="frame" x="344" y="17" width="11" height="84"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
@@ -1143,7 +1143,7 @@
                     <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
                     <clipView key="contentView" id="rMW-ks-ynj">
                         <rect key="frame" x="1" y="0.0" width="358" height="101"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnReordering="NO" multipleSelection="NO" typeSelect="NO" autosaveName="Metadata" rowHeight="15" headerView="267" id="260">
                                 <rect key="frame" x="0.0" y="0.0" width="358" height="84"/>
@@ -1183,11 +1183,11 @@
                             </tableView>
                         </subviews>
                     </clipView>
-                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="265">
+                    <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="265">
                         <rect key="frame" x="-100" y="-100" width="343" height="11"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
-                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="266">
+                    <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="266">
                         <rect key="frame" x="344" y="17" width="11" height="84"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>

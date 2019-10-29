@@ -27,6 +27,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -173,7 +174,13 @@ public class IRODSUploadFeatureTest {
             },
             status,
             new DisabledConnectionCallback());
-        assertTrue(status.isCanceled());
+        try {
+            status.validate();
+            fail();
+        }
+        catch(ConnectionCanceledException e) {
+            //
+        }
         assertFalse(status.isComplete());
         session.close();
     }

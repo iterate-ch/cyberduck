@@ -45,9 +45,10 @@ public class VaultRegistryBulkFeature<R> implements Bulk<R> {
     @Override
     public R pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(Map.Entry<TransferItem, TransferStatus> file : files.entrySet()) {
-            registry.find(session, file.getKey().remote).getFeature(session, Bulk.class, proxy).pre(type, Collections.singletonMap(file.getKey(), file.getValue()), callback);
+            final Bulk<R> feature = registry.find(session, file.getKey().remote).getFeature(session, Bulk.class, proxy);
+            return feature.pre(type, files, callback);
         }
-        return proxy.pre(type, files, callback);
+        return null;
     }
 
     @Override

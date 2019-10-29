@@ -20,7 +20,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.synchronization;
 using ch.cyberduck.core.transfer;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -35,7 +35,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (!GetStatus(item).isExists())
             {
-                return IconCache.Instance.IconForName("plus");
+                return IconCache.IconForName("plus");
             }
             return null;
         }
@@ -45,11 +45,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Comparison compare = ((SyncTransfer) Transfer).compare(item);
             if (compare.equals(Comparison.remote))
             {
-                return IconCache.Instance.IconForName("transfer-download", 16);
+                return IconCache.IconForName("transfer-download", 16);
             }
             if (compare.equals(Comparison.local))
             {
-                return IconCache.Instance.IconForName("transfer-upload", 16);
+                return IconCache.IconForName("transfer-upload", 16);
             }
             return null;
         }

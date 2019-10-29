@@ -21,16 +21,22 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Objects;
 
 public class CreateDirectoryWorker extends Worker<Path> {
+    private static final Logger log = Logger.getLogger(CreateDirectoryWorker.class);
 
     private final Path folder;
     private final String region;
@@ -43,6 +49,9 @@ public class CreateDirectoryWorker extends Worker<Path> {
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
         final Directory feature = session.getFeature(Directory.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         final TransferStatus status = new TransferStatus();
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
@@ -53,9 +62,15 @@ public class CreateDirectoryWorker extends Worker<Path> {
             status.setStorageClass(redundancy.getDefault());
         }
         status.setTimestamp(System.currentTimeMillis());
-        final UnixPermission permission = session.getFeature(UnixPermission.class);
-        if(permission != null) {
-            status.setPermission(permission.getDefault(EnumSet.of(Path.Type.directory)));
+        if(PreferencesFactory.get().getBoolean("touch.permissions.change")) {
+            final UnixPermission permission = session.getFeature(UnixPermission.class);
+            if(permission != null) {
+                status.setPermission(permission.getDefault(EnumSet.of(Path.Type.directory)));
+            }
+            final AclPermission acl = session.getFeature(AclPermission.class);
+            if(acl != null) {
+                status.setAcl(acl.getDefault(EnumSet.of(Path.Type.directory)));
+            }
         }
         return feature.mkdir(folder, region, status);
     }
@@ -81,10 +96,10 @@ public class CreateDirectoryWorker extends Worker<Path> {
             return false;
         }
         final CreateDirectoryWorker that = (CreateDirectoryWorker) o;
-        if(folder != null ? !folder.equals(that.folder) : that.folder != null) {
+        if(!Objects.equals(folder, that.folder)) {
             return false;
         }
-        return !(region != null ? !region.equals(that.region) : that.region != null);
+        return Objects.equals(region, that.region);
 
     }
 

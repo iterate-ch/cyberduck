@@ -20,7 +20,11 @@ package ch.cyberduck.core.ssl;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.idna.PunycodeConverter;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
 public class DefaultTrustManagerHostnameCallback implements TrustManagerHostnameCallback {
+    private static final Logger log = Logger.getLogger(DefaultTrustManagerHostnameCallback.class);
 
     private final Host host;
 
@@ -30,6 +34,9 @@ public class DefaultTrustManagerHostnameCallback implements TrustManagerHostname
 
     @Override
     public String getTarget() {
+        if(StringUtils.isBlank(host.getHostname())) {
+            log.error(String.format("Missing hostname to validate in %s", host));
+        }
         return new PunycodeConverter().convert(host.getHostname());
     }
 

@@ -20,8 +20,9 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
@@ -29,6 +30,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.api.client.googleapis.batch.BatchRequest;
 import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
@@ -48,10 +50,10 @@ public class DriveBatchDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final BatchRequest batch = session.getClient().batch();
         final List<BackgroundException> failures = new ArrayList<>();
-        for(Path file : files) {
+        for(Path file : files.keySet()) {
             try {
                 if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(file.getParent())) {
                     session.getClient().teamdrives().delete(fileid.getFileid(file, new DisabledListProgressListener()))
@@ -106,14 +108,14 @@ public class DriveBatchDeleteFeature implements Delete {
         }
 
         @Override
-        public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) throws IOException {
+        public void onFailure(final GoogleJsonError e, final HttpHeaders responseHeaders) {
             log.warn(String.format("Failure deleting %s. %s", file, e.getMessage()));
-            failures.add(new HttpResponseExceptionMappingService().map(
+            failures.add(new DefaultHttpResponseExceptionMappingService().map(
                 new HttpResponseException(e.getCode(), e.getMessage())));
         }
 
         @Override
-        public void onSuccess(final V aVoid, final HttpHeaders responseHeaders) throws IOException {
+        public void onSuccess(final V aVoid, final HttpHeaders responseHeaders) {
             callback.delete(file);
         }
     }

@@ -30,14 +30,14 @@ import static org.junit.Assert.assertTrue;
 public class AmazonServiceExceptionMappingServiceTest {
 
     @Test
-    public void testLoginFailure() throws Exception {
+    public void testLoginFailure() {
         final AmazonServiceException f = new AmazonServiceException("message", null);
         f.setStatusCode(401);
         assertTrue(new AmazonServiceExceptionMappingService().map(f) instanceof LoginFailureException);
     }
 
     @Test
-    public void testAccessFailure() throws Exception {
+    public void testAccessFailure() {
         final AmazonServiceException f = new AmazonServiceException("message", null);
         f.setStatusCode(403);
         f.setErrorCode("AccessDenied");

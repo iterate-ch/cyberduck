@@ -46,7 +46,7 @@ public class Host implements Serializable, Comparable<Host> {
      *
      * @see Protocol#getDefaultPort()
      */
-    private Integer port = -1;
+    private Integer port;
     /**
      * The fully qualified hostname
      */
@@ -314,7 +314,7 @@ public class Host implements Serializable, Comparable<Host> {
      * @param defaultpath The path to change the working directory to upon connecting
      */
     public void setDefaultPath(final String defaultpath) {
-        this.defaultpath = StringUtils.isBlank(defaultpath) ? null : StringUtils.trim(defaultpath);
+        this.defaultpath = defaultpath;
     }
 
     public Path getWorkdir() {
@@ -450,10 +450,6 @@ public class Host implements Serializable, Comparable<Host> {
      * if the default should be used
      */
     public TransferType getTransferType() {
-        switch(transfer) {
-            case unknown:
-                return Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type"));
-        }
         return transfer;
     }
 
@@ -546,6 +542,11 @@ public class Host implements Serializable, Comparable<Host> {
         webURL = url;
     }
 
+    public Host withWebURL(final String url) {
+        this.setWebURL(url);
+        return this;
+    }
+
     /**
      * @return The date this bookmark was last accessed.
      */
@@ -634,11 +635,13 @@ public class Host implements Serializable, Comparable<Host> {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Host{");
-        sb.append("credentials=").append(credentials);
-        sb.append(", hostname='").append(hostname).append('\'');
-        sb.append(", defaultpath='").append(defaultpath).append('\'');
+        sb.append("protocol=").append(protocol);
         sb.append(", port=").append(port);
-        sb.append(", protocol=").append(protocol);
+        sb.append(", hostname='").append(hostname).append('\'');
+        sb.append(", credentials=").append(credentials);
+        sb.append(", uuid='").append(uuid).append('\'');
+        sb.append(", nickname='").append(nickname).append('\'');
+        sb.append(", defaultpath='").append(defaultpath).append('\'');
         sb.append('}');
         return sb.toString();
     }

@@ -23,13 +23,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -39,6 +34,7 @@ import org.junit.experimental.categories.Category;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -52,19 +48,16 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
     public void testWrite() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = "test".getBytes("UTF-8");
+        final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         final OutputStream out = local.getOutputStream(false);
         IOUtils.write(content, out);
         IOUtils.closeQuietly(out);
         status.setLength(content.length);
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(session.getHost(), new ThreadLocalHostnameDelegatingTrustManager(
-                new DisabledX509TrustManager(), session.getHost().getHostname()), new DefaultX509KeyManager(), new DisabledProxyFinder()
-        );
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final DriveUploadFeature upload = new DriveUploadFeature(new DriveWriteFeature(session, fileid));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status, new DisabledConnectionCallback());
+            status, new DisabledConnectionCallback());
         test.attributes().setVersionId(fileid.getFileid(test, new DisabledListProgressListener()));
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
@@ -84,6 +77,6 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
             assertArrayEquals(reference, buffer);
         }
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(),
-                new Delete.DisabledCallback());
+            new Delete.DisabledCallback());
     }
 }

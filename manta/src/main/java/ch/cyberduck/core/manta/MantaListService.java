@@ -21,9 +21,8 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
-
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -65,7 +64,7 @@ public class MantaListService implements ListService {
         final MantaObjectAttributeAdapter adapter = new MantaObjectAttributeAdapter(session);
         while(objectsIter.hasNext()) {
             MantaObject o = objectsIter.next();
-            final Path file = new Path(directory, FilenameUtils.getName(o.getPath()),
+            final Path file = new Path(directory, PathNormalizer.name(o.getPath()),
                 EnumSet.of(o.isDirectory() ? Path.Type.directory : Path.Type.file), adapter.convert(o)
             );
             children.add(file);

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -109,11 +109,11 @@
                                                     </tableView>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="18">
+                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="18">
                                                 <rect key="frame" x="-100" y="-100" width="255" height="11"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="19">
+                                            <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="19">
                                                 <rect key="frame" x="-22" y="1" width="15" height="431"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
@@ -137,11 +137,11 @@
                                             <rect key="frame" x="-2" y="0.0" width="604" height="397"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="t14-pG-1DQ">
-                                                <rect key="frame" x="1" y="0.0" width="587" height="396"/>
+                                                <rect key="frame" x="1" y="0.0" width="602" height="396"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="ListBrowserView" headerView="36" id="33" customClass="CDListView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="587" height="379"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="602" height="379"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -152,16 +152,16 @@
                                                     </tableView>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="34">
+                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="34">
                                                 <rect key="frame" x="-100" y="-100" width="582" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="35">
-                                                <rect key="frame" x="588" y="17" width="15" height="379"/>
+                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="35">
+                                                <rect key="frame" x="587" y="17" width="16" height="379"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" id="36">
-                                                <rect key="frame" x="0.0" y="0.0" width="587" height="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="602" height="17"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
@@ -177,11 +177,11 @@
                                             <rect key="frame" x="-2" y="0.0" width="604" height="397"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="KUj-N5-PnR">
-                                                <rect key="frame" x="1" y="0.0" width="587" height="396"/>
+                                                <rect key="frame" x="1" y="0.0" width="602" height="396"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="OutlineBrowserView" headerView="44" id="41" customClass="CDOutlineView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="587" height="379"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="602" height="379"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -193,16 +193,16 @@
                                                     </tableView>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="42">
+                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="42">
                                                 <rect key="frame" x="-100" y="-100" width="582" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="43">
-                                                <rect key="frame" x="588" y="17" width="15" height="379"/>
+                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="43">
+                                                <rect key="frame" x="587" y="17" width="16" height="379"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" id="44">
-                                                <rect key="frame" x="0.0" y="0.0" width="587" height="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="602" height="17"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
@@ -282,7 +282,7 @@
                                 <popUpButtonCell key="cell" type="push" title=" " bezelStyle="rounded" alignment="left" lineBreakMode="truncatingMiddle" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="62" id="60">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
-                                    <menu key="menu" title="OtherViews" id="61">
+                                    <menu key="menu" title="其他视图" id="61">
                                         <items>
                                             <menuItem title=" " state="on" id="62"/>
                                         </items>
@@ -317,69 +317,12 @@
                 <menuItem isSeparatorItem="YES" id="67">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="信息" keyEquivalent="i" id="68">
-                    <connections>
-                        <action selector="infoButtonClicked:" target="-1" id="163"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="快速查看" image="NSQuickLookTemplate" id="69">
-                    <attributedString key="attributedTitle"/>
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="quicklookButtonClicked:" target="-1" id="185"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="外部编辑" id="70">
-                    <menu key="submenu" title="外部编辑" id="71"/>
-                </menuItem>
-                <menuItem title="重命名…" id="72">
-                    <connections>
-                        <action selector="renameFileButtonClicked:" target="-1" id="176"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="复制…" keyEquivalent="d" id="73">
-                    <connections>
-                        <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
-                    </connections>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="74"/>
-                <menuItem title="下载" keyEquivalent="" id="75">
-                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
-                    <connections>
-                        <action selector="downloadButtonClicked:" target="-1" id="164"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="下载另存为…" keyEquivalent="" id="76">
-                    <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
-                    <connections>
-                        <action selector="downloadAsButtonClicked:" target="-1" id="168"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="下载至…" id="77">
-                    <connections>
-                        <action selector="downloadToButtonClicked:" target="-1" id="177"/>
-                    </connections>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="78">
-                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                </menuItem>
-                <menuItem title="上传…" keyEquivalent="" id="79">
-                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
-                    <connections>
-                        <action selector="uploadButtonClicked:" target="-1" id="174"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="同步…" id="80">
-                    <connections>
-                        <action selector="syncButtonClicked:" target="-1" id="172"/>
-                    </connections>
-                </menuItem>
                 <menuItem title="新建文件夹…" keyEquivalent="N" id="81">
                     <connections>
                         <action selector="createFolderButtonClicked:" target="-1" id="166"/>
                     </connections>
                 </menuItem>
-                <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="6n9-Af-09P">
+                <menuItem title="新建加密库..." keyEquivalent="N" id="6n9-Af-09P">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                     <connections>
                         <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
@@ -397,6 +340,64 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="84"/>
+                <menuItem title="信息" keyEquivalent="i" id="68">
+                    <connections>
+                        <action selector="infoButtonClicked:" target="-1" id="163"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="快速查看" image="NSQuickLookTemplate" id="69">
+                    <attributedString key="attributedTitle"/>
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="quicklookButtonClicked:" target="-1" id="185"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="外部编辑" id="70">
+                    <menu key="submenu" title="外部编辑" id="71"/>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="74"/>
+                <menuItem title="重命名…" id="72">
+                    <connections>
+                        <action selector="renameFileButtonClicked:" target="-1" id="176"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="复制…" keyEquivalent="d" id="73">
+                    <connections>
+                        <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="U9L-O8-fnA"/>
+                <menuItem title="下载" keyEquivalent="" id="75">
+                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                    <connections>
+                        <action selector="downloadButtonClicked:" target="-1" id="164"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="下载另存为…" keyEquivalent="" id="76">
+                    <modifierMask key="keyEquivalentModifierMask" shift="YES" option="YES"/>
+                    <connections>
+                        <action selector="downloadAsButtonClicked:" target="-1" id="168"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="下载至…" id="77">
+                    <connections>
+                        <action selector="downloadToButtonClicked:" target="-1" id="177"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="上传…" keyEquivalent="" id="79">
+                    <modifierMask key="keyEquivalentModifierMask" option="YES"/>
+                    <connections>
+                        <action selector="uploadButtonClicked:" target="-1" id="174"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="同步…" id="80">
+                    <connections>
+                        <action selector="syncButtonClicked:" target="-1" id="172"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="78">
+                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                </menuItem>
                 <menuItem title="删除" id="85">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
@@ -425,13 +426,18 @@ CA
                 <menuItem isSeparatorItem="YES" id="91">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="拷贝 URL" id="92">
+                <menuItem title="复制 URL" id="92">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="拷贝 URL" id="93"/>
+                    <menu key="submenu" title="复制 URL" id="93"/>
                 </menuItem>
                 <menuItem title="打开 URL" id="94">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="打开 URL" id="95"/>
+                </menuItem>
+                <menuItem title="Share…" id="NBw-Mh-zlT">
+                    <connections>
+                        <action selector="shareFileButtonClicked:" target="-1" id="iI0-ew-cyt"/>
+                    </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="96">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
@@ -447,7 +453,7 @@ CA
                     </connections>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="-184.5" y="588.5"/>
+            <point key="canvasLocation" x="-367" y="582"/>
         </menu>
         <menu title="菜单" id="99">
             <items>
@@ -489,7 +495,7 @@ DQ
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="排序方式" id="108">
                         <items>
-                            <menuItem title="昵称" keyEquivalent="1" id="109">
+                            <menuItem title="备注名" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="sortBookmarksByNickame:" target="-1" id="186"/>

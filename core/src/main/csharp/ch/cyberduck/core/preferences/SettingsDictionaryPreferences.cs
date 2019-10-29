@@ -36,6 +36,8 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Windows.Storage;
 using File = System.IO.File;
+using StringUtils = org.apache.commons.lang3.StringUtils;
+
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -162,7 +164,9 @@ namespace Ch.Cyberduck.Core.Preferences
             base.setDefaults();
 
             this.setDefault("application.name", Application.ProductName);
-            this.setDefault("application.container.name", Application.ProductName);
+            this.setDefault("application.datafolder.name", Application.ProductName);
+            this.setDefault("oauth.handler.scheme",
+                String.Format("x-{0}-action", StringUtils.deleteWhitespace(Application.ProductName.ToLower())));
 
             this.setDefault("application.version", ApplicationVersion);
             this.setDefault("application.revision", ApplicationRevision);
@@ -173,8 +177,6 @@ namespace Ch.Cyberduck.Core.Preferences
             this.setDefault("update.feed.release", "https://version.cyberduck.io/windows/changelog.rss");
             this.setDefault("update.feed.beta", "https://version.cyberduck.io/windows/beta/changelog.rss");
             this.setDefault("update.feed.nightly", "https://version.cyberduck.io/windows/nightly/changelog.rss");
-
-            this.setDefault("update.feed", "release");
 
             // Importers
             this.setDefault("bookmark.import.winscp.location",
@@ -247,8 +249,11 @@ namespace Ch.Cyberduck.Core.Preferences
             this.setDefault("ssh.knownhosts",
                 Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(), "known_hosts"));
             this.setDefault("browser.enterkey.rename", false.ToString());
+            this.setDefault("terminal.openssh.enable", true.ToString());
+            this.setDefault("terminal.windowssubsystemlinux.enable", true.ToString());
             this.setDefault("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
             this.setDefault("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
+            this.setDefault("terminal.command.openssh.args", "{1} {0}@{2} -t -p {3} \"cd '{4}'; $SHELL\"");
 
             this.setDefault("editor.bundleIdentifier", new SystemWatchEditorFactory.Notepad().getIdentifier());
 
@@ -346,7 +351,7 @@ namespace Ch.Cyberduck.Core.Preferences
                     properties.load(new FileInputStream(config));
                     foreach (var key in Utils.ConvertFromJavaList<String>(properties.keySet()))
                     {
-                        setProperty(key, properties.getProperty(key));
+                        setDefault(key, properties.getProperty(key));
                     }
                 }
                 catch (Exception e)

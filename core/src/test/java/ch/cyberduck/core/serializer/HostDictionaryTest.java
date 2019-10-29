@@ -51,7 +51,7 @@ public class HostDictionaryTest {
     }
 
     @Test
-    public void testDeserialize() throws Exception {
+    public void testDeserialize() {
         final Serializer dict = SerializerFactory.get();
         dict.setStringForKey("test", "Protocol");
         dict.setStringForKey("unknown provider", "Provider");

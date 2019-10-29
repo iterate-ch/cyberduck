@@ -27,12 +27,12 @@ import static org.junit.Assert.assertEquals;
 public class WorkdirPrefixerTest {
 
     @Test
-    public void testNormalize() throws Exception {
+    public void testNormalize() {
         assertEquals(System.getProperty("user.dir") + File.separator+ "n", new WorkdirPrefixer().normalize("n"));
     }
 
     @Test
-    public void testCurrentDir() throws Exception {
+    public void testCurrentDir() {
         assertEquals(System.getProperty("user.dir"), new WorkdirPrefixer().normalize("."));
     }
 }

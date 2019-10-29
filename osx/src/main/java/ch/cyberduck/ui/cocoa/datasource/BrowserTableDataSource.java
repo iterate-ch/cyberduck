@@ -41,8 +41,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Touch;
@@ -70,7 +72,6 @@ import ch.cyberduck.ui.cocoa.controller.CopyController;
 import ch.cyberduck.ui.cocoa.controller.DeleteController;
 import ch.cyberduck.ui.cocoa.controller.MoveController;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
@@ -87,6 +88,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
@@ -102,11 +104,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private final Map<Item, NSAttributedString> attributed = new LRUMap<Item, NSAttributedString>(
+    private final LRUCache<Item, NSAttributedString> attributed = LRUCache.build(
         preferences.getInteger("browser.model.cache.size")
     );
 
-    private final Map<Path, AttributedList<Path>> filtered = new LRUMap<Path, AttributedList<Path>>(
+    private final LRUCache<Path, AttributedList<Path>> filtered = LRUCache.build(
         preferences.getInteger("browser.model.cache.size")
     );
 
@@ -132,10 +134,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 return false;
             }
             final Item item = (Item) o;
-            if(column != null ? !column.equals(item.column) : item.column != null) {
+            if(!Objects.equals(column, item.column)) {
                 return false;
             }
-            if(file != null ? !file.equals(item.file) : item.file != null) {
+            if(!Objects.equals(file, item.file)) {
                 return false;
             }
             return true;
@@ -163,6 +165,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         this.cache = cache;
     }
 
+    @Override
+    public void invalidate() {
+        attributed.clear();
+        filtered.clear();
+        super.invalidate();
+    }
+
     /**
      * Tell the browser view to reload the data
      *
@@ -176,7 +185,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     public AttributedList<Path> get(final Path directory) {
-        if(!filtered.containsKey(directory)) {
+        if(!filtered.contains(directory)) {
             filtered.put(directory, cache.get(directory).filter(controller.getComparator(), controller.getFilter()));
         }
         return filtered.get(directory);
@@ -354,7 +363,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         if(Scheme.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
-                            controller.mount(HostParser.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                            try {
+                                controller.mount(HostParser.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                            }
+                            catch(HostParserException e) {
+                                log.warn(e);
+                                continue;
+                            }
                             return true;
                         }
                     }
@@ -453,7 +468,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 return NSDraggingInfo.NSDragOperationNone;
             }
             final Touch feature = controller.getSession().getFeature(Touch.class);
-            if(!feature.isSupported(destination)) {
+            if(!feature.isSupported(destination, StringUtils.EMPTY)) {
                 // Target file system does not support creating files. Creating files is not supported
                 // for example in root of cloud storage accounts.
                 return NSDraggingInfo.NSDragOperationNone;

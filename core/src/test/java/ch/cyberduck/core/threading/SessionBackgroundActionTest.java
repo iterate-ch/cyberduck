@@ -43,7 +43,7 @@ import static org.junit.Assert.*;
 public class SessionBackgroundActionTest {
 
     @Test
-    public void testGetExceptionConnectionCanceledException() throws Exception {
+    public void testGetExceptionConnectionCanceledException() {
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
                 new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(),
             new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), new DisabledAlertCallback(), new DisabledLoginCallback(), new DisabledProgressListener()) {
@@ -64,7 +64,7 @@ public class SessionBackgroundActionTest {
     }
 
     @Test
-    public void testGetExceptionFailure() throws Exception {
+    public void testGetExceptionFailure() {
         final BackgroundException failure = new BackgroundException(new RuntimeException());
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
                 new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(),
@@ -91,7 +91,7 @@ public class SessionBackgroundActionTest {
     }
 
     @Test
-    public void testGetExceptionLoginCanceledException() throws Exception {
+    public void testGetExceptionLoginCanceledException() {
         final BackgroundException failure = new LoginCanceledException();
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
                 new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "t")), PathCache.empty(),
@@ -119,7 +119,7 @@ public class SessionBackgroundActionTest {
     }
 
     @Test
-    public void testRetrySocket() throws Exception {
+    public void testRetrySocket() {
         final BackgroundException failure = new BackgroundException(new SocketTimeoutException(""));
         SessionBackgroundAction<Void> a = new SessionBackgroundAction<Void>(new StatelessSessionPool(
                 new TestLoginConnectionService(),

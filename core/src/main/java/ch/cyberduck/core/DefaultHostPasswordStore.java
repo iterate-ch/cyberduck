@@ -17,6 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -127,13 +128,21 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
     public OAuthTokens findOAuthTokens(final Host bookmark) {
         final long expiry = preferences.getLong(String.format("%s.oauth.expiry", bookmark.getProtocol().getIdentifier()));
         final String prefix = this.getOAuthPrefix(bookmark);
+        final String hostname = getOAuthHostname(bookmark);
         return new OAuthTokens(this.getPassword(bookmark.getProtocol().getScheme(),
-            bookmark.getPort(), URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost(),
+            bookmark.getPort(), hostname,
             String.format("%s OAuth2 Access Token", prefix)),
             this.getPassword(bookmark.getProtocol().getScheme(),
-                bookmark.getPort(), URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost(),
+                bookmark.getPort(), hostname,
                 String.format("%s OAuth2 Refresh Token", prefix)),
             expiry);
+    }
+
+    protected String getOAuthHostname(final Host bookmark) {
+        if(StringUtils.isNotBlank(URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost())) {
+            return URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost();
+        }
+        return bookmark.getHostname();
     }
 
     private String getOAuthPrefix(final Host bookmark) {
@@ -150,24 +159,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
      * @see ch.cyberduck.core.Host#getCredentials()
      */
     @Override
-    public void save(final Host bookmark) {
+    public void save(final Host bookmark) throws LocalAccessDeniedException {
         if(StringUtils.isEmpty(bookmark.getHostname())) {
             log.warn("No hostname given");
             return;
         }
         final Credentials credentials = bookmark.getCredentials();
-        if(!credentials.isSaved()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Skip writing credentials for bookmark %s", bookmark.getHostname()));
-            }
-            return;
-        }
-        if(credentials.isAnonymousLogin()) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Do not write anonymous credentials for bookmark %s", bookmark.getHostname()));
-            }
-            return;
-        }
         if(log.isInfoEnabled()) {
             log.info(String.format("Add password for bookmark %s", bookmark));
         }
@@ -195,12 +192,12 @@ public abstract class DefaultHostPasswordStore implements HostPasswordStore {
             final String prefix = this.getOAuthPrefix(bookmark);
             if(StringUtils.isNotBlank(credentials.getOauth().getAccessToken())) {
                 this.addPassword(bookmark.getProtocol().getScheme(),
-                    bookmark.getPort(), URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost(),
+                    bookmark.getPort(), this.getOAuthHostname(bookmark),
                     String.format("%s OAuth2 Access Token", prefix), credentials.getOauth().getAccessToken());
             }
             if(StringUtils.isNotBlank(credentials.getOauth().getRefreshToken())) {
                 this.addPassword(bookmark.getProtocol().getScheme(),
-                    bookmark.getPort(), URI.create(bookmark.getProtocol().getOAuthTokenUrl()).getHost(),
+                    bookmark.getPort(), this.getOAuthHostname(bookmark),
                     String.format("%s OAuth2 Refresh Token", prefix), credentials.getOauth().getRefreshToken());
             }
             // Save expiry

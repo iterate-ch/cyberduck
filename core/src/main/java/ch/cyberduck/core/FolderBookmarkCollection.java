@@ -25,10 +25,8 @@ import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     private static final Logger log = Logger.getLogger(FolderBookmarkCollection.class);
@@ -100,19 +98,6 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         }
     }
 
-    @Override
-    public boolean addAll(java.util.Collection<? extends Host> c) {
-        final List<Host> temporary = new ArrayList<Host>();
-        for(Host host : c) {
-            if(temporary.contains(host)) {
-                log.warn(String.format("Reset UUID of duplicate in collection for %s", host));
-                host.setUuid(null);
-            }
-            temporary.add(host);
-        }
-        return super.addAll(temporary);
-    }
-
     /**
      * Update index of bookmark positions
      */
@@ -155,9 +140,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         Collections.sort(this, new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
-                return Integer.valueOf(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid()))).compareTo(
-                        preferences.getInteger(String.format("%s%s", prefix, o2.getUuid()))
-                );
+                return Integer.compare(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid())), preferences.getInteger(String.format("%s%s", prefix, o2.getUuid())));
             }
         });
     }

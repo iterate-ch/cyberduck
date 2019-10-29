@@ -392,7 +392,7 @@ public abstract class NSColor extends NSObject implements NSCopying {
          * Original signature : <code>NSColor* colorWithColorSpace(NSColorSpace*, const CGFloat*, NSInteger)</code><br>
          * <i>native declaration : :64</i>
          */
-        NSColor colorWithColorSpace_components_count(com.sun.jna.Pointer space, CGFloat components[], int numberOfComponents);
+        NSColor colorWithColorSpace_components_count(com.sun.jna.Pointer space, CGFloat[] components, int numberOfComponents);
 
         /**
          * Create colors with arbitrary colorspace. The number of components in the provided array should match the number dictated by the specified colorspace, plus one for alpha (supply 1.0 for opaque colors); otherwise an exception will be raised.  If the colorspace is one which cannot be used with NSColors, nil is returned.<br>

@@ -18,6 +18,7 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -50,6 +51,7 @@ public class AzureCopyFeatureTest {
     }
 
     @Test
+    @Ignore
     public void testCopySharedAccessSignature() throws Exception {
         final Host host = new Host(new AzureProtocol() {
             @Override

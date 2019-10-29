@@ -30,6 +30,7 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -56,8 +57,8 @@ public class SpectraTouchFeatureTest {
         ));
         final SpectraSession session = new SpectraSession(host, new DisabledX509TrustManager(),
                 new DefaultX509KeyManager());
-        assertFalse(new SpectraTouchFeature(session).isSupported(new Path("/", EnumSet.of(Path.Type.volume))));
-        assertTrue(new SpectraTouchFeature(session).isSupported(new Path(new Path("/", EnumSet.of(Path.Type.volume)), "/container", EnumSet.of(Path.Type.volume))));
+        assertFalse(new SpectraTouchFeature(session).isSupported(new Path("/", EnumSet.of(Path.Type.volume)), StringUtils.EMPTY));
+        assertTrue(new SpectraTouchFeature(session).isSupported(new Path(new Path("/", EnumSet.of(Path.Type.volume)), "/container", EnumSet.of(Path.Type.volume)), StringUtils.EMPTY));
     }
 
     @Test

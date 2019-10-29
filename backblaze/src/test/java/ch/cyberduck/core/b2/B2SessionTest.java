@@ -27,6 +27,8 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -38,9 +40,9 @@ import static org.junit.Assert.assertNotNull;
 public class B2SessionTest {
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final Host host = new Host(new B2Protocol(), "test.cyberduck.ch");
-        final Session session = new B2Session(host);
+        final Session session = new B2Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.getFeature(AclPermission.class));
         assertNotNull(session.getFeature(Directory.class));
         assertNotNull(session.getFeature(Delete.class));
@@ -52,7 +54,7 @@ public class B2SessionTest {
         final Host host = new Host(new B2Protocol(), new B2Protocol().getDefaultHostname(), new Credentials(
             System.getProperties().getProperty("b2.user"), "s"
         ));
-        final B2Session session = new B2Session(host);
+        final B2Session session = new B2Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
     }

@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
 public class DropboxSessionTest {
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final Host host = new Host(new DropboxProtocol(), "test.cyberduck.ch");
         final Session session = new DropboxSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.getFeature(Directory.class));

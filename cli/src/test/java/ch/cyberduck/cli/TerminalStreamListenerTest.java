@@ -30,7 +30,7 @@ import java.util.Collections;
 public class TerminalStreamListenerTest  {
 
     @Test
-    public void testRecv() throws Exception {
+    public void testRecv() {
         final DownloadTransfer transfer = new DownloadTransfer(new Host(new TestProtocol()), Collections.<TransferItem>emptyList());
         final TerminalStreamListener l = new TerminalStreamListener(new TransferSpeedometer(transfer));
         l.recv(1L);
@@ -39,7 +39,7 @@ public class TerminalStreamListenerTest  {
     }
 
     @Test
-    public void testSent() throws Exception {
+    public void testSent() {
         final DownloadTransfer transfer = new DownloadTransfer(new Host(new TestProtocol()), Collections.<TransferItem>emptyList());
         final TerminalStreamListener l = new TerminalStreamListener(new TransferSpeedometer(transfer));
         l.sent(1L);

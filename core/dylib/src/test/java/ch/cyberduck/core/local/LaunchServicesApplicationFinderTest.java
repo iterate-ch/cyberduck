@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 public class LaunchServicesApplicationFinderTest {
 
     @Test
-    public void testFindAll() throws Exception {
+    public void testFindAll() {
         ApplicationFinder f = new LaunchServicesApplicationFinder();
         final List<Application> applications = f.findAll("file.txt");
         assertFalse(applications.isEmpty());
@@ -36,28 +36,28 @@ public class LaunchServicesApplicationFinderTest {
     }
 
     @Test
-    public void testFindByFilename() throws Exception {
+    public void testFindByFilename() {
         ApplicationFinder f = new LaunchServicesApplicationFinder();
         assertEquals(new Application("com.apple.Preview", "Preview"), f.find("file.png"));
         assertEquals(Application.notfound, f.find("file.txt_"));
     }
 
     @Test
-    public void testFindByBundleIdentifier() throws Exception {
+    public void testFindByBundleIdentifier() {
         ApplicationFinder f = new LaunchServicesApplicationFinder();
         assertEquals(new Application("com.apple.Preview", "Preview"), f.getDescription("com.apple.Preview"));
         assertEquals(Application.notfound, f.getDescription("com.apple.Preview_"));
     }
 
     @Test
-    public void testFindByName() throws Exception {
+    public void testFindByName() {
         ApplicationFinder f = new LaunchServicesApplicationFinder();
         assertEquals(new Application("com.apple.Preview", "Preview"), f.getDescription("Preview"));
         assertEquals(Application.notfound, f.getDescription("Preview_"));
     }
 
     @Test
-    public void testInstalled() throws Exception {
+    public void testInstalled() {
         ApplicationFinder f = new LaunchServicesApplicationFinder();
         assertTrue(f.isInstalled(new Application("com.apple.Preview", "Preview")));
         assertFalse(f.isInstalled(new Application("com.apple.Preview_", "Preview")));

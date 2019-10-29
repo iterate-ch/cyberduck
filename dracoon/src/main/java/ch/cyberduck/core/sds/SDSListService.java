@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -57,28 +56,12 @@ public class SDSListService implements ListService {
             final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
             NodeList nodes;
             do {
-                nodes = new NodesApi(session.getClient()).getFsNodes(0,
-                    Long.parseLong(nodeid.getFileid(directory, new DisabledListProgressListener())),
-                    null, null, "name:asc", offset, chunksize, StringUtils.EMPTY, null);
+                nodes = new NodesApi(session.getClient()).getFsNodes(StringUtils.EMPTY, null, 0,
+                    null, chunksize, offset, Long.parseLong(nodeid.getFileid(directory, new DisabledListProgressListener())),
+                    false, "name:asc");
                 for(Node node : nodes.getItems()) {
                     final PathAttributes attributes = feature.toAttributes(node);
-                    final EnumSet<AbstractPath.Type> type;
-                    switch(node.getType()) {
-                        case ROOM:
-                            type = EnumSet.of(Path.Type.directory, Path.Type.volume);
-                            break;
-                        case FOLDER:
-                            type = EnumSet.of(Path.Type.directory);
-                            if(node.getIsEncrypted()) {
-                                type.add(Path.Type.decrypted);
-                            }
-                            break;
-                        default:
-                            type = EnumSet.of(Path.Type.file);
-                            if(node.getIsEncrypted()) {
-                                type.add(Path.Type.decrypted);
-                            }
-                    }
+                    final EnumSet<Path.Type> type = feature.toType(node);
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     children.add(file);
                     listener.chunk(directory, children);

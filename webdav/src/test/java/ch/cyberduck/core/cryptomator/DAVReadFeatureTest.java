@@ -64,7 +64,6 @@ public class DAVReadFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testReadRange() throws Exception {
-
         final TransferStatus status = new TransferStatus();
         final int length = 140000;
         final byte[] content = RandomUtils.nextBytes(length);

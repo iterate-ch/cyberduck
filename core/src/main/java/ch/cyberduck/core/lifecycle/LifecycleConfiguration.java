@@ -17,6 +17,8 @@ package ch.cyberduck.core.lifecycle;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import java.util.Objects;
+
 public class LifecycleConfiguration {
 
     public static LifecycleConfiguration empty() {
@@ -58,10 +60,10 @@ public class LifecycleConfiguration {
             return false;
         }
         final LifecycleConfiguration that = (LifecycleConfiguration) o;
-        if(expiration != null ? !expiration.equals(that.expiration) : that.expiration != null) {
+        if(!Objects.equals(expiration, that.expiration)) {
             return false;
         }
-        if(transition != null ? !transition.equals(that.transition) : that.transition != null) {
+        if(!Objects.equals(transition, that.transition)) {
             return false;
         }
         return true;

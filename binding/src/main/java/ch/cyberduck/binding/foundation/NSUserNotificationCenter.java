@@ -19,6 +19,7 @@ package ch.cyberduck.binding.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 
 public abstract class NSUserNotificationCenter extends NSObject {
@@ -39,7 +40,7 @@ public abstract class NSUserNotificationCenter extends NSObject {
          * Original signature : <code>+(NSUserNotificationCenter*)defaultUserNotificationCenter</code><br>
          * <i>native declaration : line 8</i>
          */
-        public abstract NSUserNotificationCenter defaultUserNotificationCenter();
+        NSUserNotificationCenter defaultUserNotificationCenter();
     }
 
     // Add a notification to the center for scheduling.
@@ -50,4 +51,10 @@ public abstract class NSUserNotificationCenter extends NSObject {
     public abstract void removeScheduledNotification(NSUserNotification notification);
 
     public abstract void removeAllDeliveredNotifications();
+
+    public abstract void setDelegate(ID delegate);
+
+    public interface Delegate {
+        void userNotificationCenter_didActivateNotification(NSUserNotificationCenter center, NSUserNotification notification);
+    }
 }

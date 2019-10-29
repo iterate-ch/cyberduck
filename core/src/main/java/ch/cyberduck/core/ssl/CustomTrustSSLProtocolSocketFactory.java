@@ -48,12 +48,10 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private static final Logger log = Logger.getLogger(CustomTrustSSLProtocolSocketFactory.class);
 
     private final SSLSocketFactory factory;
-
     /**
      * Shared context
      */
     private final SSLContext context;
-
     private final String[] protocols;
 
     private final AtomicBoolean initializer
@@ -62,7 +60,6 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private final Preferences preferences = PreferencesFactory.get();
 
     private final X509TrustManager trust;
-
     private final X509KeyManager key;
 
     /**
@@ -106,7 +103,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @param socket    Socket to configure
      * @param protocols Enabled SSL protocol versions
      */
-    protected void configure(final Socket socket, final String[] protocols) throws IOException {
+    protected void configure(final Socket socket, final String[] protocols) {
         if(socket instanceof SSLSocket) {
             try {
                 if(log.isDebugEnabled()) {

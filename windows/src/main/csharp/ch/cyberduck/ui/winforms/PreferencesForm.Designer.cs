@@ -247,6 +247,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cryptomatorButton = new System.Windows.Forms.ToolStripButton();
             this.updateButton = new System.Windows.Forms.ToolStripButton();
             this.languageButton = new System.Windows.Forms.ToolStripButton();
+            this.segmentedDownloadsCheckbox = new System.Windows.Forms.CheckBox();
             this.panelManager.SuspendLayout();
             this.managedGeneralPanel.SuspendLayout();
             this.tableLayoutPanelGeneral.SuspendLayout();
@@ -1888,30 +1889,32 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel7.Controls.Add(this.openAfterDownloadCheckbox, 0, 0);
-            this.tableLayoutPanel7.Controls.Add(this.duplicateDownloadCombobox, 1, 2);
-            this.tableLayoutPanel7.Controls.Add(this.label11, 0, 2);
-            this.tableLayoutPanel7.Controls.Add(this.downloadFolderLabel, 1, 1);
-            this.tableLayoutPanel7.Controls.Add(this.label10, 0, 1);
-            this.tableLayoutPanel7.Controls.Add(this.duplicateDownloadOverwriteCheckbox, 1, 3);
-            this.tableLayoutPanel7.Controls.Add(this.showDownloadFolderDialogButton, 2, 1);
+            this.tableLayoutPanel7.Controls.Add(this.openAfterDownloadCheckbox, 0, 1);
+            this.tableLayoutPanel7.Controls.Add(this.duplicateDownloadCombobox, 1, 3);
+            this.tableLayoutPanel7.Controls.Add(this.label11, 0, 3);
+            this.tableLayoutPanel7.Controls.Add(this.downloadFolderLabel, 1, 2);
+            this.tableLayoutPanel7.Controls.Add(this.label10, 0, 2);
+            this.tableLayoutPanel7.Controls.Add(this.duplicateDownloadOverwriteCheckbox, 1, 4);
+            this.tableLayoutPanel7.Controls.Add(this.showDownloadFolderDialogButton, 2, 2);
+            this.tableLayoutPanel7.Controls.Add(this.segmentedDownloadsCheckbox, 0, 0);
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 19);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.Padding = new System.Windows.Forms.Padding(5);
-            this.tableLayoutPanel7.RowCount = 4;
+            this.tableLayoutPanel7.RowCount = 5;
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(634, 120);
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(634, 145);
             this.tableLayoutPanel7.TabIndex = 10;
             // 
             // openAfterDownloadCheckbox
             // 
             this.openAfterDownloadCheckbox.AutoSize = true;
             this.tableLayoutPanel7.SetColumnSpan(this.openAfterDownloadCheckbox, 3);
-            this.openAfterDownloadCheckbox.Location = new System.Drawing.Point(8, 8);
+            this.openAfterDownloadCheckbox.Location = new System.Drawing.Point(8, 33);
             this.openAfterDownloadCheckbox.Name = "openAfterDownloadCheckbox";
             this.openAfterDownloadCheckbox.Size = new System.Drawing.Size(276, 19);
             this.openAfterDownloadCheckbox.TabIndex = 0;
@@ -1923,7 +1926,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.duplicateDownloadCombobox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.duplicateDownloadCombobox.FormattingEnabled = true;
-            this.duplicateDownloadCombobox.Location = new System.Drawing.Point(158, 64);
+            this.duplicateDownloadCombobox.Location = new System.Drawing.Point(158, 89);
             this.duplicateDownloadCombobox.Name = "duplicateDownloadCombobox";
             this.duplicateDownloadCombobox.Size = new System.Drawing.Size(286, 23);
             this.duplicateDownloadCombobox.TabIndex = 4;
@@ -1933,7 +1936,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label11.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(76, 68);
+            this.label11.Location = new System.Drawing.Point(76, 93);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(76, 15);
             this.label11.TabIndex = 5;
@@ -1944,7 +1947,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.downloadFolderLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.downloadFolderLabel.AutoSize = true;
-            this.downloadFolderLabel.Location = new System.Drawing.Point(158, 38);
+            this.downloadFolderLabel.Location = new System.Drawing.Point(158, 63);
             this.downloadFolderLabel.Name = "downloadFolderLabel";
             this.downloadFolderLabel.Size = new System.Drawing.Size(76, 15);
             this.downloadFolderLabel.TabIndex = 9;
@@ -1954,7 +1957,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label10.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(52, 38);
+            this.label10.Location = new System.Drawing.Point(52, 63);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(100, 15);
             this.label10.TabIndex = 3;
@@ -1964,7 +1967,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // duplicateDownloadOverwriteCheckbox
             // 
             this.duplicateDownloadOverwriteCheckbox.AutoSize = true;
-            this.duplicateDownloadOverwriteCheckbox.Location = new System.Drawing.Point(158, 93);
+            this.duplicateDownloadOverwriteCheckbox.Location = new System.Drawing.Point(158, 118);
             this.duplicateDownloadOverwriteCheckbox.Name = "duplicateDownloadOverwriteCheckbox";
             this.duplicateDownloadOverwriteCheckbox.Size = new System.Drawing.Size(200, 19);
             this.duplicateDownloadOverwriteCheckbox.TabIndex = 6;
@@ -1977,7 +1980,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.showDownloadFolderDialogButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.showDownloadFolderDialogButton.AutoSize = true;
             this.showDownloadFolderDialogButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.showDownloadFolderDialogButton.Location = new System.Drawing.Point(560, 33);
+            this.showDownloadFolderDialogButton.Location = new System.Drawing.Point(560, 58);
             this.showDownloadFolderDialogButton.Name = "showDownloadFolderDialogButton";
             this.showDownloadFolderDialogButton.Size = new System.Drawing.Size(66, 25);
             this.showDownloadFolderDialogButton.TabIndex = 8;
@@ -3218,6 +3221,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.languageButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.languageButton.Click += new System.EventHandler(this.languageButton_Click);
             // 
+            // segmentedDownloadsCheckbox
+            // 
+            this.segmentedDownloadsCheckbox.AutoSize = true;
+            this.tableLayoutPanel7.SetColumnSpan(this.segmentedDownloadsCheckbox, 3);
+            this.segmentedDownloadsCheckbox.Location = new System.Drawing.Point(8, 8);
+            this.segmentedDownloadsCheckbox.Name = "segmentedDownloadsCheckbox";
+            this.segmentedDownloadsCheckbox.Size = new System.Drawing.Size(327, 19);
+            this.segmentedDownloadsCheckbox.TabIndex = 4;
+            this.segmentedDownloadsCheckbox.Text = "Segmented downloads with multiple connections per file";
+            this.segmentedDownloadsCheckbox.UseVisualStyleBackColor = true;
+            this.segmentedDownloadsCheckbox.CheckedChanged += new System.EventHandler(this.segmentedDownloadsCheckbox_CheckedChanged);
+            // 
             // PreferencesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -3632,5 +3647,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.GroupBox groupBox17;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel32;
         private System.Windows.Forms.CheckBox verifyChecksumUploadCheckbox;
+        private System.Windows.Forms.CheckBox segmentedDownloadsCheckbox;
     }
 }

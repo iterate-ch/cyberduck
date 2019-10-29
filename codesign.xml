@@ -43,28 +43,31 @@
     <target name="codesign" depends="dotclean,compile-codesign-requirement">
         <echo
             message="Code signing ${bundle} with certificate ${codesign.certificate} and entitlements ${codesign.arg} from ${codesign.keychain}"/>
-        <apply executable="/usr/bin/codesign" failonerror="true"
+        <apply executable="/usr/bin/xcrun" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <arg
+                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.spotlight}" erroronmissingdir="false">
                 <include name="*.mdimporter"/>
             </fileset>
             <srcfile/>
         </apply>
-        <apply executable="/usr/bin/codesign" failonerror="true"
+        <apply executable="/usr/bin/xcrun" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="${codesign.options} --identifier ch.sudo.cyberduck --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
+            <arg
+                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
                 <include name="*.dylib"/>
             </fileset>
             <srcfile/>
         </apply>
-        <apply executable="/usr/bin/codesign" failonerror="true"
+        <apply executable="/usr/bin/xcrun" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <arg
+                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.runtime}">
                 <include name="**/*.dylib"/>
             </fileset>
@@ -73,28 +76,31 @@
             </fileset>
             <srcfile/>
         </apply>
-        <apply executable="/usr/bin/codesign" failonerror="false"
+        <apply executable="/usr/bin/xcrun" failonerror="false"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="${codesign.options} --deep --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <arg
+                line="codesign ${codesign.options} --deep --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
                 <include name="Sparkle.framework/Versions/A/Resources/Autoupdate.app"/>
             </fileset>
             <srcfile/>
         </apply>
-        <apply executable="/usr/bin/codesign" failonerror="true"
+        <apply executable="/usr/bin/xcrun" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
+            <arg
+                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v"/>
             <fileset dir="${bundle}/${bundle.frameworks}">
                 <include name="*.framework/Versions/A"/>
             </fileset>
             <srcfile/>
         </apply>
-        <apply executable="/usr/bin/codesign" failonerror="true"
+        <apply executable="/usr/bin/xcrun" failonerror="true"
                type="both"
                parallel="false" spawn="false" force="true">
-            <arg line="${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
+            <arg
+                line="codesign ${codesign.options} --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
             <file name="${bundle}"/>
             <srcfile/>
         </apply>
@@ -111,22 +117,31 @@
     </target>
 
     <target name="verify-signature">
-        <echo message="Print codesign requirement for ${bundle}..."/>
-        <exec executable="/usr/bin/codesign" failonerror="true">
-            <arg line="--verbose=4 --deep --strict '${bundle}'"/>
-        </exec>
+        <echo message="Verify code signature of ${bundle}..."/>
+        <apply executable="/usr/bin/xcrun" failonerror="true"
+               type="both" parallel="false" spawn="false" force="true" verbose="true">
+            <arg line="codesign --verbose=4 --deep --strict"/>
+            <file name="${bundle}"/>
+            <srcfile/>
+        </apply>
     </target>
 
     <target name="verify-spctl">
         <echo message="Print system policy verification for ${bundle}..."/>
-        <exec executable="/usr/sbin/spctl" failonerror="true">
-            <arg line="-v --assess --type execute --raw '${bundle}'"/>
-        </exec>
+        <apply executable="/usr/sbin/spctl" failonerror="true"
+               type="both" parallel="false" spawn="false" force="true" verbose="true">
+            <arg line="-v --assess --type execute --raw"/>
+            <file name="${bundle}"/>
+            <srcfile/>
+        </apply>
     </target>
 
     <target name="dotclean">
-        <exec executable="/usr/sbin/dot_clean" failonerror="true">
-            <arg line="-m --keep=native '${bundle}'"/>
-        </exec>
+        <apply executable="/usr/sbin/dot_clean" failonerror="true"
+               type="both" parallel="false" spawn="false" force="true" verbose="true">
+            <arg line="-m --keep=native"/>
+            <file name="${bundle}"/>
+            <srcfile/>
+        </apply>
     </target>
 </project>

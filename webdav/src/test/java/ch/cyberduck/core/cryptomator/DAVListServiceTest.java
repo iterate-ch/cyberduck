@@ -52,7 +52,6 @@ public class DAVListServiceTest extends AbstractDAVTest {
 
     @Test
     public void testListCryptomator() throws Exception {
-
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

@@ -110,7 +110,7 @@ namespace Ch.Cyberduck.Core
             bool isException = CheckForException(hostName, serverCert);
             if (isException)
             {
-                // Exceptions always have precendence
+                // Exceptions always have precedence
                 return true;
             }
 
@@ -181,7 +181,7 @@ namespace Ch.Cyberduck.Core
                                 AddCertificate(serverCert, StoreName.Root);
                             }
                             PreferencesFactory.get()
-                                .setProperty(hostName + ".certificate.accept", serverCert.SubjectName.Name);
+                                .setProperty(hostName + ".certificate.accept", serverCert.Thumbprint);
                         }
                         return true;
                     }
@@ -244,7 +244,7 @@ namespace Ch.Cyberduck.Core
             string accCert = PreferencesFactory.get().getProperty(hostname + ".certificate.accept");
             if (Utils.IsNotBlank(accCert))
             {
-                return accCert.Equals(cert.SubjectName.Name);
+                return accCert.Equals(cert.Thumbprint);
             }
             return false;
         }

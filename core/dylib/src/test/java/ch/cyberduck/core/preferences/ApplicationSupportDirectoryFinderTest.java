@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNotNull;
 public class ApplicationSupportDirectoryFinderTest {
 
     @Test
-    public void testFind() throws Exception {
+    public void testFind() {
         assertNotNull(new ApplicationSupportDirectoryFinder().find());
         assertEquals("~/Library/Application Support/Cyberduck", new ApplicationSupportDirectoryFinder().find().getAbbreviatedPath());
     }

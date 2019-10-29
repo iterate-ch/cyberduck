@@ -41,7 +41,7 @@ public class MicrosoftFTPEntryParserTest {
     }
 
     @Test
-    public void testParse() throws Exception {
+    public void testParse() {
         FTPFile parsed;
 
         // #3701

@@ -37,7 +37,6 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -66,7 +65,7 @@ public class IRODSDirectoryFeatureTest {
         new IRODSDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         assertTrue(session.getFeature(Find.class).find(test));
 
-        session.getFeature(Delete.class).delete(Arrays.asList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.getFeature(Delete.class).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(session.getFeature(Find.class).find(test));
         session.close();
     }

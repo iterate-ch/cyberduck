@@ -3,10 +3,10 @@ package ch.cyberduck.core.transfer.copy;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.UnixPermission;
@@ -42,11 +42,11 @@ public class OverwriteFilterTest {
         files.put(source, new Path("a", EnumSet.of(Path.Type.directory)));
         final Find find = new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 return true;
             }
         };
-        AbstractCopyFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())) {
+        AbstractCopyFilter f = new OverwriteFilter(new NullTransferSession(new Host(new TestProtocol())), new NullTransferSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
@@ -67,7 +67,7 @@ public class OverwriteFilterTest {
         final Path source = new Path("a", EnumSet.of(Path.Type.file));
         source.attributes().setSize(1L);
         files.put(source, new Path("a", EnumSet.of(Path.Type.file)));
-        OverwriteFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())), files);
+        OverwriteFilter f = new OverwriteFilter(new NullTransferSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())), files);
         final TransferStatus status = f.prepare(source, null, new TransferStatus(), new DisabledProgressListener());
         assertEquals(1L, status.getLength());
     }
@@ -79,7 +79,7 @@ public class OverwriteFilterTest {
         source.attributes().setSize(1L);
         final Path target = new Path("a", EnumSet.of(Path.Type.directory));
         files.put(source, target);
-        OverwriteFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())), files);
+        OverwriteFilter f = new OverwriteFilter(new NullTransferSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())), files);
         final TransferStatus status = f.prepare(source, null, new TransferStatus(), new DisabledProgressListener());
         assertEquals(0L, status.getLength());
     }
@@ -96,7 +96,7 @@ public class OverwriteFilterTest {
         final boolean[] permissionWrite = new boolean[1];
         final Path target = new Path("a", EnumSet.of(Path.Type.file));
         files.put(source, target);
-        OverwriteFilter f = new OverwriteFilter(new NullSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())) {
+        OverwriteFilter f = new OverwriteFilter(new NullTransferSession(new Host(new TestProtocol())), new NullSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(final Class<T> type) {
@@ -104,7 +104,7 @@ public class OverwriteFilterTest {
                     return (T) new DefaultTimestampFeature() {
 
                         @Override
-                        public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
+                        public void setTimestamp(final Path file, final Long modified) {
                             assertEquals(time, modified);
                             timestampWrite[0] = true;
                         }
@@ -113,22 +113,22 @@ public class OverwriteFilterTest {
                 if(type.equals(UnixPermission.class)) {
                     return (T) new DefaultUnixPermissionFeature() {
                         @Override
-                        public void setUnixOwner(final Path file, final String owner) throws BackgroundException {
+                        public void setUnixOwner(final Path file, final String owner) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixGroup(final Path file, final String group) throws BackgroundException {
+                        public void setUnixGroup(final Path file, final String group) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public Permission getUnixPermission(final Path file) throws BackgroundException {
+                        public Permission getUnixPermission(final Path file) {
                             throw new UnsupportedOperationException();
                         }
 
                         @Override
-                        public void setUnixPermission(final Path file, final Permission permission) throws BackgroundException {
+                        public void setUnixPermission(final Path file, final Permission permission) {
                             assertEquals(new Permission(777), permission);
                             permissionWrite[0] = true;
                         }

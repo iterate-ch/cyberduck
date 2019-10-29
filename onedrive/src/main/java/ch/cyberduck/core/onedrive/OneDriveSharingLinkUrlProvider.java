@@ -45,7 +45,11 @@ public class OneDriveSharingLinkUrlProvider implements PromptUrlProvider {
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
-        return true;
+        switch(type) {
+            case download:
+                return file.isFile();
+        }
+        return false;
     }
 
     @Override
@@ -54,6 +58,9 @@ public class OneDriveSharingLinkUrlProvider implements PromptUrlProvider {
             final OneDriveItem item = session.toItem(file);
             if(null == item) {
                 throw new NotfoundException(file.getAbsolute());
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create shared link for %s", file));
             }
             return new DescriptiveUrl(URI.create(item.createSharedLink(OneDriveSharingLink.Type.VIEW).getLink().getWebUrl()),
                 DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3")));

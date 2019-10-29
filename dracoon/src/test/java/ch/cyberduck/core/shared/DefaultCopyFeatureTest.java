@@ -54,16 +54,17 @@ public class DefaultCopyFeatureTest extends AbstractSDSTest {
     @Test
     public void testCopy() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path source = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(source, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(524);
         final TransferStatus status = new TransferStatus().length(content.length);
         status.setExists(true);
+        status.setLength(content.length);
         final OutputStream out = new SDSWriteFeature(session, nodeid).write(source, status, new DisabledConnectionCallback());
         assertNotNull(out);
-        new StreamCopier(new TransferStatus(), new TransferStatus()).withLimit(new Long(content.length)).transfer(new ByteArrayInputStream(content), out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
         new DefaultCopyFeature(session).copy(source, target, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         assertTrue(new DefaultFindFeature(session).find(source));

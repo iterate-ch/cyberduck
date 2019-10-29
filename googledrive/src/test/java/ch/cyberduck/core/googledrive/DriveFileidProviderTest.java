@@ -18,9 +18,11 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -29,13 +31,13 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 
 import com.google.api.services.drive.model.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class DriveFileidProviderTest extends AbstractDriveTest {
@@ -101,5 +103,25 @@ public class DriveFileidProviderTest extends AbstractDriveTest {
         assertEquals(p2.attributes().getVersionId(), fileid.getFileid(new Path(DriveHomeFinderService.MYDRIVE_FOLDER, filename, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
         session.getClient().files().delete(p1.attributes().getVersionId());
         session.getClient().files().delete(p2.attributes().getVersionId());
+    }
+
+    @Test
+    public void testFileIdCollision() throws Exception {
+        final Path path2R = new Path("/2R", EnumSet.of(Path.Type.directory));
+        final Path path33 = new Path("/33", EnumSet.of(Path.Type.directory));
+
+        final DriveFileidProvider idProvider = new DriveFileidProvider(session);
+        final Directory directoryFeature = new DriveDirectoryFeature(session, idProvider);
+        final Path path2RWithId = directoryFeature.mkdir(path2R, null, new TransferStatus());
+        assertNotNull(path2RWithId.attributes().getVersionId());
+        final Path path33WithId = directoryFeature.mkdir(path33, null, new TransferStatus());
+        assertNotNull(path33WithId.attributes().getVersionId());
+        assertNotEquals(path2RWithId.attributes().getVersionId(), path33WithId.attributes().getVersionId());
+
+        final String fileId = idProvider.getFileid(path33, new DisabledListProgressListener());
+
+        assertEquals(fileId, path33WithId.attributes().getVersionId());
+        assertNotEquals(fileId, path2RWithId.attributes().getVersionId());
+        new DriveDeleteFeature(session, idProvider).delete(Arrays.asList(path2RWithId, path33WithId), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }

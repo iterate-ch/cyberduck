@@ -28,7 +28,7 @@ import static org.junit.Assert.assertFalse;
 public class TerminalAlertCallbackTest  {
 
     @Test
-    public void testAlert() throws Exception {
+    public void testAlert() {
         assertFalse(new TerminalAlertCallback().alert(new Host(new TestProtocol()), new BackgroundException(), new StringBuilder()));
     }
 }

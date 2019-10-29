@@ -22,11 +22,10 @@ import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.googlestorage.AbstractGoogleStorageTest;
+import ch.cyberduck.core.googlestorage.GoogleStorageDirectoryFeature;
+import ch.cyberduck.core.googlestorage.GoogleStorageFindFeature;
+import ch.cyberduck.core.googlestorage.GoogleStorageTouchFeature;
 import ch.cyberduck.core.pool.SessionPool;
-import ch.cyberduck.core.s3.S3DirectoryFeature;
-import ch.cyberduck.core.s3.S3FindFeature;
-import ch.cyberduck.core.s3.S3TouchFeature;
-import ch.cyberduck.core.s3.S3WriteFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -47,12 +46,12 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
         final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path source = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(source, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(source));
+        new GoogleStorageTouchFeature(session).touch(source, new TransferStatus());
+        assertTrue(new GoogleStorageFindFeature(session).find(source));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(source, target), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new S3FindFeature(session).find(source));
-        assertTrue(new S3FindFeature(session).find(target));
+        assertTrue(new GoogleStorageFindFeature(session).find(source));
+        assertTrue(new GoogleStorageFindFeature(session).find(target));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(source, target), PathCache.empty(), new DisabledProgressListener()).run(session);
     }
 
@@ -60,17 +59,17 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
     public void testCopyFileToDirectory() throws Exception {
         final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path sourceFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(sourceFile, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(sourceFile));
+        new GoogleStorageTouchFeature(session).touch(sourceFile, new TransferStatus());
+        assertTrue(new GoogleStorageFindFeature(session).find(sourceFile));
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(targetFolder, null, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(targetFolder));
+        new GoogleStorageDirectoryFeature(session).mkdir(targetFolder, null, new TransferStatus());
+        assertTrue(new GoogleStorageFindFeature(session).find(targetFolder));
         // copy file into vault
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(sourceFile, targetFile), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new S3FindFeature(session).find(sourceFile));
-        assertTrue(new S3FindFeature(session).find(targetFile));
+        assertTrue(new GoogleStorageFindFeature(session).find(sourceFile));
+        assertTrue(new GoogleStorageFindFeature(session).find(targetFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(sourceFile, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
     }
 
@@ -79,19 +78,19 @@ public class CopyWorkerTest extends AbstractGoogleStorageTest {
         final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path folder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(folder, null, new TransferStatus());
-        new S3TouchFeature(session).touch(sourceFile, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(folder));
-        assertTrue(new S3FindFeature(session).find(sourceFile));
+        new GoogleStorageDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        new GoogleStorageTouchFeature(session).touch(sourceFile, new TransferStatus());
+        assertTrue(new GoogleStorageFindFeature(session).find(folder));
+        assertTrue(new GoogleStorageFindFeature(session).find(sourceFile));
         // move directory into vault
         final Path targetFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, sourceFile.getName(), EnumSet.of(Path.Type.file));
         final CopyWorker worker = new CopyWorker(Collections.singletonMap(folder, targetFolder), new SessionPool.SingleSessionPool(session), PathCache.empty(), new DisabledProgressListener(), new DisabledConnectionCallback());
         worker.run(session);
-        assertTrue(new S3FindFeature(session).find(targetFolder));
-        assertTrue(new S3FindFeature(session).find(targetFile));
-        assertTrue(new S3FindFeature(session).find(folder));
-        assertTrue(new S3FindFeature(session).find(sourceFile));
+        assertTrue(new GoogleStorageFindFeature(session).find(targetFolder));
+        assertTrue(new GoogleStorageFindFeature(session).find(targetFile));
+        assertTrue(new GoogleStorageFindFeature(session).find(folder));
+        assertTrue(new GoogleStorageFindFeature(session).find(sourceFile));
         new DeleteWorker(new DisabledLoginCallback(), Arrays.asList(folder, targetFolder), PathCache.empty(), new DisabledProgressListener()).run(session);
         session.close();
     }

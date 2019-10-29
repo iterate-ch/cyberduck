@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Attributes of a remote directory or file.
@@ -88,6 +89,11 @@ public class PathAttributes extends Attributes implements Serializable {
     private String versionId;
 
     /**
+     * Lock id
+     */
+    private String lockId;
+
+    /**
      * Should be hidden in the browser by default
      */
     private Boolean duplicate;
@@ -107,7 +113,7 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     private String displayname;
 
-    private DescriptiveUrl link;
+    private DescriptiveUrl link = DescriptiveUrl.EMPTY;
 
     /**
      * HTTP headers
@@ -150,6 +156,7 @@ public class PathAttributes extends Attributes implements Serializable {
         storageClass = copy.storageClass;
         encryption = copy.encryption;
         versionId = copy.versionId;
+        lockId = copy.lockId;
         duplicate = copy.duplicate;
         revision = copy.revision;
         region = copy.region;
@@ -174,17 +181,26 @@ public class PathAttributes extends Attributes implements Serializable {
         if(revision != null) {
             dict.setStringForKey(String.valueOf(revision), "Revision");
         }
+        if(etag != null) {
+            dict.setStringForKey(etag, "ETag");
+        }
         if(permission != Permission.EMPTY) {
             dict.setObjectForKey(permission, "Permission");
         }
         if(acl != Acl.EMPTY) {
             dict.setObjectForKey(acl, "Acl");
         }
+        if(link != DescriptiveUrl.EMPTY) {
+            dict.setStringForKey(link.getUrl(), "Link");
+        }
         if(checksum != Checksum.NONE) {
             dict.setStringForKey(checksum.hash, "Checksum");
         }
         if(StringUtils.isNotBlank(versionId)) {
             dict.setStringForKey(versionId, "Version");
+        }
+        if(StringUtils.isNotBlank(lockId)) {
+            dict.setStringForKey(lockId, "Lock Id");
         }
         if(duplicate != null) {
             dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
@@ -352,6 +368,15 @@ public class PathAttributes extends Attributes implements Serializable {
         return this;
     }
 
+    public String getLockId() {
+        return lockId;
+    }
+
+    public PathAttributes setLockId(final String lockId) {
+        this.lockId = lockId;
+        return this;
+    }
+
     public String getDirectoryId() {
         return directoryId;
     }
@@ -481,19 +506,22 @@ public class PathAttributes extends Attributes implements Serializable {
         if(size != that.size) {
             return false;
         }
-        if(checksum != null ? !checksum.equals(that.checksum) : that.checksum != null) {
+        if(!Objects.equals(checksum, that.checksum)) {
             return false;
         }
-        if(permission != null ? !permission.equals(that.permission) : that.permission != null) {
+        if(!Objects.equals(permission, that.permission)) {
             return false;
         }
-        if(versionId != null ? !versionId.equals(that.versionId) : that.versionId != null) {
+        if(!Objects.equals(acl, that.acl)) {
             return false;
         }
-        if(revision != null ? !revision.equals(that.revision) : that.revision != null) {
+        if(!Objects.equals(versionId, that.versionId)) {
             return false;
         }
-        if(region != null ? !region.equals(that.region) : that.region != null) {
+        if(!Objects.equals(revision, that.revision)) {
+            return false;
+        }
+        if(!Objects.equals(region, that.region)) {
             return false;
         }
         return true;
@@ -504,6 +532,7 @@ public class PathAttributes extends Attributes implements Serializable {
         int result = (int) (size ^ (size >>> 32));
         result = 31 * result + (int) (modified ^ (modified >>> 32));
         result = 31 * result + (permission != null ? permission.hashCode() : 0);
+        result = 31 * result + (acl != null ? acl.hashCode() : 0);
         result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
         result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
@@ -527,6 +556,7 @@ public class PathAttributes extends Attributes implements Serializable {
         sb.append(", storageClass='").append(storageClass).append('\'');
         sb.append(", encryption='").append(encryption).append('\'');
         sb.append(", versionId='").append(versionId).append('\'');
+        sb.append(", lockId='").append(lockId).append('\'');
         sb.append(", duplicate=").append(duplicate);
         sb.append(", revision=").append(revision);
         sb.append(", region='").append(region).append('\'');

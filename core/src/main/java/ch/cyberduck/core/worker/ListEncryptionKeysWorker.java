@@ -23,13 +23,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Encryption;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> {
+    private static final Logger log = Logger.getLogger(ListEncryptionKeysWorker.class);
 
     /**
      * Selected files.
@@ -46,6 +50,9 @@ public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> 
     @Override
     public Set<Encryption.Algorithm> run(final Session<?> session) throws BackgroundException {
         final Encryption feature = session.getFeature(Encryption.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         final Set<Encryption.Algorithm> keys = new HashSet<>();
         for(Path file : this.getContainers(files)) {
             if(this.isCanceled()) {
@@ -77,7 +84,7 @@ public class ListEncryptionKeysWorker extends Worker<Set<Encryption.Algorithm>> 
             return false;
         }
         final ListEncryptionKeysWorker that = (ListEncryptionKeysWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

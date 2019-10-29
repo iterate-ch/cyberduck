@@ -29,7 +29,12 @@ public class PasswordStoreFactory extends Factory<HostPasswordStore> {
 
     public static synchronized HostPasswordStore get() {
         if(null == store) {
-            store = new PasswordStoreFactory().create();
+            try {
+                store = new PasswordStoreFactory().create();
+            }
+            catch(FactoryException e) {
+                return new DisabledPasswordStore();
+            }
         }
         return store;
     }

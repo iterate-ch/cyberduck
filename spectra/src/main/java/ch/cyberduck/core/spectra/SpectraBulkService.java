@@ -27,7 +27,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.RequestEntityRestStorageService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
@@ -102,7 +102,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
     }
 
     @Override
-    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
+    public void post(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
         //
     }
 
@@ -131,7 +131,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
                     case upload:
                         if(status.isExists()) {
                             log.warn(String.format("Delete existing file %s", file));
-                            delete.delete(Collections.singletonList(file), callback, new Delete.DisabledCallback());
+                            delete.delete(Collections.singletonMap(file, status), callback, new Delete.DisabledCallback());
                         }
                         break;
                 }
@@ -378,7 +378,7 @@ public class SpectraBulkService implements Bulk<Set<UUID>> {
             }
         }
         catch(HttpResponseException e) {
-            throw new HttpResponseExceptionMappingService().map(e);
+            throw new DefaultHttpResponseExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

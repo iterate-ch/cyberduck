@@ -16,5 +16,5 @@ package ch.cyberduck.core.oauth;
  */
 
 public interface OAuth2TokenListener {
-    void callback(final String token);
+    void callback(String token);
 }

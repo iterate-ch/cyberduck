@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.StringReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -75,7 +75,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
                 "aMHUYJECgYAtpNPOcW8gou019Ys+RaRc0c0k8R5WAgxP0lqEujn+OS/PIdjdWOdD\n" +
                 "ZDuIcmUpyqcqqD/+wfgS/HBu011Mi9NSzcw6mogsXFerk28usMUfKBnibyLgtfiM\n" +
                 "jo5i4PI+2gDrScmRkBSmm86ewCo1J7Iq1Vk/0FL/oiEA2et7J8vIYA==\n" +
-                "-----END RSA PRIVATE KEY-----\n"), key.getOutputStream(false), Charset.forName("UTF-8"));
+                "-----END RSA PRIVATE KEY-----\n"), key.getOutputStream(false), StandardCharsets.UTF_8);
             // Reconnect
             session.disconnect();
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -145,7 +145,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
                 "/z54PrlBK74I9SWcBv9EwCAfL9YdZ7mW0iWrmUUmcpuJcRUXnKvTynTpq/l6GE8+\n" +
                 "Ld5saHMVWt7GlEbM3Fjqfvj7/dbtcy3TTmy0Vx4GbKzsaPytAb2jgLGn8bQfjQzp\n" +
                 "hnPC1l+r7ebV7tBR216+6PmsXQu7atqgbGjb7Dh+GP8Ak73F8v6LPtyz+tAOYwpB\n" +
-                "-----END RSA PRIVATE KEY-----\n"), key.getOutputStream(false), Charset.forName("UTF-8"));
+                "-----END RSA PRIVATE KEY-----\n"), key.getOutputStream(false), StandardCharsets.UTF_8);
             // Reconnect
             session.disconnect();
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -200,7 +200,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
                 "/z54PrlBK74I9SWcBv9EwCAfL9YdZ7mW0iWrmUUmcpuJcRUXnKvTynTpq/l6GE8+\n" +
                 "Ld5saHMVWt7GlEbM3Fjqfvj7/dbtcy3TTmy0Vx4GbKzsaPytAb2jgLGn8bQfjQzp\n" +
                 "hnPC1l+r7ebV7tBR216+6PmsXQu7atqgbGjb7Dh+GP8Ak73F8v6LPtyz+tAOYwpB\n" +
-                "-----END RSA PRIVATE KEY-----\n"), key.getOutputStream(false), Charset.forName("UTF-8"));
+                "-----END RSA PRIVATE KEY-----\n"), key.getOutputStream(false), StandardCharsets.UTF_8);
             final AtomicBoolean b = new AtomicBoolean();
             // Reconnect
             session.disconnect();
@@ -226,7 +226,7 @@ public class SFTPPublicKeyAuthenticationTest extends AbstractSFTPTest {
         final Local key = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         try {
             new DefaultLocalTouchFeature().touch(key);
-            IOUtils.copy(new StringReader("--unknown format"), key.getOutputStream(false), Charset.forName("UTF-8"));
+            IOUtils.copy(new StringReader("--unknown format"), key.getOutputStream(false), StandardCharsets.UTF_8);
             // Reconnect
             session.disconnect();
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());

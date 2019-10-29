@@ -38,25 +38,17 @@ public interface Protocol extends Comparable<Protocol> {
 
     HostnameConfigurator getHostnameFinder();
 
-    enum Type {
-        ftp,
-        sftp,
-        s3,
-        googlestorage,
-        dropbox,
-        googledrive,
-        swift,
-        dav,
-        azure,
-        onedrive,
-        irods,
-        b2,
-        file,
-        dracoon,
-        manta
-    }
+    /**
+     * @return Case sensitivity of system
+     */
+    Case getCaseSensitivity();
 
-    boolean isStateful();
+    DirectoryTimestamp getDirectoryTimestamp();
+
+    /**
+     * @return By default a protocol is considered stateless
+     */
+    Statefulness getStatefulness();
 
     /**
      * @return True if anonymous login is possible.
@@ -72,10 +64,13 @@ public interface Protocol extends Comparable<Protocol> {
      * @return True if password is required
      */
     boolean isPasswordConfigurable();
+
     boolean isTokenConfigurable();
 
     boolean isOAuthConfigurable();
+
     boolean isCertificateConfigurable();
+
     boolean isPrivateKeyConfigurable();
 
     /**
@@ -251,4 +246,49 @@ public interface Protocol extends Comparable<Protocol> {
      * @return Default OAuth 2.0 client secret
      */
     String getOAuthClientSecret();
+
+    enum Type {
+        ftp,
+        sftp,
+        s3,
+        googlestorage,
+        dropbox,
+        googledrive,
+        swift,
+        dav,
+        azure,
+        onedrive,
+        irods,
+        b2,
+        file,
+        dracoon,
+        storegate,
+        brick,
+        nextcloud,
+        manta
+    }
+
+    enum Case {
+        sensitive,
+        insensitive
+    }
+
+    enum DirectoryTimestamp {
+        /**
+         * Timestamp on directory is only updated when set explicitly using API
+         */
+        explicit,
+        /**
+         * Timestamp on directory changes implicitly when its contents changes
+         */
+        implicit
+    }
+
+    enum Statefulness {
+        stateful,
+        stateless
+    }
+
+    @SuppressWarnings("unchecked")
+    <T> T getFeature(final Class<T> type);
 }

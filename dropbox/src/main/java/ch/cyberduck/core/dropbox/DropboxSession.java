@@ -15,6 +15,7 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
@@ -30,6 +31,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Move;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.features.Search;
@@ -47,17 +49,22 @@ import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
 
+import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxHost;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.http.HttpRequestor;
 import com.dropbox.core.v2.DbxRawClientV2;
 import com.dropbox.core.v2.common.PathRoot;
+import com.dropbox.core.v2.users.DbxUserUsersRequests;
+import com.dropbox.core.v2.users.FullAccount;
 
 public class DropboxSession extends HttpSession<DbxRawClientV2> {
+    private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();
@@ -70,11 +77,11 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
 
     @Override
     protected DbxRawClientV2 connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) {
-        authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).build(), host.getProtocol())
-            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
+            .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
         configuration.addInterceptorLast(authorizationService);
-        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(authorizationService));
+        configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         final CloseableHttpClient client = configuration.build();
         return new CustomDbxRawClientV2(DbxRequestConfig.newBuilder(useragent.get())
             .withAutoRetryDisabled()
@@ -108,6 +115,17 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
+        try {
+            final Credentials credentials = host.getCredentials();
+            final FullAccount account = new DbxUserUsersRequests(client).getCurrentAccount();
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Authenticated as user %s", account));
+            }
+            credentials.setUsername(account.getEmail());
+        }
+        catch(DbxException e) {
+            throw new DropboxExceptionMappingService().map(e);
+        }
     }
 
     @Override
@@ -149,6 +167,9 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         }
         if(type == UrlProvider.class) {
             return (T) new DropboxUrlProvider(this);
+        }
+        if(type == PromptUrlProvider.class) {
+            return (T) new DropboxTemporaryUrlProvider(this);
         }
         if(type == Find.class) {
             return (T) new DropboxFindFeature(this);

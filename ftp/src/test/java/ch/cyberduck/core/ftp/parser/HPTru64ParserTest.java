@@ -42,7 +42,7 @@ public class HPTru64ParserTest {
      * http://trac.cyberduck.ch/ticket/2246
      */
     @Test
-    public void testParse() throws Exception {
+    public void testParse() {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(

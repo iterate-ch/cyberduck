@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class TransferPromptListWorker extends Worker<List<TransferItem>> {
     private static final Logger log = Logger.getLogger(TransferPromptListWorker.class);
@@ -78,10 +79,10 @@ public class TransferPromptListWorker extends Worker<List<TransferItem>> {
             return false;
         }
         final TransferPromptListWorker that = (TransferPromptListWorker) o;
-        if(directory != null ? !directory.equals(that.directory) : that.directory != null) {
+        if(!Objects.equals(directory, that.directory)) {
             return false;
         }
-        if(transfer != null ? !transfer.equals(that.transfer) : that.transfer != null) {
+        if(!Objects.equals(transfer, that.transfer)) {
             return false;
         }
         return true;

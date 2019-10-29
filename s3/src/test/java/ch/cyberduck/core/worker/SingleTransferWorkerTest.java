@@ -103,9 +103,9 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         byte[] compare = new byte[content.length];
         assertArrayEquals(content, IOUtils.toByteArray(localFile.getInputStream()));
         test.attributes().setVersionId(versionId);
@@ -137,7 +137,7 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
                 if(type == Upload.class) {
                     return (T) new S3MultipartUploadService(this, new S3WriteFeature(this), 5 * 1024L * 1024L, 5) {
                         @Override
-                        protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+                        protected InputStream decorate(final InputStream in, final MessageDigest digest) {
                             if(failed.get()) {
                                 // Second attempt successful
                                 return in;
@@ -170,9 +170,9 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         local.delete();
         assertEquals(6L * 1024L * 1024L, counter.getSent(), 0L);
         assertEquals(6L * 1024L * 1024L, new S3AttributesFinderFeature(session).find(test).getSize());

@@ -60,11 +60,16 @@ public class DefaultPathPredicate implements CacheReference<Path> {
             return false;
         }
         if(o instanceof CacheReference) {
-            return this.hashCode() == o.hashCode();
+            if(this.hashCode() == o.hashCode()) {
+                return reference.equals(o.toString());
+            }
         }
         return false;
     }
 
+    /**
+     * @return Matches hash code of NSObjectPathReference
+     */
     @Override
     public int hashCode() {
         return reference.hashCode();
@@ -72,6 +77,6 @@ public class DefaultPathPredicate implements CacheReference<Path> {
 
     @Override
     public boolean test(final Path test) {
-        return this.hashCode() == new DefaultPathPredicate(test).hashCode();
+        return this.equals(new DefaultPathPredicate(test));
     }
 }

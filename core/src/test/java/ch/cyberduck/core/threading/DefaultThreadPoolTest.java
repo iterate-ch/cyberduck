@@ -33,7 +33,7 @@ import static org.junit.Assert.fail;
 public class DefaultThreadPoolTest {
 
     @Test(expected = RejectedExecutionException.class)
-    public void testShutdown() throws Exception {
+    public void testShutdown() {
         final DefaultThreadPool p = new DefaultThreadPool(1);
         p.shutdown(true);
         p.execute(new Callable<Void>() {
@@ -46,7 +46,7 @@ public class DefaultThreadPoolTest {
     }
 
     @Test
-    public void testGracefulShutdown() throws Exception {
+    public void testGracefulShutdown() {
         final DefaultThreadPool pool = new DefaultThreadPool(Integer.MAX_VALUE);
         final AtomicInteger counter = new AtomicInteger(10);
         for(int i = 0; i < 10; i++) {
@@ -68,7 +68,7 @@ public class DefaultThreadPoolTest {
         final Object r = new Object();
         assertEquals(r, p.execute(new Callable<Object>() {
             @Override
-            public Object call() throws Exception {
+            public Object call() {
                 return r;
             }
         }).get());
@@ -82,7 +82,7 @@ public class DefaultThreadPoolTest {
         for(int i = 0; i < 1000; i++) {
             wait.add(p.execute(new Callable<Integer>() {
                 @Override
-                public Integer call() throws Exception {
+                public Integer call() {
                     return counter.incrementAndGet();
                 }
             }));
@@ -96,14 +96,14 @@ public class DefaultThreadPoolTest {
     }
 
     @Test
-    public void testShutdownGracefully() throws Exception {
+    public void testShutdownGracefully() {
         final DefaultThreadPool p = new DefaultThreadPool(Integer.MAX_VALUE);
         final List<Future<Integer>> wait = new ArrayList<Future<Integer>>();
         final AtomicInteger counter = new AtomicInteger(0);
         for(int i = 0; i < 1000; i++) {
             wait.add(p.execute(new Callable<Integer>() {
                 @Override
-                public Integer call() throws Exception {
+                public Integer call() {
                     return counter.incrementAndGet();
                 }
             }));

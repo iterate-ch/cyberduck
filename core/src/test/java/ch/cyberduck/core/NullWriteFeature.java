@@ -15,7 +15,6 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.VoidStatusOutputStream;
 import ch.cyberduck.core.shared.AppendWriteFeature;
@@ -29,7 +28,7 @@ public class NullWriteFeature extends AppendWriteFeature<Void> {
     }
 
     @Override
-    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+    public StatusOutputStream<Void> write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
         return new VoidStatusOutputStream(new NullOutputStream());
     }
 

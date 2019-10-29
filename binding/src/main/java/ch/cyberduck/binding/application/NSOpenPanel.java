@@ -53,6 +53,7 @@ public abstract class NSOpenPanel extends NSSavePanel {
      * Original signature : <code>NSArray* filenames()</code><br>
      * <i>native declaration : :22</i>
      */
+    @Deprecated
     public abstract NSArray filenames();
 
     /**

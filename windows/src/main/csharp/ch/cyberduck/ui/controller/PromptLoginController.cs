@@ -24,8 +24,8 @@ using ch.cyberduck.core.exception;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.core.sftp.openssh;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Core.TaskDialog;
+using Ch.Cyberduck.Ui.Core.Resources;
 using org.apache.log4j;
 using StructureMap;
 using Path = System.IO.Path;
@@ -53,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
             AsyncDelegate d = delegate
             {
                 _browser.CommandBox(title, title, message, String.Format("{0}|{1}", continueButton, disconnectButton),
-                    false, LocaleFactory.localizedString("Don't show again", "Credentials"), TaskDialogIcon.Question,
+                    false, Utils.IsNotBlank(preference) ? LocaleFactory.localizedString("Don't show again", "Credentials") : null, TaskDialogIcon.Question,
                     ProviderHelpServiceFactory.get().help(bookmark.getProtocol().getScheme()),
                     delegate(int option, Boolean verificationChecked)
                     {
@@ -76,15 +76,15 @@ namespace Ch.Cyberduck.Ui.Controller
         public Credentials prompt(Host bookmark, String username, String title, String reason, LoginOptions options)
         {
             View = ObjectFactory.GetInstance<ILoginView>();
-            var credentials = new Credentials().withSaved(options.save()).withUsername(username);
+            var credentials = new Credentials().withSaved(options.keychain()).withUsername(username);
             InitEventHandlers(bookmark, credentials, options);
 
 
             View.Title = LocaleFactory.localizedString(title, "Credentials");
             View.Message = LocaleFactory.localizedString(reason, "Credentials");
             View.Username = username;
-            View.SavePasswordState = options.save();
-            View.DiskIcon = IconCache.Instance.IconForName(options.icon(), 64);
+            View.SavePasswordState = options.keychain();
+            View.DiskIcon = IconCache.IconForName(options.icon(), 64);
 
             InitPrivateKeys();
 

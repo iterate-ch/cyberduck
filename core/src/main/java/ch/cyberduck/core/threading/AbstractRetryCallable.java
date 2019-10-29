@@ -15,10 +15,13 @@ package ch.cyberduck.core.threading;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.date.RemainingPeriodFormatter;
+import ch.cyberduck.core.diagnostics.ReachabilityFactory;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -34,6 +37,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
 
     private final Preferences preferences = PreferencesFactory.get();
 
+    private final Host host;
     /**
      * The number of times to retry a failed action
      */
@@ -45,12 +49,13 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
     private int count = 0;
     private int backoff;
 
-    public AbstractRetryCallable() {
-        this(PreferencesFactory.get().getInteger("connection.retry"),
+    public AbstractRetryCallable(final Host host) {
+        this(host, PreferencesFactory.get().getInteger("connection.retry"),
             PreferencesFactory.get().getInteger("connection.retry.delay"));
     }
 
-    public AbstractRetryCallable(final int retry, final int delay) {
+    public AbstractRetryCallable(final Host host, final int retry, final int delay) {
+        this.host = host;
         this.retry = retry;
         this.backoff = delay;
     }
@@ -69,6 +74,10 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
         final FailureDiagnostics<BackgroundException> diagnostics = new DefaultFailureDiagnostics();
         switch(diagnostics.determine(failure)) {
             case network:
+                if(!ReachabilityFactory.get().isReachable(host)) {
+                    log.warn(String.format("Cancel retry for failure %s with host %s not reachable", failure, host));
+                    return false;
+                }
                 if(++count > retry) {
                     log.warn(String.format("Cancel retry for failure %s", failure));
                     return false;
@@ -103,8 +112,10 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
         if(delay > 0) {
             final BackgroundActionPauser pause = new BackgroundActionPauser(new BackgroundActionPauser.Callback() {
                 @Override
-                public boolean isCanceled() {
-                    return cancel.isCanceled();
+                public void validate() throws ConnectionCanceledException {
+                    if(cancel.isCanceled()) {
+                        throw new ConnectionCanceledException();
+                    }
                 }
 
                 @Override

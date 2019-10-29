@@ -44,14 +44,14 @@ import static org.junit.Assert.*;
 public class SDSNodeIdProviderTest extends AbstractSDSTest {
 
     @Test
-    public void withCache() throws Exception {
+    public void withCache() {
         assertNotNull(new SDSNodeIdProvider(session).withCache(cache).withCache(PathCache.empty()));
     }
 
     @Test
     public void getFileIdFile() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path bucket = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path bucket = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(nodeid.getFileid(file, new DisabledListProgressListener()));
@@ -75,7 +75,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
     @Test
     public void getFileIdFileVersions() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(room, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final String versionIdTouch = file.attributes().getVersionId();
@@ -98,7 +98,7 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
     @Test
     public void getFileIdDirectory() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path bucket = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path bucket = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(bucket, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertNotNull(nodeid.getFileid(folder, new DisabledListProgressListener()));
@@ -115,9 +115,9 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
     @Test
     public void getFileIdRoom() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
-        final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, name, EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path subroom = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, name, EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         assertNotNull(nodeid.getFileid(new Path(room, name, EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()));
         try {
             assertNull(nodeid.getFileid(new Path(room, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));

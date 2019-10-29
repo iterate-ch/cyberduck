@@ -5,9 +5,9 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.shared.DefaultDownloadFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -53,11 +53,11 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepareFile() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final NullSession session = new NullTransferSession(new Host(new TestProtocol()));
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
-            public boolean offset(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) {
                 return true;
             }
         });
@@ -92,11 +92,11 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepareDirectoryExists() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final NullSession session = new NullTransferSession(new Host(new TestProtocol()));
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
-            public boolean offset(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) {
                 return true;
             }
         });
@@ -123,11 +123,11 @@ public class ResumeFilterTest {
 
     @Test
     public void testPrepareDirectoryExistsFalse() throws Exception {
-        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final NullSession session = new NullTransferSession(new Host(new TestProtocol()));
         ResumeFilter f = new ResumeFilter(new DisabledDownloadSymlinkResolver(), session,
                 new DownloadFilterOptions(), new DefaultDownloadFeature(session.getFeature(Read.class)) {
             @Override
-            public boolean offset(final Path file) throws BackgroundException {
+            public boolean offset(final Path file) {
                 return true;
             }
         });

@@ -20,7 +20,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -40,6 +39,8 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -85,12 +86,12 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
             ));
         final AtomicBoolean failed = new AtomicBoolean();
-        final B2Session session = new B2Session(host) {
+        final B2Session session = new B2Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2FileidProvider(this).withCache(cache), new B2WriteFeature(this, new B2FileidProvider(this).withCache(cache)),
                 PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
                 PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency")) {
                 @Override
-                protected InputStream decorate(final InputStream in, final MessageDigest digest) throws IOException {
+                protected InputStream decorate(final InputStream in, final MessageDigest digest) {
                     if(failed.get()) {
                         // Second attempt successful
                         return in;
@@ -129,9 +130,9 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         local.delete();
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         assertEquals(100 * 1024 * 1024 + 1, new B2AttributesFinderFeature(session, fileid).find(test).getSize());

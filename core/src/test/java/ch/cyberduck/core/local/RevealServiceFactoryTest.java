@@ -24,7 +24,7 @@ import org.junit.Test;
 public class RevealServiceFactoryTest {
 
     @Test(expected = FactoryException.class)
-    public void testGet() throws Exception {
+    public void testGet() {
         RevealServiceFactory.get();
     }
 }

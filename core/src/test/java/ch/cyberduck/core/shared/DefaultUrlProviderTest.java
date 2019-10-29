@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 public class DefaultUrlProviderTest {
 
     @Test
-    public void testDav() throws Exception {
+    public void testDav() {
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch", new Credentials(
                 "u", "p"
         ));
@@ -28,7 +28,7 @@ public class DefaultUrlProviderTest {
     }
 
     @Test
-    public void testWhitespace() throws Exception {
+    public void testWhitespace() {
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch ", new Credentials(
                 "u", "p"
         ));
@@ -39,7 +39,7 @@ public class DefaultUrlProviderTest {
     }
 
     @Test
-    public void testSftp() throws Exception {
+    public void testSftp() {
         final Host host = new Host(new TestProtocol() {
             @Override
             public Scheme getScheme() {

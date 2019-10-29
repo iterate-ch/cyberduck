@@ -33,11 +33,11 @@ import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
+import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -145,13 +145,14 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testFeatures() {
-        assertNotNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(AclPermission.class));
-        assertNotNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(DistributionConfiguration.class));
-        assertNotNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(IdentityConfiguration.class));
-        assertNotNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(Logging.class));
-        assertNotNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(Headers.class));
-        assertNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(Lifecycle.class));
-        assertNull(new GoogleStorageSession(new Host(new S3Protocol())).getFeature(Versioning.class));
+        assertNull(session.getFeature(Versioning.class));
+        assertNull(session.getFeature(AclPermission.class));
+        assertNotNull(session.getFeature(Lifecycle.class));
+        assertNotNull(session.getFeature(DistributionConfiguration.class));
+        assertNotNull(session.getFeature(IdentityConfiguration.class));
+        assertNotNull(session.getFeature(Logging.class));
+        assertNotNull(session.getFeature(Metadata.class));
+        assertNotNull(session.getFeature(Headers.class));
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -169,7 +170,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         );
         session.login(Proxy.DIRECT, new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                 // OAuth2
                 return new Credentials("", "");
             }

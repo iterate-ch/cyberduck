@@ -19,7 +19,7 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.pool;
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -91,9 +91,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public object GetBookmarkImage(object host)
         {
             Host h = (Host) host;
-            return
-                IconCache.Instance.GetProtocolImages(PreferencesFactory.get().
-                    getInteger("bookmark.icon.size"))[h.getProtocol().disk()];
+            return IconCache.GetProtocolDisk(h.getProtocol(),
+                PreferencesFactory.get().getInteger("bookmark.icon.size"));
         }
 
         public object GetHostname(object host)
@@ -101,10 +100,10 @@ namespace Ch.Cyberduck.Ui.Controller
             return ((Host) host).getHostname();
         }
 
-        public object GetUrl(object host)
+        public object GetUsername(object host)
         {
             Host h = (Host) host;
-            return new HostUrlProvider(false, true).get(h);
+            return h.getCredentials().getUsername();
         }
 
         public object GetNotes(object host)
@@ -120,12 +119,12 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (session.getState().Equals(Session.State.open))
                 {
-                    return IconCache.Instance.IconForName("statusGreen", 16);
+                    return IconCache.IconForName("statusGreen", 16);
                 }
                 if (session.getState().Equals(Session.State.closing) ||
                     session.getState().Equals(Session.State.opening))
                 {
-                    return IconCache.Instance.IconForName("statusYellow", 16);
+                    return IconCache.IconForName("statusYellow", 16);
                 }
             }
             return null;

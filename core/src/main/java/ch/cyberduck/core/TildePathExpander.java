@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.exception.BackgroundException;
-
 import org.apache.commons.lang3.StringUtils;
 
 public class TildePathExpander {
@@ -33,11 +31,11 @@ public class TildePathExpander {
         this.workdir = workdir;
     }
 
-    public Path expand(final Path remote) throws BackgroundException {
+    public Path expand(final Path remote) {
         return this.expand(remote, PREFIX);
     }
 
-    protected Path expand(final Path remote, final String format) throws BackgroundException {
+    protected Path expand(final Path remote, final String format) {
         if(remote.getAbsolute().startsWith(format)) {
             return new Path(StringUtils.replaceOnce(remote.getAbsolute(), format, workdir.getAbsolute()),
                     remote.getType());

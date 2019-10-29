@@ -100,9 +100,9 @@ public class SingleTransferWorkerTest extends AbstractDriveTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         Assert.assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(dir1));
         Assert.assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {

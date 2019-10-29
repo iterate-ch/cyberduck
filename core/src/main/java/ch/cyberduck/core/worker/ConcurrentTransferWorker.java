@@ -21,7 +21,6 @@ package ch.cyberduck.core.worker;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -66,13 +65,12 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final TransferSpeedometer meter,
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error,
-                                    final ConnectionCallback connectionCallback,
-                                    final PasswordCallback passwordCallback,
+                                    final ConnectionCallback connect,
                                     final ProgressListener progressListener,
                                     final StreamListener streamListener,
                                     final NotificationService notification) {
         this(source, destination, transfer, ThreadPool.Priority.norm, options, meter, prompt, error,
-            connectionCallback, passwordCallback, progressListener, streamListener, notification);
+            connect, progressListener, streamListener, notification);
     }
 
     public ConcurrentTransferWorker(final SessionPool source,
@@ -83,17 +81,15 @@ public class ConcurrentTransferWorker extends AbstractTransferWorker {
                                     final TransferSpeedometer meter,
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error,
-                                    final ConnectionCallback connectionCallback,
-                                    final PasswordCallback passwordCallback,
+                                    final ConnectionCallback connect,
                                     final ProgressListener progressListener,
                                     final StreamListener streamListener,
                                     final NotificationService notification) {
-        super(transfer, options, prompt, meter, error, progressListener, streamListener, connectionCallback, passwordCallback, notification);
+        super(transfer, options, prompt, meter, error, progressListener, streamListener, connect, notification);
         this.source = source;
         this.destination = destination;
         this.pool = ThreadPoolFactory.get(String.format("%s-transfer", new AlphanumericRandomStringService().random()),
-            transfer.getSource().getTransferType() == Host.TransferType.newconnection ?
-                1 : PreferencesFactory.get().getInteger("queue.connections.limit"), priority);
+            transfer.getTransferType() == Host.TransferType.newconnection ? 1 : PreferencesFactory.get().getInteger("queue.connections.limit"), priority);
         this.completion = new ExecutorCompletionService<TransferStatus>(pool.executor());
     }
 

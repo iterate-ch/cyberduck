@@ -32,8 +32,9 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.azure;
 using ch.cyberduck.core.b2;
-using ch.cyberduck.core.manta;
 using ch.cyberduck.core.bonjour;
+using ch.cyberduck.core.brick;
+using ch.cyberduck.core.nextcloud;
 using ch.cyberduck.core.dav;
 using ch.cyberduck.core.dropbox;
 using ch.cyberduck.core.ftp;
@@ -53,6 +54,7 @@ using ch.cyberduck.core.sds;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.spectra;
+using ch.cyberduck.core.storegate;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.core.updater;
@@ -70,9 +72,11 @@ using Microsoft.WindowsAPICodePack.Taskbar;
 using org.apache.log4j;
 using StructureMap;
 using Windows.Services.Store;
+using ch.cyberduck.core.exception;
 using Application = ch.cyberduck.core.local.Application;
 using ArrayList = System.Collections.ArrayList;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
+using ch.cyberduck.core.oauth;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -134,7 +138,7 @@ namespace Ch.Cyberduck.Ui.Controller
         static MainController()
         {
             StructureMapBootstrapper.Bootstrap();
-            PreferencesFactory.set(new ApplicationPreferences());
+            
             if (!(Debugger.IsAttached || Utils.IsRunningAsUWP))
             {
                 // Add the event handler for handling UI thread exceptions to the event.
@@ -153,8 +157,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 new DAVSSLProtocol(), new SwiftProtocol(), new S3Protocol(), new GoogleStorageProtocol(),
                 new AzureProtocol(), new IRODSProtocol(), new SpectraProtocol(), new B2Protocol(), new DriveProtocol(),
                 new DropboxProtocol(), new HubicProtocol(), new LocalProtocol(), new OneDriveProtocol(), new SharepointProtocol(),
-                new MantaProtocol(),
-                new SDSProtocol());
+                new SDSProtocol(), new StoregateProtocol(), new BrickProtocol(), new NextcloudProtocol());
             ProtocolFactory.get().loadDefaultProfiles();
         }
 
@@ -392,6 +395,12 @@ namespace Ch.Cyberduck.Ui.Controller
             // Dummy implementation.
         }
 
+        void ICyberduck.OAuth(string state, string code)
+        {
+            var oauth = OAuth2TokenListenerRegistry.get();
+            oauth.notify(state, code);
+        }
+
         void ICyberduck.NewInstance()
         {
             NewBrowser();
@@ -399,44 +408,55 @@ namespace Ch.Cyberduck.Ui.Controller
 
         void ICyberduck.QuickConnect(string arg)
         {
-            Host h = HostParser.parse(arg);
-            if (AbstractPath.Type.file == _detector.detect(h.getDefaultPath()))
+            try
             {
-                Path file = new Path(h.getDefaultPath(), EnumSet.of(AbstractPath.Type.file));
-                // wait until transferCollection is loaded
-                transfersSemaphore.Wait();
-                TransferController.Instance.StartTransfer(new DownloadTransfer(h, file,
-                    LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"),
-                        file.getName())));
-            }
-            else
-            {
-                foreach (BrowserController b in Browsers)
+                Host h = HostParser.parse(arg);
+                h.setCredentials(CredentialsConfiguratorFactory.get(h.getProtocol()).configure(h));
+                if (AbstractPath.Type.file == _detector.detect(h.getDefaultPath()))
                 {
-                    if (b.IsMounted())
+                    Path file = new Path(h.getDefaultPath(), EnumSet.of(AbstractPath.Type.file));
+                    // wait until transferCollection is loaded
+                    transfersSemaphore.Wait();
+                    TransferController.Instance.StartTransfer(new DownloadTransfer(h, file,
+                        LocalFactory.get(PreferencesFactory.get().getProperty("queue.download.folder"),
+                            file.getName())));
+                }
+                else
+                {
+                    foreach (BrowserController b in Browsers)
                     {
-                        if (
-                            new HostUrlProvider().get(b.Session.getHost())
-                                .Equals(new HostUrlProvider().get(h)))
+                        if (b.IsMounted())
                         {
-                            b.View.BringToFront();
-                            return;
+                            if (
+                                new HostUrlProvider().get(b.Session.getHost())
+                                    .Equals(new HostUrlProvider().get(h)))
+                            {
+                                b.View.BringToFront();
+                                return;
+                            }
                         }
                     }
+                    NewBrowser().Mount(h);
                 }
-                NewBrowser().Mount(h);
+            }
+            catch(HostParserException e)
+            {
+                Logger.warn(e.getDetail());
             }
         }
 
         void ICyberduck.RegisterBookmark(string bookmarkPath)
         {
             Local f = LocalFactory.get(bookmarkPath);
-            Host bookmark = (Host)HostReaderFactory.get().read(f);
-            if (null == bookmark)
+            try
             {
-                return;
+                Host bookmark = (Host)HostReaderFactory.get().read(f);
+                NewBrowser().Mount(bookmark);
             }
-            NewBrowser().Mount(bookmark);
+            catch (AccessDeniedException ex)
+            {
+                Logger.error($"Failure reading bookmark from {f}. {ex.getMessage()}");
+            }
         }
 
         void ICyberduck.RegisterProfile(string profilePath)
@@ -525,7 +545,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 var handler = SchemeHandlerFactory.get();
                 if (
-                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
+                    !handler.isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
                         new Application(System.Windows.Forms.Application.ExecutablePath)))
                 {
                     Core.Utils.CommandBox(LocaleFactory.localizedString("Default Protocol Handler", "Preferences"),
@@ -547,12 +567,15 @@ namespace Ch.Cyberduck.Ui.Controller
                             switch (option)
                             {
                                 case 0:
-                                    handler.setDefaultHandler(Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
-                                        new Application(System.Windows.Forms.Application.ExecutablePath));
+                                    handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
+                                        Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()));
                                     break;
                             }
                         });
                 }
+                // Register OAuth handler
+                handler.setDefaultHandler(new Application(System.Windows.Forms.Application.ExecutablePath),
+                    Arrays.asList(PreferencesFactory.get().getProperty("oauth.handler.scheme")));
             }
         }
 
@@ -836,8 +859,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 InitStoreContext();
             }
-
-            NotificationServiceFactory.get().setup();
 
             InitializeTransfers();
             InitializeSessions();

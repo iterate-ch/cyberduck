@@ -52,7 +52,6 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(test));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(test, test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
-        session.close();
     }
 
     @Test
@@ -64,7 +63,6 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3MultipleDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
-        session.close();
     }
 
     @Test
@@ -89,7 +87,6 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
         }
         assertFalse(new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener()).contains(
             new Path(container, name, EnumSet.of(Path.Type.directory))));
-        session.close();
     }
 
     @Test
@@ -99,8 +96,6 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
         assertTrue(new S3FindFeature(session).find(container));
         new S3MultipleDeleteFeature(session).delete(Arrays.asList(container,
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session).find(container));
-        session.close();
     }
 
     @Test
@@ -111,7 +106,6 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
             keys.add(new ObjectKeyAndVersion(UUID.randomUUID().toString()));
         }
         new S3MultipleDeleteFeature(session).delete(container, keys, new DisabledLoginCallback());
-        session.close();
     }
 
     @Test(expected = NotfoundException.class)

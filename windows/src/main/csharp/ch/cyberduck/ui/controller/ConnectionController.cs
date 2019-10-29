@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
 // 
@@ -39,19 +39,19 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         private ConnectionController(Host bookmark, LoginOptions options) : this(bookmark,
-            new LoginInputValidator(bookmark.getCredentials(), bookmark.getProtocol(), options), options)
+            new LoginInputValidator(bookmark, options), options)
         {
         }
 
         private ConnectionController(Host bookmark,
             LoginInputValidator validator, LoginOptions options) : base(bookmark, validator, options)
         {
-            Init();
+            View.SavePasswordChecked = _options.keychain();
+            View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
+            View.ChangedPasswordEvent += delegate { _host.getCredentials().setPassword(View.Password); };
         }
 
         public override bool Singleton => true;
-
-        protected override string ToggleProperty => "connection.toggle.options";
 
         public static ConnectionController Instance(WindowController parent)
         {
@@ -69,60 +69,14 @@ namespace Ch.Cyberduck.Ui.Controller
             return c;
         }
 
-        private void Init()
-        {
-            View.Username = PreferencesFactory.get().getProperty("connection.login.name");
-            View.SavePasswordChecked = _options.save();
-            View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
-
-            View.ChangedServerEvent += ReadPasswordFromKeychain;
-            View.ChangedUsernameEvent += ReadPasswordFromKeychain;
-            View.ChangedProtocolEvent += ReadPasswordFromKeychain;
-            View.ChangedPasswordEvent += delegate { _host.getCredentials().setPassword(View.Password); };
-        }
-
         private void View_ChangedSavePasswordCheckboxEvent()
         {
-            //
+            _host.getCredentials().setSaved(View.SavePasswordChecked);
         }
 
         protected override void ItemChanged()
         {
             //
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-            View.Password = _host.getCredentials().getPassword();
-            View.PasswordEnabled = _options.password() && !_host.getCredentials().isAnonymousLogin();
-        }
-
-        public void ReadPasswordFromKeychain()
-        {
-            if (_options.keychain())
-            {
-                if (string.IsNullOrEmpty(View.Hostname))
-                {
-                    return;
-                }
-                if (string.IsNullOrEmpty(View.Port))
-                {
-                    return;
-                }
-                if (string.IsNullOrEmpty(View.Username))
-                {
-                    return;
-                }
-                Protocol protocol = View.SelectedProtocol;
-                string password = PasswordStoreFactory.get().getPassword(protocol.getScheme(),
-                    Integer.parseInt(View.Port), View.Hostname,
-                    View.Username);
-                if (Utils.IsNotBlank(password))
-                {
-                    View.Password = password;
-                }
-            }
         }
     }
 }

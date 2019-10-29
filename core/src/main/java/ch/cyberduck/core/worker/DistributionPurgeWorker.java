@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 public class DistributionPurgeWorker extends Worker<Boolean> {
 
@@ -78,7 +79,7 @@ public class DistributionPurgeWorker extends Worker<Boolean> {
             return false;
         }
         final DistributionPurgeWorker that = (DistributionPurgeWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

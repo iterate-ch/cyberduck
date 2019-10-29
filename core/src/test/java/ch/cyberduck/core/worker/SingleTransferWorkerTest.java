@@ -1,9 +1,20 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.DisabledStreamListener;
@@ -42,7 +53,7 @@ public class SingleTransferWorkerTest {
         };
         final NullLocal local = new NullLocal("l") {
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "c") {
                     @Override
@@ -60,12 +71,11 @@ public class SingleTransferWorkerTest {
         };
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 //
-                return file;
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol()));
@@ -75,7 +85,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -83,7 +93,7 @@ public class SingleTransferWorkerTest {
                 }
                 super.transfer(new TransferItem(item.remote, new NullLocal("l") {
                     @Override
-                    public AttributedList<Local> list() throws LocalAccessDeniedException {
+                    public AttributedList<Local> list() {
                         AttributedList<Local> l = new AttributedList<Local>();
                         l.add(new NullLocal(this.getAbsolute(), "c"));
                         return l;
@@ -93,7 +103,7 @@ public class SingleTransferWorkerTest {
                 return null;
             }
         };
-        worker.run();
+        worker.run(session);
         assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
     }
 
@@ -103,7 +113,7 @@ public class SingleTransferWorkerTest {
         final Path root = new Path("/t", EnumSet.of(Path.Type.directory));
         final NullLocal local = new NullLocal("l") {
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 AttributedList<Local> l = new AttributedList<Local>();
                 l.add(new NullLocal(this.getAbsolute(), "c") {
                     @Override
@@ -121,17 +131,16 @@ public class SingleTransferWorkerTest {
         };
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
                 else {
                     assertFalse(status.isExists());
                 }
-                return file;
             }
         };
         final NullSession session = new NullSession(new Host(new TestProtocol())) {
@@ -146,7 +155,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -157,7 +166,7 @@ public class SingleTransferWorkerTest {
                 return null;
             }
         };
-        worker.run();
+        worker.run(session);
         assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
         assertTrue(worker.getCache().isEmpty());
     }
@@ -183,30 +192,29 @@ public class SingleTransferWorkerTest {
             }
 
             @Override
-            public AttributedList<Local> list() throws AccessDeniedException {
+            public AttributedList<Local> list() {
                 return AttributedList.emptyList();
             }
         };
         final Transfer t = new DownloadTransfer(new Host(new TestProtocol()), root, local) {
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 if(file.equals(root)) {
                     assertTrue(status.isExists());
                 }
                 else {
                     assertFalse(status.isExists());
                 }
-                return file;
             }
 
             @Override
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 return super.filter(source, destination, action, listener).withAttributes(new AttributesFinder() {
                     @Override
-                    public PathAttributes find(final Path file) throws BackgroundException {
+                    public PathAttributes find(final Path file) {
                         return file.attributes();
                     }
                 });
@@ -226,7 +234,7 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
             @Override
             public Future<TransferStatus> transfer(final TransferItem item, final TransferAction action) throws BackgroundException {
                 if(item.remote.equals(root)) {
@@ -239,7 +247,7 @@ public class SingleTransferWorkerTest {
                 return null;
             }
         };
-        worker.run();
+        worker.run(session);
         assertFalse(worker.getCache().isCached(new TransferItem(child, local)));
         assertTrue(worker.getCache().isEmpty());
     }
@@ -270,14 +278,14 @@ public class SingleTransferWorkerTest {
                     return TransferAction.overwrite;
                 }
             }, new DisabledTransferErrorCallback(),
-                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+                new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
                 @Override
-                public Future<TransferStatus> transfer(final TransferItem file, final TransferAction action) throws BackgroundException {
+                public Future<TransferStatus> transfer(final TransferItem file, final TransferAction action) {
                     // Expected not found
                     fail();
                     return null;
                 }
-            }.run();
+            }.run(session);
         }
         catch(NotfoundException e) {
             // Expected

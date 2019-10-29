@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 public class ReceiptFactoryTest {
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate() {
         assertEquals(new Receipt(null, "b8e85600dffe"), new ReceiptFactory(new Local("src/test/resources")).create());
     }
 

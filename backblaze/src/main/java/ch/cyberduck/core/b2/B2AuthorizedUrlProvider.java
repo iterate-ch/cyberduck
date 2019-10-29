@@ -55,36 +55,40 @@ public class B2AuthorizedUrlProvider implements PromptUrlProvider<Void, Void> {
 
     @Override
     public boolean isSupported(final Path file, final Type type) {
-        return file.isFile();
+        switch(type) {
+            case download:
+                return file.isFile();
+        }
+        return false;
     }
 
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Void none, final PasswordCallback callback) throws BackgroundException {
-        if(file.isFile()) {
-            final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
-                URIEncoder.encode(containerService.getContainer(file).getName()),
-                URIEncoder.encode(containerService.getKey(file)));
-            try {
-                final int seconds = 604800;
-                // Determine expiry time for URL
-                final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                expiry.add(Calendar.SECOND, seconds);
-                final String token = session.getClient().getDownloadAuthorization(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
-                    StringUtils.EMPTY, seconds);
-                return new DescriptiveUrl(URI.create(String.format("%s?Authorization=%s", download, token)), DescriptiveUrl.Type.signed,
-                    MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-                        + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                        UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
-                );
+        final String download = String.format("%s/file/%s/%s", session.getClient().getDownloadUrl(),
+            URIEncoder.encode(containerService.getContainer(file).getName()),
+            URIEncoder.encode(containerService.getKey(file)));
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Create download authorization for %s", file));
             }
-            catch(B2ApiException e) {
-                throw new B2ExceptionMappingService().map(e);
-            }
-            catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map(e);
-            }
+            final int seconds = 604800;
+            // Determine expiry time for URL
+            final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            expiry.add(Calendar.SECOND, seconds);
+            final String token = session.getClient().getDownloadAuthorization(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
+                StringUtils.EMPTY, seconds);
+            return new DescriptiveUrl(URI.create(String.format("%s?Authorization=%s", download, token)), DescriptiveUrl.Type.signed,
+                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
+                    + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                    UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
+            );
         }
-        return DescriptiveUrl.EMPTY;
+        catch(B2ApiException e) {
+            throw new B2ExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            throw new DefaultIOExceptionMappingService().map(e);
+        }
     }
 
     @Override

@@ -20,6 +20,7 @@ package ch.cyberduck.core.serializer;
 
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.transfer.TransferItem;
 
 public class TransferItemDictionary {
@@ -40,10 +41,13 @@ public class TransferItemDictionary {
         if(null == remote) {
             return null;
         }
+        final TransferItem item = new TransferItem(remote);
         final Object localObj = dict.objectForKey("Local Dictionary");
         if(localObj != null) {
-            return new TransferItem(remote, new LocalDictionary(deserializer).deserialize((localObj)));
+            item.setLocal(new LocalDictionary(deserializer).deserialize((localObj)));
         }
-        return new TransferItem(remote);
+        item.setLockId(dict.stringForKey("Lock Id"));
+        item.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));
+        return item;
     }
 }

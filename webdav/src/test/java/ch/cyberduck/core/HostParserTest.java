@@ -2,6 +2,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Test;
@@ -13,14 +14,14 @@ import static org.junit.Assert.*;
 
 public class HostParserTest {
 
-    @Test
-    public void testParseURLEmpty() {
+    @Test(expected = HostParserException.class)
+    public void testParseURLEmpty() throws HostParserException {
         Host h = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol()).get("");
         assertEquals(h.getHostname(), PreferencesFactory.get().getProperty("connection.hostname.default"));
     }
 
     @Test
-    public void testParseHostnameOnly() {
+    public void testParseHostnameOnly() throws HostParserException {
         final HostParser parser = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol());
         assertEquals("hostname", parser.get("hostname").getHostname());
         assertEquals("hostname", parser.get("hostname ").getHostname());
@@ -28,7 +29,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseHostnameOnlyRemoveTrailingSlash() {
+    public void testParseHostnameOnlyRemoveTrailingSlash() throws HostParserException {
         final HostParser parser = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol());
         assertEquals("hostname", parser.get("hostname/").getHostname());
         assertEquals("hostname", parser.get("hostname//").getHostname());
@@ -36,7 +37,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testHostnameAppendPort() {
+    public void testHostnameAppendPort() throws HostParserException {
         final HostParser parser = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol());
         assertEquals("s3.amazonaws.com", parser.get("s3.amazonaws.com:443").getHostname());
         assertEquals("s3.amazonaws.com", parser.get("s3.amazonaws.com:443/").getHostname());
@@ -45,7 +46,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseHttp() {
+    public void testParseHttp() throws HostParserException {
         String url = "http://www.testrumpus.com/";
         Host h = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVProtocol()))).get(url);
         assertEquals("www.testrumpus.com", h.getHostname());
@@ -55,7 +56,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseNoProtocolAndCustomPath() {
+    public void testParseNoProtocolAndCustomPath() throws HostParserException {
         String url = "user@hostname/path/to/file";
         Host h = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol()).get(url);
         assertEquals("hostname", h.getHostname());
@@ -66,7 +67,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseNoProtocol() {
+    public void testParseNoProtocol() throws HostParserException {
         String url = "user@hostname";
         Host h = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol()).get(url);
         assertEquals("hostname", h.getHostname());
@@ -76,7 +77,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseWithTwoAtSymbol() {
+    public void testParseWithTwoAtSymbol() throws HostParserException {
         String url = "user@name@hostname";
         Host h = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol()).get(url);
         assertEquals("hostname", h.getHostname());
@@ -86,7 +87,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseWithTwoAtSymbolAndPassword() {
+    public void testParseWithTwoAtSymbolAndPassword() throws HostParserException {
         String url = "user@name:password@hostname";
         Host h = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol()).get(url);
         assertEquals("hostname", h.getHostname());
@@ -96,21 +97,21 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseWithDefaultPath() {
+    public void testParseWithDefaultPath() throws HostParserException {
         String url = "user@hostname/path/to/file";
         Host h = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol()).get(url);
         assertEquals("/path/to/file", h.getDefaultPath());
     }
 
     @Test
-    public void testParseWithDefaultPathAndCustomPort() {
+    public void testParseWithDefaultPathAndCustomPort() throws HostParserException {
         String url = "user@hostname:999/path/to/file";
         Host h = new HostParser(new ProtocolFactory(new HashSet<Protocol>()), new TestDAVProtocol()).get(url);
         assertEquals("/path/to/file", h.getDefaultPath());
     }
 
     @Test
-    public void testParseDefaultPathWithAtSign() {
+    public void testParseDefaultPathWithAtSign() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVSSLProtocol()))).get("https://mail.sgbio.com/dav/YourEmail@sgbio.com/Briefcase");
         assertEquals("mail.sgbio.com", host.getHostname());
         assertEquals(new DAVSSLProtocol(), host.getProtocol());
@@ -120,7 +121,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseUsernameDefaultPathWithAtSign() {
+    public void testParseUsernameDefaultPathWithAtSign() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVSSLProtocol()))).get("https://u@mail.sgbio.com/dav/YourEmail@sgbio.com/Briefcase");
         assertEquals("mail.sgbio.com", host.getHostname());
         assertEquals(new TestDAVSSLProtocol(), host.getProtocol());
@@ -130,7 +131,7 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseUsernamePasswordDefaultPathWithAtSign() {
+    public void testParseUsernamePasswordDefaultPathWithAtSign() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVSSLProtocol()))).get("https://u:p@mail.sgbio.com/dav/YourEmail@sgbio.com/Briefcase");
         assertEquals("mail.sgbio.com", host.getHostname());
         assertEquals(new TestDAVSSLProtocol(), host.getProtocol());
@@ -141,28 +142,28 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseColonInPath() {
+    public void testParseColonInPath() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVProtocol()))).get("http://cdn.duck.sh/duck-4.6.2.16174:16179M.pkg");
         assertEquals(80, host.getPort());
         assertEquals("/duck-4.6.2.16174:16179M.pkg", host.getDefaultPath());
     }
 
     @Test
-    public void testParseColonInPathPlusPort() {
+    public void testParseColonInPathPlusPort() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVProtocol()))).get("http://cdn.duck.sh:444/duck-4.6.2.16174:16179M.pkg");
         assertEquals(444, host.getPort());
         assertEquals("/duck-4.6.2.16174:16179M.pkg", host.getDefaultPath());
     }
 
     @Test
-    public void testInvalidPortnumber() {
+    public void testInvalidPortnumber() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVProtocol()))).get("http://hostname:21a");
         assertEquals("hostname", host.getHostname());
         assertEquals(80, host.getPort());
     }
 
     @Test
-    public void testMissingPortNumber() {
+    public void testMissingPortNumber() throws HostParserException {
         final Host host = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVProtocol()))).get("http://hostname:~/sandbox");
         assertEquals("hostname", host.getHostname());
         assertEquals(80, host.getPort());
@@ -170,12 +171,8 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseIpv6() throws Exception {
+    public void testParseIpv6() throws HostParserException {
         final HostParser parser = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVProtocol())));
-        assertEquals("fc01:2:3:4:5::1", parser.get("http://fc01:2:3:4:5::1/~/sandbox").getHostname());
-        assertEquals(80, parser.get("http://fc01:2:3:4:5::1/~/sandbox").getPort());
-        assertEquals("user", parser.get("http://user@fc01:2:3:4:5::1/~/sandbox").getCredentials().getUsername());
-        assertEquals("/~/sandbox", parser.get("http://fc01:2:3:4:5::1/~/sandbox").getDefaultPath());
         assertEquals("fc01:2:3:4:5::1", parser.get("http://[fc01:2:3:4:5::1]:2121").getHostname());
         assertEquals(2121, parser.get("http://[fc01:2:3:4:5::1]:2121").getPort());
         assertEquals("user", parser.get("http://user@[fc01:2:3:4:5::1]:2121").getCredentials().getUsername());
@@ -185,9 +182,9 @@ public class HostParserTest {
     }
 
     @Test
-    public void testParseIpv6LinkLocalZoneIndex() throws Exception {
+    public void testParseIpv6LinkLocalZoneIndex() throws HostParserException {
         final HostParser parser = new HostParser(new ProtocolFactory(Collections.singleton(new TestDAVProtocol())));
-        assertEquals("fe80::c62c:3ff:fe0b:8670%en0", parser.get("http://fe80::c62c:3ff:fe0b:8670%en0/~/sandbox").getHostname());
+        assertEquals("fe80::c62c:3ff:fe0b:8670%en0", parser.get("http://[fe80::c62c:3ff:fe0b:8670%en0]/~/sandbox").getHostname());
     }
 
     private static class TestDAVProtocol extends DAVProtocol {

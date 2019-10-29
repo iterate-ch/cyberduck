@@ -27,9 +27,9 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.synchronization.Comparison;
 
@@ -54,7 +54,7 @@ public class SyncTransferTest {
             }
 
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 return new AttributedList<Local>(Collections.<Local>singletonList(new NullLocal("p", "a")));
             }
         }));
@@ -116,7 +116,7 @@ public class SyncTransferTest {
     public void testFilterMirror() throws Exception {
         final Path p = new Path("t", EnumSet.of(Path.Type.directory));
         SyncTransfer t = new SyncTransfer(new Host(new TestProtocol()), new TransferItem(p, new NullLocal(System.getProperty("java.io.tmpdir"), "t")));
-        final NullSession session = new NullSession(new Host(new TestProtocol()));
+        final NullSession session = new NullTransferSession(new Host(new TestProtocol()));
         final TransferPathFilter filter = t.filter(session, null, TransferAction.mirror, new DisabledProgressListener());
         assertTrue(filter.accept(new Path(p, "a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
                     @Override
@@ -160,7 +160,7 @@ public class SyncTransferTest {
     public void testChildrenRemoteAndLocalExist() throws Exception {
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 final AttributedList<Local> list = new AttributedList<Local>();
                 list.add(new NullLocal(this, "a"));
                 return list;
@@ -198,7 +198,7 @@ public class SyncTransferTest {
         };
         final NullLocal directory = new NullLocal(System.getProperty("java.io.tmpdir"), "t") {
             @Override
-            public AttributedList<Local> list() throws LocalAccessDeniedException {
+            public AttributedList<Local> list() {
                 final AttributedList<Local> list = new AttributedList<Local>();
                 list.add(new NullLocal(System.getProperty("java.io.tmpdir") + "/t", "a") {
                     @Override

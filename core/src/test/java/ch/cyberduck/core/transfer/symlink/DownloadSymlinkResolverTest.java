@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
 public class DownloadSymlinkResolverTest {
 
     @Test
-    public void testNotSupported() throws Exception {
+    public void testNotSupported() {
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(null, Collections.<TransferItem>singletonList(
                 new TransferItem(new Path("/", EnumSet.of(Path.Type.directory)), new Local(System.getProperty("java.io.tmpdir")))
         ));
@@ -25,7 +25,7 @@ public class DownloadSymlinkResolverTest {
     }
 
     @Test
-    public void testResolve() throws Exception {
+    public void testResolve() {
         final ArrayList<TransferItem> files = new ArrayList<TransferItem>();
         files.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory))));
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(files);
@@ -37,7 +37,7 @@ public class DownloadSymlinkResolverTest {
     }
 
     @Test
-    public void testResolveRoot() throws Exception {
+    public void testResolveRoot() {
         final ArrayList<TransferItem> files = new ArrayList<TransferItem>();
         files.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory))));
         DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(files);
@@ -47,7 +47,7 @@ public class DownloadSymlinkResolverTest {
     }
 
     @Test
-    public void testRelativize() throws Exception {
+    public void testRelativize() {
         DownloadSymlinkResolver r = new DownloadSymlinkResolver(Collections.<TransferItem>emptyList());
         assertEquals("d", r.relativize("/a/b/c", "/a/b/d"));
         assertEquals("../boot-screens/syslinux.cfg", r.relativize("/ubuntu/dists/precise/main/installer-i386/current/images/netboot/ubuntu-installer/i386/pxelinux.cfg/syslinux.cfg",

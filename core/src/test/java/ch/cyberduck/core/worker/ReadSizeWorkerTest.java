@@ -7,7 +7,7 @@ import ch.cyberduck.core.TestProtocol;
 
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
@@ -18,7 +18,7 @@ public class ReadSizeWorkerTest {
     public void testRun() throws Exception {
         final Path d = new Path("/d", EnumSet.of(Path.Type.directory));
         d.attributes().setSize(-1L);
-        final ReadSizeWorker worker = new ReadSizeWorker(Arrays.asList(d)) {
+        final ReadSizeWorker worker = new ReadSizeWorker(Collections.singletonList(d)) {
             @Override
             public void cleanup(final Long result) {
                 //

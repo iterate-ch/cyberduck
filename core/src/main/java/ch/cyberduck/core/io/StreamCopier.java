@@ -97,7 +97,8 @@ public final class StreamCopier {
                     // Cast will work because chunk size is int
                     len = limit.intValue();
                 }
-                while(len > 0 && !cancel.isCanceled()) {
+                while(len > 0) {
+                    cancel.validate();
                     final int read = in.read(buffer, 0, len);
                     if(-1 == read) {
                         if(log.isDebugEnabled()) {
@@ -135,6 +136,9 @@ public final class StreamCopier {
                 c.close(in);
             }
         }
+        catch(ConnectionCanceledException e) {
+            throw e;
+        }
         catch(Exception e) {
             // Discard sent bytes if there is an error reply.
             final long sent = listener.getSent();
@@ -144,9 +148,7 @@ public final class StreamCopier {
             listener.recv(-recv);
             throw e;
         }
-        if(cancel.isCanceled()) {
-            throw new ConnectionCanceledException();
-        }
+        cancel.validate();
     }
 
     public static InputStream skip(final InputStream in, final long offset) throws BackgroundException {

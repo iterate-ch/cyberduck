@@ -70,7 +70,7 @@ namespace Ch.Cyberduck.Ui.Controller
             //register exception
             PreferencesFactory.get()
                 .setProperty(hostName + ".certificate.accept",
-                    SystemCertificateStore.ConvertCertificate(cert).SubjectName.Name);
+                    SystemCertificateStore.ConvertCertificate(cert).Thumbprint);
             Assert.IsTrue(new SystemCertificateStore().isTrusted(hostName, certs));
         }
 
@@ -160,7 +160,7 @@ namespace Ch.Cyberduck.Ui.Controller
             //register exception
             PreferencesFactory.get()
                 .setProperty(hostName + ".certificate.accept",
-                    SystemCertificateStore.ConvertCertificate(hostCert).SubjectName.Name);
+                    SystemCertificateStore.ConvertCertificate(hostCert).Thumbprint);
             Assert.IsTrue(new SystemCertificateStore().isTrusted(hostName, certs));
         }
     }

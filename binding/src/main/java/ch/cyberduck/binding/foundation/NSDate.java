@@ -115,7 +115,7 @@ public abstract class NSDate extends NSObject {
      * Original signature : <code>addTimeInterval(NSTimeInterval)</code><br>
      * <i>from NSExtendedDate native declaration : :26</i>
      */
-    public abstract NSObject addTimeInterval(double seconds);
+    public abstract NSDate addTimeInterval(double seconds);
 
     /**
      * Original signature : <code>NSDate* earlierDate(NSDate*)</code><br>

@@ -54,6 +54,7 @@ import ch.cyberduck.core.bonjour.Rendezvous;
 import ch.cyberduck.core.bonjour.RendezvousFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
 import ch.cyberduck.core.importer.Expandrive3BookmarkCollection;
 import ch.cyberduck.core.importer.Expandrive4BookmarkCollection;
@@ -71,6 +72,7 @@ import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
 import ch.cyberduck.core.notification.NotificationServiceFactory;
+import ch.cyberduck.core.oauth.OAuth2AuthorizationService;
 import ch.cyberduck.core.oauth.OAuth2TokenListenerRegistry;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.Preferences;
@@ -97,6 +99,8 @@ import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -106,6 +110,8 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import java.net.URI;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,6 +123,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 /**
  * Setting the main menu and implements application delegate methods
@@ -207,7 +215,7 @@ public class MainController extends BundleController implements NSApplication.De
         final List<BrowserController> browsers = getBrowsers();
         if(!force) {
             for(BrowserController controller : browsers) {
-                if(SessionPool.DISCONNECTED == controller.getSession()) {
+                if(controller.isIdle()) {
                     controller.window().makeKeyAndOrderFront(null);
                     return controller;
                 }
@@ -388,7 +396,7 @@ public class MainController extends BundleController implements NSApplication.De
                 final List<BrowserController> b = MainController.getBrowsers();
                 for(BrowserController controller : b) {
                     if(controller.window().isKeyWindow()) {
-                        List<Path> selected = controller.getSelectedPaths();
+                        final List<Path> selected = controller.getSelectedPaths();
                         if(selected.isEmpty()) {
                             if(controller.isMounted()) {
                                 return Collections.singletonList(controller.workdir());
@@ -424,7 +432,7 @@ public class MainController extends BundleController implements NSApplication.De
                 final List<BrowserController> b = MainController.getBrowsers();
                 for(BrowserController controller : b) {
                     if(controller.window().isKeyWindow()) {
-                        List<Path> selected = controller.getSelectedPaths();
+                        final List<Path> selected = controller.getSelectedPaths();
                         if(selected.isEmpty()) {
                             if(controller.isMounted()) {
                                 return Collections.singletonList(controller.workdir());
@@ -580,15 +588,11 @@ public class MainController extends BundleController implements NSApplication.De
             if("duck".equals(f.getExtension())) {
                 final Host bookmark;
                 try {
-                    bookmark = HostReaderFactory.get().read(f);
-                    if(null == bookmark) {
-                        return false;
-                    }
-                    newDocument().mount(bookmark);
+                    newDocument().mount(HostReaderFactory.get().read(f));
                     return true;
                 }
                 catch(AccessDeniedException e) {
-                    log.error(e.getMessage());
+                    log.error(String.format("Failure reading bookmark from %s. %s", f, e.getMessage()));
                     return false;
                 }
             }
@@ -643,9 +647,6 @@ public class MainController extends BundleController implements NSApplication.De
             else if("cyberduckprofile".equals(f.getExtension())) {
                 try {
                     final Protocol profile = ProfileReaderFactory.get().read(f);
-                    if(null == profile) {
-                        return false;
-                    }
                     if(profile.isEnabled()) {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Register profile %s", profile));
@@ -663,7 +664,7 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                 }
                 catch(AccessDeniedException e) {
-                    log.error(e.getMessage());
+                    log.error(String.format("Failure reading profile from %s. %s", f, e));
                     return false;
                 }
             }
@@ -671,14 +672,9 @@ public class MainController extends BundleController implements NSApplication.De
                 // Upload file
                 this.background(new AbstractBackgroundAction<Void>() {
                     @Override
-                    public Void run() throws BackgroundException {
+                    public Void run() {
                         // Wait until bookmarks are loaded
-                        try {
-                            bookmarksSemaphore.await();
-                        }
-                        catch(InterruptedException e) {
-                            log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
-                        }
+                        Uninterruptibles.awaitUninterruptibly(bookmarksSemaphore);
                         return null;
                     }
 
@@ -954,7 +950,7 @@ public class MainController extends BundleController implements NSApplication.De
                         if(log.isInfoEnabled()) {
                             log.info(String.format("New browser for saved session %s", host));
                         }
-                        final BrowserController browser = newDocument(false, host.getUuid());
+                        final BrowserController browser = newDocument(true, host.getUuid());
                         browser.mount(host);
                     }
                     sessions.clear();
@@ -1002,8 +998,7 @@ public class MainController extends BundleController implements NSApplication.De
         bonjour.addListener(new NotificationRendezvousListener(bonjour));
         if(preferences.getBoolean("defaulthandler.reminder")
             && preferences.getInteger("uses") > 0) {
-            if(!SchemeHandlerFactory.get().isDefaultHandler(
-                Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
+            if(!SchemeHandlerFactory.get().isDefaultHandler(Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name()),
                 new Application(preferences.getProperty("application.identifier")))) {
                 final NSAlert alert = NSAlert.alert(
                     LocaleFactory.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
@@ -1023,8 +1018,8 @@ public class MainController extends BundleController implements NSApplication.De
                 }
                 if(choice == SheetCallback.DEFAULT_OPTION) {
                     SchemeHandlerFactory.get().setDefaultHandler(
-                        Arrays.asList(Scheme.ftp, Scheme.ftps, Scheme.sftp),
-                        new Application(preferences.getProperty("application.identifier"))
+                        new Application(preferences.getProperty("application.identifier")),
+                        Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name(), Scheme.sftp.name())
                     );
                 }
             }
@@ -1051,7 +1046,7 @@ public class MainController extends BundleController implements NSApplication.De
             null);
         this.background(new AbstractBackgroundAction<Void>() {
             @Override
-            public Void run() throws BackgroundException {
+            public Void run() {
                 bonjour.init();
                 return null;
             }
@@ -1072,6 +1067,13 @@ public class MainController extends BundleController implements NSApplication.De
                 updater.register();
             }
         }
+        // Register OAuth handler
+        final String handler = preferences.getProperty("oauth.handler.scheme");
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Register OAuth handler %s", handler));
+        }
+        SchemeHandlerFactory.get().setDefaultHandler(new Application(preferences.getProperty("application.identifier")),
+            Collections.singletonList(handler));
         NSAppleEventManager.sharedAppleEventManager().setEventHandler_andSelector_forEventClass_andEventID(
             this.id(), Foundation.selector("handleGetURLEvent:withReplyEvent:"), kInternetEventClass, kAEGetURL);
     }
@@ -1260,7 +1262,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     @Action
     public void handleGetURLEvent_withReplyEvent(NSAppleEventDescriptor event, NSAppleEventDescriptor reply) {
-        log.debug("Received URL from Apple Event:" + event);
+        log.debug(String.format("Received URL from event %s", event));
         final NSAppleEventDescriptor param = event.paramDescriptorForKeyword(keyAEResult);
         if(null == param) {
             log.error("No URL parameter");
@@ -1271,42 +1273,55 @@ public class MainController extends BundleController implements NSApplication.De
             log.error("URL parameter is empty");
             return;
         }
-        if(StringUtils.startsWith(url, "x-cyberduck-action:")) {
-            final String action = StringUtils.removeStart(url, "x-cyberduck-action:");
-            switch(action) {
-                case "update":
-                    updater.check(false);
-                    break;
-                default:
-                    if(StringUtils.startsWith(action, "oauth?token=")) {
-                        final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
-                        final String token = StringUtils.removeStart(action, "oauth?token=");
-                        oauth.notify(token);
-                        break;
-                    }
-            }
-        }
-        else {
-            final Host h = HostParser.parse(url);
-            if(Path.Type.file == detector.detect(h.getDefaultPath())) {
-                final Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.file));
-                TransferControllerFactory.get().start(new DownloadTransfer(h, file,
-                    LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
-            }
-            else {
-                for(BrowserController browser : MainController.getBrowsers()) {
-                    if(browser.isMounted()) {
-                        if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
-                            new HostUrlProvider().get(h))) {
-                            // Handle browser window already connected to the same host. #4215
-                            browser.window().makeKeyAndOrderFront(null);
-                            return;
+        switch(url) {
+            case "x-cyberduck-action:update":
+                updater.check(false);
+                break;
+            default:
+                if(StringUtils.startsWith(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI)) {
+                    final String action = StringUtils.removeStart(url, OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI);
+                    final List<NameValuePair> pairs = URLEncodedUtils.parse(URI.create(action), Charset.defaultCharset());
+                    String state = StringUtils.EMPTY;
+                    String code = StringUtils.EMPTY;
+                    for(NameValuePair pair : pairs) {
+                        if(StringUtils.equals(pair.getName(), "state")) {
+                            state = StringUtils.equals(pair.getName(), "state") ? pair.getValue() : StringUtils.EMPTY;
+                        }
+                        if(StringUtils.equals(pair.getName(), "code")) {
+                            code = StringUtils.equals(pair.getName(), "code") ? pair.getValue() : StringUtils.EMPTY;
                         }
                     }
+                    final OAuth2TokenListenerRegistry oauth = OAuth2TokenListenerRegistry.get();
+                    oauth.notify(state, code);
                 }
-                final BrowserController browser = newDocument(false);
-                browser.mount(h);
-            }
+                else {
+                    try {
+                        final Host h = HostParser.parse(url);
+                        h.setCredentials(CredentialsConfiguratorFactory.get(h.getProtocol()).configure(h));
+                        if(Path.Type.file == detector.detect(h.getDefaultPath())) {
+                            final Path file = new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.file));
+                            TransferControllerFactory.get().start(new DownloadTransfer(h, file,
+                                LocalFactory.get(preferences.getProperty("queue.download.folder"), file.getName())), new TransferOptions());
+                        }
+                        else {
+                            for(BrowserController browser : MainController.getBrowsers()) {
+                                if(browser.isMounted()) {
+                                    if(new HostUrlProvider().get(browser.getSession().getHost()).equals(
+                                        new HostUrlProvider().get(h))) {
+                                        // Handle browser window already connected to the same host. #4215
+                                        browser.window().makeKeyAndOrderFront(null);
+                                        return;
+                                    }
+                                }
+                            }
+                            final BrowserController browser = newDocument(false);
+                            browser.mount(h);
+                        }
+                    }
+                    catch(HostParserException e) {
+                        log.warn(e);
+                    }
+                }
         }
     }
 
@@ -1383,12 +1398,7 @@ public class MainController extends BundleController implements NSApplication.De
                     preferences.setProperty(t.getConfiguration(), true);
                 }
             }
-            try {
-                lock.await();
-            }
-            catch(InterruptedException e) {
-                log.error(String.format("Error awaiting bookmarks to load %s", e.getMessage()));
-            }
+            Uninterruptibles.awaitUninterruptibly(lock);
             return null;
         }
 

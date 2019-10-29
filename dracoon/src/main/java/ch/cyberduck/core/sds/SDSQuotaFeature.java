@@ -56,7 +56,7 @@ public class SDSQuotaFeature implements Quota {
                     return new Space(node.getSize(), node.getQuota() - node.getSize());
                 }
             }
-            final CustomerData info = new UserApi(session.getClient()).getCustomerInfo(StringUtils.EMPTY, null);
+            final CustomerData info = new UserApi(session.getClient()).getCustomerInfo(StringUtils.EMPTY);
             return new Space(info.getSpaceUsed(), info.getSpaceLimit() - info.getSpaceUsed());
         }
         catch(ApiException e) {

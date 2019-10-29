@@ -67,11 +67,11 @@ public abstract class NSMenu extends NSObject implements NSCopying {
         NSMenu alloc();
     }
 
-    public static interface Validation {
+    public interface Validation {
         boolean validateMenuItem(NSMenuItem item);
     }
 
-    public static interface Delegate {
+    public interface Delegate {
         /**
          * @param menu
          * @return If you return a positive value, the menu is resized by either removing or adding items.
@@ -154,6 +154,8 @@ public abstract class NSMenu extends NSObject implements NSCopying {
      * <i>native declaration : :68</i>
      */
     public abstract void removeItem(NSMenuItem item);
+
+    public abstract void removeAllItems();
 
     /**
      * Original signature : <code>void setSubmenu(NSMenu*, NSMenuItem*)</code><br>

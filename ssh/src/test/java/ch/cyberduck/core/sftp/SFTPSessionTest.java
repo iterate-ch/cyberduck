@@ -18,7 +18,6 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
@@ -57,7 +56,7 @@ import static org.junit.Assert.*;
 public class SFTPSessionTest extends AbstractSFTPTest {
 
     @Test
-    public void testLoginPassword() throws Exception {
+    public void testLoginPassword() {
         assertTrue(session.isConnected());
     }
 
@@ -107,8 +106,8 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             public Credentials prompt(final Host bookmark, String username,
                                       String title, String reason, LoginOptions options)
                 throws LoginCanceledException {
-                assertEquals("Login failed", title);
-//                assertEquals("Too many authentication failures for jenkins. Please contact your web hosting service provider for assistance.", reason);
+                assertEquals("Login test.cyberduck.ch", title);
+                assertEquals("Login failed. Exhausted available authentication methods. Please contact your web hosting service provider for assistance.", reason);
                 fail.set(true);
                 throw new LoginCanceledException();
             }
@@ -134,7 +133,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     }
 
     @Test
-    public void testFeatures() throws Exception {
+    public void testFeatures() {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
         final Session session = new SFTPSession(host);
         assertNotNull(session.getFeature(Compress.class));
@@ -154,7 +153,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         try {
             session.open(Proxy.DIRECT, new HostKeyCallback() {
                 @Override
-                public boolean verify(String hostname, int port, PublicKey key) throws ConnectionCanceledException {
+                public boolean verify(Host hostname, PublicKey key) throws ConnectionCanceledException {
                     verify.set(true);
                     throw new ConnectionCanceledException();
                 }
@@ -177,12 +176,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             }
         }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
             new DisabledProgressListener());
-        try {
-            login.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        }
-        catch(LoginCanceledException e) {
-            throw e;
-        }
+        login.connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
     @Test(expected = LoginCanceledException.class)
@@ -196,7 +190,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
                                       String title, String reason, LoginOptions options)
                 throws LoginCanceledException {
                 assertEquals("Login test.cyberduck.ch", title);
-                assertEquals("Login test.cyberduck.ch – SFTP with username and password. No login credentials could be found in the Keychain.", reason);
+                assertEquals("Login test.cyberduck.ch – SFTP with username and password. Select the private key in PEM or PuTTY format. No login credentials could be found in the Keychain.", reason);
                 change.set(true);
                 throw new LoginCanceledException();
             }
@@ -220,18 +214,11 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Local select(final Local identity) throws LoginCanceledException {
-                try {
-                    return new NullLocal("k");
-                }
-                catch(LocalAccessDeniedException e) {
-                    fail();
-                    throw new LoginCanceledException(e);
-                }
+                return new NullLocal("k");
             }
 
             @Override
-            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options)
-                throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) {
                 if(change.get()) {
                     assertEquals("Change of username or service not allowed: (u1,ssh-connection) -> (jenkins,ssh-connection). Please contact your web hosting service provider for assistance.", reason);
                     return null;
@@ -290,19 +277,19 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         try {
             assertNotNull(session.open(Proxy.DIRECT, new OpenSSHHostKeyVerifier(f) {
                 @Override
-                public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                public boolean verify(final Host hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
                     fingerprint.set(new SSHFingerprintGenerator().fingerprint(key));
-                    return super.verify(hostname, port, key);
+                    return super.verify(hostname, key);
                 }
 
                 @Override
-                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key) {
                     this.allow(hostname, key, true);
                     return true;
                 }
 
                 @Override
-                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) {
                     fail();
                     return false;
                 }
@@ -310,18 +297,18 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             session.close();
             assertNotNull(session.open(Proxy.DIRECT, new OpenSSHHostKeyVerifier(f) {
                 @Override
-                public boolean verify(final String hostname, final int port, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                public boolean verify(final Host hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
                     assertEquals(fingerprint.get(), new SSHFingerprintGenerator().fingerprint(key));
-                    return super.verify(hostname, port, key);
+                    return super.verify(hostname, key);
                 }
 
                 @Override
-                protected boolean isUnknownKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isUnknownKeyAccepted(final Host hostname, final PublicKey key) {
                     return false;
                 }
 
                 @Override
-                protected boolean isChangedKeyAccepted(final String hostname, final PublicKey key) throws ConnectionCanceledException, ChecksumException {
+                protected boolean isChangedKeyAccepted(final Host hostname, final PublicKey key) {
                     return false;
                 }
             }, new DisabledLoginCallback()));

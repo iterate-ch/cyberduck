@@ -17,7 +17,6 @@ package ch.cyberduck.core.urlhandler;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.local.Application;
 
 import java.util.List;
@@ -25,26 +24,28 @@ import java.util.List;
 public interface SchemeHandler {
 
     /**
-     * @param scheme      URL scheme
-     * @param application Application to set as default handler
+     * Register this bundle identifier as the default application for all schemes
+     *
+     * @param application The bundle identifier of the application
+     * @param schemes     The protocol identifier
      */
-    void setDefaultHandler(List<Scheme> scheme, Application application);
+    void setDefaultHandler(Application application, List<String> schemes);
 
     /**
-     * @param scheme URL scheme
+     * @param scheme URI scheme
      * @return Null if no handler is set
      */
-    Application getDefaultHandler(Scheme scheme);
+    Application getDefaultHandler(String scheme);
 
     /**
-     * @param scheme URL scheme
+     * @param scheme URI scheme
      * @return True if current application is configured as protocol handler
      */
-    boolean isDefaultHandler(List<Scheme> scheme, Application application);
+    boolean isDefaultHandler(List<String> scheme, Application application);
 
     /**
-     * @param scheme URL schemes
+     * @param scheme URI schemes
      * @return True if current application is configured as protocol handler for all schemes
      */
-    List<Application> getAllHandlers(Scheme scheme);
+    List<Application> getAllHandlers(String scheme);
 }

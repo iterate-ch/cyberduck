@@ -27,14 +27,10 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.preferences.Preferences;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.ssl.X509KeyManager;
-import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.S3ServiceException;
@@ -54,10 +50,7 @@ import com.amazonaws.services.cloudfront.model.OriginProtocolPolicy;
 
 public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
-
-    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final Map<Path, Distribution> distributions, final X509TrustManager trust, final X509KeyManager key) {
+    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final Map<Path, Distribution> distributions) {
         super(session, distributions);
     }
 
@@ -73,7 +66,7 @@ public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistri
             return super.getMethods(container);
         }
         final List<Distribution.Method> methods = new ArrayList<Distribution.Method>();
-        if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+        if(S3Session.isAwsHostname(session.getHost().getHostname())) {
             methods.addAll(super.getMethods(container));
             methods.addAll(Arrays.asList(Distribution.WEBSITE, Distribution.WEBSITE_CDN));
         }

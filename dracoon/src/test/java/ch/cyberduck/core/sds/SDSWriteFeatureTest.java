@@ -19,8 +19,12 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -48,13 +52,14 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
     public void testReadWrite() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final byte[] content = RandomUtils.nextBytes(32769);
         final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final VersionId version;
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
+            status.setMime("text/plain");
             final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
             final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -78,8 +83,42 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
             assertNotEquals(version, out.getStatus());
+            new SDSReadFeature(session, nodeid).read(test.withAttributes(new PathAttributes().withVersionId(out.getStatus().id)), new TransferStatus(), new DisabledConnectionCallback()).close();
+        }
+        // Read with previous version must fail
+        try {
+            new SDSReadFeature(session, nodeid).read(new Path(test.getAbsolute(), test.getType(), new PathAttributes().withVersionId(version.id)), new TransferStatus(), new DisabledConnectionCallback());
+            fail();
+        }
+        catch(NotfoundException e) {
+            // Expected
         }
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test(expected = TransferCanceledException.class)
+    public void testWriteCancel() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
+        final TransferStatus status = new TransferStatus() {
+            @Override
+            public void validate() throws ConnectionCanceledException {
+                if(this.getOffset() >= 32768) {
+                    throw new TransferCanceledException();
+                }
+                super.validate();
+            }
+        };
+        status.setLength(content.length);
+        final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        assertFalse(new DefaultFindFeature(session).find(test));
+        out.getStatus();
     }
 
     @Test(expected = InteroperabilityException.class)

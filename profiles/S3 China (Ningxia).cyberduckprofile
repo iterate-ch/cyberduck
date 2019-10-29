@@ -37,5 +37,7 @@
         <true/>
         <key>Authorization</key>
         <string>AWS4HMACSHA256</string>
+        <key>Region</key>
+        <string>cn-northwest-1</string>
     </dict>
 </plist>

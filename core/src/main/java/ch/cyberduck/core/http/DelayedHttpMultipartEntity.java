@@ -33,6 +33,8 @@ import java.nio.charset.Charset;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public class DelayedHttpMultipartEntity extends DelayedHttpEntity {
     private static final Logger log = Logger.getLogger(DelayedHttpMultipartEntity.class);
 
@@ -152,13 +154,7 @@ public class DelayedHttpMultipartEntity extends DelayedHttpEntity {
             entry.countDown();
         }
         // Wait for signal when content has been written to the pipe
-        try {
-            exit.await();
-        }
-        catch(InterruptedException e) {
-            log.error(String.format("Error waiting for exit signal %s", e.getMessage()));
-            throw new IOException(e);
-        }
+        Uninterruptibles.awaitUninterruptibly(exit);
         // Entity written to server
         consumed = true;
     }

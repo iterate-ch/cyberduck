@@ -24,9 +24,8 @@ import ch.cyberduck.core.LoginService;
 import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
+import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -34,8 +33,6 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3Session;
@@ -51,6 +48,7 @@ import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.kms.AWSKMS;
 import com.amazonaws.services.kms.AWSKMSClientBuilder;
 import com.amazonaws.services.kms.model.AliasListEntry;
@@ -71,28 +69,10 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     private final Location locationFeature;
 
     public KMSEncryptionFeature(final S3Session session) {
-        this(session, PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000);
-    }
-
-    public KMSEncryptionFeature(final S3Session session, final int timeout) {
         super(session);
         this.bookmark = session.getHost();
-        configuration = new ClientConfiguration();
-        configuration.setConnectionTimeout(timeout);
-        configuration.setSocketTimeout(timeout);
-        final UseragentProvider ua = new PreferencesUseragentProvider();
-        configuration.setUserAgentPrefix(ua.get());
-        configuration.setMaxErrorRetry(0);
-        configuration.setMaxConnections(1);
-        configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
-        final Proxy proxy = ProxyFactory.get().find(bookmark);
-        switch(proxy.getType()) {
-            case HTTP:
-            case HTTPS:
-                configuration.setProxyHost(proxy.getHostname());
-                configuration.setProxyPort(proxy.getPort());
-        }
-        locationFeature = session.getFeature(Location.class);
+        this.configuration = new CustomClientConfiguration(bookmark);
+        this.locationFeature = session.getFeature(Location.class);
     }
 
     private interface Authenticated<T> extends Callable<T> {
@@ -100,7 +80,7 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     }
 
     private <T> T authenticated(final Authenticated<T> run, final LoginCallback prompt) throws BackgroundException {
-        final LoginOptions options = new LoginOptions(bookmark.getProtocol()).anonymous(false).publickey(false);
+        final LoginOptions options = new LoginOptions(bookmark.getProtocol());
         try {
             final LoginService login = new KeychainLoginService(PasswordStoreFactory.get());
             login.validate(bookmark, LocaleFactory.localizedString("AWS Key Management Service", "S3"), prompt, options);
@@ -180,10 +160,17 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
     }
 
     private AWSKMS client(final Path container) throws BackgroundException {
-        return AWSKMSClientBuilder.standard()
+        final AWSKMSClientBuilder builder = AWSKMSClientBuilder.standard()
             .withCredentials(AWSCredentialsConfigurator.toAWSCredentialsProvider(bookmark.getCredentials()))
-            .withClientConfiguration(configuration)
-            .withRegion(locationFeature.getLocation(container).getIdentifier()).build();
+            .withClientConfiguration(configuration);
+        final Location.Name region = locationFeature.getLocation(container);
+        if(Location.unknown.equals(region)) {
+            builder.withRegion(Regions.DEFAULT_REGION);
+        }
+        else {
+            builder.withRegion(region.getIdentifier());
+        }
+        return builder.build();
     }
 
     /**

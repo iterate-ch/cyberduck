@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class OwnerComparatorTest {
 
     @Test
-    public void testCompareFirst() throws Exception {
+    public void testCompareFirst() {
         assertEquals(0,
                 new OwnerComparator(true).compareFirst(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file))));
         final Path p = new Path("/a", EnumSet.of(Path.Type.file));

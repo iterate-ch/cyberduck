@@ -20,7 +20,6 @@ package ch.cyberduck.core.transfer.copy;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.upload.UploadFilterOptions;
 
@@ -37,7 +36,7 @@ public class OverwriteFilter extends AbstractCopyFilter {
     }
 
     @Override
-    public boolean accept(final Path source, final Local local, final TransferStatus parent) throws BackgroundException {
+    public boolean accept(final Path source, final Local local, final TransferStatus parent) {
         return true;
     }
 }

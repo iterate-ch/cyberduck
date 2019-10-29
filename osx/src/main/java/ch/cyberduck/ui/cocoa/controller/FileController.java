@@ -48,6 +48,7 @@ public abstract class FileController extends AlertController {
     @Override
     public void loadBundle(final NSAlert alert) {
         this.inputField = NSTextField.textfieldWithFrame(new NSRect(alert.window().frame().size.width.doubleValue(), 22));
+        this.inputField.cell().setWraps(false);
         this.inputField.cell().setPlaceholderString(alert.informativeText());
         super.loadBundle(alert);
     }

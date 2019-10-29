@@ -23,11 +23,12 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 import synapticloop.b2.exception.B2ApiException;
 
@@ -46,8 +47,8 @@ public class B2DeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        for(Path file : files) {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+        for(Path file : files.keySet()) {
             if(containerService.isContainer(file)) {
                 continue;
             }
@@ -63,7 +64,7 @@ public class B2DeleteFeature implements Delete {
                         fileid = this.fileid.getFileid(file, new DisabledListProgressListener());
                     }
                     catch(NotfoundException e) {
-                        log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e.getDetail(), file));
+                        log.warn(String.format("Ignore failure %s deleting placeholder file for %s", e, file));
                         continue;
                     }
                     try {
@@ -89,7 +90,7 @@ public class B2DeleteFeature implements Delete {
                 }
             }
         }
-        for(Path file : files) {
+        for(Path file : files.keySet()) {
             try {
                 if(containerService.isContainer(file)) {
                     callback.delete(file);

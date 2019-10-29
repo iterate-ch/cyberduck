@@ -72,20 +72,26 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_Keychain_getPasswordFromKeychai
     return (*env)->NewStringUTF(env, [[keychainItem password] UTF8String]);
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addInternetPasswordToKeychain(JNIEnv *env, jobject this, jstring jProtocol, jint port, 
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_addInternetPasswordToKeychain(JNIEnv *env, jobject this, jstring jProtocol, jint port,
 																					 jstring jService, jstring jUsername, jstring jPassword) {
-	[[EMKeychainProxy sharedProxy] addInternetKeychainItemForServer:JNFJavaToNSString(env, jService)
+	if(nil == [[EMKeychainProxy sharedProxy] addInternetKeychainItemForServer:JNFJavaToNSString(env, jService)
 													   withUsername:JNFJavaToNSString(env, jUsername)
 														   password:JNFJavaToNSString(env, jPassword) 
 															   path:nil 
 															   port:port
-														   protocol:convertToSecProtocolType(env, jProtocol)];
+														   protocol:convertToSecProtocolType(env, jProtocol)]) {
+       return NO;
+   }
+   return YES;
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_Keychain_addPasswordToKeychain(JNIEnv *env, jobject this, jstring jService, jstring jUsername, jstring jPass)  {
-	[[EMKeychainProxy sharedProxy] addGenericKeychainItemForService:JNFJavaToNSString(env, jService) 
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_addPasswordToKeychain(JNIEnv *env, jobject this, jstring jService, jstring jUsername, jstring jPass)  {
+	if(nil == [[EMKeychainProxy sharedProxy] addGenericKeychainItemForService:JNFJavaToNSString(env, jService)
 													   withUsername:JNFJavaToNSString(env, jUsername)
-														   password:JNFJavaToNSString(env, jPass)];
+														   password:JNFJavaToNSString(env, jPass)]) {
+       return NO;
+   }
+   return YES;
 }
 
 jbyteArray GetCertData(JNIEnv *env, SecCertificateRef certificateRef) {

@@ -29,6 +29,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Distribution {
 
@@ -105,7 +106,7 @@ public class Distribution {
     /**
      * CNAME DNS entires to the CDN hostname
      */
-    private String cnames[];
+    private String[] cnames;
 
     /**
      * Kind of distribution
@@ -511,16 +512,16 @@ public class Distribution {
         if(!Arrays.equals(cnames, that.cnames)) {
             return false;
         }
-        if(errorDocument != null ? !errorDocument.equals(that.errorDocument) : that.errorDocument != null) {
+        if(!Objects.equals(errorDocument, that.errorDocument)) {
             return false;
         }
-        if(indexDocument != null ? !indexDocument.equals(that.indexDocument) : that.indexDocument != null) {
+        if(!Objects.equals(indexDocument, that.indexDocument)) {
             return false;
         }
-        if(loggingContainer != null ? !loggingContainer.equals(that.loggingContainer) : that.loggingContainer != null) {
+        if(!Objects.equals(loggingContainer, that.loggingContainer)) {
             return false;
         }
-        if(method != null ? !method.equals(that.method) : that.method != null) {
+        if(!Objects.equals(method, that.method)) {
             return false;
         }
         return true;

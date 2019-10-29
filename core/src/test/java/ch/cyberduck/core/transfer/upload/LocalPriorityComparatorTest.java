@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 public class LocalPriorityComparatorTest {
 
     @Test
-    public void testCompare() throws Exception {
+    public void testCompare() {
         assertEquals(-1, new LocalPriorityComparator().compare(new NullLocal("/t") {
             @Override
             public boolean isFile() {

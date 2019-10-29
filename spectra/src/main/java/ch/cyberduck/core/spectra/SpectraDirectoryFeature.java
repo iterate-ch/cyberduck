@@ -19,7 +19,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -45,9 +44,7 @@ public class SpectraDirectoryFeature extends S3DirectoryFeature {
             return super.mkdir(folder, region, status);
         }
         else {
-            if(Checksum.NONE == status.getChecksum()) {
-                status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
-            }
+            status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
             return super.mkdir(folder, region, status);
         }
     }

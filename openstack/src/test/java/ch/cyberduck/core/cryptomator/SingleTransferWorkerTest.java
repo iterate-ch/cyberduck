@@ -111,9 +111,9 @@ public class SingleTransferWorkerTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         assertTrue(new CryptoFindFeature(session, new SwiftFindFeature(session), cryptomator).find(dir1));
         assertEquals(content.length, new CryptoAttributesFeature(session, new DefaultAttributesFinderFeature(session), cryptomator).find(file1).getSize());
         {

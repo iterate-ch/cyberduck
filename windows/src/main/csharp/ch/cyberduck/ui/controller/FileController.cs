@@ -20,7 +20,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.pool;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -38,9 +38,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateInput += ValidateInput;
         }
 
-        public virtual Bitmap IconView
+        public virtual Image IconView
         {
-            get { return IconCache.Instance.IconForFilename("_unknown", IconCache.IconSize.Large); }
+            get { return IconCache.IconForFilename("_unknown", IconCache.IconSize.Large); }
         }
 
         public virtual Path Workdir

@@ -31,6 +31,7 @@ public class NotificationServiceFactory extends Factory<NotificationService> {
     public static synchronized NotificationService get() {
         if(null == notifier) {
             notifier = new NotificationServiceFactory().create();
+            notifier.setup();
         }
         return notifier;
     }

@@ -57,7 +57,7 @@ public class SwiftLocationFeatureTest {
     }
 
     @Test
-    public void testLocationNull() throws Exception {
+    public void testLocationNull() {
         final SwiftLocationFeature.SwiftRegion region = new SwiftLocationFeature.SwiftRegion(null);
         assertNull(region.getIdentifier());
         assertEquals("Unknown", region.toString());
@@ -91,7 +91,7 @@ public class SwiftLocationFeatureTest {
     }
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         assertEquals(unknown, new SwiftLocationFeature.SwiftRegion(null));
     }
 }

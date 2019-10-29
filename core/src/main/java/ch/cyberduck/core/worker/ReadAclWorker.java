@@ -27,12 +27,16 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AclPermission;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
+    private static final Logger log = Logger.getLogger(ReadAclWorker.class);
 
     private final List<Path> files;
 
@@ -43,6 +47,9 @@ public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
     @Override
     public List<Acl.UserAndRole> run(final Session<?> session) throws BackgroundException {
         final AclPermission feature = session.getFeature(AclPermission.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         final List<Acl.UserAndRole> updated = new ArrayList<Acl.UserAndRole>();
         for(Path next : files) {
             if(this.isCanceled()) {
@@ -81,7 +88,7 @@ public class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
             return false;
         }
         final ReadAclWorker that = (ReadAclWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

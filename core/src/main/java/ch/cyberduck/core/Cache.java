@@ -15,7 +15,7 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
-import java.util.Set;
+import java.util.Map;
 
 public interface Cache<T extends Referenceable> {
 
@@ -23,13 +23,15 @@ public interface Cache<T extends Referenceable> {
      * @param object Value object
      * @return Key used for internal comparison in map
      */
-    CacheReference key(T object);
+    CacheReference<?> reference(T object);
 
     /**
      * @param parent Directory
      * @return True if directory is cached
      */
     boolean isCached(T parent);
+
+    long size();
 
     /**
      * @return True if no directory is cached
@@ -55,17 +57,16 @@ public interface Cache<T extends Referenceable> {
     AttributedList<T> get(T parent);
 
     /**
+     * @return Map representation for cached entries
+     */
+    Map<T, AttributedList<T>> asMap();
+
+    /**
      * Remove from cache
      *
      * @param parent Directory
-     * @return Previous list
      */
     AttributedList<T> remove(T parent);
-
-    /**
-     * @return Set of folders that have a cached directory listing
-     */
-    Set<T> keySet();
 
     /**
      * Mark cached directory listing as out of date
@@ -79,5 +80,9 @@ public interface Cache<T extends Referenceable> {
      */
     void clear();
 
+    /**
+     * @param reference Key for item in cached list
+     * @return Cached value for reference
+     */
     T lookup(CacheReference<T> reference);
 }

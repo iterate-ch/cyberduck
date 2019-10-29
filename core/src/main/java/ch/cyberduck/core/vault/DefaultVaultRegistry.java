@@ -100,13 +100,13 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
             }
         }
         if(lookup) {
-            final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(session, this, keychain, prompt);
+            final LoadingVaultLookupListener listener = new LoadingVaultLookupListener(this, keychain, prompt);
             if(file.attributes().getVault() != null) {
-                return listener.load(file.attributes().getVault(), DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_PEPPER);
+                return listener.load(session, file.attributes().getVault(), DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_PEPPER);
             }
             final Path directory = file.getParent();
             if(directory.attributes().getVault() != null) {
-                return listener.load(directory.attributes().getVault(), DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_PEPPER);
+                return listener.load(session, directory.attributes().getVault(), DEFAULT_MASTERKEY_FILE_NAME, DEFAULT_PEPPER);
             }
         }
         return Vault.DISABLED;
@@ -121,13 +121,13 @@ public class DefaultVaultRegistry extends CopyOnWriteArraySet<Vault> implements 
         }
         if(type == ListService.class) {
             return (T) new VaultRegistryListService(session, (ListService) proxy, this,
-                new LoadingVaultLookupListener(session, this, keychain, prompt))
+                new LoadingVaultLookupListener(this, keychain, prompt))
                 .withAutodetect(preferences.getBoolean("cryptomator.vault.autodetect")
                 );
         }
         if(type == Find.class) {
             return (T) new VaultRegistryFindFeature(session, (Find) proxy, this,
-                new LoadingVaultLookupListener(session, this, keychain, prompt))
+                new LoadingVaultLookupListener(this, keychain, prompt))
                 .withAutodetect(preferences.getBoolean("cryptomator.vault.autodetect")
                 );
         }

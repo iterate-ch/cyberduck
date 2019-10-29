@@ -26,6 +26,7 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSOpenPanel;
 import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSSecureTextField;
 import ch.cyberduck.binding.application.NSTextField;
 import ch.cyberduck.binding.application.NSWindow;
 import ch.cyberduck.binding.application.SheetCallback;
@@ -33,9 +34,10 @@ import ch.cyberduck.binding.foundation.NSAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.diagnostics.ReachabilityFactory;
-import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -48,6 +50,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -74,10 +77,12 @@ public class BookmarkController extends SheetController implements CollectionLis
     private final List<BookmarkObserver> observers = new ArrayList<>();
 
     protected final Host bookmark;
-    protected final Credentials credentials;
 
     protected final LoginInputValidator validator;
     protected final LoginOptions options;
+
+    private final HostPasswordStore keychain
+        = PasswordStoreFactory.get();
 
     @Outlet
     protected NSPopUpButton protocolPopup;
@@ -96,6 +101,10 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Outlet
     protected NSTextField usernameLabel;
     @Outlet
+    protected NSTextField passwordField;
+    @Outlet
+    private NSTextField passwordLabel;
+    @Outlet
     protected NSButton anonymousCheckbox;
     @Outlet
     protected NSPopUpButton privateKeyPopup;
@@ -106,21 +115,16 @@ public class BookmarkController extends SheetController implements CollectionLis
      * @param bookmark The bookmark to edit
      */
     public BookmarkController(final Host bookmark) {
-        this(bookmark, bookmark.getCredentials());
+        this(bookmark, new LoginOptions(bookmark.getProtocol()));
     }
 
-    public BookmarkController(final Host bookmark, final Credentials credentials) {
-        this(bookmark, credentials, new LoginOptions(bookmark.getProtocol()));
+    public BookmarkController(final Host bookmark, final LoginOptions options) {
+        this(bookmark, new LoginInputValidator(bookmark, options), options);
     }
 
-    public BookmarkController(final Host bookmark, final Credentials credentials, final LoginOptions options) {
-        this(bookmark, credentials, new LoginInputValidator(credentials, bookmark.getProtocol(), options), options);
-    }
-
-    public BookmarkController(final Host bookmark, final Credentials credentials, final LoginInputValidator validator, final LoginOptions options) {
+    public BookmarkController(final Host bookmark, final LoginInputValidator validator, final LoginOptions options) {
         super(validator);
         this.bookmark = bookmark;
-        this.credentials = credentials;
         this.validator = validator;
         this.options = options;
     }
@@ -146,7 +150,7 @@ public class BookmarkController extends SheetController implements CollectionLis
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
         for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
-            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))) {
+            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud)))) {
             this.addProtocol(protocol);
         }
         this.protocolPopup.menu().addItem(NSMenuItem.separatorItem());
@@ -228,21 +232,20 @@ public class BookmarkController extends SheetController implements CollectionLis
     public void hostFieldDidChange(final NSNotification sender) {
         final String input = hostField.stringValue();
         if(Scheme.isURL(input)) {
-            final Host parsed = HostParser.parse(input);
-            bookmark.setHostname(parsed.getHostname());
-            bookmark.setProtocol(parsed.getProtocol());
-            bookmark.setPort(parsed.getPort());
-            bookmark.setDefaultPath(parsed.getDefaultPath());
+            try {
+                final Host parsed = HostParser.parse(input);
+                bookmark.setHostname(parsed.getHostname());
+                bookmark.setProtocol(parsed.getProtocol());
+                bookmark.setPort(parsed.getPort());
+                bookmark.setDefaultPath(parsed.getDefaultPath());
+            }
+            catch(HostParserException e) {
+                log.warn(e);
+            }
         }
         else {
             bookmark.setHostname(input);
-            final Credentials auto = CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark);
-            final Credentials credentials = bookmark.getCredentials();
-            credentials.setUsername(auto.getUsername());
-            credentials.setPassword(auto.getPassword());
-            credentials.setIdentity(auto.getIdentity());
-            credentials.setToken(auto.getToken());
-            credentials.setCertificate(auto.getCertificate());
+            bookmark.setCredentials(CredentialsConfiguratorFactory.get(bookmark.getProtocol()).configure(bookmark));
         }
         this.update();
     }
@@ -261,7 +264,7 @@ public class BookmarkController extends SheetController implements CollectionLis
                         boolean reachable = false;
 
                         @Override
-                        public Boolean run() throws BackgroundException {
+                        public Boolean run() {
                             return reachable = ReachabilityFactory.get().isReachable(bookmark);
                         }
 
@@ -353,16 +356,16 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-                updateField(usernameField, credentials.getUsername());
+                updateField(usernameField, bookmark.getCredentials().getUsername());
                 usernameField.cell().setPlaceholderString(bookmark.getProtocol().getUsernamePlaceholder());
-                usernameField.setEnabled(options.user && !credentials.isAnonymousLogin());
+                usernameField.setEnabled(options.user && !bookmark.getCredentials().isAnonymousLogin());
             }
         });
     }
 
     @Action
     public void usernameInputDidChange(final NSNotification sender) {
-        credentials.setUsername(usernameField.stringValue());
+        bookmark.getCredentials().setUsername(usernameField.stringValue());
         this.update();
     }
 
@@ -372,8 +375,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             @Override
             public void change(final Host bookmark) {
                 usernameLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                    StringUtils.isNotBlank(bookmark.getProtocol().getUsernamePlaceholder()) ? String.format("%s:",
-                        bookmark.getProtocol().getUsernamePlaceholder()) : StringUtils.EMPTY,
+                    String.format("%s:", bookmark.getProtocol().getUsernamePlaceholder()),
                     TRUNCATE_TAIL_ATTRIBUTES
                 ));
             }
@@ -388,7 +390,7 @@ public class BookmarkController extends SheetController implements CollectionLis
             @Override
             public void change(final Host bookmark) {
                 anonymousCheckbox.setEnabled(options.anonymous);
-                anonymousCheckbox.setState(credentials.isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
+                anonymousCheckbox.setState(bookmark.getCredentials().isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
             }
         });
     }
@@ -396,20 +398,56 @@ public class BookmarkController extends SheetController implements CollectionLis
     @Action
     public void anonymousCheckboxClicked(final NSButton sender) {
         if(sender.state() == NSCell.NSOnState) {
-            credentials.setUsername(preferences.getProperty("connection.login.anon.name"));
-            credentials.setPassword(preferences.getProperty("connection.login.anon.pass"));
+            bookmark.getCredentials().setUsername(preferences.getProperty("connection.login.anon.name"));
+            bookmark.getCredentials().setPassword(preferences.getProperty("connection.login.anon.pass"));
         }
         if(sender.state() == NSCell.NSOffState) {
             if(preferences.getProperty("connection.login.name").equals(
                 preferences.getProperty("connection.login.anon.name"))) {
-                credentials.setUsername(StringUtils.EMPTY);
+                bookmark.getCredentials().setUsername(StringUtils.EMPTY);
             }
             else {
-                credentials.setUsername(preferences.getProperty("connection.login.name"));
+                bookmark.getCredentials().setUsername(preferences.getProperty("connection.login.name"));
             }
-            credentials.setPassword(null);
+            bookmark.getCredentials().setPassword(null);
         }
         this.update();
+    }
+
+    public void setPasswordField(NSSecureTextField field) {
+        this.passwordField = field;
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(final Host bookmark) {
+                passwordField.cell().setPlaceholderString(options.getPasswordPlaceholder());
+                passwordField.setEnabled(options.password && !bookmark.getCredentials().isAnonymousLogin());
+                if(options.keychain && options.password) {
+                    if(StringUtils.isBlank(bookmark.getHostname())) {
+                        return;
+                    }
+                    if(StringUtils.isBlank(bookmark.getCredentials().getUsername())) {
+                        return;
+                    }
+                    final String password = keychain.getPassword(bookmark.getProtocol().getScheme(),
+                        bookmark.getPort(),
+                        bookmark.getHostname(),
+                        bookmark.getCredentials().getUsername());
+                    updateField(passwordField, password);
+                }
+            }
+        });
+    }
+
+    public void setPasswordLabel(NSTextField passwordLabel) {
+        this.passwordLabel = passwordLabel;
+        this.addObserver(new BookmarkObserver() {
+            @Override
+            public void change(final Host bookmark) {
+                passwordLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                    String.format("%s:", options.getPasswordPlaceholder()), TRUNCATE_TAIL_ATTRIBUTES
+                ));
+            }
+        });
     }
 
     @Override
@@ -477,16 +515,15 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.addObserver(new BookmarkObserver() {
             @Override
             public void change(final Host bookmark) {
-
                 privateKeyPopup.setEnabled(options.publickey);
-                if(credentials.isPublicKeyAuthentication()) {
-                    privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(credentials.getIdentity().getAbsolute()));
+                if(bookmark.getCredentials().isPublicKeyAuthentication()) {
+                    privateKeyPopup.selectItemAtIndex(privateKeyPopup.indexOfItemWithRepresentedObject(bookmark.getCredentials().getIdentity().getAbsolute()));
                 }
                 else {
                     privateKeyPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
                 }
-                if(credentials.isPublicKeyAuthentication()) {
-                    final Local key = credentials.getIdentity();
+                if(bookmark.getCredentials().isPublicKeyAuthentication()) {
+                    final Local key = bookmark.getCredentials().getIdentity();
                     if(-1 == privateKeyPopup.indexOfItemWithRepresentedObject(key.getAbsolute()).intValue()) {
                         final NSInteger index = new NSInteger(0);
                         privateKeyPopup.insertItemWithTitle_atIndex(key.getAbbreviatedPath(), index);
@@ -505,13 +542,13 @@ public class BookmarkController extends SheetController implements CollectionLis
             privateKeyOpenPanel.setCanChooseDirectories(false);
             privateKeyOpenPanel.setCanChooseFiles(true);
             privateKeyOpenPanel.setAllowsMultipleSelection(false);
-            privateKeyOpenPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
+            privateKeyOpenPanel.setMessage(LocaleFactory.localizedString("Select the private key in PEM or PuTTY format", "bookmark.getCredentials()"));
             privateKeyOpenPanel.setPrompt(LocaleFactory.localizedString("Choose"));
             privateKeyOpenPanel.beginSheetForDirectory(LocalFactory.get(LocalFactory.get(), ".ssh").getAbsolute(), null, this.window(), this.id(),
                 Foundation.selector("privateKeyPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            credentials.setIdentity(StringUtils.isBlank(selected) ? null : LocalFactory.get(selected));
+            bookmark.getCredentials().setIdentity(StringUtils.isBlank(selected) ? null : LocalFactory.get(selected));
         }
         this.update();
     }
@@ -519,14 +556,14 @@ public class BookmarkController extends SheetController implements CollectionLis
     public void privateKeyPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
-                final NSObject selected = privateKeyOpenPanel.filenames().lastObject();
+                final NSObject selected = privateKeyOpenPanel.URLs().lastObject();
                 if(selected != null) {
-                    final Local key = LocalFactory.get(selected.toString());
-                    credentials.setIdentity(key);
+                    final Local key = LocalFactory.get(Rococoa.cast(selected, NSURL.class).path());
+                    bookmark.getCredentials().setIdentity(key);
                 }
                 break;
             case SheetCallback.ALTERNATE_OPTION:
-                credentials.setIdentity(null);
+                bookmark.getCredentials().setIdentity(null);
                 break;
         }
         this.update();

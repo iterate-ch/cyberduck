@@ -60,10 +60,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { okButton.Text = value; }
         }
 
-        public bool SavePassword
+        public bool SavePasswordState
         {
             get { return saveCheckBox.Checked; }
             set { saveCheckBox.Checked = value; }
+        }
+
+        public bool SavePasswordEnabled
+        {
+            set { saveCheckBox.Enabled = value; }
         }
     }
 }

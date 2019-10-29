@@ -64,7 +64,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { inputTextBox.Text = value; }
         }
 
-        public Bitmap IconView
+        public Image IconView
         {
             set { pictureBox.Image = value; }
         }

@@ -22,7 +22,7 @@ import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.aquaticprime.ReceiptFactory;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
-import ch.cyberduck.core.i18n.BundleLocale;
+import ch.cyberduck.core.i18n.BundleRegexLocale;
 import ch.cyberduck.core.local.DisabledFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
 import ch.cyberduck.core.local.FinderLocal;
@@ -57,7 +57,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
         this.setDefault("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
         this.setDefault("factory.local.class", FinderLocal.class.getName());
-        this.setDefault("factory.locale.class", BundleLocale.class.getName());
+        this.setDefault("factory.locale.class", BundleRegexLocale.class.getName());
         this.setDefault("factory.passwordstore.class", Keychain.class.getName());
         this.setDefault("factory.certificatestore.class", Keychain.class.getName());
         this.setDefault("factory.proxy.class", SystemConfigurationProxy.class.getName());
@@ -74,7 +74,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.terminalservice.class", ApplescriptTerminalService.class.getName());
         this.setDefault("factory.badgelabeler.class", WorkspaceApplicationBadgeLabeler.class.getName());
         this.setDefault("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
-        if(null == Updater.getFeed()) {
+        if(null == this.getDefault("SUExpectsDSASignature")) {
             this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
         }
         if(!Factory.Platform.osversion.matches("10\\.(5|6|7).*")) {

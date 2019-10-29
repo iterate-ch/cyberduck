@@ -21,7 +21,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.vault;
 using ch.cyberduck.core.exception;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -35,24 +35,32 @@ namespace Ch.Cyberduck.Ui.Controller
             _browser = c;
         }
 
+        public void close(string input)
+        {
+            View.InputText = input;
+            View.Close();
+        }
+
         public Credentials prompt(Host bookmark, string title, string reason, LoginOptions options)
         {
-            Credentials credentials = new Credentials().withSaved(options.save());
+            Credentials credentials = new Credentials().withSaved(options.keychain());
             AsyncDelegate d = delegate
             {
                 View = ObjectFactory.GetInstance<IPasswordPromptView>();
                 View.Title = title;
-                View.Reason = reason;
+                View.Reason = new StringAppender().append(reason).toString();
                 View.OkButtonText = LocaleFactory.localizedString("Continue", "Credentials");
-                View.IconView = IconCache.Instance.IconForName(options.icon(), 64);
-                View.SavePassword = options.save();
+                View.IconView = IconCache.IconForName(options.icon(), 64);
+                View.SavePasswordEnabled = options.keychain();
+                View.SavePasswordState = credentials.isSaved();
+
                 View.ValidateInput += ValidateInputEventHandler;
                 if (DialogResult.Cancel == View.ShowDialog(_browser.View))
                 {
                     throw new LoginCanceledException();
                 }
                 credentials.setPassword(View.InputText);
-                credentials.setSaved(View.SavePassword);
+                credentials.setSaved(View.SavePasswordState);
             };
             _browser.Invoke(d);
             return credentials;

@@ -47,7 +47,7 @@ public class SDSSessionTest extends AbstractSDSTest {
 
     @Test
     public void testLoginUserPassword() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -73,7 +73,7 @@ public class SDSSessionTest extends AbstractSDSTest {
 
     @Test
     public void testLoginRefreshToken() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -86,7 +86,7 @@ public class SDSSessionTest extends AbstractSDSTest {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailureInvalidUser() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -98,12 +98,13 @@ public class SDSSessionTest extends AbstractSDSTest {
         new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
 
+    @Ignore
     @Test(expected = ConnectionTimeoutException.class)
     public void testLoginRadius() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/DRACOON (Radius).cyberduckprofile"));
-        final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
+        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
             "rsa.user1", "1234"
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -112,7 +113,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 assertEquals("Multi-Factor Authentication", reason);
                 assertFalse(options.user);
                 assertTrue(options.password);
@@ -127,7 +128,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SDSProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/DRACOON (OAuth).cyberduckprofile"));
-        final Host host = new Host(profile, "duck.ssp-europe.eu", new Credentials(
+        final Host host = new Host(profile, "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -140,7 +141,7 @@ public class SDSSessionTest extends AbstractSDSTest {
 
     @Test(expected = LoginFailureException.class)
     public void testLoginFailure() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
             "a", "s"
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -152,7 +153,7 @@ public class SDSSessionTest extends AbstractSDSTest {
 
     @Test(expected = ConnectionRefusedException.class)
     public void testProxyNoConnect() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
@@ -174,7 +175,7 @@ public class SDSSessionTest extends AbstractSDSTest {
     @Ignore
     @Test(expected = ProxyLoginFailureException.class)
     public void testConnectProxyInvalidCredentials() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
+        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DefaultX509TrustManager(),
@@ -183,7 +184,7 @@ public class SDSSessionTest extends AbstractSDSTest {
         final LoginConnectionService c = new LoginConnectionService(
             new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                     return new Credentials("test", "n");
                 }
             },

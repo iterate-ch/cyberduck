@@ -25,7 +25,7 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.preferences;
 using ch.cyberduck.ui.browser;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Core.Date;
 using java.util;
@@ -71,30 +71,25 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (path.isVolume())
             {
-                return IconCache.Instance.VolumeIcon(_controller.Session.getHost().getProtocol(),
+                return IconCache.GetProtocolDisk(_controller.Session.getHost().getProtocol(),
                     IconCache.IconSize.Small);
             }
-            return IconCache.Instance.IconForPath(path, IconCache.IconSize.Small);
+            return IconCache.IconForPath(path, IconCache.IconSize.Small);
         }
 
         public object GetModified(Path path)
         {
-            long modificationDate = path.attributes().getModificationDate();
-            if (modificationDate != -1)
-            {
-                return UserDefaultsDateFormatter.ConvertJavaMillisecondsToDateTime(modificationDate);
-            }
-            return DateTime.MinValue;
+            return path.attributes().getModificationDate();
         }
 
         public string GetModifiedAsString(object value)
         {
-            DateTime modificationDate = (DateTime) value;
-            if (modificationDate != DateTime.MinValue)
+            long modificationDate = (long) value;
+            if (modificationDate != -1)
             {
                 return
                     UserDateFormatterFactory.get()
-                        .getShortFormat(UserDefaultsDateFormatter.ConvertDateTimeToJavaMilliseconds(modificationDate),
+                        .getShortFormat(modificationDate,
                             PreferencesFactory.get().getBoolean("browser.date.natural"));
             }
             return _unknown;

@@ -24,10 +24,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 public class WriteVersioningWorker extends Worker<Boolean> {
+    private static final Logger log = Logger.getLogger(WriteVersioningWorker.class);
 
     /**
      * Selected files.
@@ -47,6 +51,9 @@ public class WriteVersioningWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Versioning feature = session.getFeature(Versioning.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         for(Path file : this.getContainers(files)) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
@@ -80,7 +87,7 @@ public class WriteVersioningWorker extends Worker<Boolean> {
             return false;
         }
         final WriteVersioningWorker that = (WriteVersioningWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

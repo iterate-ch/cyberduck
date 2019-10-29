@@ -19,7 +19,6 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -70,14 +69,14 @@ public class DefaultDownloadFeatureTest extends AbstractFTPTest {
             new DefaultDownloadFeature(new FTPReadFeature(session)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true);
             new DefaultDownloadFeature(new FTPReadFeature(session)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[39864];
         final InputStream in = local.getInputStream();
@@ -86,6 +85,5 @@ public class DefaultDownloadFeatureTest extends AbstractFTPTest {
         assertArrayEquals(content, buffer);
         final Delete delete = session.getFeature(Delete.class);
         delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 }

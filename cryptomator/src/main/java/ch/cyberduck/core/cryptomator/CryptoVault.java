@@ -15,12 +15,26 @@ package ch.cyberduck.core.cryptomator;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
+import ch.cyberduck.core.PasswordCallback;
+import ch.cyberduck.core.PasswordStore;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.cryptomator.features.*;
 import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryProvider;
 import ch.cyberduck.core.cryptomator.impl.CryptoFilenameProvider;
 import ch.cyberduck.core.cryptomator.random.FastSecureRandomProvider;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.preferences.Preferences;
@@ -91,7 +105,7 @@ public class CryptoVault implements Vault {
         this.masterkey = new Path(home, masterkey, EnumSet.of(Path.Type.file, Path.Type.vault));
         this.pepper = pepper;
         // New vault home with vault flag set for internal use
-        final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(home.getType());
+        final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
         type.add(Path.Type.vault);
         final Path vault = new Path(home.getAbsolute(), type, new PathAttributes(home.attributes()));
         this.filenameProvider = new CryptoFilenameProvider(vault);
@@ -105,8 +119,13 @@ public class CryptoVault implements Vault {
         );
         final Host bookmark = session.getHost();
         if(credentials.isSaved()) {
-            keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
-                new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+            try {
+                keychain.addPassword(String.format("Cryptomator Passphrase (%s)", bookmark.getCredentials().getUsername()),
+                    new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
+            }
+            catch(LocalAccessDeniedException e) {
+                log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e));
+            }
         }
         final String passphrase = credentials.getPassword();
         final KeyFile masterKeyFileContent = provider.createNew().writeKeysToMasterkeyFile(passphrase, pepper, VAULT_VERSION);
@@ -133,9 +152,9 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create vault root directory at %s", secondLevel));
         }
-        directory.mkdir(dataDir, region, new TransferStatus());
-        directory.mkdir(firstLevel, region, new TransferStatus());
-        directory.mkdir(secondLevel, region, new TransferStatus());
+        directory.mkdir(dataDir, region, status);
+        directory.mkdir(firstLevel, region, status);
+        directory.mkdir(secondLevel, region, status);
         return vault;
     }
 
@@ -174,14 +193,13 @@ public class CryptoVault implements Vault {
     }
 
     private void unlock(final Session<?> session, final Path masterKeyFile, final KeyFile masterKeyFileContent,
-                        String passphrase, final Host bookmark, final PasswordCallback prompt, final String message, final PasswordStore keychain) throws BackgroundException {
+                        final String passphrase, final Host bookmark, final PasswordCallback prompt, final String message, final PasswordStore keychain) throws BackgroundException {
         final Credentials credentials;
         if(null == passphrase) {
             credentials = prompt.prompt(
                 bookmark, LocaleFactory.localizedString("Unlock Vault", "Cryptomator"),
                 message,
                 new LoginOptions()
-                    .save(preferences.getBoolean("vault.keychain"))
                     .user(false)
                     .anonymous(false)
                     .icon("cryptomator.tiff")
@@ -345,7 +363,7 @@ public class CryptoVault implements Vault {
             }
             // Translate file size
             attributes.setSize(this.toCiphertextSize(file.attributes().getSize()));
-            final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(file.getType());
+            final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
             type.remove(Path.Type.directory);
             type.remove(Path.Type.decrypted);
             type.add(Path.Type.file);
@@ -405,12 +423,16 @@ public class CryptoVault implements Vault {
                 attributes.setEncrypted(file);
                 // Add reference for vault
                 attributes.setVault(home);
-                final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(file.getType());
+                final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
                 type.remove(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.file : Path.Type.directory);
                 type.add(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file);
                 type.remove(Path.Type.encrypted);
                 type.add(Path.Type.decrypted);
-                return new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
+                final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
+                if(type.contains(Path.Type.symboliclink)) {
+                    decrypted.setSymlinkTarget(file.getSymlinkTarget());
+                }
+                return decrypted;
             }
             catch(AuthenticationFailedException e) {
                 throw new CryptoAuthenticationException(

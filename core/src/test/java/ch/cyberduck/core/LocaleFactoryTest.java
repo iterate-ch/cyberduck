@@ -27,13 +27,13 @@ import static org.junit.Assert.assertEquals;
 public class LocaleFactoryTest {
 
     @Test
-    public void testFormat() throws Exception {
+    public void testFormat() {
         assertEquals("La clé d'hôte fournie est 1.",
                 MessageFormat.format(LocaleFactory.localizedString("La clé d'hôte fournie est {0}."), "1"));
     }
 
     @Test
-    public void testLocalizedString() throws Exception {
+    public void testLocalizedString() {
         assertEquals("La clé d''hôte fournie est {0}.",
                 LocaleFactory.localizedString("La clé d'hôte fournie est {0}.", "Localizable"));
     }

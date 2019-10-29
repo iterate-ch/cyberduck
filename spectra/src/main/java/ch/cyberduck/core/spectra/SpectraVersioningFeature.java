@@ -21,17 +21,14 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.s3.S3PathContainerService;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
 import java.util.UUID;
 
 import com.spectralogic.ds3client.Ds3Client;
@@ -56,16 +53,15 @@ public class SpectraVersioningFeature implements Versioning {
     private final PathContainerService containerService
         = new S3PathContainerService();
 
-    @SuppressWarnings("unchecked")
-    private Map<Path, VersioningConfiguration> cache
-        = Collections.synchronizedMap(new LRUMap<Path, VersioningConfiguration>(10));
+    private LRUCache<Path, VersioningConfiguration> cache
+        = LRUCache.build(10);
 
     public SpectraVersioningFeature(final SpectraSession session) {
         this.session = session;
     }
 
     @Override
-    public Versioning withCache(final Map<Path, VersioningConfiguration> cache) {
+    public Versioning withCache(final LRUCache<Path, VersioningConfiguration> cache) {
         this.cache = cache;
         return this;
     }
@@ -77,7 +73,7 @@ public class SpectraVersioningFeature implements Versioning {
         if(container.isRoot()) {
             return VersioningConfiguration.empty();
         }
-        if(cache.containsKey(container)) {
+        if(cache.contains(container)) {
             return cache.get(container);
         }
         try {
@@ -90,10 +86,10 @@ public class SpectraVersioningFeature implements Versioning {
             return configuration;
         }
         catch(FailedRequestException e) {
-            throw new SpectraExceptionMappingService().map(e);
+            throw new SpectraExceptionMappingService().map("Cannot read container configuration", e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
         }
     }
 
@@ -120,10 +116,10 @@ public class SpectraVersioningFeature implements Versioning {
             cache.remove(container);
         }
         catch(FailedRequestException e) {
-            throw new SpectraExceptionMappingService().map(e);
+            throw new SpectraExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
     }
 
@@ -139,13 +135,16 @@ public class SpectraVersioningFeature implements Versioning {
         try {
             client.undeleteObjectSpectraS3(new UndeleteObjectSpectraS3Request(container.getName(), containerService.getKey(file)));
         }
+        catch(FailedRequestException e) {
+            throw new SpectraExceptionMappingService().map("Cannot revert file", e, file);
+        }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot revert file", e, file);
         }
     }
 
     @Override
-    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) throws ConnectionCanceledException {
+    public Credentials getToken(final String mfaSerial, final PasswordCallback callback) {
         return null;
     }
 }

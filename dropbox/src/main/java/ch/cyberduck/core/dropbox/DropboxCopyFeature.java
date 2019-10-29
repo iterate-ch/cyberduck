@@ -39,7 +39,7 @@ public class DropboxCopyFeature implements Copy {
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             if(status.isExists()) {
-                new DropboxDeleteFeature(session).delete(Collections.singletonList(target), callback, new Delete.DisabledCallback());
+                new DropboxDeleteFeature(session).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
             }
             // If the source path is a folder all its contents will be copied.
             new DbxUserFilesRequests(session.getClient()).copyV2(source.getAbsolute(), target.getAbsolute());

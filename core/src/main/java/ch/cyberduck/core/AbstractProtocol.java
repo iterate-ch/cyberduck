@@ -61,8 +61,8 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public boolean isStateful() {
-        return false;
+    public Statefulness getStatefulness() {
+        return Statefulness.stateless;
     }
 
     @Override
@@ -332,5 +332,20 @@ public abstract class AbstractProtocol implements Protocol {
     @Override
     public HostnameConfigurator getHostnameFinder() {
         return new DisabledHostnameConfigurator();
+    }
+
+    @Override
+    public Case getCaseSensitivity() {
+        return Protocol.Case.sensitive;
+    }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.implicit;
+    }
+
+    @Override
+    public <T> T getFeature(final Class<T> type) {
+        return null;
     }
 }

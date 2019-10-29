@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 public class PreferencesUseragentProviderTest {
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() {
         assertTrue(new PreferencesUseragentProvider().get().startsWith("Cyberduck/"));
     }
 }

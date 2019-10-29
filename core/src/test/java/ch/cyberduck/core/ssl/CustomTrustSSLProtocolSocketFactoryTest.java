@@ -11,7 +11,7 @@ import static org.junit.Assert.assertNotNull;
 public class CustomTrustSSLProtocolSocketFactoryTest {
 
     @Test
-    public void testGetSSLContext() throws Exception {
+    public void testGetSSLContext() {
         assertNotNull(new CustomTrustSSLProtocolSocketFactory(new DefaultX509TrustManager(), new CertificateStoreX509KeyManager(
                 new DisabledCertificateStore(),
                 new Host(new TestProtocol()))).getSSLContext());

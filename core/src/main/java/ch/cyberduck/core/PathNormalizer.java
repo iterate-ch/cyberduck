@@ -19,16 +19,17 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.unicode.NFCNormalizer;
+import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 public final class PathNormalizer {
 
-    private static final boolean enabled = PreferencesFactory.get().getBoolean("path.normalize");
-    private static final boolean nfc = PreferencesFactory.get().getBoolean("path.normalize.unicode");
+    private static final boolean IS_ENABLED = PreferencesFactory.get().getBoolean("path.normalize");
+
+    private static final UnicodeNormalizer UNICODE_NORMALIZER = PreferencesFactory.get().getBoolean("path.normalize.unicode") ? new NFCNormalizer() : UnicodeNormalizer.DISABLED;
 
     private PathNormalizer() {
         //
@@ -38,10 +39,13 @@ public final class PathNormalizer {
         if(String.valueOf(Path.DELIMITER).equals(path)) {
             return path;
         }
-        if(StringUtils.endsWith(path, String.valueOf(Path.DELIMITER))) {
-            return FilenameUtils.getName(normalize(path));
+        if(!StringUtils.contains(path, Path.DELIMITER)) {
+            return UNICODE_NORMALIZER.normalize(path).toString();
         }
-        return FilenameUtils.getName(path);
+        if(StringUtils.endsWith(path, String.valueOf(Path.DELIMITER))) {
+            return UNICODE_NORMALIZER.normalize(StringUtils.substringAfterLast(normalize(path), String.valueOf(Path.DELIMITER))).toString();
+        }
+        return UNICODE_NORMALIZER.normalize(StringUtils.substringAfterLast(path, String.valueOf(Path.DELIMITER))).toString();
     }
 
     public static String parent(final String absolute, final char delimiter) {
@@ -56,7 +60,7 @@ public final class PathNormalizer {
         }
         int cut = absolute.lastIndexOf(delimiter, index);
         if(cut > 0) {
-            return absolute.substring(0, cut);
+            return UNICODE_NORMALIZER.normalize(absolute.substring(0, cut)).toString();
         }
         //if (index == 0) parent is root
         return String.valueOf(delimiter);
@@ -80,7 +84,7 @@ public final class PathNormalizer {
             return String.valueOf(Path.DELIMITER);
         }
         String normalized = path;
-        if(enabled) {
+        if(IS_ENABLED) {
             if(absolute) {
                 while(!normalized.startsWith(String.valueOf(Path.DELIMITER))) {
                     normalized = Path.DELIMITER + normalized;
@@ -141,11 +145,8 @@ public final class PathNormalizer {
                 normalized = normalized.substring(0, normalized.length() - 1);
             }
         }
-        if(nfc) {
-            return new NFCNormalizer().normalize(normalized).toString();
-        }
         // Return the normalized path that we have completed
-        return normalized;
+        return UNICODE_NORMALIZER.normalize(normalized).toString();
     }
 
     /**

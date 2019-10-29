@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.binding.Proxy;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 import ch.cyberduck.core.ssl.DEREncoder;
@@ -29,7 +30,6 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -78,7 +78,7 @@ public final class Keychain extends DefaultHostPasswordStore implements Password
      * @param user        Username
      * @param password    Secret
      */
-    public synchronized native void addPasswordToKeychain(String serviceName, String user, String password);
+    public synchronized native boolean addPasswordToKeychain(String serviceName, String user, String password);
 
     /**
      * @param protocol    Protocol identifier
@@ -87,7 +87,7 @@ public final class Keychain extends DefaultHostPasswordStore implements Password
      * @param user        Username
      * @param password    Secret
      */
-    public synchronized native void addInternetPasswordToKeychain(String protocol, int port, String serviceName, String user, String password);
+    public synchronized native boolean addInternetPasswordToKeychain(String protocol, int port, String serviceName, String user, String password);
 
     @Override
     public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
@@ -95,8 +95,10 @@ public final class Keychain extends DefaultHostPasswordStore implements Password
     }
 
     @Override
-    public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) {
-        this.addInternetPasswordToKeychain(scheme.name(), port, hostname, user, password);
+    public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) throws LocalAccessDeniedException {
+        if(!this.addInternetPasswordToKeychain(scheme.name(), port, hostname, user, password)) {
+            throw new LocalAccessDeniedException(String.format("Failure saving credentials for %s in Keychain", user));
+        }
     }
 
     @Override
@@ -105,8 +107,10 @@ public final class Keychain extends DefaultHostPasswordStore implements Password
     }
 
     @Override
-    public void addPassword(final String serviceName, final String accountName, final String password) {
-        this.addPasswordToKeychain(serviceName, accountName, password);
+    public void addPassword(final String serviceName, final String accountName, final String password) throws LocalAccessDeniedException {
+        if(!this.addPasswordToKeychain(serviceName, accountName, password)) {
+            throw new LocalAccessDeniedException(String.format("Failure saving credentials for %s in Keychain", accountName));
+        }
     }
 
     /**
@@ -169,13 +173,7 @@ public final class Keychain extends DefaultHostPasswordStore implements Password
                                   final Host bookmark, final String prompt)
         throws ConnectionCanceledException {
         final List<X509Certificate> certificates = new ArrayList<X509Certificate>();
-        final CertificateStoreX509KeyManager manager;
-        try {
-            manager = new KeychainX509KeyManager(bookmark).init();
-        }
-        catch(IOException e) {
-            throw new ConnectionCanceledException(e);
-        }
+        final CertificateStoreX509KeyManager manager = new KeychainX509KeyManager(bookmark).init();
         final String[] aliases = manager.getClientAliases(keyTypes, issuers);
         if(null == aliases) {
             throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found", Arrays.toString(issuers)));

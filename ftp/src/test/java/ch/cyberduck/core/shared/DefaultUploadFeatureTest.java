@@ -81,6 +81,5 @@ public class DefaultUploadFeatureTest extends AbstractFTPTest {
         final Delete delete = session.getFeature(Delete.class);
         delete.delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         local.delete();
-        ;
     }
 }

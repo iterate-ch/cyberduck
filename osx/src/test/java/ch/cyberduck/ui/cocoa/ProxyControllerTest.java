@@ -2,7 +2,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.binding.ProxyController;
 import ch.cyberduck.core.AbstractController;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
@@ -29,7 +28,7 @@ public class ProxyControllerTest {
             }
 
             @Override
-            public Object run() throws BackgroundException {
+            public Object run() {
                 assertEquals("background-1", Thread.currentThread().getName());
                 return null;
             }
@@ -58,18 +57,13 @@ public class ProxyControllerTest {
                 entry.countDown();
             }
         };
-        new Thread() {
+        new Thread(() -> controller.invoke(new DefaultMainAction() {
             @Override
             public void run() {
-                controller.invoke(new DefaultMainAction() {
-                    @Override
-                    public void run() {
-                        c.set(true);
-                        invoked.countDown();
-                    }
-                }, false);
+                c.set(true);
+                invoked.countDown();
             }
-        }.start();
+        }, false)).start();
         entry.await(1, TimeUnit.SECONDS);
         invoked.await(1, TimeUnit.SECONDS);
         assertTrue(c.get());
@@ -87,17 +81,12 @@ public class ProxyControllerTest {
                 entry.countDown();
             }
         };
-        new Thread() {
+        new Thread(() -> controller.invoke(new DefaultMainAction() {
             @Override
             public void run() {
-                controller.invoke(new DefaultMainAction() {
-                    @Override
-                    public void run() {
-                        c.set(true);
-                    }
-                }, true);
+                c.set(true);
             }
-        }.start();
+        }, true)).start();
         entry.await(1, TimeUnit.SECONDS);
         assertTrue(c.get());
     }

@@ -27,6 +27,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.editor;
+using ch.cyberduck.core.exception;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.pasteboard;
@@ -42,11 +43,12 @@ using ch.cyberduck.ui.browser;
 using ch.cyberduck.ui.comparator;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Local;
-using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms;
 using java.lang;
+using java.text;
 using java.util;
 using org.apache.log4j;
 using StructureMap;
@@ -79,7 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private String _dropFolder; // holds the drop folder of the current drag operation
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
-        private PathPasteboard _pasteboard;
+        private PathPasteboard _pasteboard = PathPasteboard.EMPTY;
         private Scheduler _scheduler;
         private bool _showHiddenFiles;
 
@@ -151,6 +153,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateDuplicateFile += View_ValidateDuplicateFile;
             View.OpenUrl += View_OpenUrl;
             View.ValidateOpenWebUrl += View_ValidateOpenWebUrl;
+            View.CreateShareLink += View_CreateShareLink;
+            View.ValidateCreateShareLink += View_ValidateCreateShareLink;
             View.ValidateEditWith += View_ValidateEditWith;
             View.ShowInspector += View_ShowInspector;
             View.ValidateShowInspector += View_ValidateShowInspector;
@@ -272,7 +276,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BookmarkImageGetter = _bookmarkModel.GetBookmarkImage;
             View.BookmarkNicknameGetter = _bookmarkModel.GetNickname;
             View.BookmarkHostnameGetter = _bookmarkModel.GetHostname;
-            View.BookmarkUrlGetter = _bookmarkModel.GetUrl;
+            View.BookmarkUsernameGetter = _bookmarkModel.GetUsername;
             View.BookmarkNotesGetter = _bookmarkModel.GetNotes;
             View.BookmarkStatusImageGetter = _bookmarkModel.GetBookmarkStatusImage;
 
@@ -302,6 +306,27 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Exit += View_Exit;
             View.SetBookmarkModel(_bookmarkCollection, null);
             SetNavigation(false);
+        }
+
+        private void View_CreateShareLink()
+        {
+            ShareLinkAction share = new ShareLinkAction(this, SelectedPath);
+            Background(share);
+        }
+
+        private bool View_ValidateCreateShareLink()
+        {
+            if (IsMounted() && SelectedPaths.Count == 1)
+            {
+                if (null == SelectedPath)
+                {
+                    return false;
+                }
+
+                PromptUrlProvider feature = (PromptUrlProvider) Session.getFeature(typeof(PromptUrlProvider));
+                return feature != null && feature.isSupported(SelectedPath, PromptUrlProvider.Type.download);
+            }
+            return false;
         }
 
         public BrowserController() : this(ObjectFactory.GetInstance<IBrowserView>())
@@ -770,8 +795,15 @@ namespace Ch.Cyberduck.Ui.Controller
                     Host destination = (Host) e.DropTargetItem.RowObject;
                     foreach (string file in data.GetFileDropList())
                     {
-                        _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination),
-                            HostReaderFactory.get().read(LocalFactory.get(file)));
+                        try
+                        {
+                            _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination),
+                                HostReaderFactory.get().read(LocalFactory.get(file)));
+                        }
+                        catch (AccessDeniedException ex)
+                        {
+                            Log.error($"Failure reading bookmark from {file}. {ex.getMessage()}");
+                        }
                     }
                 }
                 if (e.DropTargetLocation == DropTargetLocation.BelowItem)
@@ -779,15 +811,29 @@ namespace Ch.Cyberduck.Ui.Controller
                     Host destination = (Host) e.DropTargetItem.RowObject;
                     foreach (string file in data.GetFileDropList())
                     {
-                        _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination) + 1,
-                            HostReaderFactory.get().read(LocalFactory.get(file)));
+                        try
+                        {
+                            _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination) + 1,
+                                HostReaderFactory.get().read(LocalFactory.get(file)));
+                        }
+                        catch (AccessDeniedException ex)
+                        {
+                            Log.error($"Failure reading bookmark from {file}. {ex.getMessage()}");
+                        }
                     }
                 }
                 if (e.DropTargetLocation == DropTargetLocation.Background)
                 {
                     foreach (string file in data.GetFileDropList())
                     {
-                        _bookmarkModel.Source.add(HostReaderFactory.get().read(LocalFactory.get(file)));
+                        try
+                        {
+                            _bookmarkModel.Source.add(HostReaderFactory.get().read(LocalFactory.get(file)));
+                        }
+                        catch (AccessDeniedException ex)
+                        {
+                            Log.error($"Failure reading bookmark from {file}. {ex.getMessage()}");
+                        }
                     }
                 }
             }
@@ -927,7 +973,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         return;
                 }
                 Touch feature = (Touch) Session.getFeature(typeof(Touch));
-                if (!feature.isSupported(destination))
+                if (!feature.isSupported(destination, String.Empty))
                 {
                     args.Effect = DragDropEffects.None;
                     args.DropTargetLocation = DropTargetLocation.None;
@@ -1207,7 +1253,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.SelectedBookmarks.Count == 1)
             {
-                BookmarkController<IBookmarkView>.Factory.Create(View.SelectedBookmark).View.Show(View);
+                DefaultBookmarkController.Factory.Create(View.SelectedBookmark).View.Show(View);
             }
         }
 
@@ -1253,7 +1299,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.SelectBookmark(item);
             View.EnsureBookmarkVisible(item);
-            BookmarkController<IBookmarkView>.Factory.Create(item).View.Show(View);
+            DefaultBookmarkController.Factory.Create(item).View.Show(View);
         }
 
         private void View_DeleteBookmark()
@@ -1338,7 +1384,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDisconnect()
         {
-            return IsConnected();
+            return !IsIdle() || IsConnected();
         }
 
         private bool View_ValidateStop()
@@ -1413,14 +1459,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 infoController.View.Close();
             }
-            if (IsConnected())
-            {
-                Background(new DisconnectAction(this, runnable));
-            }
-            else
-            {
-                runnable();
-            }
+            Background(new DisconnectAction(this, runnable));
         }
 
         private void View_SendCustomCommand()
@@ -1736,14 +1775,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return IsMounted() &&
                    ((Touch) Session.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath));
+                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
         private bool View_ValidateUpload()
         {
             return IsMounted() &&
                    ((Touch) Session.getFeature(typeof(Touch))).isSupported(
-                       new UploadTargetFinder(Workdir).find(SelectedPath));
+                       new UploadTargetFinder(Workdir).find(SelectedPath), String.Empty);
         }
 
         private void View_Upload()
@@ -1751,7 +1790,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Due to the limited functionality of the OpenFileDialog class it is
             // currently not possible to select a folder. May be we should provide
             // a second menu item which allows to select a folder to upload
-            string[] paths = View.UploadDialog(null);
+            string[] paths = View.UploadDialog(new UploadDirectoryFinder().find(Session.getHost()));
             if (null == paths || paths.Length == 0) return;
 
             bool parentFound = false;
@@ -2106,7 +2145,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             return;
                     }
                     Touch feature = (Touch) Session.getFeature(typeof(Touch));
-                    if (!feature.isSupported(destination))
+                    if (!feature.isSupported(destination, String.Empty))
                     {
                         Log.trace("Session does not allow file creation");
                         args.Effect = DragDropEffects.None;
@@ -2199,30 +2238,19 @@ namespace Ch.Cyberduck.Ui.Controller
                     string editCommand = app != null ? app.getIdentifier() : null;
                     if (Utils.IsNotBlank(editCommand))
                     {
-                        try
-                        {
-                            Icon fileIconFromExecutable = IconCache.Instance.GetFileIconFromExecutable(
-                                WindowsApplicationLauncher.GetExecutableCommand(editCommand),
+                        View.EditIcon = IconCache.GetAppImage(
+                            WindowsApplicationLauncher.GetExecutableCommand(editCommand),
                                 IconCache.IconSize.Large);
-
-                            if (null != fileIconFromExecutable)
-                            {
-                                View.EditIcon = fileIconFromExecutable.ToBitmap();
-                                return;
-                            }
-                        }
-                        catch (ObjectDisposedException)
-                        {
-                        }
+                        return;
                     }
                 }
             }
-            View.EditIcon = IconCache.Instance.IconForName("pencil", 32);
+            View.EditIcon = IconCache.IconForName("pencil", 32);
         }
 
         private void UpdateOpenIcon()
         {
-            View.OpenIcon = IconCache.Instance.GetDefaultBrowserIcon();
+            View.OpenIcon = IconCache.GetDefaultBrowserIcon();
         }
 
         private void View_BrowserSelectionChanged()
@@ -2322,7 +2350,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
             }
-            Mount(HostParser.parse(input));
+            try
+            {
+                Mount(HostParser.parse(input));
+            }
+            catch(HostParserException e)
+            {
+                Log.warn(e.getDetail());
+            }
         }
 
         /// <summary>
@@ -2366,7 +2401,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         protected void transfer(Transfer transfer, IList<Path> selected)
         {
-            this.transfer(transfer, selected, transfer.getSource().getTransferType().equals(Host.TransferType.browser));
+            this.transfer(transfer, selected, transfer.getTransferType().equals(Host.TransferType.browser));
         }
 
         /// <summary>
@@ -3267,6 +3302,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 base.cleanup();
+                _controller._pasteboard.clear();
                 _callback();
             }
         }
@@ -3322,7 +3358,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.View.CertBasedConnection = _pool.getFeature(typeof(X509TrustManager)) != null;
                         _controller.View.SecureConnectionVisible = true;
                         _controller._scheduler = (Scheduler) _pool.getFeature(typeof(Scheduler));
-                        _controller._scheduler?.repeat(PasswordCallbackFactory.get(_controller));
+                        _controller._scheduler?.repeat(_pool, PasswordCallbackFactory.get(_controller));
                     }
                 }
             }
@@ -3342,7 +3378,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerMoveWorker(BrowserController controller, Map files, PathCache cache)
                     : base(files,
-                        controller.Session.getHost().getProtocol().isStateful()
+                        controller.Session.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful
                             ? SessionPoolFactory.create(controller, cache, controller.Session.getHost())
                             : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
 {
@@ -3375,7 +3411,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public InnerCopyWorker(BrowserController controller, Map files, PathCache cache)
                     : base(files,
-                        controller.Session.getHost().getProtocol().isStateful()
+                        controller.Session.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful
                             ? SessionPoolFactory.create(controller, cache, controller.Session.getHost())
                             : controller.Session, cache, controller, LoginCallbackFactory.get(controller))
                 {
@@ -3455,6 +3491,51 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     IList<Path> files = (IList<Path>) Utils.ConvertFromJavaList<Path>((List) result);
                     _controller.Reload(_controller.Workdir, files, files);
+                }
+            }
+        }
+
+        private class ShareLinkAction : WorkerBackgroundAction
+        {
+            public ShareLinkAction(BrowserController controller, Path file)
+                : base(controller, controller.Session, new InnerDownloadShareWorker(controller, file))
+            {
+            }
+
+            private class InnerDownloadShareWorker : DownloadShareWorker
+            {
+                private readonly BrowserController _controller;
+                private readonly Path _file;
+
+                public InnerDownloadShareWorker(BrowserController controller, Path file)
+                    : base(file, null, PasswordCallbackFactory.get(controller))
+                {
+                    _controller = controller;
+                    _file = file;
+                }
+
+                public override void cleanup(object result)
+                {
+                    DescriptiveUrl url = (DescriptiveUrl) result;
+                    // Display
+                    if (!DescriptiveUrl.EMPTY.@equals(url))
+                    {
+                        string title = LocaleFactory.localizedString("Create Download Share", "Share");
+                        string commandButtons = String.Format("{0}|{1}", LocaleFactory.localizedString("Continue", "Credentials"),
+                            LocaleFactory.localizedString("Copy", "Main"));
+                        _controller.CommandBox(title, title, MessageFormat.format(LocaleFactory.localizedString("You have successfully created a share link for {0}.", "SDS") + "\n\n{1}", _file.getName(), url.getUrl()), 
+                            commandButtons,
+                            false, null, TaskDialogIcon.Information,
+                            delegate (int option, System.Boolean verificationChecked)
+                            {
+                                switch (option)
+                                {
+                                    case 1:
+                                        Clipboard.SetText(url.getUrl());
+                                        break;
+                                }
+                            });
+                    }
                 }
             }
         }

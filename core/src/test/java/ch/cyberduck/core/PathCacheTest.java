@@ -9,19 +9,22 @@ import static org.junit.Assert.*;
 public class PathCacheTest {
 
     @Test
-    public void testLookup() throws Exception {
+    public void testLookup() {
         final Cache<Path> cache = new ReverseLookupCache<Path>(new PathCache(1), 1);
         assertNull(cache.lookup(new DefaultPathPredicate(new Path("/", EnumSet.of(Path.Type.directory)))));
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path directory = new Path("p", EnumSet.of(Path.Type.directory));
-        final Path file = new Path(directory, "name", EnumSet.of(Path.Type.file));
-        list.add(file);
+        final Path file1 = new Path(directory, "name1", EnumSet.of(Path.Type.file));
+        list.add(file1);
+        final Path file2 = new Path(directory, "name2", EnumSet.of(Path.Type.file));
+        list.add(file2);
         cache.put(directory, list);
-        assertNotNull(cache.lookup(new DefaultPathPredicate(file)));
+        assertNotNull(cache.lookup(new DefaultPathPredicate(file1)));
+        assertNotNull(cache.lookup(new DefaultPathPredicate(file2)));
     }
 
     @Test
-    public void testIsEmpty() throws Exception {
+    public void testIsEmpty() {
         final PathCache cache = new PathCache(1);
         assertTrue(cache.isEmpty());
         cache.put(new Path("/", EnumSet.of(Path.Type.directory)), new AttributedList<Path>());
@@ -29,7 +32,7 @@ public class PathCacheTest {
     }
 
     @Test
-    public void testContainsKey() throws Exception {
+    public void testContainsKey() {
         final PathCache cache = new PathCache(1);
         final Path f = new Path("/", EnumSet.of(Path.Type.directory));
         assertFalse(cache.containsKey(f));
@@ -40,7 +43,7 @@ public class PathCacheTest {
     }
 
     @Test
-    public void testInvalidate() throws Exception {
+    public void testInvalidate() {
         final PathCache cache = new PathCache(1);
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path f = new Path("/t", EnumSet.of(Path.Type.directory));
@@ -54,18 +57,18 @@ public class PathCacheTest {
     }
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() {
         final PathCache cache = new PathCache(1);
         final Path file = new Path("name", EnumSet.of(Path.Type.file));
         assertEquals(AttributedList.<Path>emptyList(), cache.get(file));
     }
 
     @Test
-    public void testDisabledCache() throws Exception {
+    public void testDisabledCache() {
         PathCache cache = PathCache.empty();
         final Path file = new Path("name", EnumSet.of(Path.Type.file));
         cache.put(file, AttributedList.<Path>emptyList());
         assertFalse(cache.containsKey(file));
-        assertEquals(0, cache.keySet().size());
+        assertEquals(0, cache.size());
     }
 }

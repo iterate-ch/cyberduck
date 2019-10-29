@@ -39,7 +39,6 @@ public class S3LifecycleConfigurationTest extends AbstractS3Test {
         assertEquals(1, new S3LifecycleConfiguration(session).getConfiguration(
             new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
         ).getTransition(), 0L);
-        session.close();
     }
 
     @Test
@@ -47,6 +46,5 @@ public class S3LifecycleConfigurationTest extends AbstractS3Test {
         assertEquals(LifecycleConfiguration.empty(), new S3LifecycleConfiguration(session).getConfiguration(
             new Path("bucket", EnumSet.of(Path.Type.directory))
         ));
-        session.close();
     }
 }

@@ -40,7 +40,7 @@ public class vsFTPdEntryParserTest {
     }
 
     @Test
-    public void testParse() throws Exception {
+    public void testParse() {
         FTPFile parsed;
 
         // #5437

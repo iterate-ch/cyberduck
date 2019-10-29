@@ -20,10 +20,12 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 
 import org.junit.Test;
 
 import javax.net.ssl.SSLHandshakeException;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketException;
 import java.security.cert.CertificateException;
@@ -35,11 +37,11 @@ import static org.junit.Assert.assertSame;
 public class DefaultIOExceptionMappingServiceTest {
 
     @Test
-    public void testMap() throws Exception {
+    public void testMap() {
         assertEquals(ConnectionCanceledException.class,
-                new DefaultIOExceptionMappingService().map(new SocketException("Software caused connection abort")).getClass());
+            new DefaultIOExceptionMappingService().map(new SocketException("Software caused connection abort")).getClass());
         assertEquals(ConnectionCanceledException.class,
-                new DefaultIOExceptionMappingService().map(new SocketException("Socket closed")).getClass());
+            new DefaultIOExceptionMappingService().map(new SocketException("Socket closed")).getClass());
     }
 
     @Test
@@ -47,42 +49,50 @@ public class DefaultIOExceptionMappingServiceTest {
         final SSLHandshakeException c = new SSLHandshakeException("f");
         c.initCause(new CertificateException("c"));
         assertEquals(ConnectionCanceledException.class,
-                new DefaultIOExceptionMappingService().map(c).getClass());
+            new DefaultIOExceptionMappingService().map(c).getClass());
     }
 
     @Test
-    public void testPlaceholder() throws Exception {
+    public void testPlaceholder() {
         final BackgroundException e = new DefaultIOExceptionMappingService().map("{0} message", new SocketException("s"),
-                new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume)));
+            new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertEquals("N message.", e.getMessage());
         assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", e.getDetail());
     }
 
     @Test
-    public void testSameMessageInRootCause() throws Exception {
+    public void testSameMessageInRootCause() {
         assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException("s")))
-                .getDetail());
+            .getDetail());
         assertEquals("The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException("s", new SocketException(null)))
-                .getDetail());
+            .getDetail());
         assertEquals("S. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", new DefaultIOExceptionMappingService().map(new IOException(null, new SocketException("s")))
-                .getDetail());
+            .getDetail());
     }
 
     @Test
-    public void testMapPathName() throws Exception {
+    public void testMapPathName() {
         final DefaultIOExceptionMappingService s = new DefaultIOExceptionMappingService();
         assertEquals("Download n failed.", s.map("Download {0} failed", new SocketException("s"),
-                new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
+            new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
         assertEquals("Download failed n.", s.map("Download failed {0}", new SocketException("s"),
-                new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
+            new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
         assertEquals("Download failed (/n).", s.map("Download failed", new SocketException("s"),
-                new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
+            new Path("/n", EnumSet.of(Path.Type.directory, Path.Type.volume))).getMessage());
     }
 
     @Test
-    public void testMapWrappedCause() throws Exception {
+    public void testMapWrappedCause() {
         final DefaultIOExceptionMappingService s = new DefaultIOExceptionMappingService();
         final BackgroundException cause = new BackgroundException();
         assertSame(cause, s.map(new IOException(cause)));
+    }
+
+    @Test
+    public void testPeerShutDownIncorrectly() {
+        final DefaultIOExceptionMappingService s = new DefaultIOExceptionMappingService();
+        final SSLHandshakeException failure = new SSLHandshakeException("Remote host closed connection during handshake");
+        failure.initCause(new EOFException("SSL peer shut down incorrectly"));
+        assertEquals(ConnectionRefusedException.class, s.map(failure).getClass());
     }
 }

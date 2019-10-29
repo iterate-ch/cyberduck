@@ -25,7 +25,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ListCanceledException;
 
 import org.junit.Test;
 
@@ -58,7 +57,7 @@ public class DefaultSearchFeatureTest {
         final AttributedList<Path> search = feature.search(
                 workdir, filter, new DisabledListProgressListener() {
                     @Override
-                    public void chunk(final Path parent, final AttributedList<Path> list) throws ListCanceledException {
+                    public void chunk(final Path parent, final AttributedList<Path> list) {
                         assertTrue(list.contains(f1));
                         assertFalse(list.contains(f2));
                         assertEquals(1, list.size());

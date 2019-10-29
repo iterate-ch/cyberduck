@@ -38,6 +38,7 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class TransferPromptFilterWorker extends Worker<Map<TransferItem, TransferStatus>> {
     private static final Logger log = Logger.getLogger(TransferPromptFilterWorker.class);
@@ -58,29 +59,23 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
     @Override
     public Map<TransferItem, TransferStatus> run(final Session<?> session) throws BackgroundException {
         final Map<TransferItem, TransferStatus> status = new HashMap<TransferItem, TransferStatus>();
-        for(TransferItem file : transfer.getRoots()) {
-            if(this.isCanceled()) {
-                throw new ConnectionCanceledException();
-            }
-            status.put(file.getParent(), new TransferStatus().exists(true));
-        }
-
         final TransferPathFilter filter = transfer.filter(session, session, action, listener);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter cache %s with filter %s", cache, filter));
         }
-        for(TransferItem key : cache.keySet()) {
+        // Unordered list
+        for(Map.Entry<TransferItem, AttributedList<TransferItem>> entry : cache.asMap().entrySet()) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
             }
-            final AttributedList<TransferItem> list = cache.get(key);
+            final AttributedList<TransferItem> list = entry.getValue();
             for(TransferItem file : list) {
                 if(this.isCanceled()) {
                     throw new ConnectionCanceledException();
                 }
-                final boolean accept = filter.accept(file.remote, file.local, status.get(file.getParent()));
-                status.put(file, filter.prepare(file.remote, file.local, status.get(file.getParent()), listener)
-                        .reject(!accept));
+                final boolean accept = filter.accept(file.remote, file.local, new TransferStatus().exists(true));
+                status.put(file, filter.prepare(file.remote, file.local, new TransferStatus().exists(true), listener)
+                    .reject(!accept));
             }
         }
         return status;
@@ -89,7 +84,7 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Apply {0} filter", "Status"),
-                StringUtils.uncapitalize(action.getTitle()));
+            StringUtils.uncapitalize(action.getTitle()));
     }
 
     @Override
@@ -106,10 +101,10 @@ public class TransferPromptFilterWorker extends Worker<Map<TransferItem, Transfe
             return false;
         }
         final TransferPromptFilterWorker that = (TransferPromptFilterWorker) o;
-        if(cache != null ? !cache.equals(that.cache) : that.cache != null) {
+        if(!Objects.equals(cache, that.cache)) {
             return false;
         }
-        if(transfer != null ? !transfer.equals(that.transfer) : that.transfer != null) {
+        if(!Objects.equals(transfer, that.transfer)) {
             return false;
         }
         return true;

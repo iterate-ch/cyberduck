@@ -18,12 +18,11 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
 
 public class NullFileidProvider implements IdProvider {
     @Override
-    public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
+    public String getFileid(final Path file, final ListProgressListener listener) {
         return null;
     }
 

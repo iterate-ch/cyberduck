@@ -6,21 +6,24 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.text.RandomStringGenerator;
+import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -35,12 +38,12 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final S3Session session = new S3Session(new Host(new S3Protocol()));
         final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 return true;
             }
         }, new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 return new PathAttributes();
             }
         });
@@ -53,12 +56,12 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final S3Session session = new S3Session(new Host(new S3Protocol()));
         final S3WriteFeature feature = new S3WriteFeature(session, null, new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 return true;
             }
         }, new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setSize(3L);
                 return attributes;
@@ -76,7 +79,6 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         assertFalse(new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE, PathCache.empty()).append);
         assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), Long.MAX_VALUE, PathCache.empty()));
         assertEquals(Write.notfound, new S3WriteFeature(session).append(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), 0L, PathCache.empty()));
-        session.close();
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -87,12 +89,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        try {
-            feature.write(file, status, new DisabledConnectionCallback());
-        }
-        finally {
-            session.close();
-        }
+        feature.write(file, status, new DisabledConnectionCallback());
     }
 
     @Test(expected = InteroperabilityException.class)
@@ -102,7 +99,7 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(5 * 1024 * 1024).getBytes("UTF-8");
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(5 * 1024 * 1024).getBytes(StandardCharsets.UTF_8);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
         try {
             feature.write(file, status, new DisabledConnectionCallback());
@@ -111,9 +108,6 @@ public class S3WriteFeatureTest extends AbstractS3Test {
             assertEquals("A header you provided implies functionality that is not implemented. Please contact your web hosting service provider for assistance.", e.getDetail());
             throw e;
         }
-        finally {
-            session.close();
-        }
     }
 
     @Test
@@ -121,16 +115,14 @@ public class S3WriteFeatureTest extends AbstractS3Test {
         final S3WriteFeature feature = new S3WriteFeature(session);
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final byte[] content = new RandomStringGenerator.Builder().build().generate(5 * 1024 * 1024).getBytes("UTF-8");
+        final byte[] content = new RandomStringGenerator.Builder().build().generate(5 * 1024 * 1024).getBytes(StandardCharsets.UTF_8);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
         status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
-        try {
-            feature.write(file, status, new DisabledConnectionCallback());
-            new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        }
-        finally {
-            session.close();
-        }
+        final HttpResponseOutputStream<StorageObject> out = feature.write(file, status, new DisabledConnectionCallback());
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        assertEquals(content.length, new S3AttributesFinderFeature(session).find(file).getSize());
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

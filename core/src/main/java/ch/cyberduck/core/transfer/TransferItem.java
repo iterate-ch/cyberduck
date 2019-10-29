@@ -22,12 +22,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Referenceable;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
+
+import java.util.Objects;
 
 public class TransferItem implements Referenceable, Serializable {
 
     public Path remote;
     public Local local;
+    public Checksum checksum = Checksum.NONE;
+    public String lockId;
 
     public TransferItem(final Path remote) {
         this(remote, null);
@@ -36,6 +41,19 @@ public class TransferItem implements Referenceable, Serializable {
     public TransferItem(final Path remote, final Local local) {
         this.remote = remote;
         this.local = local;
+    }
+
+    public TransferItem(final Path remote, final Local local, final String lockId) {
+        this.remote = remote;
+        this.local = local;
+        this.lockId = lockId;
+    }
+
+    public TransferItem(final Path remote, final Local local, final String lockId, final Checksum checksum) {
+        this.remote = remote;
+        this.local = local;
+        this.checksum = checksum;
+        this.lockId = lockId;
     }
 
     public TransferItem getParent() {
@@ -48,6 +66,12 @@ public class TransferItem implements Referenceable, Serializable {
         if(local != null) {
             dict.setObjectForKey(local, "Local Dictionary");
         }
+        if(lockId != null) {
+            dict.setStringForKey(lockId, "Lock Id");
+        }
+        if(checksum != Checksum.NONE) {
+            dict.setStringForKey(checksum.hash, "Checksum");
+        }
         return dict.getSerialized();
     }
 
@@ -59,6 +83,14 @@ public class TransferItem implements Referenceable, Serializable {
         this.remote = remote;
     }
 
+    public void setLockId(final String lockId) {
+        this.lockId = lockId;
+    }
+
+    public void setChecksum(final Checksum checksum) {
+        this.checksum = checksum;
+    }
+
     @Override
     public boolean equals(Object o) {
         if(this == o) {
@@ -68,7 +100,7 @@ public class TransferItem implements Referenceable, Serializable {
             return false;
         }
         TransferItem that = (TransferItem) o;
-        if(local != null ? !local.equals(that.local) : that.local != null) {
+        if(!Objects.equals(local, that.local)) {
             return false;
         }
         if(remote != null ? !new SimplePathPredicate(remote).equals(new SimplePathPredicate(that.remote)) : that.remote != null) {
@@ -87,8 +119,9 @@ public class TransferItem implements Referenceable, Serializable {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("TransferItem{");
-        sb.append("local=").append(local);
-        sb.append(", remote=").append(remote);
+        sb.append("remote=").append(remote);
+        sb.append(", local=").append(local);
+        sb.append(", lockId='").append(lockId).append('\'');
         sb.append('}');
         return sb.toString();
     }

@@ -20,7 +20,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>6.9.2-SNAPSHOT</version>
+        <version>7.1.3-SNAPSHOT</version>
     </parent>
     <artifactId>cli-windows</artifactId>
     <description>Cyberduck CLI Windows</description>
@@ -38,6 +38,69 @@
                 <plugins>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>run-ant-restore-target</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}" />
+                                        <ant antfile="${project.basedir}/build.xml" target="restore" dir="." />
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>run-ant-build-target</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}" />
+                                        <property name="version" value="${project.version}" />
+                                        <property name="revision" value="${git.commitsCount}" />
+                                        <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>run-ant-installer-target</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}" />
+                                        <property name="version" value="${project.version}" />
+                                        <property name="revision" value="${git.commitsCount}" />
+                                        <property name="skip" value="${skipSign}" />
+                                        <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>run-ant-deploy-target</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}" />
+                                        <property name="version" value="${project.version}" />
+                                        <property name="revision" value="${git.commitsCount}" />
+                                        <property name="git.revision" value="${git.revision}" />
+                                        <property name="sparkle.feed" value="${sparkle.feed}" />
+                                        <ant antfile="${project.basedir}/build.xml" target="deploy" dir="." />
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                     <plugin>
                         <artifactId>maven-dependency-plugin</artifactId>
@@ -54,7 +117,7 @@
                                             <groupId>ch.iterate</groupId>
                                             <artifactId>ikvm</artifactId>
                                             <type>zip</type>
-                                            <version>8.3</version>
+                                            <version>8.3.1</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>

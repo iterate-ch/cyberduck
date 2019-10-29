@@ -34,6 +34,8 @@ import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.LocalNotfoundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -109,14 +111,14 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
     public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
         if(!local.exists()) {
             // Local file is no more here
-            throw new NotfoundException(local.getAbsolute());
+            throw new LocalNotfoundException(local.getAbsolute());
         }
         return true;
     }
 
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
-        final TransferStatus status = new TransferStatus();
+        final TransferStatus status = new TransferStatus().withLockId(parent.getLockId());
         // Read remote attributes first
         if(parent.isExists()) {
             if(find.withCache(cache).find(file)) {
@@ -278,7 +280,14 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 if(feature != null) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
                         file.getName()));
-                    status.setChecksum(feature.compute(local.getInputStream(), status));
+                    try {
+                        status.setChecksum(feature.compute(local.getInputStream(), status));
+                    }
+                    catch(LocalAccessDeniedException e) {
+                        // Ignore failure reading file when in sandbox when we miss a security scoped access bookmark.
+                        // Lock for files is obtained only later in Transfer#pre
+                        log.warn(e.getMessage());
+                    }
                 }
             }
         }

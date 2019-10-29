@@ -276,7 +276,7 @@ public final class TransferController extends WindowController implements Transf
             t.id());
     }
 
-    public void filterFieldTextDidChange(NSNotification notification) {
+    public void filterFieldTextDidChange(final NSNotification notification) {
         transferTableModel.setFilter(filterField.stringValue());
         this.reload();
     }

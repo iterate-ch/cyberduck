@@ -98,6 +98,12 @@ public class ResumeFilter extends AbstractDownloadFilter {
                         segmentStatus.setAppend(true);
                         segmentStatus.setLength(segmentStatus.getLength() - segmentFile.attributes().getSize());
                         segmentStatus.setOffset(segmentStatus.getOffset() + segmentFile.attributes().getSize());
+                        if(segmentStatus.getLength() == 0L) {
+                            segmentStatus.setComplete();
+                        }
+                        // Recalculate transfer length
+                        status.setAppend(true);
+                        status.setLength(status.getLength() - segmentFile.attributes().getSize());
                     }
                 }
             }
@@ -111,6 +117,9 @@ public class ResumeFilter extends AbstractDownloadFilter {
                             status.setLength(status.getLength() - local.attributes().getSize());
                             status.setOffset(status.getOffset() + local.attributes().getSize());
                             status.rename((Local) null);
+                            if(status.getLength() == 0L) {
+                                status.setComplete();
+                            }
                         }
                     }
                 }

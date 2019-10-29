@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 
 import org.apache.commons.lang3.StringUtils;
@@ -54,7 +54,7 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
                 return new DefaultSocketExceptionMappingService().map((SocketException) cause);
             }
             if(cause instanceof HttpResponseException) {
-                return new HttpResponseExceptionMappingService().map((HttpResponseException) cause);
+                return new DefaultHttpResponseExceptionMappingService().map((HttpResponseException) cause);
             }
             if(cause instanceof IOException) {
                 return new DefaultIOExceptionMappingService().map((IOException) cause);
@@ -148,12 +148,20 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
             }
         }
         switch(failure.getCode()) {
+            case HttpStatus.SC_FORBIDDEN:
+                if(failure.getResponseHeaders().containsKey("X-Forbidden")) {
+                    return new AccessDeniedException(LocaleFactory.localizedString("The AV scanner detected that the file could be malicious", "SDS"));
+                }
+                break;
+            case 901:
+                // Server with AV scanners will block transfer attempts of infected files (upload or download) and answer the request 901
+                return new AccessDeniedException(LocaleFactory.localizedString("The AV scanner detected that the file could be malicious", "SDS"));
             case HttpStatus.SC_PRECONDITION_FAILED:
                 // [-10103] EULA must be accepted
                 // [-10104] Password must be changed
                 // [-10106] Username must be changed
                 return new LoginFailureException(buffer.toString(), failure);
         }
-        return new HttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
+        return new DefaultHttpResponseExceptionMappingService().map(failure, buffer, failure.getCode());
     }
 }

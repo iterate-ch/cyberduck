@@ -1,6 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -32,7 +31,7 @@ public class AbstractControllerTest {
             }
 
             @Override
-            public Object run(final Session<?> session) throws BackgroundException {
+            public Object run(final Session<?> session) {
                 return null;
             }
 
@@ -56,17 +55,12 @@ public class AbstractControllerTest {
                 entry.countDown();
             }
         };
-        new Thread() {
+        new Thread(() -> controller.invoke(new DefaultMainAction() {
             @Override
             public void run() {
-                controller.invoke(new DefaultMainAction() {
-                    @Override
-                    public void run() {
-                        //
-                    }
-                });
+                //
             }
-        }.start();
+        })).start();
         entry.await(1, TimeUnit.SECONDS);
     }
 }

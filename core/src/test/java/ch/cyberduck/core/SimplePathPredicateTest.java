@@ -25,10 +25,16 @@ import static org.junit.Assert.assertTrue;
 public class SimplePathPredicateTest {
 
     @Test
-    public void testPredicateTest() throws Exception {
+    public void testPredicateTest() {
         final Path t = new Path("/f", EnumSet.of(Path.Type.file));
-        assertTrue(new SimplePathPredicate(t).test(t));
+        assertTrue(new SimplePathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.file))));
         assertFalse(new SimplePathPredicate(t).test(new Path("/f/a", EnumSet.of(Path.Type.file))));
         assertFalse(new SimplePathPredicate(t).test(new Path("/f", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testCollision() {
+        final Path t = new Path("/d/2R", EnumSet.of(Path.Type.directory));
+        assertFalse(new SimplePathPredicate(t).test(new Path("/d/33", EnumSet.of(Path.Type.directory))));
     }
 }

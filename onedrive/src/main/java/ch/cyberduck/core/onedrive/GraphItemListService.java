@@ -21,9 +21,12 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.webloc.UrlFileWriter;
+import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveFolder;
@@ -40,6 +43,7 @@ public class GraphItemListService implements ListService {
 
     private final GraphSession session;
     private final GraphAttributesFinderFeature attributes;
+    private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
 
     public GraphItemListService(final GraphSession session) {
         this.session = session;
@@ -62,7 +66,16 @@ public class GraphItemListService implements ListService {
                     continue;
                 }
                 final PathAttributes attr = attributes.toAttributes(metadata);
-                children.add(new Path(directory, metadata.getName(), resolveType(metadata), attr));
+
+                final String fileName;
+                if(metadata instanceof OneDrivePackageItem.Metadata) {
+                    fileName = String.format("%s.%s", PathNormalizer.name(metadata.getName()), urlFileWriter.getExtension());
+                }
+                else {
+                    fileName = metadata.getName();
+                }
+
+                children.add(new Path(directory, fileName, this.resolveType(metadata), attr));
                 listener.chunk(directory, children);
             }
         }
@@ -78,12 +91,12 @@ public class GraphItemListService implements ListService {
         return this;
     }
 
-    private EnumSet<Path.Type> resolveType(OneDriveItem.Metadata metadata) {
+    private EnumSet<Path.Type> resolveType(final OneDriveItem.Metadata metadata) {
         if(metadata instanceof OneDrivePackageItem.Metadata) {
-            return EnumSet.of(Path.Type.placeholder);
+            return EnumSet.of(Path.Type.file, Path.Type.placeholder);
         }
         else if(metadata instanceof OneDriveRemoteItem.Metadata) {
-            final EnumSet<Path.Type> types = resolveType(((OneDriveRemoteItem.Metadata) metadata).getRemoteItem());
+            final EnumSet<Path.Type> types = this.resolveType(((OneDriveRemoteItem.Metadata) metadata).getRemoteItem());
             types.add(Path.Type.shared);
             return types;
         }

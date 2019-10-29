@@ -39,7 +39,7 @@ public class RumpusFTPEntryParserTest {
     }
 
     @Test
-    public void testParse() throws Exception {
+    public void testParse() {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
@@ -98,7 +98,7 @@ public class RumpusFTPEntryParserTest {
     }
 
     @Test
-    public void testUnknownSystIdentifier() throws Exception {
+    public void testUnknownSystIdentifier() {
         this.parser = new FTPParserSelector().getParser("Digital Domain FTP");
 
         FTPFile parsed;

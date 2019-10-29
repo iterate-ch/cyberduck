@@ -12,7 +12,6 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -29,6 +28,7 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -51,7 +51,7 @@ public class SwiftWriteFeatureTest {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final TransferStatus status = new TransferStatus();
         status.setMime("text/plain");
-        final byte[] content = "test".getBytes("UTF-8");
+        final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         status.setLength(content.length);
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
@@ -95,7 +95,7 @@ public class SwiftWriteFeatureTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftWriteFeature(session, regionService, new SwiftObjectListService(session, regionService) {
             @Override
-            public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+            public AttributedList<Path> list(Path directory, ListProgressListener listener) {
                 list.set(true);
                 return new AttributedList<Path>(Collections.<Path>emptyList());
             }
@@ -120,7 +120,7 @@ public class SwiftWriteFeatureTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftWriteFeature(session, regionService, new SwiftObjectListService(session, regionService) {
             @Override
-            public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+            public AttributedList<Path> list(Path directory, ListProgressListener listener) {
                 list.set(true);
                 final Path segment1 = segments.getSegment(file, 0L, 1);
                 segment1.attributes().setSize(1L);
@@ -148,19 +148,19 @@ public class SwiftWriteFeatureTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftWriteFeature(session, regionService, new SwiftObjectListService(session, regionService) {
             @Override
-            public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+            public AttributedList<Path> list(Path directory, ListProgressListener listener) {
                 list.set(true);
                 return new AttributedList<Path>(Collections.singletonList(file));
             }
         }, new SwiftSegmentService(session), new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 find.set(true);
                 return true;
             }
         }, new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 return new PathAttributes();
             }
         }
@@ -185,13 +185,13 @@ public class SwiftWriteFeatureTest {
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final Write.Append append = new SwiftWriteFeature(session, regionService, new SwiftObjectListService(session, regionService) {
             @Override
-            public AttributedList<Path> list(Path directory, ListProgressListener listener) throws BackgroundException {
+            public AttributedList<Path> list(Path directory, ListProgressListener listener) {
                 list.set(true);
                 return new AttributedList<Path>(Collections.singletonList(file));
             }
         }, new SwiftSegmentService(session), new Find() {
             @Override
-            public boolean find(final Path file) throws BackgroundException {
+            public boolean find(final Path file) {
                 find.set(true);
                 return false;
             }

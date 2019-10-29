@@ -78,4 +78,9 @@ public class AzureProtocol extends AbstractProtocol {
         }
         return false;
     }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
+    }
 }

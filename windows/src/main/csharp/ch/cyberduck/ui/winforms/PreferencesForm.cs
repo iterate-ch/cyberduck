@@ -22,8 +22,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
-using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Application = ch.cyberduck.core.local.Application;
 
@@ -54,22 +54,23 @@ namespace Ch.Cyberduck.Ui.Winforms
             MaximumSize = new Size(MaxWidth, MaxHeight);
             MinimumSize = new Size(MinWidth, MinHeight);
 
-            generalButton.Image = IconCache.Instance.IconForName("general", 32);
-            browserButton.Image = IconCache.Instance.IconForName("browser", 32);
-            transfersButton.Image = IconCache.Instance.IconForName("queue", 32);
-            editStripButton.Image = IconCache.Instance.IconForName("pencil", 32);
-            sftpButton.Image = IconCache.Instance.IconForName("ftp", 32);
-            s3Button.Image = IconCache.Instance.IconForName("s3", 32);
-            bandwidthButton.Image = IconCache.Instance.IconForName("bandwidth", 32);
-            connectionButton.Image = IconCache.Instance.IconForName("connection", 32);
-            cryptomatorButton.Image = IconCache.Instance.IconForName("cryptomator", 32);
-            updateButton.Image = IconCache.Instance.IconForName("update", 32);
-            languageButton.Image = IconCache.Instance.IconForName("language", 32);
+            generalButton.Image = IconCache.IconForName("general", 32);
+            browserButton.Image = IconCache.IconForName("browser", 32);
+            transfersButton.Image = IconCache.IconForName("queue", 32);
+            editStripButton.Image = IconCache.IconForName("pencil", 32);
+            sftpButton.Image = IconCache.IconForName("ftp", 32);
+            s3Button.Image = IconCache.IconForName("s3", 32);
+            bandwidthButton.Image = IconCache.IconForName("bandwidth", 32);
+            connectionButton.Image = IconCache.IconForName("connection", 32);
+            cryptomatorButton.Image = IconCache.IconForName("cryptomator", 32);
+            updateButton.Image = IconCache.IconForName("update", 32);
+            languageButton.Image = IconCache.IconForName("language", 32);
 
             connectBookmarkCombobox.ICImageList = ProtocolIconsImageList();
             defaultProtocolCombobox.ICImageList = ProtocolIconsImageList();
 
             showDownloadFolderDialogButton.Text = LocaleFactory.localizedString("Choose") + "…";
+            retriesUpDown.Maximum = PreferencesFactory.get().getInteger("connection.retry.max");
 
             #region Font Settings
 
@@ -272,6 +273,12 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get { return openAfterDownloadCheckbox.Checked; }
             set { openAfterDownloadCheckbox.Checked = value; }
+        }
+
+        public bool SegmentedDownloads
+        {
+            get { return segmentedDownloadsCheckbox.Checked; }
+            set { segmentedDownloadsCheckbox.Checked = value; }
         }
 
         public string DownloadFolder
@@ -708,6 +715,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler TransfersToBackChangedEvent = delegate { };
         public event VoidHandler RemoveFromTransfersChangedEvent = delegate { };
         public event VoidHandler OpenAfterDownloadChangedEvent = delegate { };
+        public event VoidHandler SegmentedDownloadsChangedEvent = delegate { };
         public event VoidHandler DownloadFolderChangedEvent = delegate { };
         public event VoidHandler DuplicateDownloadActionChangedEvent = delegate { };
         public event VoidHandler DuplicateUploadActionChangedEvent = delegate { };
@@ -795,10 +803,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void PopulateEditors(List<KeyValueIconTriple<Application, string>> editors)
         {
-            editorComboBox.DataSource = editors;
             editorComboBox.ValueMember = "Key";
             editorComboBox.DisplayMember = "Value";
             editorComboBox.IconMember = "IconKey";
+            editorComboBox.DataSource = editors;
 
             ImageList imageList = new ImageList();
             foreach (KeyValueIconTriple<Application, string> triple in editors)
@@ -806,7 +814,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (triple.Key.getIdentifier() != null)
                 {
                     imageList.Images.Add(triple.Value,
-                        IconCache.Instance.GetFileIconFromExecutable(triple.Key.getIdentifier(),
+                        IconCache.GetAppImage(triple.Key.getIdentifier(),
                             IconCache.IconSize.Small));
                 }
             }
@@ -1493,6 +1501,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void verifyChecksumUploadCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             VerifyChecksumUploadChangedEvent();
+        }
+
+        private void segmentedDownloadsCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            SegmentedDownloadsChangedEvent();
         }
     }
 }

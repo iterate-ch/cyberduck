@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
@@ -115,9 +116,10 @@ public class KeychainLoginService implements LoginService {
      * @param message  Message in prompt
      * @param prompt   Login prompt
      * @param options  Available login options for protocol
+     * @return True if credentials have been updated
      * @throws LoginCanceledException Prompt canceled by user
      */
-    public void prompt(final Host bookmark, final String message, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException {
+    public boolean prompt(final Host bookmark, final String message, final LoginCallback prompt, final LoginOptions options) throws LoginCanceledException {
         final Credentials credentials = bookmark.getCredentials();
         if(options.password) {
             final Credentials input = prompt.prompt(bookmark, credentials.getUsername(),
@@ -137,6 +139,7 @@ public class KeychainLoginService implements LoginService {
             credentials.setSaved(input.isSaved());
             credentials.setToken(input.getPassword());
         }
+        return options.password || options.token;
     }
 
     @Override
@@ -144,8 +147,22 @@ public class KeychainLoginService implements LoginService {
                                 final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         final Host bookmark = session.getHost();
         final Credentials credentials = bookmark.getCredentials();
-        listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
-            StringUtils.isEmpty(credentials.getUsername()) ? LocaleFactory.localizedString("Unknown") : credentials.getUsername()));
+        if(credentials.isPasswordAuthentication()) {
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
+                credentials.getUsername()));
+        }
+        else if(credentials.isOAuthAuthentication()) {
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
+                credentials.getOauth().getAccessToken()));
+        }
+        else if(credentials.isPublicKeyAuthentication()) {
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
+                credentials.getIdentity().getName()));
+        }
+        else if(credentials.isCertificateAuthentication()) {
+            listener.message(MessageFormat.format(LocaleFactory.localizedString("Authenticating as {0}", "Status"),
+                credentials.getCertificate()));
+        }
         try {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Attempt authentication for %s", bookmark));
@@ -155,42 +172,41 @@ public class KeychainLoginService implements LoginService {
                 log.debug(String.format("Login successful for session %s", session));
             }
             listener.message(LocaleFactory.localizedString("Login successful", "Credentials"));
-            // Write credentials to keychain
-            keychain.save(bookmark);
+            if(credentials.isSaved()) {
+                // Write credentials to keychain
+                try {
+                    keychain.save(bookmark);
+                }
+                catch(LocalAccessDeniedException e) {
+                    log.error(String.format("Failure saving credentials for %s in keychain. %s", session, e));
+                }
+            }
+            else {
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Skip writing credentials for bookmark %s", bookmark.getHostname()));
+                }
+            }
             // Flag for successful authentication
             credentials.setPassed(true);
-            // Nullify password.
+            // Nullify password and tokens
             credentials.setPassword(null);
+            credentials.setToken(null);
+            credentials.setOauth(OAuthTokens.EMPTY);
             return true;
         }
         catch(LoginFailureException e) {
             listener.message(LocaleFactory.localizedString("Login failed", "Credentials"));
             credentials.setPassed(false);
             final LoginOptions options = new LoginOptions(bookmark.getProtocol());
-            if(options.user && options.password) {
-                // Default login prompt with username and password input
-                final Credentials input = prompt.prompt(bookmark, credentials.getUsername(),
-                    LocaleFactory.localizedString("Login failed", "Credentials"), e.getDetail(), options);
-                credentials.setUsername(input.getUsername());
-                credentials.setPassword(input.getPassword());
-                credentials.setSaved(input.isSaved());
-                if(input.isPublicKeyAuthentication()) {
-                    credentials.setIdentity(input.getIdentity());
-                }
-                if(input.isCertificateAuthentication()) {
-                    credentials.setCertificate(input.getCertificate());
-                }
+            final StringAppender details = new StringAppender();
+            details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
+            details.append(e.getDetail());
+            if(this.prompt(bookmark, details.toString(), prompt, options)) {
                 // Retry
                 return false;
             }
-            else {
-                final StringAppender details = new StringAppender();
-                details.append(LocaleFactory.localizedString("Login failed", "Credentials"));
-                details.append(e.getDetail());
-                this.prompt(bookmark, details.toString(), prompt, options);
-                // Retry
-                return false;
-            }
+            // No updated credentials
+            throw e;
         }
     }
 }

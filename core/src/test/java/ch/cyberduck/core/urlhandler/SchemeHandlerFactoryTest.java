@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 public class SchemeHandlerFactoryTest {
 
     @Test
-    public void testGet() throws Exception {
+    public void testGet() {
         assertNotNull(SchemeHandlerFactory.get());
     }
 }

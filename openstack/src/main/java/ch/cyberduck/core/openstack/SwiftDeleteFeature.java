@@ -25,11 +25,13 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
@@ -61,8 +63,8 @@ public class SwiftDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        for(Path file : files) {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+        for(Path file : files.keySet()) {
             callback.delete(file);
             try {
                 if(file.isFile()) {

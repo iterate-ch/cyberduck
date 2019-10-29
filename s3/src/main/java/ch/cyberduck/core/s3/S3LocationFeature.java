@@ -24,7 +24,6 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -60,7 +59,7 @@ public class S3LocationFeature implements Location {
             return Collections.singleton(new S3Region(session.getHost().getRegion()));
         }
         // Only for AWS
-        if(session.getHost().getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+        if(S3Session.isAwsHostname(session.getHost().getHostname())) {
             return session.getHost().getProtocol().getRegions();
         }
         return Collections.emptySet();
@@ -80,13 +79,7 @@ public class S3LocationFeature implements Location {
             final S3Region region;
             if(StringUtils.isBlank(location)) {
                 log.warn(String.format("No region known for bucket %s", container.getName()));
-                // Only for AWS
-                if(session.getHost().getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
-                    region = new S3Region("us-east-1");
-                }
-                else {
-                    region = new S3Region(session.getHost().getProtocol().getRegion());
-                }
+                region = new S3Region("us-east-1");
             }
             else {
                 switch(location) {

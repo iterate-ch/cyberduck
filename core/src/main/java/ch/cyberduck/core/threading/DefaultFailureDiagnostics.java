@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.exception.SSLNegotiateException;
 import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.io.IOResumeException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NoHttpResponseException;
@@ -82,6 +83,7 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
                 return Type.network;
             }
             if(cause instanceof SocketException
+                || cause instanceof IOResumeException
                 || cause instanceof TimeoutException // Used in Promise#retrieve
                 || cause instanceof SocketTimeoutException
                 || cause instanceof UnknownHostException) {

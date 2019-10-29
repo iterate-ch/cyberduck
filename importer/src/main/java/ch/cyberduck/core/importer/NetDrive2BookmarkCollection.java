@@ -22,6 +22,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -30,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import com.google.gson.stream.JsonReader;
 
@@ -54,7 +56,7 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
     @Override
     protected void parse(final ProtocolFactory protocols, final Local file) throws AccessDeniedException {
         try {
-            final JsonReader reader = new JsonReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
+            final JsonReader reader = new JsonReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
             reader.beginArray();
             String url;
             String user;
@@ -114,7 +116,12 @@ public class NetDrive2BookmarkCollection extends JsonBookmarkCollection {
                                 break;
                         }
                     }
-                    this.add(HostParser.parse(protocols, protocol, url));
+                    try {
+                        this.add(new HostParser(protocols, protocol).get(url));
+                    }
+                    catch(HostParserException e) {
+                        log.warn(e);
+                    }
                 }
             }
             reader.endArray();

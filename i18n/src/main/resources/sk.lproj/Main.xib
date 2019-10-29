@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <development version="7000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -118,18 +117,14 @@
                                     <action selector="connectButtonClicked:" target="-1" id="375"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="247">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="247"/>
                             <menuItem title="Nové prevzatie" keyEquivalent="" id="248">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
                                     <action selector="newDownloadMenuClicked:" target="-2" id="376"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="249">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="249"/>
                             <menuItem title="Nový priečinok…" keyEquivalent="N" id="250">
                                 <connections>
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
@@ -152,7 +147,9 @@
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
                                 </connections>
                             </menuItem>
+                            <menuItem isSeparatorItem="YES" id="255"/>
                             <menuItem title="Premenovať súbor…" id="253">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="renameFileButtonClicked:" target="-1" id="380"/>
                                 </connections>
@@ -162,16 +159,11 @@
                                     <action selector="duplicateFileButtonClicked:" target="-1" id="381"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="255">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
-                            <menuItem title="Otvoriť umiestnenie" id="256">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Otvoriť umiestnenie" id="257"/>
-                            </menuItem>
-                            <menuItem title="Upraviť v editore" id="258">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Upraviť v editore" id="259"/>
+                            <menuItem isSeparatorItem="YES" id="t4E-eL-Tgs"/>
+                            <menuItem title="Informácie" tag="2" keyEquivalent="i" id="261">
+                                <connections>
+                                    <action selector="infoButtonClicked:" target="-1" id="383"/>
+                                </connections>
                             </menuItem>
                             <menuItem title="Quick Look" image="NSQuickLookTemplate" id="260">
                                 <attributedString key="attributedTitle"/>
@@ -180,14 +172,11 @@
                                     <action selector="quicklookButtonClicked:" target="-1" id="382"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Informácie" tag="2" keyEquivalent="i" id="261">
-                                <connections>
-                                    <action selector="infoButtonClicked:" target="-1" id="383"/>
-                                </connections>
+                            <menuItem title="Upraviť v editore" id="258">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Upraviť v editore" id="259"/>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="262">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="262"/>
                             <menuItem title="Prevziať" keyEquivalent="" id="263">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                                 <connections>
@@ -201,6 +190,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem title="Prevziať do…" id="265">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="downloadToButtonClicked:" target="-1" id="386"/>
                                 </connections>
@@ -212,6 +202,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem title="Synchronizovať…" id="267">
+                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="syncButtonClicked:" target="-1" id="388"/>
                                 </connections>
@@ -230,9 +221,7 @@ CA
                                     <action selector="revertFileButtonClicked:" target="-1" id="390"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="271">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="271"/>
                             <menuItem title="Vytvoriť archív" id="272">
                                 <menu key="submenu" title="Vytvoriť archív" id="273"/>
                             </menuItem>
@@ -241,17 +230,22 @@ CA
                                     <action selector="unarchiveButtonClicked:" target="-1" id="391"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="275">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            <menuItem isSeparatorItem="YES" id="Xdd-Sj-x3y"/>
+                            <menuItem title="Otvoriť umiestnenie" id="256">
+                                <menu key="submenu" title="Otvoriť umiestnenie" id="257"/>
                             </menuItem>
+                            <menuItem title="Share…" id="Dp0-uw-cX3">
+                                <connections>
+                                    <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="275"/>
                             <menuItem title="Tlačiť…" keyEquivalent="p" id="276">
                                 <connections>
                                     <action selector="printDocument:" target="-1" id="392"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="277">
-                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="277"/>
                             <menuItem title="Zatvoriť okno" keyEquivalent="w" id="278">
                                 <connections>
                                     <action selector="performClose:" target="-1" id="393"/>

@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 public class UploadRootPathsNormalizerTest {
 
     @Test
-    public void testNormalize() throws Exception {
+    public void testNormalize() {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.directory)), new NullLocal(System.getProperty("java.io.tmpdir"), "a") {
@@ -30,15 +30,17 @@ public class UploadRootPathsNormalizerTest {
             public boolean isFile() {
                 return false;
             }
-        }));
-        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a"+ File.separator + "b")));
+        }, "1"));
+        list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal(System.getProperty("java.io.tmpdir"), "a" + File.separator + "b"), "2"));
         final List<TransferItem> normalized = n.normalize(list);
         assertEquals(1, normalized.size());
-        assertEquals(new Path("/a", EnumSet.of(Path.Type.directory)), normalized.iterator().next().remote);
+        final TransferItem i = normalized.iterator().next();
+        assertEquals(new Path("/a", EnumSet.of(Path.Type.directory)), i.remote);
+        assertEquals("1", i.lockId);
     }
 
     @Test
-    public void testNormalizeLargeSet() throws Exception {
+    public void testNormalizeLargeSet() {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         for(int i = 0; i < 1000; i++) {
@@ -50,7 +52,7 @@ public class UploadRootPathsNormalizerTest {
     }
 
     @Test
-    public void testNameClash() throws Exception {
+    public void testNameClash() {
         UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
         final List<TransferItem> list = new ArrayList<TransferItem>();
         list.add(new TransferItem(new Path("/a", EnumSet.of(Path.Type.file)), new NullLocal("/f/a")));

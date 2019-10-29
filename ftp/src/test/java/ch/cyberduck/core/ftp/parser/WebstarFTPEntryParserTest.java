@@ -39,7 +39,7 @@ public class WebstarFTPEntryParserTest {
     }
 
     @Test
-    public void testParse() throws Exception {
+    public void testParse() {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(

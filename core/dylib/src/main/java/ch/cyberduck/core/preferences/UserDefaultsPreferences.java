@@ -21,7 +21,6 @@ package ch.cyberduck.core.preferences;
 import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSBundle;
-import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSLocale;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -40,9 +39,7 @@ import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.sun.jna.platform.linux.LibC;
 import com.sun.jna.platform.mac.SystemB;
@@ -78,7 +75,9 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             // Missing in default. Lookup in Info.plist
             NSObject plist = bundle.infoDictionary().objectForKey(property);
             if(null == plist) {
-                log.warn(String.format("No default value for property %s", property));
+                if(log.isTraceEnabled()) {
+                    log.trace(String.format("No default value for property %s", property));
+                }
                 return null;
             }
             return plist.toString();
@@ -190,15 +189,12 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             }
             this.setDefault("application.receipt.path", String.format("%s/Contents/_MASReceipt", bundle.bundlePath()));
         }
+        this.setDefault("oauth.handler.scheme",
+            String.format("x-%s-action", StringUtils.deleteWhitespace(StringUtils.lowerCase(this.getProperty("application.name")))));
 
         this.setDefault("update.feed.release", "https://version.cyberduck.io/changelog.rss");
         this.setDefault("update.feed.beta", "https://version.cyberduck.io/beta/changelog.rss");
         this.setDefault("update.feed.nightly", "https://version.cyberduck.io/nightly/changelog.rss");
-        // Fix #9395
-        if(!StringUtils.startsWith(this.getProperty(Updater.PROPERTY_FEED_URL), Scheme.https.name())) {
-            this.deleteProperty(Updater.PROPERTY_FEED_URL);
-            this.save();
-        }
 
         this.setDefault("bookmark.import.filezilla.location", "~/.config/filezilla/sitemanager.xml");
         this.setDefault("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");
@@ -225,23 +221,11 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         this.setDefault("connection.ssl.keystore.type", "KeychainStore");
         this.setDefault("connection.ssl.keystore.provider", "Apple");
 
-        this.setDefault("network.interface.blacklist", "awdl0 utun0");
+        this.setDefault("network.interface.blacklist", "awdl0 utun0 utun1 utun2 utun3 utun4");
 
         this.setDefault("browser.window.tabbing.identifier", "browser.window.tabbing.identifier");
         // Allow to show transfers in browser window as tab
         this.setDefault("queue.window.tabbing.identifier", "browser.window.tabbing.identifier");
-    }
-
-    /**
-     * Setting default values that must be accessible using [NSUserDefaults standardUserDefaults]
-     *
-     * @param property Initial property name to store default value for.
-     */
-    private void _init(final String property) {
-        if(null == store.objectForKey(property)) {
-            // Set the default value
-            this.setProperty(property, this.getDefault(property));
-        }
     }
 
     @Override
@@ -300,18 +284,5 @@ public class UserDefaultsPreferences extends DefaultPreferences {
             list.add(next.toString());
         }
         return list;
-    }
-
-    private Map<String, String> toMap(final NSDictionary dictionary) {
-        if(null == dictionary) {
-            return Collections.emptyMap();
-        }
-        final Map<String, String> map = new HashMap<>();
-        NSEnumerator keys = dictionary.keyEnumerator();
-        NSObject key;
-        while(((key = keys.nextObject()) != null)) {
-            map.put(key.toString(), dictionary.objectForKey(key.toString()).toString());
-        }
-        return map;
     }
 }

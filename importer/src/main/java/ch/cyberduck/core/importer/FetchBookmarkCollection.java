@@ -25,13 +25,17 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
 
+import org.apache.log4j.Logger;
+
 import java.util.List;
 
 public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
+    private static final Logger log = Logger.getLogger(FetchBookmarkCollection.class);
 
     private static final long serialVersionUID = -7544710198776572190L;
 
@@ -79,7 +83,14 @@ public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
             if(null == url) {
                 continue;
             }
-            final Host host = new HostParser(protocols).get(url);
+            final Host host;
+            try {
+                host = new HostParser(protocols).get(url);
+            }
+            catch(HostParserException e) {
+                log.warn(e);
+                continue;
+            }
             host.setNickname(reader.stringForKey("Name"));
             this.add(host);
         }

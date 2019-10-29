@@ -24,11 +24,12 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.List;
+import java.util.Map;
 
 public class SDSDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(SDSDeleteFeature.class);
@@ -45,8 +46,9 @@ public class SDSDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        for(Path file : files) {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+        for(Path file : files.keySet()) {
+            callback.delete(file);
             try {
                 new NodesApi(session.getClient()).deleteNode(
                     Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY);
@@ -62,7 +64,7 @@ public class SDSDeleteFeature implements Delete {
         if(containerService.isContainer(file)) {
             if(PreferencesFactory.get().getBoolean("sds.delete.dataroom.enable")) {
                 // Need the query permission on the parent data room if file itself is subroom
-                new SDSPermissionsFeature(session, nodeid).containsRole(containerService.getContainer(file.getParent()),
+                return new SDSPermissionsFeature(session, nodeid).containsRole(containerService.getContainer(file.getParent()),
                     SDSPermissionsFeature.MANAGE_ROLE);
             }
             return false;

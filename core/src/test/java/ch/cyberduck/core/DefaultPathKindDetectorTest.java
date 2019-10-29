@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 public class DefaultPathKindDetectorTest {
 
     @Test
-    public void testDetect() throws Exception {
+    public void testDetect() {
         DefaultPathKindDetector d = new DefaultPathKindDetector();
         assertEquals(Path.Type.directory, d.detect(null));
         assertEquals(Path.Type.directory, d.detect("/"));

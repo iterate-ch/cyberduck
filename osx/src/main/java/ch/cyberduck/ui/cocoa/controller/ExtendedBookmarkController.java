@@ -40,9 +40,9 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
 import ch.cyberduck.core.WebUrlProvider;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
@@ -50,6 +50,7 @@ import ch.cyberduck.ui.browser.DownloadDirectoryFinder;
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 
@@ -131,9 +132,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
             @Override
             public void change(Host bookmark) {
                 connectmodePopup.setEnabled(bookmark.getProtocol().getType() == Protocol.Type.ftp);
-                if(bookmark.getProtocol().getType() == Protocol.Type.ftp) {
-                    connectmodePopup.selectItemAtIndex(connectmodePopup.indexOfItemWithRepresentedObject(bookmark.getFTPConnectMode().name()));
-                }
+                connectmodePopup.selectItemAtIndex(connectmodePopup.indexOfItemWithRepresentedObject(bookmark.getFTPConnectMode().name()));
             }
         });
     }
@@ -152,6 +151,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
         final Host.TransferType unknown = Host.TransferType.unknown;
         this.transferPopup.addItemWithTitle(unknown.toString());
         this.transferPopup.lastItem().setRepresentedObject(unknown.name());
+        this.transferPopup.lastItem().setToolTip(Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type")).toString());
         this.transferPopup.menu().addItem(NSMenuItem.separatorItem());
         for(String name : preferences.getList("queue.transfer.type.enabled")) {
             final Host.TransferType t = Host.TransferType.valueOf(name);
@@ -227,9 +227,9 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
     public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, final int returncode, ID contextInfo) {
         switch(returncode) {
             case SheetCallback.DEFAULT_OPTION:
-                final NSObject selected = sheet.filenames().lastObject();
+                final NSObject selected = sheet.URLs().lastObject();
                 if(selected != null) {
-                    bookmark.setDownloadFolder(LocalFactory.get(selected.toString()));
+                    bookmark.setDownloadFolder(LocalFactory.get(Rococoa.cast(selected, NSURL.class).path()));
                 }
                 break;
         }
@@ -276,7 +276,7 @@ public class ExtendedBookmarkController extends DefaultBookmarkController {
                 if(preferences.getBoolean("bookmark.favicon.download")) {
                     background(new AbstractBackgroundAction<Void>() {
                         @Override
-                        public Void run() throws BackgroundException {
+                        public Void run() {
                             final String f = bookmark.getProtocol().favicon();
                             if(StringUtils.isNotBlank(f)) {
                                 favicon = IconCacheFactory.<NSImage>get().iconNamed(f, 16);

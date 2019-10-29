@@ -31,6 +31,7 @@ import ch.cyberduck.core.exception.ListCanceledException;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 
 public class SessionListWorker extends Worker<AttributedList<Path>> {
     private static final Logger log = Logger.getLogger(SessionListWorker.class);
@@ -54,6 +55,9 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
                 return list;
             }
             final ListService service = session.getFeature(ListService.class).withCache(cache);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Run with feature %s", service));
+            }
             return service.list(directory, listener);
         }
         catch(ListCanceledException e) {
@@ -94,7 +98,7 @@ public class SessionListWorker extends Worker<AttributedList<Path>> {
             return false;
         }
         final SessionListWorker that = (SessionListWorker) o;
-        if(directory != null ? !directory.equals(that.directory) : that.directory != null) {
+        if(!Objects.equals(directory, that.directory)) {
             return false;
         }
         return true;

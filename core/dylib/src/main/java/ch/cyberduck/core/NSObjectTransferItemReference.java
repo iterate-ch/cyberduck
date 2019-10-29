@@ -17,12 +17,9 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferItem;
-
-import org.apache.commons.collections4.map.LRUMap;
-
-import java.util.Map;
 
 /**
  * Mapper between path references returned from the outline view model and its internal
@@ -30,21 +27,23 @@ import java.util.Map;
  */
 public class NSObjectTransferItemReference implements CacheReference<TransferItem> {
 
-    private static final Map<Path, NSString> cache = new LRUMap<Path, NSString>(
-            PreferencesFactory.get().getInteger("browser.model.cache.size")
+    private static final LRUCache<Path, NSString> cache = LRUCache.build(
+        PreferencesFactory.get().getInteger("browser.model.cache.size")
     );
 
     public static NSObject get(final Path file) {
-        if(!cache.containsKey(file)) {
+        if(!cache.contains(file)) {
             cache.put(file, NSString.stringWithString(new DefaultPathPredicate(file).toString()));
         }
         return cache.get(file);
     }
 
+    private final String stringRepresentation;
     private final int hashCode;
 
     public NSObjectTransferItemReference(final NSObject reference) {
-        this.hashCode = reference.toString().hashCode();
+        this.stringRepresentation = reference.toString();
+        this.hashCode = stringRepresentation.hashCode();
     }
 
     @Override
@@ -65,10 +64,7 @@ public class NSObjectTransferItemReference implements CacheReference<TransferIte
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("NSObjectPathReference{");
-        sb.append("hashCode=").append(hashCode);
-        sb.append('}');
-        return sb.toString();
+        return stringRepresentation;
     }
 
     @Override

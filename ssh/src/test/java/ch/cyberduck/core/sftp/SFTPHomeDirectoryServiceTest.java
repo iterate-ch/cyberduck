@@ -35,7 +35,7 @@ public class SFTPHomeDirectoryServiceTest extends AbstractSFTPTest {
     }
 
     @Test
-    public void testFindWithWorkdir() throws Exception {
+    public void testFindWithWorkdir() {
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),
             new SFTPHomeDirectoryService(null).find(new Path("/", EnumSet.of(Path.Type.directory)), "sandbox"));
         assertEquals(new Path("/sandbox", EnumSet.of(Path.Type.directory)),

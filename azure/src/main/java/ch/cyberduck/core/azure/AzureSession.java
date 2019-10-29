@@ -95,6 +95,8 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     static {
+        HttpsURLConnection.setDefaultSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(new DisabledX509TrustManager(), new DefaultX509KeyManager()));
+        HttpsURLConnection.setDefaultHostnameVerifier(new DisabledX509HostnameVerifier());
         HttpsURLConnection.setFollowRedirects(true);
     }
 
@@ -185,7 +187,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
     }
 
     @Override
-    protected void logout() throws BackgroundException {
+    protected void logout() {
         context.getSendingRequestEventHandler().removeListener(listener);
     }
 

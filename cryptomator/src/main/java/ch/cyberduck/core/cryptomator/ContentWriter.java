@@ -20,6 +20,8 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
@@ -39,13 +41,21 @@ public class ContentWriter {
     }
 
     public void write(final Path file, final byte[] content) throws BackgroundException {
-        this.write(file, content, new TransferStatus().length(content.length));
+        this.write(file, content, new TransferStatus());
     }
 
     public void write(final Path file, final byte[] content, final TransferStatus status) throws BackgroundException {
         final Write<?> write = session._getFeature(Write.class);
         status.setLength(content.length);
         status.setChecksum(write.checksum(file).compute(new ByteArrayInputStream(content), status));
+        final Encryption encryption = session.getFeature(Encryption.class);
+        if(encryption != null) {
+            status.setEncryption(encryption.getDefault(file));
+        }
+        final Redundancy redundancy = session.getFeature(Redundancy.class);
+        if(redundancy != null) {
+            status.setStorageClass(redundancy.getDefault());
+        }
         final StatusOutputStream<?> out = write.write(file, status, new DisabledConnectionCallback());
         try {
             IOUtils.write(content, out);

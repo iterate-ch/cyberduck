@@ -53,7 +53,7 @@ public class ExecApplicationLauncher implements ApplicationLauncher {
             final Process process = runtime.exec(String.format("%s %s", application.getIdentifier(), file.getAbsolute()));
             pool.execute(new Callable<Boolean>() {
                 @Override
-                public Boolean call() throws IOException {
+                public Boolean call() {
                     try {
                         process.waitFor();
                         callback.callback();

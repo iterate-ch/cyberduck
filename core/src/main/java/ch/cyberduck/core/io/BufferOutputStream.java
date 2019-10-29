@@ -17,11 +17,10 @@ package ch.cyberduck.core.io;
 
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.io.output.ProxyOutputStream;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class BufferOutputStream extends ProxyOutputStream {
     private static final Logger log = Logger.getLogger(BufferOutputStream.class.getName());
@@ -51,8 +50,8 @@ public class BufferOutputStream extends ProxyOutputStream {
 
     @Override
     public void write(final byte[] bytes, final int off, final int len) throws IOException {
-        if(log.isLoggable(Level.FINE)) {
-            log.fine(String.format("Buffer %d bytes at offset %d", len, offset));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Buffer %d bytes at offset %d", len, offset));
         }
         final byte[] chunk = new byte[len];
         System.arraycopy(bytes, off, chunk, 0, len);
@@ -61,7 +60,7 @@ public class BufferOutputStream extends ProxyOutputStream {
     }
 
     @Override
-    protected void afterWrite(final int n) throws IOException {
+    protected void afterWrite(final int n) {
         offset += n;
     }
 }

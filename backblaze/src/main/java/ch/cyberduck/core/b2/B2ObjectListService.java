@@ -26,6 +26,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -80,6 +81,7 @@ public class B2ObjectListService implements ListService {
             final String containerId = fileid.getFileid(containerService.getContainer(directory), new DisabledListProgressListener());
             // Seen placeholders
             final Map<String, Long> revisions = new HashMap<>();
+            boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("List directory %s with marker %s", directory, marker));
@@ -92,9 +94,17 @@ public class B2ObjectListService implements ListService {
                     containerService.isContainer(directory) ? null : String.format("%s%s", containerService.getKey(directory), String.valueOf(Path.DELIMITER)),
                     String.valueOf(Path.DELIMITER));
                 marker = this.parse(directory, objects, response, revisions);
+                if(null == marker.nextFileId) {
+                    if(!response.getFiles().isEmpty()) {
+                        hasDirectoryPlaceholder = true;
+                    }
+                }
                 listener.chunk(directory, objects);
             }
             while(marker.hasNext());
+            if(!hasDirectoryPlaceholder && objects.isEmpty()) {
+                throw new NotfoundException(directory.getAbsolute());
+            }
             return objects;
         }
         catch(B2ApiException e) {
@@ -119,7 +129,7 @@ public class B2ObjectListService implements ListService {
             }
             final PathAttributes attributes = this.parse(info);
             final Long revision;
-            if(revisions.keySet().contains(info.getFileName())) {
+            if(revisions.containsKey(info.getFileName())) {
                 // Later version already found
                 attributes.setDuplicate(true);
                 revision = revisions.get(info.getFileName()) + 1L;
@@ -161,10 +171,10 @@ public class B2ObjectListService implements ListService {
             case start:
                 // Large file has been started, but not finished or canceled
                 attributes.setDuplicate(true);
-                attributes.setSize(-1L);
                 break;
             default:
-                attributes.setSize(response.getSize());
+                attributes.setSize(response.getContentLength());
+                break;
         }
         return attributes;
     }

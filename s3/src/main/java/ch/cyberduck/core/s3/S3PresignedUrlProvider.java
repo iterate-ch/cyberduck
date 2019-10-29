@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
@@ -36,15 +37,29 @@ public class S3PresignedUrlProvider {
      * @return a URL signed in such a way as to grant access to an S3 resource to whoever uses it.
      */
     public String create(final Host host, final String user, final String secret,
-                         final String bucket, final String region, final String key,
+                         final String bucket, String region, final String key,
                          final long expiry) {
         final S3Protocol.AuthenticationHeaderSignatureVersion signature;
         if(StringUtils.isBlank(region)) {
-            signature = S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
+            // Only for AWS
+            if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+                // Region is required for AWS4-HMAC-SHA256 signature
+                region = "us-east-1";
+                signature = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
+            }
+            else {
+                signature = S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
+            }
         }
         else {
-            // Region is required for AWS4-HMAC-SHA256 signature
-            signature = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
+            // Only for AWS
+            if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+                // Region is required for AWS4-HMAC-SHA256 signature
+                signature = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
+            }
+            else {
+                signature = S3Protocol.AuthenticationHeaderSignatureVersion.AWS2;
+            }
         }
         return new RestS3Service(new AWSCredentials(StringUtils.strip(user), StringUtils.strip(secret))) {
             @Override

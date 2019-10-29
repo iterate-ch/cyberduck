@@ -109,7 +109,7 @@ public abstract class BundleController extends ProxyController {
      * After loading the NIB, awakeFromNib from NSNibLoading protocol was called.
      * Not the case on 10.6 because the method is implemented by NSObject.
      */
-    private boolean awaked;
+    protected boolean awaked;
 
     /**
      * Called by the runtime after the NIB file has been loaded sucessfully

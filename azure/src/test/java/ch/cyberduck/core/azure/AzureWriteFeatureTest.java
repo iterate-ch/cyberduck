@@ -26,6 +26,7 @@ import org.junit.experimental.categories.Category;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
@@ -72,13 +73,13 @@ public class AzureWriteFeatureTest {
         in.close();
         assertArrayEquals(content, buffer);
         final OutputStream overwrite = new AzureWriteFeature(session, context).write(test, new TransferStatus()
-                .length("overwrite".getBytes("UTF-8").length).withMetadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
+            .length("overwrite".getBytes(StandardCharsets.UTF_8).length).withMetadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus())
-                .transfer(new ByteArrayInputStream("overwrite".getBytes("UTF-8")), overwrite);
+            .transfer(new ByteArrayInputStream("overwrite".getBytes(StandardCharsets.UTF_8)), overwrite);
         overwrite.close();
         // Test double close
         overwrite.close();
-        assertEquals("overwrite".getBytes("UTF-8").length, new AzureAttributesFinderFeature(session, context).find(test).getSize());
+        assertEquals("overwrite".getBytes(StandardCharsets.UTF_8).length, new AzureAttributesFinderFeature(session, context).find(test).getSize());
         new AzureDeleteFeature(session, context).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

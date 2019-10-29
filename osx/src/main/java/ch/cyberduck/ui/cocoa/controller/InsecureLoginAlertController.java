@@ -27,13 +27,17 @@ public class InsecureLoginAlertController extends AlertController {
     private final String continueButton;
     private final String disconnectButton;
     private final Protocol protocol;
+    private final boolean enableSuppressionButton;
 
-    public InsecureLoginAlertController(final String title, final String message, final String continueButton, final String disconnectButton, final Protocol protocol) {
+    public InsecureLoginAlertController(final String title, final String message,
+                                        final String continueButton, final String disconnectButton,
+                                        final Protocol protocol, final boolean enableSuppressionButton) {
         this.title = title;
         this.message = message;
         this.continueButton = continueButton;
         this.disconnectButton = disconnectButton;
         this.protocol = protocol;
+        this.enableSuppressionButton = enableSuppressionButton;
     }
 
     @Override
@@ -45,7 +49,7 @@ public class InsecureLoginAlertController extends AlertController {
         alert.addButtonWithTitle(continueButton);
         alert.addButtonWithTitle(disconnectButton);
         alert.setShowsHelp(true);
-        alert.setShowsSuppressionButton(true);
+        alert.setShowsSuppressionButton(enableSuppressionButton);
         alert.suppressionButton().setTitle(LocaleFactory.localizedString("Don't show again", "Credentials"));
         super.loadBundle(alert);
     }

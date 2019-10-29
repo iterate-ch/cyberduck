@@ -44,7 +44,7 @@ public class SwiftSegmentServiceTest {
     }
 
     @Test
-    public void testManifest() throws Exception {
+    public void testManifest() {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
@@ -83,7 +83,7 @@ public class SwiftSegmentServiceTest {
     }
 
     @Test
-    public void testGetSegmentsDirectory() throws Exception {
+    public void testGetSegmentsDirectory() {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
@@ -98,7 +98,7 @@ public class SwiftSegmentServiceTest {
     }
 
     @Test
-    public void testGetSegmentName() throws Exception {
+    public void testGetSegmentName() {
         final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
                 System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));

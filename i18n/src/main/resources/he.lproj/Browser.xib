@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -109,11 +109,11 @@
                                                     </tableView>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="18">
+                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="18">
                                                 <rect key="frame" x="-100" y="-100" width="255" height="11"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="19">
+                                            <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="19">
                                                 <rect key="frame" x="-22" y="1" width="15" height="431"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
@@ -137,11 +137,11 @@
                                             <rect key="frame" x="-2" y="0.0" width="604" height="397"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="t14-pG-1DQ">
-                                                <rect key="frame" x="1" y="0.0" width="587" height="396"/>
+                                                <rect key="frame" x="1" y="0.0" width="602" height="396"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="ListBrowserView" headerView="36" id="33" customClass="CDListView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="587" height="379"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="602" height="379"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -152,16 +152,16 @@
                                                     </tableView>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="34">
+                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="34">
                                                 <rect key="frame" x="-100" y="-100" width="582" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="35">
-                                                <rect key="frame" x="588" y="17" width="15" height="379"/>
+                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="35">
+                                                <rect key="frame" x="587" y="17" width="16" height="379"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" id="36">
-                                                <rect key="frame" x="0.0" y="0.0" width="587" height="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="602" height="17"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
@@ -177,11 +177,11 @@
                                             <rect key="frame" x="-2" y="0.0" width="604" height="397"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <clipView key="contentView" id="KUj-N5-PnR">
-                                                <rect key="frame" x="1" y="0.0" width="587" height="396"/>
+                                                <rect key="frame" x="1" y="0.0" width="602" height="396"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <subviews>
                                                     <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveName="OutlineBrowserView" headerView="44" id="41" customClass="CDOutlineView">
-                                                        <rect key="frame" x="0.0" y="0.0" width="587" height="379"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="602" height="379"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <size key="intercellSpacing" width="3" height="2"/>
                                                         <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -193,16 +193,16 @@
                                                     </tableView>
                                                 </subviews>
                                             </clipView>
-                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="42">
+                                            <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="42">
                                                 <rect key="frame" x="-100" y="-100" width="582" height="15"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
-                                            <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="43">
-                                                <rect key="frame" x="588" y="17" width="15" height="379"/>
+                                            <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="43">
+                                                <rect key="frame" x="587" y="17" width="16" height="379"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <tableHeaderView key="headerView" id="44">
-                                                <rect key="frame" x="0.0" y="0.0" width="587" height="17"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="602" height="17"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </tableHeaderView>
                                         </scrollView>
@@ -317,6 +317,29 @@
                 <menuItem isSeparatorItem="YES" id="67">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
+                <menuItem title="תיקייה חדשה…" keyEquivalent="N" id="81">
+                    <connections>
+                        <action selector="createFolderButtonClicked:" target="-1" id="166"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="6n9-Af-09P">
+                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                    <connections>
+                        <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="קובץ חדש…" keyEquivalent="f" id="82">
+                    <connections>
+                        <action selector="createFileButtonClicked:" target="-1" id="173"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="קיצור דרך חדש..." id="83">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="createSymlinkButtonClicked:" target="-1" id="184"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="84"/>
                 <menuItem title="מידע" keyEquivalent="i" id="68">
                     <connections>
                         <action selector="infoButtonClicked:" target="-1" id="163"/>
@@ -332,6 +355,7 @@
                 <menuItem title="ערוך בעזרת" id="70">
                     <menu key="submenu" title="ערוך בעזרת" id="71"/>
                 </menuItem>
+                <menuItem isSeparatorItem="YES" id="74"/>
                 <menuItem title="שינוי שם…" id="72">
                     <connections>
                         <action selector="renameFileButtonClicked:" target="-1" id="176"/>
@@ -342,7 +366,7 @@
                         <action selector="duplicateFileButtonClicked:" target="-1" id="175"/>
                     </connections>
                 </menuItem>
-                <menuItem isSeparatorItem="YES" id="74"/>
+                <menuItem isSeparatorItem="YES" id="U9L-O8-fnA"/>
                 <menuItem title="הורד" keyEquivalent="" id="75">
                     <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                     <connections>
@@ -360,9 +384,6 @@
                         <action selector="downloadToButtonClicked:" target="-1" id="177"/>
                     </connections>
                 </menuItem>
-                <menuItem isSeparatorItem="YES" id="78">
-                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                </menuItem>
                 <menuItem title="העלה…" keyEquivalent="" id="79">
                     <modifierMask key="keyEquivalentModifierMask" option="YES"/>
                     <connections>
@@ -374,29 +395,9 @@
                         <action selector="syncButtonClicked:" target="-1" id="172"/>
                     </connections>
                 </menuItem>
-                <menuItem title="תיקייה חדשה…" keyEquivalent="N" id="81">
-                    <connections>
-                        <action selector="createFolderButtonClicked:" target="-1" id="166"/>
-                    </connections>
+                <menuItem isSeparatorItem="YES" id="78">
+                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="6n9-Af-09P">
-                    <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
-                    <connections>
-                        <action selector="createEncryptedVaultButtonClicked:" target="-1" id="hvL-ql-14Q"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="קובץ חדש…" keyEquivalent="f" id="82">
-                    <connections>
-                        <action selector="createFileButtonClicked:" target="-1" id="173"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="New Symbolic Link…" id="83">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="createSymlinkButtonClicked:" target="-1" id="184"/>
-                    </connections>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="84"/>
                 <menuItem title="מחק" id="85">
                     <string key="keyEquivalent" base64-UTF8="YES">
 CA
@@ -414,8 +415,8 @@ CA
                 <menuItem isSeparatorItem="YES" id="87">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                 </menuItem>
-                <menuItem title="Crea un archivio" id="88">
-                    <menu key="submenu" title="Crea un archivio" id="89"/>
+                <menuItem title="צור ארכיון" id="88">
+                    <menu key="submenu" title="צור ארכיון" id="89"/>
                 </menuItem>
                 <menuItem title="Expand Archive" id="90">
                     <connections>
@@ -427,11 +428,16 @@ CA
                 </menuItem>
                 <menuItem title="Copy URL" id="92">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Copy URL" id="93"/>
+                    <menu key="submenu" title="העתק כתובת" id="93"/>
                 </menuItem>
                 <menuItem title="פתח כתובת" id="94">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="פתח כתובת" id="95"/>
+                </menuItem>
+                <menuItem title="שתף..." id="NBw-Mh-zlT">
+                    <connections>
+                        <action selector="shareFileButtonClicked:" target="-1" id="iI0-ew-cyt"/>
+                    </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="96">
                     <modifierMask key="keyEquivalentModifierMask" command="YES"/>
@@ -447,7 +453,7 @@ CA
                     </connections>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="-184.5" y="588.5"/>
+            <point key="canvasLocation" x="-367" y="582"/>
         </menu>
         <menu title="תפריט" id="99">
             <items>

@@ -25,6 +25,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -32,15 +33,11 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Versioning;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3BucketVersioningStatus;
 import org.jets3t.service.model.S3Object;
-
-import java.util.Collections;
-import java.util.Map;
 
 public class S3VersioningFeature implements Versioning {
     private static final Logger log = Logger.getLogger(S3VersioningFeature.class);
@@ -52,9 +49,8 @@ public class S3VersioningFeature implements Versioning {
 
     private final S3AccessControlListFeature accessControlListFeature;
 
-    @SuppressWarnings("unchecked")
-    private Map<Path, VersioningConfiguration> cache
-        = Collections.synchronizedMap(new LRUMap<Path, VersioningConfiguration>(10));
+    private LRUCache<Path, VersioningConfiguration> cache
+        = LRUCache.build(10);
 
     public S3VersioningFeature(final S3Session session, final S3AccessControlListFeature accessControlListFeature) {
         this.session = session;
@@ -62,7 +58,7 @@ public class S3VersioningFeature implements Versioning {
     }
 
     @Override
-    public S3VersioningFeature withCache(final Map<Path, VersioningConfiguration> cache) {
+    public S3VersioningFeature withCache(final LRUCache<Path, VersioningConfiguration> cache) {
         this.cache = cache;
         return this;
     }
@@ -135,7 +131,7 @@ public class S3VersioningFeature implements Versioning {
         if(container.isRoot()) {
             return VersioningConfiguration.empty();
         }
-        if(cache.containsKey(container)) {
+        if(cache.contains(container)) {
             return cache.get(container);
         }
         try {
@@ -148,7 +144,7 @@ public class S3VersioningFeature implements Versioning {
         }
         catch(ServiceException e) {
             try {
-                throw new S3ExceptionMappingService().map("Cannot read bucket versioning status", e);
+                throw new S3ExceptionMappingService().map("Cannot read container configuration", e);
             }
             catch(AccessDeniedException l) {
                 log.warn(String.format("Missing permission to read versioning configuration for %s %s", container, e.getMessage()));
@@ -182,7 +178,7 @@ public class S3VersioningFeature implements Versioning {
                     acl = accessControlListFeature.getPermission(file);
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn(String.format("Ignore failure %s", e.getDetail()));
+                    log.warn(String.format("Ignore failure %s", e));
                 }
                 destination.setAcl(accessControlListFeature.convert(acl));
                 session.getClient().copyVersionedObject(file.attributes().getVersionId(),

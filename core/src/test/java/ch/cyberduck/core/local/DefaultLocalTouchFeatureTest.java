@@ -24,7 +24,7 @@ public class DefaultLocalTouchFeatureTest {
     }
 
     @Test
-    public void testFailure() throws Exception {
+    public void testFailure() {
         Local l = new Local("/" + UUID.randomUUID().toString());
         final DefaultLocalTouchFeature f = new DefaultLocalTouchFeature();
         try {

@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class AttributedListTest {
 
     @Test
-    public void testPostFilter() throws Exception {
+    public void testPostFilter() {
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
         assertTrue(list.add(a));
@@ -29,7 +29,7 @@ public class AttributedListTest {
     }
 
     @Test
-    public void testPreFilter() throws Exception {
+    public void testPreFilter() {
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
         assertTrue(list.filter(new NullComparator<Path>(), new NullFilter<Path>() {
@@ -42,7 +42,7 @@ public class AttributedListTest {
     }
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         final AttributedList<Path> list1 = new AttributedList<Path>();
         final AttributedList<Path> list2 = new AttributedList<Path>();
         final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
@@ -52,7 +52,7 @@ public class AttributedListTest {
     }
 
     @Test
-    public void testFilterFind() throws Exception {
+    public void testFilterFind() {
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
         assertTrue(list.add(a));
@@ -73,7 +73,7 @@ public class AttributedListTest {
     }
 
     @Test
-    public void testNullFilter() throws Exception {
+    public void testNullFilter() {
         final AttributedList<Path> list = new AttributedList<Path>();
         final Path a = new Path("/a", EnumSet.of(Path.Type.directory));
         assertTrue(list.add(a));

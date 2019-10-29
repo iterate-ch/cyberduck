@@ -22,16 +22,22 @@ import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.EnumSet;
+import java.util.Objects;
 
 public class TouchWorker extends Worker<Path> {
+    private static final Logger log = Logger.getLogger(TouchWorker.class);
 
     private final Path file;
 
@@ -42,6 +48,9 @@ public class TouchWorker extends Worker<Path> {
     @Override
     public Path run(final Session<?> session) throws BackgroundException {
         final Touch feature = session.getFeature(Touch.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         final TransferStatus status = new TransferStatus()
             .exists(false)
             .length(0L)
@@ -55,9 +64,15 @@ public class TouchWorker extends Worker<Path> {
             status.setStorageClass(redundancy.getDefault());
         }
         status.setTimestamp(System.currentTimeMillis());
-        final UnixPermission permission = session.getFeature(UnixPermission.class);
-        if(permission != null) {
-            status.setPermission(permission.getDefault(EnumSet.of(Path.Type.file)));
+        if(PreferencesFactory.get().getBoolean("touch.permissions.change")) {
+            final UnixPermission permission = session.getFeature(UnixPermission.class);
+            if(permission != null) {
+                status.setPermission(permission.getDefault(EnumSet.of(Path.Type.file)));
+            }
+            final AclPermission acl = session.getFeature(AclPermission.class);
+            if(acl != null) {
+                status.setAcl(acl.getDefault(EnumSet.of(Path.Type.file)));
+            }
         }
         return feature.touch(file, status);
     }
@@ -82,7 +97,7 @@ public class TouchWorker extends Worker<Path> {
             return false;
         }
         final TouchWorker that = (TouchWorker) o;
-        return !(file != null ? !file.equals(that.file) : that.file != null);
+        return Objects.equals(file, that.file);
 
     }
 

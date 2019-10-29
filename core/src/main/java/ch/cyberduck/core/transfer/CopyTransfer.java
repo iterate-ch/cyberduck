@@ -101,7 +101,7 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
+        dict.setStringForKey(this.getType().name(), "Type");
         dict.setObjectForKey(host, "Host");
         if(destination != null) {
             dict.setObjectForKey(destination, "Destination");
@@ -231,10 +231,10 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public Path transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
+    public void transfer(final Session<?> session, final Session<?> destination, final Path source, final Local n,
                          final TransferOptions options, final TransferStatus status,
                          final ConnectionCallback connectionCallback,
-                         final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                         final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", source, options));
         }
@@ -253,7 +253,6 @@ public class CopyTransfer extends Transfer {
             feature.copy(source, mapping.get(source), status, connectionCallback);
             this.addTransferred(status.getLength());
         }
-        return source;
     }
 
     @Override

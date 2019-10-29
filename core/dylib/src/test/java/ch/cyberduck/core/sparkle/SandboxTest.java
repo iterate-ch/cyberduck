@@ -25,7 +25,7 @@ import static org.junit.Assert.assertFalse;
 public class SandboxTest {
 
     @Test
-    public void testIsSandboxed() throws Exception {
+    public void testIsSandboxed() {
         assertFalse(new Sandbox().isSandboxed());
     }
 }

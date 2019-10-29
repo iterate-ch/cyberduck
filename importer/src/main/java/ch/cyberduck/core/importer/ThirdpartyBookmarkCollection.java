@@ -28,6 +28,7 @@ import ch.cyberduck.core.PasswordStoreFactory;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.ChecksumComputeFactory;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -162,12 +163,22 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
         final Credentials credentials = bookmark.getCredentials();
         if(StringUtils.isNotBlank(credentials.getPassword())) {
             if(credentials.isPublicKeyAuthentication()) {
-                keychain.addPassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
+                try {
+                    keychain.addPassword(bookmark.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
                         credentials.getPassword());
+                }
+                catch(LocalAccessDeniedException e) {
+                    log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e));
+                }
             }
             else if(!credentials.isAnonymousLogin()) {
-                keychain.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
+                try {
+                    keychain.addPassword(bookmark.getProtocol().getScheme(), bookmark.getPort(),
                         bookmark.getHostname(), credentials.getUsername(), credentials.getPassword());
+                }
+                catch(LocalAccessDeniedException e) {
+                    log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e));
+                }
                 // Reset password in memory
                 credentials.setPassword(null);
             }

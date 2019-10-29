@@ -16,8 +16,10 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
@@ -30,10 +32,8 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
@@ -41,23 +41,24 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
     @Test
     public void testDeleteFile() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
-        session.close();
     }
 
     @Test
     public void testDeletePlaceholder() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path container = new Path("versioning-test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(new Path(container,
+            String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(test));
-        session.close();
+        assertFalse(new DefaultFindFeature(session).find(test));
+        assertNull(new S3VersionedObjectListService(session).list(container, new DisabledListProgressListener()).find(new SimplePathPredicate(test)));
     }
 
     @Test
@@ -80,25 +81,24 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
             new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
             assertFalse(new S3FindFeature(session).find(test));
         }
-        session.close();
     }
 
+    @Ignore
     @Test
     public void testDeleteContainer() throws Exception {
-        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("US");
         new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(container, null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(container));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new S3FindFeature(session).find(container));
-        session.close();
     }
 
     @Ignore
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundKey() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
-        final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

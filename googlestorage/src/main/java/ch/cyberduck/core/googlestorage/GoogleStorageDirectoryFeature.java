@@ -17,37 +17,74 @@ package ch.cyberduck.core.googlestorage;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.s3.S3DirectoryFeature;
-import ch.cyberduck.core.s3.S3PathContainerService;
+import ch.cyberduck.core.io.DefaultStreamCloser;
+import ch.cyberduck.core.io.StatusOutputStream;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.jets3t.service.model.StorageObject;
+import java.io.IOException;
+import java.util.EnumSet;
 
-public class GoogleStorageDirectoryFeature extends S3DirectoryFeature {
+import com.google.api.services.storage.model.Bucket;
+
+public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
+
+    private static final String MIMETYPE = "application/x-directory";
+
+    private final PathContainerService containerService
+        = new GoogleStoragePathContainerService();
 
     private final GoogleStorageSession session;
 
-    private final PathContainerService containerService
-        = new S3PathContainerService();
+    private Write<VersionId> writer;
 
-    public GoogleStorageDirectoryFeature(final GoogleStorageSession session, final Write<StorageObject> write) {
-        super(session, write);
+    public GoogleStorageDirectoryFeature(final GoogleStorageSession session) {
         this.session = session;
+        this.writer = new GoogleStorageWriteFeature(session);
     }
 
     @Override
-    public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
-        if(containerService.isContainer(folder)) {
-            final GoogleStorageBucketCreateService service = new GoogleStorageBucketCreateService(session);
-            service.create(folder, region);
-            return folder;
+    public Path mkdir(final Path folder, final String location, final TransferStatus status) throws BackgroundException {
+        try {
+            if(containerService.isContainer(folder)) {
+                final Bucket bucket = session.getClient().buckets().insert(session.getHost().getCredentials().getUsername(),
+                    new Bucket()
+                        .setLocation(location)
+                        .setStorageClass(PreferencesFactory.get().getProperty("googlestorage.storage.class"))
+                        .setName(new GoogleStoragePathContainerService().getContainer(folder).getName())).execute();
+                final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
+                type.add(Path.Type.volume);
+                return new Path(folder.getParent(), folder.getName(), type,
+                    new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));
+            }
+            else {
+                // Add placeholder object
+                status.setMime(MIMETYPE);
+                final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
+                type.add(Path.Type.placeholder);
+                final StatusOutputStream<VersionId> out = writer.write(new Path(folder.getParent(), folder.getName(), type,
+                    new PathAttributes(folder.attributes())), status, new DisabledConnectionCallback());
+                new DefaultStreamCloser().close(out);
+                return new Path(folder.getParent(), folder.getName(), type,
+                    folder.attributes().withVersionId(out.getStatus().id));
+            }
         }
-        else {
-            return super.mkdir(folder, region, status);
+        catch(IOException e) {
+            throw new GoogleStorageExceptionMappingService().map("Cannot create folder {0}", e, folder);
         }
+    }
+
+    @Override
+    public Directory<VersionId> withWriter(final Write<VersionId> writer) {
+        this.writer = writer;
+        return this;
     }
 }

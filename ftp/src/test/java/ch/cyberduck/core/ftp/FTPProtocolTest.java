@@ -51,13 +51,13 @@ public class FTPProtocolTest {
     }
 
     @Test
-    public void testValidateCredentialsEmpty() throws Exception {
+    public void testValidateCredentialsEmpty() {
         Credentials c = new Credentials("user", "");
         assertTrue(c.validate(new FTPProtocol(), new LoginOptions(new FTPProtocol())));
     }
 
     @Test
-    public void testValidateCredentialsBlank() throws Exception {
+    public void testValidateCredentialsBlank() {
         Credentials c = new Credentials("user", " ");
         assertTrue(c.validate(new FTPProtocol(), new LoginOptions(new FTPProtocol())));
     }

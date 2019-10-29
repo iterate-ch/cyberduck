@@ -17,11 +17,11 @@ package ch.cyberduck.core.irods;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
-import org.irods.jargon.core.exception.JargonException;
 import org.irods.jargon.core.transfer.TransferControlBlock;
 import org.irods.jargon.core.transfer.TransferStatusCallbackListener;
 
@@ -40,7 +40,7 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
     }
 
     @Override
-    public FileStatusCallbackResponse statusCallback(final org.irods.jargon.core.transfer.TransferStatus t) throws JargonException {
+    public FileStatusCallbackResponse statusCallback(final org.irods.jargon.core.transfer.TransferStatus t) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Progress with %s", t));
         }
@@ -54,31 +54,35 @@ public class DefaultTransferStatusCallbackListener implements TransferStatusCall
                 listener.sent(bytes);
                 break;
         }
-        if(status.isCanceled()) {
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Set canceled for block %s", block));
-            }
-            block.setCancelled(true);
-            return FileStatusCallbackResponse.SKIP;
-        }
-        else {
+        try {
+            status.validate();
             if(!t.isIntraFileStatusReport()) {
                 if(t.getTotalFilesTransferredSoFar() == t.getTotalFilesToTransfer()) {
                     status.setComplete();
                 }
             }
         }
+        catch(ConnectionCanceledException e) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Set canceled for block %s", block));
+            }
+            block.setCancelled(true);
+            return FileStatusCallbackResponse.SKIP;
+        }
         return FileStatusCallbackResponse.CONTINUE;
     }
 
     @Override
-    public void overallStatusCallback(final org.irods.jargon.core.transfer.TransferStatus t) throws JargonException {
+    public void overallStatusCallback(final org.irods.jargon.core.transfer.TransferStatus t) {
         //
     }
 
     @Override
     public CallbackResponse transferAsksWhetherToForceOperation(final String irodsAbsolutePath, final boolean isCollection) {
-        if(status.isCanceled()) {
+        try {
+            status.validate();
+        }
+        catch(ConnectionCanceledException e) {
             return CallbackResponse.CANCEL;
         }
         if(status.isAppend()) {

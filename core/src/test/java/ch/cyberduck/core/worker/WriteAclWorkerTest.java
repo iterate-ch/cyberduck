@@ -6,7 +6,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 import ch.cyberduck.core.shared.DefaultAclFeature;
 
@@ -37,13 +36,13 @@ public class WriteAclWorkerTest {
                 if(type.equals(AclPermission.class)) {
                     return (T) new DefaultAclFeature() {
                         @Override
-                        public Acl getPermission(final Path file) throws BackgroundException {
+                        public Acl getPermission(final Path file) {
                             fail();
                             return null;
                         }
 
                         @Override
-                        public void setPermission(final Path file, final Acl acl) throws BackgroundException {
+                        public void setPermission(final Path file, final Acl acl) {
                             fail();
                         }
 
@@ -80,13 +79,13 @@ public class WriteAclWorkerTest {
                 if(type.equals(AclPermission.class)) {
                     return (T) new DefaultAclFeature() {
                         @Override
-                        public Acl getPermission(final Path file) throws BackgroundException {
+                        public Acl getPermission(final Path file) {
                             fail();
                             return null;
                         }
 
                         @Override
-                        public void setPermission(final Path file, final Acl acl) throws BackgroundException {
+                        public void setPermission(final Path file, final Acl acl) {
                             assertEquals(Acl.EMPTY, acl);
                         }
 
@@ -124,13 +123,13 @@ public class WriteAclWorkerTest {
                            if(type.equals(AclPermission.class)) {
                                return (T) new DefaultAclFeature() {
                                    @Override
-                                   public Acl getPermission(final Path file) throws BackgroundException {
+                                   public Acl getPermission(final Path file) {
                                        fail();
                                        return null;
                                    }
 
                                    @Override
-                                   public void setPermission(final Path file, final Acl n) throws BackgroundException {
+                                   public void setPermission(final Path file, final Acl n) {
                                        assertEquals(acl, n);
                                        set.set(true);
                                    }

@@ -93,7 +93,7 @@ public class FTPListResponseReader implements FTPDataResponseReader {
                     final String target = f.getLink();
                     if(StringUtils.isBlank(target)) {
                         log.warn(String.format("Missing symbolic link target for %s", parsed));
-                        final EnumSet<AbstractPath.Type> type = parsed.getType();
+                        final EnumSet<Path.Type> type = parsed.getType();
                         type.remove(AbstractPath.Type.symboliclink);
                     }
                     else if(StringUtils.startsWith(target, String.valueOf(Path.DELIMITER))) {

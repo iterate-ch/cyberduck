@@ -165,7 +165,13 @@ public class StreamCopierTest {
         status.setCanceled();
         exit.await();
         assertFalse(status.isComplete());
-        assertTrue(status.isCanceled());
+        try {
+            status.validate();
+            fail();
+        }
+        catch(ConnectionCanceledException e) {
+
+        }
         assertEquals(32768L, status.getOffset());
     }
 }

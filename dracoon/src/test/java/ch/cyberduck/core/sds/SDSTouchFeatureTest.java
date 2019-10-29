@@ -16,6 +16,7 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -24,6 +25,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -36,11 +38,11 @@ import static org.junit.Assert.*;
 public class SDSTouchFeatureTest extends AbstractSDSTest {
 
     @Test
-    public void testSupported() throws Exception {
+    public void testSupported() {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
-        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory))));
-        assertFalse(new SDSTouchFeature(session, nodeid).isSupported(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), StringUtils.EMPTY));
+        assertTrue(new SDSTouchFeature(session, nodeid).isSupported(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), StringUtils.EMPTY));
+        assertFalse(new SDSTouchFeature(session, nodeid).isSupported(new Path("/", EnumSet.of(Path.Type.directory)), StringUtils.EMPTY));
     }
 
     @Test(expected = BackgroundException.class)
@@ -59,7 +61,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     public void testInvalidName() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         try {
             new SDSTouchFeature(session, nodeid).touch(new Path(room, "CON", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
@@ -76,7 +78,7 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
     public void testInvalidCharacter() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
-                new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         try {
             new SDSTouchFeature(session, nodeid).touch(new Path(room, "?", EnumSet.of(Path.Type.file)), new TransferStatus());
         }
@@ -87,5 +89,18 @@ public class SDSTouchFeatureTest extends AbstractSDSTest {
         finally {
             new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
+    }
+
+    @Test
+    public void testTouch() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path test = new SDSTouchFeature(session, nodeid).touch(
+            new Path(room, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus().withMime("text/plain"));
+        assertNotNull(test.attributes().getVersionId());
+        assertTrue(new SDSFindFeature(nodeid).find(test));
+        assertEquals(test.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(test).getVersionId());
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

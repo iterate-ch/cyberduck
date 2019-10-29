@@ -10,19 +10,19 @@ import static org.junit.Assert.assertNull;
 public class PathNormalizerTest {
 
     @Test
-    public void testNormalize() throws Exception {
+    public void testNormalize() {
         assertEquals(PathNormalizer.normalize("relative/path", false), "relative/path");
         assertEquals(PathNormalizer.normalize("/absolute/path", true), "/absolute/path");
         assertEquals(PathNormalizer.normalize("/absolute/path", false), "/absolute/path");
     }
 
     @Test
-    public void test972() throws Exception {
+    public void test972() {
         assertEquals("//home/path", PathNormalizer.normalize("//home/path"));
     }
 
     @Test
-    public void testName() throws Exception {
+    public void testName() {
         assertEquals("p", PathNormalizer.name("/p"));
         assertEquals("n", PathNormalizer.name("/p/n"));
         assertEquals("p", PathNormalizer.name("p"));
@@ -30,14 +30,14 @@ public class PathNormalizerTest {
     }
 
     @Test
-    public void testParent() throws Exception {
+    public void testParent() {
         assertEquals("/", PathNormalizer.parent("/p", '/'));
         assertEquals("/p", PathNormalizer.parent("/p/n", '/'));
         assertNull(PathNormalizer.parent("/", '/'));
     }
 
     @Test
-    public void testDoubleDot() throws Exception {
+    public void testDoubleDot() {
         assertEquals("/", PathNormalizer.normalize("/.."));
         assertEquals("/p", PathNormalizer.normalize("/p/n/.."));
         assertEquals("/n", PathNormalizer.normalize("/p/../n"));
@@ -46,13 +46,13 @@ public class PathNormalizerTest {
     }
 
     @Test
-    public void testDot() throws Exception {
+    public void testDot() {
         assertEquals("/p", PathNormalizer.normalize("/p/."));
         assertEquals("/", PathNormalizer.normalize("/."));
     }
 
     @Test
-    public void testPathNormalize() throws Exception {
+    public void testPathNormalize() {
         {
             final Path path = new Path(PathNormalizer.normalize(
                 "/path/to/remove/.."), EnumSet.of(Path.Type.directory));
@@ -106,7 +106,7 @@ public class PathNormalizerTest {
     }
 
     @Test
-    public void testPathName() throws Exception {
+    public void testPathName() {
         {
             Path path = new Path(PathNormalizer.normalize(
                 "/path/to/file/"), EnumSet.of(Path.Type.directory));
@@ -119,5 +119,10 @@ public class PathNormalizerTest {
             assertEquals("file", path.getName());
             assertEquals("/path/to/file", path.getAbsolute());
         }
+    }
+
+    @Test
+    public void testNormalizeNameWithBackslash() {
+        assertEquals("file\\name", PathNormalizer.name("/path/to/file\\name"));
     }
 }

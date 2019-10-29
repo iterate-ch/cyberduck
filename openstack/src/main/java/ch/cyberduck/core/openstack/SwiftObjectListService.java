@@ -18,7 +18,6 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
@@ -29,6 +28,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -76,7 +76,7 @@ public class SwiftObjectListService implements ListService {
                     null, limit, marker, Path.DELIMITER);
                 for(StorageObject object : list) {
                     final PathAttributes attr = attributes.toAttributes(object);
-                    final EnumSet<AbstractPath.Type> types = "application/directory"
+                    final EnumSet<Path.Type> types = "application/directory"
                         .equals(object.getMimeType()) ? EnumSet.of(Path.Type.directory) : EnumSet.of(Path.Type.file);
                     if(StringUtils.endsWith(object.getName(), String.valueOf(Path.DELIMITER))) {
                         if(children.contains(new Path(directory, PathNormalizer.name(object.getName()), EnumSet.of(Path.Type.directory), attr))) {
@@ -93,6 +93,11 @@ public class SwiftObjectListService implements ListService {
                 listener.chunk(directory, children);
             }
             while(list.size() == limit);
+            if(!containerService.isContainer(directory) && children.isEmpty()) {
+                if(!new SwiftFindFeature(session).find(directory)) {
+                    throw new NotfoundException(directory.getAbsolute());
+                }
+            }
             return children;
         }
         catch(GenericException e) {

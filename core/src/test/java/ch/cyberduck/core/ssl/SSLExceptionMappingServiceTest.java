@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 public class SSLExceptionMappingServiceTest {
 
     @Test
-    public void testMap() throws Exception {
+    public void testMap() {
         final BackgroundException f = new SSLExceptionMappingService().map(new SSLException(
                 "Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Broken pipe",
                 new SSLException("javax.net.ssl.SSLException: java.net.SocketException: Broken pipe",

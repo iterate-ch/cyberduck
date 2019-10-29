@@ -21,7 +21,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -133,9 +132,9 @@ public class SingleTransferWorkerTest extends AbstractSFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledNotificationService()) {
+            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
 
-        }.run());
+        }.run(session));
         local.delete();
         assertEquals(98305L, counter.getSent(), 0L);
         assertTrue(failed.get());

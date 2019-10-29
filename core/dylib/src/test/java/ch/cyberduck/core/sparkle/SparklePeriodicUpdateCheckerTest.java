@@ -22,7 +22,7 @@ import org.junit.Test;
 public class SparklePeriodicUpdateCheckerTest {
 
     @Test
-    public void testCheck() throws Exception {
+    public void testCheck() {
         final SparklePeriodicUpdateChecker updater = new SparklePeriodicUpdateChecker(new ProxyController());
         updater.check(false);
     }

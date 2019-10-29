@@ -18,7 +18,6 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
@@ -78,6 +77,7 @@ public class AzureObjectListService implements ListService {
                     prefix += Path.DELIMITER;
                 }
             }
+            boolean hasDirectoryPlaceholder = containerService.isContainer(directory);
             do {
                 final BlobRequestOptions options = new BlobRequestOptions();
                 result = container.listBlobsSegmented(
@@ -85,6 +85,7 @@ public class AzureObjectListService implements ListService {
                         PreferencesFactory.get().getInteger("azure.listing.chunksize"), token, options, context);
                 for(ListBlobItem object : result.getResults()) {
                     if(new Path(object.getUri().getPath(), EnumSet.of(Path.Type.directory)).equals(directory)) {
+                        hasDirectoryPlaceholder = true;
                         continue;
                     }
                     final PathAttributes attributes = new PathAttributes();
@@ -98,7 +99,7 @@ public class AzureObjectListService implements ListService {
                         }
                     }
                     // A directory is designated by a delimiter character.
-                    final EnumSet<AbstractPath.Type> types = object instanceof CloudBlobDirectory
+                    final EnumSet<Path.Type> types = object instanceof CloudBlobDirectory
                             ? EnumSet.of(Path.Type.directory, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
                     final Path child = new Path(directory, PathNormalizer.name(object.getUri().getPath()), types, attributes);
                     children.add(child);
@@ -107,6 +108,9 @@ public class AzureObjectListService implements ListService {
                 token = result.getContinuationToken();
             }
             while(result.getHasMoreResults());
+            if(!hasDirectoryPlaceholder && children.isEmpty()) {
+                throw new NotfoundException(directory.getAbsolute());
+            }
             return children;
         }
         catch(StorageException e) {

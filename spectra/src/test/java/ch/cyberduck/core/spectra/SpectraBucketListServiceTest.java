@@ -24,7 +24,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
@@ -54,7 +53,7 @@ public class SpectraBucketListServiceTest {
                 new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new S3BucketListService(session).list(
+        final AttributedList<Path> list = new SpectraBucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));
@@ -75,7 +74,7 @@ public class SpectraBucketListServiceTest {
                 new DefaultX509KeyManager());
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final AttributedList<Path> list = new S3BucketListService(session).list(
+        final AttributedList<Path> list = new SpectraBucketListService(session).list(
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)), new DisabledListProgressListener());
         assertFalse(list.isEmpty());
         assertTrue(list.contains(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume))));

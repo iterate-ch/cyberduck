@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 public class BookmarkNameProviderTest {
 
     @Test
-    public void testToString() throws Exception {
+    public void testToString() {
         assertEquals("h – FTP", BookmarkNameProvider.toString(new Host(new TestProtocol(Scheme.ftp), "h")));
         final TestProtocol dav = new TestProtocol(Scheme.http) {
             @Override
@@ -42,7 +42,7 @@ public class BookmarkNameProviderTest {
     }
 
     @Test
-    public void testToStringNoDefaultHostname() throws Exception {
+    public void testToStringNoDefaultHostname() {
         final TestProtocol protocol = new TestProtocol(Scheme.file) {
             @Override
             public String getName() {
@@ -59,7 +59,7 @@ public class BookmarkNameProviderTest {
     }
 
     @Test
-    public void testToStringDefaultHostname() throws Exception {
+    public void testToStringDefaultHostname() {
         final TestProtocol protocol = new TestProtocol(Scheme.file) {
             @Override
             public String getName() {

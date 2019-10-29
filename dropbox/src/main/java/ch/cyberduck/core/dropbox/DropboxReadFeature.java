@@ -55,7 +55,7 @@ public class DropboxReadFeature implements Read {
     }
 
     @Override
-    public boolean offset(Path file) throws BackgroundException {
+    public boolean offset(Path file) {
         return true;
     }
 }

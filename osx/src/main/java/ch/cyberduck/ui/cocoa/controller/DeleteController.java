@@ -52,11 +52,11 @@ public class DeleteController extends ProxyController {
         int i = 0;
         Iterator<Path> iter;
         for(iter = normalized.iterator(); i < 10 && iter.hasNext(); ) {
-            alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(iter.next().getName());
+            alertText.append('\n').append('\u2022').append(' ').append(iter.next().getName());
             i++;
         }
         if(iter.hasNext()) {
-            alertText.append("\n").append(Character.toString('\u2022')).append(" " + "…");
+            alertText.append('\n').append('\u2022').append(' ').append('…');
         }
         final NSAlert alert = NSAlert.alert(LocaleFactory.localizedString("Delete"), //title
             alertText.toString(),

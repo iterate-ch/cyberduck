@@ -18,7 +18,6 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
@@ -57,7 +56,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
     @Test
     public void testTransferAppend() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new SDSTouchFeature(session, nodeid).touch(
             new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final byte[] content = new byte[39864];
@@ -77,14 +76,14 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
             new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
         }
         {
             final TransferStatus status = new TransferStatus().length(content.length / 2).skip(content.length / 2).append(true).exists(true);
             new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();
@@ -97,7 +96,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
     @Test
     public void testTransferUnknownSize() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path test = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(test, new TransferStatus());
         final byte[] content = new byte[1];
@@ -117,7 +116,7 @@ public class DefaultDownloadFeatureTest extends AbstractSDSTest {
             new DefaultDownloadFeature(new SDSReadFeature(session, nodeid)).download(
                 test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
                 status,
-                new DisabledConnectionCallback(), new DisabledPasswordCallback());
+                new DisabledConnectionCallback());
         }
         final byte[] buffer = new byte[content.length];
         final InputStream in = local.getInputStream();

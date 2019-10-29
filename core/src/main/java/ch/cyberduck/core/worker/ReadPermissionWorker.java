@@ -29,14 +29,18 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.UnixPermission;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
+    private static final Logger log = Logger.getLogger(ReadPermissionWorker.class);
 
     /**
      * Selected files.
@@ -50,6 +54,9 @@ public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
     @Override
     public PermissionOverwrite run(final Session<?> session) throws BackgroundException {
         final UnixPermission feature = session.getFeature(UnixPermission.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         final List<Permission> permissions = new ArrayList<>();
         for(Path next : files) {
             if(this.isCanceled()) {
@@ -108,7 +115,7 @@ public class ReadPermissionWorker extends Worker<PermissionOverwrite> {
             return false;
         }
         final ReadPermissionWorker that = (ReadPermissionWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

@@ -49,8 +49,8 @@ namespace Ch.Cyberduck.Ui.Controller
         bool HistoryForwardEnabled { set; }
         bool ParentPathEnabled { set; }
         string SelectedComboboxPath { get; }
-        Bitmap EditIcon { set; }
-        Bitmap OpenIcon { set; }
+        Image EditIcon { set; }
+        Image OpenIcon { set; }
         string SelectedEncoding { set; }
         bool SecureConnection { set; }
         bool SecureConnectionVisible { set; }
@@ -121,6 +121,8 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DuplicateFile;
         event ValidateCommand ValidateDuplicateFile;
         event VoidHandler OpenUrl;
+        event VoidHandler CreateShareLink;
+        event ValidateCommand ValidateCreateShareLink;
         event ValidateCommand ValidateOpenWebUrl;
         event ValidateCommand ValidateEditWith;
         event EditorsHandler GetEditorsForSelection;

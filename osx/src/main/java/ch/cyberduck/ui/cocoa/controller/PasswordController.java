@@ -34,6 +34,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.ProviderHelpServiceFactory;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.resources.IconCacheFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +74,7 @@ public class PasswordController extends AlertController {
         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
         alert.setIcon(IconCacheFactory.<NSImage>get().iconNamed(options.icon, 64));
         alert.setMessageText(title);
-        alert.setInformativeText(reason);
+        alert.setInformativeText(new StringAppender().append(reason).toString());
         alert.addButtonWithTitle(LocaleFactory.localizedString("Continue", "Credentials"));
         alert.addButtonWithTitle(LocaleFactory.localizedString("Cancel", "Alert"));
         alert.setShowsSuppressionButton(false);
@@ -92,7 +93,7 @@ public class PasswordController extends AlertController {
     }
 
     @Action
-    public void passwordFieldTextDidChange(NSNotification notification) {
+    public void passwordFieldTextDidChange(final NSNotification notification) {
         credentials.setPassword(inputField.stringValue());
     }
 
@@ -105,7 +106,7 @@ public class PasswordController extends AlertController {
             keychainCheckbox.setAction(Foundation.selector("keychainCheckboxClicked:"));
             keychainCheckbox.setTarget(this.id());
             keychainCheckbox.setButtonType(NSButton.NSSwitchButton);
-            keychainCheckbox.setState(options.save ? NSCell.NSOnState : NSCell.NSOffState);
+            keychainCheckbox.setState(credentials.isSaved() ? NSCell.NSOnState : NSCell.NSOffState);
             keychainCheckbox.sizeToFit();
             // Override accessory view with location menu added
             keychainCheckbox.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue()));
@@ -116,6 +117,10 @@ public class PasswordController extends AlertController {
         inputField.setFrameOrigin(new NSPoint(0, this.getFrame(alert, view).size.height.doubleValue() + view.subviews().count().doubleValue() * SUBVIEWS_VERTICAL_SPACE));
         view.addSubview(inputField);
         return view;
+    }
+
+    public void setPasswordFieldText(final String input) {
+        inputField.setStringValue(input);
     }
 
     @Override
@@ -135,6 +140,6 @@ public class PasswordController extends AlertController {
 
     @Override
     protected String help() {
-        return ProviderHelpServiceFactory.get().help();
+        return ProviderHelpServiceFactory.get().help(bookmark.getProtocol());
     }
 }

@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,13 +61,13 @@ public class SwiftMultipleDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         if(files.size() == 1) {
             new SwiftDeleteFeature(session, regionService).delete(files, prompt, callback);
         }
         else {
             final Map<Path, List<String>> containers = new HashMap<Path, List<String>>();
-            for(Path file : files) {
+            for(Path file : files.keySet()) {
                 if(containerService.isContainer(file)) {
                     continue;
                 }
@@ -100,13 +101,13 @@ public class SwiftMultipleDeleteFeature implements Delete {
                     return;
                 }
                 else {
-                    throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, files.iterator().next());
+                    throw new SwiftExceptionMappingService().map("Cannot delete {0}", e, files.keySet().iterator().next());
                 }
             }
             catch(IOException e) {
-                throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, files.iterator().next());
+                throw new DefaultIOExceptionMappingService().map("Cannot delete {0}", e, files.keySet().iterator().next());
             }
-            for(Path file : files) {
+            for(Path file : files.keySet()) {
                 if(containerService.isContainer(file)) {
                     callback.delete(file);
                     // Finally delete bucket itself

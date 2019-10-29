@@ -51,7 +51,6 @@ public class S3MultipartWriteFeatureTest extends AbstractS3Test {
         stream.close();
         assertArrayEquals(content, compare);
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test

@@ -17,7 +17,20 @@ package ch.cyberduck.core.transfer;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Filter;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.ListProgressListener;
+import ch.cyberduck.core.ListService;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Download;
@@ -64,7 +77,7 @@ public class DownloadTransfer extends Transfer {
 
     private final DownloadSymlinkResolver symlinkResolver;
 
-    private DownloadFilterOptions options = new DownloadFilterOptions();
+    private DownloadFilterOptions options;
 
     public DownloadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
@@ -140,29 +153,30 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
+        final DownloadFilterOptions o = (null == options ? new DownloadFilterOptions() : options);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Filter transfer with action %s", action));
+            log.debug(String.format("Filter transfer with action %s and options %s", action, o));
         }
         final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, source, options).withCache(cache);
+            return new ResumeFilter(resolver, source, o).withCache(cache);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, source, options).withCache(cache);
+            return new RenameFilter(resolver, source, o).withCache(cache);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, source, options).withCache(cache);
+            return new RenameExistingFilter(resolver, source, o).withCache(cache);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, source, options).withCache(cache);
+            return new SkipFilter(resolver, source, o).withCache(cache);
         }
         if(action.equals(TransferAction.trash)) {
-            return new TrashFilter(resolver, source, options).withCache(cache);
+            return new TrashFilter(resolver, source, o).withCache(cache);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, source, options, listener).withCache(cache);
+            return new CompareFilter(resolver, source, o, listener).withCache(cache);
         }
-        return new OverwriteFilter(resolver, source, options).withCache(cache);
+        return new OverwriteFilter(resolver, source, o).withCache(cache);
     }
 
     @Override
@@ -235,8 +249,8 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
-                         final TransferStatus status, final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback,
+    public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local, final TransferOptions options,
+                         final TransferStatus status, final ConnectionCallback connectionCallback,
                          final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
@@ -251,7 +265,7 @@ public class DownloadTransfer extends Transfer {
                 }
                 final Symlink symlink = LocalSymlinkFactory.get();
                 symlink.symlink(local, target);
-                return file;
+                return;
             }
         }
         if(file.isFile()) {
@@ -269,7 +283,7 @@ public class DownloadTransfer extends Transfer {
                     addTransferred(bytes);
                     super.recv(bytes);
                 }
-            }, status, connectionCallback, passwordCallback);
+            }, status, connectionCallback);
         }
         else if(file.isDirectory()) {
             if(!status.isExists()) {
@@ -279,7 +293,6 @@ public class DownloadTransfer extends Transfer {
                 status.setComplete();
             }
         }
-        return file;
     }
 
     @Override

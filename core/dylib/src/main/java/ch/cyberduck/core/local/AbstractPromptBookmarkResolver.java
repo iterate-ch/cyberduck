@@ -27,10 +27,13 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.preferences.SecurityApplicationGroupSupportDirectoryFinder;
+import ch.cyberduck.core.preferences.TemporarySupportDirectoryFinder;
 import ch.cyberduck.core.threading.DefaultMainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.ObjCObjectByReference;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSError;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -45,6 +48,9 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
 
     private final Proxy proxy = new Proxy();
 
+    private static final Local TEMPORARY = new TemporarySupportDirectoryFinder().find();
+    private static final Local GROUP_CONTAINER = new SecurityApplicationGroupSupportDirectoryFinder().find();
+
     /**
      * @param create  Create options
      * @param resolve Resolve options
@@ -53,7 +59,6 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
         this.create = create;
         this.resolve = resolve;
     }
-
 
     @Override
     public String create(final Local file) throws AccessDeniedException {
@@ -82,17 +87,37 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
 
     @Override
     public NSURL resolve(final Local file, final boolean interactive) throws AccessDeniedException {
+        if(null != TEMPORARY) {
+            if(file.isChild(TEMPORARY)) {
+                // Skip prompt for file in temporary folder where access is not sandboxed
+                return null;
+            }
+        }
+        if(null != GROUP_CONTAINER) {
+            if(file.isChild(GROUP_CONTAINER)) {
+                // Skip prompt for file in application group folder where access is not sandboxed
+                return null;
+            }
+        }
         final NSData bookmark;
         if(null == file.getBookmark()) {
-            log.warn(String.format("Missing security scoped bookmark for file %s", file));
             if(interactive) {
+                if(!file.exists()) {
+                    return null;
+                }
                 // Prompt user if no bookmark reference is available
+                log.warn(String.format("Missing security scoped bookmark for file %s", file));
                 final String reference = this.choose(file);
+                if(null == reference) {
+                    // Prompt canceled by user
+                    return null;
+                }
                 file.setBookmark(reference);
                 bookmark = NSData.dataWithBase64EncodedString(reference);
             }
             else {
-                throw new LocalAccessDeniedException(String.format("No security scoped bookmark for %s", file.getName()));
+                log.warn(String.format("No security scoped bookmark for %s", file.getName()));
+                return null;
             }
         }
         else {
@@ -129,11 +154,11 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
                 panel.setPrompt(LocaleFactory.localizedString("Choose"));
                 final NSInteger modal = panel.runModal(file.getParent().getAbsolute(), file.getName());
                 if(modal.intValue() == SheetCallback.DEFAULT_OPTION) {
-                    final NSArray filenames = panel.filenames();
+                    final NSArray filenames = panel.URLs();
                     final NSEnumerator enumerator = filenames.objectEnumerator();
                     NSObject next;
                     while((next = enumerator.nextObject()) != null) {
-                        selected.set(new FinderLocal(next.toString()));
+                        selected.set(new FinderLocal(Rococoa.cast(next, NSURL.class).path()));
                     }
                 }
                 panel.orderOut(null);
@@ -141,7 +166,8 @@ public abstract class AbstractPromptBookmarkResolver implements FilesystemBookma
         };
         proxy.invoke(action, action.lock(), true);
         if(selected.get() == null) {
-            throw new LocalAccessDeniedException(String.format("Prompt for %s canceled", file));
+            log.warn(String.format("Prompt for %s canceled", file));
+            return null;
         }
         // Save Base64 encoded scoped reference
         return this.create(selected.get());

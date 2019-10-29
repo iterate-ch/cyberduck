@@ -18,8 +18,6 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.LoginCallbackFactory;
-import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PasswordCallbackFactory;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.TransferErrorCallbackControllerFactory;
 import ch.cyberduck.core.TransferPromptControllerFactory;
@@ -91,10 +89,22 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final ProgressListener progress,
                                     final Transfer transfer,
                                     final TransferOptions options,
+                                    final TransferPrompt prompt) {
+        this(controller, source, destination, listener, progress, transfer, options, prompt, TransferErrorCallbackControllerFactory.get(controller),
+                new TransferSpeedometer(transfer), new DisabledStreamListener());
+    }
+
+    public TransferBackgroundAction(final Controller controller,
+                                    final SessionPool source,
+                                    final SessionPool destination,
+                                    final TransferListener listener,
+                                    final ProgressListener progress,
+                                    final Transfer transfer,
+                                    final TransferOptions options,
                                     final TransferPrompt prompt,
                                     final TransferErrorCallback error) {
         this(controller, source, destination, listener, progress, transfer, options, prompt, error,
-                new TransferSpeedometer(transfer), new DisabledStreamListener());
+            new TransferSpeedometer(transfer), new DisabledStreamListener());
     }
 
     public TransferBackgroundAction(final Controller controller,
@@ -108,12 +118,11 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        this(LoginCallbackFactory.get(controller), PasswordCallbackFactory.get(controller),
-                controller, source, destination, listener, progress, transfer, options, prompt, error, meter, stream);
+        this(LoginCallbackFactory.get(controller),
+            controller, source, destination, listener, progress, transfer, options, prompt, error, meter, stream);
     }
 
     public TransferBackgroundAction(final ConnectionCallback callback,
-                                    final PasswordCallback password,
                                     final Controller controller,
                                     final SessionPool source,
                                     final SessionPool destination,
@@ -125,7 +134,7 @@ public class TransferBackgroundAction extends TransferWorkerBackgroundAction<Boo
                                     final TransferErrorCallback error,
                                     final TransferSpeedometer meter,
                                     final StreamListener stream) {
-        super(controller, new ConcurrentTransferWorker(source, destination, transfer, options, meter, prompt, error, callback, password, progress, stream,
+        super(controller, source, new ConcurrentTransferWorker(source, destination, transfer, options, meter, prompt, error, callback, progress, stream,
             NotificationServiceFactory.get()));
         this.options = options;
         this.meter = meter;

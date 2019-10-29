@@ -19,7 +19,6 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.LocaleFactory;
@@ -47,6 +46,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Objects;
 
 public class EditOpenWorker extends Worker<Transfer> {
     private static final Logger log = Logger.getLogger(EditOpenWorker.class);
@@ -68,11 +68,10 @@ public class EditOpenWorker extends Worker<Transfer> {
         this.callback = callback;
         this.quit = quit;
         this.notification = notification;
-        this.download = new DownloadTransfer(bookmark, editor.getRemote(), editor.getLocal(),
-                new DownloadDuplicateFilter()) {
+        this.download = new DownloadTransfer(bookmark, editor.getRemote(), editor.getLocal(), new DownloadDuplicateFilter()) {
             @Override
             public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested,
-                                         final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
+                                         final TransferPrompt prompt, final ListProgressListener listener) {
                 return TransferAction.trash;
             }
         };
@@ -92,9 +91,9 @@ public class EditOpenWorker extends Worker<Transfer> {
         options.open = false;
         final SingleTransferWorker worker
             = new SingleTransferWorker(session, session, download, options, new TransferSpeedometer(download),
-                new DisabledTransferPrompt(), callback,
-            listener, new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), notification);
-        worker.run();
+            new DisabledTransferPrompt(), callback,
+            listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
+        worker.run(session);
         if(!download.isComplete()) {
             log.warn(String.format("File size changed for %s", file));
         }
@@ -110,7 +109,7 @@ public class EditOpenWorker extends Worker<Transfer> {
     @Override
     public String getActivity() {
         return MessageFormat.format(LocaleFactory.localizedString("Downloading {0}", "Status"),
-                editor.getRemote().getName());
+            editor.getRemote().getName());
     }
 
     @Override
@@ -127,7 +126,7 @@ public class EditOpenWorker extends Worker<Transfer> {
             return false;
         }
         EditOpenWorker that = (EditOpenWorker) o;
-        if(editor != null ? !editor.equals(that.editor) : that.editor != null) {
+        if(!Objects.equals(editor, that.editor)) {
             return false;
         }
         return true;

@@ -10,7 +10,7 @@ import static org.junit.Assert.assertFalse;
 public class WindowMainActionTest {
 
     @Test
-    public void testIsValid() throws Exception {
+    public void testIsValid() {
         assertFalse(new WindowMainAction(new WindowController() {
             @Override
             protected String getBundleName() {

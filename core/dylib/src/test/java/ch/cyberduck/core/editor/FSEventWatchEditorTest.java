@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 public class FSEventWatchEditorTest {
 
     @Test
-    public void testTemporaryPath() throws Exception {
+    public void testTemporaryPath() {
         final Path path = new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file));
         path.attributes().setDuplicate(true);
         path.attributes().setVersionId("1");
@@ -58,7 +58,7 @@ public class FSEventWatchEditorTest {
     }
 
     @Test
-    public void testSymlinkTarget() throws Exception {
+    public void testSymlinkTarget() {
         final Path file = new Path("/f1/f2/s.txt", EnumSet.of(Path.Type.file, Path.Type.symboliclink));
         file.setSymlinkTarget(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)));
         final FSEventWatchEditor editor = new FSEventWatchEditor(new Application("com.apple.TextEdit", null),

@@ -34,6 +34,7 @@ import org.apache.commons.net.ftp.parser.OS400FTPEntryParser;
 import org.apache.commons.net.ftp.parser.ParserInitializationException;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -143,15 +144,15 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     }
 
     private CompositeFileEntryParser createOS2FTPEntryParser(final TimeZone timezone) {
-        return new CompositeFileEntryParser(Arrays.asList(
-                new OS2FTPEntryParser() {
-                    @Override
-                    protected FTPClientConfig getDefaultConfiguration() {
-                        final FTPClientConfig config = super.getDefaultConfiguration();
-                        config.setServerTimeZoneId(timezone.getID());
-                        return config;
-                    }
+        return new CompositeFileEntryParser(Collections.singletonList(
+            new OS2FTPEntryParser() {
+                @Override
+                protected FTPClientConfig getDefaultConfiguration() {
+                    final FTPClientConfig config = super.getDefaultConfiguration();
+                    config.setServerTimeZoneId(timezone.getID());
+                    return config;
                 }
+            }
         ));
     }
 
@@ -170,15 +171,15 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     }
 
     private CompositeFileEntryParser createMVSEntryParser(final TimeZone timezone) {
-        return new CompositeFileEntryParser(Arrays.asList(
-                new MVSFTPEntryParser() {
-                    @Override
-                    protected FTPClientConfig getDefaultConfiguration() {
-                        final FTPClientConfig config = super.getDefaultConfiguration();
-                        config.setServerTimeZoneId(timezone.getID());
-                        return config;
-                    }
+        return new CompositeFileEntryParser(Collections.singletonList(
+            new MVSFTPEntryParser() {
+                @Override
+                protected FTPClientConfig getDefaultConfiguration() {
+                    final FTPClientConfig config = super.getDefaultConfiguration();
+                    config.setServerTimeZoneId(timezone.getID());
+                    return config;
                 }
+            }
         ));
     }
 }

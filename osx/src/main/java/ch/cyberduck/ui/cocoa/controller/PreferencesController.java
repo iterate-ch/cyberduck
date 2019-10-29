@@ -27,7 +27,9 @@ import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSMutableAttributedString;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
+import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSRange;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.features.Location;
@@ -41,7 +43,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
-import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
@@ -52,16 +53,17 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Object;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -81,29 +83,29 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSView panelGeneral;
+    protected NSView panelGeneral;
     @Outlet
-    private NSView panelEditor;
+    protected NSView panelEditor;
     @Outlet
-    private NSView panelBrowser;
+    protected NSView panelBrowser;
     @Outlet
-    private NSView panelTransfer;
+    protected NSView panelTransfer;
     @Outlet
-    private NSView panelFTP;
+    protected NSView panelFTP;
     @Outlet
-    private NSView panelSFTP;
+    protected NSView panelSFTP;
     @Outlet
-    private NSView panelS3;
+    protected NSView panelS3;
     @Outlet
-    private NSView panelBandwidth;
+    protected NSView panelBandwidth;
     @Outlet
-    private NSView panelAdvanced;
+    protected NSView panelAdvanced;
     @Outlet
-    private NSView panelUpdate;
+    protected NSView panelUpdate;
     @Outlet
-    private NSView panelLanguage;
+    protected NSView panelLanguage;
     @Outlet
-    private NSView panelCryptomator;
+    protected NSView panelCryptomator;
 
     public void setPanelUpdate(NSView v) {
         this.panelUpdate = v;
@@ -163,84 +165,67 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Override
-    protected List<NSView> getPanels() {
-        final List<String> identifiers = this.getPanelIdentifiers();
-        final List<NSView> views = new ArrayList<NSView>();
-        if(identifiers.contains(PreferencesToolbarItem.general.name())) {
-            views.add(panelGeneral);
+    protected Map<Label, NSView> getPanels() {
+        final Map<Label, NSView> views = new LinkedHashMap<>();
+        views.put(new Label(PreferencesToolbarItem.general.name(), PreferencesToolbarItem.general.label()), panelGeneral);
+        views.put(new Label(PreferencesToolbarItem.browser.name(), PreferencesToolbarItem.browser.label()), panelBrowser);
+        views.put(new Label(PreferencesToolbarItem.queue.name(), PreferencesToolbarItem.queue.label()), panelTransfer);
+        views.put(new Label(PreferencesToolbarItem.pencil.name(), PreferencesToolbarItem.pencil.label()), panelEditor);
+        views.put(new Label(PreferencesToolbarItem.ftp.name(), PreferencesToolbarItem.ftp.label()), panelFTP);
+        views.put(new Label(PreferencesToolbarItem.sftp.name(), PreferencesToolbarItem.sftp.label()), panelSFTP);
+        views.put(new Label(PreferencesToolbarItem.s3.name(), PreferencesToolbarItem.s3.label()), panelS3);
+        views.put(new Label(PreferencesToolbarItem.bandwidth.name(), PreferencesToolbarItem.bandwidth.label()), panelBandwidth);
+        views.put(new Label(PreferencesToolbarItem.connection.name(), PreferencesToolbarItem.connection.label()), panelAdvanced);
+        views.put(new Label(PreferencesToolbarItem.cryptomator.name(), PreferencesToolbarItem.cryptomator.label()), panelCryptomator);
+        if(null != preferences.getDefault("SUExpectsDSASignature")) {
+            views.put(new Label(PreferencesToolbarItem.update.name(), PreferencesToolbarItem.update.label()), panelUpdate);
         }
-        if(identifiers.contains(PreferencesToolbarItem.browser.name())) {
-            views.add(panelBrowser);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.queue.name())) {
-            views.add(panelTransfer);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.pencil.name())) {
-            views.add(panelEditor);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.ftp.name())) {
-            views.add(panelFTP);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.sftp.name())) {
-            views.add(panelSFTP);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.s3.name())) {
-            views.add(panelS3);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.bandwidth.name())) {
-            views.add(panelBandwidth);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.connection.name())) {
-            views.add(panelAdvanced);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.cryptomator.name())) {
-            views.add(panelCryptomator);
-        }
-        if(identifiers.contains(PreferencesToolbarItem.update.name())) {
-            if(null != Updater.getFeed()) {
-                views.add(panelUpdate);
-            }
-        }
-        if(identifiers.contains(PreferencesToolbarItem.language.name())) {
-            views.add(panelLanguage);
-        }
-        return views;
-    }
-
-    @Override
-    protected List<String> getPanelIdentifiers() {
-        final List<String> views = new ArrayList<>(Arrays.asList(
-            PreferencesToolbarItem.general.name(),
-            PreferencesToolbarItem.browser.name(),
-            PreferencesToolbarItem.queue.name(),
-            PreferencesToolbarItem.pencil.name(),
-            PreferencesToolbarItem.ftp.name(),
-            PreferencesToolbarItem.sftp.name(),
-            PreferencesToolbarItem.s3.name(),
-            PreferencesToolbarItem.bandwidth.name(),
-            PreferencesToolbarItem.connection.name(),
-            PreferencesToolbarItem.cryptomator.name())
-        );
-        if(null != Updater.getFeed()) {
-            views.add(PreferencesToolbarItem.update.name());
-        }
-        views.add(PreferencesToolbarItem.language.name());
+        views.put(new Label(PreferencesToolbarItem.language.name(), PreferencesToolbarItem.language.label()), panelLanguage);
         return views;
     }
 
     protected enum PreferencesToolbarItem {
         general,
         browser,
-        queue,
-        pencil,
-        ftp,
-        sftp,
-        s3,
+        queue {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString("Transfers", "Preferences");
+            }
+        },
+        pencil {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString("Editor", "Preferences");
+            }
+        },
+        ftp {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.upperCase(this.name()), "Preferences");
+            }
+        },
+        sftp {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.upperCase(this.name()), "Preferences");
+            }
+        },
+        s3 {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.upperCase(this.name()), "Preferences");
+            }
+        },
         bandwidth,
         connection,
         cryptomator,
         update,
-        language
+        language;
+
+        public String label() {
+            return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Preferences");
+        }
     }
 
     @Override
@@ -366,10 +351,9 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void editorPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            NSArray selected = sheet.filenames();
-            String filename;
-            if((filename = selected.lastObject().toString()) != null) {
-                final String path = LocalFactory.get(filename).getAbsolute();
+            NSObject selected = sheet.URLs().lastObject();
+            if(selected != null) {
+                final String path = LocalFactory.get(Rococoa.cast(selected, NSURL.class).path()).getAbsolute();
                 final ApplicationFinder finder = ApplicationFinderFactory.get();
                 final Application application = finder.getDescription(path);
                 if(finder.isInstalled(application)) {
@@ -427,12 +411,15 @@ public class PreferencesController extends ToolbarWindowController {
     public void bookmarkSizePopupClicked(NSPopUpButton sender) {
         if(sender.indexOfSelectedItem().intValue() == 0) {
             preferences.setProperty("bookmark.icon.size", BookmarkCell.SMALL_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.menu.icon.size", BookmarkCell.SMALL_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem().intValue() == 1) {
             preferences.setProperty("bookmark.icon.size", BookmarkCell.MEDIUM_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.menu.icon.size", BookmarkCell.MEDIUM_BOOKMARK_SIZE);
         }
         if(sender.indexOfSelectedItem().intValue() == 2) {
             preferences.setProperty("bookmark.icon.size", BookmarkCell.LARGE_BOOKMARK_SIZE);
+            preferences.setProperty("bookmark.menu.icon.size", BookmarkCell.LARGE_BOOKMARK_SIZE);
         }
         BrowserController.updateBookmarkTableRowHeight();
     }
@@ -613,6 +600,8 @@ public class PreferencesController extends ToolbarWindowController {
         this.connectionRetryNumberStepper.setTarget(this.id());
         this.connectionRetryNumberStepper.setAction(Foundation.selector("connectionRetryNumberStepperClicked:"));
         this.connectionRetryNumberStepper.setIntValue(preferences.getInteger("connection.retry"));
+        this.connectionRetryNumberStepper.setMinValue(1);
+        this.connectionRetryNumberStepper.setMaxValue(preferences.getInteger("connection.retry.max"));
     }
 
     @Action
@@ -739,6 +728,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void chmodUploadCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
         preferences.setProperty("queue.upload.permissions.change", enabled);
+        preferences.setProperty("touch.permissions.change", enabled);
         this.chmodUploadDefaultCheckbox.setEnabled(enabled);
         this.chmodUploadCustomCheckbox.setEnabled(enabled);
         boolean chmodUploadDefaultChecked = this.chmodUploadDefaultCheckbox.state() == NSCell.NSOnState;
@@ -1341,10 +1331,9 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void downloadPathPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            NSArray selected = sheet.filenames();
-            String filename;
-            if((filename = selected.lastObject().toString()) != null) {
-                final Local folder = LocalFactory.get(filename);
+            NSObject selected = sheet.URLs().lastObject();
+            if(selected != null) {
+                final Local folder = LocalFactory.get(Rococoa.cast(selected, NSURL.class).path());
                 preferences.setProperty("queue.download.folder", folder.getAbbreviatedPath());
                 preferences.setProperty("queue.download.folder.bookmark", folder.getBookmark());
             }
@@ -1428,7 +1417,7 @@ public class PreferencesController extends ToolbarWindowController {
             this.downloadSkipRegexField.id());
     }
 
-    public void downloadSkipRegexFieldDidChange(NSNotification sender) {
+    public void downloadSkipRegexFieldDidChange(final NSNotification sender) {
         String value = this.downloadSkipRegexField.string().trim();
         if(StringUtils.EMPTY.equals(value)) {
             preferences.setProperty("queue.download.skip.enable", false);
@@ -1493,7 +1482,7 @@ public class PreferencesController extends ToolbarWindowController {
             this.uploadSkipRegexField.id());
     }
 
-    public void uploadSkipRegexFieldDidChange(NSNotification sender) {
+    public void uploadSkipRegexFieldDidChange(final NSNotification sender) {
         String value = this.uploadSkipRegexField.string().trim();
         if(StringUtils.EMPTY.equals(value)) {
             preferences.setProperty("queue.upload.skip.enable", false);
@@ -1698,6 +1687,22 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
+    NSButton segmentedDownloadCheckbox;
+
+    public void setSegmentedDownloadCheckbox(final NSButton b) {
+        this.segmentedDownloadCheckbox = b;
+        this.segmentedDownloadCheckbox.setTarget(this.id());
+        this.segmentedDownloadCheckbox.setAction(Foundation.selector("segmentedDownloadCheckboxClicked:"));
+        this.segmentedDownloadCheckbox.setState(preferences.getBoolean("queue.download.segments") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void segmentedDownloadCheckboxClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.NSOnState;
+        preferences.setProperty("queue.download.segments", enabled);
+    }
+
+    @Outlet
     private NSButton openAfterDownloadCheckbox;
 
     public void setOpenAfterDownloadCheckbox(NSButton b) {
@@ -1868,7 +1873,7 @@ public class PreferencesController extends ToolbarWindowController {
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
         for(Protocol protocol : protocols.find(new DefaultProtocolPredicate(
-            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive)))) {
+            EnumSet.of(Protocol.Type.dropbox, Protocol.Type.onedrive, Protocol.Type.googledrive, Protocol.Type.nextcloud)))) {
             this.addProtocol(protocol);
         }
         this.protocolCombobox.menu().addItem(NSMenuItem.separatorItem());
@@ -1895,7 +1900,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void protocolComboboxClicked(NSPopUpButton sender) {
         final Protocol selected = ProtocolFactory.get().forName(sender.selectedItem().representedObject());
-        preferences.setProperty("connection.protocol.default", selected.getIdentifier());
+        preferences.setProperty("connection.protocol.default", String.format("%s-%s", selected.getIdentifier(), selected.getProvider()));
         preferences.setProperty("connection.port.default", selected.getDefaultPort());
     }
 
@@ -1916,7 +1921,7 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     private void configureDefaultProtocolHandlerCombobox(final NSPopUpButton defaultProtocolHandlerCombobox, final Scheme protocol) {
-        final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol);
+        final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol.name());
         if(Application.notfound.equals(defaultHandler)) {
             defaultProtocolHandlerCombobox.addItemWithTitle(LocaleFactory.localizedString("Unknown"));
             defaultProtocolHandlerCombobox.setEnabled(false);
@@ -1925,7 +1930,7 @@ public class PreferencesController extends ToolbarWindowController {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Default Protocol Handler for %s:%s", protocol, defaultHandler));
             }
-            for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol)) {
+            for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol.name())) {
                 defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
                 final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
                 item.setImage(IconCacheFactory.<NSImage>get().applicationIcon(handler, 16));
@@ -1951,7 +1956,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
-            Arrays.asList(Scheme.ftp, Scheme.ftps), new Application(bundle)
+            new Application(bundle), Arrays.asList(Scheme.ftp.name(), Scheme.ftps.name())
         );
     }
 
@@ -1969,7 +1974,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         SchemeHandlerFactory.get().setDefaultHandler(
-            Collections.singletonList(Scheme.sftp), new Application(bundle)
+            new Application(bundle), Collections.singletonList(Scheme.sftp.name())
         );
     }
 
@@ -2073,17 +2078,20 @@ public class PreferencesController extends ToolbarWindowController {
         this.updateFeedPopup.removeAllItems();
         this.updateFeedPopup.setAction(Foundation.selector("updateFeedPopupClicked:"));
         this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Release"));
-        this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.release"));
-        this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Beta"));
-        this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.beta"));
-        this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Snapshot Builds"));
-        this.updateFeedPopup.lastItem().setRepresentedObject(preferences.getProperty("update.feed.nightly"));
-        final String feed = preferences.getProperty(Updater.PROPERTY_FEED_URL);
+        this.updateFeedPopup.lastItem().setRepresentedObject("release");
+        if(preferences.getBoolean("update.feed.beta.enable")) {
+            this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Beta"));
+            this.updateFeedPopup.lastItem().setRepresentedObject("beta");
+        }
+        if(preferences.getBoolean("update.feed.nightly.enable")) {
+            this.updateFeedPopup.addItemWithTitle(LocaleFactory.localizedString("Snapshot Builds"));
+            this.updateFeedPopup.lastItem().setRepresentedObject("nightly");
+        }
+        final String feed = preferences.getProperty("update.feed");
         NSInteger selected = this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(feed);
         if(-1 == selected.intValue()) {
-            log.warn(String.format("Invalid feed setting:%s", feed));
-            this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(
-                preferences.getProperty("update.feed.release")));
+            log.warn(String.format("Invalid feed setting %s", feed));
+            this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject("release"));
         }
         else {
             this.updateFeedPopup.selectItemAtIndex(selected);
@@ -2092,15 +2100,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void updateFeedPopupClicked(NSPopUpButton sender) {
-        // Update sparkle feed property. Default is in Info.plist
-        String selected = sender.selectedItem().representedObject();
-        if(null == selected || preferences.getDefault(Updater.PROPERTY_FEED_URL).equals(selected)) {
-            // Remove custom value
-            preferences.deleteProperty(Updater.PROPERTY_FEED_URL);
-        }
-        else {
-            preferences.setProperty(Updater.PROPERTY_FEED_URL, selected);
-        }
+        preferences.setProperty("update.feed", sender.selectedItem().representedObject());
     }
 
     @Outlet

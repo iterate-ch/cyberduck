@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -75,9 +76,9 @@ public class DriveReadFeature implements Read {
                 return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
             else {
-                final String base = session.getClient().getRootUrl();
-                final HttpUriRequest request = new HttpGet(String.format(String.format("%%s/drive/v3/files/%%s?alt=media&supportsTeamDrives=%s", PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")), base,
-                    fileid.getFileid(file, new DisabledListProgressListener())));
+                final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s",
+                    session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
+                    PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
                 request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                 if(status.isAppend()) {
                     final HttpRange range = HttpRange.withStatus(status);
@@ -102,8 +103,8 @@ public class DriveReadFeature implements Read {
                     case HttpStatus.SC_PARTIAL_CONTENT:
                         return new HttpMethodReleaseInputStream(response);
                     default:
-                        throw new DriveExceptionMappingService().map(new HttpResponseException(
-                                response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                        throw new DefaultHttpResponseExceptionMappingService().map(
+                            new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                 }
             }
         }

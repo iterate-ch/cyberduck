@@ -33,6 +33,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public class DefaultWatchEditor extends AbstractEditor {
     private static final Logger log = Logger.getLogger(DefaultWatchEditor.class);
 
@@ -57,21 +59,15 @@ public class DefaultWatchEditor extends AbstractEditor {
 
     @Override
     protected void watch(final Local local, final FileWatcherListener listener) throws IOException {
-        try {
-            monitor.register(local, listener).await();
-        }
-        catch(InterruptedException e) {
-            throw new IOException(String.format("Failure monitoring file %s", local), e);
-        }
+        Uninterruptibles.awaitUninterruptibly(monitor.register(local, listener));
     }
 
     @Override
-    public void delete() {
+    public void close() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Close monitor %s", monitor));
         }
         monitor.close();
-        super.delete();
     }
 }
 

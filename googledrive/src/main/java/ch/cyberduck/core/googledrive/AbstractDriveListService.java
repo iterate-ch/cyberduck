@@ -15,7 +15,6 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
@@ -23,6 +22,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.webloc.UrlFileWriter;
@@ -101,11 +101,14 @@ public abstract class AbstractDriveListService implements ListService {
                         continue;
                     }
                     // Use placeholder type to mark Google Apps document to download as web link file
-                    final EnumSet<AbstractPath.Type> type = DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
+                    final EnumSet<Path.Type> type = DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
                         StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)
                             ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
 
                     final Path child = new Path(directory, filename, type, properties);
+                    if(children.find(new DriveFileidProvider.IgnoreTrashedPathPredicate(child)) != null) {
+                        properties.setDuplicate(true);
+                    }
                     children.add(child);
                 }
                 listener.chunk(directory, children);

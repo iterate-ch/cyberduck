@@ -27,7 +27,6 @@ import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoInvalidFilesizeException;
 import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Read;
@@ -59,7 +58,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             if("masterkey.cryptomator".equals(file.getName())) {
                                 final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
@@ -76,7 +75,7 @@ public class CryptoVaultTest {
                         }
 
                         @Override
-                        public boolean offset(final Path file) throws BackgroundException {
+                        public boolean offset(final Path file) {
                             return false;
                         }
                     };
@@ -88,7 +87,7 @@ public class CryptoVaultTest {
         final CryptoVault vault = new CryptoVault(home);
         vault.load(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault");
             }
         }, new DisabledPasswordStore());
@@ -136,7 +135,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             final String masterKey = "{\n" +
                                 "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                 "  \"scryptCostParam\": 16384,\n" +
@@ -150,7 +149,7 @@ public class CryptoVaultTest {
                         }
 
                         @Override
-                        public boolean offset(final Path file) throws BackgroundException {
+                        public boolean offset(final Path file) {
                             return false;
                         }
                     };
@@ -162,7 +161,7 @@ public class CryptoVaultTest {
         final CryptoVault vault = new CryptoVault(home);
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault");
             }
         }, new DisabledPasswordStore()).getHome());
@@ -179,7 +178,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             final String masterKey = "{\n" +
                                 "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                 "  \"scryptCostParam\": 16384,\n" +
@@ -193,7 +192,7 @@ public class CryptoVaultTest {
                         }
 
                         @Override
-                        public boolean offset(final Path file) throws BackgroundException {
+                        public boolean offset(final Path file) {
                             return false;
                         }
                     };
@@ -205,7 +204,7 @@ public class CryptoVaultTest {
         final CryptoVault vault = new CryptoVault(home);
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault");
             }
         }, new DisabledPasswordStore()).getHome());
@@ -223,7 +222,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             final String masterKey = "{\n" +
                                 "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                 "  \"scryptCostParam\": 16384,\n" +
@@ -237,7 +236,7 @@ public class CryptoVaultTest {
                         }
 
                         @Override
-                        public boolean offset(final Path file) throws BackgroundException {
+                        public boolean offset(final Path file) {
                             return false;
                         }
                     };
@@ -280,7 +279,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             final String masterKey = "{\n" +
                                 "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                 "  \"scryptCostParam\": 16384,\n" +
@@ -294,7 +293,7 @@ public class CryptoVaultTest {
                         }
 
                         @Override
-                        public boolean offset(final Path file) throws BackgroundException {
+                        public boolean offset(final Path file) {
                             return false;
                         }
                     };
@@ -327,7 +326,7 @@ public class CryptoVaultTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             final String masterKey = "{\n" +
                                 "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                 "  \"scryptCostParam\": 16384,\n" +
@@ -341,7 +340,7 @@ public class CryptoVaultTest {
                         }
 
                         @Override
-                        public boolean offset(final Path file) throws BackgroundException {
+                        public boolean offset(final Path file) {
                             return false;
                         }
                     };
@@ -354,7 +353,7 @@ public class CryptoVaultTest {
         try {
             vault.load(session, new DisabledPasswordCallback() {
                 @Override
-                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                     return new VaultCredentials(null);
                 }
             }, new DisabledPasswordStore());
@@ -376,7 +375,7 @@ public class CryptoVaultTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
                         }
@@ -406,7 +405,7 @@ public class CryptoVaultTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
                         }
@@ -461,7 +460,7 @@ public class CryptoVaultTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
                             assertTrue(folder.equals(home) || folder.isChild(home));
                             return folder;
                         }

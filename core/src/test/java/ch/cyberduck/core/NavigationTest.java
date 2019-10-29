@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNull;
 public class NavigationTest {
 
     @Test
-    public void testEmpty() throws Exception {
+    public void testEmpty() {
         Navigation n = new Navigation();
         assertEquals(0, n.getBack().size());
         assertEquals(0, n.getForward().size());
@@ -19,7 +19,7 @@ public class NavigationTest {
     }
 
     @Test
-    public void testBack() throws Exception {
+    public void testBack() {
         Navigation n = new Navigation();
         assertNull(n.back());
         n.add(new Path("a", EnumSet.of(Path.Type.directory)));

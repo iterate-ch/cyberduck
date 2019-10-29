@@ -67,7 +67,7 @@ namespace Ch.Cyberduck.Core.Sparkle
         public override void check(bool background)
         {
             Log.debug($"Checking for updates, background= {background}");
-            SetAppcastURL();
+            WinSparkle.SetAppcastUrl(this.getFeedUrl());
             if (background)
             {
                 WinSparkle.CheckUpdateWithoutUi();
@@ -77,14 +77,6 @@ namespace Ch.Cyberduck.Core.Sparkle
                 WinSparkle.CheckUpdateWithUi();
             }
             _preferences.setProperty("update.check.last", DateTime.Now.Ticks);
-        }
-
-        private void SetAppcastURL()
-        {
-            String currentFeed = _preferences.getProperty("update.feed");
-            String feedUrl = _preferences.getProperty("update.feed." + currentFeed);
-            Log.debug("Setting feed URL to " + feedUrl);
-            WinSparkle.SetAppcastUrl(feedUrl);
         }
 
         public override bool hasUpdatePrivileges()

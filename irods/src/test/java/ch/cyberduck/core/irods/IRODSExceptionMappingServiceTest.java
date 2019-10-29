@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 public class IRODSExceptionMappingServiceTest {
 
     @Test
-    public void testMap() throws Exception {
+    public void testMap() {
         assertTrue(new IRODSExceptionMappingService().map(new CatNoAccessException("no access")) instanceof AccessDeniedException);
         assertTrue(new IRODSExceptionMappingService().map(new FileNotFoundException("no file")) instanceof NotfoundException);
         assertTrue(new IRODSExceptionMappingService().map(new AuthenticationException("no user")) instanceof LoginFailureException);

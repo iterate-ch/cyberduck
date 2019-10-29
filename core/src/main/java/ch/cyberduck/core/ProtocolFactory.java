@@ -75,19 +75,21 @@ public final class ProtocolFactory {
                     log.debug(String.format("Load profiles from %s", bundle));
                 }
                 for(Local f : bundle.list().filter(new ProfileFilter())) {
-                    final Profile profile = ProfileReaderFactory.get().read(f);
-                    if(null == profile) {
-                        continue;
+                    try {
+                        final Profile profile = ProfileReaderFactory.get().read(f);
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Adding bundled protocol %s", profile));
+                        }
+                        // Replace previous possibly disable protocol in Preferences
+                        registered.add(profile);
                     }
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Adding bundled protocol %s", profile));
+                    catch(AccessDeniedException e) {
+                        log.error(String.format("Failure reading profile from %s. %s", f, e));
                     }
-                    // Replace previous possibly disable protocol in Preferences
-                    registered.add(profile);
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", bundle, e.getMessage()));
+                log.warn(String.format("Failure reading collection %s %s", bundle, e));
             }
         }
         // Load thirdparty protocols
@@ -98,20 +100,22 @@ public final class ProtocolFactory {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Load profiles from %s", library));
                 }
-                for(Local profile : library.list().filter(new ProfileFilter())) {
-                    final Profile protocol = ProfileReaderFactory.get().read(profile);
-                    if(null == protocol) {
-                        continue;
+                for(Local f : library.list().filter(new ProfileFilter())) {
+                    try {
+                        final Profile profile = ProfileReaderFactory.get().read(f);
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Adding profile %s", profile));
+                        }
+                        // Replace previous possibly disable protocol in Preferences
+                        registered.add(profile);
                     }
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Adding thirdparty protocol %s", protocol));
+                    catch(AccessDeniedException e) {
+                        log.warn(String.format("Failure reading profile from %s. %s", f, e));
                     }
-                    // Replace previous possibly disable protocol in Preferences
-                    registered.add(protocol);
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading collection %s %s", library, e.getMessage()));
+                log.warn(String.format("Failure reading collection %s %s", library, e));
             }
         }
     }

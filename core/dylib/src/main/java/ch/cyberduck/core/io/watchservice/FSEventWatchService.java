@@ -46,6 +46,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
@@ -106,12 +107,7 @@ public class FSEventWatchService extends AbstractWatchService {
         final CountDownLatch lock = new CountDownLatch(1);
         final CFRunLoop loop = new CFRunLoop(lock, stream);
         threadFactory.newThread(loop).start();
-        try {
-            lock.await();
-        }
-        catch(InterruptedException e) {
-            throw new IOException(String.format("Failure registering for events in %s", folder), e);
-        }
+        Uninterruptibles.awaitUninterruptibly(lock);
         loops.put(key, loop);
         callbacks.put(key, callback);
         return key;
@@ -174,7 +170,7 @@ public class FSEventWatchService extends AbstractWatchService {
     }
 
     @Override
-    public void release() throws IOException {
+    public void release() {
         for(CFRunLoop l : loops.values()) {
             // Tells the daemon to stop sending events
             library.FSEventStreamStop(l.getStreamRef());

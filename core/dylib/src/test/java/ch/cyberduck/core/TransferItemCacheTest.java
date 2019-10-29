@@ -21,20 +21,17 @@ import org.junit.Test;
 
 import java.util.EnumSet;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TransferItemCacheTest {
 
     @Test
-    public void testRemove() throws Exception {
-        final AttributedList<TransferItem> remove = new TransferItemCache(1).remove(new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory))));
-        assertNotNull(remove);
-        assertTrue(remove.isEmpty());
+    public void testRemove() {
+        assertEquals(AttributedList.emptyList(), new TransferItemCache(1).remove(new TransferItem(new Path("/t", EnumSet.of(Path.Type.directory)))));
     }
 
     @Test
-    public void testLookup() throws Exception {
+    public void testLookup() {
         final Cache<TransferItem> c = new ReverseLookupCache<TransferItem>(new TransferItemCache(1), 1);
         final AttributedList<TransferItem> list = new AttributedList<>();
         list.add(new TransferItem(new Path("/r2", EnumSet.of(Path.Type.file)), new Local("/l2")));
@@ -44,11 +41,12 @@ public class TransferItemCacheTest {
     }
 
     @Test
-    public void testLookupFromRootDirectory() throws Exception {
+    public void testLookupFromRootDirectory() {
         final Cache<TransferItem> c = new ReverseLookupCache<TransferItem>(new TransferItemCache(1), 1);
         final AttributedList<TransferItem> list = new AttributedList<>();
         list.add(new TransferItem(new Path("/r2", EnumSet.of(Path.Type.file)), new Local("/l2")));
         c.put(null, list);
+        assertFalse(c.get(null).isEmpty());
         final NSObjectTransferItemReference reference = new NSObjectTransferItemReference(NSObjectTransferItemReference.get(new Path("/r2", EnumSet.of(Path.Type.file))));
         assertNotNull(c.lookup(reference));
     }

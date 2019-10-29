@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
@@ -32,6 +33,8 @@ import java.time.Duration;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.InvalidAccessTokenException;
+import com.dropbox.core.NetworkIOException;
+import com.dropbox.core.ProtocolException;
 import com.dropbox.core.RetryException;
 import com.dropbox.core.ServerException;
 import com.dropbox.core.v2.files.*;
@@ -51,12 +54,20 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
             return new LoginFailureException(buffer.toString(), failure);
         }
         if(failure instanceof RetryException) {
+            // Rate limit
             final Duration delay = Duration.ofMillis(((RetryException) failure).getBackoffMillis());
             return new RetriableAccessDeniedException(buffer.toString(), delay);
         }
         if(failure instanceof ServerException) {
             return new ConnectionRefusedException(buffer.toString(), failure);
         }
+        if(failure instanceof ProtocolException) {
+            return new InteroperabilityException(buffer.toString(), failure);
+        }
+        if(failure instanceof NetworkIOException) {
+            return new DefaultIOExceptionMappingService().map(((NetworkIOException) failure).getCause());
+        }
+        // API failure
         if(failure instanceof GetMetadataErrorException) {
             final GetMetadataError error = ((GetMetadataErrorException) failure).errorValue;
             final LookupError lookup = error.getPathValue();
@@ -221,6 +232,9 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
     }
 
     private void parse(final StringBuilder buffer, final String message) {
+        if(StringUtils.isBlank(message)) {
+            return;
+        }
         final JsonParser parser = new JsonParser();
         try {
             final JsonElement element = parser.parse(new StringReader(message));

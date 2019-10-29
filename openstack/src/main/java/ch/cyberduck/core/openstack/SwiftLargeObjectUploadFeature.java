@@ -26,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -102,7 +103,12 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
         final List<Path> existingSegments = new ArrayList<Path>();
         if(status.isAppend()) {
             // Get a lexicographically ordered list of the existing file segments
-            existingSegments.addAll(listService.list(segmentService.getSegmentsDirectory(file, status.getOffset() + status.getLength()), new DisabledListProgressListener()).toList());
+            try {
+                existingSegments.addAll(listService.list(segmentService.getSegmentsDirectory(file, status.getOffset() + status.getLength()), new DisabledListProgressListener()).toList());
+            }
+            catch(NotfoundException e) {
+                // Ignore
+            }
         }
         // Get the results of the uploads in the order they were submitted
         // this is important for building the manifest, and is not a problem in terms of performance
@@ -185,7 +191,7 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
             return stored;
         }
         catch(GenericException e) {
-            throw new SwiftExceptionMappingService().map("Upload {0} failed", e);
+            throw new SwiftExceptionMappingService().map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
@@ -195,12 +201,10 @@ public class SwiftLargeObjectUploadFeature extends HttpUploadFeature<StorageObje
     private Future<StorageObject> submit(final ThreadPool pool, final Path segment, final Local local,
                                          final BandwidthThrottle throttle, final StreamListener listener,
                                          final TransferStatus overall, final Long offset, final Long length, final ConnectionCallback callback) {
-        return pool.execute(new DefaultRetryCallable<StorageObject>(new BackgroundExceptionCallable<StorageObject>() {
+        return pool.execute(new DefaultRetryCallable<StorageObject>(session.getHost(), new BackgroundExceptionCallable<StorageObject>() {
             @Override
             public StorageObject call() throws BackgroundException {
-                if(overall.isCanceled()) {
-                    throw new ConnectionCanceledException();
-                }
+                overall.validate();
                 final TransferStatus status = new TransferStatus()
                     .length(length)
                     .skip(offset);

@@ -24,10 +24,10 @@ using System.Reflection;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Core.TaskDialog;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core;
+using Ch.Cyberduck.Ui.Core.Resources;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -177,9 +177,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Validate();
         }
 
-        public new void Close()
+        void IView.Close()
         {
-            base.Close();
+            if (Modal)
+            {
+                DialogResult = DialogResult.None;
+            }
+            Close();
         }
 
         public new bool Visible
@@ -487,7 +491,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         protected static Bitmap GetIcon(string iconIdentifier)
         {
-            object obj = IconCache.Instance.IconForName(iconIdentifier);
+            object obj = IconCache.IconForName(iconIdentifier);
             return (Bitmap) obj;
         }
 
@@ -496,7 +500,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             ImageList images = new ImageList();
             images.ImageSize = new Size(16, 16);
             images.ColorDepth = ColorDepth.Depth32Bit;
-            foreach (var icon in IconCache.Instance.GetProtocolIcons())
+            foreach (var icon in IconCache.GetProtocolIcons())
             {
                 images.Images.Add(icon.Key, icon.Value);
             }

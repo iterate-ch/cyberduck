@@ -58,7 +58,7 @@ public class TransferToolbarValidator implements ToolbarValidator {
                 @Override
                 public boolean validate(final Transfer transfer) {
                     final NSPopUpButton popup = Rococoa.cast(item.view(), NSPopUpButton.class);
-                    switch(transfer.getSource().getTransferType()) {
+                    switch(transfer.getTransferType()) {
                         case newconnection:
                             popup.selectItemAtIndex(popup.indexOfItemWithRepresentedObject(String.valueOf(1)));
                             break;

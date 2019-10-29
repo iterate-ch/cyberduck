@@ -20,9 +20,16 @@ package ch.cyberduck.binding.application;
  */
 
 import org.rococoa.ID;
+import org.rococoa.ObjCClass;
+import org.rococoa.cocoa.foundation.NSRect;
 
 /// <i>native declaration : :42</i>
 public abstract class NSProgressIndicator extends NSView {
+    private static final NSProgressIndicator._Class CLASS = org.rococoa.Rococoa.createClass("NSProgressIndicator", NSProgressIndicator._Class.class);
+
+    public static NSProgressIndicator progressIndicatorWithFrame(NSRect frameRect) {
+        return CLASS.alloc().initWithFrame(frameRect);
+    }
 
     /// <i>native declaration : :22</i>
     public static final int NSProgressIndicatorPreferredThickness = 14;
@@ -36,6 +43,13 @@ public abstract class NSProgressIndicator extends NSView {
     public static final int NSProgressIndicatorBarStyle = 0;
     /// <i>native declaration : :33</i>
     public static final int NSProgressIndicatorSpinningStyle = 1;
+
+    public interface _Class extends ObjCClass {
+        NSProgressIndicator alloc();
+    }
+
+    @Override
+    public abstract NSProgressIndicator initWithFrame(NSRect frameRect);
 
     /**
      * Original signature : <code>BOOL isIndeterminate()</code><br>

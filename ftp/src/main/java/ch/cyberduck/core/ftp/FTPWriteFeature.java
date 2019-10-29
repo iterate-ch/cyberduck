@@ -129,7 +129,7 @@ public class FTPWriteFeature extends AppendWriteFeature<Integer> {
         }
 
         @Override
-        public Integer getStatus() throws BackgroundException {
+        public Integer getStatus() {
             return reply;
         }
     }

@@ -18,7 +18,6 @@ package ch.cyberduck.core.azure;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -27,7 +26,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -69,10 +67,8 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 return new Path(folder.getParent(), folder.getName(), folder.getType(), new AzureAttributesFinderFeature(session, context).find(folder));
             }
             else {
-                if(Checksum.NONE == status.getChecksum()) {
-                    status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
-                }
-                final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
+                status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
+                final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 final Path placeholder = new Path(folder.getParent(), folder.getName(), type,
                     new PathAttributes(folder.attributes()));

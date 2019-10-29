@@ -92,7 +92,17 @@ public class S3PresignedUrlProviderTest {
     }
 
     @Test
-    public void testCustomHostname() throws Exception {
+    public void testCustomHostname() {
+        final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
+        final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol(), "s3.eu-central-1.wasabisys.com"), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),
+            "cyberduck", "eu-central-1", "f", expiry.getTimeInMillis());
+        assertNotNull(url);
+        assertEquals("cyberduck.s3.eu-central-1.wasabisys.com", URI.create(url).getHost());
+    }
+
+    @Test
+    public void testCustomHostnameWithRegion() {
         final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         expiry.add(Calendar.MILLISECOND, (int) TimeUnit.DAYS.toMillis(7));
         final String url = new S3PresignedUrlProvider().create(new Host(new S3Protocol(), "h"), System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret"),

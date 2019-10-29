@@ -203,7 +203,7 @@ public class DefaultSessionPool implements SessionPool {
                     session.interrupt();
                 }
                 catch(BackgroundException e) {
-                    log.warn(String.format("Failure interrupting session %s prior releasing to pool. %s", session, e.getDetail()));
+                    log.warn(String.format("Failure interrupting session %s prior releasing to pool. %s", session, e));
                 }
                 finally {
                     try {
@@ -298,6 +298,9 @@ public class DefaultSessionPool implements SessionPool {
     public String toString() {
         final StringBuilder sb = new StringBuilder("DefaultSessionPool{");
         sb.append("bookmark=").append(bookmark);
+        sb.append(", idle=").append(pool.getNumIdle());
+        sb.append(", active=").append(pool.getNumActive());
+        sb.append(", waiters=").append(pool.getNumWaiters());
         sb.append('}');
         return sb.toString();
     }

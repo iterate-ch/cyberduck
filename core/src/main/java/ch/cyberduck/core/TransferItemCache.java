@@ -21,21 +21,29 @@ import ch.cyberduck.core.transfer.TransferItem;
 
 public class TransferItemCache extends AbstractCache<TransferItem> {
 
-    public static TransferItemCache empty() {
-        return new TransferItemCache(0) {
-            @Override
-            public AttributedList<TransferItem> put(final TransferItem item, final AttributedList<TransferItem> children) {
-                return AttributedList.emptyList();
-            }
-        };
-    }
+    private static final TransferItem NULL_KEY = new TransferItem(null);
 
     public TransferItemCache(final int size) {
         super(size);
     }
 
     @Override
-    public CacheReference key(final TransferItem object) {
+    public CacheReference<?> reference(final TransferItem object) {
         return new DefaultPathPredicate(object.remote);
+    }
+
+    @Override
+    public boolean containsKey(final TransferItem key) {
+        return super.containsKey(null == key ? NULL_KEY : key);
+    }
+
+    @Override
+    public AttributedList<TransferItem> get(final TransferItem key) {
+        return super.get(null == key ? NULL_KEY : key);
+    }
+
+    @Override
+    public AttributedList<TransferItem> put(final TransferItem key, final AttributedList<TransferItem> children) {
+        return super.put(null == key ? NULL_KEY : key, children);
     }
 }

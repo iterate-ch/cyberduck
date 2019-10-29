@@ -23,14 +23,10 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.UseragentProvider;
+import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.proxy.ProxyFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -131,31 +127,36 @@ public class STSCredentialsConfigurator {
                 else {
                     final BasicProfile sourceProfile = profiles.get(basicProfile.getRoleSourceProfile());
                     // If a profile defines the role_arn property then the profile is treated as an assume role profile
-                    final AWSSecurityTokenService service = this.getTokenService(ProxyFactory.get().find(host),
+                    final AWSSecurityTokenService service = this.getTokenService(host,
                         host.getRegion(),
                         sourceProfile.getAwsAccessIdKey(), sourceProfile.getAwsSecretAccessKey(), sourceProfile.getAwsSessionToken());
+                    final String tokenCode;
+                    if(basicProfile.getProperties().containsKey("mfa_serial")) {
+                        tokenCode = prompt.prompt(
+                            host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
+                            String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
+                                basicProfile.getProperties().get("mfa_serial")),
+                            new LoginOptions(host.getProtocol())
+                                .password(true)
+                                .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
+                                .keychain(false)
+                        ).getPassword();
+                    }
+                    else {
+                        tokenCode = null;
+                    }
                     // Starts a new session by sending a request to the AWS Security Token Service (STS) to assume a
                     // Role using the long lived AWS credentials
-                    final Credentials input = prompt.prompt(
-                        host, LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                        String.format("%s %s", LocaleFactory.localizedString("Multi-Factor Authentication", "S3"),
-                            basicProfile.getProperties().get("mfa_serial")),
-                        new LoginOptions(host.getProtocol())
-                            .password(true)
-                            .passwordPlaceholder(LocaleFactory.localizedString("MFA Authentication Code", "S3"))
-                            .keychain(false)
-                    );
                     final AssumeRoleRequest assumeRoleRequest = new AssumeRoleRequest()
                         .withRoleArn(basicProfile.getRoleArn())
                         // Specify this value if the IAM user has a policy that requires MFA authentication
                         .withSerialNumber(basicProfile.getProperties().getOrDefault("mfa_serial", null))
                         // The value provided by the MFA device, if MFA is required
-                        .withTokenCode(basicProfile.getProperties().containsKey("mfa_serial") ?
+                        .withTokenCode(tokenCode
                             // mfa_serial - The identification number of the MFA device to use when assuming a role. This is an optional parameter.
                             // Specify this value if the trust policy of the role being assumed includes a condition that requires MFA authentication.
                             // The value is either the serial number for a hardware device (such as GAHT12345678) or an Amazon Resource Name (ARN) for
                             // a virtual device (such as arn:aws:iam::123456789012:mfa/user).
-                            input.getPassword() : null
                         )
                         .withRoleSessionName(new AsciiRandomStringService().random());
                     if(log.isDebugEnabled()) {
@@ -194,7 +195,7 @@ public class STSCredentialsConfigurator {
                         if(log.isDebugEnabled()) {
                             log.debug(String.format("Get session token from credentials in profile %s", basicProfile.getProfileName()));
                         }
-                        final AWSSecurityTokenService service = this.getTokenService(ProxyFactory.get().find(host),
+                        final AWSSecurityTokenService service = this.getTokenService(host,
                             host.getRegion(),
                             basicProfile.getAwsAccessIdKey(), basicProfile.getAwsSecretAccessKey(), basicProfile.getAwsSessionToken());
                         final GetSessionTokenRequest sessionTokenRequest = new GetSessionTokenRequest();
@@ -227,22 +228,8 @@ public class STSCredentialsConfigurator {
         return credentials;
     }
 
-    protected AWSSecurityTokenService getTokenService(final Proxy proxy, final String region, final String accessKey, final String secretKey, final String sessionToken) {
-        final ClientConfiguration configuration = new ClientConfiguration();
-        final int timeout = PreferencesFactory.get().getInteger("connection.timeout.seconds") * 1000;
-        configuration.setConnectionTimeout(timeout);
-        configuration.setSocketTimeout(timeout);
-        final UseragentProvider ua = new PreferencesUseragentProvider();
-        configuration.setUserAgentPrefix(ua.get());
-        configuration.setMaxErrorRetry(0);
-        configuration.setMaxConnections(1);
-        configuration.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
-        switch(proxy.getType()) {
-            case HTTP:
-            case HTTPS:
-                configuration.setProxyHost(proxy.getHostname());
-                configuration.setProxyPort(proxy.getPort());
-        }
+    protected AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
+        final ClientConfiguration configuration = new CustomClientConfiguration(host);
         return AWSSecurityTokenServiceClientBuilder.standard()
             .withCredentials(new AWSStaticCredentialsProvider(StringUtils.isBlank(sessionToken) ? new AWSCredentials() {
                 @Override
@@ -319,8 +306,7 @@ public class STSCredentialsConfigurator {
             Map<String, String> properties = allProfileProperties.get(profileName);
 
             if(properties.containsKey(propertyKey)) {
-                throw new IllegalArgumentException(
-                    "Duplicate property values for [" + propertyKey + "].");
+                log.warn("Duplicate property values for [" + propertyKey + "].");
             }
 
             properties.put(propertyKey, propertyValue);

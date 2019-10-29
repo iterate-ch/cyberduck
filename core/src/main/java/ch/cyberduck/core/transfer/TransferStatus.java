@@ -23,6 +23,9 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamCancelation;
@@ -38,6 +41,8 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class TransferStatus implements StreamCancelation, StreamProgress {
     private static final Logger log = Logger.getLogger(TransferStatus.class);
@@ -166,6 +171,10 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private NonceGenerator nonces;
 
     private Object lockId;
+    /**
+     * Version after write
+     */
+    private VersionId version;
 
     public TransferStatus() {
         // Default
@@ -201,6 +210,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.filekey = copy.filekey;
         this.nonces = copy.nonces;
         this.lockId = copy.lockId;
+        this.version = copy.version;
     }
 
     /**
@@ -210,12 +220,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
      */
     public boolean await() {
         // Lock until complete
-        try {
-            done.await();
-        }
-        catch(InterruptedException e) {
-            log.error("Failure waiting for status to complete");
-        }
+        Uninterruptibles.awaitUninterruptibly(done);
         return complete.get();
     }
 
@@ -248,10 +253,12 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     }
 
     /**
-     * @return True if marked for interrupt
      */
-    public boolean isCanceled() {
-        return canceled.get();
+    @Override
+    public void validate() throws ConnectionCanceledException {
+        if(canceled.get()) {
+            throw new TransferCanceledException();
+        }
     }
 
     /**
@@ -578,6 +585,24 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.lockId = lockId;
     }
 
+    public TransferStatus withLockId(final Object lockId) {
+        this.setLockId(lockId);
+        return this;
+    }
+
+    public VersionId getVersion() {
+        return version;
+    }
+
+    public void setVersion(final VersionId version) {
+        this.version = version;
+    }
+
+    public TransferStatus withVersion(final VersionId version) {
+        this.version = version;
+        return this;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
@@ -617,6 +642,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         sb.append(", length=").append(length);
         sb.append(", canceled=").append(canceled);
         sb.append(", renamed=").append(rename);
+        sb.append(", version=").append(version);
         sb.append('}');
         return sb.toString();
     }

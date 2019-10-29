@@ -23,6 +23,7 @@ import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.b2.B2Protocol;
+import ch.cyberduck.core.brick.BrickProtocol;
 import ch.cyberduck.core.dav.DAVProtocol;
 import ch.cyberduck.core.dav.DAVSSLProtocol;
 import ch.cyberduck.core.dropbox.DropboxProtocol;
@@ -32,7 +33,7 @@ import ch.cyberduck.core.googledrive.DriveProtocol;
 import ch.cyberduck.core.googlestorage.GoogleStorageProtocol;
 import ch.cyberduck.core.hubic.HubicProtocol;
 import ch.cyberduck.core.irods.IRODSProtocol;
-import ch.cyberduck.core.manta.MantaProtocol;
+import ch.cyberduck.core.nextcloud.NextcloudProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
 import ch.cyberduck.core.onedrive.OneDriveProtocol;
 import ch.cyberduck.core.onedrive.SharepointProtocol;
@@ -43,6 +44,7 @@ import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sftp.SFTPProtocol;
 import ch.cyberduck.core.spectra.SpectraProtocol;
+import ch.cyberduck.core.storegate.StoregateProtocol;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.core.threading.LoggingUncaughtExceptionHandler;
@@ -76,32 +78,34 @@ public final class MainApplication {
             PreferencesFactory.set(preferences);
             final ProtocolFactory protocols = ProtocolFactory.get();
             protocols.register(
-                    new FTPProtocol(),
-                    new FTPTLSProtocol(),
-                    new SFTPProtocol(),
-                    new DAVProtocol(),
-                    new DAVSSLProtocol(),
-                    new SwiftProtocol(),
-                    new S3Protocol(),
-                    new GoogleStorageProtocol(),
-                    new AzureProtocol(),
-                    new IRODSProtocol(),
-                    new SpectraProtocol(),
-                    new B2Protocol(),
-                    new DropboxProtocol(),
-                    new DriveProtocol(),
-                    new HubicProtocol(),
-                    new OneDriveProtocol(),
-                    new SharepointProtocol(),
-                    new LocalProtocol(),
-                    new MantaProtocol(),
-                    new SDSProtocol()
+                new FTPProtocol(),
+                new FTPTLSProtocol(),
+                new SFTPProtocol(),
+                new DAVProtocol(),
+                new DAVSSLProtocol(),
+                new SwiftProtocol(),
+                new S3Protocol(),
+                new GoogleStorageProtocol(),
+                new AzureProtocol(),
+                new IRODSProtocol(),
+                new SpectraProtocol(),
+                new B2Protocol(),
+                new DropboxProtocol(),
+                new DriveProtocol(),
+                new HubicProtocol(),
+                new OneDriveProtocol(),
+                new SharepointProtocol(),
+                new LocalProtocol(),
+                new SDSProtocol(),
+                new StoregateProtocol(),
+                new BrickProtocol(),
+                new NextcloudProtocol()
             );
             if(log.isInfoEnabled()) {
                 log.info(String.format("Running version %s", NSBundle.mainBundle()
-                        .objectForInfoDictionaryKey("CFBundleVersion").toString()));
+                    .objectForInfoDictionaryKey("CFBundleVersion").toString()));
                 log.info(String.format("Running Java %s on %s", System
-                        .getProperty("java.version"), System.getProperty("os.arch")));
+                    .getProperty("java.version"), System.getProperty("os.arch")));
                 log.info(String.format("Available localizations:%s", preferences.applicationLocales()));
                 log.info(String.format("Native library path:%s", System.getProperty("java.library.path")));
                 log.info(String.format("Using default encoding %s", System.getProperty("file.encoding")));

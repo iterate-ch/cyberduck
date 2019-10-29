@@ -1,22 +1,8 @@
 package ch.cyberduck.core.worker;
 
-import ch.cyberduck.core.AbstractController;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Controller;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TestLoginConnectionService;
-import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.pool.StatelessSessionPool;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.WorkerBackgroundAction;
@@ -37,7 +23,7 @@ public class SessionListWorkerTest {
         final Host host = new Host(new TestProtocol());
         final Session<?> session = new NullSession(host) {
             @Override
-            public AttributedList<Path> list(final Path file, final ListProgressListener listener) throws NotfoundException {
+            public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 return new AttributedList<>(Collections.singletonList(new Path("/home/jenkins/f", EnumSet.of(Path.Type.file))));
             }
         };
@@ -55,7 +41,7 @@ public class SessionListWorkerTest {
     @Test
     public void testCacheNotFoundWithController() throws Exception {
         final Host host = new Host(new TestProtocol(), "localhost");
-        final Session<?> session = new NullSession(host);
+        final Session<?> session = new NullTransferSession(host);
         final PathCache cache = new PathCache(1);
         final SessionListWorker worker = new SessionListWorker(cache,
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
@@ -70,7 +56,6 @@ public class SessionListWorkerTest {
                 new TestLoginConnectionService(), session, PathCache.empty(),
                 new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), worker));
         assertTrue(task.get().isEmpty());
-        assertTrue(cache.containsKey(new Path("/home/notfound", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
@@ -103,7 +88,7 @@ public class SessionListWorkerTest {
     }
 
     @Test
-    public void testInitialValueOnFailure() throws Exception {
+    public void testInitialValueOnFailure() {
         final SessionListWorker worker = new SessionListWorker(PathCache.empty(),
                 new Path("/home/notfound", EnumSet.of(Path.Type.directory)),
                 new DisabledListProgressListener());

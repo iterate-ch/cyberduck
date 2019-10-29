@@ -49,7 +49,7 @@ public class SFTPQuotaFeature implements Quota {
                 return this.getSpaceAvailable(session.sftp(), home);
             }
             catch(BackgroundException e) {
-                log.info(String.format("Failure obtaining disk quota. %s.", e.getDetail()));
+                log.info(String.format("Failure obtaining disk quota. %s", e));
             }
         }
         if(this.isStatVFSOpenSSHSupported()) {
@@ -57,14 +57,14 @@ public class SFTPQuotaFeature implements Quota {
                 return this.getSpaceStatVFSOpenSSH(session.sftp(), home);
             }
             catch(BackgroundException e) {
-                log.info(String.format("Failure obtaining disk quota. %s.", e.getDetail()));
+                log.info(String.format("Failure obtaining disk quota. %s", e));
             }
         }
         try {
             return this.getSpaceShellPrompt(home);
         }
         catch(BackgroundException e) {
-            log.info(String.format("Failure obtaining disk quota. %s.", e.getDetail()));
+            log.info(String.format("Failure obtaining disk quota. %s", e));
         }
         return new Space(0L, Long.MAX_VALUE);
     }

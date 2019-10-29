@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 public class CollectionTest {
 
     @Test
-    public void testClear() throws Exception {
+    public void testClear() {
         Collection<Object> c = new Collection<Object>();
         c.add(new Object());
         c.clear();
@@ -20,7 +20,7 @@ public class CollectionTest {
     }
 
     @Test
-    public void testRemoveAll() throws Exception {
+    public void testRemoveAll() {
         Collection<Object> collection = new Collection<Object>();
         final Object a = new Object();
         collection.add(a);
@@ -35,7 +35,7 @@ public class CollectionTest {
     }
 
     @Test
-    public void testRemoveIterator() throws Exception {
+    public void testRemoveIterator() {
         Collection<Object> collection = new Collection<Object>();
         final Object a = new Object();
         collection.add(a);
@@ -50,7 +50,7 @@ public class CollectionTest {
     }
 
     @Test
-    public void testRemoveLambda() throws Exception {
+    public void testRemoveLambda() {
         Collection<Object> collection = new Collection<Object>();
         final Object a = new Object();
         collection.add(a);

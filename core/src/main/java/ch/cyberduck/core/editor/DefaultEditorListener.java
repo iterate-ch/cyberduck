@@ -58,7 +58,7 @@ public class DefaultEditorListener implements FileWatcherListener {
         if(log.isInfoEnabled()) {
             log.info(String.format("File %s deleted", file));
         }
-        editor.delete();
+        editor.close();
     }
 
     @Override

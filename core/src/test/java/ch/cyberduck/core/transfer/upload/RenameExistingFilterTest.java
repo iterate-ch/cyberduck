@@ -11,7 +11,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -56,7 +55,7 @@ public class RenameExistingFilterTest {
                 if(type == Move.class) {
                     return (T) new Move() {
                         @Override
-                        public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {
                             assertNotSame(file.getName(), renamed.getName());
                             c.set(true);
                             return renamed;
@@ -102,7 +101,7 @@ public class RenameExistingFilterTest {
         final AtomicInteger moved = new AtomicInteger();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path f) throws BackgroundException {
+            public boolean find(final Path f) {
                 if(f.equals(file)) {
                     found.set(true);
                     return true;
@@ -112,7 +111,7 @@ public class RenameExistingFilterTest {
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 return new PathAttributes();
             }
         };
@@ -123,7 +122,7 @@ public class RenameExistingFilterTest {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public Path move(final Path source, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path source, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {
                             if(moved.incrementAndGet() == 1) {
                                 // Rename existing target file
                                 assertEquals(file, source);
@@ -153,13 +152,13 @@ public class RenameExistingFilterTest {
                 if(type.equals(Write.class)) {
                     return (T) new Write<Void>() {
                         @Override
-                        public StatusOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             fail();
                             return null;
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final Cache<Path> cache) {
                             fail();
                             return new Append(1L);
                         }
@@ -203,7 +202,7 @@ public class RenameExistingFilterTest {
         final AtomicBoolean moved = new AtomicBoolean();
         final Find find = new Find() {
             @Override
-            public boolean find(final Path f) throws BackgroundException {
+            public boolean find(final Path f) {
                 if(f.equals(file)) {
                     found.set(true);
                     return true;
@@ -213,7 +212,7 @@ public class RenameExistingFilterTest {
         };
         final AttributesFinder attributes = new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 return new PathAttributes();
             }
         };
@@ -224,7 +223,7 @@ public class RenameExistingFilterTest {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public Path move(final Path f, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+                        public Path move(final Path f, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {
                             assertFalse(moved.get());
                             assertEquals(file, f);
                             moved.set(true);
@@ -246,13 +245,13 @@ public class RenameExistingFilterTest {
                 if(type.equals(Write.class)) {
                     return (T) new Write<Void>() {
                         @Override
-                        public StatusOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public StatusOutputStream write(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             fail();
                             return null;
                         }
 
                         @Override
-                        public Append append(final Path file, final Long length, final Cache<Path> cache) throws BackgroundException {
+                        public Append append(final Path file, final Long length, final Cache<Path> cache) {
                             fail();
                             return new Append(0L);
                         }

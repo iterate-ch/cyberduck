@@ -18,13 +18,24 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>6.9.2-SNAPSHOT</version>
+        <version>7.1.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>googledrive</artifactId>
     <properties>
-        <google-api-services-drive-version>v3-rev20181101-1.27.0</google-api-services-drive-version>
+        <google-api-services-drive-version>v3-rev20190926-1.30.3</google-api-services-drive-version>
     </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <skipITs>true</skipITs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
         <dependency>
             <groupId>ch.cyberduck</groupId>
@@ -40,28 +51,6 @@
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-drive</artifactId>
             <version>${google-api-services-drive-version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.http-client</groupId>
-                    <artifactId>google-http-client</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.http-client</groupId>
-                    <artifactId>google-http-client-jackson2</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava-jdk5</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>ch.iterate.google-http-client</groupId>
-            <artifactId>google-http-client-gson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.iterate.google-http-client</groupId>
-            <artifactId>google-http-client-jackson2</artifactId>
         </dependency>
         <dependency>
             <groupId>ch.cyberduck</groupId>

@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoChecksumCompute;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
@@ -51,7 +50,7 @@ public class CryptoChecksumComputeTest {
                     return (T) new Directory() {
 
                         @Override
-                        public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
+                        public Path mkdir(final Path folder, final String region, final TransferStatus status) {
                             assertTrue(folder.equals(vault) || folder.isChild(vault));
                             return folder;
                         }

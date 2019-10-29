@@ -77,9 +77,6 @@ public class DriveDirectoryFeature implements Directory<VersionId> {
 
     @Override
     public boolean isSupported(final Path workdir, final String name) {
-        if(workdir.isRoot()) {
-            return false;
-        }
-        return true;
+        return new DriveTouchFeature(session, fileid).isSupported(workdir, name);
     }
 }

@@ -27,6 +27,8 @@ import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class TerminalPasswordCallback implements PasswordCallback {
 
     private final Console console = new Console();
@@ -41,12 +43,17 @@ public class TerminalPasswordCallback implements PasswordCallback {
     }
 
     @Override
+    public void close(final String input) {
+        console.printf("%s%n", input);
+    }
+
+    @Override
     public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
         console.printf("%n%s", new StringAppender().append(title).append(reason));
         try {
             final char[] input = console.readPassword("%n%s: ", options.getPasswordPlaceholder());
             final Credentials credentials = new Credentials();
-            credentials.setPassword(String.valueOf(input));
+            credentials.setPassword(StringUtils.strip(String.valueOf(input)));
             return this.prompt(options, credentials);
         }
         catch(ConnectionCanceledException e) {
@@ -55,7 +62,7 @@ public class TerminalPasswordCallback implements PasswordCallback {
     }
 
     protected Credentials prompt(final LoginOptions options, final Credentials credentials) {
-        if(options.save && options.keychain) {
+        if(options.keychain) {
             if(!PreferencesFactory.get().getBoolean("keychain.secure")) {
                 console.printf(String.format("WARNING! Passwords are stored in plain text in %s.",
                     LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "credentials").getAbbreviatedPath()));
@@ -63,7 +70,7 @@ public class TerminalPasswordCallback implements PasswordCallback {
             credentials.setSaved(prompt.prompt(LocaleFactory.get().localize("Save password", "Credentials")));
         }
         else {
-            credentials.setSaved(options.save);
+            credentials.setSaved(false);
         }
         return credentials;
     }

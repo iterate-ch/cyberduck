@@ -47,7 +47,7 @@ public class DriveDirectoryFeatureTest extends AbstractDriveTest {
         // Trashed
         test.attributes().setVersionId(null);
         assertFalse(new DriveFindFeature(session, fileid).find(test));
-        assertTrue(new DefaultFindFeature(session).find(test));
+        assertFalse(new DefaultFindFeature(session).find(test));
         assertTrue(new DefaultAttributesFinderFeature(session).find(test).isDuplicate());
     }
 }

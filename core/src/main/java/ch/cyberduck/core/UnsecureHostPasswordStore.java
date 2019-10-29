@@ -22,7 +22,7 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
             new DefaultLocalDirectoryFeature().mkdir(file.getParent());
         }
         catch(AccessDeniedException e) {
-            log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e.getDetail()));
+            log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e));
         }
         if(file.exists()) {
             try {
@@ -31,7 +31,7 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
                 }
             }
             catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading credentials from %s. %s", file.getAbsolute(), e.getDetail()));
+                log.warn(String.format("Failure reading credentials from %s. %s", file.getAbsolute(), e));
             }
             catch(IOException e) {
                 log.warn(String.format("Failure reading credentials from %s. %s", file.getAbsolute(), e.getMessage()));
@@ -45,7 +45,7 @@ public class UnsecureHostPasswordStore extends DefaultHostPasswordStore {
             properties.store(out, "Credentials");
         }
         catch(AccessDeniedException e) {
-            log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e.getDetail()));
+            log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e));
         }
         catch(IOException e) {
             log.warn(String.format("Failure saving credentials to %s. %s", file.getAbsolute(), e.getMessage()));

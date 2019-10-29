@@ -62,6 +62,7 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
             for(Header header : request.getAllHeaders()) {
                 switch(header.getName()) {
                     case HttpHeaders.AUTHORIZATION:
+                    case HttpHeaders.PROXY_AUTHORIZATION:
                     case "X-Auth-Key":
                     case "X-Auth-Token":
                         listener.log(TranscriptListener.Type.request, String.format("%s: %s", header.getName(),
@@ -73,18 +74,27 @@ public class LoggingHttpRequestExecutor extends HttpRequestExecutor {
                 }
             }
         }
-        return super.doSendRequest(request, conn, context);
+        final HttpResponse response = super.doSendRequest(request, conn, context);
+        if(null != response) {
+            // response received as part of an expect-continue handshake
+            this.log(response);
+        }
+        return response;
     }
 
     @Override
     protected HttpResponse doReceiveResponse(final HttpRequest request, final HttpClientConnection conn, final HttpContext context) throws HttpException, IOException {
         final HttpResponse response = super.doReceiveResponse(request, conn, context);
+        this.log(response);
+        return response;
+    }
+
+    private void log(final HttpResponse response) {
         synchronized(listener) {
             listener.log(TranscriptListener.Type.response, response.getStatusLine().toString());
             for(Header header : response.getAllHeaders()) {
                 listener.log(TranscriptListener.Type.response, header.toString());
             }
         }
-        return response;
     }
 }

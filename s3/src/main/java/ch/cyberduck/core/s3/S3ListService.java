@@ -61,7 +61,7 @@ public class S3ListService implements ListService {
                     objects = new S3VersionedObjectListService(session).list(directory, listener);
                 }
                 catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn(String.format("Ignore failure listing versioned objects. %s", e.getDetail()));
+                    log.warn(String.format("Ignore failure listing versioned objects. %s", e));
                     objects = new S3ObjectListService(session).list(directory, listener);
                 }
             }
@@ -71,13 +71,14 @@ public class S3ListService implements ListService {
             try {
                 for(MultipartUpload upload : new S3DefaultMultipartService(session).find(directory)) {
                     final PathAttributes attributes = new PathAttributes();
+                    attributes.setDuplicate(true);
                     attributes.setVersionId(upload.getUploadId());
                     attributes.setModificationDate(upload.getInitiatedDate().getTime());
                     objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
                 }
             }
             catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e.getDetail()));
+                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
             }
             return objects;
         }

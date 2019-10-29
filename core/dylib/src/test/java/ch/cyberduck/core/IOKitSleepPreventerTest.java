@@ -6,7 +6,7 @@ import org.junit.Test;
 public class IOKitSleepPreventerTest {
 
     @Test
-    public void testRelease() throws Exception {
+    public void testRelease() {
         final SleepPreventer s = new IOKitSleepPreventer();
         final String lock = s.lock();
         Assert.assertNotNull(lock);

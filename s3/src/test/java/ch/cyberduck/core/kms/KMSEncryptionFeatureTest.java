@@ -21,8 +21,6 @@ import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Encryption;
@@ -33,8 +31,6 @@ import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3TouchFeature;
-import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
-import ch.cyberduck.core.threading.FailureDiagnostics;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -108,20 +104,5 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         new KMSEncryptionFeature(session).getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
         session.close();
-    }
-
-    @Test(expected = ConnectionTimeoutException.class)
-    public void testTimeout() throws Exception {
-        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, 1);
-        try {
-            kms.getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
-            fail();
-        }
-        catch(BackgroundException e) {
-            assertSame(new DefaultFailureDiagnostics().determine(e), FailureDiagnostics.Type.network);
-            throw e;
-        }
-        session.close();
-
     }
 }

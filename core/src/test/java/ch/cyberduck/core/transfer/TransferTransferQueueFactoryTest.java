@@ -19,12 +19,12 @@ package ch.cyberduck.core.transfer;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 
 public class TransferTransferQueueFactoryTest {
 
     @Test
-    public void testGet() throws Exception {
-        assertTrue(TransferQueueFactory.get() == TransferQueueFactory.get());
+    public void testGet() {
+        assertSame(TransferQueueFactory.get(), TransferQueueFactory.get());
     }
 }

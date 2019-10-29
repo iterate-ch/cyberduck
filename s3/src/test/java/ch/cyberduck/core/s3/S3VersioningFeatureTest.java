@@ -17,19 +17,16 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -49,7 +46,6 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         assertNotNull(configuration);
         assertFalse(configuration.isEnabled());
         assertFalse(configuration.isMultifactor());
-        session.close();
     }
 
     @Test
@@ -58,9 +54,9 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
             = new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)));
         assertNotNull(configuration);
         assertTrue(configuration.isEnabled());
-        session.close();
     }
 
+    @Ignore
     @Test
     public void testSetConfiguration() throws Exception {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
@@ -69,18 +65,12 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         feature.setConfiguration(container, new DisabledLoginCallback(), new VersioningConfiguration(true, false));
         assertTrue(feature.getConfiguration(container).isEnabled());
         new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testForbidden() throws Exception {
-        final Host host = new Host(new S3Protocol(), "dist.springframework.org.s3.amazonaws.com", new Credentials(
-            PreferencesFactory.get().getProperty("connection.login.anon.name"), null
-        ));
-        final S3Session session = new S3Session(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.getHost().getCredentials().setPassword(StringUtils.EMPTY);
         assertEquals(VersioningConfiguration.empty(),
             new S3VersioningFeature(session, new S3AccessControlListFeature(session)).getConfiguration(new Path("/dist.springframework.org", EnumSet.of(Path.Type.directory))));
-        session.close();
     }
 }

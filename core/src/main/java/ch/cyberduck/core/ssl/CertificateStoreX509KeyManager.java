@@ -65,7 +65,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
         this._keystore = store;
     }
 
-    public CertificateStoreX509KeyManager init() throws IOException {
+    public CertificateStoreX509KeyManager init() {
         return this;
     }
 

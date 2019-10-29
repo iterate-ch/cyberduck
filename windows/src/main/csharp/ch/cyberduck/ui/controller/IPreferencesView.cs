@@ -47,6 +47,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool TransfersToBack { set; get; }
         bool RemoveFromTransfers { set; get; }
         bool OpenAfterDownload { set; get; }
+        bool SegmentedDownloads { set; get; }
         string DownloadFolder { set; get; }
         string DuplicateDownloadAction { set; get; }
         string DuplicateUploadAction { set; get; }
@@ -136,6 +137,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler TransfersToBackChangedEvent;
         event VoidHandler RemoveFromTransfersChangedEvent;
         event VoidHandler OpenAfterDownloadChangedEvent;
+        event VoidHandler SegmentedDownloadsChangedEvent;
         event VoidHandler DownloadFolderChangedEvent;
         event VoidHandler DuplicateDownloadActionChangedEvent;
         event VoidHandler DuplicateUploadActionChangedEvent;

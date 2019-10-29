@@ -23,13 +23,14 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveItem;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 public class GraphDeleteFeature implements Delete {
     private static final Logger logger = Logger.getLogger(GraphDeleteFeature.class);
@@ -41,8 +42,8 @@ public class GraphDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        for(Path file : files) {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+        for(Path file : files.keySet()) {
             callback.delete(file);
             try {
                 final OneDriveItem item = session.toItem(file);

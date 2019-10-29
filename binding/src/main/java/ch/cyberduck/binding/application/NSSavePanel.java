@@ -52,19 +52,24 @@ public abstract class NSSavePanel extends NSPanel {
      * Original signature : <code>NSString* filename()</code><br>
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:71</i>
      */
+    @Deprecated
     public abstract String filename();
 
     /**
      * Original signature : <code>NSString* directory()</code><br>
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:73</i>
      */
+    @Deprecated
     public abstract String directory();
+    public abstract NSURL directoryURL();
 
     /**
      * Original signature : <code>void setDirectory(NSString*)</code><br>
      * <i>native declaration : /System/Library/Frameworks/AppKit.framework/Headers/NSSavePanel.h:74</i>
      */
+    @Deprecated
     public abstract void setDirectory(String path);
+    public abstract void setDirectoryURL(NSURL path);
 
     /**
      * A file specified in the save panel is saved with the designated filename and this file type as an extension. This method is equivalent to calling allowedFileTypes and returning the first element of the list of allowed types, or nil if there are none.  It is preferred to use 'allowedFileTypes' over this method.<br>

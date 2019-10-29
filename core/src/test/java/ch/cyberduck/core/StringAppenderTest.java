@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 public class StringAppenderTest {
 
     @Test
-    public void testAppend() throws Exception {
+    public void testAppend() {
         assertEquals("Verification Code.", new StringAppender().append("Verification Code:").toString());
         assertEquals("Message.", new StringAppender().append("Message").toString());
         assertEquals("Message.", new StringAppender().append("Message.").toString());

@@ -5,7 +5,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>6.9.2-SNAPSHOT</version>
+        <version>7.1.3-SNAPSHOT</version>
     </parent>
     <artifactId>Cyberduck.Core.Native</artifactId>
     <packaging>pom</packaging>
@@ -35,7 +35,7 @@
                                             <groupId>ch.iterate</groupId>
                                             <artifactId>ikvm</artifactId>
                                             <type>zip</type>
-                                            <version>8.3</version>
+                                            <version>8.3.1</version>
                                         </artifactItem>
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -49,7 +49,7 @@
                         <executions>
                             <execution>
                                 <id>install-dll</id>
-                                <phase>verify</phase>
+                                <phase>package</phase>
                                 <goals>
                                     <goal>attach-artifact</goal>
                                 </goals>
@@ -66,6 +66,54 @@
                     </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>run-ant-restore-target</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}" />
+                                        <ant antfile="${project.basedir}/build.xml" target="restore" dir="." />
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>run-ant-build-target</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}" />
+                                        <property name="version" value="${project.version}" />
+                                        <property name="revision" value="${git.commitsCount}" />
+                                        <property name="git.revision" value="${git.revision}" />
+                                        <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>run-ant-test-target</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <tasks>
+                                        <property name="home" value="${main.basedir}" />
+                                        <property name="version" value="${project.version}" />
+                                        <property name="revision" value="${git.commitsCount}" />
+                                        <property name="git.revision" value="${git.revision}" />
+                                        <property name="skip" value="${skipTests}" />
+                                        <ant antfile="${project.basedir}/build.xml" target="test" dir="." />
+                                    </tasks>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -88,35 +136,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.microsoft</groupId>
+            <groupId>net.adoptopenjdk</groupId>
             <artifactId>msvcr100</artifactId>
-            <classifier>native</classifier>
+            <classifier>x86_64</classifier>
             <type>dll</type>
-            <version>10.0.40219.325</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>msvcp120</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>12.0.21005.1</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>msvcr120</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>12.0.21005.1</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft</groupId>
-            <artifactId>vccorlib120</artifactId>
-            <classifier>native</classifier>
-            <type>dll</type>
-            <version>12.0.21005.1</version>
+            <version>8u192</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

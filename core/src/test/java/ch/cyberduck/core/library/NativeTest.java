@@ -24,7 +24,7 @@ import static org.junit.Assert.assertFalse;
 public class NativeTest {
 
     @Test
-    public void testLoad() throws Exception {
+    public void testLoad() {
         assertFalse(Native.load("notfound"));
     }
 }

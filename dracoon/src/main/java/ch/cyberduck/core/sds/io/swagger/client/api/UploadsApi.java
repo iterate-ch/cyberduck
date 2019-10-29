@@ -1,22 +1,8 @@
 package ch.cyberduck.core.sds.io.swagger.client.api;
 
-/*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
- * https://cyberduck.io/
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
-
 import ch.cyberduck.core.sds.io.swagger.client.ApiClient;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.ApiResponse;
 import ch.cyberduck.core.sds.io.swagger.client.Configuration;
 import ch.cyberduck.core.sds.io.swagger.client.Pair;
 import ch.cyberduck.core.sds.io.swagger.client.model.ChunkUploadResponse;
@@ -30,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2018-05-23T09:31:14.222+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:08:20.178+02:00")
 public class UploadsApi {
   private ApiClient apiClient;
 
@@ -57,50 +43,74 @@ public class UploadsApi {
    * @throws ApiException if fails to make API call
    */
   public void cancelFileUploadByToken(String token) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // verify the required parameter 'token' is set
-    if (token == null) {
-      throw new ApiException(400, "Missing the required parameter 'token' when calling cancelFileUploadByToken");
-    }
-    
-    // create path and map variables
-    String localVarPath = "/v4/uploads/{token}"
-      .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
 
-    // query params
-    List<Pair> localVarQueryParams = new ArrayList<Pair>();
-    Map<String, String> localVarHeaderParams = new HashMap<String, String>();
-    Map<String, Object> localVarFormParams = new HashMap<String, Object>();
-
-
-    
-    
-    final String[] localVarAccepts = {
-      "application/json;charset=UTF-8"
-    };
-    final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
-
-    final String[] localVarContentTypes = {
-      
-    };
-    final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
-
-    String[] localVarAuthNames = new String[] {  };
-
-
-    apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+      cancelFileUploadByTokenWithHttpInfo(token);
   }
+
+    /**
+     * Cancel file upload
+     * ### Functional Description: Cancel file upload.  ### Precondition: Valid upload token.  ### Effects: Upload canceled, token invalidated and all already transfered chunks removed.  ### &amp;#9432; Further Information: It is recommended to notify the API about cancelled uploads if possible.
+     *
+     * @param token Upload token (required)
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Void> cancelFileUploadByTokenWithHttpInfo(String token) throws ApiException {
+        Object localVarPostBody = null;
+
+        // verify the required parameter 'token' is set
+        if(token == null) {
+            throw new ApiException(400, "Missing the required parameter 'token' when calling cancelFileUploadByToken");
+        }
+
+        // create path and map variables
+        String localVarPath = "/v4/uploads/{token}"
+            .replaceAll("\\{" + "token" + "\\}", apiClient.escapeString(token.toString()));
+
+        // query params
+        List<Pair> localVarQueryParams = new ArrayList<Pair>();
+        Map<String, String> localVarHeaderParams = new HashMap<String, String>();
+        Map<String, Object> localVarFormParams = new HashMap<String, Object>();
+
+
+        final String[] localVarAccepts = {
+            "application/json;charset=UTF-8"
+        };
+        final String localVarAccept = apiClient.selectHeaderAccept(localVarAccepts);
+
+        final String[] localVarContentTypes = {
+
+        };
+        final String localVarContentType = apiClient.selectHeaderContentType(localVarContentTypes);
+
+        String[] localVarAuthNames = new String[]{};
+
+
+        return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
+    }
   /**
    * Complete file upload
-   * ### Functional Description: Finish uploading a file.  ### Precondition: Valid upload token.  ### Effects: File created.  ### &amp;#9432; Further Information: The provided file name might be changed in accordance with the resolution strategy:  * **autorename**: changes the file name and adds a number to avoid conflicts. * **overwrite**: deletes any old file with the same file name. * **fail**: returns an error; in this case, another &#x60;PUT&#x60; request with a different file name may be sent.  Please ensure that all chunks have been transferred correctly before finishing the upload.  ### 200 OK is not used by this API
+   * ### Functional Description: Finish uploading a file.  ### Precondition: Valid upload token.  ### Effects: File created.  ### &amp;#9432; Further Information: The provided file name might be changed in accordance with the resolution strategy:  * **autorename**: changes the file name and adds a number to avoid conflicts. * **overwrite**: deletes any old file with the same file name. * **fail**: returns an error; in this case, another &#x60;PUT&#x60; request with a different file name may be sent.  Please ensure that all chunks have been transferred correctly before finishing the upload.  ### 200 OK is **NOT** used by this API
    * @param token Upload token (required)
+   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
    * @param body The body must be empty if public upload token is used. The &#x60;resolutionStrategy&#x60; in that case will be always &#x60;autorename&#x60; (optional)
-   * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)): * &#x60;LOCAL&#x60; * &#x60;UTC&#x60; * &#x60;OFFSET&#x60; * &#x60;EPOCH&#x60; (optional)
    * @return Node
    * @throws ApiException if fails to make API call
    */
-  public Node completeFileUploadByToken(String token, CompleteUploadRequest body, String xSdsDateFormat) throws ApiException {
+  public Node completeFileUploadByToken(String token, String xSdsDateFormat, CompleteUploadRequest body) throws ApiException {
+      return completeFileUploadByTokenWithHttpInfo(token, xSdsDateFormat, body).getData();
+  }
+
+    /**
+     * Complete file upload
+     * ### Functional Description: Finish uploading a file.  ### Precondition: Valid upload token.  ### Effects: File created.  ### &amp;#9432; Further Information: The provided file name might be changed in accordance with the resolution strategy:  * **autorename**: changes the file name and adds a number to avoid conflicts. * **overwrite**: deletes any old file with the same file name. * **fail**: returns an error; in this case, another &#x60;PUT&#x60; request with a different file name may be sent.  Please ensure that all chunks have been transferred correctly before finishing the upload.  ### 200 OK is **NOT** used by this API
+     *
+     * @param token          Upload token (required)
+     * @param xSdsDateFormat Date time format (cf. [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) &amp; [leettime.de](http://leettime.de/)) (optional)
+     * @param body           The body must be empty if public upload token is used. The &#x60;resolutionStrategy&#x60; in that case will be always &#x60;autorename&#x60; (optional)
+     * @return ApiResponse&lt;Node&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<Node> completeFileUploadByTokenWithHttpInfo(String token, String xSdsDateFormat, CompleteUploadRequest body) throws ApiException {
     Object localVarPostBody = body;
     
     // verify the required parameter 'token' is set
@@ -136,27 +146,42 @@ public class UploadsApi {
 
     GenericType<Node> localVarReturnType = new GenericType<Node>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
-      }
-  /**
-   * Upload file by token
-   * ### Functional Description:   Upload a chunk of a file.  ### Precondition: Valid upload token.  ### Effects: Chunk uploaded.  ### &amp;#9432; Further Information: Use this API if you cannot set custom headers during uploads.   Range requests are supported (please cf. [RCF 7233](https://tools.ietf.org/html/rfc7233) for details).
-   * @param token Upload token (required)
-   * @param file File (required)
-   * @param contentRange Content-Range e.g. &#x60;bytes 0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
-   * @return ChunkUploadResponse
-   * @throws ApiException if fails to make API call
-   */
-  public ChunkUploadResponse uploadFileByToken(String token, File file, String contentRange) throws ApiException {
-    Object localVarPostBody = null;
-    
-    // verify the required parameter 'token' is set
-    if (token == null) {
-      throw new ApiException(400, "Missing the required parameter 'token' when calling uploadFileByToken");
     }
-    
-    // verify the required parameter 'file' is set
-    if (file == null) {
-      throw new ApiException(400, "Missing the required parameter 'file' when calling uploadFileByToken");
+
+    /**
+     * Upload file
+     * ### Functional Description:   Upload a (chunk of a) file.  ### Precondition: Valid upload token.  ### Effects: Chunk uploaded.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).    Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * &#x60;application/octet-stream&#x60;    For both file upload types set the correct &#x60;Content-Type&#x60; header and body.   Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * &#x60;application/octet-stream&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: application/octet-stream ...  Body: Content of file.txt &#x60;&#x60;&#x60;
+     * @param file File (required)
+   * @param token Upload token (required)
+   * @param contentRange Content-Range e.g. &#x60;bytes 0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+     * @return ChunkUploadResponse
+     * @throws ApiException if fails to make API call
+     */
+    public ChunkUploadResponse uploadFileByToken(File file, String token, String contentRange) throws ApiException {
+        return uploadFileByTokenWithHttpInfo(file, token, contentRange).getData();
+    }
+
+    /**
+     * Upload file
+     * ### Functional Description:   Upload a (chunk of a) file.  ### Precondition: Valid upload token.  ### Effects: Chunk uploaded.  ### &amp;#9432; Further Information: Range requests are supported (please cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) for details).    Following &#x60;Content-Types&#x60; are supported by this API: * &#x60;multipart/form-data&#x60; * &#x60;application/octet-stream&#x60;    For both file upload types set the correct &#x60;Content-Type&#x60; header and body.   Examples:    * &#x60;multipart/form-data&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: multipart/form-data; boundary&#x3D;----WebKitFormBoundary7MA4YWxkTrZu0gW ...  Body: ------WebKitFormBoundary7MA4YWxkTrZu0gW Content-Disposition: form-data; name&#x3D;\&quot;file\&quot;; filename&#x3D;\&quot;file.txt\&quot; Content-Type: text/plain  Content of file.txt ------WebKitFormBoundary7MA4YWxkTrZu0gW-- &#x60;&#x60;&#x60;  * &#x60;application/octet-stream&#x60; &#x60;&#x60;&#x60; POST /api/v4/uploads/{token} HTTP/1.1  Header: ... Content-Type: application/octet-stream ...  Body: Content of file.txt &#x60;&#x60;&#x60;
+     *
+     * @param file         File (required)
+     * @param token        Upload token (required)
+     * @param contentRange Content-Range e.g. &#x60;bytes 0-999/3980&#x60; cf. [RFC 7233](https://tools.ietf.org/html/rfc7233) (optional)
+     * @return ApiResponse&lt;ChunkUploadResponse&gt;
+     * @throws ApiException if fails to make API call
+     */
+    public ApiResponse<ChunkUploadResponse> uploadFileByTokenWithHttpInfo(File file, String token, String contentRange) throws ApiException {
+        Object localVarPostBody = null;
+
+        // verify the required parameter 'file' is set
+        if(file == null) {
+            throw new ApiException(400, "Missing the required parameter 'file' when calling uploadFileByToken");
+        }
+
+        // verify the required parameter 'token' is set
+        if(token == null) {
+            throw new ApiException(400, "Missing the required parameter 'token' when calling uploadFileByToken");
     }
     
     // create path and map variables

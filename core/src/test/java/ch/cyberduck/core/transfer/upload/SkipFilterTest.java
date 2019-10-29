@@ -5,10 +5,10 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.TestProtocol;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -26,14 +26,14 @@ public class SkipFilterTest {
 
     @Test
     public void testAccept() throws Exception {
-        SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullSession(new Host(new TestProtocol())) {
+        SkipFilter f = new SkipFilter(new DisabledUploadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())) {
             @Override
             @SuppressWarnings("unchecked")
             public <T> T _getFeature(Class<T> type) {
                 if(type == Find.class) {
                     return (T) new Find() {
                         @Override
-                        public boolean find(Path file) throws BackgroundException {
+                        public boolean find(Path file) {
                             return true;
                         }
                     };
@@ -59,7 +59,7 @@ public class SkipFilterTest {
         });
         f.withAttributes(new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 return file.attributes();
             }
         });
@@ -81,7 +81,7 @@ public class SkipFilterTest {
         });
         f.withAttributes(new AttributesFinder() {
             @Override
-            public PathAttributes find(final Path file) throws BackgroundException {
+            public PathAttributes find(final Path file) {
                 return file.attributes();
             }
         });

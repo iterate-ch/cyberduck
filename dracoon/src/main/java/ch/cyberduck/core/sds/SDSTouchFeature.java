@@ -26,9 +26,13 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 
 public class SDSTouchFeature implements Touch<VersionId> {
+    private static final Logger log = Logger.getLogger(SDSTouchFeature.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -46,7 +50,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
             if(nodeid.isEncrypted(file)) {
                 nodeid.setFileKey(status);
             }
-            final StatusOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
+            final StatusOutputStream<VersionId> out = writer.write(file, status.complete(), new DisabledConnectionCallback());
             out.close();
             return new Path(file.getParent(), file.getName(), file.getType(),
                 new PathAttributes(file.attributes()).withVersionId(out.getStatus().id));
@@ -57,12 +61,40 @@ public class SDSTouchFeature implements Touch<VersionId> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String filename) {
         if(workdir.isRoot()) {
+            return false;
+        }
+        if(!this.validate(filename)) {
+            log.warn(String.format("Validation failed for target name %s", filename));
             return false;
         }
         // for existing files the delete role is also needed but at this point we don't know if it exists or not
         return new SDSPermissionsFeature(session, nodeid).containsRole(workdir, SDSPermissionsFeature.CREATE_ROLE);
+    }
+
+    /**
+     * Validate node name convention
+     */
+    public boolean validate(final String filename) {
+        // Empty argument if not known in validation
+        if(StringUtils.isNotBlank(filename)) {
+            if(StringUtils.length(filename) > 150) {
+                // Node (room, folder, file) names are limited to 150 characters.
+                return false;
+            }
+            // '\\', '<','>', ':', '\"', '|', '?', '*', '/', leading '-', trailing '.'
+            if(StringUtils.containsAny(filename, '\\', '<', '>', ':', '"', '|', '?', '*', '/')) {
+                return false;
+            }
+            if(StringUtils.startsWith(filename, "-")) {
+                return false;
+            }
+            if(StringUtils.endsWith(filename, ".")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

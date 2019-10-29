@@ -57,6 +57,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -196,43 +201,67 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
         status.setAcl(attributes.getAcl());
         if(options.segments) {
             if(file.isFile()) {
-                // Make segments
-                if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
-                    && status.getLength() > preferences.getLong("queue.download.segments.size")) {
-                    final Download read = session.getFeature(Download.class);
-                    if(read.offset(file)) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Split download %s into segments", local));
-                        }
-                        long remaining = status.getLength();
-                        long offset = 0;
-                        // Part size from default setting of size divided by maximum number of connections
-                        long partsize = Math.max(
-                            preferences.getLong("queue.download.segments.size"),
-                            status.getLength() / preferences.getInteger("queue.connections.limit"));
-                        // Sorted list
-                        final List<TransferStatus> segments = new ArrayList<TransferStatus>();
-                        final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
-                        for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
-                            final Local segmentFile = LocalFactory.get(
-                                segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
-                            boolean skip = false;
-                            // Last part can be less than 5 MB. Adjust part size.
-                            Long length = Math.min(partsize, remaining);
-                            final TransferStatus segmentStatus = new TransferStatus()
-                                .segment(true)
-                                .append(true)
-                                .skip(offset)
-                                .length(length)
-                                .rename(segmentFile);
-                            if(log.isDebugEnabled()) {
-                                log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
+                // Free space on disk
+                long space = 0L;
+                try {
+                    space = Files.getFileStore(Paths.get(local.getParent().getAbsolute())).getUsableSpace();
+                }
+                catch(IOException e) {
+                    log.warn(String.format("Failure to determine disk space for %s", file.getParent()));
+                }
+                if(status.getLength() * 2 > space) {
+                    log.warn(String.format("Insufficient free disk space %d for segmented download of %s", space, file));
+                }
+                else {
+                    // Make segments
+                    if(status.getLength() >= preferences.getLong("queue.download.segments.threshold")
+                        && status.getLength() > preferences.getLong("queue.download.segments.size")) {
+                        final Download read = session.getFeature(Download.class);
+                        if(read.offset(file)) {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Split download %s into segments", local));
                             }
-                            segments.add(segmentStatus);
-                            remaining -= length;
-                            offset += length;
+                            long remaining = status.getLength();
+                            long offset = 0;
+                            // Part size from default setting of size divided by maximum number of connections
+                            long partsize = Math.max(
+                                preferences.getLong("queue.download.segments.size"),
+                                status.getLength() / preferences.getInteger("queue.connections.limit"));
+                            // Sorted list
+                            final List<TransferStatus> segments = new ArrayList<TransferStatus>();
+                            final Local segmentsFolder = LocalFactory.get(local.getParent(), String.format("%s.cyberducksegment", local.getName()));
+                            for(int segmentNumber = 1; remaining > 0; segmentNumber++) {
+                                final Local segmentFile = LocalFactory.get(
+                                    segmentsFolder, String.format("%s-%d.cyberducksegment", local.getName(), segmentNumber));
+                                try {
+                                    // Test path length
+                                    Paths.get(segmentFile.getAbsolute()).toRealPath();
+                                }
+                                catch(NoSuchFileException e) {
+                                    // Continue
+                                }
+                                catch(InvalidPathException | IOException e) {
+                                    log.error(String.format("Failure to create path for segment %s. %s", segmentFile, e.getMessage()));
+                                    segments.clear();
+                                    break;
+                                }
+                                // Last part can be less than 5 MB. Adjust part size.
+                                Long length = Math.min(partsize, remaining);
+                                final TransferStatus segmentStatus = new TransferStatus()
+                                    .segment(true)
+                                    .append(true)
+                                    .skip(offset)
+                                    .length(length)
+                                    .rename(segmentFile);
+                                if(log.isDebugEnabled()) {
+                                    log.debug(String.format("Adding status %s for segment %s", segmentStatus, segmentFile));
+                                }
+                                segments.add(segmentStatus);
+                                remaining -= length;
+                                offset += length;
+                            }
+                            status.withSegments(segments);
                         }
-                        status.withSegments(segments);
                     }
                 }
             }

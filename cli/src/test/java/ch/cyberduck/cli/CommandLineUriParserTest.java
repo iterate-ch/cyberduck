@@ -52,7 +52,9 @@ public class CommandLineUriParserTest {
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile")));
         factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile")));
         assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
-            .compareTo(new CommandLineUriParser(input, factory).parse("s3://AWS456@cyberduck-test/key")));
+            .compareTo(new CommandLineUriParser(input, factory).parse("s3:AWS456@cyberduck-test/key")));
+        assertEquals(0, new Host(new S3Protocol(), "s3.amazonaws.com", 443, "/cyberduck-test/key", new Credentials("AWS456", null))
+            .compareTo(new CommandLineUriParser(input, factory).parse("s3://AWS456@/cyberduck-test/key")));
         assertEquals(0, new Host(new FTPTLSProtocol(), "cyberduck.io", 55, "/folder", new Credentials("anonymous", null))
             .compareTo(new CommandLineUriParser(input, factory).parse("ftps://cyberduck.io:55/folder")));
     }

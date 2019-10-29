@@ -100,7 +100,8 @@ public class S3Protocol extends AbstractProtocol {
             new S3LocationFeature.S3Region("ap-northeast-1"),
             new S3LocationFeature.S3Region("ap-northeast-2"),
             new S3LocationFeature.S3Region("ap-south-1"),
-            new S3LocationFeature.S3Region("sa-east-1")
+            new S3LocationFeature.S3Region("sa-east-1"),
+            new S3LocationFeature.S3Region("me-south-1")
         ));
     }
 
@@ -166,5 +167,10 @@ public class S3Protocol extends AbstractProtocol {
     @Override
     public CredentialsConfigurator getCredentialsFinder() {
         return credentials;
+    }
+
+    @Override
+    public DirectoryTimestamp getDirectoryTimestamp() {
+        return DirectoryTimestamp.explicit;
     }
 }

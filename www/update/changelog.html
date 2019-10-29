@@ -14,15 +14,7 @@
         p.mountainduck {
             display: block;
             padding: 15px 10px 15px 50px;
-            background: #E5E5DB url(https://cdn.mountainduck.io/images/mountainduck_y_32.png) no-repeat 5px 5px;
-            border: 1px solid #cccccc;
-            color: black;
-        }
-
-        p.cryptomator {
-            display: block;
-            padding: 15px 10px 15px 50px;
-            background: rgba(100, 176, 0, 0.24) url(https://cdn.cyberduck.io/img/cryptomator_32.png) no-repeat 5px 5px;
+            background: #E5E5DB url(https://cdn.mountainduck.io/images/mountainduck_y_32.png) no-repeat 10px 10px;
             border: 1px solid #cccccc;
             color: black;
         }
@@ -60,74 +52,74 @@
 <body>
 
 <p class="mountainduck">
-    <strong><a href="https://mountainduck.io">Mountain Duck</a></strong>. Cyberduck for <strong>mounting
+    <strong><a target="_blank" href="https://mountainduck.io">Mountain Duck</a></strong>. Cyberduck for <strong>mounting
     volumes</strong> in the file
     explorer for Mac &amp; Windows.
 </p>
-<p class="cryptomator">
-    <strong><a href="https://cyberduck.io/cryptomator/">Cryptomator</a></strong>. Cyberduck <a
-    href="https://trac.cyberduck.io/milestone/6.0">6.0</a>
-    supports transparent <strong>client-side encryption</strong> using Cryptomator interoperable vaults.
-</p>
 
 <p>
-    <a href="https://trac.cyberduck.io/milestone/6.9.0"><strong>Version 6.9.1</strong></a>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/7.1.2"><strong>Version 7.1.2</strong></a>
 </p>
 <ul>
-    <li><span class="label label-warning">Bugfix</span> Fix code signature designated requirement issue (Mac App Store)</li>
-</ul>
-<p>
-    <a href="https://trac.cyberduck.io/milestone/6.9.0"><strong>Version 6.9.0</strong></a>
-</p>
-<ul>
-    <li><span class="label label-success">Localize</span> Estonian Localization</li>
-    <li><span class="label label-success">Feature</span> Default connection profile for Microsoft Sharepoint Online (<a
-        href="https://trac.cyberduck.io/ticket/10115">#10115</a>)
+    <li><span class="label label-warning">Bugfix</span> Folder showing no more than 1000 files (S3) (
+        <a target="_blank" href="https://trac.cyberduck.io/ticket/10811">#10811</a>)
     </li>
-    <li><span class="label label-success">Feature</span> Support for eu-west-3 (Stockholm) region (S3)</li>
-    <li><span class="label label-success">Feature</span> Improve listing performance for versioned buckets (S3) (<a
-        href="https://trac.cyberduck.io/ticket/10426">#10426</a>)
-    </li>
-    <li><span class="label label-success">Feature</span> Add <tt>--profile</tt> option to select connection profile
-        (CLI)
-    </li>
-    <li><span class="label label-success">Feature</span> Add option to disable checksum verification for file transfers
-        (<a
-            href="https://trac.cyberduck.io/ticket/10215">#10215</a>)
-    </li>
-    <li><span class="label label-warning">Bugfix</span> Stop button to interrupt transfer (<a
-        href="https://trac.cyberduck.io/ticket/10363">#10363</a>)
-    </li>
-    <li><span class="label label-warning">Bugfix</span> Save passphrase for private key in keychain only after
-        successful connect (<a
-            href="https://trac.cyberduck.io/ticket/10526">#10526</a>)
-    </li>
-    <li><span class="label label-warning">Bugfix</span> Failure authenticating with proxy using Integrated Windows
-        Authentication (IWA) authentication (WebDAV, Windows)
-    </li>
-    <li><span class="label label-warning">Bugfix</span> Failure authenticating with NTLM authentication (WebDAV,
-        Windows) (<a
-            href="https://trac.cyberduck.io/ticket/10556">#10556</a>)
-    </li>
-    <li><span class="label label-warning">Bugfix</span> Failure to read attributes of common prefix (S3) (<a
-        href="https://trac.cyberduck.io/ticket/8724">#8724</a>)
-    </li>
-    <li><span class="label label-warning">Bugfix</span> Asks for OAuth authentication code on every connect attempt
-        (Google Drive) (<a
-            href="https://trac.cyberduck.io/ticket/10555">#10555</a>)
-    </li>
-    <li><span class="label label-warning">Bugfix</span> Transfers with many files to vault take a long time to finish
-        (Cryptomator) (<a
-            href="https://trac.cyberduck.io/ticket/10564">#10564</a>)
-    </li>
-    <li><span class="label label-warning">Bugfix</span> Cannot list KMS keys when using IAM Cross Account Roles (S3) (<a
-        href="https://trac.cyberduck.io/ticket/10565">#10565</a>)
-    </li>
-    <li><span class="label label-warning">Bugfix</span> Updated localizations</li>
+    <li><span class="label label-warning">Bugfix</span> Failure deleting folder recursively (FTP)</li>
 </ul>
 
+<p>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/7.1.1"><strong>Version 7.1.1</strong></a>
+</p>
+<ul>
+    <li><span class="label label-warning">Bugfix</span> Failure authenticating using SSH agent (SFTP) (<a
+        target="_blank" href="https://trac.cyberduck.io/ticket/10800">#10800</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Failure overwriting existing file (Google Storage)</li>
+    <li><span class="label label-warning">Bugfix</span> Missing hostname verification in TLS handshake when connecting
+        through HTTP proxy
+    </li>
+</ul>
+
+<p>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/7.1.0"><strong>Version 7.1.0</strong></a>
+</p>
+<ul>
+    <li><span class="label label-success">Feature</span> Application running as 64-bit (Windows)</li>
+    <li><span class="label label-success">Feature</span> Application package is notarized (macOS)</li>
+    <li><span class="label label-success">Feature</span> Support for storage classes (Google Storage)</li>
+    <li><span class="label label-success">Feature</span> Support to select region (eu, us, asia) for new buckets (Google
+        Storage)
+    </li>
+    <li><span class="label label-success">Feature</span> Support to set lifecycle configuration on bucket (Google
+        Storage)
+    </li>
+    <li><span class="label label-success">Feature</span> Support for me-south-1 (Bahrain) region (S3)</li>
+    <li><span class="label label-warning">Bugfix</span> Number of buckets displayed in browser limited to 1000 (Google
+        Storage)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Fails to authenticate where keyboard-interactive mechanism is
+        not supported (SFTP) (<a target="_blank" href="https://trac.cyberduck.io/ticket/10714">#10714</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Errors accessing Cryptomator vault (Google Drive, OneDrive)</li>
+    <li><span class="label label-warning">Bugfix</span> No route to host error with IPv6 only server (macOS)</li>
+    <li><span class="label label-warning">Bugfix</span> Allow to access files with non printable characters in key name
+        (S3))
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Use AWS4 signature for pre-signed URLs for AWS in region
+        us-east-1 (S3))
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Rate limit number of requests (Google Drive) (<a
+        target="_blank" href="https://trac.cyberduck.io/ticket/10103">#10103</a>))
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Repeated prompt to validate host key when connecting to non
+        standard port (SFTP) (<a target="_blank" href="https://trac.cyberduck.io/ticket/10772">10772</a>))
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Segmented downloads fail with longer filenames (<a
+        target="_blank" href="https://trac.cyberduck.io/ticket/10726">#10726</a>))
+    </li>
+</ul>
 
 <p>Release notes for previous versions can be found at <a
-    href="https://cyberduck.io/changelog">cyberduck.io/changelog</a>.</p>
+    target="_blank" href="https://cyberduck.io/changelog">cyberduck.io/changelog</a>.</p>
 </body>
 </html>

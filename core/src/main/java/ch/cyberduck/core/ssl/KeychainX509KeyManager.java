@@ -26,14 +26,22 @@ import ch.cyberduck.core.Host;
 import java.net.Socket;
 import java.security.KeyStore;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
 
     private final Map<Key, String> memory
-            = new HashMap<Key, String>();
+        = new HashMap<Key, String>();
+
+    private final Set<String> aliases
+        = new HashSet<>();
 
     public KeychainX509KeyManager(final Host bookmark) {
         super(CertificateStoreFactory.get(), bookmark);
@@ -63,6 +71,14 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
             return null;
         }
         return this.save(key, s);
+    }
+
+    @Override
+    public List<String> list() {
+        if(aliases.isEmpty()) {
+            aliases.addAll(super.list());
+        }
+        return new ArrayList<>(aliases);
     }
 
     protected String find(final Key key) {
@@ -100,7 +116,7 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
             if(port != key.port) {
                 return false;
             }
-            if(hostname != null ? !hostname.equals(key.hostname) : key.hostname != null) {
+            if(!Objects.equals(hostname, key.hostname)) {
                 return false;
             }
             if(!Arrays.equals(issuers, key.issuers)) {
@@ -120,7 +136,7 @@ public class KeychainX509KeyManager extends CertificateStoreX509KeyManager imple
         @Override
         public String toString() {
             return String.format("connection.ssl.keystore.%s:%s.%s.alias",
-                    hostname, port, Arrays.toString(issuers));
+                hostname, port, Arrays.toString(issuers));
         }
     }
 }

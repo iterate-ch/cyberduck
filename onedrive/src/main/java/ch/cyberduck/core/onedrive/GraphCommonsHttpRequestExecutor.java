@@ -45,6 +45,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.google.common.util.concurrent.Uninterruptibles;
+
 public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor {
 
     private final CloseableHttpClient client;
@@ -54,19 +56,19 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
     }
 
     @Override
-    public Upload doPost(final URL url, final Set<RequestHeader> headers) throws IOException {
+    public Upload doPost(final URL url, final Set<RequestHeader> headers) {
         final HttpEntityEnclosingRequestBase request = new HttpPost(url.toString());
         return this.doUpload(url, headers, request);
     }
 
     @Override
-    public Upload doPut(final URL url, final Set<RequestHeader> headers) throws IOException {
+    public Upload doPut(final URL url, final Set<RequestHeader> headers) {
         final HttpEntityEnclosingRequestBase request = new HttpPut(url.toString());
         return this.doUpload(url, headers, request);
     }
 
     @Override
-    public Upload doPatch(final URL url, final Set<RequestHeader> headers) throws IOException {
+    public Upload doPatch(final URL url, final Set<RequestHeader> headers) {
         final HttpPatch request = new HttpPatch(url.toString());
         return this.doUpload(url, headers, request);
     }
@@ -123,13 +125,8 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
 
             @Override
             public OutputStream getOutputStream() {
-                try {
-                    // Await execution of HTTP request to make stream available
-                    entry.await();
-                }
-                catch(InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                // Await execution of HTTP request to make stream available
+                Uninterruptibles.awaitUninterruptibly(entry);
                 return entity.getStream();
             }
         };
@@ -181,12 +178,12 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
         }
 
         @Override
-        public int getStatusCode() throws IOException {
+        public int getStatusCode() {
             return response.getStatusLine().getStatusCode();
         }
 
         @Override
-        public String getStatusMessage() throws IOException {
+        public String getStatusMessage() {
             return response.getStatusLine().getReasonPhrase();
         }
 

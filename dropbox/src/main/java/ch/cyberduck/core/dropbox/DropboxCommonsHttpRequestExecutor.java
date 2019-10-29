@@ -43,6 +43,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import com.dropbox.core.http.HttpRequestor;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements Closeable {
     private static final Logger log = Logger.getLogger(DropboxCommonsHttpRequestExecutor.class);
@@ -75,18 +76,18 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
     }
 
     @Override
-    public Uploader startPost(final String url, final Iterable<Header> headers) throws IOException {
+    public Uploader startPost(final String url, final Iterable<Header> headers) {
         final HttpEntityEnclosingRequestBase request = new HttpPost(url);
         return this.execute(url, headers, request);
     }
 
     @Override
-    public Uploader startPut(final String url, final Iterable<Header> headers) throws IOException {
+    public Uploader startPut(final String url, final Iterable<Header> headers) {
         final HttpEntityEnclosingRequestBase request = new HttpPut(url);
         return this.execute(url, headers, request);
     }
 
-    private Uploader execute(final String url, final Iterable<Header> headers, final HttpEntityEnclosingRequestBase request) throws IOException {
+    private Uploader execute(final String url, final Iterable<Header> headers, final HttpEntityEnclosingRequestBase request) {
         for(Header header : headers) {
             if(header.getKey().equals(HTTP.TRANSFER_ENCODING)) {
                 continue;
@@ -120,13 +121,8 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
         return new Uploader() {
             @Override
             public OutputStream getBody() {
-                try {
-                    // Await execution of HTTP request to make stream available
-                    entry.await();
-                }
-                catch(InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                // Await execution of HTTP request to make stream available
+                Uninterruptibles.awaitUninterruptibly(entry);
                 return entity.getStream();
             }
 

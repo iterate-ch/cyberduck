@@ -24,8 +24,8 @@ public final class DisabledNotificationService implements NotificationService {
     private static final Logger log = Logger.getLogger(DisabledNotificationService.class);
 
     @Override
-    public void setup() {
-        log.warn("Notifications disabled");
+    public NotificationService setup() {
+        return this;
     }
 
     @Override
@@ -34,9 +34,19 @@ public final class DisabledNotificationService implements NotificationService {
     }
 
     @Override
-    public void notify(String title, String description) {
+    public void addListener(final Listener listener) {
+        //
+    }
+
+    @Override
+    public void notify(final String group, final String identifier, final String title, final String description) {
         if(log.isInfoEnabled()) {
-            log.info(description);
+            log.info(String.format("%s. %s", title, description));
         }
+    }
+
+    @Override
+    public void notify(final String group, final String identifier, final String title, final String description, final String action) {
+        log.warn("Notifications disabled");
     }
 }

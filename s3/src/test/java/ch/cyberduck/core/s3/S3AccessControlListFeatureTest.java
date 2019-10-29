@@ -63,7 +63,6 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         assertTrue(acl.get(new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6")).contains(
             new Acl.Role(Acl.Role.FULL)
         ));
-        session.close();
     }
 
     @Test
@@ -78,7 +77,6 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         assertTrue(acl.get(new Acl.CanonicalUser("80b9982b7b08045ee86680cc47f43c84bf439494a89ece22b5330f8a49477cf6")).contains(
             new Acl.Role(Acl.Role.FULL)
         ));
-        session.close();
     }
 
     @Test
@@ -102,7 +100,6 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
             assertEquals(acl, f.getPermission(test));
         }
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -150,7 +147,6 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertNotNull(f.getPermission(test));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
@@ -160,7 +156,6 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertNotNull(f.getPermission(placeholder));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test(expected = NotfoundException.class)
@@ -193,11 +188,10 @@ public class S3AccessControlListFeatureTest extends AbstractS3Test {
             fail();
         }
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
-    public void testRoles() throws Exception {
+    public void testRoles() {
         final S3AccessControlListFeature f = new S3AccessControlListFeature(session);
         assertTrue(f.getAvailableAclUsers().contains(new Acl.CanonicalUser()));
         assertTrue(f.getAvailableAclUsers().contains(new Acl.EmailUser()));

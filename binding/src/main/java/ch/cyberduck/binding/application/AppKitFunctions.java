@@ -23,7 +23,7 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 
 public interface AppKitFunctions extends Library {
-    public static final AppKitFunctions instance = Native.load("AppKit", AppKitFunctions.class);
+    AppKitFunctions instance = Native.load("AppKit", AppKitFunctions.class);
 
     /**
      * Original signature : <code>void NSBeep()</code><br>

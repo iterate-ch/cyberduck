@@ -64,17 +64,14 @@ public class HistoryCollectionTest {
                 assertEquals("mirror.switch.ch", bookmark.getHostname());
             }
         };
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    c.load();
-                }
-                catch(AccessDeniedException e) {
-                    //
-                }
+        new Thread(() -> {
+            try {
+                c.load();
             }
-        }.start();
+            catch(AccessDeniedException e) {
+                //
+            }
+        }).start();
         loaded.await(1, TimeUnit.SECONDS);
         assertEquals(1, c.size());
         final Host host = c.get(0);

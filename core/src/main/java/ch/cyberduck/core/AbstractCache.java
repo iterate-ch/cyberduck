@@ -18,44 +18,54 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.commons.collections4.map.LRUMap;
+import ch.cyberduck.core.cache.LRUCache;
+
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 public abstract class AbstractCache<T extends Referenceable> implements Cache<T> {
     private static final Logger log = Logger.getLogger(AbstractCache.class);
 
-    private final Map<T, AttributedList<T>> impl;
+    private final LRUCache<T, AttributedList<T>> impl;
 
     public AbstractCache(int size) {
         if(size == Integer.MAX_VALUE) {
             // Unlimited
-            impl = Collections.synchronizedMap(new LinkedHashMap<T, AttributedList<T>>());
-        }
-        else if(size == 0) {
-            impl = Collections.emptyMap();
+            impl = LRUCache.build();
         }
         else {
             // Will inflate to the given size
-            impl = Collections.synchronizedMap(new LRUMap<T, AttributedList<T>>(size));
+            impl = LRUCache.build(size);
         }
     }
 
     @Override
     public T lookup(final CacheReference<T> reference) {
+        for(AttributedList<T> entry : impl.asMap().values()) {
+            final T f = entry.find(reference);
+            if(null == f) {
+                continue;
+            }
+            return f;
+        }
+        log.warn(String.format("Lookup failed for %s in cache", reference));
         return null;
     }
 
+    @Override
+    public long size() {
+        return impl.size();
+    }
+
+    @Override
     public boolean isEmpty() {
         return impl.isEmpty();
     }
 
-    public Set<T> keySet() {
-        return impl.keySet();
+    @Override
+    public Map<T, AttributedList<T>> asMap() {
+        return impl.asMap();
     }
 
     /**
@@ -63,7 +73,7 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      * @return True if the directory listing of this path is cached
      */
     public boolean containsKey(final T reference) {
-        return impl.containsKey(reference);
+        return impl.contains(reference);
     }
 
     /**
@@ -73,7 +83,8 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      * @return The previously cached directory listing
      */
     public AttributedList<T> remove(final T reference) {
-        final AttributedList<T> removed = impl.remove(reference);
+        final AttributedList<T> removed = impl.get(reference);
+        impl.remove(reference);
         if(null == removed) {
             // Not previously in cache
             return AttributedList.emptyList();
@@ -88,7 +99,10 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
      *                                                   and requests a new filter here.
      */
     public AttributedList<T> get(final T reference) {
-        AttributedList<T> children = impl.get(reference);
+        if(null == reference) {
+            return AttributedList.emptyList();
+        }
+        final AttributedList<T> children = impl.get(reference);
         if(null == children) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("No cache for %s", reference));
@@ -107,7 +121,13 @@ public abstract class AbstractCache<T extends Referenceable> implements Cache<T>
         if(log.isDebugEnabled()) {
             log.debug(String.format("Caching %s", reference));
         }
-        return impl.put(reference, children);
+        final AttributedList<T> replaced = impl.get(reference);
+        impl.put(reference, children);
+        if(null == replaced) {
+            // Not previously in cache
+            return AttributedList.emptyList();
+        }
+        return replaced;
     }
 
     /**

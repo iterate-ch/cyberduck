@@ -15,28 +15,25 @@ package ch.cyberduck.core.cryptomator.impl;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.CacheReference;
-import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.RandomStringService;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UUIDRandomStringService;
+import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
-import java.util.Map;
 
 public class CryptoDirectoryProvider {
     private static final Logger log = Logger.getLogger(CryptoDirectoryProvider.class);
@@ -51,7 +48,7 @@ public class CryptoDirectoryProvider {
     private final RandomStringService random
         = new UUIDRandomStringService();
 
-    private final Map<CacheReference<Path>, String> cache = new LRUMap<CacheReference<Path>, String>(
+    private final LRUCache<CacheReference<Path>, String> cache = LRUCache.build(
         PreferencesFactory.get().getInteger("browser.cache.size"));
 
     public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
@@ -69,7 +66,7 @@ public class CryptoDirectoryProvider {
      * @param type        File type
      * @return Encrypted filename
      */
-    public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<AbstractPath.Type> type) throws BackgroundException {
+    public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
             cryptomator.getCryptor().fileNameCryptor().encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
@@ -94,7 +91,7 @@ public class CryptoDirectoryProvider {
             final PathAttributes attributes = new PathAttributes(directory.attributes());
             if(new SimplePathPredicate(directory).test(home)) {
                 // The root of the vault is a different target directory
-                attributes.withVersionId((String) null);
+                attributes.withVersionId(null);
             }
             // Remember random directory id for use in vault
             final String id = this.toDirectoryId(session, directory, directoryId);
@@ -107,7 +104,7 @@ public class CryptoDirectoryProvider {
             // Intermediate directory
             final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
             // Add encrypted type
-            final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(directory.getType());
+            final EnumSet<Path.Type> type = EnumSet.copyOf(directory.getType());
             type.add(Path.Type.encrypted);
             type.remove(Path.Type.decrypted);
             return new Path(intermediate, directoryIdHash.substring(2), type, attributes);
@@ -120,14 +117,14 @@ public class CryptoDirectoryProvider {
             return ROOT_DIR_ID;
         }
         if(StringUtils.isBlank(directoryId)) {
-            if(cache.containsKey(new DefaultPathPredicate(directory))) {
-                return cache.get(new DefaultPathPredicate(directory));
+            if(cache.contains(new SimplePathPredicate(directory))) {
+                return cache.get(new SimplePathPredicate(directory));
             }
             final String id = this.load(session, directory);
-            cache.put(new DefaultPathPredicate(directory), id);
+            cache.put(new SimplePathPredicate(directory), id);
             return id;
         }
-        cache.put(new DefaultPathPredicate(directory), directoryId);
+        cache.put(new SimplePathPredicate(directory), directoryId);
         return directoryId;
     }
 
@@ -153,7 +150,7 @@ public class CryptoDirectoryProvider {
      * Remove from cache
      */
     public void delete(final Path directory) {
-        cache.remove(new DefaultPathPredicate(directory));
+        cache.remove(new SimplePathPredicate(directory));
     }
 
     public void destroy() {

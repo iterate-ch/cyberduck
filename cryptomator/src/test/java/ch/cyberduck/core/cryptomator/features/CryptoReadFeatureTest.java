@@ -25,8 +25,6 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
@@ -51,7 +49,7 @@ public class CryptoReadFeatureTest {
                 if(type == Read.class) {
                     return (T) new Read() {
                         @Override
-                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                        public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) {
                             final String masterKey = "{\n" +
                                     "  \"scryptSalt\": \"NrC7QGG/ouc=\",\n" +
                                     "  \"scryptCostParam\": 16384,\n" +
@@ -65,7 +63,7 @@ public class CryptoReadFeatureTest {
                         }
 
                         @Override
-                        public boolean offset(final Path file) throws BackgroundException {
+                        public boolean offset(final Path file) {
                             return false;
                         }
                     };
@@ -77,7 +75,7 @@ public class CryptoReadFeatureTest {
         final CryptoVault vault = new CryptoVault(home);
         assertEquals(home, vault.load(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("vault");
             }
         }, new DisabledPasswordStore()).getHome());

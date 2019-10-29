@@ -42,19 +42,19 @@ public abstract class NSPrintPanel extends NSObject implements org.rococoa.ObjCO
         return CLASS.printPanel();
     }
 
-    public static interface _Class extends ObjCClass {
+    public interface _Class extends ObjCClass {
         /**
          * Create a new NSPrintPanel.<br>
          * Original signature : <code>+(NSPrintPanel*)printPanel</code><br>
          * <i>native declaration : NSPrintPanel.h:102</i>
          */
-        public abstract NSPrintPanel printPanel();
+        NSPrintPanel printPanel();
         /// <i>native declaration : NSPrintPanel.h</i>
 
-        public abstract NSPrintPanel alloc();
+        NSPrintPanel alloc();
         /// <i>native declaration : NSPrintPanel.h</i>
 
-        public abstract NSPrintPanel new_();
+        NSPrintPanel new_();
     }
 
     /**

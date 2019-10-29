@@ -61,7 +61,7 @@ public abstract class NSUserNotification extends NSObject {
     /**
      * Available in OS X v10.9 and later.
      */
-    public abstract String getIdentifier();
+    public abstract String identifier();
 
     /**
      * This identifier is unique to a notification. A notification delivered with the same identifier
@@ -70,4 +70,27 @@ public abstract class NSUserNotification extends NSObject {
      * Available in OS X v10.9 and later.
      */
     public abstract void setIdentifier(String identifier);
+
+    /**
+     * Application-specific user info that can be attached to the notification.
+     */
+    public abstract void setUserInfo(NSDictionary userInfo);
+
+    public abstract NSDictionary userInfo();
+
+    public abstract void setHasActionButton(boolean flag);
+
+    public abstract void setActionButtonTitle(String title);
+
+    public abstract void setOtherButtonTitle(String title);
+
+    public abstract int activationType();
+
+    public enum ActivationType {
+        NSUserNotificationActivationTypeNone,
+        NSUserNotificationActivationTypeContentsClicked,
+        NSUserNotificationActivationTypeActionButtonClicked,
+        NSUserNotificationActivationTypeReplied,
+        NSUserNotificationActivationTypeAdditionalActionClicked
+    }
 }

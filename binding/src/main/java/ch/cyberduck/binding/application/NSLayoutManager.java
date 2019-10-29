@@ -71,7 +71,7 @@ public abstract class NSLayoutManager extends NSObject {
     /// <i>native declaration : :64</i>
     public static final int NSTypesetterBehavior_10_4 = 4;
 
-    public static interface Delegate {
+    public interface Delegate {
         void layoutManager_didCompleteLayoutForTextContainer_atEnd(NSLayoutManager layoutManager,
                                                                    NSObject textContainer,
                                                                    boolean finished);

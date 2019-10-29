@@ -27,10 +27,14 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Encryption;
 
+import org.apache.log4j.Logger;
+
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 
 public class WriteEncryptionWorker extends Worker<Boolean> {
+    private static final Logger log = Logger.getLogger(WriteEncryptionWorker.class);
 
     /**
      * Selected files.
@@ -65,6 +69,9 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
     @Override
     public Boolean run(final Session<?> session) throws BackgroundException {
         final Encryption feature = session.getFeature(Encryption.class);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
         for(Path file : files) {
             if(this.isCanceled()) {
                 throw new ConnectionCanceledException();
@@ -81,6 +88,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
         listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                 file.getName()));
         feature.setEncryption(file, algorithm);
+        file.attributes().setEncryption(algorithm);
         if(file.isDirectory()) {
             if(callback.recurse(file, algorithm)) {
                 for(Path child : session.getFeature(ListService.class).list(file, new WorkerListProgressListener(this, listener))) {
@@ -110,7 +118,7 @@ public class WriteEncryptionWorker extends Worker<Boolean> {
             return false;
         }
         final WriteEncryptionWorker that = (WriteEncryptionWorker) o;
-        if(files != null ? !files.equals(that.files) : that.files != null) {
+        if(!Objects.equals(files, that.files)) {
             return false;
         }
         return true;

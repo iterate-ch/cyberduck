@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 public class ExtensionComparatorTest {
 
     @Test
-    public void testCompareFirst() throws Exception {
+    public void testCompareFirst() {
         assertEquals(0,
                 new ExtensionComparator(true).compareFirst(new Path("/a.a", EnumSet.of(Path.Type.directory)), new Path("/b.b", EnumSet.of(Path.Type.directory))));
         assertEquals(0,

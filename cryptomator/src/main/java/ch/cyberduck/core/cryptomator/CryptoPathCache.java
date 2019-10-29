@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 
 import org.apache.log4j.Logger;
 
-import java.util.Set;
+import java.util.Map;
 
 public final class CryptoPathCache implements Cache<Path> {
     private static final Logger log = Logger.getLogger(CryptoPathCache.class);
@@ -39,8 +39,8 @@ public final class CryptoPathCache implements Cache<Path> {
     }
 
     @Override
-    public CacheReference key(final Path object) {
-        return delegate.key(object);
+    public CacheReference<?> reference(final Path object) {
+        return delegate.reference(object);
     }
 
     @Override
@@ -82,8 +82,13 @@ public final class CryptoPathCache implements Cache<Path> {
     }
 
     @Override
-    public Set<Path> keySet() {
-        return delegate.keySet();
+    public long size() {
+        return delegate.size();
+    }
+
+    @Override
+    public Map<Path, AttributedList<Path>> asMap() {
+        return delegate.asMap();
     }
 
     @Override

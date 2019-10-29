@@ -11,14 +11,14 @@ import static org.junit.Assert.assertEquals;
 public class HyperlinkAttributedStringFactoryTest {
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate() {
         assertEquals("", HyperlinkAttributedStringFactory.create((DescriptiveUrl.EMPTY)).string());
         assertEquals("", HyperlinkAttributedStringFactory.create((String) null).string());
         assertEquals("ftp://localhost/d", HyperlinkAttributedStringFactory.create("ftp://localhost/d").string());
     }
 
     @Test
-    public void testCreateNull() throws Exception {
+    public void testCreateNull() {
         assertEquals("", HyperlinkAttributedStringFactory.create(new DescriptiveUrl(null)).string());
         assertEquals("", HyperlinkAttributedStringFactory.create((String) null).string());
         assertEquals("", HyperlinkAttributedStringFactory.create("", (Local) null).string());

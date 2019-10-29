@@ -71,7 +71,7 @@ public class DefaultSessionPoolTest {
         final Host bookmark = new Host(new TestProtocol());
         final TestLoginConnectionService connect = new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) {
                 return true;
             }
         };
@@ -101,7 +101,7 @@ public class DefaultSessionPoolTest {
         final Host bookmark = new Host(new TestProtocol());
         final TestLoginConnectionService connect = new TestLoginConnectionService() {
             @Override
-            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) throws BackgroundException {
+            public boolean check(final Session<?> session, final Cache<Path> cache, final CancelCallback callback) {
                 return true;
             }
         };

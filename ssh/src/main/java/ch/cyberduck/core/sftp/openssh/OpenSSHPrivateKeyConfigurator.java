@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -63,7 +63,7 @@ public class OpenSSHPrivateKeyConfigurator {
                 final KeyFormat format;
                 try {
                     format = KeyProviderUtil.detectKeyFileFormat(
-                        new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")), true);
+                        new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8), true);
                 }
                 catch(AccessDeniedException | IOException e) {
                     log.debug(String.format("Ignore file %s with unknown format. %s", file, e.getMessage()));

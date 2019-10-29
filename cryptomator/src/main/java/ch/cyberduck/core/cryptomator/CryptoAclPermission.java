@@ -22,6 +22,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AclPermission;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public class CryptoAclPermission implements AclPermission {
@@ -60,6 +61,11 @@ public class CryptoAclPermission implements AclPermission {
     @Override
     public Acl getDefault(final Local file) {
         return delegate.getDefault(file);
+    }
+
+    @Override
+    public Acl getDefault(final EnumSet<Path.Type> type) {
+        return delegate.getDefault(type);
     }
 
     @Override

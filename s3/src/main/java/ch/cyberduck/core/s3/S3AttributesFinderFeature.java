@@ -60,6 +60,9 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         if(file.isRoot()) {
             return PathAttributes.EMPTY;
         }
+        if(file.getType().contains(Path.Type.upload)) {
+            return PathAttributes.EMPTY;
+        }
         if(containerService.isContainer(file)) {
             final PathAttributes attributes = new PathAttributes();
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());
@@ -154,12 +157,14 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             // not the MD5 of the object data.
             attributes.setChecksum(Checksum.parse(object.getETag()));
         }
-        final HashMap<String, String> metadata = new HashMap<String, String>();
-        final Map<String, Object> source = object.getModifiableMetadata();
-        for(Map.Entry<String, Object> entry : source.entrySet()) {
-            metadata.put(entry.getKey(), entry.getValue().toString());
+        if(!object.getModifiableMetadata().isEmpty()) {
+            final HashMap<String, String> metadata = new HashMap<String, String>();
+            final Map<String, Object> source = object.getModifiableMetadata();
+            for(Map.Entry<String, Object> entry : source.entrySet()) {
+                metadata.put(entry.getKey(), entry.getValue().toString());
+            }
+            attributes.setMetadata(metadata);
         }
-        attributes.setMetadata(metadata);
         return attributes;
     }
 }

@@ -15,10 +15,8 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -28,13 +26,12 @@ import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -45,23 +42,21 @@ import static org.junit.Assert.*;
 public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractGoogleStorageTest {
 
     @Test
-    public void testGetMethods() throws Exception {
+    public void testGetMethods() {
         final DistributionConfiguration configuration
-                = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
-                new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
+            = new GoogleStorageWebsiteDistributionConfiguration(session);
         assertEquals(Collections.singletonList(Distribution.WEBSITE), configuration.getMethods(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
-    public void testGetProtocol() throws Exception {
+    public void testGetProtocol() {
         final DistributionConfiguration configuration
-                = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
-                new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
-        assertEquals(new GoogleStorageProtocol().getDefaultHostname(), configuration.getHostname());
+            = new GoogleStorageWebsiteDistributionConfiguration(session);
+        assertEquals("storage.googleapis.com", configuration.getHostname());
     }
 
     @Test
-    public void testUrl() throws Exception {
+    public void testUrl() {
         final DistributionConfiguration configuration
             = new GoogleStorageWebsiteDistributionConfiguration(session);
         assertEquals("http://test.cyberduck.ch.storage.googleapis.com/f", configuration.toUrl(new Path("test.cyberduck.ch/f", EnumSet.of(Path.Type.file))).find(
@@ -69,33 +64,18 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
     }
 
     @Test
-    public void testRead() throws Exception {
-        final DistributionConfiguration configuration
-                = new GoogleStorageWebsiteDistributionConfiguration(session);
-        final Distribution website = configuration.read(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory)), Distribution.WEBSITE,
-                new DisabledLoginCallback());
-        assertTrue(website.isEnabled());
-        assertEquals(URI.create("http://test.cyberduck.ch.storage.googleapis.com"), website.getUrl());
-        assertTrue(website.getContainers().contains(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory))));
-    }
-
-    @Test
     public void testWrite() throws Exception {
         final DistributionConfiguration configuration
                 = new GoogleStorageWebsiteDistributionConfiguration(session);
         final Path bucket = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        new GoogleStorageBucketCreateService(session).create(bucket, "US");
+        new GoogleStorageDirectoryFeature(session).mkdir(bucket, "US", new TransferStatus());
         configuration.write(bucket, new Distribution(null, Distribution.WEBSITE, true), new DisabledLoginCallback());
         assertTrue(configuration.read(bucket, Distribution.WEBSITE, new DisabledLoginCallback()).isEnabled());
-        new S3DefaultDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testFeatures() {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("google.projectid"), null
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
         final DistributionConfiguration d = new GoogleStorageWebsiteDistributionConfiguration(
                 session
         );

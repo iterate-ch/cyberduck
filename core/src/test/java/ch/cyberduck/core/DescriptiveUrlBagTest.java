@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class DescriptiveUrlBagTest {
 
     @Test
-    public void testFilter() throws Exception {
+    public void testFilter() {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         final DescriptiveUrl url = new DescriptiveUrl(URI.create("http://example.net"));
         list.add(url);
@@ -22,7 +22,7 @@ public class DescriptiveUrlBagTest {
     }
 
     @Test
-    public void testFind() throws Exception {
+    public void testFind() {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         final DescriptiveUrl url = new DescriptiveUrl(URI.create("http://example.net"));
         list.add(url);

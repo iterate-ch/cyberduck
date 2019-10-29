@@ -302,11 +302,11 @@ public abstract class NSURL extends NSObject {
     public abstract NSData bookmarkDataWithOptions_includingResourceValuesForKeys_relativeToURL_error(
             int options, NSArray keys, NSURL relativeURL, ObjCObjectByReference error);
 
-    public static interface NSURLBookmarkCreationOptions {
+    public interface NSURLBookmarkCreationOptions {
         /**
          * Specifies that the bookmark data should include properties required to create Finder alias files
          */
-        public static final int NSURLBookmarkCreationSuitableForBookmarkFile = (1 << 10);
+        int NSURLBookmarkCreationSuitableForBookmarkFile = (1 << 10);
 
         /**
          * Specifies that you want to create a security-scoped bookmark that, when resolved, provides a security-scoped URL allowing
@@ -316,7 +316,7 @@ public abstract class NSURL extends NSObject {
          * <p/>
          * Available in OS X v10.7 and later.
          */
-        public static final int NSURLBookmarkCreationWithSecurityScope = (1 << 11);
+        int NSURLBookmarkCreationWithSecurityScope = (1 << 11);
 
         /**
          * When combined with the NSURLBookmarkCreationWithSecurityScope option, specifies that you want to create a security-scoped
@@ -325,14 +325,14 @@ public abstract class NSURL extends NSObject {
          * <p/>
          * Available in OS X v10.7 and later.
          */
-        public static final int NSURLBookmarkCreationSecurityScopeAllowOnlyReadAccess = (1 << 12);
+        int NSURLBookmarkCreationSecurityScopeAllowOnlyReadAccess = (1 << 12);
     }
 
-    public static interface NSURLBookmarkResolutionOptions {
+    public interface NSURLBookmarkResolutionOptions {
         /**
          * Specifies that the security scope, applied to the bookmark when it was created, should be used during resolution of the bookmark data.
          * Available in OS X v10.7 and later.
          */
-        public static final int NSURLBookmarkResolutionWithSecurityScope = (1 << 10);
+        int NSURLBookmarkResolutionWithSecurityScope = (1 << 10);
     }
 }

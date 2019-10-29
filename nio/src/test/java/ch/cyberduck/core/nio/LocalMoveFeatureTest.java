@@ -40,13 +40,28 @@ import static org.junit.Assert.assertTrue;
 public class LocalMoveFeatureTest {
 
     @Test
-    public void testMove() throws Exception {
+    public void testMoveFile() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path workdir = new LocalHomeFinderFeature(session).find();
         final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalTouchFeature(session).touch(test, new TransferStatus());
+        final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new LocalMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        assertFalse(new LocalFindFeature(session).find(test));
+        assertTrue(new LocalFindFeature(session).find(target));
+        new LocalDeleteFeature(session).delete(Collections.<Path>singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testMoveDirectory() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path workdir = new LocalHomeFinderFeature(session).find();
+        final Path test = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        new LocalDirectoryFeature(session).mkdir(test, null, new TransferStatus());
         final Path target = new Path(workdir, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new LocalMoveFeature(session).move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertFalse(new LocalFindFeature(session).find(test));

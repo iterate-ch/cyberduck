@@ -73,37 +73,28 @@ public class HostTest {
     }
 
     @Test
-    public void testTrimDefaultPath() {
-        Host host = new Host(new TestProtocol(Scheme.ftp), "localhost");
-        host.setDefaultPath("p");
-        assertEquals("p", host.getDefaultPath());
-        host.setDefaultPath("/p");
-        assertEquals("/p", host.getDefaultPath());
-        host.setDefaultPath("/p\n");
-        assertEquals("/p", host.getDefaultPath());
-        host.setDefaultPath("/p\r");
-        assertEquals("/p", host.getDefaultPath());
-        host.setDefaultPath("/p\r\n");
-        assertEquals("/p", host.getDefaultPath());
-        host.setDefaultPath("/p f");
-        assertEquals("/p f", host.getDefaultPath());
-        host.setDefaultPath("/p ");
-        assertEquals("/p", host.getDefaultPath());
-    }
-
-    @Test
     public void testCompare() {
-        assertEquals(0, new Host(new TestProtocol(Scheme.ftp), "a", 33).compareTo(new Host(new TestProtocol(Scheme.ftp), "a", 33)));
-        assertEquals(-1, new Host(new TestProtocol(Scheme.ftp), "a", 22).compareTo(new Host(new TestProtocol(Scheme.ftp), "a", 33)));
-        assertEquals(1, new Host(new TestProtocol(Scheme.ftp), "a", 33).compareTo(new Host(new TestProtocol(Scheme.ftp), "a", 22)));
+        assertEquals(0, new Host(new TestProtocol(Scheme.ftp), "a", 33)
+            .compareTo(new Host(new TestProtocol(Scheme.ftp), "a", 33)));
+        assertEquals(-1, new Host(new TestProtocol(Scheme.ftp), "a", 22)
+            .compareTo(new Host(new TestProtocol(Scheme.ftp), "a", 33)));
+        assertEquals(1, new Host(new TestProtocol(Scheme.ftp), "a", 33)
+            .compareTo(new Host(new TestProtocol(Scheme.ftp), "a", 22)));
 
-        assertEquals(1, new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u", null))
-                .compareTo(new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials())));
+        assertEquals(0, new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u"))
+            .compareTo(new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u"))));
+        assertEquals(0, new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u"))
+            .compareTo(new Host(new TestProtocol(Scheme.sftp), "a", 22, "/path", new Credentials("u"))));
         assertEquals(-1, new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials())
-                .compareTo(new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u", null))));
+            .compareTo(new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u"))));
+        assertEquals(1, new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials("u"))
+            .compareTo(new Host(new TestProtocol(Scheme.sftp), "a", 22, new Credentials())));
 
-        assertEquals(0, new Host(new TestProtocol(Scheme.ftp), "a").compareTo((new Host(new TestProtocol(Scheme.ftp), "a"))));
-        assertEquals(-1, new Host(new TestProtocol(Scheme.ftp), "a").compareTo((new Host(new TestProtocol(Scheme.ftp), "b"))));
-        assertEquals(1, new Host(new TestProtocol(Scheme.ftp), "b").compareTo((new Host(new TestProtocol(Scheme.ftp), "a"))));
+        assertEquals(0, new Host(new TestProtocol(Scheme.ftp), "a")
+            .compareTo((new Host(new TestProtocol(Scheme.ftp), "a"))));
+        assertEquals(-1, new Host(new TestProtocol(Scheme.ftp), "a")
+            .compareTo((new Host(new TestProtocol(Scheme.ftp), "b"))));
+        assertEquals(1, new Host(new TestProtocol(Scheme.ftp), "b")
+            .compareTo((new Host(new TestProtocol(Scheme.ftp), "a"))));
     }
 }

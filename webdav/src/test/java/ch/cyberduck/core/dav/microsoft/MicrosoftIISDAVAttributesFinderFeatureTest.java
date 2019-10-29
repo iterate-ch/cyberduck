@@ -50,7 +50,7 @@ public class MicrosoftIISDAVAttributesFinderFeatureTest {
     }
 
     @Test
-    public void testCustomModified_PropertyNotAvailable() throws Exception {
+    public void testCustomModified_PropertyNotAvailable() {
         final MicrosoftIISDAVAttributesFinderFeature f = new MicrosoftIISDAVAttributesFinderFeature(null);
         final DavResource mock = mock(DavResource.class);
 

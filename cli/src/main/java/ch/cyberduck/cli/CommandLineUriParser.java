@@ -22,6 +22,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostParser;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.exception.HostParserException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.log4j.Logger;
@@ -41,7 +42,7 @@ public class CommandLineUriParser {
         this.factory = factory;
     }
 
-    public Host parse(final String uri) {
+    public Host parse(final String uri) throws HostParserException {
         final Host host = new HostParser(factory).get(uri);
         if(input.hasOption(TerminalOptionsBuilder.Params.region.name())) {
             host.setRegion(input.getOptionValue(TerminalOptionsBuilder.Params.region.name()));

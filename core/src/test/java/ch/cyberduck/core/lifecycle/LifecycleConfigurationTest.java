@@ -2,8 +2,7 @@ package ch.cyberduck.core.lifecycle;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 public class LifecycleConfigurationTest {
 
@@ -12,6 +11,6 @@ public class LifecycleConfigurationTest {
         assertEquals(LifecycleConfiguration.empty(), new LifecycleConfiguration());
         assertEquals(new LifecycleConfiguration(1, "GLACIER", 1), new LifecycleConfiguration(1, "GLACIER", 1));
         assertEquals(new LifecycleConfiguration(1, "GLACIER", 2), new LifecycleConfiguration(1, "GLACIER", 2));
-        assertFalse(new LifecycleConfiguration(1, "GLACIER", 2).equals(new LifecycleConfiguration(2, "GLACIER", 1)));
+        assertNotEquals(new LifecycleConfiguration(1, "GLACIER", 2), new LifecycleConfiguration(2, "GLACIER", 1));
     }
 }

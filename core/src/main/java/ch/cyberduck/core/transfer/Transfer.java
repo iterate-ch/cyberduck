@@ -25,16 +25,16 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 
@@ -174,7 +174,7 @@ public abstract class Transfer implements Serializable {
     public abstract Transfer withCache(final Cache<Path> cache);
 
     public <T> T serialize(final Serializer dict) {
-        dict.setStringForKey(String.valueOf(this.getType().name()), "Type");
+        dict.setStringForKey(this.getType().name(), "Type");
         dict.setObjectForKey(host, "Host");
         dict.setListForKey(roots, "Items");
         dict.setStringForKey(uuid, "UUID");
@@ -259,6 +259,13 @@ public abstract class Transfer implements Serializable {
         return null;
     }
 
+    public Host.TransferType getTransferType() {
+        if(Host.TransferType.unknown.equals(host.getTransferType())) {
+            return Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type"));
+        }
+        return host.getTransferType();
+    }
+
     public String getName() {
         if(roots.isEmpty()) {
             return LocaleFactory.localizedString("None");
@@ -311,12 +318,19 @@ public abstract class Transfer implements Serializable {
      */
     public void pre(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(TransferItem item : roots) {
-            final Local directory = item.local.getParent();
             try {
-                locks.put(directory, directory.lock(true));
+                switch(this.getType()) {
+                    case download:
+                        final Local directory = item.local.getParent();
+                        locks.put(directory, directory.lock(true));
+                        break;
+                    case upload:
+                        locks.put(item.local, item.local.lock(true));
+                        break;
+                }
             }
-            catch(AccessDeniedException e) {
-                // Ignore no lock support
+            catch(LocalAccessDeniedException e) {
+                log.warn(String.format("Failure obtaining lock for %s. %s", item.local, e));
             }
         }
     }
@@ -330,8 +344,15 @@ public abstract class Transfer implements Serializable {
     public void post(final Session<?> source, final Session<?> destination, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
         for(Iterator<Map.Entry<Local, Object>> iter = locks.entrySet().iterator(); iter.hasNext(); ) {
             final Map.Entry<Local, Object> entry = iter.next();
-            final Local directory = entry.getKey().getParent();
-            directory.release(entry.getValue());
+            switch(this.getType()) {
+                case download:
+                    final Local directory = entry.getKey().getParent();
+                    directory.release(entry.getValue());
+                    break;
+                case upload:
+                    entry.getKey().release(entry.getValue());
+                    break;
+            }
             iter.remove();
         }
     }
@@ -346,14 +367,12 @@ public abstract class Transfer implements Serializable {
      * @param options            Quarantine option
      * @param status             Transfer status
      * @param connectionCallback Prompt
-     * @param passwordCallback   Prompt
      * @param progressListener   Listener
      * @param streamListener     Listener
-     * @return Target file
      */
-    public abstract Path transfer(Session<?> source, Session<?> destination, Path file, Local local,
+    public abstract void transfer(Session<?> source, Session<?> destination, Path file, Local local,
                                   TransferOptions options, TransferStatus status,
-                                  ConnectionCallback connectionCallback, PasswordCallback passwordCallback,
+                                  ConnectionCallback connectionCallback,
                                   ProgressListener progressListener,
                                   StreamListener streamListener) throws BackgroundException;
 

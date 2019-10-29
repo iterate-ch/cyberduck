@@ -35,20 +35,20 @@ import static org.junit.Assert.assertEquals;
 public class TerminalHelpPrinterTest {
 
     @Test
-    public void testPrintWidth100() throws Exception {
+    public void testPrintWidth100() {
         TerminalHelpPrinter.print(TerminalOptionsBuilder.options(), new TerminalHelpFormatter(100));
     }
 
     @Test
     @Ignore
-    public void testPrintWidth20DefaultFormatter() throws Exception {
+    public void testPrintWidth20DefaultFormatter() {
         final HelpFormatter f = new TerminalHelpFormatter();
         f.setWidth(20);
         TerminalHelpPrinter.print(TerminalOptionsBuilder.options(), f);
     }
 
     @Test
-    public void testPrintWidth20() throws Exception {
+    public void testPrintWidth20() {
         TerminalHelpPrinter.print(TerminalOptionsBuilder.options(), new TerminalHelpFormatter(40));
     }
 

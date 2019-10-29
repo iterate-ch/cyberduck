@@ -92,6 +92,5 @@ public class FTPWriteFeatureTest extends AbstractFTPTest {
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
         new CryptoDeleteFeature(session, new FTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        ;
     }
 }

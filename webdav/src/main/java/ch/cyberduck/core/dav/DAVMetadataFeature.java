@@ -64,7 +64,7 @@ public class DAVMetadataFeature implements Headers {
                 throw new DAVExceptionMappingService().map("Failure to read attributes of {0}", e, file);
             }
             catch(InteroperabilityException | NotfoundException i) {
-                log.warn(String.format("Failure to obtain attributes of %s. %s", file, i.getDetail()));
+                log.warn(String.format("Failure to obtain attributes of %s. %s", file, i));
                 // Workaround for #8902
                 return Collections.emptyMap();
             }
@@ -81,7 +81,7 @@ public class DAVMetadataFeature implements Headers {
         }
         try {
             session.getClient().setCustomProps(new DAVPathEncoder().encode(file),
-                    metadata, Collections.<java.lang.String>emptyList());
+                metadata, Collections.emptyList());
         }
         catch(SardineException e) {
             throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);

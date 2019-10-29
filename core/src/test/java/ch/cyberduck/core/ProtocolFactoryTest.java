@@ -15,6 +15,7 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
@@ -30,7 +31,7 @@ import static org.junit.Assert.*;
 public class ProtocolFactoryTest {
 
     @Test
-    public void testGetProtocols() throws Exception {
+    public void testGetProtocols() {
         final TestProtocol defaultProtocol = new TestProtocol(Scheme.ftp);
         final TestProtocol providerProtocol = new TestProtocol(Scheme.ftp) {
             @Override
@@ -45,7 +46,7 @@ public class ProtocolFactoryTest {
             }
         };
         final ProtocolFactory f = new ProtocolFactory(new HashSet<>(
-                Arrays.asList(defaultProtocol, providerProtocol, disabledProtocol)));
+            Arrays.asList(defaultProtocol, providerProtocol, disabledProtocol)));
         final List<Protocol> protocols = f.find();
         assertTrue(protocols.contains(defaultProtocol));
         assertTrue(protocols.contains(providerProtocol));
@@ -53,7 +54,7 @@ public class ProtocolFactoryTest {
     }
 
     @Test
-    public void testFindUnknownDefaultProtocol() throws Exception {
+    public void testFindUnknownDefaultProtocol() {
         final TestProtocol dav = new TestProtocol(Scheme.dav);
         final TestProtocol davs = new TestProtocol(Scheme.davs);
         final ProtocolFactory f = new ProtocolFactory(new LinkedHashSet<>(Arrays.asList(dav, davs)));
@@ -65,7 +66,7 @@ public class ProtocolFactoryTest {
     }
 
     @Test
-    public void testFindProtocolWithProviderInIdentifier() throws Exception {
+    public void testFindProtocolWithProviderInIdentifier() {
         final TestProtocol dav = new TestProtocol(Scheme.dav) {
             @Override
             public String getIdentifier() {
@@ -83,7 +84,7 @@ public class ProtocolFactoryTest {
     }
 
     @Test
-    public void testFindProtocolProviderMismatch() throws Exception {
+    public void testFindProtocolProviderMismatch() {
         final TestProtocol dav_provider1 = new TestProtocol(Scheme.dav) {
             @Override
             public String getIdentifier() {
@@ -114,7 +115,7 @@ public class ProtocolFactoryTest {
     }
 
     @Test
-    public void testSchemeFallbackType() throws Exception {
+    public void testSchemeFallbackType() {
         final TestProtocol dav = new TestProtocol(Scheme.dav);
         final TestProtocol swift = new TestProtocol(Scheme.dav) {
             @Override
@@ -131,9 +132,9 @@ public class ProtocolFactoryTest {
         assertEquals(swift, f.forName("swift"));
     }
 
-    @Test
+    @Test(expected = AccessDeniedException.class)
     public void testRegisterUnknownProtocol() throws Exception {
-        final Profile profile = new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
+        new ProfilePlistReader(new ProtocolFactory(Collections.singleton(new TestProtocol() {
             @Override
             public Type getType() {
                 return Type.dav;
@@ -141,9 +142,5 @@ public class ProtocolFactoryTest {
         }))).read(
             new Local("src/test/resources/Unknown.cyberduckprofile")
         );
-        assertNull(profile);
-        final ProtocolFactory f = new ProtocolFactory();
-        f.register(profile);
-        assertTrue(f.find().isEmpty());
     }
 }

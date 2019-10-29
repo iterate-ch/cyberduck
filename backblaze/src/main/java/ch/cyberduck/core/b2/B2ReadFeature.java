@@ -25,6 +25,9 @@ import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -44,6 +47,9 @@ public class B2ReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
+            if(file.getType().contains(Path.Type.upload)) {
+                return new NullInputStream(0L);
+            }
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 return session.getClient().downloadFileRangeByIdToStream(
@@ -55,6 +61,10 @@ public class B2ReadFeature implements Read {
             return new HttpMethodReleaseInputStream(response.getResponse());
         }
         catch(B2ApiException e) {
+            if(StringUtils.equals("file_state_none", e.getMessage())) {
+                // Pending large file upload
+                return new NullInputStream(0L);
+            }
             throw new B2ExceptionMappingService().map("Download {0} failed", e, file);
         }
         catch(IOException e) {

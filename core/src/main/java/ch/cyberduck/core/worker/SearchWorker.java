@@ -52,8 +52,11 @@ public class SearchWorker extends Worker<AttributedList<Path>> {
     @Override
     public AttributedList<Path> run(final Session<?> session) throws BackgroundException {
         // Run recursively
-        final Search search = session.getFeature(Search.class).withCache(cache);
-        return this.search(search, directory);
+        final Search feature = session.getFeature(Search.class).withCache(cache);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Run with feature %s", feature));
+        }
+        return this.search(feature, directory);
     }
 
     private AttributedList<Path> search(final Search search, final Path workdir) throws BackgroundException {

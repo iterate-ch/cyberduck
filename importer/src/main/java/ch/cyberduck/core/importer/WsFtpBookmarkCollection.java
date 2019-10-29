@@ -27,14 +27,13 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -84,38 +83,32 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     protected void read(final ProtocolFactory protocols, Local file) throws AccessDeniedException {
-        try {
-            final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")));
-            try {
-                Host current = null;
-                String line;
-                while((line = in.readLine()) != null) {
-                    log.trace(line);
-                    if(line.startsWith("[")) {
-                        this.add(current);
-                        current = new Host(protocols.forScheme(Scheme.ftp));
-                        current.getCredentials().setUsername(
-                                PreferencesFactory.get().getProperty("connection.login.anon.name"));
-                        Pattern pattern = Pattern.compile("\\[(.*)\\]");
-                        Matcher matcher = pattern.matcher(line);
-                        if(matcher.matches()) {
-                            current.setNickname(matcher.group(1));
-                        }
-                    }
-                    else if(StringUtils.isBlank(line)) {
-                        this.add(current);
-                    }
-                    else {
-                        if(null == current) {
-                            log.warn("Failed to detect start of bookmark");
-                            continue;
-                        }
-                        this.parse(protocols, current, line);
+        try (final BufferedReader in = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+            Host current = null;
+            String line;
+            while((line = in.readLine()) != null) {
+                log.trace(line);
+                if(line.startsWith("[")) {
+                    this.add(current);
+                    current = new Host(protocols.forScheme(Scheme.ftp));
+                    current.getCredentials().setUsername(
+                        PreferencesFactory.get().getProperty("connection.login.anon.name"));
+                    Pattern pattern = Pattern.compile("\\[(.*)\\]");
+                    Matcher matcher = pattern.matcher(line);
+                    if(matcher.matches()) {
+                        current.setNickname(matcher.group(1));
                     }
                 }
-            }
-            finally {
-                IOUtils.closeQuietly(in);
+                else if(StringUtils.isBlank(line)) {
+                    this.add(current);
+                }
+                else {
+                    if(null == current) {
+                        log.warn("Failed to detect start of bookmark");
+                        continue;
+                    }
+                    this.parse(protocols, current, line);
+                }
             }
         }
         catch(IOException e) {
@@ -136,42 +129,44 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             return false;
         }
         String value = scanner.next().replaceAll("\"", StringUtils.EMPTY);
-        if("conntype".equals(name)) {
-            try {
-                switch(Integer.parseInt(value)) {
-                    case 4:
-                        current.setProtocol(protocols.forScheme(Scheme.sftp));
-                        break;
-                    case 5:
-                        current.setProtocol(protocols.forScheme(Scheme.ftps));
-                        break;
+        switch(name) {
+            case "conntype":
+                try {
+                    switch(Integer.parseInt(value)) {
+                        case 4:
+                            current.setProtocol(protocols.forScheme(Scheme.sftp));
+                            break;
+                        case 5:
+                            current.setProtocol(protocols.forScheme(Scheme.ftps));
+                            break;
+                    }
+                    // Reset port to default
+                    current.setPort(-1);
                 }
-                // Reset port to default
-                current.setPort(-1);
-            }
-            catch(NumberFormatException e) {
-                log.warn("Unknown Protocol:" + e.getMessage());
-            }
-        }
-        else if("host".equals(name)) {
-            current.setHostname(value);
-        }
-        else if("port".equals(name)) {
-            try {
-                current.setPort(Integer.parseInt(value));
-            }
-            catch(NumberFormatException e) {
-                log.warn("Invalid Port:" + e.getMessage());
-            }
-        }
-        else if("dir".equals(name)) {
-            current.setDefaultPath(value);
-        }
-        else if("comment".equals(name)) {
-            current.setComment(value);
-        }
-        else if("uid".equals(name)) {
-            current.getCredentials().setUsername(value);
+                catch(NumberFormatException e) {
+                    log.warn("Unknown Protocol:" + e.getMessage());
+                }
+                break;
+            case "host":
+                current.setHostname(value);
+                break;
+            case "port":
+                try {
+                    current.setPort(Integer.parseInt(value));
+                }
+                catch(NumberFormatException e) {
+                    log.warn("Invalid Port:" + e.getMessage());
+                }
+                break;
+            case "dir":
+                current.setDefaultPath(value);
+                break;
+            case "comment":
+                current.setComment(value);
+                break;
+            case "uid":
+                current.getCredentials().setUsername(value);
+                break;
         }
         return true;
     }
@@ -182,7 +177,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
             return false;
         }
         if(bookmark.getHostname().equals(
-                PreferencesFactory.get().getProperty("connection.hostname.default"))) {
+            PreferencesFactory.get().getProperty("connection.hostname.default"))) {
             return false;
         }
         return super.add(bookmark);

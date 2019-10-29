@@ -33,5 +33,5 @@ public interface TransferListener {
     /**
      * @param status Progress text
      */
-    void transferDidProgress(final Transfer transfer, TransferProgress status);
+    void transferDidProgress(Transfer transfer, TransferProgress status);
 }

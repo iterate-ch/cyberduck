@@ -290,7 +290,7 @@ public abstract class TransferPromptController extends SheetController implement
             }
 
             @Override
-            public void selectionDidChange(NSNotification notification) {
+            public void selectionDidChange(final NSNotification notification) {
                 if(browserView.selectedRow().intValue() == -1) {
                     remoteURLField.setStringValue(StringUtils.EMPTY);
                     remoteSizeField.setStringValue(StringUtils.EMPTY);

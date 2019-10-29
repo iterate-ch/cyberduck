@@ -23,7 +23,6 @@ import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
-import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
 import ch.cyberduck.core.local.LocalTrashFactory;
@@ -43,7 +42,7 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
     private final String identifier;
 
     public SecurityApplicationGroupSupportDirectoryFinder() {
-        this("G69SCX94XU.duck");
+        this(String.format("G69SCX94XU.%s", PreferencesFactory.get().getProperty("application.container.name")));
     }
 
     public SecurityApplicationGroupSupportDirectoryFinder(final String identifier) {
@@ -55,22 +54,15 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
         final NSFileManager manager = NSFileManager.defaultManager();
         if(manager.respondsToSelector(Foundation.selector("containerURLForSecurityApplicationGroupIdentifier:"))) {
             final NSURL group = manager
-                    .containerURLForSecurityApplicationGroupIdentifier(identifier);
+                .containerURLForSecurityApplicationGroupIdentifier(identifier);
             if(null == group) {
                 log.warn("Missing com.apple.security.application-groups in sandbox entitlements");
             }
             else {
                 // You should organize the contents of this directory in the same way that any other Library folder is organized
-                final String application = PreferencesFactory.get().getProperty("application.container.name");
+                final String application = PreferencesFactory.get().getProperty("application.datafolder.name");
                 final Local folder = new FinderLocal(String.format("%s/Library/Application Support", group.path()), application);
                 try {
-                    // In previous versions of OS X, although the group container directory is part of your sandbox,
-                    // the directory itself is not created automatically.
-                    if(!folder.exists()) {
-                        log.info(String.format("Create shared security application group folder %s", folder));
-                        new DefaultLocalDirectoryFeature().mkdir(folder);
-                    }
-                    log.info(String.format("Shared security application group folder %s is empty. Attempt to migrate support directory.", folder));
                     final Local previous = new ApplicationSupportDirectoryFinder().find();
                     if(previous.exists()) {
                         log.warn(String.format("Migrate application support folder from %s to %s", previous, folder));

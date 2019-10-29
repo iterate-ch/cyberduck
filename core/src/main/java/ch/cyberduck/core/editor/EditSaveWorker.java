@@ -18,7 +18,6 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Local;
@@ -46,6 +45,7 @@ import ch.cyberduck.core.worker.Worker;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 
 public class EditSaveWorker extends Worker<Transfer> {
     private static final Logger log = Logger.getLogger(EditSaveWorker.class);
@@ -87,8 +87,8 @@ public class EditSaveWorker extends Worker<Transfer> {
         final SingleTransferWorker worker
             = new SingleTransferWorker(session, session, upload, new TransferOptions(),
                 new TransferSpeedometer(upload), new DisabledTransferPrompt(), callback,
-            listener, new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledPasswordCallback(), notification);
-        worker.run();
+            listener, new DisabledStreamListener(), new DisabledLoginCallback(), notification);
+        worker.run(session);
         if(!upload.isComplete()) {
             log.warn(String.format("File size changed for %s", editor.getRemote()));
         }
@@ -124,7 +124,7 @@ public class EditSaveWorker extends Worker<Transfer> {
             return false;
         }
         EditSaveWorker that = (EditSaveWorker) o;
-        if(editor != null ? !editor.equals(that.editor) : that.editor != null) {
+        if(!Objects.equals(editor, that.editor)) {
             return false;
         }
         return true;

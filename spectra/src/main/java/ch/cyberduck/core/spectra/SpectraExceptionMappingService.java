@@ -18,7 +18,7 @@ import ch.cyberduck.core.AbstractExceptionMappingService;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
@@ -60,6 +60,6 @@ public class SpectraExceptionMappingService extends AbstractExceptionMappingServ
         if(e.getCause() instanceof IOException) {
             return new DefaultIOExceptionMappingService().map((IOException) e.getCause());
         }
-        return new HttpResponseExceptionMappingService().map(new HttpResponseException(e.getStatusCode(), buffer.toString()));
+        return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(e.getStatusCode(), buffer.toString()));
     }
 }

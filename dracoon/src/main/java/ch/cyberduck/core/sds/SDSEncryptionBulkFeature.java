@@ -18,6 +18,7 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
@@ -59,10 +60,9 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
         return null;
     }
 
-    private Map<Path, Boolean> getRoomEncryptionStatus(final Map<TransferItem, TransferStatus> files) throws BackgroundException {
+    private Map<Path, Boolean> getRoomEncryptionStatus(final Map<TransferItem, TransferStatus> files) {
         final Map<Path, Boolean> rooms = new HashMap<>();
         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-            // Get top level room
             final Path container = new PathContainerService().getContainer(entry.getKey().remote);
             if(rooms.containsKey(container)) {
                 continue;
@@ -80,12 +80,15 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
             default:
                 if(PreferencesFactory.get().getBoolean("sds.encryption.missingkeys.upload")) {
                     if(session.userAccount().isEncryptionEnabled()) {
-                        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
+                        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
                         final Map<Path, Boolean> rooms = this.getRoomEncryptionStatus(files);
                         for(Map.Entry<TransferItem, TransferStatus> entry : files.entrySet()) {
-                            final Path container = new PathContainerService().getContainer(entry.getKey().remote);
+                            final Path file = entry.getKey().remote;
+                            final Path container = new PathContainerService().getContainer(file);
                             if(rooms.get(container)) {
-                                background.operate(callback, entry.getKey().remote);
+                                background.operate(session, callback, file.withAttributes(new PathAttributes(file.attributes()).withVersionId(
+                                    entry.getValue().getVersion().id
+                                )));
                             }
                         }
                     }

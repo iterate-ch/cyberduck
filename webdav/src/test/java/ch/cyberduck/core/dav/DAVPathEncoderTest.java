@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 public class DAVPathEncoderTest {
 
     @Test
-    public void testEncode() throws Exception {
+    public void testEncode() {
         assertEquals("/", new DAVPathEncoder().encode(new Path("/", EnumSet.of(Path.Type.directory))));
         assertEquals("/dav/", new DAVPathEncoder().encode(new Path("/dav", EnumSet.of(Path.Type.directory))));
         assertEquals("/dav", new DAVPathEncoder().encode(new Path("/dav", EnumSet.of(Path.Type.file))));

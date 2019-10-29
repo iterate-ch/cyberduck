@@ -18,10 +18,12 @@ package ch.cyberduck.core.serializer;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.io.Checksum;
 
+import java.net.URI;
 import java.util.Collections;
 
 public class PathAttributesDictionary {
@@ -51,6 +53,10 @@ public class PathAttributesDictionary {
         if(revisionObj != null) {
             attributes.setRevision(Long.parseLong(revisionObj));
         }
+        final String etagObj = dict.stringForKey("ETag");
+        if(etagObj != null) {
+            attributes.setETag(dict.stringForKey("ETag"));
+        }
         final Object permissionObj = dict.objectForKey("Permission");
         if(permissionObj != null) {
             attributes.setPermission(new PermissionDictionary().deserialize(permissionObj));
@@ -59,8 +65,13 @@ public class PathAttributesDictionary {
         if(aclObj != null) {
             attributes.setAcl(new AclDictionary().deserialize(aclObj));
         }
+        final Object linkObj = dict.stringForKey("Link");
+        if(linkObj != null) {
+            attributes.setLink(new DescriptiveUrl(URI.create(dict.stringForKey("Link")), DescriptiveUrl.Type.http));
+        }
         attributes.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));
         attributes.setVersionId(dict.stringForKey("Version"));
+        attributes.setLockId(dict.stringForKey("Lock Id"));
         final String duplicateObj = dict.stringForKey("Duplicate");
         if(duplicateObj != null) {
             attributes.setDuplicate(Boolean.valueOf(duplicateObj));

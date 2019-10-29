@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 public class TimestampComparisonServiceTest {
 
     @Test
-    public void testCompareEqual() throws Exception {
+    public void testCompareEqual() {
         ComparisonService s = new TimestampComparisonService(TimeZone.getDefault());
         final long timestamp = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
         assertEquals(Comparison.equal, s.compare(new PathAttributes() {
@@ -31,7 +31,7 @@ public class TimestampComparisonServiceTest {
     }
 
     @Test
-    public void testCompareLocal() throws Exception {
+    public void testCompareLocal() {
         ComparisonService s = new TimestampComparisonService(TimeZone.getDefault());
         final long timestamp = Calendar.getInstance(TimeZone.getDefault()).getTimeInMillis();
         assertEquals(Comparison.local, s.compare(new PathAttributes() {

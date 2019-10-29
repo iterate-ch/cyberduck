@@ -25,7 +25,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using BrightIdeasSoftware;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
+using Ch.Cyberduck.Ui.Core.Resources;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -129,7 +129,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (imageSelector is string)
             {
                 return
-                    IconCache.Instance.IconForName((string)imageSelector, 0);
+                    IconCache.IconForName((string)imageSelector, 0);
             }
             return null;
         }
@@ -707,7 +707,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <summary>
         /// Gets or sets the delegate of the aspect of the model object that contains the URL
         /// </summary>
-        public AspectGetterDelegate UrlAspectGetter { get; set; }
+        public AspectGetterDelegate UsernameAspectGetter { get; set; }
 
         /// <summary>
         /// Gets or sets the delegate of the aspect of the model object that contains the notes
@@ -718,7 +718,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             DrawBackground(g, r);
             DrawBookmark(g, r, Aspect as String, HostnameAspectGetter(RowObject) as String,
-                         UrlAspectGetter(RowObject) as String, NotesAspectGetter(RowObject) as String);
+                         UsernameAspectGetter(RowObject) as String, NotesAspectGetter(RowObject) as String);
         }
 
         public abstract void DrawBookmark(Graphics g, Rectangle r, String nickname, String hostname, String url,

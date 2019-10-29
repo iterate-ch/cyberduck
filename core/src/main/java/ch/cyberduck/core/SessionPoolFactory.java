@@ -75,22 +75,23 @@ public class SessionPoolFactory {
                                      final X509TrustManager x509TrustManager, final X509KeyManager x509KeyManager,
                                      final VaultRegistry registry,
                                      final Usage... usage) {
-        if(bookmark.getProtocol().isStateful()) {
-            // Stateful
-            if(Arrays.asList(usage).contains(Usage.browser)) {
-                return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
-            }
-            // Break through to default pool
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Create new pooled connection pool for %s", bookmark));
-            }
-            return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, registry, cache, transcript, bookmark)
-                .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
-                .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
-                .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
+        switch(bookmark.getProtocol().getStatefulness()) {
+            case stateful:
+                if(Arrays.asList(usage).contains(Usage.browser)) {
+                    return stateful(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
+                }
+                // Break through to default pool
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Create new pooled connection pool for %s", bookmark));
+                }
+                return new DefaultSessionPool(connect, x509TrustManager, x509KeyManager, registry, cache, transcript, bookmark)
+                    .withMinIdle(PreferencesFactory.get().getInteger("connection.pool.minidle"))
+                    .withMaxIdle(PreferencesFactory.get().getInteger("connection.pool.maxidle"))
+                    .withMaxTotal(PreferencesFactory.get().getInteger("connection.pool.maxtotal"));
+            default:
+                // Stateless protocol
+                return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
         }
-        // Stateless protocol
-        return stateless(connect, transcript, cache, bookmark, x509TrustManager, x509KeyManager, registry);
     }
 
     /**

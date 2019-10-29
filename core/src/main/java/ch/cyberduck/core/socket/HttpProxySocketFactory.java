@@ -33,7 +33,7 @@ public class HttpProxySocketFactory extends DefaultSocketFactory {
     }
 
     @Override
-    public Socket createSocket() throws IOException {
+    public Socket createSocket() {
         return new HttpProxyAwareSocket(proxy);
     }
 

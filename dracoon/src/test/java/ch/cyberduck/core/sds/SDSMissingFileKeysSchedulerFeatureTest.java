@@ -18,9 +18,9 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -28,7 +28,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetRequest;
-import ch.cyberduck.core.sds.triplecrypt.CryptoWriteFeature;
+import ch.cyberduck.core.sds.triplecrypt.TripleCryptWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -54,15 +54,15 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
 
     @Test
     public void testMissingKeys() throws Exception {
-        final Path room = new Path("CD-TEST-ENCRYPTED", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.decrypted));
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.triplecrypt));
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
-        final CryptoWriteFeature writer = new CryptoWriteFeature(session, new SDSWriteFeature(session, nodeid));
+        final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSWriteFeature(session, nodeid));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -70,11 +70,11 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
         assertEquals(content.length, new SDSAttributesFinderFeature(session, nodeid).find(test).getSize());
-        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
-        final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
+        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
+        final List<UserFileKeySetRequest> processed = background.operate(session, new DisabledPasswordCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
-                return new VaultCredentials("ahbic3Ae");
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
+                return new VaultCredentials("eth[oh8uv4Eesij");
             }
         }, test);
         assertFalse(processed.isEmpty());
@@ -92,9 +92,9 @@ public class SDSMissingFileKeysSchedulerFeatureTest extends AbstractSDSTest {
     @Test(expected = LoginCanceledException.class)
     public void testWrongPassword() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature(session, nodeid);
+        final SDSMissingFileKeysSchedulerFeature background = new SDSMissingFileKeysSchedulerFeature();
         final AtomicBoolean prompt = new AtomicBoolean();
-        final List<UserFileKeySetRequest> processed = background.operate(new PasswordCallback() {
+        final List<UserFileKeySetRequest> processed = background.operate(session, new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
                 if(prompt.get()) {

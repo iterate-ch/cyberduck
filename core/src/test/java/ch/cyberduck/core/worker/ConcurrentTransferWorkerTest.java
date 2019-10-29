@@ -59,16 +59,16 @@ public class ConcurrentTransferWorkerTest {
     public void testDoubleRelease() throws Exception {
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         final Transfer t = new UploadTransfer(host,
-                new Path("/t", EnumSet.of(Path.Type.directory)),
-                new NullLocal("l"));
+            new Path("/t", EnumSet.of(Path.Type.directory)),
+            new NullLocal("l"));
         final LoginConnectionService connection = new TestLoginConnectionService();
         final DefaultSessionPool pool = new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DefaultVaultRegistry(new DisabledPasswordCallback()),
-                PathCache.empty(), new DisabledTranscriptListener(), host);
+            new DefaultVaultRegistry(new DisabledPasswordCallback()),
+            PathCache.empty(), new DisabledTranscriptListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                pool, SessionPool.DISCONNECTED, t, new TransferOptions(),
-                new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-            new DisabledConnectionCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            pool, SessionPool.DISCONNECTED, t, new TransferOptions(),
+            new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+            new DisabledConnectionCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
         worker.release(session, ConcurrentTransferWorker.Connection.source, null);
@@ -79,16 +79,16 @@ public class ConcurrentTransferWorkerTest {
     public void testBorrow() throws Exception {
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         final Transfer t = new UploadTransfer(host,
-                new Path("/t", EnumSet.of(Path.Type.directory)),
-                new NullLocal("l"));
+            new Path("/t", EnumSet.of(Path.Type.directory)),
+            new NullLocal("l"));
         final LoginConnectionService connection = new TestLoginConnectionService();
         final DefaultSessionPool pool = new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DefaultVaultRegistry(new DisabledPasswordCallback()),
-                PathCache.empty(), new DisabledTranscriptListener(), host);
+            new DefaultVaultRegistry(new DisabledPasswordCallback()),
+            PathCache.empty(), new DisabledTranscriptListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                pool, SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t),
-                new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            pool, SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t),
+            new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         assertNotSame(worker.borrow(ConcurrentTransferWorker.Connection.source), worker.borrow(ConcurrentTransferWorker.Connection.source));
         worker.cleanup(true);
@@ -98,15 +98,15 @@ public class ConcurrentTransferWorkerTest {
     public void testSessionReuse() throws Exception {
         final Host host = new Host(new TestProtocol(), "test.cyberduck.ch");
         final Transfer t = new UploadTransfer(host,
-                new Path("/t", EnumSet.of(Path.Type.directory)),
-                new NullLocal("l"));
+            new Path("/t", EnumSet.of(Path.Type.directory)),
+            new NullLocal("l"));
         final LoginConnectionService connection = new TestLoginConnectionService();
         final DefaultSessionPool pool = new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DefaultVaultRegistry(new DisabledPasswordCallback()),
-                PathCache.empty(), new DisabledTranscriptListener(), host);
+            new DefaultVaultRegistry(new DisabledPasswordCallback()),
+            PathCache.empty(), new DisabledTranscriptListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                pool.withMaxTotal(1), SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            pool.withMaxTotal(1), SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         // Override default transfer queue size
         pool.withMaxTotal(1);
@@ -152,37 +152,36 @@ public class ConcurrentTransferWorkerTest {
         ) {
 
             @Override
-            public Path transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
+            public void transfer(final Session<?> source, final Session<?> destination, final Path file, final Local local,
                                  final TransferOptions options, final TransferStatus status,
                                  final ConnectionCallback connectionCallback,
-                                 final PasswordCallback passwordCallback, final ProgressListener listener, final StreamListener streamListener) throws BackgroundException {
+                                 final ProgressListener listener, final StreamListener streamListener) {
                 assertNotNull(source);
                 transferred.add(file);
-                return file;
             }
 
             @Override
             public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
                 return new AbstractDownloadFilter(new DisabledDownloadSymlinkResolver(), source, null) {
                     @Override
-                    public boolean accept(final Path file, final Local local, final TransferStatus parent) throws BackgroundException {
+                    public boolean accept(final Path file, final Local local, final TransferStatus parent) {
                         assertFalse(transferred.contains(file));
                         return true;
                     }
 
                     @Override
-                    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
+                    public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) {
                         assertFalse(transferred.contains(file));
                         return new TransferStatus();
                     }
 
                     @Override
-                    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+                    public void apply(final Path file, final Local local, final TransferStatus status, final ProgressListener listener) {
                         assertFalse(transferred.contains(file));
                     }
 
                     @Override
-                    public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status, final ProgressListener listener) throws BackgroundException {
+                    public void complete(final Path file, final Local local, final TransferOptions options, final TransferStatus status, final ProgressListener listener) {
                         assertTrue(transferred.contains(file));
                     }
                 };
@@ -190,20 +189,20 @@ public class ConcurrentTransferWorkerTest {
         };
         final LoginConnectionService connection = new TestLoginConnectionService();
         final DefaultSessionPool pool = new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                new DefaultVaultRegistry(new DisabledPasswordCallback()),
-                PathCache.empty(), new DisabledTranscriptListener(), host);
+            new DefaultVaultRegistry(new DisabledPasswordCallback()),
+            PathCache.empty(), new DisabledTranscriptListener(), host);
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                pool, SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
+            pool, SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
             @Override
             public TransferAction prompt(final TransferItem file) {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         pool.withMaxTotal(connections);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
-        assertTrue(worker.run());
+        assertTrue(worker.run(session));
         worker.release(session, ConcurrentTransferWorker.Connection.source, null);
         for(int i = 1; i <= files; i++) {
             assertTrue(transferred.contains(new Path("/t" + i, EnumSet.of(Path.Type.file))));
@@ -215,14 +214,14 @@ public class ConcurrentTransferWorkerTest {
     public void testBorrowTimeoutNoSessionAvailable() throws Exception {
         final Host host = new Host(new TestProtocol(), "localhost", new Credentials("u", "p"));
         final Transfer t = new UploadTransfer(host,
-                new Path("/t", EnumSet.of(Path.Type.directory)),
-                new NullLocal("l"));
+            new Path("/t", EnumSet.of(Path.Type.directory)),
+            new NullLocal("l"));
         final LoginConnectionService connection = new TestLoginConnectionService();
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                        new DefaultVaultRegistry(new DisabledPasswordCallback()),
-                        PathCache.empty(), new DisabledTranscriptListener(), host), SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                new DefaultVaultRegistry(new DisabledPasswordCallback()),
+                PathCache.empty(), new DisabledTranscriptListener(), host), SessionPool.DISCONNECTED, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
         assertNotNull(session);
@@ -231,15 +230,9 @@ public class ConcurrentTransferWorkerTest {
             @Override
             public void run() {
                 try {
-                    assertSame(session, worker.borrow(ConcurrentTransferWorker.Connection.source));
-                    try {
-                        lock.await(1, TimeUnit.MINUTES);
-                    }
-                    catch(InterruptedException | BrokenBarrierException | TimeoutException e) {
-                        fail();
-                    }
+                    lock.await(1, TimeUnit.MINUTES);
                 }
-                catch(BackgroundException e) {
+                catch(InterruptedException | BrokenBarrierException | TimeoutException e) {
                     fail();
                 }
             }
@@ -252,21 +245,21 @@ public class ConcurrentTransferWorkerTest {
     public void testAwait() throws Exception {
         final Host host = new Host(new TestProtocol(), "localhost", new Credentials("u", "p"));
         final Transfer transfer = new UploadTransfer(host,
-                new Path("/t", EnumSet.of(Path.Type.directory)),
-                new NullLocal("l"));
+            new Path("/t", EnumSet.of(Path.Type.directory)),
+            new NullLocal("l"));
         final LoginConnectionService connection = new TestLoginConnectionService();
         final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
-                new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
-                        new DefaultVaultRegistry(new DisabledPasswordCallback()),
-                        PathCache.empty(), new DisabledTranscriptListener(), host), SessionPool.DISCONNECTED, transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            new DefaultSessionPool(connection, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                new DefaultVaultRegistry(new DisabledPasswordCallback()),
+                PathCache.empty(), new DisabledTranscriptListener(), host), SessionPool.DISCONNECTED, transfer, new TransferOptions(), new TransferSpeedometer(transfer), new DisabledTransferPrompt(), new DisabledTransferErrorCallback(),
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         int workers = 1000;
         final CountDownLatch entry = new CountDownLatch(workers);
         for(int i = 0; i < workers; i++) {
             worker.submit(new TransferWorker.TransferCallable() {
                 @Override
-                public TransferStatus call() throws BackgroundException {
+                public TransferStatus call() {
                     entry.countDown();
                     return new TransferStatus().complete();
                 }

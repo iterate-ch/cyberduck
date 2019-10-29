@@ -55,7 +55,7 @@ public abstract class NSToolbar extends NSObject {
         NSToolbar alloc();
     }
 
-    public static interface Delegate {
+    public interface Delegate {
         boolean validateToolbarItem(final NSToolbarItem item);
 
         /**

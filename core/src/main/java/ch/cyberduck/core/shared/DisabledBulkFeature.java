@@ -18,7 +18,6 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.Transfer;
@@ -29,8 +28,8 @@ import java.util.Map;
 
 public class DisabledBulkFeature implements Bulk<Map<TransferItem, TransferStatus>> {
     @Override
-    public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) throws BackgroundException {
-        return files;
+    public Map<TransferItem, TransferStatus> pre(final Transfer.Type type, final Map<TransferItem, TransferStatus> files, final ConnectionCallback callback) {
+        return null;
     }
 
     @Override

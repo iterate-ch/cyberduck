@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
@@ -62,7 +63,7 @@ import static org.junit.Assert.*;
 public class TransferBackgroundActionTest {
 
     @Test
-    public void testWorkerImplementationDefaultConcurrent() throws Exception {
+    public void testWorkerImplementationDefaultConcurrent() {
         final AbstractController controller = new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {
@@ -98,7 +99,7 @@ public class TransferBackgroundActionTest {
         final Path copy = new Path(directory, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final CopyTransfer t = new CopyTransfer(host, host, Collections.singletonMap(test, copy)) {
             @Override
-            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
+            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) {
                 return TransferAction.overwrite;
             }
         };
@@ -111,8 +112,8 @@ public class TransferBackgroundActionTest {
         };
         final AtomicBoolean start = new AtomicBoolean();
         final AtomicBoolean stop = new AtomicBoolean();
-        final Session session = new NullSession(host);
-        final Session destination = new NullSession(host);
+        final Session session = new NullTransferSession(host);
+        final Session destination = new NullTransferSession(host);
         final TransferBackgroundAction action = new TransferBackgroundAction(controller,
                 new StatelessSessionPool(
                         new TestLoginConnectionService(), session, PathCache.empty(),
@@ -151,8 +152,8 @@ public class TransferBackgroundActionTest {
 
     @Test
     public void testCopyBetweenHosts() throws Exception {
-        final Session session = new NullSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
-        final Session destination = new NullSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
+        final Session session = new NullTransferSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
+        final Session destination = new NullTransferSession(new Host(new TestProtocol(), "test.cyberduck.ch"));
 
         final Path directory = new Path("/home/jenkins/transfer", EnumSet.of(Path.Type.directory));
         final Path test = new Path(directory, "test", EnumSet.of(Path.Type.file));
@@ -161,7 +162,7 @@ public class TransferBackgroundActionTest {
         final Path copy = new Path(new Path("/transfer", EnumSet.of(Path.Type.directory)), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Transfer t = new CopyTransfer(session.getHost(), destination.getHost(), Collections.singletonMap(test, copy)) {
             @Override
-            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) throws BackgroundException {
+            public TransferAction action(final Session<?> source, final Session<?> destination, final boolean resumeRequested, final boolean reloadRequested, final TransferPrompt prompt, final ListProgressListener listener) {
                 return TransferAction.overwrite;
             }
         };
@@ -209,7 +210,7 @@ public class TransferBackgroundActionTest {
     }
 
     @Test
-    public void testResumeOnRetryWithException() throws Exception {
+    public void testResumeOnRetryWithException() {
         final AtomicBoolean alert = new AtomicBoolean();
         final AbstractController controller = new AbstractController() {
             @Override

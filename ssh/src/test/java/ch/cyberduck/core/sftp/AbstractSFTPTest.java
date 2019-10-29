@@ -29,7 +29,6 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.apache.commons.lang3.StringUtils;
@@ -116,7 +115,7 @@ public class AbstractSFTPTest {
         session = new SFTPSession(host);
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
-            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+            public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 fail(reason);
                 return null;
             }

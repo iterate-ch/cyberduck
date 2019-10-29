@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 public class NullTransferFilterTest {
 
     @Test
-    public void testAccept() throws Exception {
+    public void testAccept() {
         assertTrue(new NullTransferFilter().accept(null));
     }
 }

@@ -15,7 +15,6 @@ package ch.cyberduck.core.b2;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
@@ -26,7 +25,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -77,13 +75,11 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                     new PathAttributes(folder.attributes()));
             }
             else {
-                if(Checksum.NONE == status.getChecksum()) {
-                    status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
-                }
+                status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
                 final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);
-                final EnumSet<AbstractPath.Type> type = EnumSet.copyOf(folder.getType());
+                final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 return new Path(folder.getParent(), folder.getName(), type,
                     new B2AttributesFinderFeature(session, fileid).toAttributes((B2FileResponse) out.getStatus()));

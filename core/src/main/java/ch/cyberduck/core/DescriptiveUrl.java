@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.net.URI;
 import java.util.Objects;
 
@@ -31,7 +29,7 @@ public class DescriptiveUrl {
 
     private final Type type;
 
-    private String help = StringUtils.EMPTY;
+    private String help;
 
     public enum Type {
         /**

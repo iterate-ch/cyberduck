@@ -87,6 +87,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -447,35 +448,19 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Override
-    protected List<NSView> getPanels() {
-        List<NSView> views = new ArrayList<NSView>();
-        views.add(panelGeneral);
+    protected Map<Label, NSView> getPanels() {
+        final Map<Label, NSView> views = new LinkedHashMap<>();
+        views.put(new Label(InfoToolbarItem.info.name(), InfoToolbarItem.info.label()), panelGeneral);
         if(session.getFeature(AclPermission.class) != null) {
-            views.add(panelAcl);
+            views.put(new Label(InfoToolbarItem.acl.name(), InfoToolbarItem.acl.label()), panelAcl);
         }
         else {
-            views.add(panelPermissions);
+            views.put(new Label(InfoToolbarItem.permissions.name(), InfoToolbarItem.permissions.label()), panelPermissions);
         }
-        views.add(panelMetadata);
-        views.add(panelDistribution);
-        views.add(panelCloud);
+        views.put(new Label(InfoToolbarItem.metadata.name(), InfoToolbarItem.metadata.label()), panelMetadata);
+        views.put(new Label(InfoToolbarItem.distribution.name(), InfoToolbarItem.distribution.label()), panelDistribution);
+        views.put(new Label(InfoToolbarItem.s3.name(), InfoToolbarItem.s3.label()), panelCloud);
         return views;
-    }
-
-    @Override
-    protected List<String> getPanelIdentifiers() {
-        List<String> identifiers = new ArrayList<String>();
-        identifiers.add(InfoToolbarItem.info.name());
-        if(session.getFeature(AclPermission.class) != null) {
-            identifiers.add(InfoToolbarItem.acl.name());
-        }
-        else {
-            identifiers.add(InfoToolbarItem.permissions.name());
-        }
-        identifiers.add(InfoToolbarItem.metadata.name());
-        identifiers.add(InfoToolbarItem.distribution.name());
-        identifiers.add(InfoToolbarItem.s3.name());
-        return identifiers;
     }
 
     private String getName() {
@@ -998,7 +983,7 @@ public class InfoController extends ToolbarWindowController {
             }
 
             @Override
-            public void selectionDidChange(NSNotification notification) {
+            public void selectionDidChange(final NSNotification notification) {
                 aclRemoveButton.setEnabled(aclTable.numberOfSelectedRows().intValue() > 0);
             }
 
@@ -1185,7 +1170,7 @@ public class InfoController extends ToolbarWindowController {
             }
 
             @Override
-            public void selectionDidChange(NSNotification notification) {
+            public void selectionDidChange(final NSNotification notification) {
                 metadataRemoveButton.setEnabled(metadataTable.numberOfSelectedRows().intValue() > 0);
             }
 
@@ -2490,11 +2475,35 @@ public class InfoController extends ToolbarWindowController {
         /**
          * General
          */
-        info,
+        info {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize("General"), "Info");
+            }
+        },
         permissions,
-        acl,
-        distribution,
-        s3,
-        metadata
+        acl {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize("Permissions"), "Info");
+            }
+        },
+        distribution {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize("Distribution (CDN)"), "Info");
+            }
+        },
+        s3 {
+            @Override
+            public String label() {
+                return LocaleFactory.localizedString(StringUtils.capitalize("Amazon S3"), "Info");
+            }
+        },
+        metadata;
+
+        public String label() {
+            return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Info");
+        }
     }
 }

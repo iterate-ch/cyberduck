@@ -26,6 +26,7 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
@@ -36,7 +37,7 @@ public class S3ReadFeature implements Read {
     private static final Logger log = Logger.getLogger(S3ReadFeature.class);
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     private final S3Session session;
 
@@ -47,18 +48,21 @@ public class S3ReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
+            if(file.getType().contains(Path.Type.upload)) {
+                return new NullInputStream(0L);
+            }
             final HttpRange range = HttpRange.withStatus(status);
             final RequestEntityRestStorageService client = session.getClient();
             final S3Object object = client.getVersionedObject(
-                    file.attributes().getVersionId(),
-                    containerService.getContainer(file).getName(),
-                    containerService.getKey(file),
-                    null, // ifModifiedSince
-                    null, // ifUnmodifiedSince
-                    null, // ifMatch
-                    null, // ifNoneMatch
-                    status.isAppend() ? range.getStart() : null,
-                    status.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null);
+                file.attributes().getVersionId(),
+                containerService.getContainer(file).getName(),
+                containerService.getKey(file),
+                null, // ifModifiedSince
+                null, // ifUnmodifiedSince
+                null, // ifMatch
+                null, // ifNoneMatch
+                status.isAppend() ? range.getStart() : null,
+                status.isAppend() ? (range.getEnd() == -1 ? null : range.getEnd()) : null);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Reading stream with content length %d", object.getContentLength()));
             }

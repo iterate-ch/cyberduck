@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class LoggingConfiguration {
 
@@ -83,7 +84,7 @@ public class LoggingConfiguration {
         if(enabled != that.enabled) {
             return false;
         }
-        if(loggingTarget != null ? !loggingTarget.equals(that.loggingTarget) : that.loggingTarget != null) {
+        if(!Objects.equals(loggingTarget, that.loggingTarget)) {
             return false;
         }
         return true;

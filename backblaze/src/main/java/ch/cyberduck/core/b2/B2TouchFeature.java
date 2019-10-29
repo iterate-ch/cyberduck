@@ -20,7 +20,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -44,9 +43,7 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        if(Checksum.NONE == status.getChecksum()) {
-            status.setChecksum(writer.checksum(file).compute(new NullInputStream(0L), status));
-        }
+        status.setChecksum(writer.checksum(file).compute(new NullInputStream(0L), status));
         status.setTimestamp(System.currentTimeMillis());
         final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);
@@ -55,7 +52,7 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String filename) {
         // Creating files is only possible inside a bucket.
         return !workdir.isRoot();
     }

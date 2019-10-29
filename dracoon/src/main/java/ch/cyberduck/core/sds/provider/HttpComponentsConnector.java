@@ -157,7 +157,7 @@ public class HttpComponentsConnector implements Connector {
             }
 
             @Override
-            public InputStream getContent() throws IOException, IllegalStateException {
+            public InputStream getContent() throws IllegalStateException {
                 return null;
             }
 
@@ -165,7 +165,7 @@ public class HttpComponentsConnector implements Connector {
             public void writeTo(final OutputStream outputStream) throws IOException {
                 clientRequest.setStreamProvider(new OutboundMessageContext.StreamProvider() {
                     @Override
-                    public OutputStream getOutputStream(final int contentLength) throws IOException {
+                    public OutputStream getOutputStream(final int contentLength) {
                         return outputStream;
                     }
                 });

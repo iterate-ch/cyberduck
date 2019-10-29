@@ -17,7 +17,6 @@ package ch.cyberduck.core.urlhandler;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
@@ -28,7 +27,6 @@ import java.util.List;
 
 /**
  * A wrapper for the handler functions in ApplicationServices.h
-
  */
 public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
 
@@ -46,19 +44,21 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
         this.applicationFinder = applicationFinder;
     }
 
+    @Override
+    public void setDefaultHandler(final Application application, final List<String> schemes) {
+        for(String scheme : schemes) {
+            this.setDefaultHandlerForURLScheme(scheme, application.getIdentifier());
+        }
+    }
+
     /**
      * See ApplicationServices/ApplicationServices.h#LSSetDefaultHandlerForURLScheme
      * Register this bundle identifier as the default application for all schemes
      *
-     * @param application The bundle identifier of the application
-     * @param scheme      The protocol identifier
+     * @param bundleIdentifier The bundle identifier of the application
+     * @param scheme           The protocol identifier
      */
-    @Override
-    public void setDefaultHandlerForScheme(final Application application, final Scheme scheme) {
-        this.setDefaultHandler(scheme.name(), application.getIdentifier());
-    }
-
-    private native void setDefaultHandler(String scheme, String bundleIdentifier);
+    private native void setDefaultHandlerForURLScheme(String scheme, String bundleIdentifier);
 
     /**
      * See ApplicationServices/ApplicationServices.h#LSCopyDefaultHandlerForURLScheme
@@ -67,20 +67,20 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
      * @return The bundle identifier for the application registered as the default handler for this scheme
      */
     @Override
-    public Application getDefaultHandler(final Scheme scheme) {
-        final Application application = applicationFinder.getDescription(this.getDefaultHandler(scheme.name()));
+    public Application getDefaultHandler(final String scheme) {
+        final Application application = applicationFinder.getDescription(this.getDefaultHandlerForURLScheme(scheme));
         if(applicationFinder.isInstalled(application)) {
             return application;
         }
         return Application.notfound;
     }
 
-    private native String getDefaultHandler(String scheme);
+    private native String getDefaultHandlerForURLScheme(String scheme);
 
     @Override
-    public List<Application> getAllHandlers(final Scheme scheme) {
+    public List<Application> getAllHandlers(final String scheme) {
         final List<Application> handlers = new ArrayList<Application>();
-        for(String bundleIdentifier : this.getAllHandlers(scheme.name())) {
+        for(String bundleIdentifier : this.getAllHandlersForURLScheme(scheme)) {
             final Application application = applicationFinder.getDescription(bundleIdentifier);
             if(applicationFinder.isInstalled(application)) {
                 handlers.add(application);
@@ -95,5 +95,5 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
      * @param scheme The protocol identifier
      * @return The bundle identifiers for all applications that promise to be capable of handling this scheme
      */
-    private native String[] getAllHandlers(String scheme);
+    private native String[] getAllHandlersForURLScheme(String scheme);
 }

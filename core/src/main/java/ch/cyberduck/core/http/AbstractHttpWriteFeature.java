@@ -22,7 +22,6 @@ import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.shared.AppendWriteFeature;
@@ -39,6 +38,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
+
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> implements HttpWriteFeature<T> {
     private static final Logger log = Logger.getLogger(AbstractHttpWriteFeature.class);
@@ -84,83 +85,69 @@ public abstract class AbstractHttpWriteFeature<T> extends AppendWriteFeature<T> 
         // Signal on enter streaming
         final CountDownLatch entry = entity.getEntry();
         final CountDownLatch exit = new CountDownLatch(1);
-        try {
-            if(StringUtils.isNotBlank(status.getMime())) {
-                entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
-            }
-            else {
-                entity.setContentType(MimeTypeService.DEFAULT_CONTENT_TYPE);
-            }
-            final FutureHttpResponse target = new FutureHttpResponse() {
-                @Override
-                public void run() {
-                    try {
-                        if(status.isCanceled()) {
-                            throw new ConnectionCanceledException();
-                        }
-                        response = command.call(entity);
-                    }
-                    catch(Exception e) {
-                        exception = e;
-                    }
-                    finally {
-                        // For zero byte files #writeTo is never called and the entry latch not triggered
-                        entry.countDown();
-                        // Continue reading the response
-                        exit.countDown();
-                    }
+        if(StringUtils.isNotBlank(status.getMime())) {
+            entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, status.getMime()));
+        }
+        else {
+            entity.setContentType(MimeTypeService.DEFAULT_CONTENT_TYPE);
+        }
+        final FutureHttpResponse target = new FutureHttpResponse() {
+            @Override
+            public void run() {
+                try {
+                    status.validate();
+                    response = command.call(entity);
                 }
-            };
-            final ThreadFactory factory
-                = new NamedThreadFactory(String.format("http-%s", file.getName()));
-            final Thread t = factory.newThread(target);
-            t.start();
-            // Wait for output stream to become available
-            entry.await();
-            if(null != target.getException()) {
-                if(target.getException() instanceof BackgroundException) {
-                    throw (BackgroundException) target.getException();
+                catch(Exception e) {
+                    exception = e;
                 }
-                throw new DefaultExceptionMappingService().map(target.getException());
+                finally {
+                    // For zero byte files #writeTo is never called and the entry latch not triggered
+                    entry.countDown();
+                    // Continue reading the response
+                    exit.countDown();
+                }
             }
-            final OutputStream stream = entity.getStream();
-            return new HttpResponseOutputStream<T>(stream) {
-                @Override
-                public void flush() throws IOException {
-                    stream.flush();
-                }
+        };
+        final ThreadFactory factory
+            = new NamedThreadFactory(String.format("http-%s", file.getName()));
+        final Thread t = factory.newThread(target);
+        t.start();
+        // Wait for output stream to become available
+        Uninterruptibles.awaitUninterruptibly(entry);
+        if(null != target.getException()) {
+            if(target.getException() instanceof BackgroundException) {
+                throw (BackgroundException) target.getException();
+            }
+            throw new DefaultExceptionMappingService().map(target.getException());
+        }
+        final OutputStream stream = entity.getStream();
+        return new HttpResponseOutputStream<T>(stream) {
+            @Override
+            public void flush() throws IOException {
+                stream.flush();
+            }
 
-                /**
-                 * Only available after this stream is closed.
-                 * @return Response from server for upload
-                 */
-                @Override
-                public T getStatus() throws BackgroundException {
-                    try {
-                        if(status.isCanceled()) {
-                            throw new ConnectionCanceledException();
-                        }
-                        // Block the calling thread until after the full response from the server
-                        // has been consumed.
-                        exit.await();
+            /**
+             * Only available after this stream is closed.
+             *
+             * @return Response from server for upload
+             */
+            @Override
+            public T getStatus() throws BackgroundException {
+                status.validate();
+                // Block the calling thread until after the full response from the server
+                // has been consumed.
+                Uninterruptibles.awaitUninterruptibly(exit);
+                if(null != target.getException()) {
+                    if(target.getException() instanceof BackgroundException) {
+                        throw (BackgroundException) target.getException();
                     }
-                    catch(InterruptedException e) {
-                        throw new DefaultExceptionMappingService().map(e);
-                    }
-                    if(null != target.getException()) {
-                        if(target.getException() instanceof BackgroundException) {
-                            throw (BackgroundException) target.getException();
-                        }
-                        throw new DefaultExceptionMappingService().map(target.getException());
-                    }
-                    return target.getResponse();
+                    throw new DefaultExceptionMappingService().map(target.getException());
                 }
-            };
-        }
-        catch(InterruptedException e) {
-            log.warn(String.format("Error waiting for output stream for %s", file));
-            throw new DefaultExceptionMappingService().map(e);
-        }
+                return target.getResponse();
+            }
+        };
     }
 
     @Override

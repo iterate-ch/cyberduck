@@ -13,7 +13,7 @@ public class CredentialsTest {
     public void testEquals() {
         assertEquals(new Credentials("a", "b"), new Credentials("a", "b"));
         assertNotSame(new Credentials("a", "b"), new Credentials("a", "c"));
-        assertFalse(new Credentials("a", "b").equals(new Credentials("a", "c")));
+        assertNotEquals(new Credentials("a", "b"), new Credentials("a", "c"));
     }
 
     @Test
@@ -29,28 +29,28 @@ public class CredentialsTest {
     }
 
     @Test
-    public void testAnonymous() throws Exception {
+    public void testAnonymous() {
         Credentials c = new Credentials("anonymous", "");
         assertEquals("cyberduck@example.net", c.getPassword());
     }
 
     @Test
-    public void testDefault() throws Exception {
+    public void testDefault() {
         Credentials c = new Credentials();
         assertEquals("", c.getUsername());
         assertEquals("", c.getPassword());
     }
 
     @Test
-    public void testNullifyPassword() throws Exception {
+    public void testNullifyPassword() {
         Credentials c = new Credentials();
         assertEquals("", c.getPassword());
         c.setPassword(null);
-        assertEquals(null, c.getPassword());
+        assertNull(c.getPassword());
         c.setPassword("n");
         assertEquals("n", c.getPassword());
         c.setPassword(null);
-        assertEquals(null, c.getPassword());
+        assertNull(c.getPassword());
     }
 
     @Test

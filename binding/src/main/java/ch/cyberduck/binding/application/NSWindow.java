@@ -144,6 +144,19 @@ public abstract class NSWindow extends NSResponder {
     public static final int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;
 
     /// enum values
+    public interface NSWindowLevel {
+        int NSNormalWindowLevel = 0;
+        int NSFloatingWindowLevel = 3;
+        int NSSubmenuWindowLevel = 3;
+        int NSTornOffMenuWindowLevel = 3;
+        int NSMainMenuWindowLevel = 24;
+        int NSStatusWindowLevel = 25;
+        int NSModalPanelWindowLevel = 8;
+        int NSPopUpMenuWindowLevel = 101;
+        int NSScreenSaverWindowLevel = 1000;
+    }
+
+    /// enum values
     public interface NSWindowCollectionBehavior {
         int NSWindowCollectionBehaviorManaged = 1 << 2; // participates in spaces, exposé.  Default behavior if windowLevel == NSNormalWindowLevel
         int NSWindowCollectionBehaviorTransient = 1 << 3; // floats in spaces, hidden by exposé.  Default behavior if windowLevel != NSNormalWindowLevel

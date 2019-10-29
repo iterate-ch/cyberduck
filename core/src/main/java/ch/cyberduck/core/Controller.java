@@ -20,11 +20,14 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionListener;
+import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.core.threading.MainAction;
 
 import java.util.concurrent.Future;
 
 public interface Controller extends ProgressListener, TranscriptListener, BackgroundActionListener {
+
+    BackgroundActionRegistry getRegistry();
 
     /**
      * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed

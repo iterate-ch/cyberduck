@@ -40,7 +40,7 @@ namespace Ch.Cyberduck.Cli
         {
             base.setDefaults();
 
-            this.setDefault("application.container.name", "Cyberduck");
+            this.setDefault("application.datafolder.name", "Cyberduck");
 
             Security.addProvider(new SunMSCAPI());
             this.setDefault("connection.ssl.keystore.type", "Windows-MY");

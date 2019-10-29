@@ -37,19 +37,19 @@ import static org.junit.Assert.assertEquals;
 public class SFTPExceptionMappingServiceTest {
 
     @Test
-    public void testMapReadFailure() throws Exception {
+    public void testMapReadFailure() {
         assertEquals(SocketException.class,
             new SFTPExceptionMappingService().map(new SocketException("Unexpected end of sftp stream.")).getCause().getClass());
     }
 
     @Test
-    public void testWrapped() throws Exception {
+    public void testWrapped() {
         assertEquals(InteroperabilityException.class,
             new SFTPExceptionMappingService().map(new TransportException(DisconnectReason.UNKNOWN, new SSHException(DisconnectReason.PROTOCOL_ERROR))).getClass());
     }
 
     @Test
-    public void testSocketTimeout() throws Exception {
+    public void testSocketTimeout() {
         assertEquals(ConnectionTimeoutException.class, new SFTPExceptionMappingService()
             .map(new SocketTimeoutException()).getClass());
         assertEquals(ConnectionTimeoutException.class, new SFTPExceptionMappingService()

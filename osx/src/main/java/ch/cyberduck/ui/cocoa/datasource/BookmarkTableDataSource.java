@@ -30,8 +30,22 @@ import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSMutableDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.BookmarkNameProvider;
+import ch.cyberduck.core.CollectionListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostFilter;
+import ch.cyberduck.core.HostParser;
+import ch.cyberduck.core.HostReaderFactory;
+import ch.cyberduck.core.HostWriterFactory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -255,7 +269,9 @@ public class BookmarkTableDataSource extends ListDataSource {
             final NSMutableDictionary dict = NSMutableDictionary.dictionary();
             dict.setObjectForKey(BookmarkNameProvider.toString(host), "Nickname");
             dict.setObjectForKey(host.getHostname(), "Hostname");
-            dict.setObjectForKey(new HostUrlProvider().withUsername(true).withPath(true).get(host), "URL");
+            if(StringUtils.isNotBlank(host.getCredentials().getUsername())) {
+                dict.setObjectForKey(host.getCredentials().getUsername(), "Username");
+            }
             final String comment = this.getSource().getComment(host);
             if(StringUtils.isNotBlank(comment)) {
                 dict.setObjectForKey(comment, "Comment");
@@ -379,7 +395,13 @@ public class BookmarkTableDataSource extends ListDataSource {
             if(null == o) {
                 return false;
             }
-            final Host h = HostParser.parse(o);
+            final Host h;
+            try {
+                h = HostParser.parse(o);
+            }
+            catch(HostParserException e) {
+                return false;
+            }
             source.add(row.intValue(), h);
             view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             view.scrollRowToVisible(row);
@@ -396,20 +418,16 @@ public class BookmarkTableDataSource extends ListDataSource {
                     Host host = null;
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final String filename = elements.objectAtIndex(new NSUInteger(i)).toString();
-                        final Local local = LocalFactory.get(filename);
+                        final Local f = LocalFactory.get(filename);
                         if(filename.endsWith(".duck")) {
                             // Adding a previously exported bookmark file from the Finder
-                            final Host bookmark;
                             try {
-                                bookmark = HostReaderFactory.get().read(local);
-                                if(null == bookmark) {
-                                    continue;
-                                }
-                                source.add(row.intValue(), bookmark);
+                                source.add(row.intValue(), HostReaderFactory.get().read(f));
                                 view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
                                 view.scrollRowToVisible(row);
                             }
                             catch(AccessDeniedException e) {
+                                log.error(String.format("Failure reading bookmark from %s. %s", f, e.getMessage()));
                                 continue;
                             }
                         }
@@ -422,9 +440,8 @@ public class BookmarkTableDataSource extends ListDataSource {
                             // Upload to the remote host this bookmark points to
                             uploads.add(new TransferItem(
                                 new Path(new Path(PathNormalizer.normalize(h.getDefaultPath()), EnumSet.of(Path.Type.directory)),
-                                    local.getName(), EnumSet.of(Path.Type.file)),
-                                local
-                            ));
+                                    f.getName(), EnumSet.of(Path.Type.file)), f)
+                            );
                         }
                     }
                     if(!uploads.isEmpty()) {
@@ -444,7 +461,14 @@ public class BookmarkTableDataSource extends ListDataSource {
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final String url = elements.objectAtIndex(new NSUInteger(i)).toString();
                         if(StringUtils.isNotBlank(url)) {
-                            final Host h = HostParser.parse(url);
+                            final Host h;
+                            try {
+                                h = HostParser.parse(url);
+                            }
+                            catch(HostParserException e) {
+                                log.warn(e);
+                                continue;
+                            }
                             source.add(row.intValue(), h);
                             view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
                             view.scrollRowToVisible(row);

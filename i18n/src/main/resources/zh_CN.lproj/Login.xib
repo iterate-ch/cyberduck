@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -36,7 +36,7 @@
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="5">
                         <rect key="frame" x="17" y="145" width="133" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="用户名:" id="6">
+                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" id="6">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -90,7 +90,7 @@
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" id="19">
                         <rect key="frame" x="17" y="118" width="133" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="密码:" id="20">
+                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" id="20">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -182,6 +182,6 @@ DQ
         </window>
     </objects>
     <resources>
-        <image name="NSApplicationIcon" width="128" height="128"/>
+        <image name="NSApplicationIcon" width="32" height="32"/>
     </resources>
 </document>

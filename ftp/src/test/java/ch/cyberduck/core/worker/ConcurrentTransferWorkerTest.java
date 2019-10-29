@@ -29,7 +29,6 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
@@ -75,12 +74,12 @@ public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
         final DefaultSessionPool pool = new DefaultSessionPool(
             new LoginConnectionService(new DisabledLoginCallback() {
                 @Override
-                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) throws LoginCanceledException {
+                public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
                     return new Credentials(username, "test");
                 }
 
                 @Override
-                public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) {
                     //
                 }
             }, new DisabledHostKeyCallback(), new DisabledPasswordStore(),
@@ -95,14 +94,12 @@ public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
                 return TransferAction.overwrite;
             }
         }, new DisabledTransferErrorCallback(),
-            new DisabledLoginCallback(), new DisabledPasswordCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
+            new DisabledLoginCallback(), new DisabledProgressListener(), new DisabledStreamListener(), new DisabledNotificationService()
         );
         pool.withMaxTotal(connections);
-        final Session<?> s = worker.borrow(ConcurrentTransferWorker.Connection.source);
         final Session<?> session = worker.borrow(ConcurrentTransferWorker.Connection.source);
-        assertTrue(worker.run());
+        assertTrue(worker.run(session));
         worker.release(session, ConcurrentTransferWorker.Connection.source, null);
-        worker.release(s, ConcurrentTransferWorker.Connection.source, null);
         assertEquals(0L, transfer.getTransferred(), 0L);
         worker.cleanup(true);
     }

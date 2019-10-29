@@ -84,7 +84,7 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
             return response;
         }
         catch(HttpResponseException e) {
-            throw new HttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
+            throw new DefaultHttpResponseExceptionMappingService().map("Upload {0} failed", e, file);
         }
         catch(IOException e) {
             throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
@@ -114,7 +114,7 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
             log.debug(String.format("Digest disabled for file %s", file));
             return;
         }
-        if(null == checksum || !checksum.algorithm.equals(HashAlgorithm.md5)) {
+        if(null == checksum) {
             log.warn("ETag returned by server is unknown checksum algorithm");
             return;
         }

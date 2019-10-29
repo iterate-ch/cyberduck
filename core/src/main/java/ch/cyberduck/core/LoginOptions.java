@@ -36,13 +36,9 @@ public final class LoginOptions {
     public boolean token = false;
     public boolean oauth = false;
     /**
-     * Enable option to save password in keychain
+     * Search for passwords in keychain and enable option in prompt to save password in keychain after opening connection.
      */
-    public boolean keychain = true;
-    /**
-     * Save in keychain checked by default
-     */
-    public boolean save = PreferencesFactory.get().getBoolean("connection.login.keychain");
+    public boolean keychain = PreferencesFactory.get().getBoolean("connection.login.keychain");
     /**
      * Enable option to select public key
      */
@@ -73,7 +69,6 @@ public final class LoginOptions {
         token = copy.token;
         oauth = copy.oauth;
         keychain = copy.keychain;
-        save = copy.save;
         publickey = copy.publickey;
         certificate = copy.certificate;
         anonymous = copy.anonymous;
@@ -89,7 +84,7 @@ public final class LoginOptions {
         this.configure(protocol);
     }
 
-    public void configure(final Protocol protocol) {
+    public LoginOptions configure(final Protocol protocol) {
         publickey = protocol.isPrivateKeyConfigurable();
         certificate = protocol.isCertificateConfigurable();
         anonymous = protocol.isAnonymousConfigurable();
@@ -100,6 +95,7 @@ public final class LoginOptions {
         icon = protocol.disk();
         usernamePlaceholder = protocol.getUsernamePlaceholder();
         passwordPlaceholder = protocol.getPasswordPlaceholder();
+        return this;
     }
 
     public LoginOptions user(boolean e) {
@@ -124,9 +120,6 @@ public final class LoginOptions {
 
     public LoginOptions keychain(boolean e) {
         keychain = e;
-        if(!keychain) {
-            save = false;
-        }
         return this;
     }
 
@@ -142,11 +135,6 @@ public final class LoginOptions {
 
     public LoginOptions icon(String icon) {
         this.icon = icon;
-        return this;
-    }
-
-    public LoginOptions save(final boolean save) {
-        this.save = save;
         return this;
     }
 
@@ -184,10 +172,6 @@ public final class LoginOptions {
 
     public String icon() {
         return icon;
-    }
-
-    public boolean save() {
-        return save;
     }
 
     public LoginOptions usernamePlaceholder(final String usernamePlaceholder) {

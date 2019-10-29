@@ -27,12 +27,12 @@ import static org.junit.Assert.assertSame;
 
 public class CertificateStoreFactoryTest {
 
-    public void testGet() throws Exception {
+    public void testGet() {
         assertSame(CertificateStoreFactory.get(), CertificateStoreFactory.get());
     }
 
     @Test
-    public void testGetWithCustomController() throws Exception {
+    public void testGetWithCustomController() {
         assertNotSame(CertificateStoreFactory.get(new AbstractController() {
             @Override
             public void invoke(final MainAction runnable, final boolean wait) {

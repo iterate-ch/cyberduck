@@ -20,7 +20,6 @@ package ch.cyberduck.core.irods;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -56,7 +55,7 @@ public class IRODSDownloadFeature implements Download {
     @Override
     public void download(final Path file, final Local local, final BandwidthThrottle throttle,
                          final StreamListener listener, final TransferStatus status,
-                         final ConnectionCallback connectionCallback, final PasswordCallback passwordCallback) throws BackgroundException {
+                         final ConnectionCallback callback) throws BackgroundException {
         try {
             final IRODSFileSystemAO fs = session.getClient();
             final IRODSFile f = fs.getIRODSFileFactory().instanceIRODSFile(file.getAbsolute());
@@ -64,7 +63,12 @@ public class IRODSDownloadFeature implements Download {
                 final TransferControlBlock block = DefaultTransferControlBlock.instance(StringUtils.EMPTY,
                         preferences.getInteger("connection.retry"));
                 final TransferOptions options = new DefaultTransferOptionsConfigurer().configure(new TransferOptions());
-                options.setUseParallelTransfer(session.getHost().getTransferType().equals(Host.TransferType.concurrent));
+                if(Host.TransferType.unknown.equals(session.getHost().getTransferType())) {
+                    options.setUseParallelTransfer(Host.TransferType.valueOf(PreferencesFactory.get().getProperty("queue.transfer.type")).equals(Host.TransferType.concurrent));
+                }
+                else {
+                    options.setUseParallelTransfer(session.getHost().getTransferType().equals(Host.TransferType.concurrent));
+                }
                 block.setTransferOptions(options);
                 final DataTransferOperations transfer = fs.getIRODSAccessObjectFactory()
                         .getDataTransferOperations(fs.getIRODSAccount());
@@ -82,7 +86,7 @@ public class IRODSDownloadFeature implements Download {
     }
 
     @Override
-    public boolean offset(final Path file) throws BackgroundException {
+    public boolean offset(final Path file) {
         return false;
     }
 

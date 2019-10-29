@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 public class PermissionsComparatorTest {
 
     @Test
-    public void testCompareFirst() throws Exception {
+    public void testCompareFirst() {
         assertEquals(0,
                 new PermissionsComparator(true).compareFirst(new Path("/a", EnumSet.of(Path.Type.file)), new Path("/b", EnumSet.of(Path.Type.file))));
     }

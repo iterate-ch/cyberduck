@@ -17,9 +17,7 @@ package ch.cyberduck.core.shared;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -28,7 +26,6 @@ import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
-import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sds.SDSTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -47,9 +44,6 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSDSTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "duck.ssp-europe.eu", new Credentials(
-                System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
         new DefaultAttributesFinderFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
@@ -58,7 +52,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSDSTest {
         final PathCache cache = new PathCache(1);
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
-        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path file = new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SDSTouchFeature(session, nodeid).touch(file, new TransferStatus());
         final Attributes attributes = f.find(file);

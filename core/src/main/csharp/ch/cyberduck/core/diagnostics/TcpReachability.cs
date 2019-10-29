@@ -1,6 +1,6 @@
 ﻿// 
-// Copyright (c) 2010-2018 Yves Langisch. All rights reserved.
-// http://cyberduck.io/
+// Copyright (c) 2010-2019 Yves Langisch. All rights reserved.
+// https://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,28 +14,81 @@
 // 
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
 
 using System;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Cache;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using ch.cyberduck.core;
 using ch.cyberduck.core.diagnostics;
+using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Diagnostics
 {
     public class TcpReachability : Reachability
     {
+        private static readonly Logger Log = Logger.getLogger(typeof(TcpReachability).FullName);
+
         public bool isReachable(Host h)
         {
+            if (h.getProtocol().getScheme().name().Equals("http") ||
+                h.getProtocol().getScheme().name().Equals("https"))
+            {
+                try
+                {
+                    WebRequest.DefaultWebProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
+                    WebRequest.DefaultCachePolicy = new RequestCachePolicy(RequestCacheLevel.NoCacheNoStore);
+                    var url = new HostUrlProvider().withUsername(false).withPath(true).get(h);
+                    if (Log.isDebugEnabled())
+                    {
+                        Log.debug($"Reachability test with url {url}");
+                    }
+
+                    WebRequest request = WebRequest.Create(url);
+                    request.Timeout = 10000;
+                    using (request.GetResponse())
+                    {
+                        return true;
+                    }
+                }
+                catch (WebException e)
+                {
+                    if (Log.isDebugEnabled())
+                    {
+                        Log.debug($"WebException thrown with status {e.Status}");
+                    }
+
+                    switch (e.Status)
+                    {
+                        case WebExceptionStatus.ProtocolError:
+                        case WebExceptionStatus.TrustFailure:
+                        case WebExceptionStatus.Success:
+                            return true;
+                    }
+
+                    return false;
+                }
+                catch (Exception e)
+                {
+                    Log.error("Generic exception while checking for reachability", e);
+                    return false;
+                }
+            }
+
             try
             {
+                if (Log.isDebugEnabled())
+                {
+                    Log.debug($"Try TCP connection to {h.getHostname()}:{h.getPort()}");
+                }
+
                 TcpClient c = new TcpClient(h.getHostname(), h.getPort());
                 c.Close();
                 return true;
             }
-            catch (Exception)
+            catch (SocketException e)
             {
                 return false;
             }

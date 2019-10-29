@@ -29,8 +29,8 @@ using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Resources;
 using Ch.Cyberduck.Core.TaskDialog;
+using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using org.apache.log4j;
 using StructureMap;
@@ -411,18 +411,18 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (transfer.getLocal() != null)
                     {
-                        View.FileIcon = IconCache.Instance.IconForFilename(transfer.getRoot().local.getAbsolute(),
+                        View.FileIcon = IconCache.IconForFilename(transfer.getRoot().local.getAbsolute(),
                             IconCache.IconSize.Large);
                     }
                     else
                     {
-                        View.FileIcon = IconCache.Instance.IconForPath(transfer.getRoot().remote,
+                        View.FileIcon = IconCache.IconForPath(transfer.getRoot().remote,
                             IconCache.IconSize.Large);
                     }
                 }
                 else
                 {
-                    View.FileIcon = IconCache.Instance.IconForName("multiple", 0);
+                    View.FileIcon = IconCache.IconForName("multiple", 0);
                 }
             }
             else

@@ -62,8 +62,11 @@ public class DriveTouchFeature implements Touch<VersionId> {
     }
 
     @Override
-    public boolean isSupported(final Path workdir) {
+    public boolean isSupported(final Path workdir, final String filename) {
         if(workdir.isRoot()) {
+            return false;
+        }
+        else if(DriveHomeFinderService.TEAM_DRIVES_NAME.equals(workdir)) {
             return false;
         }
         return true;

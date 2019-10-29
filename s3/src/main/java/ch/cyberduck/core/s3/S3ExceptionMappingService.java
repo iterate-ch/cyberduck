@@ -25,7 +25,7 @@ import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.http.HttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -82,6 +82,9 @@ public class S3ExceptionMappingService extends AbstractExceptionMappingService<S
         if(e.getCause() instanceof SAXException) {
             return new InteroperabilityException(buffer.toString(), e);
         }
-        return new HttpResponseExceptionMappingService().map(new HttpResponseException(e.getResponseCode(), buffer.toString()));
+        if(-1 == e.getResponseCode()) {
+            return new InteroperabilityException(buffer.toString(), e);
+        }
+        return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(e.getResponseCode(), buffer.toString()));
     }
 }
