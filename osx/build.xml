@@ -164,6 +164,7 @@
                 def check = "/usr/bin/xcrun altool --notarization-info ${requestId} --output-format xml -u ${args[0]} -p ${args[1]}"
                 ant.echo "$check"
                 def exit = false
+                def trials = 60
                 def status
                 while (!exit){
                     def cproc = check.execute()
@@ -175,6 +176,9 @@
                     status = plist['notarization-info']['Status']
                     ant.echo "Current status is '${status}'"
                     exit = status != 'in progress'
+                    if (--trials == 0) {
+                        ant.fail "Number of trials exceeded - failing."
+                    }
                     Thread.sleep(10000)
                 }
                 if (status == 'success') {
