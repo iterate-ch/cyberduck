@@ -96,107 +96,122 @@
         </antcall>
     </target>
 
-    <target name="package" depends="version">
-        <mkdir dir="${build.deploy}"/>
-        <antcall target="zip">
-            <param name="directory" value="${build}"/>
-            <param name="target" value="${app.name}-${version}.${revision}.zip"/>
-            <param name="source" value="${app.name}.app"/>
-        </antcall>
+    <target name="notarize">
         <taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy"/>
         <groovy>
             <arg line="${env.NOTARIZATION_USER} ${env.NOTARIZATION_PW}"/>
             <![CDATA[
-                class PlistUtility {
-                    static parseXmlPlistText(String text) {
-                        def parser = new XmlParser(false, false, true)
-                        parser.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD, "all")
+                    class PlistUtility {
+                        static parseXmlPlistText(String text) {
+                            def parser = new XmlParser(false, false, true)
+                            parser.setProperty(javax.xml.XMLConstants.ACCESS_EXTERNAL_DTD, "all")
 
-                        def xml = parser.parseText(text)
+                            def xml = parser.parseText(text)
 
-                        assert xml.name() == "plist"
+                            assert xml.name() == "plist"
 
-                        def parseNode
-                        parseNode = { node ->
-                            def childNodes = node."*"
-                            switch (node.name()) {
-                                case "dict":
-                                    def dict = [:]
-                                    for (int i = 0; i < childNodes.size(); i += 2) {
-                                        assert childNodes[i].name() == "key"
-                                        dict[childNodes[i].text().trim()] = parseNode(childNodes[i + 1])
-                                    }
-                                    return dict
-                                case "array":
-                                    return childNodes.collect(parseNode)
-                                case "string":
-                                    return node.text()
-                                case "integer":
-                                    return Integer.parseInt(node.text())
-                                case "date":
-                                    return Date.parse("yyyy-MM-dd'T'HH:mm:ss'Z'", node.text())
-                                case "false":
-                                    return false
-                                case "true":
-                                    return true
-                                default:
-                                    assert false
+                            def parseNode
+                            parseNode = { node ->
+                                def childNodes = node."*"
+                                switch (node.name()) {
+                                    case "dict":
+                                        def dict = [:]
+                                        for (int i = 0; i < childNodes.size(); i += 2) {
+                                            assert childNodes[i].name() == "key"
+                                            dict[childNodes[i].text().trim()] = parseNode(childNodes[i + 1])
+                                        }
+                                        return dict
+                                    case "array":
+                                        return childNodes.collect(parseNode)
+                                    case "string":
+                                        return node.text()
+                                    case "integer":
+                                        return Integer.parseInt(node.text())
+                                    case "date":
+                                        return Date.parse("yyyy-MM-dd'T'HH:mm:ss'Z'", node.text())
+                                    case "false":
+                                        return false
+                                    case "true":
+                                        return true
+                                    default:
+                                        assert false
+                                }
                             }
+                            return parseNode(xml."*"[0])
                         }
-                        return parseNode(xml."*"[0])
                     }
-                }
 
-                ant.echo "Start notarizing"
-                def notarize = "/usr/bin/xcrun altool --primary-bundle-id ch.sudo.cyberduck --notarize-app --output-format xml -f ${properties['build.deploy']}/${properties['app.name']}-${properties.version}.${properties.revision}.zip -t osx -u ${args[0]} -p ${args[1]}"
-                ant.echo "$notarize"
-                def nproc = notarize.execute()
-                nproc.waitFor()
-                if (nproc.exitValue() != 0) {
-                    ant.fail "Error notarizing (${nproc.exitValue()}) : ${nproc.err.text} - ${nproc.in.text}"
-                }
-                def plist = PlistUtility.parseXmlPlistText(nproc.in.text)
-                def requestId = plist['notarization-upload']['RequestUUID']
-                ant.echo "RequestUUID is ${requestId}"
+                    ant.echo "Start notarizing"
+                    def notarize = "/usr/bin/xcrun altool --primary-bundle-id ch.sudo.cyberduck --notarize-app --output-format xml -f ${properties['notarize.archive.upload'] -t osx -u ${args[0]} -p ${args[1]}"
+                    ant.echo "$notarize"
+                    def nproc = notarize.execute()
+                    nproc.waitFor()
+                    if (nproc.exitValue() != 0) {
+                        ant.fail "Error notarizing (${nproc.exitValue()}) : ${nproc.err.text} - ${nproc.in.text}"
+                    }
+                    def plist = PlistUtility.parseXmlPlistText(nproc.in.text)
+                    def requestId = plist['notarization-upload']['RequestUUID']
+                    ant.echo "RequestUUID is ${requestId}"
 
-                Thread.sleep(30000)
-                ant.echo "Start polling status"
-                def check = "/usr/bin/xcrun altool --notarization-info ${requestId} --output-format xml -u ${args[0]} -p ${args[1]}"
-                ant.echo "$check"
-                def exit = false
-                def status
-                while (!exit){
-                    def cproc = check.execute()
-                    cproc.waitFor()
-                    if (cproc.exitValue() != 0) {
-                        ant.fail "Error notarizing (${cproc.exitValue()}) : ${cproc.err.text} - ${cproc.in.text}"
+                    Thread.sleep(30000)
+                    ant.echo "Start polling status"
+                    def check = "/usr/bin/xcrun altool --notarization-info ${requestId} --output-format xml -u ${args[0]} -p ${args[1]}"
+                    ant.echo "$check"
+                    def exit = false
+                    def trials = 60
+                    def status
+                    while (!exit){
+                        def cproc = check.execute()
+                        cproc.waitFor()
+                        if (cproc.exitValue() != 0) {
+                            ant.fail "Error notarizing (${cproc.exitValue()}) : ${cproc.err.text} - ${cproc.in.text}"
+                        }
+                        plist = PlistUtility.parseXmlPlistText(cproc.in.text)
+                        status = plist['notarization-info']['Status']
+                        ant.echo "Current status is '${status}'"
+                        exit = status != 'in progress'
+                        if (--trials == 0) {
+                            ant.fail "Number of trials exceeded - failing."
+                        }
+                        Thread.sleep(10000)
                     }
-                    plist = PlistUtility.parseXmlPlistText(cproc.in.text)
-                    status = plist['notarization-info']['Status']
-                    ant.echo "Current status is '${status}'"
-                    exit = status != 'in progress'
-                    Thread.sleep(10000)
-                }
-                if (status == 'success') {
-                    ant.echo "Staple ticket"
-                    def stapler = "/usr/bin/xcrun stapler staple -v ${properties.home}/osx/target/${properties['app.name']}.app"
-                    def sproc = stapler.execute()
-                    sproc.waitFor()
-                    if (sproc.exitValue() != 0) {
-                        ant.fail "Error stapling: ${sproc.err.text}"
+                    if (status == 'success') {
+                        ant.echo "Staple ticket"
+                        def stapler = "/usr/bin/xcrun stapler staple -v ${properties['notarize.archive.staple']}"
+                        def sproc = stapler.execute()
+                        sproc.waitFor()
+                        if (sproc.exitValue() != 0) {
+                            ant.fail "Error stapling: ${sproc.err.text}"
+                        }
+                        ant.echo "Notarization done."
+                    } else {
+                        ant.fail "Notarization failed with status ${status}"
                     }
-                    ant.echo "Notarization done."
-                } else {
-                    ant.fail "Notarization failed with status ${status}"
-                }
-            ]]>
+                ]]>
         </groovy>
+    </target>
+
+    <target name="package" depends="version">
+        <property name="bundle.archive.basename" value="${app.name}-${version}.${revision}"/>
+        <property name="bundle.archive.zip" value="${bundle.archive.basename}.zip"/>
+        <property name="bundle.archive.pkg" value="${bundle.archive.basename}.pkg"/>
+
+        <mkdir dir="${build.deploy}"/>
         <antcall target="zip">
             <param name="directory" value="${build}"/>
-            <param name="target" value="${app.name}-${version}.${revision}.zip"/>
+            <param name="target" value="${bundle.archive.zip}"/>
             <param name="source" value="${app.name}.app"/>
         </antcall>
-        <checksum file="${build.deploy}/${app.name}-${version}.${revision}.zip"
+        <antcall target="notarize" unless:true="${skipNotarize}">
+            <param name="notarize.archive.upload" value="${build.deploy}/${bundle.archive.zip}"/>
+            <param name="notarize.archive.staple" value="${app.bundle}"/>
+        </antcall>
+        <antcall target="zip">
+            <param name="directory" value="${build}"/>
+            <param name="target" value="${bundle.archive.zip}"/>
+            <param name="source" value="${app.name}.app"/>
+        </antcall>
+        <checksum file="${build.deploy}/${bundle.archive.zip}"
                   algorithm="md5" property="archive.md5"/>
         <echo message="Calculating DSA signature..."/>
         <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
@@ -204,7 +219,7 @@
             <arg value="pipefail"/>
             <arg value="-c"/>
             <arg
-                value="openssl dgst -sha1 -binary '${build.deploy}/${app.name}-${version}.${revision}.zip' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
+                value="openssl dgst -sha1 -binary '${build.deploy}/${bundle.archive.zip}' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
         </exec>
         <echo message="DSASIGNATURE=${signature.dsa}"/>
         <echo message="MD5SUM=${archive.md5}"/>
@@ -218,7 +233,7 @@
             <include name="changelog.rss"/>
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://update.cyberduck.io/${sparkle.feed}/${app.name}-${version}.${revision}.zip"/>
+                           value="https://update.cyberduck.io/${sparkle.feed}/${bundle.archive.zip}"/>
             <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/${sparkle.feed}/changelog.html"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
@@ -226,13 +241,17 @@
             <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
             <replacefilter token="${MACOSX_DEPLOYMENT_TARGET}" value="${app.runtime.system.min}"/>
         </replace>
-        <echo message="Building ${build.deploy}/${app.name}-${version}.${revision}.pkg"/>
+        <echo message="Building ${build.deploy}/${bundle.archive.pkg}"/>
         <echo
             message="Code signing ${app.bundle} with certificate ${installer.certificate} from ${installer.keychain}"/>
         <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
             <arg
-                line="--component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${app.name}-${version}.${revision}.pkg"/>
+                line="--component ${app.bundle} /Applications --version ${version} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.deploy}/${bundle.archive.pkg}"/>
         </exec>
+        <antcall target="notarize" unless:true="${skipNotarize}">
+            <param name="notarize.archive.upload" value="${build.deploy}/${bundle.archive.pkg}"/>
+            <param name="notarize.archive.staple" value="${build.deploy}/${bundle.archive.pkg}"/>
+        </antcall>
         <foreach target="md5" param="source">
             <fileset dir="${build.deploy}">
                 <include name="*.pkg"/>
