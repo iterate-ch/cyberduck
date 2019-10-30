@@ -67,10 +67,10 @@ public class SDSDelegatingWriteFeature implements MultipartWrite<VersionId> {
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file) {
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         if(nodeid.isEncrypted(file)) {
-            return new TripleCryptWriteFeature(session, nodeid, proxy).checksum(file);
+            return new TripleCryptWriteFeature(session, nodeid, proxy).checksum(file, status);
         }
-        return proxy.checksum(file);
+        return proxy.checksum(file, status);
     }
 }

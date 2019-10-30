@@ -67,7 +67,7 @@ public class AzureDirectoryFeature implements Directory<Void> {
                 return new Path(folder.getParent(), folder.getName(), folder.getType(), new AzureAttributesFinderFeature(session, context).find(folder));
             }
             else {
-                status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
+                status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());
                 type.add(Path.Type.placeholder);
                 final Path placeholder = new Path(folder.getParent(), folder.getName(), type,

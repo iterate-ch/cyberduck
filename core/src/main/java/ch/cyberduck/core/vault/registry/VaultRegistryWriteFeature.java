@@ -60,12 +60,12 @@ public class VaultRegistryWriteFeature<T> implements Write<T> {
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file) {
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         try {
-            return registry.find(session, file).getFeature(session, Write.class, proxy).checksum(file);
+            return registry.find(session, file).getFeature(session, Write.class, proxy).checksum(file, status);
         }
         catch(VaultUnlockCancelException e) {
-            return proxy.checksum(file);
+            return proxy.checksum(file, status);
         }
     }
 

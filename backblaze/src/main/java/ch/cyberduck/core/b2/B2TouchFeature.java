@@ -43,7 +43,7 @@ public class B2TouchFeature implements Touch<BaseB2Response> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setChecksum(writer.checksum(file).compute(new NullInputStream(0L), status));
+        status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status));
         status.setTimestamp(System.currentTimeMillis());
         final StatusOutputStream<BaseB2Response> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);

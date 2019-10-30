@@ -69,7 +69,7 @@ public class SpectraWriteFeature extends S3WriteFeature {
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file) {
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 }

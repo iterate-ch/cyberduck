@@ -227,7 +227,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                     .skip(offset);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());
-                status.setChecksum(writer.checksum(file).compute(local.getInputStream(), status));
+                status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                 status.setSegment(true);
                 status.setVersion(overall.getVersion());
                 status.setPart(partNumber);
