@@ -142,7 +142,7 @@
                     }
 
                     ant.echo "Start notarizing"
-                    def notarize = "/usr/bin/xcrun altool --primary-bundle-id ch.sudo.cyberduck --notarize-app --output-format xml -f ${properties['notarize.archive.upload'] -t osx -u ${args[0]} -p ${args[1]}"
+                    def notarize = "/usr/bin/xcrun altool --primary-bundle-id ch.sudo.cyberduck --notarize-app --output-format xml -f ${properties['notarize.archive.upload']} -t osx -u ${args[0]} -p ${args[1]}"
                     ant.echo "$notarize"
                     def nproc = notarize.execute()
                     nproc.waitFor()
