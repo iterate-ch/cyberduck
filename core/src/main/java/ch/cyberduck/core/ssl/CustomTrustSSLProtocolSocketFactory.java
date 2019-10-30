@@ -24,6 +24,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.SecureRandomProviderFactory;
 
 import org.apache.log4j.Logger;
+import org.conscrypt.Conscrypt;
 import org.conscrypt.OpenSSLProvider;
 
 import javax.net.ssl.HandshakeCompletedEvent;
@@ -60,6 +61,10 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
 
     private final X509TrustManager trust;
     private final X509KeyManager key;
+
+    static {
+        Conscrypt.setUseEngineSocketByDefault(true);
+    }
 
     /**
      * @param trust Verifying trusts in system settings
