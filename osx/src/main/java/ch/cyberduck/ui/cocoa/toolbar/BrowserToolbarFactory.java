@@ -32,7 +32,6 @@ import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.DefaultCharsetProvider;
-import ch.cyberduck.core.FolderBookmarkCollection;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinder;
@@ -57,11 +56,8 @@ import static ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarFactory.BrowserToolbar
 public class BrowserToolbarFactory extends AbstractToolbarFactory implements ToolbarFactory {
 
     private final ApplicationFinder applicationFinder = ApplicationFinderFactory.get();
-
     private final ProxyController quickConnectPopupModel = new QuickConnectModel();
-
-    private final AbstractHostCollection bookmarks
-        = FolderBookmarkCollection.favoritesCollection();
+    private final AbstractHostCollection bookmarks;
 
     private final class QuickConnectModel extends ProxyController implements NSComboBox.DataSource {
         @Override
@@ -428,8 +424,9 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             = new HashMap<String, NSToolbarItem>();
 
 
-    public BrowserToolbarFactory(final BrowserController controller) {
+    public BrowserToolbarFactory(final BrowserController controller, final AbstractHostCollection bookmarks) {
         this.controller = controller;
+        this.bookmarks = bookmarks;
     }
 
     @Override

@@ -177,7 +177,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         = FolderBookmarkCollection.favoritesCollection();
 
     private final BrowserToolbarFactory browserToolbarFactory
-        = new BrowserToolbarFactory(this);
+        = new BrowserToolbarFactory(this, bookmarks);
 
     private final NSNotificationCenter notificationCenter
         = NSNotificationCenter.defaultCenter();
