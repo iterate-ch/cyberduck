@@ -485,7 +485,12 @@ public class Terminal {
             public void callback() {
                 lock.countDown();
             }
-        }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor));
+        }, new DisabledTransferErrorCallback(), new DefaultEditorListener(controller, session, editor, new DefaultEditorListener.Listener() {
+            @Override
+            public void saved() {
+                //
+            }
+        }));
         final SessionBackgroundAction<Transfer> action = new TerminalBackgroundAction<Transfer>(controller, session, worker);
         try {
             this.execute(action);
