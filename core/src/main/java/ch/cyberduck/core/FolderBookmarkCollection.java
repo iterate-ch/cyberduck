@@ -25,8 +25,8 @@ import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.stream.IntStream;
 
 public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     private static final Logger log = Logger.getLogger(FolderBookmarkCollection.class);
@@ -108,9 +108,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     private void index() {
         this.lock();
         try {
-            for(int i = 0; i < this.size(); i++) {
-                preferences.setProperty(toProperty(this.get(i), prefix), i);
-            }
+            IntStream.range(0, this.size()).forEach(i -> preferences.setProperty(toProperty(this.get(i), prefix), i));
         }
         finally {
             this.unlock();

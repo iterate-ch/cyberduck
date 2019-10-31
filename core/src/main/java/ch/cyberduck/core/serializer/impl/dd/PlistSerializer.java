@@ -22,7 +22,7 @@ import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import com.dd.plist.NSArray;
@@ -51,11 +51,22 @@ public class PlistSerializer implements Serializer {
     }
 
     @Override
-    public <T extends Serializable> void setListForKey(final List<T> value, final String key) {
+    public <T extends Serializable> void setListForKey(final Collection<T> value, final String key) {
         final NSArray list = new NSArray(value.size());
         int i = 0;
         for(Serializable serializable : value) {
             list.setValue(i, serializable.<NSDictionary>serialize(SerializerFactory.get()));
+            i++;
+        }
+        dict.put(key, list);
+    }
+
+    @Override
+    public void setStringListForKey(final Collection<String> value, final String key) {
+        final NSArray list = new NSArray(value.size());
+        int i = 0;
+        for(String serializable : value) {
+            list.setValue(i, serializable);
             i++;
         }
         dict.put(key, list);

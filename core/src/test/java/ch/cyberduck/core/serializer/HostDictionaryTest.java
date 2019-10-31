@@ -28,7 +28,9 @@ import ch.cyberduck.core.TestProtocol;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 
@@ -42,6 +44,7 @@ public class HostDictionaryTest {
     @Test
     public void testDictionaryWorkdirRegion() {
         final Host h = new Host(new TestProtocol(), "h", 66);
+        h.setLabels(new HashSet<>(Arrays.asList("a", "b")));
         final Path container = new Path("/container", EnumSet.of(Path.Type.directory));
         container.attributes().setRegion("r");
         h.setWorkdir(container);
@@ -56,8 +59,10 @@ public class HostDictionaryTest {
         dict.setStringForKey("test", "Protocol");
         dict.setStringForKey("unknown provider", "Provider");
         dict.setStringForKey("h", "Hostname");
+        dict.setStringListForKey(Arrays.asList("a", "b"), "Labels");
         final Host host = new HostDictionary(new DeserializerFactory()).deserialize(dict.getSerialized());
         assertEquals(new TestProtocol(), host.getProtocol());
+        assertEquals(new HashSet<>(Arrays.asList("a", "b")), host.getLabels());
     }
 
 }
