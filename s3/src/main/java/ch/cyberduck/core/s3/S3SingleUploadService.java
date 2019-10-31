@@ -61,7 +61,7 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
             case AWS4HMACSHA256:
                 if(!HashAlgorithm.sha256.equals(status.getChecksum().algorithm)) {
                     // Checksum not set in upload filter
-                    status.setChecksum(writer.checksum(file).compute(local.getInputStream(), status));
+                    status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                 }
                 break;
         }

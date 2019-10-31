@@ -43,7 +43,7 @@ public class S3TouchFeature implements Touch<StorageObject> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        status.setChecksum(writer.checksum(file).compute(new NullInputStream(0L), status));
+        status.setChecksum(writer.checksum(file, status).compute(new NullInputStream(0L), status));
         status.setLength(0L);
         final StatusOutputStream<StorageObject> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);

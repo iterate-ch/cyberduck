@@ -47,7 +47,7 @@ public class ContentWriter {
     public void write(final Path file, final byte[] content, final TransferStatus status) throws BackgroundException {
         final Write<?> write = session._getFeature(Write.class);
         status.setLength(content.length);
-        status.setChecksum(write.checksum(file).compute(new ByteArrayInputStream(content), status));
+        status.setChecksum(write.checksum(file, status).compute(new ByteArrayInputStream(content), status));
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(file));
