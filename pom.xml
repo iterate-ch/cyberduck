@@ -345,6 +345,11 @@
                 <artifactId>aws-maven</artifactId>
                 <version>5.0.0.RELEASE</version>
             </extension>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.6.2</version>
+            </extension>
         </extensions>
         <pluginManagement>
             <plugins>
