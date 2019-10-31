@@ -24,7 +24,7 @@
     <artifactId>manta</artifactId>
     <properties>
         <maven.test.skip>true</maven.test.skip>
-        <manta-client-version>3.4.0</manta-client-version>
+        <manta-client-version>3.4.1</manta-client-version>
     </properties>
     <dependencies>
         <dependency>
