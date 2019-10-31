@@ -46,7 +46,7 @@ public abstract class ListDataSource extends ProxyController implements NSTableV
 
     @Override
     public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes) {
-        return NSArray.array();
+        return this.namesOfPromisedFilesDroppedAtDestination(dropDestination);
     }
 
     @Override

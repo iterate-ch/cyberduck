@@ -56,7 +56,7 @@ public abstract class OutlineDataSource extends ProxyController implements NSOut
 
     @Override
     public NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items) {
-        return NSArray.array();
+        return this.namesOfPromisedFilesDroppedAtDestination(dropDestination);
     }
 
     @Override
