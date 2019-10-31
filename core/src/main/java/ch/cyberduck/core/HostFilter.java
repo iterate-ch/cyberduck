@@ -20,4 +20,11 @@ package ch.cyberduck.core;
 
 public interface HostFilter {
     boolean accept(Host host);
+
+    HostFilter NONE = new HostFilter() {
+        @Override
+        public boolean accept(final Host host) {
+            return true;
+        }
+    };
 }

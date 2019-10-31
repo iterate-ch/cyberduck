@@ -25,7 +25,7 @@ import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 public class PlistSerializer implements Serializer {
@@ -51,10 +51,19 @@ public class PlistSerializer implements Serializer {
     }
 
     @Override
-    public <T extends Serializable> void setListForKey(final List<T> value, final String key) {
+    public <T extends Serializable> void setListForKey(final Collection<T> value, final String key) {
         final NSMutableArray list = NSMutableArray.array();
         for(Serializable serializable : value) {
             list.addObject(serializable.<NSDictionary>serialize(SerializerFactory.get()));
+        }
+        dict.setObjectForKey(list, key);
+    }
+
+    @Override
+    public void setStringListForKey(final Collection<String> value, final String key) {
+        final NSMutableArray list = NSMutableArray.array();
+        for(String serializable : value) {
+            list.addObject(serializable);
         }
         dict.setObjectForKey(list, key);
     }

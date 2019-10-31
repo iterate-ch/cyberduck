@@ -28,8 +28,12 @@ public abstract class Factory<T> {
 
     protected final Class<T> clazz;
 
-    protected Factory() {
+    public Factory() {
         this.clazz = null;
+    }
+
+    public Factory(final Class<T> clazz) {
+        this.clazz = clazz;
     }
 
     /**

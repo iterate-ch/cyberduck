@@ -26,6 +26,10 @@ public class SerializerFactory extends Factory<Serializer> {
         super("factory.serializer.class");
     }
 
+    public SerializerFactory(final Class<Serializer> impl) {
+        super(impl);
+    }
+
     public static Serializer get() {
         return new SerializerFactory().create();
     }

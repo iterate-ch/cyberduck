@@ -20,7 +20,7 @@ package ch.cyberduck.core.serializer;
 
 import ch.cyberduck.core.Serializable;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 public interface Serializer {
@@ -41,7 +41,9 @@ public interface Serializer {
      * @param value Value for key
      * @param key   Identifier for value to serialize
      */
-    <T extends Serializable> void setListForKey(List<T> value, String key);
+    <T extends Serializable> void setListForKey(Collection<T> value, String key);
+
+    void setStringListForKey(Collection<String> value, String key);
 
     void setMapForKey(Map<String, String> value, String key);
 

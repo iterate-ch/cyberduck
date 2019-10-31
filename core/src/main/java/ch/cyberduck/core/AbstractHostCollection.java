@@ -24,7 +24,12 @@ import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public abstract class AbstractHostCollection extends Collection<Host> implements EditableCollection {
     private static final long serialVersionUID = -255801158019850767L;
@@ -123,6 +128,30 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         this.sort(comparator);
         // Save new index
         this.save();
+    }
+
+    /**
+     * A bookmark may be member of multiple groups
+     *
+     * @return Map of bookmarks grouped by labels
+     */
+    public Map<String, List<Host>> groups(final HostFilter filter) {
+        final Map<String, List<Host>> labels = new HashMap<>();
+        for(Host host : this.stream().filter(filter::accept).collect(Collectors.toList())) {
+            if(host.getLabels().isEmpty()) {
+                final List<Host> list = labels.getOrDefault(StringUtils.EMPTY, new ArrayList<>());
+                list.add(host);
+                labels.put(StringUtils.EMPTY, list);
+            }
+            else {
+                for(String label : host.getLabels()) {
+                    final List<Host> list = labels.getOrDefault(label, new ArrayList<>());
+                    list.add(host);
+                    labels.put(label, list);
+                }
+            }
+        }
+        return labels;
     }
 
     protected void sort() {

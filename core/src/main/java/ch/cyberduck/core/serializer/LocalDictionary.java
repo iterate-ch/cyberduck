@@ -27,18 +27,21 @@ import org.apache.commons.lang3.StringUtils;
 
 public class LocalDictionary {
 
-    private final DeserializerFactory deserializer;
+    private final DeserializerFactory factory;
 
     public LocalDictionary() {
-        this.deserializer = new DeserializerFactory();
+        this.factory = new DeserializerFactory();
     }
 
-    public LocalDictionary(final DeserializerFactory deserializer) {
-        this.deserializer = deserializer;
+    public LocalDictionary(final DeserializerFactory factory) {
+        this.factory = factory;
     }
 
     public <T> Local deserialize(T serialized) {
-        final Deserializer dict = deserializer.create(serialized);
+        return this.deserialize(factory.create(serialized));
+    }
+
+    public <T> Local deserialize(Deserializer<T> dict) {
         final String path = dict.stringForKey("Path");
         if(StringUtils.isBlank(path)) {
             return null;

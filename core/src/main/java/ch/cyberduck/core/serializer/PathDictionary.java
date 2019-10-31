@@ -29,18 +29,18 @@ import java.util.EnumSet;
 
 public class PathDictionary {
 
-    private final DeserializerFactory deserializer;
+    private final DeserializerFactory factory;
 
     public PathDictionary() {
-        this.deserializer = new DeserializerFactory();
+        this.factory = new DeserializerFactory();
     }
 
-    public PathDictionary(final DeserializerFactory deserializer) {
-        this.deserializer = deserializer;
+    public PathDictionary(final DeserializerFactory factory) {
+        this.factory = factory;
     }
 
-    public <T> Path deserialize(T serialized) {
-        final Deserializer dict = deserializer.create(serialized);
+    public <T> Path deserialize(final T serialized) {
+        final Deserializer dict = factory.create(serialized);
         final EnumSet<Path.Type> type = EnumSet.noneOf(Path.Type.class);
         final String typeObj = dict.stringForKey("Type");
         if(typeObj != null) {
@@ -52,9 +52,9 @@ public class PathDictionary {
         final Path path;
         final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
-            final PathAttributes attributes = new PathAttributesDictionary(deserializer).deserialize(attributesObj);
+            final PathAttributes attributes = new PathAttributesDictionary(factory).deserialize(attributesObj);
             // Legacy
-            final String legacyTypeObj = deserializer.create(attributesObj).stringForKey("Type");
+            final String legacyTypeObj = factory.create(attributesObj).stringForKey("Type");
             if(legacyTypeObj != null) {
                 if((Integer.valueOf(legacyTypeObj) & AbstractPath.Type.file.legacy()) == AbstractPath.Type.file.legacy()) {
                     type.add(AbstractPath.Type.file);
@@ -90,7 +90,7 @@ public class PathDictionary {
         }
         final Object symlinkObj = dict.objectForKey("Symbolic Link");
         if(symlinkObj != null) {
-            path.setSymlinkTarget(new PathDictionary(deserializer).deserialize(symlinkObj));
+            path.setSymlinkTarget(new PathDictionary(factory).deserialize(symlinkObj));
         }
         return path;
     }

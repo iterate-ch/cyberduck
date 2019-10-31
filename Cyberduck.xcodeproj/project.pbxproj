@@ -73,8 +73,6 @@
 		4749607C1CD75C9700B020C9 /* trash.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 474960631CD75C9700B020C9 /* trash.pdf */; };
 		4749607F1CD7679A00B020C9 /* transferremove.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749607D1CD7679A00B020C9 /* transferremove.pdf */; };
 		474960801CD7679A00B020C9 /* transferresume.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 4749607E1CD7679A00B020C9 /* transferresume.pdf */; };
-		474B843D1C15CDD1004D562C /* CDTransmitImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 474B843B1C15CDD1004D562C /* CDTransmitImporter.m */; };
-		474B843E1C15CDD1004D562C /* CDTransmitImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 474B843C1C15CDD1004D562C /* CDTransmitImporter.h */; };
 		474B84411C15DB51004D562C /* Sandbox.h in Headers */ = {isa = PBXBuildFile; fileRef = 474B843F1C15DB51004D562C /* Sandbox.h */; };
 		474B84421C15DB51004D562C /* Sandbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 474B84401C15DB51004D562C /* Sandbox.m */; };
 		474D863E1DEF6017002D101F /* Cryptomator.strings in Resources */ = {isa = PBXBuildFile; fileRef = 474D86191DEF6017002D101F /* Cryptomator.strings */; };
@@ -741,8 +739,6 @@
 		474960631CD75C9700B020C9 /* trash.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = trash.pdf; path = toolbar/trash.pdf; sourceTree = "<group>"; };
 		4749607D1CD7679A00B020C9 /* transferremove.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = transferremove.pdf; path = toolbar/transferremove.pdf; sourceTree = "<group>"; };
 		4749607E1CD7679A00B020C9 /* transferresume.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = transferresume.pdf; path = toolbar/transferresume.pdf; sourceTree = "<group>"; };
-		474B843B1C15CDD1004D562C /* CDTransmitImporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDTransmitImporter.m; path = importer/src/main/objc/CDTransmitImporter.m; sourceTree = SOURCE_ROOT; };
-		474B843C1C15CDD1004D562C /* CDTransmitImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDTransmitImporter.h; path = importer/src/main/objc/CDTransmitImporter.h; sourceTree = SOURCE_ROOT; };
 		474B843F1C15DB51004D562C /* Sandbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sandbox.h; path = core/src/main/objc/Sandbox.h; sourceTree = SOURCE_ROOT; };
 		474B84401C15DB51004D562C /* Sandbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Sandbox.m; path = core/src/main/objc/Sandbox.m; sourceTree = SOURCE_ROOT; };
 		474D861B1DEF6017002D101F /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = i18n/src/main/resources/ca.lproj/Cryptomator.strings; sourceTree = "<group>"; };
@@ -1805,8 +1801,6 @@
 				4705DFF21C037AB5002466FA /* LaunchServicesSchemeHandler.m */,
 				4705DFF31C037AB5002466FA /* SystemConfigurationProxy.h */,
 				4705DFF41C037AB5002466FA /* SystemConfigurationProxy.m */,
-				474B843B1C15CDD1004D562C /* CDTransmitImporter.m */,
-				474B843C1C15CDD1004D562C /* CDTransmitImporter.h */,
 				47820E3820B58426006D0501 /* CDReachabilityMonitor.h */,
 				47820E3720B58425006D0501 /* CDReachabilityMonitor.m */,
 			);
@@ -2030,7 +2024,6 @@
 				4705DFFC1C037AB5002466FA /* EMKeychainProxy.h in Headers */,
 				4705E0021C037AB5002466FA /* IOKitSleepPreventer.h in Headers */,
 				4705DFF81C037AB5002466FA /* FinderSidebarService.h in Headers */,
-				474B843E1C15CDD1004D562C /* CDTransmitImporter.h in Headers */,
 				4705DFFE1C037AB5002466FA /* FinderLocal.h in Headers */,
 				4705E0061C037AB5002466FA /* LaunchServicesApplicationFinder.h in Headers */,
 				4705E00D1C037AB5002466FA /* SystemConfigurationProxy.h in Headers */,
@@ -2439,7 +2432,6 @@
 				47EEFDC82386ECD100A3CAB0 /* UnifiedSystemLogAppender.m in Sources */,
 				4705DFF71C037AB5002466FA /* FinderSidebarService.m in Sources */,
 				4705DFF91C037AB5002466FA /* LaunchServicesApplicationFinder.m in Sources */,
-				474B843D1C15CDD1004D562C /* CDTransmitImporter.m in Sources */,
 				4705E00E1C037AB5002466FA /* SystemConfigurationProxy.m in Sources */,
 				47820E3920B58426006D0501 /* CDReachabilityMonitor.m in Sources */,
 				4705DFFB1C037AB5002466FA /* EMKeychainItem.m in Sources */,

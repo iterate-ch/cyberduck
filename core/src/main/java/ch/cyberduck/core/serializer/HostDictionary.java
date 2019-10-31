@@ -31,13 +31,14 @@ import org.apache.log4j.Logger;
 
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.TimeZone;
 
 public class HostDictionary {
     private static final Logger log = Logger.getLogger(HostDictionary.class);
 
-    private final DeserializerFactory deserializer;
+    private final DeserializerFactory factory;
     private final ProtocolFactory protocols;
 
     public HostDictionary() {
@@ -48,20 +49,20 @@ public class HostDictionary {
         this(protocols, new DeserializerFactory());
     }
 
-    public HostDictionary(final DeserializerFactory deserializer) {
-        this(ProtocolFactory.get(), deserializer);
+    public HostDictionary(final DeserializerFactory factory) {
+        this(ProtocolFactory.get(), factory);
     }
 
-    public HostDictionary(final ProtocolFactory protocols, final DeserializerFactory deserializer) {
+    public HostDictionary(final ProtocolFactory protocols, final DeserializerFactory factory) {
         this.protocols = protocols;
-        this.deserializer = deserializer;
+        this.factory = factory;
     }
 
     public <T> Host deserialize(final T serialized) {
-        final Deserializer dict = deserializer.create(serialized);
+        final Deserializer dict = factory.create(serialized);
         Object protocolObj = dict.stringForKey("Protocol");
         if(protocolObj == null) {
-            log.warn(String.format("Missing protocol key in %s", serialized));
+            log.warn(String.format("Missing protocol key in %s", dict));
             return null;
         }
         final Protocol protocol;
@@ -98,7 +99,7 @@ public class HostDictionary {
             }
             final Object keyObj = dict.objectForKey("Private Key File Dictionary");
             if(keyObj != null) {
-                bookmark.getCredentials().setIdentity(new LocalDictionary(deserializer).deserialize(keyObj));
+                bookmark.getCredentials().setIdentity(new LocalDictionary(factory).deserialize(keyObj));
             }
             final Object certObj = dict.stringForKey("Client Certificate");
             if(certObj != null) {
@@ -119,7 +120,7 @@ public class HostDictionary {
             }
             final Object workdirObj = dict.objectForKey("Workdir Dictionary");
             if(workdirObj != null) {
-                bookmark.setWorkdir(new PathDictionary(deserializer).deserialize(workdirObj));
+                bookmark.setWorkdir(new PathDictionary(factory).deserialize(workdirObj));
             }
             final Object nicknameObj = dict.stringForKey("Nickname");
             if(nicknameObj != null) {
@@ -156,11 +157,11 @@ public class HostDictionary {
             }
             final Object downloadObj = dict.objectForKey("Download Folder Dictionary");
             if(downloadObj != null) {
-                bookmark.setDownloadFolder(new LocalDictionary(deserializer).deserialize(downloadObj));
+                bookmark.setDownloadFolder(new LocalDictionary(factory).deserialize(downloadObj));
             }
             final Object uploadObj = dict.objectForKey("Upload Folder Dictionary");
             if(uploadObj != null) {
-                bookmark.setUploadFolder(new LocalDictionary(deserializer).deserialize(uploadObj));
+                bookmark.setUploadFolder(new LocalDictionary(factory).deserialize(uploadObj));
             }
             final Object timezoneObj = dict.stringForKey("Timezone");
             if(timezoneObj != null) {
@@ -189,6 +190,10 @@ public class HostDictionary {
             final Map customObj = dict.mapForKey("Custom");
             if(customObj != null) {
                 bookmark.setCustom(customObj);
+            }
+            final Object labelObj = dict.stringForKey("Labels");
+            if(labelObj != null) {
+                bookmark.setLabels(new HashSet<>(dict.listForKey("Labels")));
             }
             return bookmark;
         }
