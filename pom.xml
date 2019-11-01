@@ -201,7 +201,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
-                <version>1.7.28</version>
+                <version>1.7.29</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.woodstox</groupId>
