@@ -2211,20 +2211,46 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     editor = EditorFactory.instance().create(this, Session, new Application(exe, null), selected);
                 }
-                edit(editor);
+                edit(editor, selected);
             }
         }
 
         public void edit(Path file)
         {
-            edit(EditorFactory.instance().create(this, Session, file));
+            edit(EditorFactory.instance().create(this, Session, file), file);
         }
 
-        public void edit(Editor editor)
+        public void edit(Editor editor, Path file)
         {
             background(new WorkerBackgroundAction(this, Session,
                 editor.open(new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(),
-                    new DefaultEditorListener(this, Session, editor))));
+                    new DefaultEditorListener(this, Session, editor, new ReloadEditorListener(this, file)))));
+        }
+
+        private class ReloadEditorListener : DefaultEditorListener.Listener
+        {
+            private readonly BrowserController _controller;
+            private readonly Path _file;
+
+
+            public ReloadEditorListener(BrowserController controller, Path file)
+            {
+                _controller = controller;
+                _file = file;
+            }
+
+            public void saved()
+            {
+                var selected = new PathReloadFinder().find(Collections.singletonList(_file));
+                HashSet<Path> folders = new HashSet<Path>();
+                Iterator it = selected.iterator();
+                while (it.hasNext())
+                {
+                    folders.Add((Path)it.next());
+                }
+                _controller.Reload(_controller.Workdir, folders, Utils.ConvertFromJavaList<Path>(Collections.singletonList(_file),
+                    item => (Path) item), true);
+            }
         }
 
         private void UpdateEditIcon()
