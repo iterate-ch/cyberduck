@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
-import java.io.IOException;
+import java.io.EOFException;
 import java.net.SocketException;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateException;
@@ -77,7 +77,7 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
         }
         final String message = failure.getMessage();
         for(Alert alert : Alert.values()) {
-            if(StringUtils.contains(message, alert.name())) {
+            if(StringUtils.containsIgnoreCase(message, alert.name())) {
                 this.append(buffer, alert.getDescription());
                 break;
             }
@@ -88,7 +88,7 @@ public class SSLExceptionMappingService extends AbstractExceptionMappingService<
                 // Server certificate not accepted
                 return new ConnectionCanceledException(failure);
             }
-            if(ExceptionUtils.getRootCause(failure) instanceof IOException) {
+            if(ExceptionUtils.getRootCause(failure) instanceof EOFException) {
                 // SSL peer shut down incorrectly
                 return this.wrap(failure, buffer);
             }
