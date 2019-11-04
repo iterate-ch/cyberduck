@@ -197,6 +197,7 @@
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${FEED}" value="${sparkle.feed}"/>
             <replacefilter token="${CHECKSUM}" value="${archive.sha256}"/>
+            <replacefilter token="${COPYRIGHT}" value="${copyright}"/>
         </replace>
         <exec executable="${cpack.bin}" dir="${chocolatey.target}" failonerror="true"/>
     </target>
