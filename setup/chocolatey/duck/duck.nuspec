@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>duck</id>
-    <title>duck</title>
+    <title>Cyberduck CLI</title>
     <version>${VERSION}.${REVISION}</version>
     <authors>David Kocher, Yves Langisch</authors>
     <owners>cyberduck.io</owners>
