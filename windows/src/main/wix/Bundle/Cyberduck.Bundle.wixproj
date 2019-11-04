@@ -74,7 +74,7 @@
     </PropertyGroup>
   </Target>
   <Target Name="SignMsi" DependsOnTargets="UsesSignTool">
-    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;%(SignMsi.FullPath)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.apple.com/ts01 /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;%(SignMsi.FullPath)&quot;" />
   </Target>
   <!--
 	To modify your build process, add your task inside one of the targets below and uncomment it.
@@ -88,6 +88,6 @@
       <Assemblies Remove="$(TargetBuildDir)System*.dll" />
     </ItemGroup>
 
-    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.globalsign.com/scripts/timestamp.dll /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;%(Assemblies.Identity)&quot;" />
+    <Exec Command="&quot;$(SignToolPath)&quot; sign /d &quot;Cyberduck&quot; /fd sha256 /tr http://timestamp.apple.com/ts01 /td sha256 /a /sm /n &quot;iterate GmbH&quot; &quot;%(Assemblies.Identity)&quot;" />
   </Target>
 </Project>
