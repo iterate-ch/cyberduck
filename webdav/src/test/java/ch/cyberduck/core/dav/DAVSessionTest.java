@@ -9,6 +9,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.ProxyLoginFailureException;
+import ch.cyberduck.core.exception.SSLNegotiateException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -293,7 +294,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         session.close();
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test(expected = SSLNegotiateException.class)
     @Ignore
     public void testMutualTlsUnknownCA() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "auth.startssl.com");
@@ -331,7 +332,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         c.connect(session, PathCache.empty(), new DisabledCancelCallback());
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test(expected = SSLNegotiateException.class)
     public void testConnectMutualTlsNoCertificate() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/dav");
@@ -361,7 +362,7 @@ public class DAVSessionTest extends AbstractDAVTest {
         }
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test(expected = SSLNegotiateException.class)
     public void testConnectMutualTls() throws Exception {
         final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch");
         host.setDefaultPath("/dav");
