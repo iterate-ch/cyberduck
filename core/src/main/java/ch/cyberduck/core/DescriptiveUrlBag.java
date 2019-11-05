@@ -49,7 +49,7 @@ public class DescriptiveUrlBag extends LinkedHashSet<DescriptiveUrl> {
      */
     public DescriptiveUrlBag filter(final DescriptiveUrl.Type... types) {
         final DescriptiveUrlBag filtered = new DescriptiveUrlBag(this);
-        filtered.removeIf(url -> Arrays.asList(types).contains(url.getType()));
+        filtered.removeIf(url -> !Arrays.asList(types).contains(url.getType()));
         return filtered;
     }
 
