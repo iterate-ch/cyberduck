@@ -55,9 +55,7 @@ public class TerminalPreferences extends Preferences {
 
     @Override
     protected void setLogging() {
-        this.setDefault("logging", "fatal");
-
-        super.setLogging();
+        this.setLogging("fatal");
     }
 
     @Override

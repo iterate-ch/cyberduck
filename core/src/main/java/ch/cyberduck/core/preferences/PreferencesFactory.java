@@ -31,7 +31,6 @@ public final class PreferencesFactory {
         preferences.setLogging();
         preferences.setFactories();
         preferences.setDefaults();
-        preferences.post();
     }
 
     public static synchronized Preferences get() {
