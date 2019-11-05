@@ -20,27 +20,38 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.security.Key;
 import java.security.KeyStore;
 import java.security.Principal;
+import java.security.Security;
+import java.security.cert.Certificate;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-@Ignore
 public class KeychainStoreTest {
 
     private KeyStore keychain;
 
     @Before
-    public void initBC() throws Exception {
+    public void initKeychain() throws Exception {
         keychain = KeyStore.getInstance("KeychainStore", "Apple");
         keychain.load(null, null);
+
+        KeyStore kspkcs12 = KeyStore.getInstance("pkcs12");
+        kspkcs12.load(this.getClass().getResourceAsStream("/test.p12"), "test".toCharArray());
+        Key key = kspkcs12.getKey("test", "test".toCharArray());
+        Certificate[] chain = kspkcs12.getCertificateChain("test");
+        keychain.setKeyEntry("myClient", key, "null".toCharArray(), chain);
+        keychain.store(null, null);
     }
 
     @Test
