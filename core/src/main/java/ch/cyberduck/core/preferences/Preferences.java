@@ -1094,6 +1094,11 @@ public abstract class Preferences implements Locales {
         this.setLogging(this.getProperty("logging"));
     }
 
+    /**
+     * Reconfigure logging configuration
+     *
+     * @param level Log level
+     */
     public void setLogging(final String level) {
         this.setProperty("logging", level);
         // Call only once during initialization time of your application
@@ -1134,14 +1139,6 @@ public abstract class Preferences implements Locales {
                 java.util.logging.Logger.getLogger(logger.getName()).setLevel(map.get(logger.getLevel()));
             }
         }
-    }
-
-    public void enableDebugLogging() {
-        this.setLogging(Level.DEBUG.toString());
-    }
-
-    public void disableDebugLogging() {
-        this.setLogging(Level.ERROR.toString());
     }
 
     /**
