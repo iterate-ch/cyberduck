@@ -20,17 +20,15 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.security.Key;
 import java.security.KeyStore;
+import java.security.NoSuchProviderException;
 import java.security.Principal;
-import java.security.Security;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 
@@ -43,19 +41,25 @@ public class KeychainStoreTest {
 
     @Before
     public void initKeychain() throws Exception {
-        keychain = KeyStore.getInstance("KeychainStore", "Apple");
-        keychain.load(null, null);
+        try {
+            keychain = KeyStore.getInstance("KeychainStore", "Apple");
+            keychain.load(null, null);
 
-        KeyStore kspkcs12 = KeyStore.getInstance("pkcs12");
-        kspkcs12.load(this.getClass().getResourceAsStream("/test.p12"), "test".toCharArray());
-        Key key = kspkcs12.getKey("test", "test".toCharArray());
-        Certificate[] chain = kspkcs12.getCertificateChain("test");
-        keychain.setKeyEntry("myClient", key, "null".toCharArray(), chain);
-        keychain.store(null, null);
+            KeyStore kspkcs12 = KeyStore.getInstance("pkcs12");
+            kspkcs12.load(this.getClass().getResourceAsStream("/test.p12"), "test".toCharArray());
+            Key key = kspkcs12.getKey("test", "test".toCharArray());
+            Certificate[] chain = kspkcs12.getCertificateChain("test");
+            keychain.setKeyEntry("myClient", key, "null".toCharArray(), chain);
+            keychain.store(null, null);
+        }
+        catch(NoSuchProviderException e) {
+            // assuming we are not on macOS - ignore
+        }
     }
 
     @Test
     public void testGetAliasesForIssuerDN() {
+        Assume.assumeTrue(System.getProperty("os.name").toLowerCase().startsWith("mac"));
         final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
             keychain).init();
         final String[] aliases = m.getClientAliases("RSA", new Principal[]{
@@ -67,6 +71,7 @@ public class KeychainStoreTest {
 
     @Test
     public void testLoadPrivateKeyFromKeychain() {
+        Assume.assumeTrue(System.getProperty("os.name").toLowerCase().startsWith("mac"));
         final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
             keychain).init();
         assertNotNull(m.getPrivateKey("myClient"));
