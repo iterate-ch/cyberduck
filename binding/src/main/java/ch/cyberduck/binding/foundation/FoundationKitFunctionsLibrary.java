@@ -34,7 +34,7 @@ public final class FoundationKitFunctionsLibrary {
     }
 
     private static final FoundationKitFunctions instance = Native.load(
-            "Foundation", FoundationKitFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
+        "Foundation", FoundationKitFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
 
     public static NSRect NSUnionRect(NSRect aRect, NSRect bRect) {
         return instance.NSUnionRect(aRect, bRect);
@@ -83,6 +83,20 @@ public final class FoundationKitFunctionsLibrary {
     public static void NSLog(String format, String... args) {
         instance.NSLog(format, args);
     }
+
+    public static NSObject os_log_create(String subsystem, String category) {
+        return instance.os_log_create(subsystem, category);
+    }
+
+    public static void os_log_with_type(NSObject os_log, int os_log_type, String format, String... args) {
+        instance._os_log_internal(os_log, os_log_type, format, args);
+    }
+
+    public static final int OS_LOG_TYPE_DEFAULT = 0x00;
+    public static final int OS_LOG_TYPE_INFO = 0x01;
+    public static final int OS_LOG_TYPE_DEBUG = 0x02;
+    public static final int OS_LOG_TYPE_ERROR = 0x10;
+    public static final int OS_LOG_TYPE_FAULT = 0x11;
 
     public static CFStringRef CFStringCreateWithCharacters(final CFAllocatorRef allocator, final char[] chars, final CFIndex index) {
         return instance.CFStringCreateWithCharacters(allocator, chars, index);

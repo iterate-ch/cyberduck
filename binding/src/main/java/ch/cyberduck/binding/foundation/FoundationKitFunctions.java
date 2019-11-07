@@ -284,6 +284,10 @@ public interface FoundationKitFunctions extends Library {
      */
     void NSLog(String format, String... args);
 
+    NSObject os_log_create(String subsystem, String category);
+
+    void _os_log_internal(NSObject os_log_t, int os_log_type_t, String format, String... args);
+
     CFStringRef CFStringCreateWithCharacters(CFAllocatorRef allocator, char[] chars, CFIndex index);
 }
 
