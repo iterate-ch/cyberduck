@@ -27,8 +27,6 @@ import org.apache.log4j.Logger;
 import org.conscrypt.Conscrypt;
 import org.conscrypt.OpenSSLProvider;
 
-import javax.net.ssl.HandshakeCompletedEvent;
-import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -85,7 +83,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         this.key = key;
         try {
             if(preferences.getBoolean("connection.ssl.provider.conscrypt")) {
-                context = SSLContext.getInstance("TLS",  new OpenSSLProvider());
+                context = SSLContext.getInstance("TLS", new OpenSSLProvider());
             }
             else {
                 // Default provider
@@ -123,14 +121,6 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Enabled cipher suites %s",
                         Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
-                    ((SSLSocket) socket).addHandshakeCompletedListener(new HandshakeCompletedListener() {
-                        @Override
-                        public void handshakeCompleted(final HandshakeCompletedEvent event) {
-                            log.info(String.format("Completed handshake with %s and negotiated cipher suite %s",
-                                event.getSession().getProtocol(), event.getCipherSuite()));
-                            ((SSLSocket) socket).removeHandshakeCompletedListener(this);
-                        }
-                    });
                 }
             }
             catch(Exception e) {
