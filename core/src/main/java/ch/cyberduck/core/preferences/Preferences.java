@@ -299,6 +299,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("local.delimiter", File.separator);
         this.setDefault("local.temporaryfiles.shortening.threshold", String.valueOf(240));
 
+        this.setDefault("application.identifier", "io.cyberduck");
         this.setDefault("application.name", "Cyberduck");
         this.setDefault("application.container.name", "duck");
         this.setDefault("application.datafolder.name", "duck");
