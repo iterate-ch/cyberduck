@@ -20,8 +20,9 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 
+import org.junit.AfterClass;
 import org.junit.Assume;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
@@ -37,16 +38,15 @@ import static org.junit.Assert.assertNotNull;
 
 public class KeychainStoreTest {
 
-    private KeyStore keychain;
+    private static KeyStore keychain;
 
-    @Before
-    public void initKeychain() throws Exception {
+    @BeforeClass
+    public static void initKeychain() throws Exception {
         try {
             keychain = KeyStore.getInstance("KeychainStore", "Apple");
             keychain.load(null, null);
-
             KeyStore kspkcs12 = KeyStore.getInstance("pkcs12");
-            kspkcs12.load(this.getClass().getResourceAsStream("/test.p12"), "test".toCharArray());
+            kspkcs12.load(KeychainStoreTest.class.getResourceAsStream("/test.p12"), "test".toCharArray());
             Key key = kspkcs12.getKey("test", "test".toCharArray());
             Certificate[] chain = kspkcs12.getCertificateChain("test");
             keychain.setKeyEntry("myClient", key, "null".toCharArray(), chain);
@@ -55,6 +55,12 @@ public class KeychainStoreTest {
         catch(NoSuchProviderException e) {
             // assuming we are not on macOS - ignore
         }
+    }
+
+    @AfterClass
+    public static void removeCertificate() throws Exception {
+        keychain.deleteEntry("myClient");
+        keychain.store(null, null);
     }
 
     @Test
