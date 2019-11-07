@@ -69,7 +69,7 @@ public class KeychainStoreTest {
         final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
             keychain).init();
         final String[] aliases = m.getClientAliases("RSA", new Principal[]{
-            new X500Principal("C=US, O=Apple Inc., OU=Apple Certification Authority, CN=Developer ID Certification Authority")
+            new X500Principal("CN=iterate GmbH - Test")
         });
         assertNotNull(aliases);
         assertFalse(Arrays.asList(aliases).isEmpty());
