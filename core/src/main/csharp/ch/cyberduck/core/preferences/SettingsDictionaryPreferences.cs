@@ -140,9 +140,10 @@ namespace Ch.Cyberduck.Core.Preferences
             return getProperty("application.language");
         }
 
-        protected override void post()
+        public override void setLogging(String level)
         {
-            base.post();
+            base.setLogging(level);
+
             Logger root = Logger.getRootLogger();
             var fileName = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
                 getProperty("application.name").ToLower().Replace(" ", "") + ".log");
@@ -156,7 +157,6 @@ namespace Ch.Cyberduck.Core.Preferences
             {
                 root.setLevel(Level.DEBUG);
             }
-            ApplyGlobalConfig();
         }
 
         protected override void setDefaults()
@@ -336,12 +336,11 @@ namespace Ch.Cyberduck.Core.Preferences
             }
             if (Utils.IsRunningAsUWP)
             {
-                SetUWPDefaults();
+                // Running from Windows Store
+                this.setDefault("update.check", $"{false}");
+                this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
             }
-        }
-
-        private void ApplyGlobalConfig()
-        {
+            // Apply global configuration
             var config = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
                 "default.properties");
             if (File.Exists(config))
@@ -360,13 +359,6 @@ namespace Ch.Cyberduck.Core.Preferences
                     Log.warn($"Failure while reading {config}", e);
                 }
             }
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void SetUWPDefaults()
-        {
-            this.setDefault("update.check", $"{false}");
-            this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
         }
 
         private string TryToMatchLocale(string sysLocale, List appLocales)
