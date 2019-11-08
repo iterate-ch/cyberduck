@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -336,22 +337,22 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     icon.set(local, status);
                     icon.remove(local);
                 }
-                final DescriptiveUrl provider = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider);
-                if(!DescriptiveUrl.EMPTY.equals(provider)) {
+                final DescriptiveUrlBag provider = session.getFeature(UrlProvider.class).toUrl(file).filter(DescriptiveUrl.Type.provider, DescriptiveUrl.Type.http);
+                for(DescriptiveUrl url : provider) {
                     try {
                         if(options.quarantine) {
                             // Set quarantine attributes
-                            quarantine.setQuarantine(local, new HostUrlProvider().withUsername(false).get(session.getHost()),
-                                provider.getUrl());
+                            quarantine.setQuarantine(local, new HostUrlProvider().withUsername(false).get(session.getHost()), url.getUrl());
                         }
                         if(this.options.wherefrom) {
                             // Set quarantine attributes
-                            quarantine.setWhereFrom(local, provider.getUrl());
+                            quarantine.setWhereFrom(local, url.getUrl());
                         }
                     }
                     catch(LocalAccessDeniedException e) {
                         log.warn(String.format("Failure to quarantine file %s. %s", file, e.getMessage()));
                     }
+                    break;
                 }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {

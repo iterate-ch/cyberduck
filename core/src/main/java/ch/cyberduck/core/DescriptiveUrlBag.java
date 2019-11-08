@@ -17,7 +17,7 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 public class DescriptiveUrlBag extends LinkedHashSet<DescriptiveUrl> {
@@ -49,19 +49,7 @@ public class DescriptiveUrlBag extends LinkedHashSet<DescriptiveUrl> {
      */
     public DescriptiveUrlBag filter(final DescriptiveUrl.Type... types) {
         final DescriptiveUrlBag filtered = new DescriptiveUrlBag(this);
-        for(Iterator<DescriptiveUrl> iter = filtered.iterator(); iter.hasNext(); ) {
-            final DescriptiveUrl url = iter.next();
-            boolean remove = true;
-            for(DescriptiveUrl.Type type : types) {
-                if(url.getType().equals(type)) {
-                    remove = false;
-                    break;
-                }
-            }
-            if(remove) {
-                iter.remove();
-            }
-        }
+        filtered.removeIf(url -> !Arrays.asList(types).contains(url.getType()));
         return filtered;
     }
 
