@@ -92,7 +92,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         // Reset
         NSEnumerator items = this.tabView.tabViewItems().objectEnumerator();
         NSObject object;
-        while(((object = items.nextObject()) != null)) {
+        while((object = items.nextObject()) != null) {
             this.tabView.removeTabViewItem(Rococoa.cast(object, NSTabViewItem.class));
         }
         // Insert all panels into tab view

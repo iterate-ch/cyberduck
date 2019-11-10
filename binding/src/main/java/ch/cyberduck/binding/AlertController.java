@@ -98,7 +98,7 @@ public abstract class AlertController extends SheetController implements SheetCa
     protected void focus(final NSAlert alert) {
         NSEnumerator buttons = alert.buttons().objectEnumerator();
         NSObject button;
-        while(((button = buttons.nextObject()) != null)) {
+        while((button = buttons.nextObject()) != null) {
             final NSButton b = Rococoa.cast(button, NSButton.class);
             b.setTarget(this.id());
             b.setAction(Foundation.selector("closeSheet:"));
