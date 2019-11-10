@@ -50,7 +50,7 @@
         <key>OAuth Token Url</key>
         <string>/identity/core/connect/token</string>
         <key>OAuth Redirect Url</key>
-        <string>https://cyberduck.io/oauth</string>
+        <string>x-storegatedrive-action:oauth</string>
         <key>OAuth Client ID</key>
         <string>mountainduck</string>
         <key>OAuth Client Secret</key>
