@@ -80,10 +80,6 @@ public final class FoundationKitFunctionsLibrary {
         return instance.NSSearchPathForDirectoriesInDomains(directory, domainMask, expandTilde);
     }
 
-    public static void NSLog(String format, String... args) {
-        instance.NSLog(format, args);
-    }
-
     public static CFStringRef CFStringCreateWithCharacters(final CFAllocatorRef allocator, final char[] chars, final CFIndex index) {
         return instance.CFStringCreateWithCharacters(allocator, chars, index);
     }
