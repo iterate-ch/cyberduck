@@ -47,7 +47,7 @@ import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
 public class AzureUrlProvider implements UrlProvider {
 
     private final PathContainerService containerService
-            = new AzurePathContainerService();
+        = new AzurePathContainerService();
 
     private final AzureSession session;
 
@@ -59,14 +59,16 @@ public class AzureUrlProvider implements UrlProvider {
     public DescriptiveUrlBag toUrl(final Path file) {
         final DescriptiveUrlBag list = new DescriptiveUrlBag();
         list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
-        if(file.isFile()) {
-            list.add(this.createSignedUrl(file, 60 * 60));
-            // Default signed URL expiring in 24 hours.
-            list.add(this.createSignedUrl(file, PreferencesFactory.get().getInteger("s3.url.expire.seconds")));
-            // Week
-            list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60));
-            // Month
-            list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60 * 4));
+        if(!session.getHost().getCredentials().isTokenAuthentication()) {
+            if(file.isFile()) {
+                list.add(this.createSignedUrl(file, 60 * 60));
+                // Default signed URL expiring in 24 hours.
+                list.add(this.createSignedUrl(file, PreferencesFactory.get().getInteger("s3.url.expire.seconds")));
+                // Week
+                list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60));
+                // Month
+                list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60 * 4));
+            }
         }
         return list;
     }
@@ -78,7 +80,7 @@ public class AzureUrlProvider implements UrlProvider {
                 return DescriptiveUrl.EMPTY;
             }
             blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlobReferenceFromServer(containerService.getKey(file));
+                .getBlobReferenceFromServer(containerService.getKey(file));
         }
         catch(URISyntaxException | StorageException e) {
             return DescriptiveUrl.EMPTY;
@@ -91,11 +93,11 @@ public class AzureUrlProvider implements UrlProvider {
             return DescriptiveUrl.EMPTY;
         }
         return new DescriptiveUrl(URI.create(String.format("%s://%s%s?%s",
-                Scheme.https.name(), session.getHost().getHostname(), URIEncoder.encode(file.getAbsolute()), token)),
-                DescriptiveUrl.Type.signed,
-                MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-                        + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                        UserDateFormatterFactory.get().getShortFormat(this.getExpiry(seconds))));
+            Scheme.https.name(), session.getHost().getHostname(), URIEncoder.encode(file.getAbsolute()), token)),
+            DescriptiveUrl.Type.signed,
+            MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
+                + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                UserDateFormatterFactory.get().getShortFormat(this.getExpiry(seconds))));
     }
 
     private SharedAccessBlobPolicy getPolicy(final int expiry) {
