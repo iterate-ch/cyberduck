@@ -72,7 +72,7 @@ public class AzureWriteFeatureTest {
         IOUtils.readFully(in, buffer);
         in.close();
         assertArrayEquals(content, buffer);
-        final OutputStream overwrite = new AzureWriteFeature(session, context).write(test, new TransferStatus()
+        final OutputStream overwrite = new AzureWriteFeature(session, context).write(test, new TransferStatus().exists(true)
             .length("overwrite".getBytes(StandardCharsets.UTF_8).length).withMetadata(Collections.singletonMap("Content-Type", "text/plain")), new DisabledConnectionCallback());
         new StreamCopier(new TransferStatus(), new TransferStatus())
             .transfer(new ByteArrayInputStream("overwrite".getBytes(StandardCharsets.UTF_8)), overwrite);
