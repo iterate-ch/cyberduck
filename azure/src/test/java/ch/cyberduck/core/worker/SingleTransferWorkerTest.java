@@ -71,7 +71,7 @@ public class SingleTransferWorkerTest {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
             System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
-        download(host);
+        this.download(host);
     }
 
     @Test
@@ -79,7 +79,7 @@ public class SingleTransferWorkerTest {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
             System.getProperties().getProperty("azure.account"), null, System.getProperties().getProperty("azure.sas")
         ));
-        download(host);
+        this.download(host);
     }
 
     private void download(final Host host) throws ch.cyberduck.core.exception.BackgroundException, java.io.IOException {
