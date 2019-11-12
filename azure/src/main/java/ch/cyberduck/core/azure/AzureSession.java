@@ -28,24 +28,10 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ListCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.AclPermission;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Headers;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Logging;
-import ch.cyberduck.core.features.Metadata;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
@@ -236,7 +222,7 @@ public class AzureSession extends SSLSession<CloudBlobClient> {
         if(type == Touch.class) {
             return (T) new AzureTouchFeature(this, context);
         }
-        if(type == UrlProvider.class) {
+        if(type == PromptUrlProvider.class) {
             return (T) new AzureUrlProvider(this);
         }
         if(type == AclPermission.class) {
