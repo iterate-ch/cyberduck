@@ -41,10 +41,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -65,7 +67,7 @@ public class FTPClient extends FTPSClient {
     private Map<String, Set<String>> features;
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     public FTPClient(final Protocol protocol, final SSLSocketFactory f, final SSLContext c) {
         super(false, c);
@@ -95,16 +97,37 @@ public class FTPClient extends FTPSClient {
                 if(session.isValid()) {
                     final SSLSessionContext context = session.getSessionContext();
                     context.setSessionCacheSize(preferences.getInteger("ftp.ssl.session.cache.size"));
+                    Field sessionHostPortCache;
                     try {
-                        final Field sessionHostPortCache = context.getClass().getDeclaredField("sessionHostPortCache");
-                        sessionHostPortCache.setAccessible(true);
-                        final Object cache = sessionHostPortCache.get(context);
-                        final Method method = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
-                        method.setAccessible(true);
-                        method.invoke(cache, String.format("%s:%s", socket.getInetAddress().getHostName(),
+                        try {
+                            // JDK
+                            sessionHostPortCache = context.getClass().getDeclaredField("sessionHostPortCache");
+                            sessionHostPortCache.setAccessible(true);
+                            final Object cache = sessionHostPortCache.get(context);
+                            final Method declaredMethod = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
+                            declaredMethod.setAccessible(true);
+                            declaredMethod.invoke(cache, String.format("%s:%s", socket.getInetAddress().getHostName(),
                                 String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT), session);
-                        method.invoke(cache, String.format("%s:%s", socket.getInetAddress().getHostAddress(),
+                            declaredMethod.invoke(cache, String.format("%s:%s", socket.getInetAddress().getHostAddress(),
                                 String.valueOf(socket.getPort())).toLowerCase(Locale.ROOT), session);
+                        }
+                        catch(NoSuchFieldException e) {
+                            // Conscrypt
+                            sessionHostPortCache = context.getClass().getDeclaredField("sessionsByHostAndPort");
+                            sessionHostPortCache.setAccessible(true);
+                            final Object cache = sessionHostPortCache.get(context);
+                            final Class<?>[] declaredClasses = context.getClass().getDeclaredClasses();
+                            for(Class<?> declaredClass : declaredClasses) {
+                                if(declaredClass.getName().equals("org.conscrypt.ClientSessionContext$HostAndPort")) {
+                                    final Constructor<?> declaredConstructor = declaredClass.getDeclaredConstructor(String.class, int.class);
+                                    declaredConstructor.setAccessible(true);
+                                    final Method declaredMethod = cache.getClass().getDeclaredMethod("put", Object.class, Object.class);
+                                    declaredMethod.setAccessible(true);
+                                    declaredMethod.invoke(cache, declaredConstructor.newInstance(socket.getInetAddress().getHostName(), socket.getPort()), Collections.singletonList(session));
+                                    declaredMethod.invoke(cache, declaredConstructor.newInstance(socket.getInetAddress().getHostAddress(), socket.getPort()), Collections.singletonList(session));
+                                }
+                            }
+                        }
                     }
                     catch(NoSuchFieldException e) {
                         // Not running in expected JRE
@@ -157,15 +180,15 @@ public class FTPClient extends FTPSClient {
     protected void sslNegotiation() throws IOException {
         if(protocol.isSecure()) {
             final SSLSocket socket = (SSLSocket) sslSocketFactory.createSocket(_socket_,
-                    _socket_.getInetAddress().getHostAddress(), _socket_.getPort(), false);
+                _socket_.getInetAddress().getHostAddress(), _socket_.getPort(), false);
             socket.setEnableSessionCreation(true);
             socket.setUseClientMode(true);
             socket.startHandshake();
             _socket_ = socket;
             _controlInput_ = new BufferedReader(new InputStreamReader(
-                    socket.getInputStream(), getControlEncoding()));
+                socket.getInputStream(), getControlEncoding()));
             _controlOutput_ = new BufferedWriter(new OutputStreamWriter(
-                    socket.getOutputStream(), getControlEncoding()));
+                socket.getOutputStream(), getControlEncoding()));
         }
     }
 
@@ -179,7 +202,7 @@ public class FTPClient extends FTPSClient {
         Socket socket = _openDataConnection_(command, pathname);
 
         BufferedReader reader = new BufferedReader(
-                new InputStreamReader(socket.getInputStream(), getControlEncoding()));
+            new InputStreamReader(socket.getInputStream(), getControlEncoding()));
         ArrayList<String> results = new ArrayList<String>();
         String line;
         while((line = reader.readLine()) != null) {
