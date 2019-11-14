@@ -75,15 +75,27 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
     private final Preferences preferences
         = PreferencesFactory.get();
 
+    private final BlobType blobType;
+
     public AzureWriteFeature(final AzureSession session, final OperationContext context) {
+        this(session, BlobType.valueOf(PreferencesFactory.get().getProperty("azure.upload.blobtype")), context);
+    }
+
+    public AzureWriteFeature(final AzureSession session, final BlobType blobType, final OperationContext context) {
         super(session);
         this.session = session;
+        this.blobType = blobType;
         this.context = context;
     }
 
     public AzureWriteFeature(final AzureSession session, final OperationContext context, final Find finder, final AttributesFinder attributes) {
+        this(session, BlobType.valueOf(PreferencesFactory.get().getProperty("azure.upload.blobtype")), context, finder, attributes);
+    }
+
+    public AzureWriteFeature(final AzureSession session, final BlobType blobType, final OperationContext context, final Find finder, final AttributesFinder attributes) {
         super(finder, attributes);
         this.session = session;
+        this.blobType = blobType;
         this.context = context;
     }
 
@@ -131,13 +143,28 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
                 }
                 else {
                     // Existing block blob type
-                    blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlockBlobReference(containerService.getKey(file));
+                    final PathAttributes attr = new AzureAttributesFinderFeature(session, context).find(file);
+                    if(BlobType.APPEND_BLOB == BlobType.valueOf(attr.getCustom().get(AzureAttributesFinderFeature.KEY_BLOB_TYPE))) {
+                        blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                            .getAppendBlobReference(containerService.getKey(file));
+                    }
+                    else {
+                        blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                            .getBlockBlobReference(containerService.getKey(file));
+                    }
                 }
             }
             else {
-                blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getAppendBlobReference(containerService.getKey(file));
+                // Create new blob with default type set in defaults
+                switch(blobType) {
+                    case APPEND_BLOB:
+                        blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                            .getAppendBlobReference(containerService.getKey(file));
+                        break;
+                    default:
+                        blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                            .getBlockBlobReference(containerService.getKey(file));
+                }
             }
             if(StringUtils.isNotBlank(status.getMime())) {
                 blob.getProperties().setContentType(status.getMime());
@@ -174,14 +201,19 @@ public class AzureWriteFeature extends AppendWriteFeature<Void> implements Write
             final BlobOutputStream out;
             if(status.isAppend()) {
                 options.setStoreBlobContentMD5(false);
-                out = ((CloudAppendBlob) blob).openWriteExisting(AccessCondition.generateEmptyCondition(), options, context);
-            }
-            else {
-                if(status.isExists()) {
-                    out = ((CloudBlockBlob) blob).openOutputStream(AccessCondition.generateEmptyCondition(), options, context);
+                if(blob instanceof CloudAppendBlob) {
+                    out = ((CloudAppendBlob) blob).openWriteExisting(AccessCondition.generateEmptyCondition(), options, context);
                 }
                 else {
+                    throw new NotfoundException(String.format("Unexpected blob type for %s", blob.getName()));
+                }
+            }
+            else {
+                if(blob instanceof CloudAppendBlob) {
                     out = ((CloudAppendBlob) blob).openWriteNew(AccessCondition.generateEmptyCondition(), options, context);
+                }
+                else {
+                    out = ((CloudBlockBlob) blob).openOutputStream(AccessCondition.generateEmptyCondition(), options, context);
                 }
             }
             return new VoidStatusOutputStream(out) {
