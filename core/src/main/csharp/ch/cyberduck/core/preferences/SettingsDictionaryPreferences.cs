@@ -294,7 +294,6 @@ namespace Ch.Cyberduck.Core.Preferences
             this.setDefault("local.delimiter", "\\");
             this.setDefault("local.normalize.tilde", false.ToString());
 
-            this.setDefault("connection.ssl.provider.conscrypt", false.ToString());
             // SSL Keystore
             // Add mscapi security provider
             Security.addProvider(new SunMSCAPI());

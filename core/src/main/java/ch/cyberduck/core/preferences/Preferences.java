@@ -972,7 +972,6 @@ public abstract class Preferences implements Locales {
         this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.ftp), String.valueOf(true));
         this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(true));
 
-        this.setDefault("connection.ssl.provider.conscrypt", String.valueOf(true));
         this.setDefault("connection.ssl.provider.bouncycastle.position", String.valueOf(1));
         this.setDefault("connection.ssl.protocols", "TLSv1.2,TLSv1.1,TLSv1");
         this.setDefault("connection.ssl.cipher.blacklist", StringUtils.EMPTY);
