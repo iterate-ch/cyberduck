@@ -28,8 +28,7 @@ import java.security.Principal;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class KeychainStoreTest {
 
@@ -68,6 +67,7 @@ public class KeychainStoreTest {
     public void testLoadPrivateKeyFromKeychain() {
         final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
             keychain).init();
+        assertTrue(m.list().contains("myclient"));
         assertNotNull(m.getPrivateKey("myClient"));
     }
 }
