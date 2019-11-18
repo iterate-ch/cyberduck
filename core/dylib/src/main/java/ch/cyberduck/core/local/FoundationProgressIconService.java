@@ -18,15 +18,17 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSDictionary;
+import ch.cyberduck.binding.foundation.NSProgress;
+import ch.cyberduck.binding.foundation.NSString;
+import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public final class FoundationProgressIconService implements IconService {
+import static ch.cyberduck.binding.foundation.NSProgress.*;
 
-    static {
-        Native.load("core");
-    }
+public final class FoundationProgressIconService implements IconService {
 
     @Override
     public boolean set(final Local file, final String image) {
@@ -35,17 +37,41 @@ public final class FoundationProgressIconService implements IconService {
 
     @Override
     public boolean set(final Local file, final TransferStatus status) {
-        this.progress(file.getAbsolute(), status.getOffset(), status.getLength());
+        NSProgress progress = NSProgress.currentProgress();
+        if(null == progress) {
+            final NSDictionary userInfo = NSDictionary.dictionaryWithObjectsForKeys(
+                NSArray.arrayWithObjects(
+                    NSString.stringWithString("NSProgressFileOperationKindDownloading"),
+                    NSURL.fileURLWithPath(file.getAbsolute())
+                ),
+                NSArray.arrayWithObjects(NSProgressFileOperationKindKey, NSProgressFileURLKey)
+            );
+            progress = NSProgress.progressWithParent(null, userInfo);
+            progress.setKind(NSProgressKindFile);
+            progress.setPausable(false);
+            progress.setCancellable(false);
+            progress.setCompletedUnitCount(status.getOffset());
+            progress.setTotalUnitCount(status.getLength());
+            // Sets the receiver as the current progress object of the current thread.
+            progress.becomeCurrentWithPendingUnitCount(status.getLength());
+            progress.publish();
+        }
+        else {
+            progress.setUserInfoObject_forKey(NSString.stringWithString("NSProgressFileOperationKindDownloading"), NSProgressFileOperationKindKey);
+            progress.setUserInfoObject_forKey(NSURL.fileURLWithPath(file.getAbsolute()), NSProgressFileURLKey);
+            progress.setCompletedUnitCount(status.getOffset());
+            progress.setTotalUnitCount(status.getLength());
+        }
         return true;
     }
 
     @Override
     public boolean remove(final Local file) {
-        this.cancel(file.getAbsolute());
+        final NSProgress progress = NSProgress.currentProgress();
+        if(null == progress) {
+            return false;
+        }
+        progress.resignCurrent();
         return true;
     }
-
-    private native void progress(String file, long current, long size);
-
-    private native void cancel(String file);
 }
