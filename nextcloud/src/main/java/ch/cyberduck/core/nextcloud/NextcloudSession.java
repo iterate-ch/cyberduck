@@ -31,7 +31,7 @@ public class NextcloudSession extends DAVSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == PromptUrlProvider.class) {
-            return (T) new NextCloudShareProvider(this);
+            return (T) new NextcloudShareProvider(this);
         }
         return super._getFeature(type);
     }
