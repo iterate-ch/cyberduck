@@ -30,7 +30,6 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
-import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 
 import org.apache.http.HttpHost;
@@ -56,7 +55,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpCoreContext;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLSession;
@@ -83,12 +81,7 @@ public class HttpConnectionPoolBuilder {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
                 // Return socket factory with disabled support for HTTP tunneling as provided internally
-                return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
-                    @Override
-                    public String getTarget() {
-                        return ((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName();
-                    }
-                }, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
+                return new ProxySocketFactory(host, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
             }
 
             @Override
@@ -103,12 +96,7 @@ public class HttpConnectionPoolBuilder {
         ) {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
-                return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
-                    @Override
-                    public String getTarget() {
-                        return ((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName();
-                    }
-                }, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
+                return new ProxySocketFactory(host, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
             }
 
             @Override
