@@ -83,9 +83,10 @@ public class HttpConnectionPoolBuilder {
             }
 
             @Override
-            public Socket connectSocket(final int connectTimeout, final Socket socket, final HttpHost host, final InetSocketAddress remoteAddress, final InetSocketAddress localAddress, final HttpContext context) throws IOException {
-                // Must set target hostname for plain socket which may be upgraded later to TLS from HttpClientConnectionOperator#upgrade
-                trust.setTarget(remoteAddress.getHostName());
+            public Socket connectSocket(final int connectTimeout, final Socket socket, final HttpHost host,
+                                        final InetSocketAddress remoteAddress, final InetSocketAddress localAddress,
+                                        final HttpContext context) throws IOException {
+                trust.setTarget(host.getHostName());
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
         }, new SSLConnectionSocketFactory(
@@ -98,13 +99,10 @@ public class HttpConnectionPoolBuilder {
             }
 
             @Override
-            public Socket connectSocket(final int connectTimeout,
-                                        final Socket socket,
-                                        final HttpHost host,
-                                        final InetSocketAddress remoteAddress,
-                                        final InetSocketAddress localAddress,
+            public Socket connectSocket(final int connectTimeout, final Socket socket, final HttpHost host,
+                                        final InetSocketAddress remoteAddress, final InetSocketAddress localAddress,
                                         final HttpContext context) throws IOException {
-                trust.setTarget(remoteAddress.getHostName());
+                trust.setTarget(host.getHostName());
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
         });
