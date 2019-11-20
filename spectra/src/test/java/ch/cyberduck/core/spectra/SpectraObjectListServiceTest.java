@@ -41,6 +41,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -147,6 +148,7 @@ public class SpectraObjectListServiceTest {
     }
 
     @Test
+    @Ignore
     public void testListSPECTRA70() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override
