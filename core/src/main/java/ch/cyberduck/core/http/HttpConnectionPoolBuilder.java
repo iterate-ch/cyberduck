@@ -66,9 +66,7 @@ import java.nio.charset.Charset;
 public class HttpConnectionPoolBuilder {
     private static final Logger log = Logger.getLogger(HttpConnectionPoolBuilder.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
+    private final Preferences preferences = PreferencesFactory.get();
     private final ConnectionSocketFactory socketFactory;
     private final ConnectionSocketFactory sslSocketFactory;
     private final Host host;
