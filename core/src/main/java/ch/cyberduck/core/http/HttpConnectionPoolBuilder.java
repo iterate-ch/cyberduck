@@ -99,6 +99,12 @@ public class HttpConnectionPoolBuilder {
             }
 
             @Override
+            public Socket createLayeredSocket(final Socket socket, final String target, final int port, final HttpContext context) throws IOException {
+                trust.setTarget(target);
+                return super.createLayeredSocket(socket, target, port, context);
+            }
+
+            @Override
             public Socket connectSocket(final int connectTimeout, final Socket socket, final HttpHost host,
                                         final InetSocketAddress remoteAddress, final InetSocketAddress localAddress,
                                         final HttpContext context) throws IOException {
