@@ -57,7 +57,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLSession;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -91,7 +90,7 @@ public class HttpConnectionPoolBuilder {
             }
         }, new SSLConnectionSocketFactory(
             new CustomTrustSSLProtocolSocketFactory(trust, key),
-            new CallbackHostnameVerifier(trust)
+            new DisabledX509HostnameVerifier()
         ) {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
@@ -214,19 +213,5 @@ public class HttpConnectionPoolBuilder {
         // Detect connections that have become stale (half-closed) while kept inactive in the pool
         manager.setValidateAfterInactivity(preferences.getInteger("http.connections.stale.check.ms"));
         return manager;
-    }
-
-    private static final class CallbackHostnameVerifier extends DisabledX509HostnameVerifier {
-        private final ThreadLocalHostnameDelegatingTrustManager trust;
-
-        public CallbackHostnameVerifier(final ThreadLocalHostnameDelegatingTrustManager trust) {
-            this.trust = trust;
-        }
-
-        @Override
-        public boolean verify(final String host, final SSLSession sslSession) {
-            trust.setTarget(host);
-            return super.verify(host, sslSession);
-        }
     }
 }
