@@ -145,7 +145,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
             while(priorLastKey != null);
             if(!hasDirectoryPlaceholder && children.isEmpty()) {
                 // Only for AWS
-                if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+                if(S3Session.isAwsHostname(session.getHost().getHostname())) {
                     throw new NotfoundException(directory.getAbsolute());
                 }
                 final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
