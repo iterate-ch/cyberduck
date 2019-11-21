@@ -26,9 +26,11 @@ import ch.cyberduck.binding.WindowController;
 import ch.cyberduck.binding.application.*;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSAttributedString;
+import ch.cyberduck.binding.foundation.NSData;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSIndexSet;
+import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSNotification;
 import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
@@ -47,6 +49,8 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.Scheduler;
 import ch.cyberduck.core.features.Touch;
+import ch.cyberduck.core.keychain.SFCertificatePanel;
+import ch.cyberduck.core.keychain.SecurityFunctions;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
@@ -118,6 +122,7 @@ import ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarValidator;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -2156,12 +2161,29 @@ public class BrowserController extends WindowController
     @Action
     public void securityLabelClicked(final ID sender) {
         final List<X509Certificate> certificates = Arrays.asList(pool.getFeature(X509TrustManager.class).getAcceptedIssuers());
+        if(certificates.isEmpty()) {
+            return;
+        }
         try {
-            CertificateStoreFactory.get(this).display(certificates);
+            final NSMutableArray certs = NSMutableArray.arrayWithCapacity(new NSUInteger(certificates.size()));
+            for(X509Certificate certificate : certificates) {
+                certs.addObject(SecurityFunctions.library.SecCertificateCreateWithData(null,
+                    NSData.dataWithBase64EncodedString(Base64.encodeBase64String(certificate.getEncoded()))));
+            }
+            final SFCertificatePanel panel = SFCertificatePanel.sharedCertificatePanel();
+            panel.setShowsHelp(false);
+            // Implementation of this delegate method is optional
+            panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_certificates_showGroup(
+                this.window, this.id(), Foundation.selector("certificateSheetDidEnd:returnCode:contextInfo:"), null, certs, true);
         }
         catch(CertificateException e) {
             log.warn(String.format("Failure decoding certificate %s", e.getMessage()));
         }
+    }
+
+    @Action
+    public void certificateSheetDidEnd_returnCode_contextInfo(NSWindow sheet, NSInteger returnCode, NSObject contextInfo) {
+        //
     }
 
     @Action
