@@ -30,7 +30,6 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
-import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -244,7 +243,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
             System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
         final SFTPSession session = new SFTPSession(host,
-            new ProxySocketFactory(host.getProtocol(), new DefaultTrustManagerHostnameCallback(host),
+            new ProxySocketFactory(host,
                 new DefaultSocketConfigurator(), new ProxyFinder() {
                 @Override
                 public Proxy find(final Host target) {

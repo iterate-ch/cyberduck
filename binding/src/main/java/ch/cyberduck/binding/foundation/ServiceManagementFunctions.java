@@ -17,9 +17,17 @@ package ch.cyberduck.binding.foundation;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import org.rococoa.internal.RococoaTypeMapper;
+
+import java.util.Collections;
+
 import com.sun.jna.Library;
+import com.sun.jna.Native;
 
 public interface ServiceManagementFunctions extends Library {
+
+    ServiceManagementFunctions library = Native.load(
+        "ServiceManagement", ServiceManagementFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
 
     /**
      * @param identifier The bundle identifier of the helper application bundle
@@ -29,5 +37,5 @@ public interface ServiceManagementFunctions extends Library {
      *                   application will no longer be kept running.
      * @return Returns true if the requested change has taken effect.
      */
-    boolean SMLoginItemSetEnabled(CFStringRef identifier, boolean enabled);
+    boolean SMLoginItemSetEnabled(String identifier, boolean enabled);
 }

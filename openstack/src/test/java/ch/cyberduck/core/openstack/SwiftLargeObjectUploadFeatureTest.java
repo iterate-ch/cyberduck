@@ -9,7 +9,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -200,13 +199,8 @@ public class SwiftLargeObjectUploadFeatureTest {
         assertNotNull(new DefaultAttributesFinderFeature(session).find(test).getChecksum().hash);
 
         assertTrue(status.isComplete());
-        try {
-            status.validate();
-            fail();
-        }
-        catch(ConnectionCanceledException e) {
-
-        }
+        // Verify not canceled
+        status.validate();
         assertEquals(content.length, status.getOffset());
 
         assertTrue(new SwiftFindFeature(session).find(test));

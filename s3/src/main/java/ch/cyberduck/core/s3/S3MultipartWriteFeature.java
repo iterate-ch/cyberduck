@@ -221,7 +221,7 @@ public class S3MultipartWriteFeature implements MultipartWrite<VersionId> {
                         else {
                             reference = complete.getEtag();
                         }
-                        if(!expected.equals(reference)) {
+                        if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                             if(S3Session.isAwsHostname(session.getHost().getHostname())) {
                                 throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                                     MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",

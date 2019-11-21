@@ -37,11 +37,11 @@ import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-public class NextCloudShareProvider implements PromptUrlProvider {
+public class NextcloudShareProvider implements PromptUrlProvider {
 
     private final NextcloudSession session;
 
-    public NextCloudShareProvider(final NextcloudSession session) {
+    public NextcloudShareProvider(final NextcloudSession session) {
         this.session = session;
     }
 

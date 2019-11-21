@@ -23,8 +23,6 @@
 		4705DFFD1C037AB5002466FA /* EMKeychainProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE31C037AB5002466FA /* EMKeychainProxy.m */; };
 		4705DFFE1C037AB5002466FA /* FinderLocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFE41C037AB5002466FA /* FinderLocal.h */; };
 		4705DFFF1C037AB5002466FA /* FinderLocal.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE51C037AB5002466FA /* FinderLocal.m */; };
-		4705E0001C037AB5002466FA /* FoundationProgressIconService.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFE61C037AB5002466FA /* FoundationProgressIconService.h */; };
-		4705E0011C037AB5002466FA /* FoundationProgressIconService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE71C037AB5002466FA /* FoundationProgressIconService.m */; };
 		4705E0021C037AB5002466FA /* IOKitSleepPreventer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */; };
 		4705E0031C037AB5002466FA /* IOKitSleepPreventer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */; };
 		4705E0041C037AB5002466FA /* Keychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFEA1C037AB5002466FA /* Keychain.h */; };
@@ -352,8 +350,6 @@
 		4705DFE31C037AB5002466FA /* EMKeychainProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EMKeychainProxy.m; path = core/src/main/objc/EMKeychainProxy.m; sourceTree = SOURCE_ROOT; };
 		4705DFE41C037AB5002466FA /* FinderLocal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FinderLocal.h; path = core/src/main/objc/FinderLocal.h; sourceTree = SOURCE_ROOT; };
 		4705DFE51C037AB5002466FA /* FinderLocal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FinderLocal.m; path = core/src/main/objc/FinderLocal.m; sourceTree = SOURCE_ROOT; };
-		4705DFE61C037AB5002466FA /* FoundationProgressIconService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FoundationProgressIconService.h; path = core/src/main/objc/FoundationProgressIconService.h; sourceTree = SOURCE_ROOT; };
-		4705DFE71C037AB5002466FA /* FoundationProgressIconService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FoundationProgressIconService.m; path = core/src/main/objc/FoundationProgressIconService.m; sourceTree = SOURCE_ROOT; };
 		4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IOKitSleepPreventer.h; path = core/src/main/objc/IOKitSleepPreventer.h; sourceTree = SOURCE_ROOT; };
 		4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IOKitSleepPreventer.m; path = core/src/main/objc/IOKitSleepPreventer.m; sourceTree = SOURCE_ROOT; };
 		4705DFEA1C037AB5002466FA /* Keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Keychain.h; path = core/src/main/objc/Keychain.h; sourceTree = SOURCE_ROOT; };
@@ -1790,8 +1786,6 @@
 				4705DFE31C037AB5002466FA /* EMKeychainProxy.m */,
 				4705DFE41C037AB5002466FA /* FinderLocal.h */,
 				4705DFE51C037AB5002466FA /* FinderLocal.m */,
-				4705DFE61C037AB5002466FA /* FoundationProgressIconService.h */,
-				4705DFE71C037AB5002466FA /* FoundationProgressIconService.m */,
 				4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */,
 				4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */,
 				4705DFEA1C037AB5002466FA /* Keychain.h */,
@@ -2028,7 +2022,6 @@
 				4705E0041C037AB5002466FA /* Keychain.h in Headers */,
 				4705DFFC1C037AB5002466FA /* EMKeychainProxy.h in Headers */,
 				4705E0021C037AB5002466FA /* IOKitSleepPreventer.h in Headers */,
-				4705E0001C037AB5002466FA /* FoundationProgressIconService.h in Headers */,
 				4705DFF81C037AB5002466FA /* FinderSidebarService.h in Headers */,
 				474B843E1C15CDD1004D562C /* CDTransmitImporter.h in Headers */,
 				4705DFFE1C037AB5002466FA /* FinderLocal.h in Headers */,
@@ -2431,7 +2424,6 @@
 			files = (
 				4705E0081C037AB5002466FA /* LaunchServicesFileDescriptor.m in Sources */,
 				4705E00C1C037AB5002466FA /* LaunchServicesSchemeHandler.m in Sources */,
-				4705E0011C037AB5002466FA /* FoundationProgressIconService.m in Sources */,
 				4705E00A1C037AB5002466FA /* LaunchServicesQuarantineService.m in Sources */,
 				4705E0051C037AB5002466FA /* Keychain.m in Sources */,
 				47F85C1C1C0F101F00FDA856 /* UKSystemInfo.m in Sources */,

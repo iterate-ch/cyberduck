@@ -19,7 +19,6 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.binding.foundation.FoundationKitFunctions;
-import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.FinderLocal;
@@ -34,7 +33,7 @@ public class ApplicationSupportDirectoryFinder implements SupportDirectoryFinder
 
     @Override
     public Local find() {
-        final NSArray directories = FoundationKitFunctionsLibrary.NSSearchPathForDirectoriesInDomains(
+        final NSArray directories = FoundationKitFunctions.library.NSSearchPathForDirectoriesInDomains(
                 FoundationKitFunctions.NSSearchPathDirectory.NSApplicationSupportDirectory,
                 FoundationKitFunctions.NSSearchPathDomainMask.NSUserDomainMask,
                 true);

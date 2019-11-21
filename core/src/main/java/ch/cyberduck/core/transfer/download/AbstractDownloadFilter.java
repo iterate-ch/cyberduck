@@ -19,6 +19,7 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -47,7 +48,6 @@ import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -70,32 +70,21 @@ import java.util.List;
 public abstract class AbstractDownloadFilter implements TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractDownloadFilter.class);
 
-    private final SymlinkResolver<Path> symlinkResolver;
-
-    private final QuarantineService quarantine
-        = QuarantineServiceFactory.get();
-
-    private final ApplicationLauncher launcher
-        = ApplicationLauncherFactory.get();
-
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
-    private final IconService icon
-        = IconServiceFactory.get();
-
     private final Session<?> session;
+    private final SymlinkResolver<Path> symlinkResolver;
+    private final QuarantineService quarantine = QuarantineServiceFactory.get();
+    private final ApplicationLauncher launcher = ApplicationLauncherFactory.get();
+    private final Preferences preferences = PreferencesFactory.get();
+    private final IconService icon = IconServiceFactory.get();
 
     protected AttributesFinder attribute;
-
     private DownloadFilterOptions options;
 
-    protected AbstractDownloadFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session,
-                                     final DownloadFilterOptions options) {
+    protected AbstractDownloadFilter(final SymlinkResolver<Path> symlinkResolver, final Session<?> session, final DownloadFilterOptions options) {
         this.symlinkResolver = symlinkResolver;
         this.session = session;
         this.options = options;
-        this.attribute = session.getFeature(AttributesFinder.class, new DefaultAttributesFinderFeature(session));
+        this.attribute = session.getFeature(AttributesFinder.class);
     }
 
     @Override
@@ -336,22 +325,22 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                     icon.set(local, status);
                     icon.remove(local);
                 }
-                final DescriptiveUrl provider = session.getFeature(UrlProvider.class).toUrl(file).find(DescriptiveUrl.Type.provider);
-                if(!DescriptiveUrl.EMPTY.equals(provider)) {
+                final DescriptiveUrlBag provider = session.getFeature(UrlProvider.class).toUrl(file).filter(DescriptiveUrl.Type.provider, DescriptiveUrl.Type.http);
+                for(DescriptiveUrl url : provider) {
                     try {
                         if(options.quarantine) {
                             // Set quarantine attributes
-                            quarantine.setQuarantine(local, new HostUrlProvider().withUsername(false).get(session.getHost()),
-                                provider.getUrl());
+                            quarantine.setQuarantine(local, new HostUrlProvider().withUsername(false).get(session.getHost()), url.getUrl());
                         }
                         if(this.options.wherefrom) {
                             // Set quarantine attributes
-                            quarantine.setWhereFrom(local, provider.getUrl());
+                            quarantine.setWhereFrom(local, url.getUrl());
                         }
                     }
                     catch(LocalAccessDeniedException e) {
                         log.warn(String.format("Failure to quarantine file %s. %s", file, e.getMessage()));
                     }
+                    break;
                 }
             }
             if(!Permission.EMPTY.equals(status.getPermission())) {

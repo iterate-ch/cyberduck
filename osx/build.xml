@@ -219,7 +219,7 @@
             <arg value="pipefail"/>
             <arg value="-c"/>
             <arg
-                value="openssl dgst -sha1 -binary '${build.deploy}/${bundle.archive.zip}' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
+                value="openssl dgst -sha1 -binary '${build.deploy}/${bundle.archive.zip}' | openssl dgst -sha1 -sign ${www.update}/private.pem | openssl enc -base64"/>
         </exec>
         <echo message="DSASIGNATURE=${signature.dsa}"/>
         <echo message="MD5SUM=${archive.md5}"/>

@@ -108,7 +108,7 @@
         <dependency>
             <groupId>com.googlecode.plist</groupId>
             <artifactId>dd-plist</artifactId>
-            <version>1.22</version>
+            <version>1.23</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -129,17 +129,11 @@
         <dependency>
             <groupId>com.nulab-inc</groupId>
             <artifactId>zxcvbn</artifactId>
-            <version>1.2.7</version>
+            <version>1.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.joyent.util</groupId>
             <artifactId>fast-md5</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.conscrypt</groupId>
-            <artifactId>conscrypt-openjdk</artifactId>
-            <classifier>${os.detected.classifier}</classifier>
-            <version>2.2.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

@@ -22,7 +22,7 @@ import ch.cyberduck.binding.application.NSToolbar;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.application.NSView;
 import ch.cyberduck.binding.application.NSWindow;
-import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
+import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSEnumerator;
 import ch.cyberduck.binding.foundation.NSMutableArray;
@@ -92,7 +92,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         // Reset
         NSEnumerator items = this.tabView.tabViewItems().objectEnumerator();
         NSObject object;
-        while(((object = items.nextObject()) != null)) {
+        while((object = items.nextObject()) != null) {
             this.tabView.removeTabViewItem(Rococoa.cast(object, NSTabViewItem.class));
         }
         // Insert all panels into tab view
@@ -299,7 +299,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         NSObject next;
         while(null != (next = enumerator.nextObject())) {
             final NSView subview = Rococoa.cast(next, NSView.class);
-            contentRect = FoundationKitFunctionsLibrary.NSUnionRect(contentRect, subview.frame());
+            contentRect = FoundationKitFunctions.library.NSUnionRect(contentRect, subview.frame());
         }
         return contentRect;
     }
