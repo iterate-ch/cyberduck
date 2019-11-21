@@ -69,7 +69,8 @@ public class SpectraAttributesFinderFeatureTest {
         final PathAttributes attributes = f.find(test);
         assertEquals(0L, attributes.getSize());
         assertEquals("d41d8cd98f00b204e9800998ecf8427e", attributes.getChecksum().hash);
-        assertNotEquals(-1L, attributes.getModificationDate());
+        // Missing support for modification date
+        assertEquals(-1L, attributes.getModificationDate());
         // Test wrong type
         try {
             f.find(new Path(test.getAbsolute(), EnumSet.of(Path.Type.directory, Path.Type.placeholder)));
@@ -144,7 +145,8 @@ public class SpectraAttributesFinderFeatureTest {
         new SpectraDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertEquals(0L, attributes.getSize());
         assertEquals(Checksum.parse("d41d8cd98f00b204e9800998ecf8427e"), attributes.getChecksum());
-        assertNotEquals(-1L, attributes.getModificationDate());
+        // Missing support for modification date
+        assertEquals(-1L, attributes.getModificationDate());
     }
 
     @Test
