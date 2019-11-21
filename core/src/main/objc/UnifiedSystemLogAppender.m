@@ -20,14 +20,16 @@
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_logging_UnifiedSystemLogAppender_log(JNIEnv *env, jobject this, jint type, jstring message)
 {
-    NSString* appName = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleName"];
-    NSString* appBundleIdentifier = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleIdentifier"];
-    os_log_t category;
-    if (!appName || !appBundleIdentifier) {
-        category = OS_LOG_DEFAULT;
-    }
-    else {
-        category = os_log_create([appBundleIdentifier cString], [appName cString]);
+    static os_log_t category;
+    if(!category) {
+        NSString* appName = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleName"];
+        NSString* appBundleIdentifier = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleIdentifier"];
+        if (!appName || !appBundleIdentifier) {
+            category = OS_LOG_DEFAULT;
+        }
+        else {
+            category = os_log_create([appBundleIdentifier cStringUsingEncoding:kUnicodeUTF8Format], [appName cStringUsingEncoding:kUnicodeUTF8Format]);
+        }
     }
     os_log_with_type(category, type, "%{public}@", (CFStringRef)JNFJavaToNSString(env, message));
 }
