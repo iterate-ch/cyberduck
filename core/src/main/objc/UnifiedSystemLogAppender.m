@@ -29,5 +29,5 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_logging_UnifiedSystemLogAppender_l
     else {
         category = os_log_create([appBundleIdentifier cString], [appName cString]);
     }
-    os_log_with_type(category, type, "%@", (CFStringRef)JNFJavaToNSString(env, message));
+    os_log_with_type(category, type, "%{public}@", (CFStringRef)JNFJavaToNSString(env, message));
 }
