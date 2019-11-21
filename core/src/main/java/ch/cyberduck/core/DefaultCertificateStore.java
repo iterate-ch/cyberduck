@@ -53,11 +53,6 @@ public class DefaultCertificateStore implements CertificateStore {
     }
 
     @Override
-    public boolean display(List<X509Certificate> certificates) {
-        return false;
-    }
-
-    @Override
     public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
         if(certificates.isEmpty()) {
             return false;

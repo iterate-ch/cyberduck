@@ -49,14 +49,6 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     }
 
     @Override
-    public boolean display(final List<X509Certificate> certificates) {
-        for(X509Certificate c : certificates) {
-            console.printf("%n%s", c.toString());
-        }
-        return true;
-    }
-
-    @Override
     public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
         if(certificates.isEmpty()) {
             return false;

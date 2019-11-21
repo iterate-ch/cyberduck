@@ -31,11 +31,6 @@ public class DisabledCertificateStore implements CertificateStore {
     }
 
     @Override
-    public boolean display(List<X509Certificate> certificates) {
-        return false;
-    }
-
-    @Override
     public X509Certificate choose(String[] keyTypes, final Principal[] issuers, final Host bookmark, final String prompt)
             throws ConnectionCanceledException {
         throw new ConnectionCanceledException(prompt);

@@ -35,13 +35,6 @@ public interface CertificateStore {
             throws CertificateException;
 
     /**
-     * @param certificates X.509 certificates
-     * @return False if display is not possible
-     */
-    boolean display(List<X509Certificate> certificates)
-            throws CertificateException;
-
-    /**
      * Prompt user for client certificate
      *
      * @param keyTypes Encryption algorithms
