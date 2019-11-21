@@ -30,18 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.github.sardine.impl.handler.MultiStatusResponseHandler;
-import com.github.sardine.model.Collection;
-import com.github.sardine.model.Creationdate;
-import com.github.sardine.model.Displayname;
-import com.github.sardine.model.Getcontentlength;
-import com.github.sardine.model.Getcontenttype;
-import com.github.sardine.model.Getetag;
-import com.github.sardine.model.Getlastmodified;
-import com.github.sardine.model.Multistatus;
-import com.github.sardine.model.Prop;
-import com.github.sardine.model.Propstat;
-import com.github.sardine.model.Resourcetype;
-import com.github.sardine.model.Response;
+import com.github.sardine.model.*;
 import com.github.sardine.util.SardineUtil;
 
 public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
@@ -72,6 +61,9 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
         private Propstat propstat;
         private Prop prop;
         private Resourcetype type;
+        private Lockdiscovery lockdiscovery;
+        private Activelock activelock;
+        private Locktoken locktoken;
 
         private StringBuilder data;
         private Element root;
@@ -112,6 +104,24 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
                         prop.setResourcetype(type);
                     }
                     break;
+                case "lockdiscovery":
+                    lockdiscovery = new Lockdiscovery();
+                    if(prop != null) {
+                        prop.setLockdiscovery(lockdiscovery);
+                    }
+                    break;
+                case "activelock":
+                    activelock = new Activelock();
+                    if(lockdiscovery != null) {
+                        lockdiscovery.getActivelock().add(activelock);
+                    }
+                    break;
+                case "locktoken":
+                    locktoken = new Locktoken();
+                    if(activelock != null) {
+                        activelock.setLocktoken(locktoken);
+                    }
+                    break;
                 case "collection":
                     type.setCollection(new Collection());
                     break;
@@ -133,8 +143,13 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
             if(response != null) {
                 switch(localName) {
                     case "href": {
-                        if(response != null) {
-                            response.getHref().add(data.toString());
+                        if(locktoken != null) {
+                            locktoken.getHref().add(data.toString());
+                        }
+                        else {
+                            if(response != null) {
+                                response.getHref().add(data.toString());
+                            }
                         }
                         break;
                     }
@@ -211,6 +226,18 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
                 }
                 case "prop": {
                     prop = null;
+                    break;
+                }
+                case "lockdiscovery": {
+                    lockdiscovery = null;
+                    break;
+                }
+                case "activelock": {
+                    activelock = null;
+                    break;
+                }
+                case "locktoken": {
+                    locktoken = null;
                     break;
                 }
             }
