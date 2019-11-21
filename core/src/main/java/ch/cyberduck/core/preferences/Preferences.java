@@ -223,24 +223,9 @@ public abstract class Preferences implements Locales {
      * setting the default prefs values
      */
     protected void setDefaults() {
-        // Ticket #2539
-        if(this.getBoolean("connection.dns.ipv6")) {
-            System.setProperty("java.net.preferIPv6Addresses", String.valueOf(true));
-        }
         // TTL for DNS queries
         Security.setProperty("networkaddress.cache.ttl", "10");
         Security.setProperty("networkaddress.cache.negative.ttl", "5");
-        // Failure loading default key store with bouncycastle provider
-        System.setProperty("javax.net.ssl.trustStoreType", "JKS");
-        // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
-        final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
-        final BouncyCastleProvider provider = new BouncyCastleProvider();
-        // Add missing factory. http://bouncy-castle.1462172.n4.nabble.com/Keychain-issue-as-of-version-1-53-follow-up-tc4659509.html
-        provider.put("Alg.Alias.SecretKeyFactory.PBE", "PBEWITHSHAAND3-KEYTRIPLEDES-CBC");
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Install provider %s at position %d", provider, position));
-        }
-        Security.insertProviderAt(provider, position);
 
         this.setDefault("application.version", Version.getSpecification());
         this.setDefault("application.revision", Version.getImplementation());
@@ -956,6 +941,10 @@ public abstract class Preferences implements Locales {
           java.net.preferIPv6Addresses
          */
         this.setDefault("connection.dns.ipv6", String.valueOf(false));
+        // Ticket #2539
+        if(this.getBoolean("connection.dns.ipv6")) {
+            System.setProperty("java.net.preferIPv6Addresses", String.valueOf(true));
+        }
 
         /*
           Read proxy settings from system preferences
@@ -974,6 +963,17 @@ public abstract class Preferences implements Locales {
         this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(true));
 
         this.setDefault("connection.ssl.provider.bouncycastle.position", String.valueOf(1));
+        // Failure loading default key store with bouncycastle provider
+        System.setProperty("javax.net.ssl.trustStoreType", "JKS");
+        // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
+        final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
+        final BouncyCastleProvider provider = new BouncyCastleProvider();
+        // Add missing factory. http://bouncy-castle.1462172.n4.nabble.com/Keychain-issue-as-of-version-1-53-follow-up-tc4659509.html
+        provider.put("Alg.Alias.SecretKeyFactory.PBE", "PBEWITHSHAAND3-KEYTRIPLEDES-CBC");
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Install provider %s at position %d", provider, position));
+        }
+        Security.insertProviderAt(provider, position);
         this.setDefault("connection.ssl.protocols", "TLSv1.2,TLSv1.1,TLSv1");
         this.setDefault("connection.ssl.cipher.blacklist", StringUtils.EMPTY);
 
