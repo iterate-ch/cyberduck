@@ -17,7 +17,7 @@ package ch.cyberduck.core.preferences;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.binding.foundation.ServiceManagementLibrary;
+import ch.cyberduck.binding.foundation.ServiceManagementFunctions;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
@@ -43,7 +43,7 @@ public class ServiceManagementApplicationLoginRegistry implements ApplicationLog
             log.warn(String.format("Failed to register %s (%s) with launch services", helper,
                     finder.getDescription(application.getIdentifier())));
         }
-        if(!ServiceManagementLibrary.SMLoginItemSetEnabled(application.getIdentifier(), true)) {
+        if(!ServiceManagementFunctions.library.SMLoginItemSetEnabled(application.getIdentifier(), true)) {
             log.warn(String.format("Failed to register %s as login item", application));
             return false;
         }
@@ -52,7 +52,7 @@ public class ServiceManagementApplicationLoginRegistry implements ApplicationLog
 
     @Override
     public boolean unregister(final Application application) {
-        if(!ServiceManagementLibrary.SMLoginItemSetEnabled(application.getIdentifier(), false)) {
+        if(!ServiceManagementFunctions.library.SMLoginItemSetEnabled(application.getIdentifier(), false)) {
             log.warn(String.format("Failed to remove %s as login item", application));
             return false;
         }

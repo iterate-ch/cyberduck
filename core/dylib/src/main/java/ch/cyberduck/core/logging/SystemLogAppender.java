@@ -35,7 +35,7 @@ import com.sun.jna.Native;
  */
 public class SystemLogAppender extends AppenderSkeleton {
 
-    private static final FoundationKitFunctions instance = Native.load(
+    private static final FoundationKitFunctions library = Native.load(
         "Foundation", FoundationKitFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
 
     @Override
@@ -51,7 +51,7 @@ public class SystemLogAppender extends AppenderSkeleton {
                 }
             }
         }
-        instance.NSLog("%@", buffer.toString());
+        library.NSLog("%@", buffer.toString());
     }
 
     @Override
