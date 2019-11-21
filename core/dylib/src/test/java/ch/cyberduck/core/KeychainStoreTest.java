@@ -19,6 +19,7 @@ import ch.cyberduck.core.ssl.CertificateStoreX509KeyManager;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.security.auth.x500.X500Principal;
@@ -64,6 +65,7 @@ public class KeychainStoreTest {
     }
 
     @Test
+    @Ignore
     public void testLoadPrivateKeyFromKeychain() {
         final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
             keychain).init();
