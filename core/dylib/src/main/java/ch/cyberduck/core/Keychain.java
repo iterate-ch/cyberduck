@@ -141,33 +141,6 @@ public final class Keychain extends DefaultHostPasswordStore implements Password
      */
     private synchronized native boolean isTrustedNative(String hostname, Object[] certificates);
 
-    /**
-     * @param certificates Chain of certificates
-     * @return True if certificate was selected. False if prompt is dismissed to close the connection
-     */
-    @Override
-    public boolean display(final List<X509Certificate> certificates) throws CertificateException {
-        if(certificates.isEmpty()) {
-            return false;
-        }
-        final Object[] encoded = new DEREncoder().encode(certificates);
-        final AtomicBoolean accepted = new AtomicBoolean(false);
-        final DefaultMainAction action = new DefaultMainAction() {
-            @Override
-            public void run() {
-                accepted.set(displayCertificatesNative(encoded));
-            }
-        };
-        proxy.invoke(action, action.lock(), true);
-        return accepted.get();
-    }
-
-    /**
-     * @param certificates An array containing ASN.1 DER encoded certificates
-     * @return True if certificate was selected. False if prompt is dismissed to close the connection
-     */
-    private native boolean displayCertificatesNative(Object[] certificates);
-
     @Override
     public X509Certificate choose(final String[] keyTypes, final Principal[] issuers,
                                   final Host bookmark, final String prompt)

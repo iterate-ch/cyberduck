@@ -71,14 +71,6 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative
 
 /*
  * Class:     ch_cyberduck_core_Keychain
- * Method:    isTrusted
- * Signature: ([B)Z
- */
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_displayCertificatesNative
-  (JNIEnv * env, jobject this, jobjectArray jCertificateChain);
-
-/*
- * Class:     ch_cyberduck_core_Keychain
  * Method:    chooseCertificate
  * Signature: (Ljava/lang/String)Ljava/lang/String;
  */

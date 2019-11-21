@@ -305,16 +305,3 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 	}
     return FALSE;
 }
-
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_displayCertificatesNative(JNIEnv *env, jobject this, jobjectArray jCertificates) {
-	NSArray *certificates = CreateCertificatesFromData(env, jCertificates);
-	SFCertificatePanel *panel = [[SFCertificatePanel alloc] init];
-	if([panel respondsToSelector:@selector(setShowsHelp:)]) {
-		[panel setShowsHelp:NO];
-	}
-	NSInteger result = [panel runModalForCertificates:certificates showGroup:YES];
-	if(NSOKButton == result) {
-		return TRUE;
-	}
-	return FALSE;
-}
