@@ -45,7 +45,6 @@ import com.github.sardine.impl.handler.MultiStatusResponseHandler;
 import com.github.sardine.impl.handler.VoidResponseHandler;
 import com.github.sardine.impl.methods.HttpPropFind;
 import com.github.sardine.model.Multistatus;
-import com.github.sardine.model.ObjectFactory;
 import com.github.sardine.model.Propfind;
 import com.github.sardine.model.Response;
 import com.github.sardine.util.SardineUtil;
@@ -84,7 +83,6 @@ public class DAVClient extends SardineImpl {
 
     @Override
     protected List<DavResource> propfind(final String url, final int depth, final Propfind body) throws IOException {
-        body.getProp().setLockdiscovery(new ObjectFactory().createLockdiscovery());
         HttpPropFind entity = new HttpPropFind(url);
         entity.setDepth(depth < 0 ? "infinity" : Integer.toString(depth));
         entity.setEntity(new StringEntity(SardineUtil.toXml(body), StandardCharsets.UTF_8));
