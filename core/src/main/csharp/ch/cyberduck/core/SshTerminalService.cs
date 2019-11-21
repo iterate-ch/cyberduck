@@ -91,6 +91,11 @@ namespace Ch.Cyberduck.Core
 
         private bool TryStartBashSSH(Host host, string workdir)
         {
+            if (!PreferencesFactory.get().getBoolean("terminal.windowssubsystemlinux.enable"))
+            {
+                return false;
+            }
+
             var wsl = GetSystemPath("wsl.exe");
             if (!File.Exists(wsl))
             {
@@ -124,6 +129,11 @@ namespace Ch.Cyberduck.Core
 
         private bool TryStartBuiltinOpenSSH(Host host, string workdir)
         {
+            if (!PreferencesFactory.get().getBoolean("terminal.openssh.enable"))
+            {
+                return false;
+            }
+
             var ssh = GetSystemPath(Path.Combine("OpenSSH", "ssh.exe"));
             if (!File.Exists(ssh))
             {

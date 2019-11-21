@@ -152,9 +152,9 @@ public class CryptoVault implements Vault {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Create vault root directory at %s", secondLevel));
         }
-        directory.mkdir(dataDir, region, new TransferStatus());
-        directory.mkdir(firstLevel, region, new TransferStatus());
-        directory.mkdir(secondLevel, region, new TransferStatus());
+        directory.mkdir(dataDir, region, status);
+        directory.mkdir(firstLevel, region, status);
+        directory.mkdir(secondLevel, region, status);
         return vault;
     }
 

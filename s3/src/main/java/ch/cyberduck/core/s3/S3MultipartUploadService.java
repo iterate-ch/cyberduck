@@ -27,7 +27,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
-import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
@@ -206,7 +205,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     else {
                         reference = complete.getEtag();
                     }
-                    if(!expected.equals(reference)) {
+                    if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                         if(S3Session.isAwsHostname(session.getHost().getHostname())) {
                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                                 MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
@@ -243,9 +242,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         return pool.execute(new DefaultRetryCallable<MultipartPart>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
-                if(overall.isCanceled()) {
-                    throw new TransferCanceledException();
-                }
+                overall.validate();
                 final Map<String, String> requestParameters = new HashMap<String, String>();
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
@@ -257,7 +254,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                 status.setNonces(overall.getNonces());
                 switch(session.getSignatureVersion()) {
                     case AWS4HMACSHA256:
-                        status.setChecksum(writer.checksum(file).compute(local.getInputStream(), status));
+                        status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                         break;
                 }
                 status.setSegment(true);

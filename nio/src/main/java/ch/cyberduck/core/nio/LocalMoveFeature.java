@@ -37,7 +37,7 @@ public class LocalMoveFeature implements Move {
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         if(status.isExists()) {
-            new LocalDeleteFeature(session).delete(Collections.singletonList(renamed), new DisabledPasswordCallback(), callback);
+            new LocalDeleteFeature(session).delete(Collections.singletonMap(renamed, status), new DisabledPasswordCallback(), callback);
         }
         if(!session.toPath(file).toFile().renameTo(session.toPath(renamed).toFile())) {
             throw new LocalExceptionMappingService().map("Cannot rename {0}", new NoSuchFileException(file.getName()), file);

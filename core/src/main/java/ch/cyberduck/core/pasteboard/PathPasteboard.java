@@ -53,4 +53,6 @@ public final class PathPasteboard extends Collection<Path> implements Pasteboard
     public boolean isCopy() {
         return !cut;
     }
+
+    public static final PathPasteboard EMPTY = new PathPasteboard(null);
 }

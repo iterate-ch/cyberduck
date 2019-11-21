@@ -40,7 +40,6 @@ import ch.cyberduck.core.sftp.auth.SFTPPasswordAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
-import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
@@ -93,7 +92,7 @@ public class SFTPSession extends Session<SSHClient> {
     private final SocketFactory socketFactory;
 
     public SFTPSession(final Host h) {
-        this(h, new ProxySocketFactory(h.getProtocol(), new DefaultTrustManagerHostnameCallback(h)));
+        this(h, new ProxySocketFactory(h));
     }
 
     public SFTPSession(final Host h, final SocketFactory socketFactory) {
@@ -223,21 +222,19 @@ public class SFTPSession extends Session<SSHClient> {
         }
         // Ordered list of preferred authentication methods
         final List<AuthenticationProvider<Boolean>> methods = new ArrayList<AuthenticationProvider<Boolean>>();
-        if(credentials.isPublicKeyAuthentication()) {
-            if(preferences.getBoolean("ssh.authentication.agent.enable")) {
-                switch(Factory.Platform.getDefault()) {
-                    case windows:
-                        methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
-                        break;
-                    default:
-                        methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
-                        break;
-                }
+        if(preferences.getBoolean("ssh.authentication.agent.enable")) {
+            switch(Factory.Platform.getDefault()) {
+                case windows:
+                    methods.add(new SFTPAgentAuthentication(this, new PageantAuthenticator()));
+                    break;
+                default:
+                    methods.add(new SFTPAgentAuthentication(this, new OpenSSHAgentAuthenticator()));
+                    break;
             }
-            methods.add(new SFTPPublicKeyAuthentication(this));
         }
-        methods.add(new SFTPPasswordAuthentication(this));
+        methods.add(new SFTPPublicKeyAuthentication(this));
         methods.add(new SFTPChallengeResponseAuthentication(this));
+        methods.add(new SFTPPasswordAuthentication(this));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Attempt login with %d authentication methods %s", methods.size(), Arrays.toString(methods.toArray())));
         }

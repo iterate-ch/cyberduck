@@ -42,7 +42,7 @@ public class GoogleStorageMoveFeature implements Move {
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         final Path copy = new GoogleStorageCopyFeature(session).copy(source, target, status, connectionCallback);
-        delete.delete(Collections.singletonList(source), connectionCallback, callback);
+        delete.delete(Collections.singletonMap(source, status), connectionCallback, callback);
         return copy;
     }
 

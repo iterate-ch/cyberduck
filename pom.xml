@@ -6,7 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>7.1.1-SNAPSHOT</version>
+    <version>7.1.3-SNAPSHOT</version>
 
     <prerequisites>
         <maven>3.0</maven>
@@ -75,9 +75,12 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <argLine/>
+        <argLine />
         <jna-version>5.3.1</jna-version>
         <jersey-version>2.29.1</jersey-version>
+        <jackson-version>2.10.1</jackson-version>
+        <slf4j-version>1.7.29</slf4j-version>
+        <bouncycastle-version>1.61</bouncycastle-version>
     </properties>
 
     <dependencyManagement>
@@ -125,12 +128,12 @@
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcprov-jdk15on</artifactId>
-                <version>1.61</version>
+                <version>${bouncycastle-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk15on</artifactId>
-                <version>1.61</version>
+                <version>${bouncycastle-version}</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
@@ -145,7 +148,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-pool2</artifactId>
-                <version>2.6.2</version>
+                <version>2.7.0</version>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
@@ -175,7 +178,7 @@
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
-                <version>2.8.5</version>
+                <version>2.8.6</version>
             </dependency>
             <dependency>
                 <groupId>log4j</groupId>
@@ -185,22 +188,22 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.28</version>
+                <version>${slf4j-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>1.7.28</version>
+                <version>${slf4j-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
-                <version>1.7.28</version>
+                <version>${slf4j-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>jcl-over-slf4j</artifactId>
-                <version>1.7.28</version>
+                <version>${slf4j-version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.woodstox</groupId>
@@ -210,57 +213,57 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-xml</artifactId>
-                <version>2.9.9</version>
+                <version>${jackson-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>
-                <version>2.9.9</version>
+                <version>${jackson-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>2.9.9</version>
+                <version>${jackson-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jsr310</artifactId>
-                <version>2.9.9</version>
+                <version>${jackson-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.9.9.2</version>
+                <version>${jackson-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
                 <artifactId>jackson-jaxrs-base</artifactId>
-                <version>2.9.9</version>
+                <version>${jackson-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.jaxrs</groupId>
                 <artifactId>jackson-jaxrs-json-provider</artifactId>
-                <version>2.9.9</version>
+                <version>${jackson-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
-                <version>2.9.9</version>
+                <version>${jackson-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-joda</artifactId>
-                <version>2.9.9</version>
+                <version>${jackson-version}</version>
             </dependency>
             <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
-                <version>2.10.3</version>
+                <version>2.10.5</version>
             </dependency>
             <dependency>
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-annotations</artifactId>
-                <version>1.5.23</version>
+                <version>1.5.24</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.core</groupId>
@@ -290,27 +293,27 @@
             <dependency>
                 <groupId>com.google.oauth-client</groupId>
                 <artifactId>google-oauth-client</artifactId>
-                <version>1.30.2</version>
+                <version>1.30.4</version>
             </dependency>
             <dependency>
                 <groupId>com.google.api-client</groupId>
                 <artifactId>google-api-client</artifactId>
-                <version>1.30.3</version>
+                <version>1.30.5</version>
             </dependency>
             <dependency>
                 <groupId>com.google.http-client</groupId>
                 <artifactId>google-http-client</artifactId>
-                <version>1.32.0</version>
+                <version>1.33.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.http-client</groupId>
                 <artifactId>google-http-client-jackson2</artifactId>
-                <version>1.32.0</version>
+                <version>1.33.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.http-client</groupId>
                 <artifactId>google-http-client-apache-v2</artifactId>
-                <version>1.32.0</version>
+                <version>1.33.0</version>
             </dependency>
             <dependency>
                 <groupId>com.amazonaws</groupId>
@@ -344,6 +347,11 @@
                 <artifactId>aws-maven</artifactId>
                 <version>5.0.0.RELEASE</version>
             </extension>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.6.2</version>
+            </extension>
         </extensions>
         <pluginManagement>
             <plugins>
@@ -363,7 +371,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.0</version>
                     <configuration>
                         <archive>
                             <index>true</index>
@@ -381,7 +389,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -414,12 +422,12 @@
                             </goals>
                             <configuration>
                                 <tasks>
-                                    <property name="home" value="${main.basedir}"/>
-                                    <property name="version" value="${project.version}"/>
-                                    <property name="revision" value="${git.commitsCount}"/>
-                                    <property name="git.revision" value="${git.revision}"/>
-                                    <property name="sparkle.feed" value="${sparkle.feed}"/>
-                                    <ant antfile="${project.basedir}/build.xml" target="build" dir="."/>
+                                    <property name="home" value="${main.basedir}" />
+                                    <property name="version" value="${project.version}" />
+                                    <property name="revision" value="${git.commitsCount}" />
+                                    <property name="git.revision" value="${git.revision}" />
+                                    <property name="sparkle.feed" value="${sparkle.feed}" />
+                                    <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
                                 </tasks>
                             </configuration>
                         </execution>
@@ -533,7 +541,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
@@ -542,7 +550,7 @@
                 <plugin>
                     <groupId>io.swagger</groupId>
                     <artifactId>swagger-codegen-maven-plugin</artifactId>
-                    <version>2.4.8</version>
+                    <version>2.4.9</version>
                 </plugin>
             </plugins>
         </pluginManagement>

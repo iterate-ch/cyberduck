@@ -23,8 +23,6 @@
 		4705DFFD1C037AB5002466FA /* EMKeychainProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE31C037AB5002466FA /* EMKeychainProxy.m */; };
 		4705DFFE1C037AB5002466FA /* FinderLocal.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFE41C037AB5002466FA /* FinderLocal.h */; };
 		4705DFFF1C037AB5002466FA /* FinderLocal.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE51C037AB5002466FA /* FinderLocal.m */; };
-		4705E0001C037AB5002466FA /* FoundationProgressIconService.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFE61C037AB5002466FA /* FoundationProgressIconService.h */; };
-		4705E0011C037AB5002466FA /* FoundationProgressIconService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE71C037AB5002466FA /* FoundationProgressIconService.m */; };
 		4705E0021C037AB5002466FA /* IOKitSleepPreventer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */; };
 		4705E0031C037AB5002466FA /* IOKitSleepPreventer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */; };
 		4705E0041C037AB5002466FA /* Keychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFEA1C037AB5002466FA /* Keychain.h */; };
@@ -352,8 +350,6 @@
 		4705DFE31C037AB5002466FA /* EMKeychainProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = EMKeychainProxy.m; path = core/src/main/objc/EMKeychainProxy.m; sourceTree = SOURCE_ROOT; };
 		4705DFE41C037AB5002466FA /* FinderLocal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FinderLocal.h; path = core/src/main/objc/FinderLocal.h; sourceTree = SOURCE_ROOT; };
 		4705DFE51C037AB5002466FA /* FinderLocal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FinderLocal.m; path = core/src/main/objc/FinderLocal.m; sourceTree = SOURCE_ROOT; };
-		4705DFE61C037AB5002466FA /* FoundationProgressIconService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FoundationProgressIconService.h; path = core/src/main/objc/FoundationProgressIconService.h; sourceTree = SOURCE_ROOT; };
-		4705DFE71C037AB5002466FA /* FoundationProgressIconService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FoundationProgressIconService.m; path = core/src/main/objc/FoundationProgressIconService.m; sourceTree = SOURCE_ROOT; };
 		4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IOKitSleepPreventer.h; path = core/src/main/objc/IOKitSleepPreventer.h; sourceTree = SOURCE_ROOT; };
 		4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IOKitSleepPreventer.m; path = core/src/main/objc/IOKitSleepPreventer.m; sourceTree = SOURCE_ROOT; };
 		4705DFEA1C037AB5002466FA /* Keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Keychain.h; path = core/src/main/objc/Keychain.h; sourceTree = SOURCE_ROOT; };
@@ -1790,8 +1786,6 @@
 				4705DFE31C037AB5002466FA /* EMKeychainProxy.m */,
 				4705DFE41C037AB5002466FA /* FinderLocal.h */,
 				4705DFE51C037AB5002466FA /* FinderLocal.m */,
-				4705DFE61C037AB5002466FA /* FoundationProgressIconService.h */,
-				4705DFE71C037AB5002466FA /* FoundationProgressIconService.m */,
 				4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */,
 				4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */,
 				4705DFEA1C037AB5002466FA /* Keychain.h */,
@@ -2028,7 +2022,6 @@
 				4705E0041C037AB5002466FA /* Keychain.h in Headers */,
 				4705DFFC1C037AB5002466FA /* EMKeychainProxy.h in Headers */,
 				4705E0021C037AB5002466FA /* IOKitSleepPreventer.h in Headers */,
-				4705E0001C037AB5002466FA /* FoundationProgressIconService.h in Headers */,
 				4705DFF81C037AB5002466FA /* FinderSidebarService.h in Headers */,
 				474B843E1C15CDD1004D562C /* CDTransmitImporter.h in Headers */,
 				4705DFFE1C037AB5002466FA /* FinderLocal.h in Headers */,
@@ -2129,11 +2122,18 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = Cyberduck;
 				TargetAttributes = {
+					471D2C0B05A2505500675163 = {
+						ProvisioningStyle = Manual;
+					};
+					4739EF670856981300405FD3 = {
+						ProvisioningStyle = Manual;
+					};
 					47C2AD7F1A268C880047B67A = {
 						CreatedOnToolsVersion = 6.1;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -2424,7 +2424,6 @@
 			files = (
 				4705E0081C037AB5002466FA /* LaunchServicesFileDescriptor.m in Sources */,
 				4705E00C1C037AB5002466FA /* LaunchServicesSchemeHandler.m in Sources */,
-				4705E0011C037AB5002466FA /* FoundationProgressIconService.m in Sources */,
 				4705E00A1C037AB5002466FA /* LaunchServicesQuarantineService.m in Sources */,
 				4705E0051C037AB5002466FA /* Keychain.m in Sources */,
 				47F85C1C1C0F101F00FDA856 /* UKSystemInfo.m in Sources */,
@@ -3911,6 +3910,7 @@
 		4739EF720856981300405FD3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3929,6 +3929,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
@@ -3971,6 +3972,7 @@
 		47D286C70855740C008142CF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
@@ -3997,15 +3999,25 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -4038,15 +4050,25 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -4077,6 +4099,7 @@
 		47EFE4D21BECFE81009AC47B /* Mac App Store */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Versions/A/Frameworks",
@@ -4097,6 +4120,7 @@
 		47EFE4D31BECFE81009AC47B /* Mac App Store */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -4115,6 +4139,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;

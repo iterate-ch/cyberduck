@@ -211,7 +211,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
 
             // Calculate information about the files in advance to give progress information
             for(TransferItem next : transfer.getRoots()) {
-                this.prepare(next.remote, next.local, new TransferStatus().exists(true).withLockId(next.lockId), action);
+                this.prepare(next.remote, next.local, new TransferStatus().exists(true).withLockId(next.lockId).withChecksum(next.checksum), action);
             }
             this.await();
             meter.reset();
@@ -255,9 +255,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             return this.submit(new RetryTransferCallable(transfer.getSource()) {
                 @Override
                 public TransferStatus call() throws BackgroundException {
-                    if(parent.isCanceled()) {
-                        throw new TransferCanceledException();
-                    }
+                    parent.validate();
                     final Session<?> source = borrow(Connection.source);
                     final Session<?> destination = borrow(Connection.destination);
                     try {
@@ -373,9 +371,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 this.submit(new RetryTransferCallable(transfer.getSource()) {
                     @Override
                     public TransferStatus call() throws BackgroundException {
-                        if(status.isCanceled()) {
-                            throw new TransferCanceledException();
-                        }
+                        status.validate();
                         // Transfer
                         // Do transfer with retry
                         this.retry(segment);
@@ -489,9 +485,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             return this.submit(new TransferCallable() {
                 @Override
                 public TransferStatus call() throws BackgroundException {
-                    if(status.isCanceled()) {
-                        throw new TransferCanceledException();
-                    }
+                    status.validate();
                     if(status.isSegmented()) {
                         // Await completion of all segments
                         boolean complete = true;

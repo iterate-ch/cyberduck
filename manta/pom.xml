@@ -19,12 +19,12 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>7.1.1-SNAPSHOT</version>
+        <version>7.1.3-SNAPSHOT</version>
     </parent>
     <artifactId>manta</artifactId>
     <properties>
         <maven.test.skip>true</maven.test.skip>
-        <manta-client-version>3.4.0</manta-client-version>
+        <manta-client-version>3.4.1</manta-client-version>
     </properties>
     <dependencies>
         <dependency>

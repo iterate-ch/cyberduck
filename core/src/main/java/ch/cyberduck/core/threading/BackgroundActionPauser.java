@@ -18,6 +18,7 @@ package ch.cyberduck.core.threading;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -77,8 +78,15 @@ public class BackgroundActionPauser {
 
         @Override
         public void run() {
-            if(0 == delay || callback.isCanceled()) {
+            if(0 == delay) {
                 // Cancel the timer repetition
+                this.cancel();
+                return;
+            }
+            try {
+                callback.validate();
+            }
+            catch(ConnectionCanceledException e) {
                 this.cancel();
                 return;
             }
@@ -99,12 +107,6 @@ public class BackgroundActionPauser {
     }
 
     public interface Callback extends StreamCancelation {
-        /**
-         * @return True if task should be cancled and wait interrupted.
-         */
-        @Override
-        boolean isCanceled();
-
         /**
          * @param delay Remaining delay
          */

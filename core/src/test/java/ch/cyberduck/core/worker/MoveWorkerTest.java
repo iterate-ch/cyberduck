@@ -40,7 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.*;
@@ -56,7 +56,7 @@ public class MoveWorkerTest {
                 if(type == Delete.class) {
                     return (T) new Delete() {
                         @Override
-                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
+                        public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
                             //
                         }
 

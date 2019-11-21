@@ -66,7 +66,6 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testWrite() throws Exception {
-
         final TransferStatus status = new TransferStatus();
         final int length = 1048576;
         final byte[] content = RandomUtils.nextBytes(length);
@@ -82,7 +81,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         final FileHeader header = cryptor.fileHeaderCryptor().create();
         status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));
-        status.setChecksum(writer.checksum(test).compute(new ByteArrayInputStream(content), status));
+        status.setChecksum(writer.checksum(test, status).compute(new ByteArrayInputStream(content), status));
         final OutputStream out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

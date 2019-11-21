@@ -43,7 +43,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.AbstractHttpEntity;
@@ -87,42 +86,28 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
             @Override
             public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    // Initiate a resumable upload
-                    final HttpEntityEnclosingRequestBase request;
-                    if(status.isExists()) {
-                        // PATCH /storage/v1/b/myBucket/o/myObject
-                        request = new HttpPatch(String.format("%sstorage/v1/b/%s/o/%s",
-                            session.getClient().getRootUrl(), containerService.getContainer(file).getName(), containerService.getKey(file)));
-                        if(StringUtils.isNotBlank(status.getMime())) {
-                            request.setHeader(HttpHeaders.CONTENT_TYPE, status.getMime());
-                        }
-                        // Upload the file
-                        request.setEntity(entity);
+                    // POST /upload/storage/v1/b/myBucket/o
+                    final HttpEntityEnclosingRequestBase request = new HttpPost(String.format("%supload/storage/v1/b/%s/o?uploadType=resumable",
+                        session.getClient().getRootUrl(), containerService.getContainer(file).getName()));
+                    final StringBuilder metadata = new StringBuilder();
+                    metadata.append(String.format("{\"name\": \"%s\"", containerService.getKey(file)));
+                    metadata.append(",\"metadata\": {");
+                    for(Map.Entry<String, String> item : status.getMetadata().entrySet()) {
+                        metadata.append(String.format("\"%s\": \"%s\"", item.getKey(), item.getValue()));
                     }
-                    else {
-                        // POST /upload/storage/v1/b/myBucket/o
-                        request = new HttpPost(String.format("%supload/storage/v1/b/%s/o?uploadType=resumable",
-                            session.getClient().getRootUrl(), containerService.getContainer(file).getName()));
-                        final StringBuilder metadata = new StringBuilder();
-                        metadata.append(String.format("{\"name\": \"%s\"", containerService.getKey(file)));
-                        metadata.append(",\"metadata\": {");
-                        for(Map.Entry<String, String> item : status.getMetadata().entrySet()) {
-                            metadata.append(String.format("\"%s\": \"%s\"", item.getKey(), item.getValue()));
-                        }
-                        metadata.append("}");
-                        if(StringUtils.isNotBlank(status.getMime())) {
-                            metadata.append(String.format(", \"contentType\": \"%s\"", status.getMime()));
-                        }
-                        if(StringUtils.isNotBlank(status.getStorageClass())) {
-                            metadata.append(String.format(", \"storageClass\": \"%s\"", status.getStorageClass()));
-                        }
-                        metadata.append("}");
-                        request.setEntity(new StringEntity(metadata.toString(),
-                            ContentType.create("application/json", StandardCharsets.UTF_8.name())));
-                        if(StringUtils.isNotBlank(status.getMime())) {
-                            // Set to the media MIME type of the upload data to be transferred in subsequent requests.
-                            request.addHeader("X-Upload-Content-Type", status.getMime());
-                        }
+                    metadata.append("}");
+                    if(StringUtils.isNotBlank(status.getMime())) {
+                        metadata.append(String.format(", \"contentType\": \"%s\"", status.getMime()));
+                    }
+                    if(StringUtils.isNotBlank(status.getStorageClass())) {
+                        metadata.append(String.format(", \"storageClass\": \"%s\"", status.getStorageClass()));
+                    }
+                    metadata.append("}");
+                    request.setEntity(new StringEntity(metadata.toString(),
+                        ContentType.create("application/json", StandardCharsets.UTF_8.name())));
+                    if(StringUtils.isNotBlank(status.getMime())) {
+                        // Set to the media MIME type of the upload data to be transferred in subsequent requests.
+                        request.addHeader("X-Upload-Content-Type", status.getMime());
                     }
                     request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
                     final HttpClient client = session.getHttpClient();
@@ -139,45 +124,43 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
                     finally {
                         EntityUtils.consume(response.getEntity());
                     }
-                    if(!status.isExists()) {
-                        if(response.containsHeader(HttpHeaders.LOCATION)) {
-                            final String putTarget = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
-                            // Upload the file
-                            final HttpPut put = new HttpPut(putTarget);
-                            put.setEntity(entity);
-                            final HttpResponse putResponse = client.execute(put);
-                            try {
-                                switch(putResponse.getStatusLine().getStatusCode()) {
-                                    case HttpStatus.SC_OK:
-                                    case HttpStatus.SC_CREATED:
-                                        try (JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8))) {
-                                            reader.beginObject();
-                                            while(reader.hasNext()) {
-                                                final String name = reader.nextName();
-                                                final String value = reader.nextString();
-                                                switch(name) {
-                                                    case "generation":
-                                                        final VersionId version = new VersionId(value);
-                                                        status.setVersion(version);
-                                                        return version;
-                                                }
+                    if(response.containsHeader(HttpHeaders.LOCATION)) {
+                        final String putTarget = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
+                        // Upload the file
+                        final HttpPut put = new HttpPut(putTarget);
+                        put.setEntity(entity);
+                        final HttpResponse putResponse = client.execute(put);
+                        try {
+                            switch(putResponse.getStatusLine().getStatusCode()) {
+                                case HttpStatus.SC_OK:
+                                case HttpStatus.SC_CREATED:
+                                    try (JsonReader reader = new JsonReader(new InputStreamReader(putResponse.getEntity().getContent(), StandardCharsets.UTF_8))) {
+                                        reader.beginObject();
+                                        while(reader.hasNext()) {
+                                            final String name = reader.nextName();
+                                            final String value = reader.nextString();
+                                            switch(name) {
+                                                case "generation":
+                                                    final VersionId version = new VersionId(value);
+                                                    status.setVersion(version);
+                                                    return version;
                                             }
-                                            reader.endObject();
                                         }
-                                        break;
-                                    default:
-                                        throw new DefaultHttpResponseExceptionMappingService().map(
-                                            new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
-                                }
-                            }
-                            finally {
-                                EntityUtils.consume(putResponse.getEntity());
+                                        reader.endObject();
+                                    }
+                                    break;
+                                default:
+                                    throw new DefaultHttpResponseExceptionMappingService().map(
+                                        new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                             }
                         }
-                        else {
-                            throw new DefaultHttpResponseExceptionMappingService().map(
-                                new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                        finally {
+                            EntityUtils.consume(putResponse.getEntity());
                         }
+                    }
+                    else {
+                        throw new DefaultHttpResponseExceptionMappingService().map(
+                            new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
                     }
                     return new VersionId(null);
                 }
@@ -214,7 +197,7 @@ public class GoogleStorageWriteFeature extends AbstractHttpWriteFeature<VersionI
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file) {
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return ChecksumComputeFactory.get(HashAlgorithm.sha256);
     }
 }

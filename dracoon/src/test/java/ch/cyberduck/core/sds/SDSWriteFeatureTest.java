@@ -21,6 +21,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.TransferCanceledException;
@@ -58,6 +59,7 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
         {
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
+            status.setMime("text/plain");
             final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
             final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
@@ -103,11 +105,11 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
         final Path test = new Path(room, String.format("{%s", new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus() {
             @Override
-            public boolean isCanceled() {
+            public void validate() throws ConnectionCanceledException {
                 if(this.getOffset() >= 32768) {
-                    return true;
+                    throw new TransferCanceledException();
                 }
-                return super.isCanceled();
+                super.validate();
             }
         };
         status.setLength(content.length);

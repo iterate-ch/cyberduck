@@ -21,9 +21,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 import com.google.api.services.drive.model.File;
 
@@ -38,8 +39,8 @@ public class DriveDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        for(Path file : files) {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+        for(Path file : files.keySet()) {
             if(file.getType().contains(Path.Type.placeholder)) {
                 continue;
             }

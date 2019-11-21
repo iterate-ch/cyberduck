@@ -58,6 +58,9 @@ public class B2CopyFeature implements Copy {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
+        if(source.getType().contains(Path.Type.upload)) {
+            return false;
+        }
         return containerService.getContainer(source).equals(containerService.getContainer(target));
     }
 

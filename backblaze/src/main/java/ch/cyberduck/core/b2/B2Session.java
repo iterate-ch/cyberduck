@@ -28,8 +28,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -51,10 +49,6 @@ public class B2Session extends HttpSession<B2ApiClient> {
 
     private final B2FileidProvider fileid = new B2FileidProvider(this);
     private final B2ListService listService = new B2ListService(this, fileid);
-
-    public B2Session(final Host host) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
-    }
 
     public B2Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);

@@ -36,6 +36,7 @@ import ch.cyberduck.ui.cocoa.controller.DownloadPromptController;
 import ch.cyberduck.ui.cocoa.controller.SyncPromptController;
 import ch.cyberduck.ui.cocoa.controller.UploadPromptController;
 
+import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
@@ -95,13 +96,12 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
     }
 
     @Override
-    protected void post() {
+    public void setLogging(final String level) {
+        super.setLogging(level);
         // Send log output to system.log
         Logger root = Logger.getRootLogger();
-        final SystemLogAppender appender = new SystemLogAppender();
+        final Appender appender = new SystemLogAppender();
         appender.setLayout(new PatternLayout("[%t] %-5p %c - %m%n"));
         root.addAppender(appender);
-        // Post configuration
-        super.post();
     }
 }

@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
@@ -41,6 +42,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -99,42 +101,56 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
+            private HttpResponse startUpload(final Path file, final TransferStatus status) throws BackgroundException, IOException {
+                final StoregateApiClient client = session.getClient();
+                final HttpEntityEnclosingRequestBase request;
+                request = new HttpPost(String.format("%s/v4/upload/resumable", client.getBasePath()));
+                FileMetadata meta = new FileMetadata();
+                meta.setId(StringUtils.EMPTY);
+                meta.setAttributes(0);
+                meta.setFlags(FileMetadata.FlagsEnum.NUMBER_0);
+                if(status.getLockId() != null) {
+                    request.addHeader("X-Lock-Id", status.getLockId().toString());
+                }
+                meta.setFileName(file.getName());
+                meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
+                meta.setFileSize(status.getLength());
+                meta.setCreated(DateTime.now());
+                if(null != status.getTimestamp()) {
+                    meta.setModified(new DateTime(status.getTimestamp()));
+                }
+                request.setEntity(new StringEntity(new JSON().getContext(meta.getClass()).writeValueAsString(meta),
+                    ContentType.create("application/json", StandardCharsets.UTF_8.name())));
+                request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
+                final CloseableHttpResponse response = client.getClient().execute(request);
+                try {
+                    switch(response.getStatusLine().getStatusCode()) {
+                        case HttpStatus.SC_OK:
+                            break;
+                        default:
+                            throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                EntityUtils.toString(response.getEntity())));
+                    }
+                }
+                finally {
+                    EntityUtils.consume(response.getEntity());
+                }
+                return response;
+            }
+
             @Override
             public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
-                    final StoregateApiClient client = session.getClient();
                     // Initiate a resumable upload
-                    final HttpEntityEnclosingRequestBase request;
-                    request = new HttpPost(String.format("%s/v4/upload/resumable", client.getBasePath()));
-                    FileMetadata meta = new FileMetadata();
-                    meta.setId(StringUtils.EMPTY);
-                    meta.setAttributes(0);
-                    meta.setFlags(FileMetadata.FlagsEnum.NUMBER_0);
-                    if(status.getLockId() != null) {
-                        request.addHeader("X-Lock-Id", status.getLockId().toString());
-                    }
-                    meta.setFileName(file.getName());
-                    meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
-                    meta.setFileSize(status.getLength());
-                    meta.setCreated(DateTime.now());
-                    if(null != status.getTimestamp()) {
-                        meta.setModified(new DateTime(status.getTimestamp()));
-                    }
-                    request.setEntity(new StringEntity(new JSON().getContext(meta.getClass()).writeValueAsString(meta),
-                        ContentType.create("application/json", StandardCharsets.UTF_8.name())));
-                    request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
-                    final HttpResponse response = client.getClient().execute(request);
+                    HttpResponse response;
                     try {
-                        switch(response.getStatusLine().getStatusCode()) {
-                            case HttpStatus.SC_OK:
-                                break;
-                            default:
-                                throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                    EntityUtils.toString(response.getEntity())));
-                        }
+                        response = this.startUpload(file, status);
                     }
-                    finally {
-                        EntityUtils.consume(response.getEntity());
+                    catch(InteroperabilityException e) {
+                        if(null == status.getLockId()) {
+                            throw e;
+                        }
+                        response = this.startUpload(file, status.withLockId(null));
                     }
                     if(response.containsHeader(HttpHeaders.LOCATION)) {
                         final String putTarget = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
@@ -151,6 +167,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                             header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), status.getLength());
                         }
                         put.addHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %s", header));
+                        final StoregateApiClient client = session.getClient();
                         final HttpResponse putResponse = client.getClient().execute(put);
                         try {
                             switch(putResponse.getStatusLine().getStatusCode()) {

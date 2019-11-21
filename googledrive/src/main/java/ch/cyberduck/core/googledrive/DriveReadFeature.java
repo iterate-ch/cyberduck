@@ -76,7 +76,7 @@ public class DriveReadFeature implements Read {
                 return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
             else {
-                final HttpUriRequest request = new HttpGet(String.format("%s/drive/v3/files/%s?alt=media&supportsTeamDrives=%s",
+                final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s",
                     session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
                     PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
                 request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);

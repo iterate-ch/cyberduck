@@ -27,7 +27,12 @@ import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StoregateIdProvider implements IdProvider {
+
+    public static final String KEY_NODE_ID = "node_id";
 
     private final StoregateSession session;
 
@@ -38,16 +43,18 @@ public class StoregateIdProvider implements IdProvider {
     @Override
     public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
         try {
-            return new FilesApi(session.getClient()).filesGet_1(URIEncoder.encode(this.getPrefixedPath(file))).getId();
+            if(file.attributes().getCustom().containsKey(KEY_NODE_ID)) {
+                return file.attributes().getCustom().get(KEY_NODE_ID);
+            }
+            final String id = new FilesApi(session.getClient()).filesGet_1(URIEncoder.encode(this.getPrefixedPath(file))).getId();
+            final Map<String, String> custom = new HashMap<>(file.attributes().getCustom());
+            custom.put(KEY_NODE_ID, id);
+            file.attributes().setCustom(custom);
+            return id;
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
-    }
-
-    protected String set(final Path file, final String id) {
-        file.attributes().setVersionId(id);
-        return id;
     }
 
     @Override

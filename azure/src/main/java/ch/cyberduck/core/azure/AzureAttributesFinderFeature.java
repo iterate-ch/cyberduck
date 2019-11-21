@@ -31,6 +31,8 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.microsoft.azure.storage.AccessCondition;
 import com.microsoft.azure.storage.OperationContext;
@@ -44,11 +46,11 @@ import com.microsoft.azure.storage.blob.CloudBlobContainer;
 public class AzureAttributesFinderFeature implements AttributesFinder {
 
     private final AzureSession session;
-
     private final OperationContext context;
-
     private final PathContainerService containerService
             = new AzurePathContainerService();
+
+    public static final String KEY_BLOB_TYPE = "blob_type";
 
     public AzureAttributesFinderFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
@@ -83,6 +85,9 @@ public class AzureAttributesFinderFeature implements AttributesFinder {
                     attributes.setChecksum(Checksum.parse(Hex.encodeHexString(Base64.decodeBase64(properties.getContentMD5()))));
                 }
                 attributes.setETag(properties.getEtag());
+                final Map<String, String> custom = new HashMap<>();
+                custom.put(AzureAttributesFinderFeature.KEY_BLOB_TYPE, properties.getBlobType().name());
+                attributes.setCustom(custom);
                 return attributes;
             }
         }

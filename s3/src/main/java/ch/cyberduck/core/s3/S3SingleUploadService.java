@@ -27,6 +27,7 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -58,8 +59,9 @@ public class S3SingleUploadService extends HttpUploadFeature<StorageObject, Mess
         final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion = session.getSignatureVersion();
         switch(signatureVersion) {
             case AWS4HMACSHA256:
-                if(Checksum.NONE == status.getChecksum()) {
-                    status.setChecksum(writer.checksum(file).compute(local.getInputStream(), status));
+                if(!HashAlgorithm.sha256.equals(status.getChecksum().algorithm)) {
+                    // Checksum not set in upload filter
+                    status.setChecksum(writer.checksum(file, status).compute(local.getInputStream(), status));
                 }
                 break;
         }

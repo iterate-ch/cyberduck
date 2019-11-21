@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.StringTokenizer;
 
 public final class URIEncoder {
@@ -48,7 +49,7 @@ public final class URIEncoder {
                 b.append(Path.DELIMITER);
             }
             while(t.hasMoreTokens()) {
-                b.append(URLEncoder.encode(t.nextToken(), "UTF-8"));
+                b.append(URLEncoder.encode(t.nextToken(), StandardCharsets.UTF_8.name()));
                 if(t.hasMoreTokens()) {
                     b.append(Path.DELIMITER);
                 }

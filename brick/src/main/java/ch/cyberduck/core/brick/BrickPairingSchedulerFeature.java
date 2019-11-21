@@ -47,6 +47,7 @@ import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
@@ -57,7 +58,7 @@ public class BrickPairingSchedulerFeature {
     private final String token;
     private final Host host;
     private final CancelCallback cancel;
-    protected final ScheduledThreadPool scheduler = new ScheduledThreadPool();
+    private final ScheduledThreadPool scheduler = new ScheduledThreadPool();
 
     private Preferences preferences = PreferencesFactory.get();
 
@@ -75,6 +76,7 @@ public class BrickPairingSchedulerFeature {
             }
             catch(ConnectionCanceledException e) {
                 log.warn("Cancel processing scheduled task. %s", e);
+                callback.close(null);
                 this.shutdown();
             }
             catch(BackgroundException e) {
@@ -82,12 +84,19 @@ public class BrickPairingSchedulerFeature {
             }
             catch(Exception e) {
                 log.error(String.format("Failure processing scheduled task. %s", e.getMessage()), e);
+                callback.close(null);
                 this.shutdown();
             }
         }, preferences.getLong("brick.pairing.interval.ms"), TimeUnit.MILLISECONDS);
         return null;
     }
 
+    /**
+     * Pool for pairing key from service
+     *
+     * @param callback Callback when service returns 200
+     * @return Pairing keys
+     */
     private Credentials operate(final PasswordCallback callback) throws BackgroundException {
         try {
             final HttpPost resource = new HttpPost(String.format("https://app.files.com/api/rest/v1/sessions/pairing_key/%s", token));
@@ -139,6 +148,9 @@ public class BrickPairingSchedulerFeature {
             }
             callback.close(credentials.getUsername());
             return credentials;
+        }
+        catch(JsonParseException e) {
+            throw new DefaultIOExceptionMappingService().map(new IOException(e.getMessage(), e));
         }
         catch(HttpResponseException e) {
             switch(e.getStatusCode()) {

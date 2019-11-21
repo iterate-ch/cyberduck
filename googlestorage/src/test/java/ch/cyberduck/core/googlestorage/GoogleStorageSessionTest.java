@@ -145,14 +145,14 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
 
     @Test
     public void testFeatures() {
-        assertNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(Versioning.class));
-        assertNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(AclPermission.class));
-        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(Lifecycle.class));
-        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(DistributionConfiguration.class));
-        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(IdentityConfiguration.class));
-        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(Logging.class));
-        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(Metadata.class));
-        assertNotNull(new GoogleStorageSession(new Host(new GoogleStorageProtocol())).getFeature(Headers.class));
+        assertNull(session.getFeature(Versioning.class));
+        assertNull(session.getFeature(AclPermission.class));
+        assertNotNull(session.getFeature(Lifecycle.class));
+        assertNotNull(session.getFeature(DistributionConfiguration.class));
+        assertNotNull(session.getFeature(IdentityConfiguration.class));
+        assertNotNull(session.getFeature(Logging.class));
+        assertNotNull(session.getFeature(Metadata.class));
+        assertNotNull(session.getFeature(Headers.class));
     }
 
     @Test(expected = LoginCanceledException.class)

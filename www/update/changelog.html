@@ -52,13 +52,58 @@
 <body>
 
 <p class="mountainduck">
-    <strong><a href="https://mountainduck.io">Mountain Duck</a></strong>. Cyberduck for <strong>mounting
+    <strong><a target="_blank" href="https://mountainduck.io">Mountain Duck</a></strong>. Cyberduck for <strong>mounting
     volumes</strong> in the file
     explorer for Mac &amp; Windows.
 </p>
 
 <p>
-    <a href="https://trac.cyberduck.io/milestone/7.1.0"><strong>Version 7.1.0</strong></a>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/7.1.3"><strong>Version 7.1.3</strong></a>
+</p>
+<ul>
+    <li><span class="label label-warning">Bugfix</span> Failure validating hostname when connecting through HTTP proxy
+    </li>
+    <li><span class="label label-warning">Bugfix</span> MD5 mismatch error for uploads (Alibaba Cloud Object Storage
+        Service) (<a target="_blank" href="https://trac.cyberduck.io/ticket/10879">#10879</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Deprecated path-style request usage for (AWS GovCloud) (#10824)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Default to use virtual hosted style to access bucket contents
+        for third party S3 providers
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Optimize MD5 checksum calculation (S3) (<a target="_blank"
+                                                                                                   href="https://trac.cyberduck.io/ticket/10278">#10278</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Reload directory contents after editing file</li>
+    <li><span class="label label-warning">Bugfix</span> Failure replacing objects with blob type set to block (Azure)
+    </li>
+</ul>
+
+<p>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/7.1.2"><strong>Version 7.1.2</strong></a>
+</p>
+<ul>
+    <li><span class="label label-warning">Bugfix</span> Folder showing no more than 1000 files (S3) (
+        <a target="_blank" href="https://trac.cyberduck.io/ticket/10811">#10811</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Failure deleting folder recursively (FTP)</li>
+</ul>
+
+<p>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/7.1.1"><strong>Version 7.1.1</strong></a>
+</p>
+<ul>
+    <li><span class="label label-warning">Bugfix</span> Failure authenticating using SSH agent (SFTP) (<a
+        target="_blank" href="https://trac.cyberduck.io/ticket/10800">#10800</a>)
+    </li>
+    <li><span class="label label-warning">Bugfix</span> Failure overwriting existing file (Google Storage)</li>
+    <li><span class="label label-warning">Bugfix</span> Missing hostname verification in TLS handshake when connecting
+        through HTTP proxy
+    </li>
+</ul>
+
+<p>
+    <a target="_blank" href="https://trac.cyberduck.io/milestone/7.1.0"><strong>Version 7.1.0</strong></a>
 </p>
 <ul>
     <li><span class="label label-success">Feature</span> Application running as 64-bit (Windows)</li>
@@ -75,7 +120,7 @@
         Storage)
     </li>
     <li><span class="label label-warning">Bugfix</span> Fails to authenticate where keyboard-interactive mechanism is
-        not supported (SFTP) (<a href="https://trac.cyberduck.io/ticket/10714">#10714</a>)
+        not supported (SFTP) (<a target="_blank" href="https://trac.cyberduck.io/ticket/10714">#10714</a>)
     </li>
     <li><span class="label label-warning">Bugfix</span> Errors accessing Cryptomator vault (Google Drive, OneDrive)</li>
     <li><span class="label label-warning">Bugfix</span> No route to host error with IPv6 only server (macOS)</li>
@@ -86,17 +131,17 @@
         us-east-1 (S3))
     </li>
     <li><span class="label label-warning">Bugfix</span> Rate limit number of requests (Google Drive) (<a
-        href="https://trac.cyberduck.io/ticket/10103">#10103</a>))
+        target="_blank" href="https://trac.cyberduck.io/ticket/10103">#10103</a>))
     </li>
     <li><span class="label label-warning">Bugfix</span> Repeated prompt to validate host key when connecting to non
-        standard port (SFTP) (<a href="https://trac.cyberduck.io/ticket/10772">10772</a>))
+        standard port (SFTP) (<a target="_blank" href="https://trac.cyberduck.io/ticket/10772">10772</a>))
     </li>
     <li><span class="label label-warning">Bugfix</span> Segmented downloads fail with longer filenames (<a
-        href="https://trac.cyberduck.io/ticket/10726">#10726</a>))
+        target="_blank" href="https://trac.cyberduck.io/ticket/10726">#10726</a>))
     </li>
 </ul>
 
 <p>Release notes for previous versions can be found at <a
-    href="https://cyberduck.io/changelog">cyberduck.io/changelog</a>.</p>
+    target="_blank" href="https://cyberduck.io/changelog">cyberduck.io/changelog</a>.</p>
 </body>
 </html>

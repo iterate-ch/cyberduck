@@ -15,15 +15,26 @@ package ch.cyberduck.core.storegate;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
-import ch.cyberduck.core.storegate.io.swagger.client.api.FilesApi;
+import ch.cyberduck.core.transfer.TransferStatus;
 
-import java.util.List;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.util.Map;
+
+import static com.google.api.client.json.Json.MEDIA_TYPE;
 
 public class StoregateDeleteFeature implements Delete {
 
@@ -36,15 +47,32 @@ public class StoregateDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
-        for(Path file : files) {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+        for(Map.Entry<Path, TransferStatus> file : files.entrySet()) {
             try {
-                callback.delete(file);
-                final FilesApi api = new FilesApi(session.getClient());
-                api.filesDelete(fileid.getFileid(file, new DisabledListProgressListener()));
+                callback.delete(file.getKey());
+                final StoregateApiClient client = session.getClient();
+                final HttpRequestBase request;
+                request = new HttpDelete(String.format("%s/v4/files/%s", client.getBasePath(), fileid.getFileid(file.getKey(), new DisabledListProgressListener())));
+                if(file.getValue().getLockId() != null) {
+                    request.addHeader("X-Lock-Id", file.getValue().getLockId().toString());
+                }
+                request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
+                final HttpResponse response = client.getClient().execute(request);
+                try {
+                    switch(response.getStatusLine().getStatusCode()) {
+                        case HttpStatus.SC_NO_CONTENT:
+                            break;
+                        default:
+                            throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                    }
+                }
+                finally {
+                    EntityUtils.consume(response.getEntity());
+                }
             }
-            catch(ApiException e) {
-                throw new StoregateExceptionMappingService().map("Cannot delete {0}", e, file);
+            catch(IOException e) {
+                throw new DefaultIOExceptionMappingService().map(e);
             }
         }
     }

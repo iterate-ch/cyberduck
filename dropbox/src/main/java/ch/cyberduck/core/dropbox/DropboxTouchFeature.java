@@ -15,11 +15,33 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class DropboxTouchFeature extends DefaultTouchFeature<String> {
 
     public DropboxTouchFeature(final DropboxSession session) {
         super(new DropboxUploadFeature(new DropboxWriteFeature(session)), new DropboxAttributesFinderFeature(session));
+    }
+
+    /**
+     * Name begins with ~$ (a tilde and dollar sign) or .~ (a period and tilde)
+     * Name begins with a tilde and ends in .tmp, such as ~myfile.tmp
+     *
+     * @param workdir  Working directory
+     * @param filename Filename
+     * @return False if restricted filename
+     */
+    @Override
+    public boolean isSupported(final Path workdir, final String filename) {
+        if(StringUtils.startsWith(filename, "~$")) {
+            return false;
+        }
+        if(StringUtils.startsWith(filename, "~") && StringUtils.endsWith(filename, ".tmp")) {
+            return false;
+        }
+        return true;
     }
 }

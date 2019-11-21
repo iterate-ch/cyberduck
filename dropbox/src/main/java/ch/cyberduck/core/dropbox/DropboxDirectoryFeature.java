@@ -47,7 +47,7 @@ public class DropboxDirectoryFeature implements Directory<String> {
 
     @Override
     public boolean isSupported(final Path workdir, final String name) {
-        return true;
+        return new DropboxTouchFeature(session).isSupported(workdir, name);
     }
 
     @Override

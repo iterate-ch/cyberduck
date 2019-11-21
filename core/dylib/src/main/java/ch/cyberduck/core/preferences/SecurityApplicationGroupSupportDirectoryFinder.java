@@ -60,7 +60,7 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
             }
             else {
                 // You should organize the contents of this directory in the same way that any other Library folder is organized
-                final String application = PreferencesFactory.get().getProperty("application.container.name");
+                final String application = PreferencesFactory.get().getProperty("application.datafolder.name");
                 final Local folder = new FinderLocal(String.format("%s/Library/Application Support", group.path()), application);
                 try {
                     final Local previous = new ApplicationSupportDirectoryFinder().find();

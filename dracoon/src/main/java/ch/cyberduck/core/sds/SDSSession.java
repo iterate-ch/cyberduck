@@ -28,6 +28,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
+import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
@@ -75,6 +76,8 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.dracoon.sdk.crypto.CryptoException;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
@@ -88,6 +91,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
+
+    private static final String VERSION_REGEX = "(([0-9]+)\\.([0-9]+)\\.([0-9]+)).*";
 
     protected SDSErrorResponseInterceptor retryHandler;
     protected OAuth2RequestInterceptor authorizationService;
@@ -170,6 +175,16 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
+                final SoftwareVersionData softwareVersionData = this.softwareVersion();
+                Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(softwareVersionData.getRestApiVersion());
+                if(matcher.matches()) {
+                    if(new Version(matcher.group(1)).compareTo(new Version("4.16.0")) >= 0) {
+                        authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
+                    }
+                }
+                else {
+                    log.warn(String.format("Failure to parse software version %s", softwareVersionData));
+                }
                 authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
                 break;
             case radius:
@@ -204,7 +219,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             log.warn(String.format("Ignore failure reading configuration. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
-            final UserAccount account = new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false);
+            final UserAccount account = new UserApi(client).getUserInfo(StringUtils.EMPTY, null, false);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Authenticated as user %s", account));
             }
@@ -213,7 +228,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     credentials.setUsername(account.getLogin());
             }
             userAccount.set(new UserAccountWrapper(account));
-            keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
+            keyPair.set(new UserApi(client).getUserKeyPair(StringUtils.EMPTY));
             final UserPrivateKey privateKey = new UserPrivateKey();
             final UserKeyPairContainer keyPairContainer = keyPair.get();
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
@@ -237,7 +252,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             log.warn(String.format("Ignore failure reading user key pair. %s", new SDSExceptionMappingService().map(e)));
         }
         try {
-            softwareVersion.set(new PublicApi(this.getClient()).getSoftwareVersion(null));
+            softwareVersion.set(new PublicApi(client).getSoftwareVersion(null));
         }
         catch(ApiException e) {
             log.warn(String.format("Ignore failure reading version. %s", new SDSExceptionMappingService().map(e)));
@@ -271,7 +286,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserAccountWrapper userAccount() throws BackgroundException {
         if(this.userAccount.get() == null) {
             try {
-                userAccount.set(new UserAccountWrapper(new UserApi(this.getClient()).getUserInfo(StringUtils.EMPTY, null, false)));
+                userAccount.set(new UserAccountWrapper(new UserApi(client).getUserInfo(StringUtils.EMPTY, null, false)));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user info. %s", e.getMessage()));
@@ -284,7 +299,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public UserKeyPairContainer keyPair() throws BackgroundException {
         if(keyPair.get() == null) {
             try {
-                keyPair.set(new UserApi(this.getClient()).getUserKeyPair(StringUtils.EMPTY));
+                keyPair.set(new UserApi(client).getUserKeyPair(StringUtils.EMPTY));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
@@ -297,7 +312,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     public SoftwareVersionData softwareVersion() throws BackgroundException {
         if(softwareVersion.get() == null) {
             try {
-                softwareVersion.set(new PublicApi(this.getClient()).getSoftwareVersion(null));
+                softwareVersion.set(new PublicApi(client).getSoftwareVersion(null));
             }
             catch(ApiException e) {
                 log.warn(String.format("Failure updating user key pair. %s", e.getMessage()));
@@ -326,7 +341,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
         if(type == Write.class) {
-            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSWriteFeature(this, nodeid));
+            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
         }
         if(type == MultipartWrite.class) {
             return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));

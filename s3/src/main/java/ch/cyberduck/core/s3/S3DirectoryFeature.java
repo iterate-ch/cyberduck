@@ -24,7 +24,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -61,9 +60,7 @@ public class S3DirectoryFeature implements Directory<StorageObject> {
             return folder;
         }
         else {
-            if(Checksum.NONE == status.getChecksum()) {
-                status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
-            }
+            status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
             // Add placeholder object
             status.setMime(MIMETYPE);
             final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());

@@ -1,6 +1,24 @@
 Cyberduck
 https://cyberduck.io/
 
+7.1.3
+- [Bugfix] Failure validating hostname when connecting through HTTP proxy
+- [Bugfix] MD5 mismatch error for uploads (Alibaba Cloud Object Storage Service) (#10879)
+- [Bugfix] Deprecated path-style request usage for (AWS GovCloud) (#10824)
+- [Bugfix] Default to use virtual hosted style to access bucket contents for third party S3 providers
+- [Bugfix] Optimize MD5 checksum calculation (S3) (#10278)
+- [Bugfix] Reload directory contents after editing file
+- [Bugfix] Failure replacing objects with blob type set to block (Azure)
+
+7.1.2
+- [Bugfix] Folder showing no more than 1000 files (S3) (#10811)
+- [Bugfix] Failure deleting folder recursively (FTP)
+
+7.1.1
+- [Bugfix] Failure authenticating using SSH agent (SFTP) (#10800)
+- [Bugfix] Failure overwriting existing file (Google Storage)
+- [Bugfix] Missing hostname verification in TLS handshake when connecting through HTTP proxy
+
 7.1.0
 - [Feature] Application running as 64-bit (Windows)
 - [Feature] Application package is notarized (macOS)

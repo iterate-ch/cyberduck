@@ -13,13 +13,15 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -35,11 +37,11 @@ public class DeleteWorkerTest {
                 if(type == Delete.class) {
                     return (T) new Delete() {
                         @Override
-                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
-                            assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), files.get(0));
-                            assertEquals(new Path("/t/d/b", EnumSet.of(Path.Type.file)), files.get(1));
-                            assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), files.get(2));
-                            assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), files.get(3));
+                        public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
+                            assertEquals(new Path("/t/a", EnumSet.of(Path.Type.file)), new ArrayList<>(files.keySet()).get(0));
+                            assertEquals(new Path("/t/d/b", EnumSet.of(Path.Type.file)), new ArrayList<>(files.keySet()).get(1));
+                            assertEquals(new Path("/t/d", EnumSet.of(Path.Type.directory)), new ArrayList<>(files.keySet()).get(2));
+                            assertEquals(new Path("/t", EnumSet.of(Path.Type.directory)), new ArrayList<>(files.keySet()).get(3));
                         }
 
                         @Override
@@ -83,8 +85,8 @@ public class DeleteWorkerTest {
                 if(type == Delete.class) {
                     return (T) new Delete() {
                         @Override
-                        public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) {
-                            assertEquals(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink)), files.get(0));
+                        public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) {
+                            assertEquals(new Path("/s", EnumSet.of(Path.Type.directory, AbstractPath.Type.symboliclink)), new ArrayList<>(files.keySet()).get(0));
                         }
 
                         @Override

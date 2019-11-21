@@ -39,6 +39,8 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -84,7 +86,7 @@ public class SingleTransferWorkerTest extends AbstractB2Test {
                 System.getProperties().getProperty("b2.user"), System.getProperties().getProperty("b2.key")
             ));
         final AtomicBoolean failed = new AtomicBoolean();
-        final B2Session session = new B2Session(host) {
+        final B2Session session = new B2Session(host, new DefaultX509TrustManager(), new DefaultX509KeyManager()) {
             final B2LargeUploadService upload = new B2LargeUploadService(this, new B2FileidProvider(this).withCache(cache), new B2WriteFeature(this, new B2FileidProvider(this).withCache(cache)),
                 PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
                 PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency")) {

@@ -60,7 +60,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     private static final Logger log = Logger.getLogger(B2WriteFeature.class);
 
     private final PathContainerService containerService
-            = new B2PathContainerService();
+        = new B2PathContainerService();
 
     private final B2Session session;
     private final B2FileidProvider fileid;
@@ -68,7 +68,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     private final AttributesFinder attributes;
 
     private final ThreadLocal<B2GetUploadUrlResponse> urls
-            = new ThreadLocal<B2GetUploadUrlResponse>();
+        = new ThreadLocal<B2GetUploadUrlResponse>();
 
     private final Preferences preferences = PreferencesFactory.get();
 
@@ -97,7 +97,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                     final Checksum checksum = status.getChecksum();
                     if(status.isSegment()) {
                         final B2GetUploadPartUrlResponse uploadUrl
-                            = session.getClient().getUploadPartUrl(fileid.getFileid(file, new DisabledListProgressListener()));
+                            = session.getClient().getUploadPartUrl(status.getVersion().id);
                         return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.hash);
                     }
                     else {
@@ -121,12 +121,13 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                                 fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
                             }
                             return session.getClient().uploadFile(uploadUrl,
-                                    containerService.getKey(file),
-                                    entity, Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
-                                    status.getMime(),
+                                containerService.getKey(file),
+                                entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
+                                status.getMime(),
                                 fileinfo);
                         }
-                        catch(B2ApiException e) {
+                        catch(IOException | B2ApiException e) {
+                            // Upload many files to the same upload_url until that URL gives an error
                             urls.remove();
                             throw e;
                         }
@@ -159,7 +160,7 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file) {
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return ChecksumComputeFactory.get(HashAlgorithm.sha1);
     }
 

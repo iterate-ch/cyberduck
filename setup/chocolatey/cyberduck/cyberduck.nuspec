@@ -9,8 +9,8 @@
     <summary>Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure &amp; OpenStack Swift browser for Mac and Windows</summary>
     <description>Cyberduck is a libre FTP, SFTP, WebDAV, S3, Backblaze B2, Azure &amp; OpenStack Swift browser for Mac and Windows</description>
     <projectUrl>https://cyberduck.io</projectUrl>
-    <tags>cloud ftp sftp webdav s3 openstack swift rackspace backblaze b2 spectralogic</tags>
-    <copyright>Copyright (c) 2002 – 2016 David V. Kocher. Copyright (c) 2011 – 2016 Yves Langisch</copyright>
+    <tags>cloud ftp sftp webdav amazon s3 openstack swift rackspace backblaze b2 microsoft azure onedrive google drive dropbox spectralogic</tags>
+    <copyright>${COPYRIGHT}</copyright>
     <licenseUrl>http://creativecommons.org/licenses/GPL/2.0/</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <iconUrl>https://cdn.cyberduck.io/img/cyberduck-icon-384.png</iconUrl>

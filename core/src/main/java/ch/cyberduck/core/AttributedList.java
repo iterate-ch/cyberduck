@@ -172,12 +172,7 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Filter list %s with filter %s", this, filter));
             }
-            filtered.impl.removeIf(new Predicate<E>() {
-                @Override
-                public boolean test(final E e) {
-                    return !filter.accept(e);
-                }
-            });
+            filtered.impl.removeIf(e -> !filter.accept(e));
         }
         return filtered;
     }

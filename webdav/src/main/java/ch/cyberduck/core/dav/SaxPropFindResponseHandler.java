@@ -19,11 +19,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
@@ -45,10 +49,11 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
             final XMLReader xmlReader = saxParser.getXMLReader();
             final SaxHandler handler = new SaxHandler();
             xmlReader.setContentHandler(handler);
+            xmlReader.setErrorHandler(new LoggingErrorHandler());
             xmlReader.parse(new InputSource(stream));
             return handler.getMultistatus();
         }
-        catch(Exception e) {
+        catch(IOException | SAXException | ParserConfigurationException e) {
             throw new IOException("Not a valid DAV response", e);
         }
     }
@@ -251,6 +256,24 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
 
         public Multistatus getMultistatus() {
             return multistatus;
+        }
+    }
+
+    private static final class LoggingErrorHandler implements ErrorHandler {
+        @Override
+        public void warning(final SAXParseException e) throws SAXException {
+            log.warn(String.format("Parser warning %s", e));
+        }
+
+        @Override
+        public void error(final SAXParseException e) throws SAXException {
+            log.error(String.format("Parser error %s", e));
+        }
+
+        @Override
+        public void fatalError(final SAXParseException e) throws SAXException {
+            log.error(String.format("Fatal parser error %s", e));
+            throw e;
         }
     }
 }

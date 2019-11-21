@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Referenceable;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.serializer.Serializer;
 
 import java.util.Objects;
@@ -30,6 +31,7 @@ public class TransferItem implements Referenceable, Serializable {
 
     public Path remote;
     public Local local;
+    public Checksum checksum = Checksum.NONE;
     public String lockId;
 
     public TransferItem(final Path remote) {
@@ -47,6 +49,13 @@ public class TransferItem implements Referenceable, Serializable {
         this.lockId = lockId;
     }
 
+    public TransferItem(final Path remote, final Local local, final String lockId, final Checksum checksum) {
+        this.remote = remote;
+        this.local = local;
+        this.checksum = checksum;
+        this.lockId = lockId;
+    }
+
     public TransferItem getParent() {
         return new TransferItem(remote.getParent(), null == local ? null : local.getParent());
     }
@@ -58,7 +67,10 @@ public class TransferItem implements Referenceable, Serializable {
             dict.setObjectForKey(local, "Local Dictionary");
         }
         if(lockId != null) {
-            dict.setObjectForKey(local, "Lock Id");
+            dict.setStringForKey(lockId, "Lock Id");
+        }
+        if(checksum != Checksum.NONE) {
+            dict.setStringForKey(checksum.hash, "Checksum");
         }
         return dict.getSerialized();
     }
@@ -73,6 +85,10 @@ public class TransferItem implements Referenceable, Serializable {
 
     public void setLockId(final String lockId) {
         this.lockId = lockId;
+    }
+
+    public void setChecksum(final Checksum checksum) {
+        this.checksum = checksum;
     }
 
     @Override

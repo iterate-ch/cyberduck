@@ -144,7 +144,8 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                     final Checksum checksum = overall.getChecksum();
                     final B2FileResponse response = session.getClient().uploadFile(uploadUrl,
                         containerService.getKey(file),
-                        new ByteArrayEntity(content, off, len), Checksum.NONE == checksum ? "do_not_verify" : checksum.hash,
+                        new ByteArrayEntity(content, off, len),
+                        checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
                         overall.getMime(), overall.getMetadata());
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Upload finished for %s with response %s", file, response));

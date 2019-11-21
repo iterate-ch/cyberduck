@@ -47,7 +47,10 @@ public class B2MoveFeature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return !containerService.isContainer(source);
+        if(!containerService.isContainer(source)) {
+            return new B2CopyFeature(session, fileid).isSupported(source, target);
+        }
+        return false;
     }
 
     @Override

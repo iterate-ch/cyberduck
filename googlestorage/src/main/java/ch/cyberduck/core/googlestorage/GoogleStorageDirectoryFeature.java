@@ -25,13 +25,10 @@ import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.apache.commons.io.input.NullInputStream;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -69,9 +66,6 @@ public class GoogleStorageDirectoryFeature implements Directory<VersionId> {
                     new GoogleStorageAttributesFinderFeature(session).toAttributes(bucket));
             }
             else {
-                if(Checksum.NONE == status.getChecksum()) {
-                    status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
-                }
                 // Add placeholder object
                 status.setMime(MIMETYPE);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(folder.getType());

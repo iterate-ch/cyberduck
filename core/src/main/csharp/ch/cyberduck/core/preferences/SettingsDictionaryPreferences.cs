@@ -140,11 +140,12 @@ namespace Ch.Cyberduck.Core.Preferences
             return getProperty("application.language");
         }
 
-        protected override void post()
+        public override void setLogging(String level)
         {
-            base.post();
+            base.setLogging(level);
+
             Logger root = Logger.getRootLogger();
-            var fileName = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
+            var fileName = Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(),
                 getProperty("application.name").ToLower().Replace(" ", "") + ".log");
             RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
                 fileName, true);
@@ -156,7 +157,6 @@ namespace Ch.Cyberduck.Core.Preferences
             {
                 root.setLevel(Level.DEBUG);
             }
-            ApplyGlobalConfig();
         }
 
         protected override void setDefaults()
@@ -164,7 +164,7 @@ namespace Ch.Cyberduck.Core.Preferences
             base.setDefaults();
 
             this.setDefault("application.name", Application.ProductName);
-            this.setDefault("application.container.name", Application.ProductName);
+            this.setDefault("application.datafolder.name", Application.ProductName);
             this.setDefault("oauth.handler.scheme",
                 String.Format("x-{0}-action", StringUtils.deleteWhitespace(Application.ProductName.ToLower())));
 
@@ -249,6 +249,8 @@ namespace Ch.Cyberduck.Core.Preferences
             this.setDefault("ssh.knownhosts",
                 Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(), "known_hosts"));
             this.setDefault("browser.enterkey.rename", false.ToString());
+            this.setDefault("terminal.openssh.enable", true.ToString());
+            this.setDefault("terminal.windowssubsystemlinux.enable", true.ToString());
             this.setDefault("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
             this.setDefault("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
             this.setDefault("terminal.command.openssh.args", "{1} {0}@{2} -t -p {3} \"cd '{4}'; $SHELL\"");
@@ -333,13 +335,12 @@ namespace Ch.Cyberduck.Core.Preferences
             }
             if (Utils.IsRunningAsUWP)
             {
-                SetUWPDefaults();
+                // Running from Windows Store
+                this.setDefault("update.check", $"{false}");
+                this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
             }
-        }
-
-        private void ApplyGlobalConfig()
-        {
-            var config = Path.Combine(SupportDirectoryFinderFactory.get().find().getAbsolute(),
+            // Apply global configuration
+            var config = Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(),
                 "default.properties");
             if (File.Exists(config))
             {
@@ -357,13 +358,6 @@ namespace Ch.Cyberduck.Core.Preferences
                     Log.warn($"Failure while reading {config}", e);
                 }
             }
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void SetUWPDefaults()
-        {
-            this.setDefault("update.check", $"{false}");
-            this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
         }
 
         private string TryToMatchLocale(string sysLocale, List appLocales)

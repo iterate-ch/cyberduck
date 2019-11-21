@@ -86,10 +86,10 @@ public class SpectraVersioningFeature implements Versioning {
             return configuration;
         }
         catch(FailedRequestException e) {
-            throw new SpectraExceptionMappingService().map(e);
+            throw new SpectraExceptionMappingService().map("Cannot read container configuration", e);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Cannot read container configuration", e);
         }
     }
 
@@ -116,10 +116,10 @@ public class SpectraVersioningFeature implements Versioning {
             cache.remove(container);
         }
         catch(FailedRequestException e) {
-            throw new SpectraExceptionMappingService().map(e);
+            throw new SpectraExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
         catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
+            throw new DefaultIOExceptionMappingService().map("Failure to write attributes of {0}", e, container);
         }
     }
 
@@ -134,6 +134,9 @@ public class SpectraVersioningFeature implements Versioning {
         final Path container = containerService.getContainer(file);
         try {
             client.undeleteObjectSpectraS3(new UndeleteObjectSpectraS3Request(container.getName(), containerService.getKey(file)));
+        }
+        catch(FailedRequestException e) {
+            throw new SpectraExceptionMappingService().map("Cannot revert file", e, file);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot revert file", e, file);

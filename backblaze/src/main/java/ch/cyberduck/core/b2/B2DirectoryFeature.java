@@ -25,7 +25,6 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -76,9 +75,7 @@ public class B2DirectoryFeature implements Directory<BaseB2Response> {
                     new PathAttributes(folder.attributes()));
             }
             else {
-                if(Checksum.NONE == status.getChecksum()) {
-                    status.setChecksum(writer.checksum(folder).compute(new NullInputStream(0L), status));
-                }
+                status.setChecksum(writer.checksum(folder, status).compute(new NullInputStream(0L), status));
                 status.setMime(MimeTypeService.DEFAULT_CONTENT_TYPE);
                 final StatusOutputStream<BaseB2Response> out = writer.write(folder, status, new DisabledConnectionCallback());
                 new DefaultStreamCloser().close(out);

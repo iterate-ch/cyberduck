@@ -58,7 +58,7 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplic
         handlers = [NSArray array];
     }
     jobjectArray result = (jobjectArray)(*env)->NewObjectArray(env,
-        [handlers count], (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, "")
+        (int)[handlers count], (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, "")
     );
     jint i;
     for(i = 0; i < [handlers count]; i++) {

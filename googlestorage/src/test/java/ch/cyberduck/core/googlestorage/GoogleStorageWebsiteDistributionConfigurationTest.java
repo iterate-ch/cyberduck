@@ -15,10 +15,8 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -46,17 +44,15 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
     @Test
     public void testGetMethods() {
         final DistributionConfiguration configuration
-                = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
-                new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
+            = new GoogleStorageWebsiteDistributionConfiguration(session);
         assertEquals(Collections.singletonList(Distribution.WEBSITE), configuration.getMethods(new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume))));
     }
 
     @Test
     public void testGetProtocol() {
         final DistributionConfiguration configuration
-                = new GoogleStorageWebsiteDistributionConfiguration(new GoogleStorageSession(
-                new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname())));
-        assertEquals(new GoogleStorageProtocol().getDefaultHostname(), configuration.getHostname());
+            = new GoogleStorageWebsiteDistributionConfiguration(session);
+        assertEquals("storage.googleapis.com", configuration.getHostname());
     }
 
     @Test
@@ -80,10 +76,6 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
 
     @Test
     public void testFeatures() {
-        final Host host = new Host(new GoogleStorageProtocol(), new GoogleStorageProtocol().getDefaultHostname(), new Credentials(
-                System.getProperties().getProperty("google.projectid"), null
-        ));
-        final GoogleStorageSession session = new GoogleStorageSession(host);
         final DistributionConfiguration d = new GoogleStorageWebsiteDistributionConfiguration(
                 session
         );

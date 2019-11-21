@@ -200,7 +200,7 @@ public class BrowserController extends WindowController
     private boolean showHiddenFiles;
     private Filter<Path> filenameFilter;
 
-    private PathPasteboard pasteboard;
+    private PathPasteboard pasteboard = PathPasteboard.EMPTY;
 
     private final ListProgressListener listener
         = new PromptLimitedListProgressListener(this);
@@ -2388,7 +2388,7 @@ public class BrowserController extends WindowController
         for(Path selected : this.getSelectedPaths()) {
             final Editor editor = factory.create(this, pool,
                 new Application(sender.representedObject()), selected);
-            this.edit(editor);
+            this.edit(editor, selected);
         }
     }
 
@@ -2400,12 +2400,18 @@ public class BrowserController extends WindowController
     }
 
     public void edit(final Path file) {
-        this.edit(EditorFactory.instance().create(this, pool, file));
+        this.edit(EditorFactory.instance().create(this, pool, file), file);
     }
 
-    protected void edit(final Editor editor) {
+    protected void edit(final Editor editor, final Path file) {
         this.background(new WorkerBackgroundAction<Transfer>(this, pool, editor.open(
-            new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(), new DefaultEditorListener(this, pool, editor))));
+            new DisabledApplicationQuitCallback(), new DisabledTransferErrorCallback(),
+            new DefaultEditorListener(this, pool, editor, new DefaultEditorListener.Listener() {
+                @Override
+                public void saved() {
+                    reload(workdir, new PathReloadFinder().find(Collections.singletonList(file)), Collections.singletonList(file), true);
+                }
+            }))));
     }
 
     @Action
@@ -2808,9 +2814,6 @@ public class BrowserController extends WindowController
     }
 
     public boolean isIdle() {
-        if(pool == SessionPool.DISCONNECTED) {
-            return false;
-        }
         return registry.isEmpty();
     }
 
@@ -3239,19 +3242,15 @@ public class BrowserController extends WindowController
         if(null != c) {
             c.window().close();
         }
-        if(this.isConnected()) {
-            this.background(new DisconnectBackgroundAction(this, pool) {
-                @Override
-                public void cleanup() {
-                    super.cleanup();
-                    window.setDocumentEdited(false);
-                    disconnected.run();
-                }
-            });
-        }
-        else {
-            disconnected.run();
-        }
+        this.background(new DisconnectBackgroundAction(this, pool) {
+            @Override
+            public void cleanup() {
+                super.cleanup();
+                pasteboard.clear();
+                window.setDocumentEdited(false);
+                disconnected.run();
+            }
+        });
     }
 
     @Action

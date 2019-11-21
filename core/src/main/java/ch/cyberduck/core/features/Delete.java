@@ -18,11 +18,22 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface Delete {
-    void delete(List<Path> files, PasswordCallback prompt, Callback callback) throws BackgroundException;
+    default void delete(List<Path> files, PasswordCallback prompt, Callback callback) throws BackgroundException {
+        final Map<Path, TransferStatus> set = new LinkedHashMap<>();
+        for(Path file : files) {
+            set.put(file, new TransferStatus());
+        }
+        this.delete(set, prompt, callback);
+    }
+
+    void delete(Map<Path, TransferStatus> files, PasswordCallback prompt, Callback callback) throws BackgroundException;
 
     default boolean isSupported(final Path file) {
         return file.attributes().getPermission().isWritable();

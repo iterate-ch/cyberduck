@@ -113,15 +113,16 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
                 try {
                     // Previous
                     final HashMap<String, String> headers = new HashMap<>(status.getMetadata());
-                    final String checksum = session.getClient().storeObject(
+                    final Checksum checksum = status.getChecksum();
+                    final String etag = session.getClient().storeObject(
                         regionService.lookup(file),
                         containerService.getContainer(file).getName(), containerService.getKey(file),
-                        entity, headers, Checksum.NONE == status.getChecksum() ? null : status.getChecksum().hash);
+                        entity, headers, checksum.algorithm == HashAlgorithm.md5 ? checksum.hash : null);
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Saved object %s with checksum %s", file, checksum));
+                        log.debug(String.format("Saved object %s with checksum %s", file, etag));
                     }
                     final StorageObject stored = new StorageObject(containerService.getKey(file));
-                    stored.setMd5sum(checksum);
+                    stored.setMd5sum(etag);
                     stored.setSize(status.getLength());
                     return stored;
                 }
@@ -180,7 +181,7 @@ public class SwiftWriteFeature extends AbstractHttpWriteFeature<StorageObject> i
     }
 
     @Override
-    public ChecksumCompute checksum(final Path file) {
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 }

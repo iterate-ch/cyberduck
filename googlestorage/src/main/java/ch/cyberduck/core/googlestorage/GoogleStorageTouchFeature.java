@@ -22,12 +22,9 @@ import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DefaultStreamCloser;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
-
-import org.apache.commons.io.input.NullInputStream;
 
 public class GoogleStorageTouchFeature implements Touch<VersionId> {
 
@@ -39,9 +36,6 @@ public class GoogleStorageTouchFeature implements Touch<VersionId> {
 
     @Override
     public Path touch(final Path file, final TransferStatus status) throws BackgroundException {
-        if(Checksum.NONE == status.getChecksum()) {
-            status.setChecksum(writer.checksum(file).compute(new NullInputStream(0L), status));
-        }
         status.setLength(0L);
         final StatusOutputStream<VersionId> out = writer.write(file, status, new DisabledConnectionCallback());
         new DefaultStreamCloser().close(out);

@@ -110,7 +110,7 @@ namespace Ch.Cyberduck.Core
             bool isException = CheckForException(hostName, serverCert);
             if (isException)
             {
-                // Exceptions always have precendence
+                // Exceptions always have precedence
                 return true;
             }
 
@@ -131,8 +131,8 @@ namespace Ch.Cyberduck.Core
 
             if (null != errorFromChainStatus)
             {
-                // Title: LocaleFactory.localizedString("This certificate is not valid", "Keychain")
-                // Main Instruction: LocaleFactory.localizedString("This certificate is not valid", "Keychain")
+                // Title: LocaleFactory.localizedString("Certificate Error", "Keychain")
+                // Main Instruction: LocaleFactory.localizedString("Certificate Error", "Keychain")
                 // Content: errorFromChainStatus
                 // Verification Text: LocaleFactory.localizedString("Always Trust", "Keychain")
                 // CommandButtons: { LocaleFactory.localizedString("Continue", "Credentials"), LocaleFactory.localizedString("Disconnect"), LocaleFactory.localizedString("Show Certificate", "Keychain") }
@@ -142,8 +142,8 @@ namespace Ch.Cyberduck.Core
 
                 TaskDialogResult result =
                     TaskDialog.TaskDialog.Show(
-                        title: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
-                        mainInstruction: LocaleFactory.localizedString("This certificate is not valid", "Keychain"),
+                        title: LocaleFactory.localizedString("Certificate Error", "Keychain"),
+                        mainInstruction: LocaleFactory.localizedString("Certificate Error", "Keychain"),
                         verificationText: LocaleFactory.localizedString("Always Trust", "Keychain"),
                         content: errorFromChainStatus,
                         commandLinks:
@@ -181,7 +181,7 @@ namespace Ch.Cyberduck.Core
                                 AddCertificate(serverCert, StoreName.Root);
                             }
                             PreferencesFactory.get()
-                                .setProperty(hostName + ".certificate.accept", serverCert.SubjectName.Name);
+                                .setProperty(hostName + ".certificate.accept", serverCert.Thumbprint);
                         }
                         return true;
                     }
@@ -244,7 +244,7 @@ namespace Ch.Cyberduck.Core
             string accCert = PreferencesFactory.get().getProperty(hostname + ".certificate.accept");
             if (Utils.IsNotBlank(accCert))
             {
-                return accCert.Equals(cert.SubjectName.Name);
+                return accCert.Equals(cert.Thumbprint);
             }
             return false;
         }

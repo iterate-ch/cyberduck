@@ -25,11 +25,13 @@ import ch.cyberduck.core.cryptomator.impl.CryptoFilenameProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CryptoDeleteFeature implements Delete {
     private static final Logger log = Logger.getLogger(CryptoDeleteFeature.class);
@@ -47,9 +49,9 @@ public class CryptoDeleteFeature implements Delete {
     }
 
     @Override
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final List<Path> encrypted = new ArrayList<>();
-        for(Path f : files) {
+        for(Path f : files.keySet()) {
             if(!f.equals(vault.getHome())) {
                 final Path encrypt = vault.encrypt(session, f);
                 encrypted.add(encrypt);
@@ -74,7 +76,7 @@ public class CryptoDeleteFeature implements Delete {
         if(!encrypted.isEmpty()) {
             proxy.delete(encrypted, prompt, callback);
         }
-        for(Path f : files) {
+        for(Path f : files.keySet()) {
             if(f.equals(vault.getHome())) {
                 log.warn(String.format("Recursively delete vault %s", f));
                 final List<Path> metadata = new ArrayList<>();

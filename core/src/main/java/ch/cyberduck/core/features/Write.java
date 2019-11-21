@@ -54,7 +54,7 @@ public interface Write<Reply> {
      */
     boolean random();
 
-    default ChecksumCompute checksum(Path file) {
+    default ChecksumCompute checksum(final Path file, final TransferStatus status) {
         return new DisabledChecksumCompute();
     }
 

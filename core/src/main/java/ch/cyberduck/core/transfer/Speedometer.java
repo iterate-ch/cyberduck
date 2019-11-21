@@ -68,21 +68,32 @@ public class Speedometer {
 
     /**
      * @param transferred Bytes transferred
-     * @return Differential by time
+     * @return Bytes transferred in period
      */
-    protected Double getSpeed(final Long transferred) {
+    protected Double getSpeed(final long transferred) {
         return this.getSpeed(transferred, true);
     }
 
-    protected Double getSpeed(final Long transferred, final boolean reset) {
+    /**
+     * @param transferred Bytes transferred
+     * @param reset       Reset overall speed
+     * @return Bytes transferred in period
+     */
+    protected Double getSpeed(final long transferred, final boolean reset) {
         return this.getSpeed(System.currentTimeMillis(), transferred, reset);
     }
 
-    protected Double getSpeed(final Long time, final Long transferred, final boolean reset) {
+    /**
+     * @param time        Current timestamp
+     * @param transferred Bytes transferred
+     * @param reset       Reset overall speed
+     * @return Bytes transferred in period
+     */
+    protected Double getSpeed(final long time, final long transferred, final boolean reset) {
         // Number of seconds data was actually transferred
-        final Long elapsed = time - timestamp;
+        final long elapsed = time - timestamp;
         if(elapsed > 0) {
-            final Long differential = transferred - last;
+            final long differential = transferred - last;
             // No reset for overall speed
             if(reset) {
                 this.reset(time, transferred);
@@ -94,39 +105,48 @@ public class Speedometer {
     }
 
     /**
-     * @param running     Show speed and progress in percent
+     * @param running     Transfer is running. Show speed and progress in percent
      * @param size        Transfer length
-     * @param transferred Current
+     * @param transferred Current byte count
      * @return 500.0 KB (500,000 bytes) of 1.0 MB (50%, 500.0 KB/sec, 2 seconds remaining)
      */
-    public String getProgress(final Boolean running, final Long size, final Long transferred) {
+    public String getProgress(final boolean running, final long size, final long transferred) {
         return this.getProgress(System.currentTimeMillis(), running, size, transferred);
     }
 
-    public String getProgress(final Long time, final Boolean running,
-                              final Long size, final Long transferred) {
-        return this.getProgress(running, size, transferred, this.getSpeed(time, transferred, true));
+    /**
+     * @param time        Timestamp
+     * @param running     Transfer is running. Show speed and progress in percent
+     * @param size        Transfer length
+     * @param transferred Current byte count
+     * @return 500.0 KB (500,000 bytes) of 1.0 MB (50%, 500.0 KB/sec, 2 seconds remaining)
+     */
+    public String getProgress(final long time, final boolean running, final long size, final long transferred) {
+        return this.getProgress(running, size, transferred, running, this.getSpeed(time, transferred, true));
     }
 
-    public String getProgress(final Boolean running,
-                              final Long size, final Long transferred, final Double speed) {
+    /**
+     * @param running     Show speed and progress in percent
+     * @param size        Transfer length
+     * @param transferred Current
+     * @param plain       Include transferred size in bytes
+     * @param speed       Bytes transferred in period
+     * @return 500.0 KB (500,000 bytes) of 1.0 MB (50%, 500.0 KB/sec, 2 seconds remaining)
+     */
+    public String getProgress(final boolean running, final long size, final long transferred, boolean plain, final Double speed) {
         final StringBuilder b = new StringBuilder(
-                MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
-                        sizeFormatter.format(transferred, running),
-                        sizeFormatter.format(size))
+            MessageFormat.format(LocaleFactory.localizedString("{0} of {1}"),
+                sizeFormatter.format(transferred, plain),
+                sizeFormatter.format(size))
         );
         if(running && transferred > 0) {
             if(size > 0) {
                 b.append(" (");
-                if(size > 0) {
-                    b.append((int) ((double) transferred / size * 100));
-                    b.append("%");
-                }
-                if(size > 0) {
-                    b.append(", ");
-                }
+                b.append((int) ((double) transferred / size * 100));
+                b.append("%");
+                b.append(", ");
                 b.append(SizeFormatterFactory.get(true).format(
-                        new BigDecimal(speed * 1000).setScale(0, RoundingMode.UP).longValue()));
+                    new BigDecimal(speed * 1000).setScale(0, RoundingMode.UP).longValue()));
                 b.append("/sec");
                 if(speed > 0) {
                     if(transferred < size) {

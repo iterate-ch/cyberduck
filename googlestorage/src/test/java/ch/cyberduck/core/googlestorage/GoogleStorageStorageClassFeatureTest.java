@@ -17,7 +17,6 @@ package ch.cyberduck.core.googlestorage;
 
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -44,7 +43,7 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
             "REGIONAL",
             "NEARLINE",
             "COLDLINE"),
-            new GoogleStorageStorageClassFeature(new GoogleStorageSession(new Host(new GoogleStorageProtocol()))).getClasses());
+            new GoogleStorageStorageClassFeature(session).getClasses());
     }
 
     @Test(expected = NotfoundException.class)

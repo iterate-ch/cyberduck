@@ -18,9 +18,9 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.Version;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
-import ch.cyberduck.core.http.DelayedHttpMultipartEntity;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -46,12 +45,12 @@ import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
@@ -94,14 +93,9 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
             .size(status.getLength())
             .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
             .name(file.getName());
-        if(new Version(StringUtils.removePattern(session.softwareVersion().getRestApiVersion(), "-.*")).compareTo(new Version("4.9.0")) < 0) {
-            body.classification(DEFAULT_CLASSIFICATION);
-        }
         try {
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
             final String uploadId = response.getUploadId();
-            final DelayedHttpMultipartEntity entity = new DelayedHttpMultipartEntity(file.getName(), status);
-            entity.setChunked(PreferencesFactory.get().getBoolean("sds.upload.transferencoding.chunked"));
             final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
                 @Override
                 public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
@@ -109,8 +103,8 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         final SDSApiClient client = session.getClient();
                         final HttpPost request = new HttpPost(String.format("%s/v4/nodes/files/uploads/%s", client.getBasePath(), uploadId));
                         request.setEntity(entity);
+                        request.setHeader(HttpHeaders.CONTENT_TYPE, MimeTypeService.DEFAULT_CONTENT_TYPE);
                         request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
-                        request.setHeader(HTTP.CONTENT_TYPE, String.format("multipart/form-data; boundary=%s", DelayedHttpMultipartEntity.DEFAULT_BOUNDARY));
                         final HttpResponse response = client.getClient().execute(request);
                         try {
                             // Validate response
@@ -157,10 +151,10 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 
                 @Override
                 public long getContentLength() {
-                    return entity.getContentLength();
+                    return status.getLength();
                 }
             };
-            return this.write(file, status, command, entity);
+            return this.write(file, status, command);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
@@ -170,6 +164,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     protected VersionId complete(final String uploadId, final TransferStatus status) throws IOException, InvalidFileKeyException, InvalidKeyPairException, CryptoSystemException, BackgroundException, ApiException {
         final SDSApiClient client = session.getClient();
         final CompleteUploadRequest body = new CompleteUploadRequest()
+            .keepShareLinks(status.isExists() ? PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep") : false)
             .resolutionStrategy(status.isExists() ? CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteUploadRequest.ResolutionStrategyEnum.FAIL);
         if(status.getFilekey() != null) {
             final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);

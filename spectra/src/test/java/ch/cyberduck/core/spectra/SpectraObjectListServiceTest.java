@@ -33,8 +33,6 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
-import ch.cyberduck.core.s3.S3ObjectListService;
-import ch.cyberduck.core.s3.S3VersionedObjectListService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.Transfer;
@@ -43,6 +41,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -73,7 +72,7 @@ public class SpectraObjectListServiceTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
-        final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
+        final AttributedList<Path> list = new SpectraObjectListService(session).list(container, new DisabledListProgressListener());
 //        assertFalse(list.isEmpty());
         for(Path p : list) {
             assertEquals(container, p.getParent());
@@ -100,7 +99,7 @@ public class SpectraObjectListServiceTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume));
-        final AttributedList<Path> list = new S3ObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
+        final AttributedList<Path> list = new SpectraObjectListService(session).list(new Path(container, "empty", EnumSet.of(Path.Type.directory, Path.Type.placeholder)),
             new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         session.close();
@@ -121,7 +120,7 @@ public class SpectraObjectListServiceTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("notfound.cyberduck.ch", EnumSet.of(Path.Type.volume));
-        new S3ObjectListService(session).list(container, new DisabledListProgressListener());
+        new SpectraObjectListService(session).list(container, new DisabledListProgressListener());
         session.close();
     }
 
@@ -142,13 +141,14 @@ public class SpectraObjectListServiceTest {
         final Path container = new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path placeholder = new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        final AttributedList<Path> list = new S3ObjectListService(session).list(placeholder, new DisabledListProgressListener());
+        final AttributedList<Path> list = new SpectraObjectListService(session).list(placeholder, new DisabledListProgressListener());
         assertTrue(list.isEmpty());
         new SpectraDeleteFeature(session).delete(Collections.singletonList(placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 
     @Test
+    @Ignore
     public void testListSPECTRA70() throws Exception {
         final Host host = new Host(new SpectraProtocol() {
             @Override
@@ -162,7 +162,7 @@ public class SpectraObjectListServiceTest {
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path(new Path("cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume)), "SPECTRA-70", EnumSet.of(Path.Type.directory));
-        final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener() {
+        final AttributedList<Path> list = new SpectraObjectListService(session).list(container, (ch.cyberduck.core.ListProgressListener) new DisabledListProgressListener() {
             int paginate = 0;
 
             @Override
@@ -170,7 +170,7 @@ public class SpectraObjectListServiceTest {
                 assertTrue(list.size() <= (paginate += 10));
                 super.chunk(parent, list);
             }
-        }, String.valueOf(Path.DELIMITER), 10);
+        }, 10);
         assertEquals(500, list.size());
         session.close();
     }
@@ -214,9 +214,21 @@ public class SpectraObjectListServiceTest {
             out.close();
         }
         assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
-        final AttributedList<Path> list = new S3VersionedObjectListService(session).list(folder, new DisabledListProgressListener());
+        final AttributedList<Path> list = new SpectraObjectListService(session).list(folder, new DisabledListProgressListener());
         assertEquals(2, list.size());
+        for(Path f : list) {
+            assertTrue(f.attributes().getMetadata().isEmpty());
+        }
         new SpectraDeleteFeature(session).delete(Arrays.asList(test, folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        for(Path f : new SpectraObjectListService(session).list(folder, new DisabledListProgressListener())) {
+            assertTrue(f.attributes().isDuplicate());
+            if(f.attributes().getSize() == 0L) {
+                assertTrue(f.attributes().getMetadata().containsKey(SpectraVersioningFeature.KEY_REVERTABLE));
+            }
+            else {
+                assertTrue(f.attributes().getMetadata().isEmpty());
+            }
+        }
         session.close();
     }
 }

@@ -23,13 +23,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.http.HttpConnectionPoolBuilder;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
-import ch.cyberduck.core.proxy.DisabledProxyFinder;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -59,13 +54,10 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
         IOUtils.closeQuietly(out);
         status.setLength(content.length);
         final Path test = new Path(DriveHomeFinderService.MYDRIVE_FOLDER, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final HttpConnectionPoolBuilder builder = new HttpConnectionPoolBuilder(session.getHost(), new ThreadLocalHostnameDelegatingTrustManager(
-                new DisabledX509TrustManager(), session.getHost().getHostname()), new DefaultX509KeyManager(), new DisabledProxyFinder()
-        );
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         final DriveUploadFeature upload = new DriveUploadFeature(new DriveWriteFeature(session, fileid));
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status, new DisabledConnectionCallback());
+            status, new DisabledConnectionCallback());
         test.attributes().setVersionId(fileid.getFileid(test, new DisabledListProgressListener()));
         assertTrue(session.getFeature(Find.class).find(test));
         assertEquals(content.length, new DriveListService(session, fileid).list(test.getParent(), new DisabledListProgressListener()).get(test).attributes().getSize(), 0L);
@@ -85,6 +77,6 @@ public class DriveUploadFeatureTest extends AbstractDriveTest {
             assertArrayEquals(reference, buffer);
         }
         new DriveDeleteFeature(session, fileid).delete(Collections.singletonList(test), new DisabledLoginCallback(),
-                new Delete.DisabledCallback());
+            new Delete.DisabledCallback());
     }
 }

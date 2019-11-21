@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -63,10 +64,10 @@ public class S3MultipleDeleteFeature implements Delete {
         this.versioningService = session.getFeature(Versioning.class);
     }
 
-    public void delete(final List<Path> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+    public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
         final Map<Path, List<ObjectKeyAndVersion>> map = new HashMap<Path, List<ObjectKeyAndVersion>>();
         final List<Path> containers = new ArrayList<Path>();
-        for(Path file : files) {
+        for(Path file : files.keySet()) {
             if(containerService.isContainer(file)) {
                 containers.add(file);
                 continue;

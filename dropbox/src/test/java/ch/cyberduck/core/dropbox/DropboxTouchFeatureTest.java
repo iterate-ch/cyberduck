@@ -28,6 +28,8 @@ import org.junit.experimental.categories.Category;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static org.junit.Assert.assertFalse;
+
 @Category(IntegrationTest.class)
 public class DropboxTouchFeatureTest extends AbstractDropboxTest {
 
@@ -35,6 +37,7 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
     public void testDisallowedName() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
         final Path file = new Path(new DefaultHomeFinderService(session).find(), String.format("~%s.tmp", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        assertFalse(touch.isSupported(new DefaultHomeFinderService(session).find(), file.getName()));
         touch.touch(file, new TransferStatus());
     }
 }

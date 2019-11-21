@@ -23,7 +23,7 @@
 
     <import file="../../build.xml"/>
 
-    <property name="app.runtime.system.min" value="10.7"/>
+    <property name="app.runtime.system.min" value="10.8"/>
     <property name="build.xcodeoptions"
               value="OTHER_LDFLAGS=-headerpad_max_install_names SYMROOT=${build} SDKROOT=macosx MACOSX_DEPLOYMENT_TARGET=${app.runtime.system.min}"/>
 

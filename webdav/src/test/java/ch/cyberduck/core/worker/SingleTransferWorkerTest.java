@@ -38,6 +38,8 @@ import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.DisabledTransferPrompt;
 import ch.cyberduck.core.transfer.Transfer;
@@ -83,7 +85,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         ));
         host.setDefaultPath("/dav/basic");
         final AtomicBoolean failed = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host) {
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             final DAVUploadFeature upload = new DAVUploadFeature(new DAVWriteFeature(this)) {
                 @Override
                 protected InputStream decorate(final InputStream in, final MessageDigest digest) {
