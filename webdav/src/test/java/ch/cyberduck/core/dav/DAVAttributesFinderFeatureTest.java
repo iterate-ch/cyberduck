@@ -13,9 +13,9 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.joda.time.DateTime;
@@ -130,6 +130,13 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test
     public void testFindLock() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
