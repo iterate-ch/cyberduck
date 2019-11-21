@@ -206,7 +206,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                         else {
                             reference = complete.getEtag();
                         }
-                        if(!expected.equals(reference)) {
+                        if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                                 MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
                                     expected, reference));

@@ -21,8 +21,6 @@ package ch.cyberduck.core.io;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.Objects;
-
 public final class Checksum {
     private static final Logger log = Logger.getLogger(Checksum.class);
 
@@ -74,7 +72,7 @@ public final class Checksum {
         if(algorithm != checksum.algorithm) {
             return false;
         }
-        if(!Objects.equals(hash, checksum.hash)) {
+        if(!StringUtils.equalsIgnoreCase(hash, checksum.hash)) {
             return false;
         }
         return true;

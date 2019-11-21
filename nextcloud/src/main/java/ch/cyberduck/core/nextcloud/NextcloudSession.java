@@ -16,6 +16,7 @@ package ch.cyberduck.core.nextcloud;
  */
 
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -30,6 +31,9 @@ public class NextcloudSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == UrlProvider.class) {
+            return (T) new NextcloudUrlProvider(this);
+        }
         if(type == PromptUrlProvider.class) {
             return (T) new NextcloudShareProvider(this);
         }

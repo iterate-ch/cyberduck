@@ -76,6 +76,8 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.dracoon.sdk.crypto.CryptoException;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
@@ -89,6 +91,8 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     public static final String SDS_AUTH_TOKEN_HEADER = "X-Sds-Auth-Token";
     public static final int DEFAULT_CHUNKSIZE = 16;
+
+    private static final String VERSION_REGEX = "(([0-9]+)\\.([0-9]+)\\.([0-9]+)).*";
 
     protected SDSErrorResponseInterceptor retryHandler;
     protected OAuth2RequestInterceptor authorizationService;
@@ -172,12 +176,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
                 final SoftwareVersionData softwareVersionData = this.softwareVersion();
-                try {
-                    if(new Version(StringUtils.removePattern(softwareVersionData.getRestApiVersion(), "-.*")).compareTo(new Version("4.16.0")) >= 0) {
+                Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(softwareVersionData.getRestApiVersion());
+                if(matcher.matches()) {
+                    if(new Version(matcher.group(1)).compareTo(new Version("4.16.0")) >= 0) {
                         authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
                     }
                 }
-                catch(NumberFormatException e) {
+                else {
                     log.warn(String.format("Failure to parse software version %s", softwareVersionData));
                 }
                 authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
