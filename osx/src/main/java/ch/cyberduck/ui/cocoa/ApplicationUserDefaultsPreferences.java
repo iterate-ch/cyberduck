@@ -96,13 +96,12 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
     }
 
     @Override
-    protected void post() {
+    public void setLogging(final String level) {
+        super.setLogging(level);
         // Send log output to system.log
         Logger root = Logger.getRootLogger();
         final Appender appender = new UnifiedSystemLogAppender();
         appender.setLayout(new PatternLayout("[%t] %-5p %c - %m%n"));
         root.addAppender(appender);
-        // Post configuration
-        super.post();
     }
 }

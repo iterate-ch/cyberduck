@@ -21,8 +21,6 @@ package ch.cyberduck.core.io.watchservice;
 import ch.cyberduck.binding.foundation.CFIndex;
 import ch.cyberduck.binding.foundation.CFRunLoopRef;
 import ch.cyberduck.binding.foundation.CFStringRef;
-import ch.cyberduck.core.io.watchservice.jna.FSEventStreamRef;
-import ch.cyberduck.core.io.watchservice.jna.FSEvents;
 import ch.cyberduck.core.threading.NamedThreadFactory;
 
 import org.apache.log4j.Logger;
@@ -314,16 +312,6 @@ public class FSEventWatchService extends AbstractWatchService {
                 }
             }
             return deletedFileList;
-        }
-
-        @Override
-        protected void finalize() throws Throwable {
-            try {
-                log.warn(String.format("Callback for %s is finalized", key));
-            }
-            finally {
-                super.finalize();
-            }
         }
     }
 }

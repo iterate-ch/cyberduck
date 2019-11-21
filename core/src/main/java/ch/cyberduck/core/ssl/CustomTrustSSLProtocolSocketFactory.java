@@ -24,11 +24,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.random.SecureRandomProviderFactory;
 
 import org.apache.log4j.Logger;
-import org.conscrypt.Conscrypt;
-import org.conscrypt.OpenSSLProvider;
 
-import javax.net.ssl.HandshakeCompletedEvent;
-import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -62,10 +58,6 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     private final X509TrustManager trust;
     private final X509KeyManager key;
 
-    static {
-        Conscrypt.setUseEngineSocketByDefault(true);
-    }
-
     /**
      * @param trust Verifying trusts in system settings
      * @param key   Key manager for client certificate selection
@@ -84,13 +76,8 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         this.trust = trust;
         this.key = key;
         try {
-            if(preferences.getBoolean("connection.ssl.provider.conscrypt")) {
-                context = SSLContext.getInstance("TLS",  new OpenSSLProvider());
-            }
-            else {
-                // Default provider
-                context = SSLContext.getInstance("TLS");
-            }
+            // Default provider
+            context = SSLContext.getInstance("TLS");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, seeder);
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Using SSL context with protocol %s", context.getProtocol()));
@@ -123,14 +110,6 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Enabled cipher suites %s",
                         Arrays.toString(((SSLSocket) socket).getEnabledCipherSuites())));
-                    ((SSLSocket) socket).addHandshakeCompletedListener(new HandshakeCompletedListener() {
-                        @Override
-                        public void handshakeCompleted(final HandshakeCompletedEvent event) {
-                            log.info(String.format("Completed handshake with %s and negotiated cipher suite %s",
-                                event.getSession().getProtocol(), event.getCipherSuite()));
-                            ((SSLSocket) socket).removeHandshakeCompletedListener(this);
-                        }
-                    });
                 }
             }
             catch(Exception e) {

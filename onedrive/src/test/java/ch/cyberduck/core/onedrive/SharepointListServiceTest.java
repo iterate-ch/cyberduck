@@ -19,7 +19,6 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.onedrive.features.GraphFileIdProvider;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
@@ -51,23 +50,11 @@ public class SharepointListServiceTest extends AbstractSharepointTest {
 
     @Test
     public void testListDefault() throws Exception {
-        final AttributedList<Path> list = new SharepointListService(session, new GraphFileIdProvider(session)).list(SharepointListService.DEFAULT_NAME, new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        assertEquals(2, list.size());
+        new SharepointListService(session, new GraphFileIdProvider(session)).list(SharepointListService.DEFAULT_NAME, new DisabledListProgressListener());
     }
 
     @Test
     public void testListGroups() throws Exception {
-        final AttributedList<Path> list = new SharepointListService(session, new GraphFileIdProvider(session)).list(SharepointListService.GROUPS_NAME, new DisabledListProgressListener());
-        assertFalse(list.isEmpty());
-        assertEquals(2, list.size());
-    }
-
-    @Test
-    public void testListGroup() throws Exception {
-        final AttributedList<Path> list = new SharepointListService(session, new GraphFileIdProvider(session))
-            .list(new Path(
-                SharepointListService.GROUPS_NAME, "bbe48dd5-3952-4940-9989-919042b8924c",
-                EnumSet.of(Path.Type.directory), new PathAttributes().withVersionId("bbe48dd5-3952-4940-9989-919042b8924c")), new DisabledListProgressListener());
+        new SharepointListService(session, new GraphFileIdProvider(session)).list(SharepointListService.GROUPS_NAME, new DisabledListProgressListener());
     }
 }

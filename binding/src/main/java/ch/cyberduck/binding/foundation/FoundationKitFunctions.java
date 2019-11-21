@@ -22,10 +22,17 @@ package ch.cyberduck.binding.foundation;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.internal.RococoaTypeMapper;
+
+import java.util.Collections;
 
 import com.sun.jna.Library;
+import com.sun.jna.Native;
 
 public interface FoundationKitFunctions extends Library {
+    FoundationKitFunctions library = Native.load(
+        "Foundation", FoundationKitFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
+
     /**
      * <i>native declaration : /System/Library/Frameworks/ApplicationServices.framework/Headers/../Frameworks/CoreGraphics.framework/Headers/CGGeometry.h:36</i><br>
      * enum values

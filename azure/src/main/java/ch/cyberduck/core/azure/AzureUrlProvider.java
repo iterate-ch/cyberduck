@@ -19,16 +19,17 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.URIEncoder;
-import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.UnsupportedException;
+import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.shared.DefaultUrlProvider;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -44,10 +45,10 @@ import com.microsoft.azure.storage.blob.CloudBlob;
 import com.microsoft.azure.storage.blob.SharedAccessBlobPermissions;
 import com.microsoft.azure.storage.blob.SharedAccessBlobPolicy;
 
-public class AzureUrlProvider implements UrlProvider {
+public class AzureUrlProvider implements PromptUrlProvider<Void, Void> {
 
     private final PathContainerService containerService
-            = new AzurePathContainerService();
+        = new AzurePathContainerService();
 
     private final AzureSession session;
 
@@ -56,46 +57,54 @@ public class AzureUrlProvider implements UrlProvider {
     }
 
     @Override
-    public DescriptiveUrlBag toUrl(final Path file) {
-        final DescriptiveUrlBag list = new DescriptiveUrlBag();
-        list.addAll(new DefaultUrlProvider(session.getHost()).toUrl(file));
-        if(file.isFile()) {
-            list.add(this.createSignedUrl(file, 60 * 60));
-            // Default signed URL expiring in 24 hours.
-            list.add(this.createSignedUrl(file, PreferencesFactory.get().getInteger("s3.url.expire.seconds")));
-            // Week
-            list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60));
-            // Month
-            list.add(this.createSignedUrl(file, 7 * 24 * 60 * 60 * 4));
+    public boolean isSupported(final Path file, final Type type) {
+        switch(type) {
+            case download:
+                return file.isFile();
         }
-        return list;
+        return false;
     }
 
-    private DescriptiveUrl createSignedUrl(final Path file, int seconds) {
-        final CloudBlob blob;
+    @Override
+    public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+        return this.createSignedUrl(file, PreferencesFactory.get().getInteger("s3.url.expire.seconds"));
+    }
+
+    @Override
+    public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
+        throw new UnsupportedException();
+    }
+
+    private DescriptiveUrl createSignedUrl(final Path file, int seconds) throws BackgroundException {
         try {
-            if(!session.isConnected()) {
+            final CloudBlob blob;
+            try {
+                if(!session.isConnected()) {
+                    return DescriptiveUrl.EMPTY;
+                }
+                blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
+                    .getBlobReferenceFromServer(containerService.getKey(file));
+            }
+            catch(URISyntaxException e) {
                 return DescriptiveUrl.EMPTY;
             }
-            blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                    .getBlobReferenceFromServer(containerService.getKey(file));
-        }
-        catch(URISyntaxException | StorageException e) {
-            return DescriptiveUrl.EMPTY;
-        }
-        final String token;
-        try {
-            token = blob.generateSharedAccessSignature(this.getPolicy(seconds), null);
-        }
-        catch(InvalidKeyException | StorageException e) {
-            return DescriptiveUrl.EMPTY;
-        }
-        return new DescriptiveUrl(URI.create(String.format("%s://%s%s?%s",
+            final String token;
+            try {
+                token = blob.generateSharedAccessSignature(this.getPolicy(seconds), null);
+            }
+            catch(InvalidKeyException e) {
+                return DescriptiveUrl.EMPTY;
+            }
+            return new DescriptiveUrl(URI.create(String.format("%s://%s%s?%s",
                 Scheme.https.name(), session.getHost().getHostname(), URIEncoder.encode(file.getAbsolute()), token)),
                 DescriptiveUrl.Type.signed,
                 MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
-                        + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
-                        UserDateFormatterFactory.get().getShortFormat(this.getExpiry(seconds))));
+                    + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
+                    UserDateFormatterFactory.get().getShortFormat(this.getExpiry(seconds))));
+        }
+        catch(StorageException e) {
+            throw new AzureExceptionMappingService().map(e);
+        }
     }
 
     private SharedAccessBlobPolicy getPolicy(final int expiry) {

@@ -109,30 +109,6 @@ public abstract class Preferences implements Locales {
     protected static final String LIST_SEPERATOR = StringUtils.SPACE;
 
     /**
-     * Called after the defaults have been set.
-     */
-    protected void post() {
-        // Ticket #2539
-        if(this.getBoolean("connection.dns.ipv6")) {
-            System.setProperty("java.net.preferIPv6Addresses", String.valueOf(true));
-        }
-        // TTL for DNS queries
-        Security.setProperty("networkaddress.cache.ttl", "10");
-        Security.setProperty("networkaddress.cache.negative.ttl", "5");
-        // Failure loading default key store with bouncycastle provider
-        System.setProperty("javax.net.ssl.trustStoreType", "JKS");
-        // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
-        final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
-        final BouncyCastleProvider provider = new BouncyCastleProvider();
-        // Add missing factory. http://bouncy-castle.1462172.n4.nabble.com/Keychain-issue-as-of-version-1-53-follow-up-tc4659509.html
-        provider.put("Alg.Alias.SecretKeyFactory.PBE", "PBEWITHSHAAND3-KEYTRIPLEDES-CBC");
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Install provider %s at position %d", provider, position));
-        }
-        Security.insertProviderAt(provider, position);
-    }
-
-    /**
      * Update the given property with a string value.
      *
      * @param property The name of the property to create or update
@@ -247,6 +223,10 @@ public abstract class Preferences implements Locales {
      * setting the default prefs values
      */
     protected void setDefaults() {
+        // TTL for DNS queries
+        Security.setProperty("networkaddress.cache.ttl", "10");
+        Security.setProperty("networkaddress.cache.negative.ttl", "5");
+
         this.setDefault("application.version", Version.getSpecification());
         this.setDefault("application.revision", Version.getImplementation());
 
@@ -752,6 +732,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("azure.listing.chunksize", String.valueOf(1000));
         this.setDefault("azure.upload.md5", String.valueOf(false));
         this.setDefault("azure.upload.snapshot", String.valueOf(false));
+        this.setDefault("azure.upload.blobtype", "APPEND_BLOB");
 
         // Legacy authentication
 //        this.setDefault("openstack.authentication.context", "/v1.0");
@@ -961,6 +942,10 @@ public abstract class Preferences implements Locales {
           java.net.preferIPv6Addresses
          */
         this.setDefault("connection.dns.ipv6", String.valueOf(false));
+        // Ticket #2539
+        if(this.getBoolean("connection.dns.ipv6")) {
+            System.setProperty("java.net.preferIPv6Addresses", String.valueOf(true));
+        }
 
         /*
           Read proxy settings from system preferences
@@ -978,8 +963,18 @@ public abstract class Preferences implements Locales {
         this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.ftp), String.valueOf(true));
         this.setDefault(String.format("connection.unsecure.warning.%s", Scheme.http), String.valueOf(true));
 
-        this.setDefault("connection.ssl.provider.conscrypt", String.valueOf(true));
         this.setDefault("connection.ssl.provider.bouncycastle.position", String.valueOf(1));
+        // Failure loading default key store with bouncycastle provider
+        System.setProperty("javax.net.ssl.trustStoreType", "JKS");
+        // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
+        final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
+        final BouncyCastleProvider provider = new BouncyCastleProvider();
+        // Add missing factory. http://bouncy-castle.1462172.n4.nabble.com/Keychain-issue-as-of-version-1-53-follow-up-tc4659509.html
+        provider.put("Alg.Alias.SecretKeyFactory.PBE", "PBEWITHSHAAND3-KEYTRIPLEDES-CBC");
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Install provider %s at position %d", provider, position));
+        }
+        Security.insertProviderAt(provider, position);
         this.setDefault("connection.ssl.protocols", "TLSv1.2,TLSv1.1,TLSv1");
         this.setDefault("connection.ssl.cipher.blacklist", StringUtils.EMPTY);
 
@@ -1097,14 +1092,20 @@ public abstract class Preferences implements Locales {
     }
 
     protected void setLogging() {
+        this.setLogging(this.getProperty("logging"));
+    }
+
+    /**
+     * Reconfigure logging configuration
+     *
+     * @param level Log level
+     */
+    public void setLogging(final String level) {
+        this.setProperty("logging", level);
         // Call only once during initialization time of your application
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
-
-        this.resetLogging();
-    }
-
-    private void resetLogging() {
+        // Apply default configuration
         final URL configuration;
         final String file = this.getDefault("logging.config");
         if(null == file) {
@@ -1118,14 +1119,8 @@ public abstract class Preferences implements Locales {
         if(null != configuration) {
             DOMConfigurator.configure(configuration);
         }
-        else {
-            // Default if no logging configuration is found
-            root.setLevel(Level.ERROR);
-        }
-        if(StringUtils.isNotBlank(this.getProperty("logging"))) {
-            // Allow to override default logging level
-            root.setLevel(Level.toLevel(this.getProperty("logging"), Level.ERROR));
-        }
+        // Allow to override default logging level
+        root.setLevel(Level.toLevel(level, Level.ERROR));
         // Map logging level to pass through bridge
         final ImmutableMap<Level, java.util.logging.Level> map = new ImmutableMap.Builder<Level, java.util.logging.Level>()
             .put(Level.ALL, java.util.logging.Level.ALL)
@@ -1145,14 +1140,6 @@ public abstract class Preferences implements Locales {
                 java.util.logging.Logger.getLogger(logger.getName()).setLevel(map.get(logger.getLevel()));
             }
         }
-    }
-
-    public void enableDebugLogging() {
-        Logger.getRootLogger().setLevel(Level.DEBUG);
-    }
-
-    public void disableDebugLogging() {
-        this.resetLogging();
     }
 
     /**

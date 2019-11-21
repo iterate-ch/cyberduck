@@ -94,7 +94,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
         final NSArray collections = rootCollection.favorites(); //The root has collections
         final NSEnumerator collectionsEnumerator = collections.objectEnumerator();
         NSObject next;
-        while(((next = collectionsEnumerator.nextObject()) != null)) {
+        while((next = collectionsEnumerator.nextObject()) != null) {
             final TransmitFavoriteCollection collection = Rococoa.cast(next, TransmitFavoriteCollection.class);
             if("History".equals(collection.name())) {
                 continue;

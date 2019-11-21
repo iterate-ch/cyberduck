@@ -58,7 +58,7 @@ public class BrickPairingSchedulerFeature {
     private final String token;
     private final Host host;
     private final CancelCallback cancel;
-    protected final ScheduledThreadPool scheduler = new ScheduledThreadPool();
+    private final ScheduledThreadPool scheduler = new ScheduledThreadPool();
 
     private Preferences preferences = PreferencesFactory.get();
 

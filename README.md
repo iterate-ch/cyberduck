@@ -63,7 +63,7 @@ After packaging, run `mvn test -DskipITs` to run unit tests but skip integration
 
 ### Maven Artifacts (GPL)
 
-#### Repository Configuration
+#### Repository Configuration
 Maven artifacts are available in a repository hosted on Amazon S3. 
 - Use the following Maven configuration in your project POM to reference artifacts from Cyberduck
  

@@ -18,7 +18,7 @@ package ch.cyberduck.core.preferences;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
+import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.binding.foundation.NSEnumerator;
@@ -27,11 +27,9 @@ import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSUserDefaults;
 import ch.cyberduck.core.Factory;
-import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.sparkle.Sandbox;
-import ch.cyberduck.core.sparkle.Updater;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -165,7 +163,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         // Parent defaults
         super.setDefaults();
 
-        this.setDefault("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
+        this.setDefault("tmp.dir", FoundationKitFunctions.library.NSTemporaryDirectory());
         if(Sandbox.get().isSandboxed()) {
             // Set actual home directory outside of sandbox
             this.setDefault("local.user.home", SystemB.INSTANCE.getpwuid(LibC.INSTANCE.getuid()).pw_dir);

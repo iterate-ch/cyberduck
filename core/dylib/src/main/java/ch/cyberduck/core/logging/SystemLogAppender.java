@@ -18,16 +18,25 @@ package ch.cyberduck.core.logging;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary;
+import ch.cyberduck.binding.foundation.FoundationKitFunctions;
 
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
+import org.rococoa.internal.RococoaTypeMapper;
+
+import java.util.Collections;
+
+import com.sun.jna.Library;
+import com.sun.jna.Native;
 
 /**
  * Redirect to NSLog(). Logs an error message to the Apple System Log facility.
  */
 public class SystemLogAppender extends AppenderSkeleton {
+
+    private static final FoundationKitFunctions library = Native.load(
+        "Foundation", FoundationKitFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
 
     @Override
     protected void append(final LoggingEvent event) {
@@ -42,7 +51,7 @@ public class SystemLogAppender extends AppenderSkeleton {
                 }
             }
         }
-        FoundationKitFunctionsLibrary.NSLog("%@", buffer.toString());
+        library.NSLog("%@", buffer.toString());
     }
 
     @Override

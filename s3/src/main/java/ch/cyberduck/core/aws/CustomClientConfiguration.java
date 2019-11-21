@@ -33,12 +33,10 @@ import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.KeychainX509KeyManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
-import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 
 import org.apache.http.HttpHost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpCoreContext;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -89,12 +87,7 @@ public class CustomClientConfiguration extends ClientConfiguration {
             ) {
                 @Override
                 public Socket createSocket(final HttpContext context) throws IOException {
-                    return new ProxySocketFactory(bookmark.getProtocol(), new TrustManagerHostnameCallback() {
-                        @Override
-                        public String getTarget() {
-                            return ((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName();
-                        }
-                    }, proxyFinder).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
+                    return new ProxySocketFactory(bookmark, proxyFinder).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
                 }
 
                 @Override
