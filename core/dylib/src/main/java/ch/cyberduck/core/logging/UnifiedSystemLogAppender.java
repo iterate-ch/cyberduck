@@ -84,17 +84,19 @@ public class UnifiedSystemLogAppender extends AppenderSkeleton {
             }
         }
         switch(event.getLevel().toInt()) {
+            case Level.FATAL_INT:
             case Level.ERROR_INT:
                 this.log(OS_LOG_TYPE_ERROR, buffer.toString());
                 break;
-            case Level.WARN_INT:
-                this.log(OS_LOG_TYPE_FAULT, buffer.toString());
+            case Level.DEBUG_INT:
+                this.log(OS_LOG_TYPE_DEBUG, buffer.toString());
                 break;
             case Level.INFO_INT:
                 this.log(OS_LOG_TYPE_INFO, buffer.toString());
                 break;
+            case Level.WARN_INT:
             default:
-                this.log(OS_LOG_TYPE_DEBUG, buffer.toString());
+                this.log(OS_LOG_TYPE_DEFAULT, buffer.toString());
                 break;
         }
     }
