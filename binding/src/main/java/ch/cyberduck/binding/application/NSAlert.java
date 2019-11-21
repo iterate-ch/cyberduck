@@ -60,8 +60,7 @@ public abstract class NSAlert extends NSObject {
         return CLASS.alertWithError(error);
     }
 
-    public static NSAlert alert(
-            String title, String message, String defaultButton, String alternateButton, String otherButton) {
+    public static NSAlert alert(String title, String message, String defaultButton, String alternateButton, String otherButton) {
         NSAlert alert = NSAlert.alert();
         alert.setMessageText(title);
         alert.setInformativeText(new StringAppender().append(message).toString());
