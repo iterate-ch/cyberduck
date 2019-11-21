@@ -30,7 +30,6 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
-import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.ssl.X509KeyManager;
 
 import org.apache.http.HttpHost;
@@ -56,10 +55,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.WinHttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.protocol.HttpCoreContext;
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLSession;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -68,9 +65,7 @@ import java.nio.charset.Charset;
 public class HttpConnectionPoolBuilder {
     private static final Logger log = Logger.getLogger(HttpConnectionPoolBuilder.class);
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
+    private final Preferences preferences = PreferencesFactory.get();
     private final ConnectionSocketFactory socketFactory;
     private final ConnectionSocketFactory sslSocketFactory;
     private final Host host;
@@ -83,42 +78,36 @@ public class HttpConnectionPoolBuilder {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
                 // Return socket factory with disabled support for HTTP tunneling as provided internally
-                return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
-                    @Override
-                    public String getTarget() {
-                        return ((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName();
-                    }
-                }, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
+                return new ProxySocketFactory(host, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
             }
 
             @Override
-            public Socket connectSocket(final int connectTimeout, final Socket socket, final HttpHost host, final InetSocketAddress remoteAddress, final InetSocketAddress localAddress, final HttpContext context) throws IOException {
-                // Must set target hostname for plain socket which may be upgraded later to TLS from HttpClientConnectionOperator#upgrade
-                trust.setTarget(remoteAddress.getHostName());
+            public Socket connectSocket(final int connectTimeout, final Socket socket, final HttpHost host,
+                                        final InetSocketAddress remoteAddress, final InetSocketAddress localAddress,
+                                        final HttpContext context) throws IOException {
+                trust.setTarget(host.getHostName());
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
         }, new SSLConnectionSocketFactory(
             new CustomTrustSSLProtocolSocketFactory(trust, key),
-            new CallbackHostnameVerifier(trust)
+            new DisabledX509HostnameVerifier()
         ) {
             @Override
             public Socket createSocket(final HttpContext context) throws IOException {
-                return new ProxySocketFactory(host.getProtocol(), new TrustManagerHostnameCallback() {
-                    @Override
-                    public String getTarget() {
-                        return ((HttpHost) context.getAttribute(HttpCoreContext.HTTP_TARGET_HOST)).getHostName();
-                    }
-                }, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
+                return new ProxySocketFactory(host, proxy).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
             }
 
             @Override
-            public Socket connectSocket(final int connectTimeout,
-                                        final Socket socket,
-                                        final HttpHost host,
-                                        final InetSocketAddress remoteAddress,
-                                        final InetSocketAddress localAddress,
+            public Socket createLayeredSocket(final Socket socket, final String target, final int port, final HttpContext context) throws IOException {
+                trust.setTarget(target);
+                return super.createLayeredSocket(socket, target, port, context);
+            }
+
+            @Override
+            public Socket connectSocket(final int connectTimeout, final Socket socket, final HttpHost host,
+                                        final InetSocketAddress remoteAddress, final InetSocketAddress localAddress,
                                         final HttpContext context) throws IOException {
-                trust.setTarget(remoteAddress.getHostName());
+                trust.setTarget(host.getHostName());
                 return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
             }
         });
@@ -224,19 +213,5 @@ public class HttpConnectionPoolBuilder {
         // Detect connections that have become stale (half-closed) while kept inactive in the pool
         manager.setValidateAfterInactivity(preferences.getInteger("http.connections.stale.check.ms"));
         return manager;
-    }
-
-    private static final class CallbackHostnameVerifier extends DisabledX509HostnameVerifier {
-        private final ThreadLocalHostnameDelegatingTrustManager trust;
-
-        public CallbackHostnameVerifier(final ThreadLocalHostnameDelegatingTrustManager trust) {
-            this.trust = trust;
-        }
-
-        @Override
-        public boolean verify(final String host, final SSLSession sslSession) {
-            trust.setTarget(host);
-            return super.verify(host, sslSession);
-        }
     }
 }

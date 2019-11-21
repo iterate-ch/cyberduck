@@ -23,7 +23,6 @@ import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.socket.DefaultSocketConfigurator;
 import ch.cyberduck.core.socket.SocketConfigurator;
-import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -48,22 +47,12 @@ public class ProxySocketFactoryTest {
 
     @Test
     public void testCreateSocketNoProxy() throws Exception {
-        assertNotNull(new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return "localhost";
-            }
-        }).createSocket("localhost", 22));
+        assertNotNull(new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).createSocket("localhost", 22));
     }
 
     @Test(expected = SocketException.class)
     public void testCreateSocketWithProxy() throws Exception {
-        final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return "test.cyberduck.ch";
-            }
-        }, new DefaultSocketConfigurator(),
+        final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost"), new DefaultSocketConfigurator(),
                 new ProxyFinder() {
                     @Override
                     public Proxy find(final Host target) {
@@ -76,12 +65,7 @@ public class ProxySocketFactoryTest {
 
     @Test
     public void testCreateSocketIPv6Localhost() throws Exception {
-        final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return "localhost";
-            }
-        }).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0")).createSocket("::1", 22);
+        final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0")).createSocket("::1", 22);
         assertNotNull(socket);
         assertTrue(socket.getInetAddress() instanceof Inet6Address);
     }
@@ -91,12 +75,7 @@ public class ProxySocketFactoryTest {
     @Ignore
     public void testConnectIPv6LocalAddress() throws Exception {
         for(String address : Collections.singletonList("fe80::c62c:3ff:fe0b:8670")) {
-            final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
-                @Override
-                public String getTarget() {
-                    return "localhost";
-                }
-            }).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0")).createSocket(address, 22);
+            final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0")).createSocket(address, 22);
             assertNotNull(socket);
             assertTrue(socket.getInetAddress() instanceof Inet6Address);
         }
@@ -105,23 +84,13 @@ public class ProxySocketFactoryTest {
     @Test(expected = SocketException.class)
     public void testCreateSocketIPv6LocalAddressConnectionRefused() throws Exception {
         for(String address : Collections.singletonList("fe80::9272:40ff:fe02:c363")) {
-            final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
-                @Override
-                public String getTarget() {
-                    return "localhost";
-                }
-            }).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0")).createSocket(address, 22);
+            final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0")).createSocket(address, 22);
         }
     }
 
     @Test
     public void testCreateSocketDualStackGoogle() throws Exception {
-        final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return "localhost";
-            }
-        }).createSocket("ipv6test.google.com", 80);
+        final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).createSocket("ipv6test.google.com", 80);
         assertNotNull(socket);
         // We have set `java.net.preferIPv6Addresses` to `false` by default
         assertTrue(socket.getInetAddress() instanceof Inet4Address);
@@ -132,12 +101,7 @@ public class ProxySocketFactoryTest {
     @Ignore
     public void testCreateSocketIPv6OnlyWithInetAddress() throws Exception {
         for(String address : Collections.singletonList("ftp6.netbsd.org")) {
-            final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
-                @Override
-                public String getTarget() {
-                    return "ftp6.netbsd.org";
-                }
-            }, new SocketConfigurator() {
+            final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost"), new SocketConfigurator() {
                 @Override
                 public void configure(final Socket socket) throws IOException {
                     assertTrue(socket.getInetAddress() instanceof Inet6Address);
@@ -155,12 +119,7 @@ public class ProxySocketFactoryTest {
     @Ignore
     public void testCreateSocketIPv6OnlyUnknownDestination() throws Exception {
         for(String address : Collections.singletonList("ftp6.netbsd.org")) {
-            final Socket socket = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
-                @Override
-                public String getTarget() {
-                    return "ftp6.netbsd.org";
-                }
-            }, new SocketConfigurator() {
+            final Socket socket = new ProxySocketFactory(new Host(new TestProtocol(), "localhost"), new SocketConfigurator() {
                 @Override
                 public void configure(final Socket socket) {
                     // Not yet connected
@@ -199,12 +158,7 @@ public class ProxySocketFactoryTest {
 
     @Test(expected = ConnectException.class)
     public void testFixDefaultNetworkInterface() throws Exception {
-        final ProxySocketFactory factory = new ProxySocketFactory(new TestProtocol(), new TrustManagerHostnameCallback() {
-            @Override
-            public String getTarget() {
-                return "localhost";
-            }
-        }).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0"));
+        final ProxySocketFactory factory = new ProxySocketFactory(new Host(new TestProtocol(), "localhost")).withBlacklistedNetworkInterfaces(Collections.singletonList("awdl0"));
         assertEquals(
                 ((Inet6Address) factory.createSocket("::1%en0", 80).getInetAddress()).getScopeId(),
                 ((Inet6Address) factory.createSocket("::1", 80).getInetAddress()).getScopeId()
