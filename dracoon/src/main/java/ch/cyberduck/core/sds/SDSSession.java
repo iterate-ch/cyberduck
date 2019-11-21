@@ -173,7 +173,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
             case oauth:
                 final SoftwareVersionData softwareVersionData = this.softwareVersion();
                 try {
-                    if(new Version(StringUtils.removePattern(softwareVersionData.getRestApiVersion(), "-.*")).compareTo(new Version("4.15.0")) >= 0) {
+                    if(new Version(StringUtils.removePattern(softwareVersionData.getRestApiVersion(), "-.*")).compareTo(new Version("4.16.0")) >= 0) {
                         authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
                     }
                 }
