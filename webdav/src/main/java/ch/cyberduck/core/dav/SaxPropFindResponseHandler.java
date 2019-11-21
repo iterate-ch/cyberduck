@@ -74,7 +74,6 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
         private Resourcetype type;
 
         private StringBuilder data;
-
         private Element root;
 
         @Override
@@ -86,21 +85,32 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
         @Override
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
             switch(localName) {
+                case "multistatus":
+                    multistatus = new Multistatus();
+                    break;
                 case "response":
                     response = new Response();
-                    multistatus.getResponse().add(response);
+                    if(multistatus != null) {
+                        multistatus.getResponse().add(response);
+                    }
                     break;
                 case "propstat":
                     propstat = new Propstat();
-                    response.getPropstat().add(propstat);
+                    if(response != null) {
+                        response.getPropstat().add(propstat);
+                    }
                     break;
                 case "prop":
                     prop = new Prop();
-                    propstat.setProp(prop);
+                    if(propstat != null) {
+                        propstat.setProp(prop);
+                    }
                     break;
                 case "resourcetype":
                     type = new Resourcetype();
-                    prop.setResourcetype(type);
+                    if(prop != null) {
+                        prop.setResourcetype(type);
+                    }
                     break;
                 case "collection":
                     type.setCollection(new Collection());
@@ -120,53 +130,91 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
                 log.warn(String.format("Missing value for %s", localName));
                 return;
             }
-            if(localName.equals("status")) {
-                propstat.setStatus(data.toString());
+            if(response != null) {
+                switch(localName) {
+                    case "href": {
+                        if(response != null) {
+                            response.getHref().add(data.toString());
+                        }
+                        break;
+                    }
+                }
             }
-            else if(localName.equals("creationdate")) {
-                final Creationdate value = new Creationdate();
-                value.getContent().add(data.toString());
-                prop.setCreationdate(value);
+            if(propstat != null) {
+                switch(localName) {
+                    case "status": {
+                        propstat.setStatus(data.toString());
+                        break;
+                    }
+                }
             }
-            else if(localName.equals("displayname")) {
-                final Displayname value = new Displayname();
-                value.getContent().add(data.toString());
-                prop.setDisplayname(value);
+            if(prop != null) {
+                switch(localName) {
+                    case "creationdate": {
+                        final Creationdate value = new Creationdate();
+                        value.getContent().add(data.toString());
+                        prop.setCreationdate(value);
+                        break;
+                    }
+                    case "displayname": {
+                        final Displayname value = new Displayname();
+                        value.getContent().add(data.toString());
+                        prop.setDisplayname(value);
+                        break;
+                    }
+                    case "getcontentlength": {
+                        final Getcontentlength value = new Getcontentlength();
+                        value.getContent().add(data.toString());
+                        prop.setGetcontentlength(value);
+                        break;
+                    }
+                    case "getcontenttype": {
+                        final Getcontenttype value = new Getcontenttype();
+                        value.getContent().add(data.toString());
+                        prop.setGetcontenttype(value);
+                        break;
+                    }
+                    case "getlastmodified": {
+                        final Getlastmodified value = new Getlastmodified();
+                        value.getContent().add(data.toString());
+                        prop.setGetlastmodified(value);
+                        break;
+                    }
+                    case "getetag": {
+                        final Getetag value = new Getetag();
+                        value.getContent().add(data.toString());
+                        prop.setGetetag(value);
+                        break;
+                    }
+                    case "lastmodified_server": {
+                        final Element element = SardineUtil.createElement(root, DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
+                        element.setTextContent(data.toString());
+                        prop.getAny().add(element);
+                        break;
+                    }
+                    case "lastmodified": {
+                        final Element element = SardineUtil.createElement(root, DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
+                        element.setTextContent(data.toString());
+                        prop.getAny().add(element);
+                        break;
+                    }
+                }
             }
-            else if(localName.equals("getcontentlength")) {
-                final Getcontentlength value = new Getcontentlength();
-                value.getContent().add(data.toString());
-                prop.setGetcontentlength(value);
+            switch(localName) {
+                case "response": {
+                    response = null;
+                    break;
+                }
+                case "propstat": {
+                    propstat = null;
+                    break;
+                }
+                case "prop": {
+                    prop = null;
+                    break;
+                }
             }
-            else if(localName.equals("getcontenttype")) {
-                final Getcontenttype value = new Getcontenttype();
-                value.getContent().add(data.toString());
-                prop.setGetcontenttype(value);
-            }
-            else if(localName.equals("getlastmodified")) {
-                final Getlastmodified value = new Getlastmodified();
-                value.getContent().add(data.toString());
-                prop.setGetlastmodified(value);
-            }
-            else if(localName.equals("getetag")) {
-                final Getetag value = new Getetag();
-                value.getContent().add(data.toString());
-                prop.setGetetag(value);
-            }
-            else if(localName.equals("lastmodified_server")) {
-                final Element element = SardineUtil.createElement(root, DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
-                element.setTextContent(data.toString());
-                prop.getAny().add(element);
-            }
-            else if(localName.equals("lastmodified")) {
-                final Element element = SardineUtil.createElement(root, DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
-                element.setTextContent(data.toString());
-                prop.getAny().add(element);
-            }
-            else if(localName.equals("href")) {
-                response.getHref().add(data.toString());
-            }
-            else if(!uri.equals(SardineUtil.DEFAULT_NAMESPACE_URI)) {
+            if(!SardineUtil.DEFAULT_NAMESPACE_URI.equals(uri)) {
                 // Custom property
                 final Element element = SardineUtil.createElement(root, new QName(uri, localName, SardineUtil.DEFAULT_NAMESPACE_PREFIX));
                 element.setTextContent(data.toString());
