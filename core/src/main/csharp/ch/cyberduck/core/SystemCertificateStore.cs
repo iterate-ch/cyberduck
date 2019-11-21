@@ -79,17 +79,6 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        public bool display(List certificates)
-        {
-            if (certificates.isEmpty())
-            {
-                return false;
-            }
-            X509Certificate2 cert = ConvertCertificate(certificates.iterator().next() as X509Certificate);
-            X509Certificate2UI.DisplayCertificate(cert);
-            return true;
-        }
-
         public bool isTrusted(String hostName, List certs)
         {
             X509Certificate2 serverCert = ConvertCertificate(certs.iterator().next() as X509Certificate);

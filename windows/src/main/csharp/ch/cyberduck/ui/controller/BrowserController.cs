@@ -58,6 +58,9 @@ using Exception = System.Exception;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
+using X509Certificate = java.security.cert.X509Certificate;
+using X509Certificate2 = System.Security.Cryptography.X509Certificates.X509Certificate2;
+using X509Certificate2UI = System.Security.Cryptography.X509Certificates.X509Certificate2UI;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -1150,10 +1153,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_Certificate()
         {
-            if (Session.getFeature(typeof(X509TrustManager)) != null)
+            X509TrustManager feature = (X509TrustManager)Session.getFeature(typeof(X509TrustManager));
+            if (feature != null)
             {
-                X509TrustManager feature = (X509TrustManager) Session.getFeature(typeof(X509TrustManager));
-                CertificateStoreFactory.get().display(Arrays.asList(feature.getAcceptedIssuers()));
+                List certificates = Arrays.asList(feature.getAcceptedIssuers());
+                if (certificates.isEmpty())
+                {
+                    return;
+                }
+                X509Certificate2 cert = SystemCertificateStore.ConvertCertificate(certificates.iterator().next() as X509Certificate);
+                X509Certificate2UI.DisplayCertificate(cert);
             }
         }
 
