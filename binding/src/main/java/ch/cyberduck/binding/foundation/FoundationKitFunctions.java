@@ -276,7 +276,8 @@ public interface FoundationKitFunctions extends Library {
     String NSTemporaryDirectory();
 
     /**
-     * Original signature : <code>NSArray* NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory, NSSearchPathDomainMask, BOOL)</code><br>
+     * Original signature : <code>NSArray* NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory,
+     * NSSearchPathDomainMask, BOOL)</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:106</i><br>
      *
      * @param directory  @see NSSearchPathDirectory<br>
@@ -290,10 +291,6 @@ public interface FoundationKitFunctions extends Library {
      * @param format Statement
      */
     void NSLog(String format, String... args);
-
-    NSObject os_log_create(String subsystem, String category);
-
-    void _os_log_internal(NSObject os_log_t, int os_log_type_t, String format, String... args);
 
     CFStringRef CFStringCreateWithCharacters(CFAllocatorRef allocator, char[] chars, CFIndex index);
 }

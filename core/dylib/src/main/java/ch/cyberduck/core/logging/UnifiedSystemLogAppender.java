@@ -15,23 +15,27 @@ package ch.cyberduck.core.logging;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.foundation.NSObject;
-import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.library.Native;
 
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
-import static ch.cyberduck.binding.foundation.FoundationKitFunctionsLibrary.*;
-
 /**
  * Redirect to NSLog(). Logs an error message to the Apple System Log facility.
  */
 public class UnifiedSystemLogAppender extends AppenderSkeleton {
 
-    private final NSObject category = os_log_create(
-        PreferencesFactory.get().getProperty("application.identifier"), PreferencesFactory.get().getProperty("application.name"));
+    static {
+        Native.load("core");
+    }
+
+    public static final int OS_LOG_TYPE_DEFAULT = 0x00;
+    public static final int OS_LOG_TYPE_INFO = 0x01;
+    public static final int OS_LOG_TYPE_DEBUG = 0x02;
+    public static final int OS_LOG_TYPE_ERROR = 0x10;
+    public static final int OS_LOG_TYPE_FAULT = 0x11;
 
     @Override
     protected void append(final LoggingEvent event) {
@@ -48,19 +52,21 @@ public class UnifiedSystemLogAppender extends AppenderSkeleton {
         }
         switch(event.getLevel().toInt()) {
             case Level.ERROR_INT:
-                os_log_with_type(category, OS_LOG_TYPE_ERROR, "%@", buffer.toString());
+                this.log(OS_LOG_TYPE_ERROR, buffer.toString());
                 break;
             case Level.WARN_INT:
-                os_log_with_type(category, OS_LOG_TYPE_FAULT, "%@", buffer.toString());
+                this.log(OS_LOG_TYPE_FAULT, buffer.toString());
                 break;
             case Level.INFO_INT:
-                os_log_with_type(category, OS_LOG_TYPE_INFO, "%@", buffer.toString());
+                this.log(OS_LOG_TYPE_INFO, buffer.toString());
                 break;
             default:
-                os_log_with_type(category, OS_LOG_TYPE_DEBUG, "%@", buffer.toString());
+                this.log(OS_LOG_TYPE_DEBUG, buffer.toString());
                 break;
         }
     }
+
+    private native void log(int type, String message);
 
     @Override
     public void close() {
