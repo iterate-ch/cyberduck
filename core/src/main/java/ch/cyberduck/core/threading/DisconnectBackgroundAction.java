@@ -43,7 +43,7 @@ public class DisconnectBackgroundAction extends RegistryBackgroundAction<Void> {
     @Override
     public Void run() throws BackgroundException {
         final BackgroundActionRegistry registry = controller.getRegistry();
-        for(BackgroundAction action : registry) {
+        for(BackgroundAction action : registry.toArray(new BackgroundAction[registry.size()])) {
             action.cancel();
         }
         session.evict();
@@ -61,6 +61,6 @@ public class DisconnectBackgroundAction extends RegistryBackgroundAction<Void> {
             return super.getActivity();
         }
         return MessageFormat.format(LocaleFactory.localizedString("Disconnecting {0}", "Status"),
-                BookmarkNameProvider.toString(session.getHost()));
+            BookmarkNameProvider.toString(session.getHost()));
     }
 }
