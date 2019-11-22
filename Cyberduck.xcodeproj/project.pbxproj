@@ -225,6 +225,8 @@
 		47D93A171A2762A40006D4AE /* Support.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47990FD0195C63AE009EBB7C /* Support.strings */; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47ED775F1CEA1314009EBA0A /* transferstop.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 47ED775E1CEA1314009EBA0A /* transferstop.pdf */; };
+		47EEFDC72386ECD100A3CAB0 /* UnifiedSystemLogAppender.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EEFDC52386ECD100A3CAB0 /* UnifiedSystemLogAppender.h */; };
+		47EEFDC82386ECD100A3CAB0 /* UnifiedSystemLogAppender.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EEFDC62386ECD100A3CAB0 /* UnifiedSystemLogAppender.m */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47F85C191C0F101F00FDA856 /* UKCrashReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F85C151C0F101F00FDA856 /* UKCrashReporter.h */; };
 		47F85C1A1C0F101F00FDA856 /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F85C161C0F101F00FDA856 /* UKCrashReporter.m */; };
@@ -1573,6 +1575,8 @@
 		47E2B23422691AC900FD2E74 /* hu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hu; path = i18n/src/main/resources/hu.lproj/Status.strings; sourceTree = "<group>"; };
 		47E9875F0D689A280077733F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = i18n/src/main/resources/en.lproj/S3.strings; sourceTree = "<group>"; };
 		47ED775E1CEA1314009EBA0A /* transferstop.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = transferstop.pdf; path = toolbar/transferstop.pdf; sourceTree = "<group>"; };
+		47EEFDC52386ECD100A3CAB0 /* UnifiedSystemLogAppender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnifiedSystemLogAppender.h; path = core/src/main/objc/UnifiedSystemLogAppender.h; sourceTree = SOURCE_ROOT; };
+		47EEFDC62386ECD100A3CAB0 /* UnifiedSystemLogAppender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = UnifiedSystemLogAppender.m; path = core/src/main/objc/UnifiedSystemLogAppender.m; sourceTree = SOURCE_ROOT; };
 		47EF0EC50D6DBF3F00AC2F94 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = i18n/src/main/resources/ca.lproj/S3.strings; sourceTree = "<group>"; };
 		47EF0EC60D6DBF3F00AC2F94 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = cs; path = i18n/src/main/resources/cs.lproj/S3.strings; sourceTree = "<group>"; };
 		47EF0EC80D6DBF3F00AC2F94 /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = i18n/src/main/resources/da.lproj/S3.strings; sourceTree = "<group>"; };
@@ -1771,6 +1775,8 @@
 		474152D706C4F08A00AC0BD2 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				47EEFDC52386ECD100A3CAB0 /* UnifiedSystemLogAppender.h */,
+				47EEFDC62386ECD100A3CAB0 /* UnifiedSystemLogAppender.m */,
 				474B843F1C15DB51004D562C /* Sandbox.h */,
 				474B84401C15DB51004D562C /* Sandbox.m */,
 				47F85C151C0F101F00FDA856 /* UKCrashReporter.h */,
@@ -2019,6 +2025,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47EEFDC72386ECD100A3CAB0 /* UnifiedSystemLogAppender.h in Headers */,
 				4705E0041C037AB5002466FA /* Keychain.h in Headers */,
 				4705DFFC1C037AB5002466FA /* EMKeychainProxy.h in Headers */,
 				4705E0021C037AB5002466FA /* IOKitSleepPreventer.h in Headers */,
@@ -2430,6 +2437,7 @@
 				4705DFFD1C037AB5002466FA /* EMKeychainProxy.m in Sources */,
 				47F85C1A1C0F101F00FDA856 /* UKCrashReporter.m in Sources */,
 				474B84421C15DB51004D562C /* Sandbox.m in Sources */,
+				47EEFDC82386ECD100A3CAB0 /* UnifiedSystemLogAppender.m in Sources */,
 				4705DFF71C037AB5002466FA /* FinderSidebarService.m in Sources */,
 				4705DFF91C037AB5002466FA /* LaunchServicesApplicationFinder.m in Sources */,
 				474B843D1C15CDD1004D562C /* CDTransmitImporter.m in Sources */,
