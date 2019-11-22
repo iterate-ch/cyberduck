@@ -282,6 +282,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("application.identifier", "io.cyberduck");
         this.setDefault("application.name", "Cyberduck");
         this.setDefault("application.container.name", "duck");
+        this.setDefault("application.container.teamidentifier", "G69SCX94XU");
         this.setDefault("application.datafolder.name", "duck");
 
         /*

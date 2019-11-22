@@ -42,7 +42,9 @@ public class SecurityApplicationGroupSupportDirectoryFinder implements SupportDi
     private final String identifier;
 
     public SecurityApplicationGroupSupportDirectoryFinder() {
-        this(String.format("G69SCX94XU.%s", PreferencesFactory.get().getProperty("application.container.name")));
+        this(String.format("%s.%s",
+            PreferencesFactory.get().getProperty("application.container.teamidentifier"),
+            PreferencesFactory.get().getProperty("application.container.name")));
     }
 
     public SecurityApplicationGroupSupportDirectoryFinder(final String identifier) {
