@@ -1,18 +1,23 @@
 package ch.cyberduck.core.dav;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.joda.time.DateTime;
@@ -20,6 +25,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import javax.xml.namespace.QName;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -123,5 +129,24 @@ public class DAVAttributesFinderFeatureTest extends AbstractDAVTest {
 
         final PathAttributes attrs = f.toAttributes(mock);
         assertEquals(modified.getTime(), attrs.getModificationDate());
+    }
+
+    @Test
+    public void testFindLock() throws Exception {
+        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
+            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
+        ));
+        host.setDefaultPath("/dav/basic");
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path test = new DAVTouchFeature(session).touch(new Path(new DefaultHomeFinderService(session).find(),
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final DAVAttributesFinderFeature f = new DAVAttributesFinderFeature(session);
+        assertNull(f.find(test).getLockId());
+        final String lockId = new DAVLockFeature(session).lock(test);
+        assertNotNull(f.find(test).getLockId());
+        new DAVLockFeature(session).unlock(test, lockId);
+        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
