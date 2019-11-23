@@ -18,18 +18,18 @@
 #import <JavaNativeFoundation/JNFString.h>
 #import <os/log.h>
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_logging_UnifiedSystemLogAppender_log(JNIEnv *env, jobject this, jint type, jstring message)
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_logging_UnifiedSystemLogAppender_log(JNIEnv *env, jobject this, jint type, jstring logger, jstring message)
 {
-    static os_log_t category;
-    if(!category) {
-        NSString* appName = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleName"];
-        NSString* appBundleIdentifier = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleIdentifier"];
-        if (!appName || !appBundleIdentifier) {
-            category = OS_LOG_DEFAULT;
-        }
-        else {
-            category = os_log_create([appBundleIdentifier cStringUsingEncoding:kUnicodeUTF8Format], [appName cStringUsingEncoding:kUnicodeUTF8Format]);
-        }
+    os_log_t category;
+    static NSString* appBundleIdentifier;
+    if (!appBundleIdentifier) {
+        appBundleIdentifier = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleIdentifier"];
+    }
+    if (!appBundleIdentifier) {
+        category = OS_LOG_DEFAULT;
+    }
+    else {
+        category = os_log_create([appBundleIdentifier cStringUsingEncoding:kUnicodeUTF8Format], [JNFJavaToNSString(env, logger)  cStringUsingEncoding:kUnicodeUTF8Format]);
     }
     os_log_with_type(category, type, "%{public}@", (CFStringRef)JNFJavaToNSString(env, message));
 }

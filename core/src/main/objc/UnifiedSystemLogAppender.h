@@ -28,7 +28,7 @@ extern "C" {
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
 JNIEXPORT void JNICALL Java_Java_ch_cyberduck_core_logging_UnifiedSystemLogAppender_log
-  (JNIEnv *, jobject, jint, jstring);
+  (JNIEnv *, jobject, jint, jstring, jstring);
 
 #ifdef __cplusplus
 }
