@@ -90,6 +90,7 @@ public class UnifiedSystemLogAppender extends AppenderSkeleton {
             case Level.ERROR_INT:
                 this.log(OS_LOG_TYPE_ERROR, logger, buffer.toString());
                 break;
+            case Level.TRACE_INT:
             case Level.DEBUG_INT:
                 this.log(OS_LOG_TYPE_DEBUG, logger, buffer.toString());
                 break;
