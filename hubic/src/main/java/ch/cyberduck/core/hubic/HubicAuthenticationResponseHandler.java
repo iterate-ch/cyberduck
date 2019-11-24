@@ -49,8 +49,7 @@ public class HubicAuthenticationResponseHandler implements ResponseHandler<Authe
                 }
             }
             try {
-                final JsonParser parser = new JsonParser();
-                final JsonObject json = parser.parse(new InputStreamReader(response.getEntity().getContent(), charset)).getAsJsonObject();
+                final JsonObject json = JsonParser.parseReader(new InputStreamReader(response.getEntity().getContent(), charset)).getAsJsonObject();
                 final String token = json.getAsJsonPrimitive("token").getAsString();
                 final String endpoint = json.getAsJsonPrimitive("endpoint").getAsString();
                 return new AuthenticationResponse(response, token,
