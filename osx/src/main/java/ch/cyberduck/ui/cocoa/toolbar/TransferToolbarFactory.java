@@ -154,22 +154,6 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                 return LocaleFactory.localizedString("Move to Trash");
             }
         },
-        log {
-            @Override
-            public String label() {
-                return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Transfer");
-            }
-
-            @Override
-            public Selector action() {
-                return Foundation.selector("toggleLogDrawer:");
-            }
-
-            @Override
-            public String tooltip() {
-                return LocaleFactory.localizedString("Toggle Log Drawer");
-            }
-        },
         bandwidth {
             @Override
             public String label() {
@@ -361,7 +345,6 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                 TransferToolbarItem.open.name(),
                 TransferToolbarItem.trash.name(),
                 TransferToolbarItem.search.name(),
-                TransferToolbarItem.log.name(),
                 TransferToolbarItem.bandwidth.name(),
                 TransferToolbarItem.connections.name(),
                 NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
