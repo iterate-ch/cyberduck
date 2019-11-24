@@ -15,5 +15,8 @@ package ch.cyberduck.core.features;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
+
 public interface Pairing {
+    void delete(String token) throws BackgroundException;
 }

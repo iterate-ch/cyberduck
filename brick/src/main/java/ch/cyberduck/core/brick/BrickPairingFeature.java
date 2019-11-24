@@ -40,6 +40,7 @@ public class BrickPairingFeature implements Pairing {
         this.session = session;
     }
 
+    @Override
     public void delete(final String token) throws BackgroundException {
         try {
             final HttpRequestBase resource = new HttpDelete("https://app.files.com/api/rest/v1/api_key");
