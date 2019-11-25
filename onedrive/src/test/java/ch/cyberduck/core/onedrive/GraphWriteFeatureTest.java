@@ -16,6 +16,7 @@ package ch.cyberduck.core.onedrive;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -35,9 +36,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.nuxeo.onedrive.client.OneDriveAPIException;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -158,8 +159,8 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         try {
             assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
         }
-        catch(OneDriveAPIException e) {
-            final BackgroundException failure = new GraphExceptionMappingService().map(e);
+        catch(IOException e) {
+            final BackgroundException failure = new DefaultIOExceptionMappingService().map(e);
             assertTrue(failure.getDetail().contains("Invalid Content-Range header value.")
                 || failure.getDetail().contains("Bad Request. The Content-Range header is missing or malformed."));
             throw failure;
