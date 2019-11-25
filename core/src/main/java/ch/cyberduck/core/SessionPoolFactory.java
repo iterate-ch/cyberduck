@@ -54,6 +54,12 @@ public class SessionPoolFactory {
     }
 
     public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
+                                     final ProgressListener listener, final TranscriptListener transcript, final Usage... usage) {
+        return create(cache, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
+            bookmark.getProtocol()), listener, transcript, usage);
+    }
+
+    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
                                      final ProgressListener listener, final Usage... usage) {
         return create(cache, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
             bookmark.getProtocol()), listener, controller, usage);
