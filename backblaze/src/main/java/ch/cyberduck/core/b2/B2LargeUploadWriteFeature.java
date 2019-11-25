@@ -19,7 +19,6 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
@@ -40,7 +39,6 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
-import ch.cyberduck.core.threading.TransferBackgroundActionState;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.entity.ByteArrayEntity;
@@ -187,7 +185,7 @@ public class B2LargeUploadWriteFeature implements MultipartWrite<VersionId> {
                                 throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                             }
                         }
-                    }, new DisabledProgressListener(), new TransferBackgroundActionState(overall)).call());
+                    }, overall).call());
                 }
             }
             catch(BackgroundException e) {
