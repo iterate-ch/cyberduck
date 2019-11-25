@@ -43,6 +43,7 @@ import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
+import ch.cyberduck.core.logging.UnifiedSystemLogTranscriptListener;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.pool.SessionPool;
@@ -107,6 +108,8 @@ public final class TransferController extends WindowController implements Transf
 
     private final BandwidthMenuDelegate bandwidthMenuDelegate
         = new BandwidthMenuDelegate();
+
+    private final UnifiedSystemLogTranscriptListener transcript = new UnifiedSystemLogTranscriptListener();
 
     @Outlet
     private NSProgressIndicator transferSpinner;
@@ -629,6 +632,11 @@ public final class TransferController extends WindowController implements Transf
         else {
             this.background(action);
         }
+    }
+
+    @Override
+    public void log(final Type type, final String message) {
+        transcript.log(type, message);
     }
 
     @Override

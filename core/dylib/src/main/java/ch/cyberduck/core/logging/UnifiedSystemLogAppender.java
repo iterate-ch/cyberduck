@@ -104,7 +104,7 @@ public class UnifiedSystemLogAppender extends AppenderSkeleton {
         }
     }
 
-    private native void log(int type, String category, String message);
+    public native void log(int type, String category, String message);
 
     @Override
     public void close() {

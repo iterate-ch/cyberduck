@@ -51,6 +51,7 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DisabledApplicationQuitCallback;
 import ch.cyberduck.core.local.TemporaryFileServiceFactory;
+import ch.cyberduck.core.logging.UnifiedSystemLogTranscriptListener;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
@@ -183,6 +184,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         = PreferencesFactory.get();
 
     private final Navigation navigation = new Navigation();
+    private final UnifiedSystemLogTranscriptListener transcript = new UnifiedSystemLogTranscriptListener();
 
     /**
      * Connection pool
@@ -2094,6 +2096,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
             }
         });
+    }
+
+    @Override
+    public void log(final Type type, final String message) {
+        transcript.log(type, message);
     }
 
     @Action
