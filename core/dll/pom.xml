@@ -93,31 +93,31 @@
             </build>
             <dependencies>
                 <dependency>
-                    <groupId>net.adoptopenjdk</groupId>
+                    <groupId>net.java.openjdk</groupId>
                     <artifactId>sunmscapi</artifactId>
                     <classifier>x86_64</classifier>
                     <type>dll</type>
-                    <version>8u192</version>
+                    <version>8u45</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>net.adoptopenjdk</groupId>
+                    <groupId>net.java.openjdk</groupId>
                     <artifactId>sunmscapi</artifactId>
-                    <version>8u192</version>
+                    <version>8u45</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>net.adoptopenjdk</groupId>
+                    <groupId>net.java.openjdk</groupId>
                     <artifactId>sunec</artifactId>
                     <classifier>x86_64</classifier>
                     <type>dll</type>
-                    <version>8u192</version>
+                    <version>8u45</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>net.adoptopenjdk</groupId>
+                    <groupId>net.java.openjdk</groupId>
                     <artifactId>sunec</artifactId>
-                    <version>8u192</version>
+                    <version>8u45</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
