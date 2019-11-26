@@ -98,7 +98,10 @@ public class B2ErrorResponseInterceptor extends DisabledServiceUnavailableRetryS
         switch(request.getRequestLine().getMethod()) {
             case "POST":
                 // Do not override Authorization header for upload requests with upload URL token
-                break;
+                if(StringUtils.contains(request.getRequestLine().getUri(), "b2_upload_part")
+                    || StringUtils.contains(request.getRequestLine().getUri(), "b2_upload_file")) {
+                    break;
+                }
             default:
                 if(StringUtils.isNotBlank(authorizationToken)) {
                     request.removeHeaders(HttpHeaders.AUTHORIZATION);
