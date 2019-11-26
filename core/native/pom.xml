@@ -136,11 +136,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.adoptopenjdk</groupId>
+            <groupId>com.microsoft</groupId>
             <artifactId>msvcr100</artifactId>
             <classifier>x86_64</classifier>
             <type>dll</type>
-            <version>8u192</version>
+            <version>10.0.40219.325</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
