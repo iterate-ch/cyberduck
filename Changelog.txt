@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+7.2.1
+- [Bugfix] Failure to open application on Windows 7+ (Windows)
+
 7.2.0
 - [Bugfix] Failure validating hostname when connecting through HTTP proxy
 - [Bugfix] MD5 mismatch error for uploads (Alibaba Cloud Object Storage Service) (#10879)

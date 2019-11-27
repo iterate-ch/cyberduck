@@ -142,7 +142,6 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
         @Override
         public void endElement(final String uri, final String localName, final String qName) {
             if(StringUtils.isBlank(data.toString())) {
-                log.warn(String.format("Missing value for %s", localName));
                 return;
             }
             if(response != null) {

@@ -43,6 +43,7 @@ import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.LocalTrashFactory;
 import ch.cyberduck.core.local.RevealService;
 import ch.cyberduck.core.local.RevealServiceFactory;
+import ch.cyberduck.core.logging.UnifiedSystemLogTranscriptListener;
 import ch.cyberduck.core.pasteboard.PathPasteboard;
 import ch.cyberduck.core.pasteboard.PathPasteboardFactory;
 import ch.cyberduck.core.pool.SessionPool;
@@ -105,10 +106,10 @@ public final class TransferController extends WindowController implements Transf
 
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
 
-    private TranscriptController transcript;
-
     private final BandwidthMenuDelegate bandwidthMenuDelegate
         = new BandwidthMenuDelegate();
+
+    private final UnifiedSystemLogTranscriptListener transcript = new UnifiedSystemLogTranscriptListener();
 
     @Outlet
     private NSProgressIndicator transferSpinner;
@@ -124,8 +125,6 @@ public final class TransferController extends WindowController implements Transf
     private NSImageView iconView;
     @Outlet
     private NSTextField filterField;
-    @Outlet
-    private NSDrawer logDrawer;
     @Outlet
     private NSTableView transferTable;
     @Delegate
@@ -293,37 +292,6 @@ public final class TransferController extends WindowController implements Transf
     @Action
     public void searchButtonClicked(final ID sender) {
         window.makeFirstResponder(this.filterField);
-    }
-
-    @Action
-    public void drawerDidOpen(final NSNotification notification) {
-        preferences.setProperty("queue.transcript.open", true);
-    }
-
-    @Action
-    public void drawerDidClose(final NSNotification notification) {
-        preferences.setProperty("queue.transcript.open", false);
-        transcript.clear();
-    }
-
-    public NSSize drawerWillResizeContents_toSize(final NSDrawer sender, final NSSize contentSize) {
-        return contentSize;
-    }
-
-    public void setLogDrawer(NSDrawer drawer) {
-        this.logDrawer = drawer;
-        this.transcript = new TranscriptController() {
-            @Override
-            public boolean isOpen() {
-                return logDrawer.state() == NSDrawer.OpenState;
-            }
-        };
-        this.logDrawer.setContentView(this.transcript.getLogView());
-        this.logDrawer.setDelegate(this.id());
-    }
-
-    public void toggleLogDrawer(final ID sender) {
-        this.logDrawer.toggle(sender);
     }
 
     @Action
@@ -667,8 +635,8 @@ public final class TransferController extends WindowController implements Transf
     }
 
     @Override
-    public void log(final Type request, final String message) {
-        transcript.log(request, message);
+    public void log(final Type type, final String message) {
+        transcript.log(type, message);
     }
 
     @Override
