@@ -65,6 +65,7 @@ import ch.cyberduck.core.sts.STSCredentialsConfigurator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
@@ -158,8 +159,13 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         else {
             configuration.setProperty("s3service.s3-endpoint", host.getHostname());
-            configuration.setProperty("s3service.disable-dns-buckets",
-                String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
+            if(InetAddressUtils.isIPv4Address(host.getHostname()) || InetAddressUtils.isIPv6Address(host.getHostname())) {
+                configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+            }
+            else {
+                configuration.setProperty("s3service.disable-dns-buckets",
+                    String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
+            }
         }
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
