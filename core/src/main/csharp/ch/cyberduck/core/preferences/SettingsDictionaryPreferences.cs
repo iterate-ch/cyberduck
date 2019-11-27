@@ -337,9 +337,7 @@ namespace Ch.Cyberduck.Core.Preferences
             }
             if (Utils.IsRunningAsUWP)
             {
-                // Running from Windows Store
-                this.setDefault("update.check", $"{false}");
-                this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
+                SetUWPDefaults();
             }
             // Apply global configuration
             var config = Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(),
@@ -360,6 +358,13 @@ namespace Ch.Cyberduck.Core.Preferences
                     Log.warn($"Failure while reading {config}", e);
                 }
             }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void SetUWPDefaults()
+        {
+            this.setDefault("update.check", $"{false}");
+            this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
         }
 
         private string TryToMatchLocale(string sysLocale, List appLocales)
