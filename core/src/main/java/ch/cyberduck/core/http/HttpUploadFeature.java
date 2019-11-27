@@ -116,7 +116,7 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
         }
         // Obtain locally-calculated MD5 hash.
         final Checksum expected = Checksum.parse(Hex.encodeHexString(digest.digest()));
-        if(!ObjectUtils.notEqual(expected.algorithm, checksum.algorithm)) {
+        if(ObjectUtils.notEqual(expected.algorithm, checksum.algorithm)) {
             log.warn(String.format("ETag %s returned by server is %s but expected %s", checksum.hash, checksum.algorithm, expected.algorithm));
         }
         else {
