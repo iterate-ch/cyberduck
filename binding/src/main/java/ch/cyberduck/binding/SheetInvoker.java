@@ -105,10 +105,10 @@ public class SheetInvoker extends ProxyController {
             // No need to call invoke on main thread
             if(controller != null) {
                 controller.loadBundle();
-                return this.beginSheet(controller.window());
+                this.beginSheet(controller.window());
             }
             else {
-                return this.beginSheet(window);
+                this.beginSheet(window);
             }
         }
         else {
@@ -131,18 +131,17 @@ public class SheetInvoker extends ProxyController {
             }
             // Synchronize on parent controller. Only display one sheet at once.
             Uninterruptibles.awaitUninterruptibly(signal);
-            return returncode;
         }
+        return returncode;
     }
 
-    protected int beginSheet(final NSWindow sheet) {
+    protected void beginSheet(final NSWindow sheet) {
         parent.makeKeyAndOrderFront(null);
         application.beginSheet(sheet, //sheet
             this.parentWindow(), // modalForWindow
             this.id(), // modalDelegate
             Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
             null); //context
-        return returncode;
     }
 
     /**
