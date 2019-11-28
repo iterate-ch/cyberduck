@@ -20,6 +20,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Bulk;
 import ch.cyberduck.core.features.Delete;
@@ -86,9 +87,10 @@ public class SDSEncryptionBulkFeature implements Bulk<Void> {
                             final Path file = entry.getKey().remote;
                             final Path container = new PathContainerService().getContainer(file);
                             if(rooms.get(container)) {
-                                background.operate(session, callback, file.withAttributes(new PathAttributes(file.attributes()).withVersionId(
-                                    entry.getValue().getVersion().id
-                                )));
+                                final VersionId version = entry.getValue().getVersion();
+                                if(null != version) {
+                                    background.operate(session, callback, file.withAttributes(new PathAttributes(file.attributes()).withVersionId(version.id)));
+                                }
                             }
                         }
                     }
