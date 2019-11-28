@@ -339,25 +339,6 @@ namespace Ch.Cyberduck.Core.Preferences
             {
                 SetUWPDefaults();
             }
-            // Apply global configuration
-            var config = Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(),
-                "default.properties");
-            if (File.Exists(config))
-            {
-                try
-                {
-                    var properties = new java.util.Properties();
-                    properties.load(new FileInputStream(config));
-                    foreach (var key in Utils.ConvertFromJavaList<String>(properties.keySet()))
-                    {
-                        setDefault(key, properties.getProperty(key));
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.warn($"Failure while reading {config}", e);
-                }
-            }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
