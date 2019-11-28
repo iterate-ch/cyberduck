@@ -98,7 +98,7 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
     public Local select(final Local identity) throws LoginCanceledException {
         final SheetInvoker sheet = new SheetInvoker(new DisabledSheetCallback(), parent, select) {
             @Override
-            public int beginSheet(final NSWindow window) {
+            public void beginSheet(final NSWindow window) {
                 select = NSOpenPanel.openPanel();
                 select.setCanChooseDirectories(false);
                 select.setCanChooseFiles(true);
@@ -107,7 +107,6 @@ public final class PromptLoginCallback extends PromptPasswordCallback implements
                 select.setPrompt(LocaleFactory.localizedString("Choose"));
                 select.beginSheetForDirectory(LocalFactory.get("~/.ssh").getAbsolute(),
                     null, parent.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null);
-                return this.getSelectedOption();
             }
         };
         final int option = sheet.beginSheet();
