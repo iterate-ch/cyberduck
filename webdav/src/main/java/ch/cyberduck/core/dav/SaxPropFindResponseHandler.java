@@ -61,7 +61,6 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
     private static final class SaxHandler extends DefaultHandler {
 
         private Multistatus multistatus;
-
         private Response response;
         private Propstat propstat;
         private Prop prop;
@@ -70,14 +69,8 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
         private Activelock activelock;
         private Locktoken locktoken;
 
-        private StringBuilder data;
-        private Element root;
-
-        @Override
-        public void startDocument() {
-            multistatus = new Multistatus();
-            root = SardineUtil.createElement(SardineUtil.createQNameWithCustomNamespace("root"));
-        }
+        private final StringBuilder text = new StringBuilder();
+        private final Element root = SardineUtil.createElement(SardineUtil.createQNameWithCustomNamespace("root"));
 
         @Override
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
@@ -131,29 +124,28 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
                     type.setCollection(new Collection());
                     break;
             }
-            data = new StringBuilder();
+            text.setLength(0);
+            text.trimToSize();
         }
 
         @Override
         public void characters(final char[] ch, final int start, final int length) {
-            data.append(new String(ch, start, length));
+            text.append(new String(ch, start, length));
         }
 
         @Override
         public void endElement(final String uri, final String localName, final String qName) {
-            if(StringUtils.isBlank(data.toString())) {
+            if(StringUtils.isBlank(text.toString())) {
                 return;
             }
             if(response != null) {
                 switch(localName) {
                     case "href": {
                         if(locktoken != null) {
-                            locktoken.getHref().add(data.toString());
+                            locktoken.getHref().add(text.toString());
                         }
                         else {
-                            if(response != null) {
-                                response.getHref().add(data.toString());
-                            }
+                            response.getHref().add(text.toString());
                         }
                         break;
                     }
@@ -162,7 +154,7 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
             if(propstat != null) {
                 switch(localName) {
                     case "status": {
-                        propstat.setStatus(data.toString());
+                        propstat.setStatus(text.toString());
                         break;
                     }
                 }
@@ -171,49 +163,49 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
                 switch(localName) {
                     case "creationdate": {
                         final Creationdate value = new Creationdate();
-                        value.getContent().add(data.toString());
+                        value.getContent().add(text.toString());
                         prop.setCreationdate(value);
                         break;
                     }
                     case "displayname": {
                         final Displayname value = new Displayname();
-                        value.getContent().add(data.toString());
+                        value.getContent().add(text.toString());
                         prop.setDisplayname(value);
                         break;
                     }
                     case "getcontentlength": {
                         final Getcontentlength value = new Getcontentlength();
-                        value.getContent().add(data.toString());
+                        value.getContent().add(text.toString());
                         prop.setGetcontentlength(value);
                         break;
                     }
                     case "getcontenttype": {
                         final Getcontenttype value = new Getcontenttype();
-                        value.getContent().add(data.toString());
+                        value.getContent().add(text.toString());
                         prop.setGetcontenttype(value);
                         break;
                     }
                     case "getlastmodified": {
                         final Getlastmodified value = new Getlastmodified();
-                        value.getContent().add(data.toString());
+                        value.getContent().add(text.toString());
                         prop.setGetlastmodified(value);
                         break;
                     }
                     case "getetag": {
                         final Getetag value = new Getetag();
-                        value.getContent().add(data.toString());
+                        value.getContent().add(text.toString());
                         prop.setGetetag(value);
                         break;
                     }
                     case "lastmodified_server": {
                         final Element element = SardineUtil.createElement(root, DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
-                        element.setTextContent(data.toString());
+                        element.setTextContent(text.toString());
                         prop.getAny().add(element);
                         break;
                     }
                     case "lastmodified": {
                         final Element element = SardineUtil.createElement(root, DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE);
-                        element.setTextContent(data.toString());
+                        element.setTextContent(text.toString());
                         prop.getAny().add(element);
                         break;
                     }
@@ -247,9 +239,11 @@ public class SaxPropFindResponseHandler extends MultiStatusResponseHandler {
             }
             if(!SardineUtil.DEFAULT_NAMESPACE_URI.equals(uri)) {
                 // Custom property
-                final Element element = SardineUtil.createElement(root, new QName(uri, localName, SardineUtil.DEFAULT_NAMESPACE_PREFIX));
-                element.setTextContent(data.toString());
-                prop.getAny().add(element);
+                if(prop != null) {
+                    final Element element = SardineUtil.createElement(root, new QName(uri, localName, SardineUtil.DEFAULT_NAMESPACE_PREFIX));
+                    element.setTextContent(text.toString());
+                    prop.getAny().add(element);
+                }
             }
         }
 
