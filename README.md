@@ -24,6 +24,17 @@ Libre file transfer client for macOS and Windows. Command line interface (CLI) f
   - [MSBuild Community Tasks](https://github.com/loresoft/msbuildtasks)
 - [Bonjour SDK for Windows](https://developer.apple.com/downloads/index.action?q=Bonjour%20SDK%20for%20Windows)
 
+#### Chocolatey
+```
+choco install adoptopenjdk8 maven
+choco install visualstudio2019buildtools
+choco install wixtoolset
+choco install visualstudio2019-workload-manageddesktopbuildtools --params "--add Microsoft.Net.Component.4.7.TargetingPack"
+choco install visualstudio2019-workload-netcorebuildtools
+choco install visualstudio2019-workload-universalbuildtools
+choco install visualstudio2019-workload-vctools --params "--add Microsoft.VisualStudio.Component.Windows10SDK.17763 --add Microsoft.VisualStudio.Component.VC.v141.x86.x64"
+```
+
 ## Building
 
 Run `mvn verify -DskipTests -DskipSign` to build without running any tests and skip codesign.
