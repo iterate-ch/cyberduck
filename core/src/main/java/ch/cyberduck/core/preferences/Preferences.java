@@ -34,6 +34,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.diagnostics.DefaultInetAddressReachability;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
 import ch.cyberduck.core.i18n.Locales;
 import ch.cyberduck.core.io.watchservice.NIOEventWatchService;
@@ -83,6 +84,8 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.Security;
@@ -99,8 +102,7 @@ import java.util.TimeZone;
 import com.google.common.collect.ImmutableMap;
 
 /**
- * Holding all application preferences. Default values get overwritten when loading
- * the <code>PREFERENCES_FILE</code>.
+ * Holding all application preferences. Default values get overwritten when loading the <code>PREFERENCES_FILE</code>.
  * Singleton class.
  */
 public abstract class Preferences implements Locales {
@@ -216,6 +218,21 @@ public abstract class Preferences implements Locales {
     protected void setDefaults(final Properties properties) {
         for(Map.Entry<Object, Object> property : properties.entrySet()) {
             this.setDefault(property.getKey().toString(), property.getValue().toString());
+        }
+    }
+
+    protected void setDefaults(final Local defaults) {
+        if(defaults.exists()) {
+            final Properties props = new Properties();
+            try (final InputStream in = defaults.getInputStream()) {
+                props.load(in);
+            }
+            catch(AccessDeniedException | IOException e) {
+                // Ignore failure loading configuration
+            }
+            for(Map.Entry<Object, Object> entry : props.entrySet()) {
+                this.setDefault(entry.getKey().toString(), entry.getValue().toString());
+            }
         }
     }
 
@@ -1332,16 +1349,14 @@ public abstract class Preferences implements Locales {
     public abstract void load();
 
     /**
-     * @return The preferred locale of all localizations available
-     * in this application bundle
+     * @return The preferred locale of all localizations available in this application bundle
      */
     public String locale() {
         return this.applicationLocales().iterator().next();
     }
 
     /**
-     * The localizations available in this application bundle
-     * sorted by preference by the user.
+     * The localizations available in this application bundle sorted by preference by the user.
      *
      * @return Available locales in application bundle
      */

@@ -18,14 +18,7 @@ package ch.cyberduck.core.preferences;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.exception.AccessDeniedException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-import java.util.Properties;
 
 public final class PreferencesFactory {
     private PreferencesFactory() {
@@ -41,19 +34,7 @@ public final class PreferencesFactory {
         preferences.setDefaults();
         preferences.setLogging();
         // Apply global configuration
-        final Local defaults = LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "default.properties");
-        if(defaults.exists()) {
-            final Properties props = new Properties();
-            try (final InputStream in = defaults.getInputStream()) {
-                props.load(in);
-            }
-            catch(AccessDeniedException | IOException e) {
-                // Ignore failure loading configuration
-            }
-            for(Map.Entry<Object, Object> entry : props.entrySet()) {
-                preferences.setDefault(entry.getKey().toString(), entry.getValue().toString());
-            }
-        }
+        preferences.setDefaults(LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "default.properties"));
     }
 
     public static synchronized Preferences get() {
