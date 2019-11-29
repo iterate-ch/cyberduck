@@ -124,8 +124,17 @@ public class SDSMoveFeature implements Move {
             return false;
         }
         final SDSPermissionsFeature acl = new SDSPermissionsFeature(session, nodeid);
+        if(!new SimplePathPredicate(source.getParent()).test(target.getParent())) {
+            // Change parent node
+            final boolean permissions = acl.containsRole(source, SDSPermissionsFeature.CHANGE_ROLE) &&
+                acl.containsRole(source, SDSPermissionsFeature.DELETE_ROLE) &&
+                acl.containsRole(target, SDSPermissionsFeature.CREATE_ROLE);
+            if(!permissions) {
+                log.warn(String.format("Deny move of %s with missing permissions for user", source));
+            }
+            return permissions;
+        }
         final boolean permissions = acl.containsRole(source, SDSPermissionsFeature.CHANGE_ROLE) &&
-            acl.containsRole(source, SDSPermissionsFeature.DELETE_ROLE) &&
             acl.containsRole(target, SDSPermissionsFeature.CREATE_ROLE);
         if(!permissions) {
             log.warn(String.format("Deny move of %s with missing permissions for user", source));
