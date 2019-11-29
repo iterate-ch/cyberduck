@@ -15,6 +15,7 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -79,31 +80,45 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                 for(KeyValueEntry entry : configuration) {
                     if("manageDownloadShare".equals(entry.getKey())) {
                         if("false".equalsIgnoreCase(entry.getValue())) {
+                            log.warn(String.format("Not supported for file %s with manageDownloadShare=false", file));
                             return false;
                         }
                     }
                 }
                 if(file.isDirectory()) {
                     if(nodeid.isEncrypted(containerService.getContainer(file))) {
+                        log.warn(String.format("Not supported for file %s in encrypted room", file));
                         // In encrypted rooms only files can be shared
                         return false;
                     }
                 }
-                return new SDSPermissionsFeature(session, nodeid).containsRole(file, SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE);
+                final Acl.Role role = SDSPermissionsFeature.DOWNLOAD_SHARE_ROLE;
+                final boolean found = new SDSPermissionsFeature(session, nodeid).containsRole(file, role);
+                if(!found) {
+                    log.warn(String.format("Not supported for file %s with missing role %s", file, role));
+                }
+                return found;
             }
             case upload: {
                 // An upload account can be created for directories and rooms only
                 if(!file.isDirectory()) {
+                    log.warn(String.format("Not supported for file %s", file));
                     return false;
                 }
                 for(KeyValueEntry entry : configuration) {
                     if("manageUploadShare".equals(entry.getKey())) {
                         if("false".equalsIgnoreCase(entry.getValue())) {
+                            log.warn(String.format("Not supported for file %s with manageUploadShare=false", file));
                             return false;
                         }
                     }
                 }
-                return new SDSPermissionsFeature(session, nodeid).containsRole(file, SDSPermissionsFeature.UPLOAD_SHARE_ROLE);
+                final Acl.Role role = SDSPermissionsFeature.UPLOAD_SHARE_ROLE;
+                final boolean found = new SDSPermissionsFeature(session, nodeid).containsRole(file, role);
+                if(!found) {
+                    log.warn(String.format("Not supported for file %s with missing role %s", file, role));
+                }
+                return found;
             }
         }
         return false;
