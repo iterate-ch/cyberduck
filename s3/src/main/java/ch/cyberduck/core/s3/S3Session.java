@@ -58,7 +58,6 @@ import ch.cyberduck.core.shared.DelegatingSchedulerFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
-import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.STSCredentialsConfigurator;
@@ -92,15 +91,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
     public S3Session(final Host host) {
-        super(host, S3Session.isAwsHostname(host.getHostname()) ?
-            new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()) :
-            new ThreadLocalHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
+        super(host, new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, S3Session.isAwsHostname(host.getHostname()) ?
-            new LaxHostnameDelegatingTrustManager(trust, host.getHostname()) :
-            new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+        super(host, new LaxHostnameDelegatingTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
