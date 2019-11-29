@@ -66,6 +66,8 @@ public class SDSMultipartWriteFeatureTest extends AbstractSDSTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
+        // Test override with wrong flag
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), writer.write(test, new TransferStatus(status).exists(false), new DisabledConnectionCallback()));
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

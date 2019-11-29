@@ -35,7 +35,6 @@ import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sds.SDSSession;
 import ch.cyberduck.core.sds.SDSWriteFeature;
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -67,10 +66,6 @@ import java.util.EnumSet;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.dracoon.sdk.crypto.CryptoSystemException;
-import com.dracoon.sdk.crypto.InvalidFileKeyException;
-import com.dracoon.sdk.crypto.InvalidKeyPairException;
 
 import static org.junit.Assert.*;
 
@@ -209,12 +204,12 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             final SDSWriteFeature write = new SDSWriteFeature(this, fileid) {
                 @Override
-                protected VersionId complete(final String uploadId, final TransferStatus status) throws IOException, InvalidFileKeyException, InvalidKeyPairException, CryptoSystemException, BackgroundException, ApiException {
+                protected VersionId complete(final Path file, final String uploadToken, final TransferStatus status) throws BackgroundException {
                     if(!failed.get()) {
                         failed.set(true);
-                        throw new SocketTimeoutException();
+                        throw new DefaultIOExceptionMappingService().map(new SocketTimeoutException());
                     }
-                    return super.complete(uploadId, status);
+                    return super.complete(file, uploadToken, status);
                 }
             };
 
