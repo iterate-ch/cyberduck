@@ -30,12 +30,15 @@ import ch.cyberduck.binding.foundation.NSRange;
 import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.DisabledTranscriptListener;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SessionPoolFactory;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -109,7 +112,8 @@ public final class TransferController extends WindowController implements Transf
     private final BandwidthMenuDelegate bandwidthMenuDelegate
         = new BandwidthMenuDelegate();
 
-    private final UnifiedSystemLogTranscriptListener transcript = new UnifiedSystemLogTranscriptListener();
+    private final TranscriptListener transcript =
+        Factory.Platform.osversion.matches("10\\.(8|9|10|11).*") ? new DisabledTranscriptListener() : new UnifiedSystemLogTranscriptListener();
 
     @Outlet
     private NSProgressIndicator transferSpinner;
