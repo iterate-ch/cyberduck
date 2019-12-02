@@ -36,8 +36,8 @@ choco install visualstudio2019-workload-vctools --params "--add Microsoft.Visual
 Restart your machine after installing these components.
 
 Additional `%PATH%`:
-* `%ProgramFiles(x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin`
-* `%ProgramFiles(x86)\Windows Kits\10\bin\10.0.17763.0\x64`
+* `%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin`
+* `%ProgramFiles(x86)%\Windows Kits\10\bin\10.0.17763.0\x64`
 
 ## Building
 
