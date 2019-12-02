@@ -13,19 +13,20 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import org.joda.time.DateTime;
-
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.DateTime;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class FileLockRequest {
   @JsonProperty("owner")
   private String owner = null;
@@ -39,10 +40,10 @@ public class FileLockRequest {
   }
 
    /**
-    * The name of the user locking the item
+   * The name of the user locking the item
    * @return owner
   **/
-   @ApiModelProperty(value = "The name of the user locking the item")
+  @ApiModelProperty(value = "The name of the user locking the item")
   public String getOwner() {
     return owner;
   }
@@ -57,10 +58,10 @@ public class FileLockRequest {
   }
 
    /**
-    * The lock expire, between now and 1 year
+   * The lock expire, between now and 1 year
    * @return expire
   **/
-   @ApiModelProperty(value = "The lock expire, between now and 1 year")
+  @ApiModelProperty(value = "The lock expire, between now and 1 year")
   public DateTime getExpire() {
     return expire;
   }

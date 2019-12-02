@@ -1,18 +1,20 @@
 package ch.cyberduck.core.storegate.io.swagger.client.api;
 
-import ch.cyberduck.core.storegate.io.swagger.client.ApiClient;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
+import ch.cyberduck.core.storegate.io.swagger.client.ApiClient;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiResponse;
 import ch.cyberduck.core.storegate.io.swagger.client.Configuration;
 import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
+
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class UploadApi {
   private ApiClient apiClient;
 
@@ -85,8 +87,8 @@ public class UploadApi {
     return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Upload a file using a multipart request containing first a metadata (see reponse) part and a then the filedata part.
-   *
+   * Upload a file using a multipart request containing first a metadata (see reponse) part and a then the filedata part.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
+   * 
    * @return ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata
    * @throws ApiException if fails to make API call
    */
@@ -95,8 +97,8 @@ public class UploadApi {
       }
 
   /**
-   * Upload a file using a multipart request containing first a metadata (see reponse) part and a then the filedata part.
-   *
+   * Upload a file using a multipart request containing first a metadata (see reponse) part and a then the filedata part.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
+   * 
    * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata&gt;
    * @throws ApiException if fails to make API call
    */
@@ -126,12 +128,11 @@ public class UploadApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-      GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata>() {
-      };
+    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Upload a file to a share using a multipart request containing first a metadata (see reponse) part and a then the filedata part.
+   * Upload a file to a share using a multipart request containing first a metadata (see reponse) part and a then the filedata part.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param shareid The shareId (required)
    * @return ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata
@@ -142,7 +143,7 @@ public class UploadApi {
       }
 
   /**
-   * Upload a file to a share using a multipart request containing first a metadata (see reponse) part and a then the filedata part.
+   * Upload a file to a share using a multipart request containing first a metadata (see reponse) part and a then the filedata part.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param shareid The shareId (required)
    * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata&gt;
@@ -180,12 +181,11 @@ public class UploadApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-      GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata>() {
-      };
+    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata>() {};
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Starts a resumable (chunked) upload.
+   * Starts a resumable (chunked) upload.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param metadata The metadata (required)
    * @return String
@@ -196,7 +196,7 @@ public class UploadApi {
       }
 
   /**
-   * Starts a resumable (chunked) upload.
+   * Starts a resumable (chunked) upload.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param metadata The metadata (required)
    * @return ApiResponse&lt;String&gt;
@@ -346,8 +346,7 @@ public class UploadApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-      GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata>() {
-      };
+    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.FileMetadata>() {};
     return apiClient.invokeAPI(localVarPath, "PUT", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
 }

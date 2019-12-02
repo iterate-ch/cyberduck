@@ -15,13 +15,14 @@ package ch.cyberduck.core.storegate.io.swagger.client.auth;
 
 import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+
 import java.util.Map;
+import java.util.List;
 
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class HttpBasicAuth implements Authentication {
   private String username;
   private String password;
@@ -48,6 +49,6 @@ public class HttpBasicAuth implements Authentication {
       return;
     }
     String str = (username == null ? "" : username) + ":" + (password == null ? "" : password);
-      headerParams.put("Authorization", "Basic " + Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8)));
+    headerParams.put("Authorization", "Basic " + Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8)));
   }
 }

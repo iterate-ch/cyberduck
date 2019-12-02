@@ -13,19 +13,23 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
+import java.util.Arrays;
+import ch.cyberduck.core.storegate.io.swagger.client.model.MediaFolder;
+import ch.cyberduck.core.storegate.io.swagger.client.model.MediaItem;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Contains a list of mediaItems
  */
 @ApiModel(description = "Contains a list of mediaItems")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class MediaItemContents {
   @JsonProperty("parent")
   private MediaFolder parent = null;
@@ -61,7 +65,7 @@ public class MediaItemContents {
 
   public MediaItemContents addMediaItemsItem(MediaItem mediaItemsItem) {
     if (this.mediaItems == null) {
-        this.mediaItems = new ArrayList<>();
+      this.mediaItems = new ArrayList<>();
     }
     this.mediaItems.add(mediaItemsItem);
     return this;

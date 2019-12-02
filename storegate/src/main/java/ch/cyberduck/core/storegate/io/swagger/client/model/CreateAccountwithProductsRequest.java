@@ -15,7 +15,7 @@ package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import ch.cyberduck.core.storegate.io.swagger.client.model.CreateAccountSalepackage;
+import ch.cyberduck.core.storegate.io.swagger.client.model.CreateAccountSalepackageProducts;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdatePaymentRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UserDataRequest;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -29,9 +29,9 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description = "A CreateAccountRequest object")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
-public class CreateAccountRequest {
+public class CreateAccountwithProductsRequest {
   @JsonProperty("salepackage")
-  private CreateAccountSalepackage salepackage = null;
+  private CreateAccountSalepackageProducts salepackage = null;
 
   @JsonProperty("userData")
   private UserDataRequest userData = null;
@@ -60,7 +60,7 @@ public class CreateAccountRequest {
   @JsonProperty("lastName")
   private String lastName = null;
 
-  public CreateAccountRequest salepackage(CreateAccountSalepackage salepackage) {
+  public CreateAccountwithProductsRequest salepackage(CreateAccountSalepackageProducts salepackage) {
     this.salepackage = salepackage;
     return this;
   }
@@ -70,15 +70,15 @@ public class CreateAccountRequest {
    * @return salepackage
   **/
   @ApiModelProperty(value = "The salepackage")
-  public CreateAccountSalepackage getSalepackage() {
+  public CreateAccountSalepackageProducts getSalepackage() {
     return salepackage;
   }
 
-  public void setSalepackage(CreateAccountSalepackage salepackage) {
+  public void setSalepackage(CreateAccountSalepackageProducts salepackage) {
     this.salepackage = salepackage;
   }
 
-  public CreateAccountRequest userData(UserDataRequest userData) {
+  public CreateAccountwithProductsRequest userData(UserDataRequest userData) {
     this.userData = userData;
     return this;
   }
@@ -96,7 +96,7 @@ public class CreateAccountRequest {
     this.userData = userData;
   }
 
-  public CreateAccountRequest paymentData(UpdatePaymentRequest paymentData) {
+  public CreateAccountwithProductsRequest paymentData(UpdatePaymentRequest paymentData) {
     this.paymentData = paymentData;
     return this;
   }
@@ -114,7 +114,7 @@ public class CreateAccountRequest {
     this.paymentData = paymentData;
   }
 
-  public CreateAccountRequest saleReference(String saleReference) {
+  public CreateAccountwithProductsRequest saleReference(String saleReference) {
     this.saleReference = saleReference;
     return this;
   }
@@ -132,7 +132,7 @@ public class CreateAccountRequest {
     this.saleReference = saleReference;
   }
 
-  public CreateAccountRequest username(String username) {
+  public CreateAccountwithProductsRequest username(String username) {
     this.username = username;
     return this;
   }
@@ -150,7 +150,7 @@ public class CreateAccountRequest {
     this.username = username;
   }
 
-  public CreateAccountRequest password(String password) {
+  public CreateAccountwithProductsRequest password(String password) {
     this.password = password;
     return this;
   }
@@ -168,7 +168,7 @@ public class CreateAccountRequest {
     this.password = password;
   }
 
-  public CreateAccountRequest signinId(String signinId) {
+  public CreateAccountwithProductsRequest signinId(String signinId) {
     this.signinId = signinId;
     return this;
   }
@@ -186,7 +186,7 @@ public class CreateAccountRequest {
     this.signinId = signinId;
   }
 
-  public CreateAccountRequest email(String email) {
+  public CreateAccountwithProductsRequest email(String email) {
     this.email = email;
     return this;
   }
@@ -204,7 +204,7 @@ public class CreateAccountRequest {
     this.email = email;
   }
 
-  public CreateAccountRequest firstName(String firstName) {
+  public CreateAccountwithProductsRequest firstName(String firstName) {
     this.firstName = firstName;
     return this;
   }
@@ -222,7 +222,7 @@ public class CreateAccountRequest {
     this.firstName = firstName;
   }
 
-  public CreateAccountRequest lastName(String lastName) {
+  public CreateAccountwithProductsRequest lastName(String lastName) {
     this.lastName = lastName;
     return this;
   }
@@ -249,17 +249,17 @@ public class CreateAccountRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    CreateAccountRequest createAccountRequest = (CreateAccountRequest) o;
-    return Objects.equals(this.salepackage, createAccountRequest.salepackage) &&
-        Objects.equals(this.userData, createAccountRequest.userData) &&
-        Objects.equals(this.paymentData, createAccountRequest.paymentData) &&
-        Objects.equals(this.saleReference, createAccountRequest.saleReference) &&
-        Objects.equals(this.username, createAccountRequest.username) &&
-        Objects.equals(this.password, createAccountRequest.password) &&
-        Objects.equals(this.signinId, createAccountRequest.signinId) &&
-        Objects.equals(this.email, createAccountRequest.email) &&
-        Objects.equals(this.firstName, createAccountRequest.firstName) &&
-        Objects.equals(this.lastName, createAccountRequest.lastName);
+    CreateAccountwithProductsRequest createAccountwithProductsRequest = (CreateAccountwithProductsRequest) o;
+    return Objects.equals(this.salepackage, createAccountwithProductsRequest.salepackage) &&
+        Objects.equals(this.userData, createAccountwithProductsRequest.userData) &&
+        Objects.equals(this.paymentData, createAccountwithProductsRequest.paymentData) &&
+        Objects.equals(this.saleReference, createAccountwithProductsRequest.saleReference) &&
+        Objects.equals(this.username, createAccountwithProductsRequest.username) &&
+        Objects.equals(this.password, createAccountwithProductsRequest.password) &&
+        Objects.equals(this.signinId, createAccountwithProductsRequest.signinId) &&
+        Objects.equals(this.email, createAccountwithProductsRequest.email) &&
+        Objects.equals(this.firstName, createAccountwithProductsRequest.firstName) &&
+        Objects.equals(this.lastName, createAccountwithProductsRequest.lastName);
   }
 
   @Override
@@ -271,7 +271,7 @@ public class CreateAccountRequest {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class CreateAccountRequest {\n");
+    sb.append("class CreateAccountwithProductsRequest {\n");
     
     sb.append("    salepackage: ").append(toIndentedString(salepackage)).append("\n");
     sb.append("    userData: ").append(toIndentedString(userData)).append("\n");

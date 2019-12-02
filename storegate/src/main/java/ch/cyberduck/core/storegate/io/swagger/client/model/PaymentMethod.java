@@ -14,18 +14,20 @@
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class PaymentMethod {
   @JsonProperty("id")
   private String id = null;
@@ -72,6 +74,12 @@ public class PaymentMethod {
 
   @JsonProperty("type")
   private TypeEnum type = null;
+
+  @JsonProperty("countries")
+  private List<String> countries = null;
+
+  @JsonProperty("currencies")
+  private List<String> currencies = null;
 
   public PaymentMethod id(String id) {
     this.id = id;
@@ -127,6 +135,58 @@ public class PaymentMethod {
     this.type = type;
   }
 
+  public PaymentMethod countries(List<String> countries) {
+    this.countries = countries;
+    return this;
+  }
+
+  public PaymentMethod addCountriesItem(String countriesItem) {
+    if (this.countries == null) {
+      this.countries = new ArrayList<>();
+    }
+    this.countries.add(countriesItem);
+    return this;
+  }
+
+   /**
+   * Payment method list of countries
+   * @return countries
+  **/
+  @ApiModelProperty(value = "Payment method list of countries")
+  public List<String> getCountries() {
+    return countries;
+  }
+
+  public void setCountries(List<String> countries) {
+    this.countries = countries;
+  }
+
+  public PaymentMethod currencies(List<String> currencies) {
+    this.currencies = currencies;
+    return this;
+  }
+
+  public PaymentMethod addCurrenciesItem(String currenciesItem) {
+    if (this.currencies == null) {
+      this.currencies = new ArrayList<>();
+    }
+    this.currencies.add(currenciesItem);
+    return this;
+  }
+
+   /**
+   * Payment method list of currencies
+   * @return currencies
+  **/
+  @ApiModelProperty(value = "Payment method list of currencies")
+  public List<String> getCurrencies() {
+    return currencies;
+  }
+
+  public void setCurrencies(List<String> currencies) {
+    this.currencies = currencies;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -139,12 +199,14 @@ public class PaymentMethod {
     PaymentMethod paymentMethod = (PaymentMethod) o;
     return Objects.equals(this.id, paymentMethod.id) &&
         Objects.equals(this.name, paymentMethod.name) &&
-        Objects.equals(this.type, paymentMethod.type);
+        Objects.equals(this.type, paymentMethod.type) &&
+        Objects.equals(this.countries, paymentMethod.countries) &&
+        Objects.equals(this.currencies, paymentMethod.currencies);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, type);
+    return Objects.hash(id, name, type, countries, currencies);
   }
 
 
@@ -156,6 +218,8 @@ public class PaymentMethod {
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    countries: ").append(toIndentedString(countries)).append("\n");
+    sb.append("    currencies: ").append(toIndentedString(currencies)).append("\n");
     sb.append("}");
     return sb.toString();
   }

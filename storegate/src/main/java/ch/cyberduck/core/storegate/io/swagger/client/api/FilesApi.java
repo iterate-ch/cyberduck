@@ -1,10 +1,13 @@
 package ch.cyberduck.core.storegate.io.swagger.client.api;
 
-import ch.cyberduck.core.storegate.io.swagger.client.ApiClient;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
+import ch.cyberduck.core.storegate.io.swagger.client.ApiClient;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiResponse;
 import ch.cyberduck.core.storegate.io.swagger.client.Configuration;
 import ch.cyberduck.core.storegate.io.swagger.client.Pair;
+
+import javax.ws.rs.core.GenericType;
+
 import ch.cyberduck.core.storegate.io.swagger.client.model.CopyFileRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateFolderRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileContents;
@@ -13,13 +16,12 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.MoveFileRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.SearchFileContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateFilePropertiesRequest;
 
-import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class FilesApi {
   private ApiClient apiClient;
 
@@ -40,7 +42,7 @@ public class FilesApi {
   }
 
   /**
-   * Copy a resource with overwrite mode option.
+   * Copy a resource with overwrite mode option.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param id The id of the reaource to copy (required)
    * @param copyFileRequest The request data (required)
@@ -52,7 +54,7 @@ public class FilesApi {
       }
 
   /**
-   * Copy a resource with overwrite mode option.
+   * Copy a resource with overwrite mode option.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param id The id of the reaource to copy (required)
    * @param copyFileRequest The request data (required)
@@ -100,7 +102,7 @@ public class FilesApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Creates a new file of type folder.
+   * Creates a new file of type folder.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param createFolderRequest createFolderRequest (required)
    * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
@@ -111,7 +113,7 @@ public class FilesApi {
       }
 
   /**
-   * Creates a new file of type folder.
+   * Creates a new file of type folder.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param createFolderRequest createFolderRequest (required)
    * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
@@ -152,7 +154,7 @@ public class FilesApi {
     return apiClient.invokeAPI(localVarPath, "POST", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Deletes a directory or file.
+   * Deletes a directory or file.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param id The resource to delete. (required)
    * @throws ApiException if fails to make API call
@@ -163,7 +165,7 @@ public class FilesApi {
   }
 
   /**
-   * Deletes a directory or file.
+   * Deletes a directory or file.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param id The resource to delete. (required)
    * @throws ApiException if fails to make API call
@@ -204,7 +206,7 @@ public class FilesApi {
     return apiClient.invokeAPI(localVarPath, "DELETE", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, null);
   }
   /**
-   * Deletes a file version.
+   * Deletes a file version.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param id The file to delete version from. (required)
    * @param version What version to delete. (required)
@@ -216,7 +218,7 @@ public class FilesApi {
   }
 
   /**
-   * Deletes a file version.
+   * Deletes a file version.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param id The file to delete version from. (required)
    * @param version What version to delete. (required)
@@ -809,7 +811,7 @@ public class FilesApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Move or rename a file with overwrite mode option.
+   * Move or rename a file with overwrite mode option.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param id The id of the reaource to move (required)
    * @param moveFileRequest The request data (required)
@@ -821,7 +823,7 @@ public class FilesApi {
   }
 
   /**
-   * Move or rename a file with overwrite mode option.
+   * Move or rename a file with overwrite mode option.              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param id The id of the reaource to move (required)
    * @param moveFileRequest The request data (required)
@@ -953,7 +955,7 @@ public class FilesApi {
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**
-   * Update file properties
+   * Update file properties              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param id  (required)
    * @param updateFilePropertiesRequest  (required)
@@ -965,7 +967,7 @@ public class FilesApi {
       }
 
   /**
-   * Update file properties
+   * Update file properties              Use header \&quot;X-Lock-Id\&quot; to send lock id if needed
    * 
    * @param id  (required)
    * @param updateFilePropertiesRequest  (required)

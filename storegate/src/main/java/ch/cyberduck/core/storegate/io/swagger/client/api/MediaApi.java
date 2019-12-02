@@ -1,10 +1,13 @@
 package ch.cyberduck.core.storegate.io.swagger.client.api;
 
-import ch.cyberduck.core.storegate.io.swagger.client.ApiClient;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
+import ch.cyberduck.core.storegate.io.swagger.client.ApiClient;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiResponse;
 import ch.cyberduck.core.storegate.io.swagger.client.Configuration;
 import ch.cyberduck.core.storegate.io.swagger.client.Pair;
+
+import javax.ws.rs.core.GenericType;
+
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateMediaFolderRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateMediaItemRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.MediaFolder;
@@ -14,13 +17,12 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.MediaItemContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateMediaFolderRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.UpdateMediaItemRequest;
 
-import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class MediaApi {
   private ApiClient apiClient;
 

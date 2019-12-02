@@ -14,8 +14,10 @@
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -23,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * A CreateAccountSalepackageRequest object
  */
 @ApiModel(description = "A CreateAccountSalepackageRequest object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class CreateAccountSalepackage {
   @JsonProperty("partnerId")
   private String partnerId = null;
@@ -51,6 +53,9 @@ public class CreateAccountSalepackage {
 
   @JsonProperty("syncId")
   private String syncId = null;
+
+  @JsonProperty("bankIDId")
+  private String bankIDId = null;
 
   public CreateAccountSalepackage partnerId(String partnerId) {
     this.partnerId = partnerId;
@@ -214,6 +219,24 @@ public class CreateAccountSalepackage {
     this.syncId = syncId;
   }
 
+  public CreateAccountSalepackage bankIDId(String bankIDId) {
+    this.bankIDId = bankIDId;
+    return this;
+  }
+
+   /**
+   * Optional BankIDId
+   * @return bankIDId
+  **/
+  @ApiModelProperty(value = "Optional BankIDId")
+  public String getBankIDId() {
+    return bankIDId;
+  }
+
+  public void setBankIDId(String bankIDId) {
+    this.bankIDId = bankIDId;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -232,12 +255,13 @@ public class CreateAccountSalepackage {
         Objects.equals(this.storageId, createAccountSalepackage.storageId) &&
         Objects.equals(this.multiId, createAccountSalepackage.multiId) &&
         Objects.equals(this.backupId, createAccountSalepackage.backupId) &&
-        Objects.equals(this.syncId, createAccountSalepackage.syncId);
+        Objects.equals(this.syncId, createAccountSalepackage.syncId) &&
+        Objects.equals(this.bankIDId, createAccountSalepackage.bankIDId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(partnerId, retailerId, salepackageId, trialId, campaignId, storageId, multiId, backupId, syncId);
+    return Objects.hash(partnerId, retailerId, salepackageId, trialId, campaignId, storageId, multiId, backupId, syncId, bankIDId);
   }
 
 
@@ -255,6 +279,7 @@ public class CreateAccountSalepackage {
     sb.append("    multiId: ").append(toIndentedString(multiId)).append("\n");
     sb.append("    backupId: ").append(toIndentedString(backupId)).append("\n");
     sb.append("    syncId: ").append(toIndentedString(syncId)).append("\n");
+    sb.append("    bankIDId: ").append(toIndentedString(bankIDId)).append("\n");
     sb.append("}");
     return sb.toString();
   }

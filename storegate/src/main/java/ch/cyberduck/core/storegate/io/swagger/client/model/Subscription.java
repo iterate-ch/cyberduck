@@ -13,19 +13,21 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import org.joda.time.DateTime;
-
 import java.util.Objects;
-
+import java.util.Arrays;
+import ch.cyberduck.core.storegate.io.swagger.client.model.Salepackage;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.DateTime;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class Subscription {
   @JsonProperty("salepackage")
   private Salepackage salepackage = null;
@@ -38,6 +40,9 @@ public class Subscription {
 
   @JsonProperty("expires")
   private DateTime expires = null;
+
+  @JsonProperty("redirectUrl")
+  private String redirectUrl = null;
 
   public Subscription salepackage(Salepackage salepackage) {
     this.salepackage = salepackage;
@@ -111,6 +116,24 @@ public class Subscription {
     this.expires = expires;
   }
 
+  public Subscription redirectUrl(String redirectUrl) {
+    this.redirectUrl = redirectUrl;
+    return this;
+  }
+
+   /**
+   * 
+   * @return redirectUrl
+  **/
+  @ApiModelProperty(value = "")
+  public String getRedirectUrl() {
+    return redirectUrl;
+  }
+
+  public void setRedirectUrl(String redirectUrl) {
+    this.redirectUrl = redirectUrl;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -124,12 +147,13 @@ public class Subscription {
     return Objects.equals(this.salepackage, subscription.salepackage) &&
         Objects.equals(this.hasPaymentInfo, subscription.hasPaymentInfo) &&
         Objects.equals(this.isTrial, subscription.isTrial) &&
-        Objects.equals(this.expires, subscription.expires);
+        Objects.equals(this.expires, subscription.expires) &&
+        Objects.equals(this.redirectUrl, subscription.redirectUrl);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(salepackage, hasPaymentInfo, isTrial, expires);
+    return Objects.hash(salepackage, hasPaymentInfo, isTrial, expires, redirectUrl);
   }
 
 
@@ -142,6 +166,7 @@ public class Subscription {
     sb.append("    hasPaymentInfo: ").append(toIndentedString(hasPaymentInfo)).append("\n");
     sb.append("    isTrial: ").append(toIndentedString(isTrial)).append("\n");
     sb.append("    expires: ").append(toIndentedString(expires)).append("\n");
+    sb.append("    redirectUrl: ").append(toIndentedString(redirectUrl)).append("\n");
     sb.append("}");
     return sb.toString();
   }
