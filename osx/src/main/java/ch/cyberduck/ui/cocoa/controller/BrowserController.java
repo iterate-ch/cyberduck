@@ -184,7 +184,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         = PreferencesFactory.get();
 
     private final Navigation navigation = new Navigation();
-    private final UnifiedSystemLogTranscriptListener transcript = new UnifiedSystemLogTranscriptListener();
+    private final TranscriptListener transcript =
+        Factory.Platform.osversion.matches("10\\.(8|9|10|11).*") ? new DisabledTranscriptListener() : new UnifiedSystemLogTranscriptListener();
 
     /**
      * Connection pool
