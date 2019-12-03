@@ -14,22 +14,28 @@
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.DateTime;
 
 /**
  * Server information object
  */
 @ApiModel(description = "Server information object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class Server {
   @JsonProperty("version")
   private String version = null;
 
   @JsonProperty("serverId")
   private String serverId = null;
+
+  @JsonProperty("timestamp")
+  private DateTime timestamp = null;
 
   public Server version(String version) {
     this.version = version;
@@ -67,6 +73,24 @@ public class Server {
     this.serverId = serverId;
   }
 
+  public Server timestamp(DateTime timestamp) {
+    this.timestamp = timestamp;
+    return this;
+  }
+
+   /**
+   * The time of generation
+   * @return timestamp
+  **/
+  @ApiModelProperty(value = "The time of generation")
+  public DateTime getTimestamp() {
+    return timestamp;
+  }
+
+  public void setTimestamp(DateTime timestamp) {
+    this.timestamp = timestamp;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -78,12 +102,13 @@ public class Server {
     }
     Server server = (Server) o;
     return Objects.equals(this.version, server.version) &&
-        Objects.equals(this.serverId, server.serverId);
+        Objects.equals(this.serverId, server.serverId) &&
+        Objects.equals(this.timestamp, server.timestamp);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(version, serverId);
+    return Objects.hash(version, serverId, timestamp);
   }
 
 
@@ -94,6 +119,7 @@ public class Server {
     
     sb.append("    version: ").append(toIndentedString(version)).append("\n");
     sb.append("    serverId: ").append(toIndentedString(serverId)).append("\n");
+    sb.append("    timestamp: ").append(toIndentedString(timestamp)).append("\n");
     sb.append("}");
     return sb.toString();
   }

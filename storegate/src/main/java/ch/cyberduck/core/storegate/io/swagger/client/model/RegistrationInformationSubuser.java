@@ -14,8 +14,10 @@
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -23,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class RegistrationInformationSubuser {
   @JsonProperty("partnerId")
   private String partnerId = null;
@@ -39,6 +41,9 @@ public class RegistrationInformationSubuser {
 
   @JsonProperty("salepackageName")
   private String salepackageName = null;
+
+  @JsonProperty("isBankIDLogin")
+  private Boolean isBankIDLogin = null;
 
   @JsonProperty("email")
   private String email = null;
@@ -139,6 +144,24 @@ public class RegistrationInformationSubuser {
     this.salepackageName = salepackageName;
   }
 
+  public RegistrationInformationSubuser isBankIDLogin(Boolean isBankIDLogin) {
+    this.isBankIDLogin = isBankIDLogin;
+    return this;
+  }
+
+   /**
+   * Use BankID flow
+   * @return isBankIDLogin
+  **/
+  @ApiModelProperty(value = "Use BankID flow")
+  public Boolean isIsBankIDLogin() {
+    return isBankIDLogin;
+  }
+
+  public void setIsBankIDLogin(Boolean isBankIDLogin) {
+    this.isBankIDLogin = isBankIDLogin;
+  }
+
   public RegistrationInformationSubuser email(String email) {
     this.email = email;
     return this;
@@ -208,6 +231,7 @@ public class RegistrationInformationSubuser {
         Objects.equals(this.adminName, registrationInformationSubuser.adminName) &&
         Objects.equals(this.adminCompany, registrationInformationSubuser.adminCompany) &&
         Objects.equals(this.salepackageName, registrationInformationSubuser.salepackageName) &&
+        Objects.equals(this.isBankIDLogin, registrationInformationSubuser.isBankIDLogin) &&
         Objects.equals(this.email, registrationInformationSubuser.email) &&
         Objects.equals(this.firstName, registrationInformationSubuser.firstName) &&
         Objects.equals(this.lastName, registrationInformationSubuser.lastName);
@@ -215,7 +239,7 @@ public class RegistrationInformationSubuser {
 
   @Override
   public int hashCode() {
-    return Objects.hash(partnerId, retailerId, adminName, adminCompany, salepackageName, email, firstName, lastName);
+    return Objects.hash(partnerId, retailerId, adminName, adminCompany, salepackageName, isBankIDLogin, email, firstName, lastName);
   }
 
 
@@ -229,6 +253,7 @@ public class RegistrationInformationSubuser {
     sb.append("    adminName: ").append(toIndentedString(adminName)).append("\n");
     sb.append("    adminCompany: ").append(toIndentedString(adminCompany)).append("\n");
     sb.append("    salepackageName: ").append(toIndentedString(salepackageName)).append("\n");
+    sb.append("    isBankIDLogin: ").append(toIndentedString(isBankIDLogin)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");
     sb.append("    lastName: ").append(toIndentedString(lastName)).append("\n");

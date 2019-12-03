@@ -13,19 +13,21 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import org.joda.time.DateTime;
-
 import java.util.Objects;
-
+import java.util.Arrays;
+import ch.cyberduck.core.storegate.io.swagger.client.model.BackupClientSettings;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.joda.time.DateTime;
 
 /**
  * Contains information about a backup client
  */
 @ApiModel(description = "Contains information about a backup client")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class BackupClient {
   @JsonProperty("removed")
   private DateTime removed = null;

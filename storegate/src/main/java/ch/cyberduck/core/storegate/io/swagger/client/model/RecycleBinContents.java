@@ -13,19 +13,22 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
+import java.util.Arrays;
+import ch.cyberduck.core.storegate.io.swagger.client.model.RecycleBinItem;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Contains a list of recyclebin items.
  */
 @ApiModel(description = "Contains a list of recyclebin items.")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class RecycleBinContents {
   @JsonProperty("totalRowCount")
   private Integer totalRowCount = null;
@@ -58,7 +61,7 @@ public class RecycleBinContents {
 
   public RecycleBinContents addRecycleBinItemsItem(RecycleBinItem recycleBinItemsItem) {
     if (this.recycleBinItems == null) {
-        this.recycleBinItems = new ArrayList<>();
+      this.recycleBinItems = new ArrayList<>();
     }
     this.recycleBinItems.add(recycleBinItemsItem);
     return this;

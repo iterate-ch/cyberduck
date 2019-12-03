@@ -26,13 +26,7 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @ApiModel(description = "")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
-public class UpdateSubscriptionRequest {
-  @JsonProperty("salepackageId")
-  private String salepackageId = null;
-
-  @JsonProperty("campaignId")
-  private String campaignId = null;
-
+public class CreateAccountSalepackageProducts {
   @JsonProperty("storageId")
   private String storageId = null;
 
@@ -48,55 +42,16 @@ public class UpdateSubscriptionRequest {
   @JsonProperty("bankIDId")
   private String bankIDId = null;
 
-  @JsonProperty("url")
-  private String url = null;
-
-  public UpdateSubscriptionRequest salepackageId(String salepackageId) {
-    this.salepackageId = salepackageId;
-    return this;
-  }
-
-   /**
-   * 
-   * @return salepackageId
-  **/
-  @ApiModelProperty(value = "")
-  public String getSalepackageId() {
-    return salepackageId;
-  }
-
-  public void setSalepackageId(String salepackageId) {
-    this.salepackageId = salepackageId;
-  }
-
-  public UpdateSubscriptionRequest campaignId(String campaignId) {
-    this.campaignId = campaignId;
-    return this;
-  }
-
-   /**
-   * 
-   * @return campaignId
-  **/
-  @ApiModelProperty(value = "")
-  public String getCampaignId() {
-    return campaignId;
-  }
-
-  public void setCampaignId(String campaignId) {
-    this.campaignId = campaignId;
-  }
-
-  public UpdateSubscriptionRequest storageId(String storageId) {
+  public CreateAccountSalepackageProducts storageId(String storageId) {
     this.storageId = storageId;
     return this;
   }
 
    /**
-   * 
+   * Optional StorageId
    * @return storageId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Optional StorageId")
   public String getStorageId() {
     return storageId;
   }
@@ -105,16 +60,16 @@ public class UpdateSubscriptionRequest {
     this.storageId = storageId;
   }
 
-  public UpdateSubscriptionRequest multiId(String multiId) {
+  public CreateAccountSalepackageProducts multiId(String multiId) {
     this.multiId = multiId;
     return this;
   }
 
    /**
-   * 
+   * Optional MultiId
    * @return multiId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Optional MultiId")
   public String getMultiId() {
     return multiId;
   }
@@ -123,16 +78,16 @@ public class UpdateSubscriptionRequest {
     this.multiId = multiId;
   }
 
-  public UpdateSubscriptionRequest backupId(String backupId) {
+  public CreateAccountSalepackageProducts backupId(String backupId) {
     this.backupId = backupId;
     return this;
   }
 
    /**
-   * 
+   * Optional BackupId
    * @return backupId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Optional BackupId")
   public String getBackupId() {
     return backupId;
   }
@@ -141,16 +96,16 @@ public class UpdateSubscriptionRequest {
     this.backupId = backupId;
   }
 
-  public UpdateSubscriptionRequest syncId(String syncId) {
+  public CreateAccountSalepackageProducts syncId(String syncId) {
     this.syncId = syncId;
     return this;
   }
 
    /**
-   * 
+   * Optional SyncId
    * @return syncId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Optional SyncId")
   public String getSyncId() {
     return syncId;
   }
@@ -159,40 +114,22 @@ public class UpdateSubscriptionRequest {
     this.syncId = syncId;
   }
 
-  public UpdateSubscriptionRequest bankIDId(String bankIDId) {
+  public CreateAccountSalepackageProducts bankIDId(String bankIDId) {
     this.bankIDId = bankIDId;
     return this;
   }
 
    /**
-   * 
+   * Optional BankIDId
    * @return bankIDId
   **/
-  @ApiModelProperty(value = "")
+  @ApiModelProperty(value = "Optional BankIDId")
   public String getBankIDId() {
     return bankIDId;
   }
 
   public void setBankIDId(String bankIDId) {
     this.bankIDId = bankIDId;
-  }
-
-  public UpdateSubscriptionRequest url(String url) {
-    this.url = url;
-    return this;
-  }
-
-   /**
-   * 
-   * @return url
-  **/
-  @ApiModelProperty(value = "")
-  public String getUrl() {
-    return url;
-  }
-
-  public void setUrl(String url) {
-    this.url = url;
   }
 
 
@@ -204,36 +141,30 @@ public class UpdateSubscriptionRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UpdateSubscriptionRequest updateSubscriptionRequest = (UpdateSubscriptionRequest) o;
-    return Objects.equals(this.salepackageId, updateSubscriptionRequest.salepackageId) &&
-        Objects.equals(this.campaignId, updateSubscriptionRequest.campaignId) &&
-        Objects.equals(this.storageId, updateSubscriptionRequest.storageId) &&
-        Objects.equals(this.multiId, updateSubscriptionRequest.multiId) &&
-        Objects.equals(this.backupId, updateSubscriptionRequest.backupId) &&
-        Objects.equals(this.syncId, updateSubscriptionRequest.syncId) &&
-        Objects.equals(this.bankIDId, updateSubscriptionRequest.bankIDId) &&
-        Objects.equals(this.url, updateSubscriptionRequest.url);
+    CreateAccountSalepackageProducts createAccountSalepackageProducts = (CreateAccountSalepackageProducts) o;
+    return Objects.equals(this.storageId, createAccountSalepackageProducts.storageId) &&
+        Objects.equals(this.multiId, createAccountSalepackageProducts.multiId) &&
+        Objects.equals(this.backupId, createAccountSalepackageProducts.backupId) &&
+        Objects.equals(this.syncId, createAccountSalepackageProducts.syncId) &&
+        Objects.equals(this.bankIDId, createAccountSalepackageProducts.bankIDId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(salepackageId, campaignId, storageId, multiId, backupId, syncId, bankIDId, url);
+    return Objects.hash(storageId, multiId, backupId, syncId, bankIDId);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UpdateSubscriptionRequest {\n");
+    sb.append("class CreateAccountSalepackageProducts {\n");
     
-    sb.append("    salepackageId: ").append(toIndentedString(salepackageId)).append("\n");
-    sb.append("    campaignId: ").append(toIndentedString(campaignId)).append("\n");
     sb.append("    storageId: ").append(toIndentedString(storageId)).append("\n");
     sb.append("    multiId: ").append(toIndentedString(multiId)).append("\n");
     sb.append("    backupId: ").append(toIndentedString(backupId)).append("\n");
     sb.append("    syncId: ").append(toIndentedString(syncId)).append("\n");
     sb.append("    bankIDId: ").append(toIndentedString(bankIDId)).append("\n");
-    sb.append("    url: ").append(toIndentedString(url)).append("\n");
     sb.append("}");
     return sb.toString();
   }

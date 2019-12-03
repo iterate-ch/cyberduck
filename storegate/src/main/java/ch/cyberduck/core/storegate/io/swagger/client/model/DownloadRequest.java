@@ -13,19 +13,21 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class DownloadRequest {
   @JsonProperty("ids")
   private List<String> ids = null;
@@ -40,7 +42,7 @@ public class DownloadRequest {
 
   public DownloadRequest addIdsItem(String idsItem) {
     if (this.ids == null) {
-        this.ids = new ArrayList<>();
+      this.ids = new ArrayList<>();
     }
     this.ids.add(idsItem);
     return this;

@@ -13,19 +13,21 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fileContent object
  */
 @ApiModel(description = "A fileContent object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class FileContents {
   @JsonProperty("parent")
   private ch.cyberduck.core.storegate.io.swagger.client.model.File parent = null;
@@ -100,7 +102,7 @@ public class FileContents {
 
   public FileContents addFilesItem(ch.cyberduck.core.storegate.io.swagger.client.model.File filesItem) {
     if (this.files == null) {
-        this.files = new ArrayList<>();
+      this.files = new ArrayList<>();
     }
     this.files.add(filesItem);
     return this;
