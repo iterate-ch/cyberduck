@@ -276,7 +276,8 @@ public interface FoundationKitFunctions extends Library {
     String NSTemporaryDirectory();
 
     /**
-     * Original signature : <code>NSArray* NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory, NSSearchPathDomainMask, BOOL)</code><br>
+     * Original signature : <code>NSArray* NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory,
+     * NSSearchPathDomainMask, BOOL)</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:106</i><br>
      *
      * @param directory  @see NSSearchPathDirectory<br>

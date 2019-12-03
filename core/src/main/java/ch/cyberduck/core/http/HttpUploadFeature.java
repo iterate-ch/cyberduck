@@ -28,7 +28,6 @@ import ch.cyberduck.core.features.Upload;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
-import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCancelation;
 import ch.cyberduck.core.io.StreamCopier;
@@ -38,6 +37,7 @@ import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
 
@@ -75,10 +75,10 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
             final InputStream in = this.decorate(local.getInputStream(), digest);
             final StatusOutputStream<Reply> out = writer.write(file, status, callback);
             new StreamCopier(cancel, progress)
-                    .withOffset(status.getOffset())
-                    .withLimit(status.getLength())
-                    .withListener(listener)
-                    .transfer(in, new ThrottledOutputStream(out, throttle));
+                .withOffset(status.getOffset())
+                .withLimit(status.getLength())
+                .withListener(listener)
+                .transfer(in, new ThrottledOutputStream(out, throttle));
             final Reply response = out.getStatus();
             this.post(file, digest, response);
             return response;
@@ -114,21 +114,18 @@ public class HttpUploadFeature<Reply, Digest> implements Upload<Reply> {
             log.debug(String.format("Digest disabled for file %s", file));
             return;
         }
-        if(null == checksum) {
-            log.warn("ETag returned by server is unknown checksum algorithm");
-            return;
-        }
-        if(!checksum.algorithm.equals(HashAlgorithm.md5)) {
-            log.warn(String.format("ETag %s returned by server is %s but expected MD5", checksum.hash, checksum.algorithm));
-            return;
-        }
         // Obtain locally-calculated MD5 hash.
-        final String expected = Hex.encodeHexString(digest.digest());
-        // Compare our locally-calculated hash with the ETag returned by S3.
-        if(!checksum.equals(Checksum.parse(expected))) {
-            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+        final Checksum expected = Checksum.parse(Hex.encodeHexString(digest.digest()));
+        if(ObjectUtils.notEqual(expected.algorithm, checksum.algorithm)) {
+            log.warn(String.format("ETag %s returned by server is %s but expected %s", checksum.hash, checksum.algorithm, expected.algorithm));
+        }
+        else {
+            // Compare our locally-calculated hash with the ETag returned by S3.
+            if(!checksum.equals(expected)) {
+                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                     MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                            expected, checksum.hash));
+                        expected, checksum.hash));
+            }
         }
     }
 

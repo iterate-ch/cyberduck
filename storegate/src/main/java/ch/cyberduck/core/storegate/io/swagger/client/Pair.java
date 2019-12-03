@@ -13,7 +13,7 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class Pair {
     private String name = "";
     private String value = "";

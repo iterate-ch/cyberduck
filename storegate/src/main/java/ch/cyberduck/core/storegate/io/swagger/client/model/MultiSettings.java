@@ -13,21 +13,21 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A accounts multi settings. Properties that are null/undefined/missing are not available
  */
 @ApiModel(description = "A accounts multi settings. Properties that are null/undefined/missing are not available")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class MultiSettings {
   @JsonProperty("versionsAvailable")
   private List<Integer> versionsAvailable = null;
@@ -112,7 +112,7 @@ public class MultiSettings {
 
   public MultiSettings addVersionsAvailableItem(Integer versionsAvailableItem) {
     if (this.versionsAvailable == null) {
-        this.versionsAvailable = new ArrayList<>();
+      this.versionsAvailable = new ArrayList<>();
     }
     this.versionsAvailable.add(versionsAvailableItem);
     return this;

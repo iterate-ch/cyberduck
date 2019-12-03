@@ -28,8 +28,6 @@ import java.lang.reflect.InvocationTargetException;
 public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
     private static final Logger log = Logger.getLogger(HostKeyCallbackFactory.class);
 
-    private static final HostKeyCallbackFactory factory = new HostKeyCallbackFactory();
-
     private Constructor<HostKeyCallback> constructor;
 
     protected HostKeyCallbackFactory() {
@@ -62,6 +60,6 @@ public class HostKeyCallbackFactory extends Factory<HostKeyCallback> {
      * @return Login controller instance for the current platform.
      */
     public static HostKeyCallback get(final Controller c, final Protocol protocol) {
-        return factory.create(c, protocol);
+        return new HostKeyCallbackFactory().create(c, protocol);
     }
 }

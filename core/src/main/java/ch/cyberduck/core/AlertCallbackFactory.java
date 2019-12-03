@@ -27,8 +27,6 @@ import java.lang.reflect.InvocationTargetException;
 public class AlertCallbackFactory extends Factory<AlertCallback> {
     private static final Logger log = Logger.getLogger(AlertCallbackFactory.class);
 
-    private static final AlertCallbackFactory factory = new AlertCallbackFactory();
-
     private Constructor<AlertCallback> constructor;
 
     protected AlertCallbackFactory() {
@@ -58,6 +56,6 @@ public class AlertCallbackFactory extends Factory<AlertCallback> {
      * @return Login controller instance for the current platform.
      */
     public static AlertCallback get(final Controller c) {
-        return factory.create(c);
+        return new AlertCallbackFactory().create(c);
     }
 }

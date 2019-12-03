@@ -42,7 +42,7 @@ public class S3PresignedUrlProvider {
         final S3Protocol.AuthenticationHeaderSignatureVersion signature;
         if(StringUtils.isBlank(region)) {
             // Only for AWS
-            if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+            if(S3Session.isAwsHostname(host.getHostname())) {
                 // Region is required for AWS4-HMAC-SHA256 signature
                 region = "us-east-1";
                 signature = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
@@ -53,7 +53,7 @@ public class S3PresignedUrlProvider {
         }
         else {
             // Only for AWS
-            if(host.getHostname().endsWith(PreferencesFactory.get().getProperty("s3.hostname.default"))) {
+            if(S3Session.isAwsHostname(host.getHostname())) {
                 // Region is required for AWS4-HMAC-SHA256 signature
                 signature = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
             }

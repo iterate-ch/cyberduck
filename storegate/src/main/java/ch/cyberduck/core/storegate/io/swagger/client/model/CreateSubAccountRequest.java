@@ -14,8 +14,10 @@
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -23,13 +25,16 @@ import io.swagger.annotations.ApiModelProperty;
  * CreateSubAccountRequest object
  */
 @ApiModel(description = "CreateSubAccountRequest object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class CreateSubAccountRequest {
   @JsonProperty("username")
   private String username = null;
 
   @JsonProperty("password")
   private String password = null;
+
+  @JsonProperty("signinId")
+  private String signinId = null;
 
   @JsonProperty("email")
   private String email = null;
@@ -74,6 +79,24 @@ public class CreateSubAccountRequest {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public CreateSubAccountRequest signinId(String signinId) {
+    this.signinId = signinId;
+    return this;
+  }
+
+   /**
+   * Used with BankID
+   * @return signinId
+  **/
+  @ApiModelProperty(value = "Used with BankID")
+  public String getSigninId() {
+    return signinId;
+  }
+
+  public void setSigninId(String signinId) {
+    this.signinId = signinId;
   }
 
   public CreateSubAccountRequest email(String email) {
@@ -142,6 +165,7 @@ public class CreateSubAccountRequest {
     CreateSubAccountRequest createSubAccountRequest = (CreateSubAccountRequest) o;
     return Objects.equals(this.username, createSubAccountRequest.username) &&
         Objects.equals(this.password, createSubAccountRequest.password) &&
+        Objects.equals(this.signinId, createSubAccountRequest.signinId) &&
         Objects.equals(this.email, createSubAccountRequest.email) &&
         Objects.equals(this.firstName, createSubAccountRequest.firstName) &&
         Objects.equals(this.lastName, createSubAccountRequest.lastName);
@@ -149,7 +173,7 @@ public class CreateSubAccountRequest {
 
   @Override
   public int hashCode() {
-    return Objects.hash(username, password, email, firstName, lastName);
+    return Objects.hash(username, password, signinId, email, firstName, lastName);
   }
 
 
@@ -160,6 +184,7 @@ public class CreateSubAccountRequest {
     
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    password: ").append(toIndentedString(password)).append("\n");
+    sb.append("    signinId: ").append(toIndentedString(signinId)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");
     sb.append("    lastName: ").append(toIndentedString(lastName)).append("\n");

@@ -66,9 +66,8 @@ public class SDSExceptionMappingService extends AbstractExceptionMappingService<
         }
         final StringBuilder buffer = new StringBuilder();
         if(null != failure.getResponseBody()) {
-            final JsonParser parser = new JsonParser();
             try {
-                final JsonObject json = parser.parse(new StringReader(failure.getResponseBody())).getAsJsonObject();
+                final JsonObject json = JsonParser.parseReader(new StringReader(failure.getResponseBody())).getAsJsonObject();
                 if(json.has("errorCode")) {
                     if(json.get("errorCode").isJsonPrimitive()) {
                         final int errorCode = json.getAsJsonPrimitive("errorCode").getAsInt();

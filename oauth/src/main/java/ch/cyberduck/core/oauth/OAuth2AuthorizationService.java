@@ -156,7 +156,7 @@ public class OAuth2AuthorizationService {
         if(!browser.open(url)) {
             log.warn(String.format("Failed to launch web browser for %s", url));
         }
-        if(StringUtils.equals(CYBERDUCK_REDIRECT_URI, redirectUri)) {
+        if(StringUtils.contains(redirectUri, CYBERDUCK_REDIRECT_URI)) {
             final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
             registry.register(state, new OAuth2TokenListener() {
                 @Override

@@ -303,6 +303,8 @@ namespace Ch.Cyberduck.Core.Preferences
             // Override secure random strong algorithm. Outputs bytes from the Windows CryptGenRandom() API
             this.setDefault("connection.ssl.securerandom.algorithm", "Windows-PRNG");
             this.setDefault("connection.ssl.securerandom.provider", "SunMSCAPI");
+            // Set secure random algorithms for BC
+            Security.setProperty("securerandom.strongAlgorithms", "Windows-PRNG:SunMSCAPI,SHA1PRNG:SUN");
 
             // Enable Integrated Windows Authentication
             this.setDefault("connection.proxy.windows.authentication.enable", true.ToString());
@@ -335,29 +337,15 @@ namespace Ch.Cyberduck.Core.Preferences
             }
             if (Utils.IsRunningAsUWP)
             {
-                // Running from Windows Store
-                this.setDefault("update.check", $"{false}");
-                this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
+                SetUWPDefaults();
             }
-            // Apply global configuration
-            var config = Path.Combine(new RoamingSupportDirectoryFinder().find().getAbsolute(),
-                "default.properties");
-            if (File.Exists(config))
-            {
-                try
-                {
-                    var properties = new java.util.Properties();
-                    properties.load(new FileInputStream(config));
-                    foreach (var key in Utils.ConvertFromJavaList<String>(properties.keySet()))
-                    {
-                        setDefault(key, properties.getProperty(key));
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.warn($"Failure while reading {config}", e);
-                }
-            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void SetUWPDefaults()
+        {
+            this.setDefault("update.check", $"{false}");
+            this.setDefault("tmp.dir", ApplicationData.Current.TemporaryFolder.Path);
         }
 
         private string TryToMatchLocale(string sysLocale, List appLocales)

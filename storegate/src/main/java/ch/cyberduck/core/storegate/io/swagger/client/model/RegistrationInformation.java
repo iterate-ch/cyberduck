@@ -13,19 +13,26 @@
 
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-
+import java.util.Arrays;
+import ch.cyberduck.core.storegate.io.swagger.client.model.Country;
+import ch.cyberduck.core.storegate.io.swagger.client.model.PaymentMethod;
+import ch.cyberduck.core.storegate.io.swagger.client.model.PaymentPeriod;
+import ch.cyberduck.core.storegate.io.swagger.client.model.UpgradeSalepackage;
+import ch.cyberduck.core.storegate.io.swagger.client.model.UserData;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class RegistrationInformation {
   @JsonProperty("salepackage")
   private UpgradeSalepackage salepackage = null;
@@ -42,6 +49,9 @@ public class RegistrationInformation {
   @JsonProperty("isDirect")
   private Boolean isDirect = null;
 
+  @JsonProperty("allowDirectPassword")
+  private Boolean allowDirectPassword = null;
+
   @JsonProperty("userData")
   private UserData userData = null;
 
@@ -53,6 +63,9 @@ public class RegistrationInformation {
 
   @JsonProperty("paymentPeriods")
   private List<PaymentPeriod> paymentPeriods = null;
+
+  @JsonProperty("isBankIDLogin")
+  private Boolean isBankIDLogin = null;
 
   public RegistrationInformation salepackage(UpgradeSalepackage salepackage) {
     this.salepackage = salepackage;
@@ -144,6 +157,24 @@ public class RegistrationInformation {
     this.isDirect = isDirect;
   }
 
+  public RegistrationInformation allowDirectPassword(Boolean allowDirectPassword) {
+    this.allowDirectPassword = allowDirectPassword;
+    return this;
+  }
+
+   /**
+   * 
+   * @return allowDirectPassword
+  **/
+  @ApiModelProperty(value = "")
+  public Boolean isAllowDirectPassword() {
+    return allowDirectPassword;
+  }
+
+  public void setAllowDirectPassword(Boolean allowDirectPassword) {
+    this.allowDirectPassword = allowDirectPassword;
+  }
+
   public RegistrationInformation userData(UserData userData) {
     this.userData = userData;
     return this;
@@ -169,7 +200,7 @@ public class RegistrationInformation {
 
   public RegistrationInformation addCountriesItem(Country countriesItem) {
     if (this.countries == null) {
-        this.countries = new ArrayList<>();
+      this.countries = new ArrayList<>();
     }
     this.countries.add(countriesItem);
     return this;
@@ -195,7 +226,7 @@ public class RegistrationInformation {
 
   public RegistrationInformation addPaymentMethodsItem(PaymentMethod paymentMethodsItem) {
     if (this.paymentMethods == null) {
-        this.paymentMethods = new ArrayList<>();
+      this.paymentMethods = new ArrayList<>();
     }
     this.paymentMethods.add(paymentMethodsItem);
     return this;
@@ -221,7 +252,7 @@ public class RegistrationInformation {
 
   public RegistrationInformation addPaymentPeriodsItem(PaymentPeriod paymentPeriodsItem) {
     if (this.paymentPeriods == null) {
-        this.paymentPeriods = new ArrayList<>();
+      this.paymentPeriods = new ArrayList<>();
     }
     this.paymentPeriods.add(paymentPeriodsItem);
     return this;
@@ -240,6 +271,24 @@ public class RegistrationInformation {
     this.paymentPeriods = paymentPeriods;
   }
 
+  public RegistrationInformation isBankIDLogin(Boolean isBankIDLogin) {
+    this.isBankIDLogin = isBankIDLogin;
+    return this;
+  }
+
+   /**
+   * Use BankID flow
+   * @return isBankIDLogin
+  **/
+  @ApiModelProperty(value = "Use BankID flow")
+  public Boolean isIsBankIDLogin() {
+    return isBankIDLogin;
+  }
+
+  public void setIsBankIDLogin(Boolean isBankIDLogin) {
+    this.isBankIDLogin = isBankIDLogin;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -255,15 +304,17 @@ public class RegistrationInformation {
         Objects.equals(this.partnerId, registrationInformation.partnerId) &&
         Objects.equals(this.retailerId, registrationInformation.retailerId) &&
         Objects.equals(this.isDirect, registrationInformation.isDirect) &&
+        Objects.equals(this.allowDirectPassword, registrationInformation.allowDirectPassword) &&
         Objects.equals(this.userData, registrationInformation.userData) &&
         Objects.equals(this.countries, registrationInformation.countries) &&
         Objects.equals(this.paymentMethods, registrationInformation.paymentMethods) &&
-        Objects.equals(this.paymentPeriods, registrationInformation.paymentPeriods);
+        Objects.equals(this.paymentPeriods, registrationInformation.paymentPeriods) &&
+        Objects.equals(this.isBankIDLogin, registrationInformation.isBankIDLogin);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(salepackage, trialLength, partnerId, retailerId, isDirect, userData, countries, paymentMethods, paymentPeriods);
+    return Objects.hash(salepackage, trialLength, partnerId, retailerId, isDirect, allowDirectPassword, userData, countries, paymentMethods, paymentPeriods, isBankIDLogin);
   }
 
 
@@ -277,10 +328,12 @@ public class RegistrationInformation {
     sb.append("    partnerId: ").append(toIndentedString(partnerId)).append("\n");
     sb.append("    retailerId: ").append(toIndentedString(retailerId)).append("\n");
     sb.append("    isDirect: ").append(toIndentedString(isDirect)).append("\n");
+    sb.append("    allowDirectPassword: ").append(toIndentedString(allowDirectPassword)).append("\n");
     sb.append("    userData: ").append(toIndentedString(userData)).append("\n");
     sb.append("    countries: ").append(toIndentedString(countries)).append("\n");
     sb.append("    paymentMethods: ").append(toIndentedString(paymentMethods)).append("\n");
     sb.append("    paymentPeriods: ").append(toIndentedString(paymentPeriods)).append("\n");
+    sb.append("    isBankIDLogin: ").append(toIndentedString(isBankIDLogin)).append("\n");
     sb.append("}");
     return sb.toString();
   }

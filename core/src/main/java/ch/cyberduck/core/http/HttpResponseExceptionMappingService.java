@@ -71,10 +71,10 @@ public abstract class HttpResponseExceptionMappingService<E extends HttpResponse
                 return new InteroperabilityException(buffer.toString(), failure);
             case HttpStatus.SC_REQUEST_TIMEOUT:
             case HttpStatus.SC_GATEWAY_TIMEOUT:
-            case HttpStatus.SC_BAD_GATEWAY:
                 return new ConnectionTimeoutException(buffer.toString(), failure);
             case HttpStatus.SC_LOCKED:
                 return new LockedException(buffer.toString(), failure);
+            case HttpStatus.SC_BAD_GATEWAY:
             case HttpStatus.SC_INTERNAL_SERVER_ERROR:
             case HttpStatus.SC_SERVICE_UNAVAILABLE:
             case 429:

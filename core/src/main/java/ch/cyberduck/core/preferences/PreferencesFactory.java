@@ -18,6 +18,8 @@ package ch.cyberduck.core.preferences;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.LocalFactory;
+
 public final class PreferencesFactory {
     private PreferencesFactory() {
         //
@@ -31,6 +33,8 @@ public final class PreferencesFactory {
         preferences.setFactories();
         preferences.setDefaults();
         preferences.setLogging();
+        // Apply global configuration
+        preferences.setDefaults(LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "default.properties"));
     }
 
     public static synchronized Preferences get() {

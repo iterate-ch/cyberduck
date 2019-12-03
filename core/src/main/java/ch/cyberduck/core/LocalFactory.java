@@ -27,8 +27,6 @@ import java.lang.reflect.InvocationTargetException;
 
 public final class LocalFactory extends Factory<Local> {
 
-    private static final LocalFactory factory = new LocalFactory();
-
     private final Constructor<Local> constructor
         = ConstructorUtils.getMatchingAccessibleConstructor(clazz, String.class);
 
@@ -61,18 +59,18 @@ public final class LocalFactory extends Factory<Local> {
     }
 
     public static Local get(final Local parent, final String name) {
-        return factory.create(parent, name);
+        return new LocalFactory().create(parent, name);
     }
 
     public static Local get(final String parent, final String name) {
-        return factory.create(factory.create(parent), name);
+        return new LocalFactory().create(new LocalFactory().create(parent), name);
     }
 
     public static Local get(final String path) {
-        return factory.create(path);
+        return new LocalFactory().create(path);
     }
 
     public static Local get() {
-        return factory.create();
+        return new LocalFactory().create();
     }
 }

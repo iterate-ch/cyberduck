@@ -5,7 +5,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>7.1.3-SNAPSHOT</version>
+        <version>7.2.2-SNAPSHOT</version>
     </parent>
     <artifactId>Cyberduck.Core</artifactId>
     <packaging>pom</packaging>
@@ -93,31 +93,31 @@
             </build>
             <dependencies>
                 <dependency>
-                    <groupId>net.adoptopenjdk</groupId>
+                    <groupId>net.java.openjdk</groupId>
                     <artifactId>sunmscapi</artifactId>
                     <classifier>x86_64</classifier>
                     <type>dll</type>
-                    <version>8u192</version>
+                    <version>8u45</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>net.adoptopenjdk</groupId>
+                    <groupId>net.java.openjdk</groupId>
                     <artifactId>sunmscapi</artifactId>
-                    <version>8u192</version>
+                    <version>8u45</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>net.adoptopenjdk</groupId>
+                    <groupId>net.java.openjdk</groupId>
                     <artifactId>sunec</artifactId>
                     <classifier>x86_64</classifier>
                     <type>dll</type>
-                    <version>8u192</version>
+                    <version>8u45</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
-                    <groupId>net.adoptopenjdk</groupId>
+                    <groupId>net.java.openjdk</groupId>
                     <artifactId>sunec</artifactId>
-                    <version>8u192</version>
+                    <version>8u45</version>
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>

@@ -28,8 +28,6 @@ import java.lang.reflect.InvocationTargetException;
 public class LoginCallbackFactory extends Factory<LoginCallback> {
     private static final Logger log = Logger.getLogger(LoginCallbackFactory.class);
 
-    private static final LoginCallbackFactory factory = new LoginCallbackFactory();
-
     private Constructor<LoginCallback> constructor;
 
     protected LoginCallbackFactory() {
@@ -59,6 +57,6 @@ public class LoginCallbackFactory extends Factory<LoginCallback> {
      * @return Login controller instance for the current platform.
      */
     public static LoginCallback get(final Controller c) {
-        return factory.create(c);
+        return new LoginCallbackFactory().create(c);
     }
 }

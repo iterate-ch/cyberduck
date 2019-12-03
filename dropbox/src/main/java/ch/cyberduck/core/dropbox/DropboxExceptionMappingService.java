@@ -235,9 +235,8 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
         if(StringUtils.isBlank(message)) {
             return;
         }
-        final JsonParser parser = new JsonParser();
         try {
-            final JsonElement element = parser.parse(new StringReader(message));
+            final JsonElement element = JsonParser.parseReader(new StringReader(message));
             if(element.isJsonObject()) {
                 final JsonObject json = element.getAsJsonObject();
                 final JsonObject error = json.getAsJsonObject("error");

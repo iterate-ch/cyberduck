@@ -1,25 +1,27 @@
 package ch.cyberduck.core.storegate.io.swagger.client.api;
 
-import ch.cyberduck.core.storegate.io.swagger.client.ApiClient;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
+import ch.cyberduck.core.storegate.io.swagger.client.ApiClient;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiResponse;
 import ch.cyberduck.core.storegate.io.swagger.client.Configuration;
 import ch.cyberduck.core.storegate.io.swagger.client.Pair;
+
+import javax.ws.rs.core.GenericType;
+
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateAccountRequest;
-import ch.cyberduck.core.storegate.io.swagger.client.model.CreateAccountRequestBase;
+import ch.cyberduck.core.storegate.io.swagger.client.model.CreateAccountwithProductsRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateSubAccountRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.IsUsernameAvailableRequest;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RegistrationInformation;
 import ch.cyberduck.core.storegate.io.swagger.client.model.RegistrationInformationSubuser;
 import ch.cyberduck.core.storegate.io.swagger.client.model.SetPaymentStatusRequest;
 
-import javax.ws.rs.core.GenericType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class RegistrationApi {
   private ApiClient apiClient;
 
@@ -103,11 +105,12 @@ public class RegistrationApi {
    * @param multiId  (optional)
    * @param backupId  (optional)
    * @param syncId  (optional)
+   * @param bankIDId  (optional)
    * @return RegistrationInformation
    * @throws ApiException if fails to make API call
    */
-  public RegistrationInformation registrationRegisterAccount(String partnerId, String salepackageId, String retailerId, String trialId, String campaignId, String storageId, String multiId, String backupId, String syncId) throws ApiException {
-    return registrationRegisterAccountWithHttpInfo(partnerId, salepackageId, retailerId, trialId, campaignId, storageId, multiId, backupId, syncId).getData();
+  public RegistrationInformation registrationRegisterAccount(String partnerId, String salepackageId, String retailerId, String trialId, String campaignId, String storageId, String multiId, String backupId, String syncId, String bankIDId) throws ApiException {
+    return registrationRegisterAccountWithHttpInfo(partnerId, salepackageId, retailerId, trialId, campaignId, storageId, multiId, backupId, syncId, bankIDId).getData();
       }
 
   /**
@@ -122,10 +125,11 @@ public class RegistrationApi {
    * @param multiId  (optional)
    * @param backupId  (optional)
    * @param syncId  (optional)
+   * @param bankIDId  (optional)
    * @return ApiResponse&lt;RegistrationInformation&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<RegistrationInformation> registrationRegisterAccountWithHttpInfo(String partnerId, String salepackageId, String retailerId, String trialId, String campaignId, String storageId, String multiId, String backupId, String syncId) throws ApiException {
+  public ApiResponse<RegistrationInformation> registrationRegisterAccountWithHttpInfo(String partnerId, String salepackageId, String retailerId, String trialId, String campaignId, String storageId, String multiId, String backupId, String syncId, String bankIDId) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'partnerId' is set
@@ -155,6 +159,7 @@ public class RegistrationApi {
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "MultiId", multiId));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "BackupId", backupId));
     localVarQueryParams.addAll(apiClient.parameterToPairs("", "SyncId", syncId));
+    localVarQueryParams.addAll(apiClient.parameterToPairs("", "BankIDId", bankIDId));
 
     
     
@@ -234,7 +239,7 @@ public class RegistrationApi {
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String registrationRegisterAccountCampaign_0(CreateAccountRequestBase createAccountRequest, String code) throws ApiException {
+  public String registrationRegisterAccountCampaign_0(CreateAccountwithProductsRequest createAccountRequest, String code) throws ApiException {
     return registrationRegisterAccountCampaign_0WithHttpInfo(createAccountRequest, code).getData();
       }
 
@@ -246,7 +251,7 @@ public class RegistrationApi {
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> registrationRegisterAccountCampaign_0WithHttpInfo(CreateAccountRequestBase createAccountRequest, String code) throws ApiException {
+  public ApiResponse<String> registrationRegisterAccountCampaign_0WithHttpInfo(CreateAccountwithProductsRequest createAccountRequest, String code) throws ApiException {
     Object localVarPostBody = createAccountRequest;
     
     // verify the required parameter 'createAccountRequest' is set
@@ -347,7 +352,7 @@ public class RegistrationApi {
    * @return String
    * @throws ApiException if fails to make API call
    */
-  public String registrationRegisterAccountSignup_0(CreateAccountRequestBase createAccountRequest, String signupId) throws ApiException {
+  public String registrationRegisterAccountSignup_0(CreateAccountwithProductsRequest createAccountRequest, String signupId) throws ApiException {
     return registrationRegisterAccountSignup_0WithHttpInfo(createAccountRequest, signupId).getData();
       }
 
@@ -359,7 +364,7 @@ public class RegistrationApi {
    * @return ApiResponse&lt;String&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<String> registrationRegisterAccountSignup_0WithHttpInfo(CreateAccountRequestBase createAccountRequest, String signupId) throws ApiException {
+  public ApiResponse<String> registrationRegisterAccountSignup_0WithHttpInfo(CreateAccountwithProductsRequest createAccountRequest, String signupId) throws ApiException {
     Object localVarPostBody = createAccountRequest;
     
     // verify the required parameter 'createAccountRequest' is set

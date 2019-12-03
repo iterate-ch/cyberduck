@@ -214,16 +214,18 @@ public class S3AccessControlListFeature extends DefaultAclFeature implements Acl
 
     @Override
     public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
-        return Arrays.asList(new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()),
+        return Arrays.asList(
+            new Acl.Role(Permission.PERMISSION_FULL_CONTROL.toString()),
             new Acl.Role(Permission.PERMISSION_READ.toString()),
             new Acl.Role(Permission.PERMISSION_WRITE.toString()),
             new Acl.Role(Permission.PERMISSION_READ_ACP.toString()),
-            new Acl.Role(Permission.PERMISSION_WRITE_ACP.toString()));
+            new Acl.Role(Permission.PERMISSION_WRITE_ACP.toString())
+        );
     }
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        return new ArrayList<Acl.User>(Arrays.asList(
+        return new ArrayList<>(Arrays.asList(
             new Acl.CanonicalUser(),
             new Acl.GroupUser(Acl.GroupUser.EVERYONE, false),
             new Acl.EmailUser() {

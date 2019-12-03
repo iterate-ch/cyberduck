@@ -20,12 +20,34 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>7.1.3-SNAPSHOT</version>
+        <version>7.2.2-SNAPSHOT</version>
     </parent>
     <artifactId>cli-osx</artifactId>
     <description>Cyberduck CLI Mac</description>
 
     <profiles>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
+        <profile>
+            <id>linux</id>
+            <activation>
+                <os>
+                    <family>Linux</family>
+                </os>
+            </activation>
+            <properties>
+                <maven.test.skip>true</maven.test.skip>
+            </properties>
+        </profile>
         <profile>
             <id>mac</id>
             <activation>

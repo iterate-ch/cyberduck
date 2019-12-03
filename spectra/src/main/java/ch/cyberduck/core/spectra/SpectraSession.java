@@ -45,6 +45,12 @@ public class SpectraSession extends S3Session {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Find.class) {
+            return (T) new SpectraFindFeature(this);
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new SpectraAttributesFinderFeature(this);
+        }
         if(type == ListService.class) {
             return (T) new SpectraListService(this);
         }

@@ -14,8 +14,13 @@
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
-
+import java.util.Arrays;
+import ch.cyberduck.core.storegate.io.swagger.client.model.CreateAccountSalepackage;
+import ch.cyberduck.core.storegate.io.swagger.client.model.UpdatePaymentRequest;
+import ch.cyberduck.core.storegate.io.swagger.client.model.UserDataRequest;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -23,7 +28,7 @@ import io.swagger.annotations.ApiModelProperty;
  * A CreateAccountRequest object
  */
 @ApiModel(description = "A CreateAccountRequest object")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class CreateAccountRequest {
   @JsonProperty("salepackage")
   private CreateAccountSalepackage salepackage = null;
@@ -42,6 +47,9 @@ public class CreateAccountRequest {
 
   @JsonProperty("password")
   private String password = null;
+
+  @JsonProperty("signinId")
+  private String signinId = null;
 
   @JsonProperty("email")
   private String email = null;
@@ -160,6 +168,24 @@ public class CreateAccountRequest {
     this.password = password;
   }
 
+  public CreateAccountRequest signinId(String signinId) {
+    this.signinId = signinId;
+    return this;
+  }
+
+   /**
+   * Used with BankID
+   * @return signinId
+  **/
+  @ApiModelProperty(value = "Used with BankID")
+  public String getSigninId() {
+    return signinId;
+  }
+
+  public void setSigninId(String signinId) {
+    this.signinId = signinId;
+  }
+
   public CreateAccountRequest email(String email) {
     this.email = email;
     return this;
@@ -230,6 +256,7 @@ public class CreateAccountRequest {
         Objects.equals(this.saleReference, createAccountRequest.saleReference) &&
         Objects.equals(this.username, createAccountRequest.username) &&
         Objects.equals(this.password, createAccountRequest.password) &&
+        Objects.equals(this.signinId, createAccountRequest.signinId) &&
         Objects.equals(this.email, createAccountRequest.email) &&
         Objects.equals(this.firstName, createAccountRequest.firstName) &&
         Objects.equals(this.lastName, createAccountRequest.lastName);
@@ -237,7 +264,7 @@ public class CreateAccountRequest {
 
   @Override
   public int hashCode() {
-    return Objects.hash(salepackage, userData, paymentData, saleReference, username, password, email, firstName, lastName);
+    return Objects.hash(salepackage, userData, paymentData, saleReference, username, password, signinId, email, firstName, lastName);
   }
 
 
@@ -252,6 +279,7 @@ public class CreateAccountRequest {
     sb.append("    saleReference: ").append(toIndentedString(saleReference)).append("\n");
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
     sb.append("    password: ").append(toIndentedString(password)).append("\n");
+    sb.append("    signinId: ").append(toIndentedString(signinId)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");
     sb.append("    lastName: ").append(toIndentedString(lastName)).append("\n");

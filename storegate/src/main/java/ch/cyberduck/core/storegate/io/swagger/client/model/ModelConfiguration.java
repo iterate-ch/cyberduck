@@ -14,9 +14,9 @@
 package ch.cyberduck.core.storegate.io.swagger.client.model;
 
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
+import java.util.Arrays;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -25,7 +25,7 @@ import io.swagger.annotations.ApiModelProperty;
  * 
  */
 @ApiModel(description = "")
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:06:08.665+02:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
 public class ModelConfiguration {
   @JsonProperty("hasMulti")
   private Boolean hasMulti = null;
@@ -161,6 +161,15 @@ public class ModelConfiguration {
 
   @JsonProperty("hasShareOfficeOnline")
   private Boolean hasShareOfficeOnline = null;
+
+  @JsonProperty("hasMyFiles")
+  private Boolean hasMyFiles = null;
+
+  @JsonProperty("isBankIDLogin")
+  private Boolean isBankIDLogin = null;
+
+  @JsonProperty("hasApps")
+  private Boolean hasApps = null;
 
   public ModelConfiguration hasMulti(Boolean hasMulti) {
     this.hasMulti = hasMulti;
@@ -702,6 +711,60 @@ public class ModelConfiguration {
     this.hasShareOfficeOnline = hasShareOfficeOnline;
   }
 
+  public ModelConfiguration hasMyFiles(Boolean hasMyFiles) {
+    this.hasMyFiles = hasMyFiles;
+    return this;
+  }
+
+   /**
+   * Is My Files enabled
+   * @return hasMyFiles
+  **/
+  @ApiModelProperty(value = "Is My Files enabled")
+  public Boolean isHasMyFiles() {
+    return hasMyFiles;
+  }
+
+  public void setHasMyFiles(Boolean hasMyFiles) {
+    this.hasMyFiles = hasMyFiles;
+  }
+
+  public ModelConfiguration isBankIDLogin(Boolean isBankIDLogin) {
+    this.isBankIDLogin = isBankIDLogin;
+    return this;
+  }
+
+   /**
+   * Is login done via BankID
+   * @return isBankIDLogin
+  **/
+  @ApiModelProperty(value = "Is login done via BankID")
+  public Boolean isIsBankIDLogin() {
+    return isBankIDLogin;
+  }
+
+  public void setIsBankIDLogin(Boolean isBankIDLogin) {
+    this.isBankIDLogin = isBankIDLogin;
+  }
+
+  public ModelConfiguration hasApps(Boolean hasApps) {
+    this.hasApps = hasApps;
+    return this;
+  }
+
+   /**
+   * Is access to apps enabled
+   * @return hasApps
+  **/
+  @ApiModelProperty(value = "Is access to apps enabled")
+  public Boolean isHasApps() {
+    return hasApps;
+  }
+
+  public void setHasApps(Boolean hasApps) {
+    this.hasApps = hasApps;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -741,12 +804,15 @@ public class ModelConfiguration {
         Objects.equals(this.hasWebDav, _configuration.hasWebDav) &&
         Objects.equals(this.hasWebDavPasswords, _configuration.hasWebDavPasswords) &&
         Objects.equals(this.hasShareBankIDAuth, _configuration.hasShareBankIDAuth) &&
-        Objects.equals(this.hasShareOfficeOnline, _configuration.hasShareOfficeOnline);
+        Objects.equals(this.hasShareOfficeOnline, _configuration.hasShareOfficeOnline) &&
+        Objects.equals(this.hasMyFiles, _configuration.hasMyFiles) &&
+        Objects.equals(this.isBankIDLogin, _configuration.isBankIDLogin) &&
+        Objects.equals(this.hasApps, _configuration.hasApps);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(hasMulti, hasCommon, hasPermissions, hasExtendedPermissions, hasTeamSync, hasGroups, hasQuota, hasInspection, hasBackup, hasUnlimitedBackup, hasKlsBackup, hasMedia, hasSync, hasAutostore, hasOfficeOnline, hasRecycleBin, showHiddenFiles, showUsername, startPage, locale, theme, hideSplash, userAccountMode, allowShare, hasEvents, hasVersioning, hasWebDav, hasWebDavPasswords, hasShareBankIDAuth, hasShareOfficeOnline);
+    return Objects.hash(hasMulti, hasCommon, hasPermissions, hasExtendedPermissions, hasTeamSync, hasGroups, hasQuota, hasInspection, hasBackup, hasUnlimitedBackup, hasKlsBackup, hasMedia, hasSync, hasAutostore, hasOfficeOnline, hasRecycleBin, showHiddenFiles, showUsername, startPage, locale, theme, hideSplash, userAccountMode, allowShare, hasEvents, hasVersioning, hasWebDav, hasWebDavPasswords, hasShareBankIDAuth, hasShareOfficeOnline, hasMyFiles, isBankIDLogin, hasApps);
   }
 
 
@@ -785,6 +851,9 @@ public class ModelConfiguration {
     sb.append("    hasWebDavPasswords: ").append(toIndentedString(hasWebDavPasswords)).append("\n");
     sb.append("    hasShareBankIDAuth: ").append(toIndentedString(hasShareBankIDAuth)).append("\n");
     sb.append("    hasShareOfficeOnline: ").append(toIndentedString(hasShareOfficeOnline)).append("\n");
+    sb.append("    hasMyFiles: ").append(toIndentedString(hasMyFiles)).append("\n");
+    sb.append("    isBankIDLogin: ").append(toIndentedString(isBankIDLogin)).append("\n");
+    sb.append("    hasApps: ").append(toIndentedString(hasApps)).append("\n");
     sb.append("}");
     return sb.toString();
   }

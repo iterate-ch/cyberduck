@@ -191,28 +191,25 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
                 }
                 else {
-                    completed.sort(new MultipartPart.PartNumberComparator());
-                    final StringBuilder concat = new StringBuilder();
-                    for(MultipartPart part : completed) {
-                        concat.append(part.getEtag());
-                    }
-                    final String expected = String.format("%s-%d",
-                        ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
-                    final String reference;
-                    if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
-                        reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
-                    }
-                    else {
-                        reference = complete.getEtag();
-                    }
-                    if(!expected.equals(reference)) {
-                        if(S3Session.isAwsHostname(session.getHost().getHostname())) {
+                    if(S3Session.isAwsHostname(session.getHost().getHostname())) {
+                        completed.sort(new MultipartPart.PartNumberComparator());
+                        final StringBuilder concat = new StringBuilder();
+                        for(MultipartPart part : completed) {
+                            concat.append(part.getEtag());
+                        }
+                        final String expected = String.format("%s-%d",
+                            ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
+                        final String reference;
+                        if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
+                            reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
+                        }
+                        else {
+                            reference = complete.getEtag();
+                        }
+                        if(!StringUtils.equalsIgnoreCase(expected, reference)) {
                             throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
                                 MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
                                     expected, reference));
-                        }
-                        else {
-                            log.warn(String.format("Mismatch between MD5 hash %s of uploaded data and ETag %s returned by the server", expected, reference));
                         }
                     }
                 }

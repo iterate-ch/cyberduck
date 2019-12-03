@@ -74,7 +74,7 @@ public class BackgroundCallable<T> implements Callable<T> {
                         action.cleanup();
                     }
                     catch(Exception e) {
-                        log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
+                        log.error(String.format("Exception %s running cleanup task", e), e);
                     }
                 }
             });
@@ -129,10 +129,10 @@ public class BackgroundCallable<T> implements Callable<T> {
             log.warn(String.format("Failure overwriting cause for failure %s with %s", trace, failure));
         }
         if(failure instanceof UnsupportedException) {
-            log.debug(String.format("Failure running background task %s", failure.getMessage()), trace);
+            log.debug(String.format("Failure %s running background task", failure), trace);
         }
         else {
-            log.warn(String.format("Failure running background task %s", failure.getMessage()), trace);
+            log.warn(String.format("Failure %s running background task", failure), trace);
         }
     }
 }

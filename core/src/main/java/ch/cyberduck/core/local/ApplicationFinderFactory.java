@@ -22,13 +22,11 @@ import ch.cyberduck.core.Factory;
 
 public class ApplicationFinderFactory extends Factory<ApplicationFinder> {
 
-    private static final ApplicationFinderFactory factory = new ApplicationFinderFactory();
-
     public ApplicationFinderFactory() {
         super("factory.applicationfinder.class");
     }
 
     public static ApplicationFinder get() {
-        return factory.create();
+        return new ApplicationFinderFactory().create();
     }
 }

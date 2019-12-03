@@ -396,22 +396,6 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
             public Selector action() {
                 return Foundation.selector("quicklookButtonClicked:");
             }
-        },
-        log {
-            @Override
-            public String label() {
-                return LocaleFactory.localizedString(StringUtils.capitalize(this.name()), "Transfer");
-            }
-
-            @Override
-            public String tooltip() {
-                return LocaleFactory.localizedString("Toggle Log Drawer");
-            }
-
-            @Override
-            public Selector action() {
-                return Foundation.selector("toggleLogDrawer:");
-            }
         };
 
         public String label() {
@@ -654,7 +638,6 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                 terminal.name(),
                 archive.name(),
                 BrowserToolbarItem.quicklook.name(),
-                log.name(),
                 disconnect.name(),
                 NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
                 NSToolbarItem.NSToolbarSpaceItemIdentifier,

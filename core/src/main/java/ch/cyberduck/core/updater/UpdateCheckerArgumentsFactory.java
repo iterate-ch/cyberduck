@@ -19,13 +19,11 @@ import ch.cyberduck.core.Factory;
 
 public class UpdateCheckerArgumentsFactory extends Factory<UpdateCheckerArguments> {
 
-    private static final UpdateCheckerArgumentsFactory factory = new UpdateCheckerArgumentsFactory();
-
     public UpdateCheckerArgumentsFactory() {
         super("factory.updater.arguments.class");
     }
 
     public static UpdateCheckerArguments get() {
-        return factory.create();
+        return new UpdateCheckerArgumentsFactory().create();
     }
 }

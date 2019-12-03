@@ -227,7 +227,7 @@ public class S3SessionTest extends AbstractS3Test {
     @Test
     public void testBucketVirtualHostStyleCustomHost() {
         final Host host = new Host(new S3Protocol(), "test-us-east-1-cyberduck");
-        assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", true));
+        assertFalse(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", true));
     }
 
     @Test
@@ -242,7 +242,7 @@ public class S3SessionTest extends AbstractS3Test {
         final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
-        assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
+        assertFalse(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
     }
 
     @Test
@@ -251,7 +251,7 @@ public class S3SessionTest extends AbstractS3Test {
         final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, "ec.cyberduck.io");
-        assertTrue(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
+        assertFalse(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
     }
 
     @Test(expected = LoginFailureException.class)
@@ -299,6 +299,7 @@ public class S3SessionTest extends AbstractS3Test {
     }
 
     @Test
+    @Ignore
     public void testInteroperabilityMinio() throws Exception {
         final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
             "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"

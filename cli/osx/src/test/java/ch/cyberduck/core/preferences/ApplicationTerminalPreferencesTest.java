@@ -17,14 +17,18 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.core.Keychain;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 
 public class ApplicationTerminalPreferencesTest {
 
-    @org.junit.Test
+    @Test
     public void setDefaults() {
         final ApplicationTerminalPreferences prefs = new ApplicationTerminalPreferences();
-        PreferencesFactory.set(prefs);
+        prefs.load();
+        prefs.setFactories();
+        prefs.setDefaults();
         assertEquals("NativePRNG", prefs.getProperty("connection.ssl.securerandom.algorithm"));
         assertEquals(Keychain.class.getName(), prefs.getProperty("factory.passwordstore.class"));
     }

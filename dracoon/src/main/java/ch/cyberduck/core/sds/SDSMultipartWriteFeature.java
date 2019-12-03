@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
@@ -34,13 +35,8 @@ import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.model.CompleteUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
-import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
-import ch.cyberduck.core.sds.io.swagger.client.model.Node;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
-import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -63,13 +59,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import com.dracoon.sdk.crypto.Crypto;
-import com.dracoon.sdk.crypto.CryptoSystemException;
-import com.dracoon.sdk.crypto.InvalidFileKeyException;
-import com.dracoon.sdk.crypto.InvalidKeyPairException;
-import com.dracoon.sdk.crypto.model.EncryptedFileKey;
-import com.fasterxml.jackson.databind.ObjectReader;
 
 public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
@@ -97,8 +86,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
             .name(file.getName());
         try {
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
-            final String id = response.getUploadId();
-            final MultipartOutputStream proxy = new MultipartOutputStream(id, file, status);
+            final MultipartOutputStream proxy = new MultipartOutputStream(response.getToken(), file, status);
             return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
                 PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
                 @Override
@@ -113,15 +101,15 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     }
 
     private final class MultipartOutputStream extends OutputStream {
-        private final String uploadId;
+        private final String uploadToken;
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
 
         private Long offset = 0L;
 
-        public MultipartOutputStream(final String uploadId, final Path file, final TransferStatus status) {
-            this.uploadId = uploadId;
+        public MultipartOutputStream(final String uploadToken, final Path file, final TransferStatus status) {
+            this.uploadToken = uploadToken;
             this.file = file;
             this.overall = status;
         }
@@ -141,7 +129,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     public Void call() throws BackgroundException {
                         final SDSApiClient client = session.getClient();
                         try {
-                            final HttpPost request = new HttpPost(String.format("%s/v4/nodes/files/uploads/%s", client.getBasePath(), uploadId));
+                            final HttpPost request = new HttpPost(String.format("%s/v4/uploads/%s", client.getBasePath(), uploadToken));
                             request.setEntity(entity);
                             request.setHeader(HttpHeaders.CONTENT_TYPE, MimeTypeService.DEFAULT_CONTENT_TYPE);
                             request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
@@ -178,9 +166,9 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                         catch(IOException e) {
                             try {
                                 if(log.isInfoEnabled()) {
-                                    log.info(String.format("Cancel failed upload %s for %s", uploadId, file));
+                                    log.info(String.format("Cancel failed upload %s for %s", uploadToken, file));
                                 }
-                                new NodesApi(session.getClient()).cancelFileUpload(uploadId, StringUtils.EMPTY);
+                                new NodesApi(session.getClient()).cancelFileUpload(uploadToken, StringUtils.EMPTY);
                             }
                             catch(ApiException f) {
                                 throw new SDSExceptionMappingService().map(f);
@@ -203,26 +191,12 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     log.warn(String.format("Skip double close of stream %s", this));
                     return;
                 }
-                final CompleteUploadRequest body = new CompleteUploadRequest()
-                    .keepShareLinks(overall.isExists() ? PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep") : false)
-                    .resolutionStrategy(overall.isExists() ? CompleteUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteUploadRequest.ResolutionStrategyEnum.FAIL);
-                if(overall.getFilekey() != null) {
-                    final ObjectReader reader = session.getClient().getJSON().getContext(null).readerFor(FileKey.class);
-                    final FileKey fileKey = reader.readValue(overall.getFilekey().array());
-                    final EncryptedFileKey encryptFileKey = Crypto.encryptFileKey(
-                        TripleCryptConverter.toCryptoPlainFileKey(fileKey),
-                        TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
-                    );
-                    body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
+                try {
+                    overall.setVersion(new SDSWriteFeature(session, nodeid).complete(file, uploadToken, overall));
                 }
-                final Node upload = new NodesApi(session.getClient()).completeFileUpload(uploadId, StringUtils.EMPTY, null, body);
-                overall.setVersion(new VersionId(String.valueOf(upload.getId())));
-            }
-            catch(ApiException e) {
-                throw new IOException(new SDSExceptionMappingService().map("Upload {0} failed", e, file));
-            }
-            catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException e) {
-                throw new IOException(new TripleCryptExceptionMappingService().map("Upload {0} failed", e, file));
+                catch(ConflictException e) {
+                    overall.setVersion(new SDSWriteFeature(session, nodeid).complete(file, uploadToken, new TransferStatus(overall).exists(true)));
+                }
             }
             catch(BackgroundException e) {
                 throw new IOException(e);
@@ -235,7 +209,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
         @Override
         public String toString() {
             final StringBuilder sb = new StringBuilder("MultipartOutputStream{");
-            sb.append("id='").append(uploadId).append('\'');
+            sb.append("id='").append(uploadToken).append('\'');
             sb.append(", file=").append(file);
             sb.append('}');
             return sb.toString();

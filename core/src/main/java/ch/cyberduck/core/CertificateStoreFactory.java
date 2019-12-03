@@ -26,8 +26,6 @@ import java.lang.reflect.InvocationTargetException;
 public class CertificateStoreFactory extends Factory<CertificateStore> {
     private static final Logger log = Logger.getLogger(CertificateStoreFactory.class);
 
-    private static final CertificateStoreFactory factory = new CertificateStoreFactory();
-
     private Constructor<CertificateStore> constructor;
 
     protected CertificateStoreFactory() {
@@ -52,10 +50,10 @@ public class CertificateStoreFactory extends Factory<CertificateStore> {
     }
 
     public static CertificateStore get() {
-        return factory.create();
+        return new CertificateStoreFactory().create();
     }
 
     public static CertificateStore get(final Controller c) {
-        return factory.create(c);
+        return new CertificateStoreFactory().create(c);
     }
 }
