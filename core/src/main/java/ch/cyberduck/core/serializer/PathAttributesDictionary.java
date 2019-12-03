@@ -76,6 +76,10 @@ public class PathAttributesDictionary {
         if(duplicateObj != null) {
             attributes.setDuplicate(Boolean.valueOf(duplicateObj));
         }
+        final String hiddenObj = dict.stringForKey("Hidden");
+        if(hiddenObj != null) {
+            attributes.setHidden(Boolean.valueOf(hiddenObj));
+        }
         attributes.setMetadata(Collections.emptyMap());
         attributes.setRegion(dict.stringForKey("Region"));
         attributes.setStorageClass(dict.stringForKey("Storage Class"));

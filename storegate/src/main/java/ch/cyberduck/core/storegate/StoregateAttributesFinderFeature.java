@@ -64,7 +64,7 @@ public class StoregateAttributesFinderFeature implements AttributesFinder {
             attrs.setLockId(Boolean.TRUE.toString());
         }
         if((f.getFlags() & File.FlagsEnum.Hidden.getValue()) == File.FlagsEnum.Hidden.getValue()) {
-            attrs.setDuplicate(true);
+            attrs.setHidden(true);
         }
         return attrs;
     }

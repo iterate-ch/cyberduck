@@ -97,6 +97,10 @@ public class PathAttributes extends Attributes implements Serializable {
      * Should be hidden in the browser by default
      */
     private Boolean duplicate;
+    /**
+     * Hidden flag set on server
+     */
+    private Boolean hidden;
 
     /**
      * Revision number
@@ -158,6 +162,7 @@ public class PathAttributes extends Attributes implements Serializable {
         versionId = copy.versionId;
         lockId = copy.lockId;
         duplicate = copy.duplicate;
+        hidden = copy.hidden;
         revision = copy.revision;
         region = copy.region;
         displayname = copy.displayname;
@@ -204,6 +209,9 @@ public class PathAttributes extends Attributes implements Serializable {
         }
         if(duplicate != null) {
             dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
+        }
+        if(hidden != null) {
+            dict.setStringForKey(String.valueOf(hidden), "Hidden");
         }
         if(StringUtils.isNotBlank(region)) {
             dict.setStringForKey(region, "Region");
@@ -345,8 +353,7 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     /**
-     * A version identifying a particular revision of a file
-     * with the same path.
+     * A version identifying a particular revision of a file with the same path.
      *
      * @return Version Identifier or null if not versioned.
      */
@@ -427,8 +434,8 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     /**
-     * If the path should not be displayed in a browser by default unless the user
-     * explicitly chooses to show hidden files.
+     * If the path should not be displayed in a browser by default unless the user explicitly chooses to show hidden
+     * files.
      *
      * @return True if hidden by default.
      */
@@ -443,6 +450,14 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     public void setDuplicate(final boolean duplicate) {
         this.duplicate = duplicate;
+    }
+
+    public Boolean isHidden() {
+        return hidden != null && hidden;
+    }
+
+    public void setHidden(final boolean hidden) {
+        this.hidden = hidden;
     }
 
     public Map<String, String> getMetadata() {
@@ -558,6 +573,7 @@ public class PathAttributes extends Attributes implements Serializable {
         sb.append(", versionId='").append(versionId).append('\'');
         sb.append(", lockId='").append(lockId).append('\'');
         sb.append(", duplicate=").append(duplicate);
+        sb.append(", hidden=").append(hidden);
         sb.append(", revision=").append(revision);
         sb.append(", region='").append(region).append('\'');
         sb.append(", metadata=").append(metadata);
