@@ -20,12 +20,12 @@ package ch.cyberduck.core;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNotSame;
 
 public class PasswordStoreFactoryTest {
 
     @Test
     public void testGet() {
-        assertSame(PasswordStoreFactory.get(), PasswordStoreFactory.get());
+        assertNotSame(PasswordStoreFactory.get(), PasswordStoreFactory.get());
     }
 }
