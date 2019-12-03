@@ -29,8 +29,6 @@ import java.util.TimeZone;
 public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter> {
     private static final Logger log = Logger.getLogger(UserDateFormatterFactory.class);
 
-    private static final UserDateFormatterFactory factory = new UserDateFormatterFactory();
-
     private Constructor<AbstractUserDateFormatter> constructor;
 
     protected UserDateFormatterFactory() {
@@ -59,6 +57,6 @@ public class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter>
     }
 
     public static AbstractUserDateFormatter get(final String tz) {
-        return factory.create(tz);
+        return new UserDateFormatterFactory().create(tz);
     }
 }

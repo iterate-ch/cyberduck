@@ -24,8 +24,6 @@ import java.lang.reflect.InvocationTargetException;
 public class PasswordCallbackFactory extends Factory<PasswordCallback> {
     private static final Logger log = Logger.getLogger(PasswordCallbackFactory.class);
 
-    private static final PasswordCallbackFactory factory = new PasswordCallbackFactory();
-
     private Constructor<PasswordCallback> constructor;
 
     protected PasswordCallbackFactory() {
@@ -55,6 +53,6 @@ public class PasswordCallbackFactory extends Factory<PasswordCallback> {
      * @return Login controller instance for the current platform.
      */
     public static PasswordCallback get(final Controller c) {
-        return factory.create(c);
+        return new PasswordCallbackFactory().create(c);
     }
 }
