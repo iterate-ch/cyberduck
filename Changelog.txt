@@ -1,6 +1,9 @@
 Cyberduck
 https://cyberduck.io/
 
+7.2.2
+- [Bugfix] Crash opening connection (macOS 10.[9-11]) (#10892)
+
 7.2.1
 - [Bugfix] Failure to open application on Windows 7+ (Windows)
 
