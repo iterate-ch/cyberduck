@@ -23,6 +23,8 @@ import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -251,7 +253,7 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         ));
         host.setDefaultPath("/dav/basic");
         final AtomicBoolean redirected = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host, new RedirectCallback() {
+        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(), new RedirectCallback() {
             @Override
             public boolean redirect(String method) {
                 if("PUT".equals(method)) {

@@ -52,7 +52,6 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
-import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -110,7 +109,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     private final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(this);
 
     public SDSSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+        super(host, trust, key);
     }
 
     @Override

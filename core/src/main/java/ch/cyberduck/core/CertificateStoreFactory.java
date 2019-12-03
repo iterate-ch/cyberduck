@@ -49,10 +49,6 @@ public class CertificateStoreFactory extends Factory<CertificateStore> {
         }
     }
 
-    public static CertificateStore get() {
-        return new CertificateStoreFactory().create();
-    }
-
     public static CertificateStore get(final Controller c) {
         return new CertificateStoreFactory().create(c);
     }

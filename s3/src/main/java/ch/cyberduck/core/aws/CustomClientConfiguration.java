@@ -26,13 +26,10 @@ import ch.cyberduck.core.http.DisabledX509HostnameVerifier;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.proxy.ProxyFactory;
-import ch.cyberduck.core.proxy.ProxyFinder;
 import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
 
 import org.apache.http.HttpHost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -49,7 +46,7 @@ import com.amazonaws.DnsResolver;
 
 public class CustomClientConfiguration extends ClientConfiguration {
 
-    public CustomClientConfiguration(final Host bookmark) {
+    public CustomClientConfiguration(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key) {
         this.setDnsResolver(new DnsResolver() {
             @Override
             public InetAddress[] resolve(final String host) throws UnknownHostException {
@@ -69,35 +66,34 @@ public class CustomClientConfiguration extends ClientConfiguration {
         this.setMaxErrorRetry(0);
         this.setMaxConnections(1);
         this.setUseGzip(PreferencesFactory.get().getBoolean("http.compression.enable"));
-        final ProxyFinder proxyFinder = ProxyFactory.get();
-        final Proxy proxy = proxyFinder.find(bookmark);
+        final Proxy proxy = ProxyFactory.get().find(host);
         switch(proxy.getType()) {
             case HTTP:
             case HTTPS:
                 this.setProxyHost(proxy.getHostname());
                 this.setProxyPort(proxy.getPort());
         }
-        final ThreadLocalHostnameDelegatingTrustManager trust = new ThreadLocalHostnameDelegatingTrustManager(
-            new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)), bookmark.getHostname());
         this.getApacheHttpClientConfig().setSslSocketFactory(
             new SSLConnectionSocketFactory(
-                new CustomTrustSSLProtocolSocketFactory(trust,
-                    new KeychainX509KeyManager(bookmark)),
+                new CustomTrustSSLProtocolSocketFactory(trust, key),
                 new DisabledX509HostnameVerifier()
             ) {
                 @Override
                 public Socket createSocket(final HttpContext context) throws IOException {
-                    return new ProxySocketFactory(bookmark, proxyFinder).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
+                    return new ProxySocketFactory(host).disable(Proxy.Type.HTTP).disable(Proxy.Type.HTTPS).createSocket();
                 }
 
                 @Override
-                public Socket connectSocket(final int connectTimeout,
-                                            final Socket socket,
-                                            final HttpHost host,
-                                            final InetSocketAddress remoteAddress,
-                                            final InetSocketAddress localAddress,
+                public Socket createLayeredSocket(final Socket socket, final String target, final int port, final HttpContext context) throws IOException {
+                    trust.setTarget(target);
+                    return super.createLayeredSocket(socket, target, port, context);
+                }
+
+                @Override
+                public Socket connectSocket(final int connectTimeout, final Socket socket, final HttpHost host,
+                                            final InetSocketAddress remoteAddress, final InetSocketAddress localAddress,
                                             final HttpContext context) throws IOException {
-                    trust.setTarget(remoteAddress.getHostName());
+                    trust.setTarget(host.getHostName());
                     return super.connectSocket(connectTimeout, socket, host, remoteAddress, localAddress, context);
                 }
             }

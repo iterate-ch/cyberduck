@@ -44,10 +44,6 @@ public class HubicSession extends SwiftSession {
 
     private OAuth2RequestInterceptor authorizationService;
 
-    public HubicSession(final Host host) {
-        super(host);
-    }
-
     public HubicSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }

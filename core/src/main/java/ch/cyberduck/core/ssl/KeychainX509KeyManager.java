@@ -37,15 +37,8 @@ import java.util.Set;
 
 public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
 
-    private final Map<Key, String> memory
-        = new HashMap<Key, String>();
-
-    private final Set<String> aliases
-        = new HashSet<>();
-
-    public KeychainX509KeyManager(final Host bookmark) {
-        super(CertificateStoreFactory.get(), bookmark);
-    }
+    private final Map<Key, String> memory = new HashMap<Key, String>();
+    private final Set<String> aliases = new HashSet<>();
 
     public KeychainX509KeyManager(final Host bookmark, final Controller controller) {
         super(CertificateStoreFactory.get(controller), bookmark);

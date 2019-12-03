@@ -56,6 +56,9 @@ import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -94,13 +97,19 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
     private final ClientConfiguration configuration;
     private final Location locationFeature;
 
+    private final X509TrustManager trust;
+    private final X509KeyManager key;
     private final Map<Path, Distribution> distributions;
 
-    public CloudFrontDistributionConfiguration(final S3Session session, final Map<Path, Distribution> distributions) {
+    public CloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
+                                               final Map<Path, Distribution> distributions) {
         this.session = session;
         this.bookmark = session.getHost();
+        this.trust = trust;
+        this.key = key;
         this.distributions = distributions;
-        this.configuration = new CustomClientConfiguration(bookmark);
+        this.configuration = new CustomClientConfiguration(bookmark,
+            new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
         this.locationFeature = session.getFeature(Location.class);
     }
 
@@ -301,7 +310,7 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
             return (T) this;
         }
         if(type == IdentityConfiguration.class) {
-            return (T) new AmazonIdentityConfiguration(bookmark);
+            return (T) new AmazonIdentityConfiguration(bookmark, trust, key);
         }
         return null;
     }

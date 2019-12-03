@@ -55,24 +55,24 @@ public class SessionPoolFactory {
 
     public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
                                      final ProgressListener listener, final TranscriptListener transcript, final Usage... usage) {
-        return create(cache, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
+        return create(controller, cache, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
             bookmark.getProtocol()), listener, transcript, usage);
     }
 
     public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
                                      final ProgressListener listener, final Usage... usage) {
-        return create(cache, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
+        return create(controller, cache, bookmark, PasswordStoreFactory.get(), LoginCallbackFactory.get(controller), HostKeyCallbackFactory.get(controller,
             bookmark.getProtocol()), listener, controller, usage);
     }
 
-    public static SessionPool create(final Cache<Path> cache, final Host bookmark,
+    public static SessionPool create(final Controller controller, final Cache<Path> cache, final Host bookmark,
                                      final HostPasswordStore keychain, final LoginCallback login, final HostKeyCallback key,
                                      final ProgressListener listener, final TranscriptListener transcript,
                                      final Usage... usage) {
         final LoginConnectionService connect = new LoginConnectionService(login, key, keychain, listener);
         return create(connect, transcript, cache, bookmark,
-            new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark)),
-            new KeychainX509KeyManager(bookmark),
+            new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(bookmark), controller),
+            new KeychainX509KeyManager(bookmark, controller),
             VaultRegistryFactory.create(keychain, login), usage);
     }
 

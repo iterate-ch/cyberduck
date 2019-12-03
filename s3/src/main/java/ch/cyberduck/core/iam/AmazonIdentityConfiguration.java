@@ -31,6 +31,9 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.log4j.Logger;
 
@@ -54,9 +57,10 @@ public class AmazonIdentityConfiguration implements IdentityConfiguration {
     private static final String prefix = "iam.";
     public final ClientConfiguration configuration;
 
-    public AmazonIdentityConfiguration(final Host bookmark) {
+    public AmazonIdentityConfiguration(final Host bookmark, final X509TrustManager trust, final X509KeyManager key) {
         this.bookmark = bookmark;
-        this.configuration = new CustomClientConfiguration(bookmark);
+        this.configuration = new CustomClientConfiguration(bookmark,
+            new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
     }
 
     private interface Authenticated<T> extends Callable<T> {

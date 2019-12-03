@@ -19,6 +19,7 @@ package ch.cyberduck.core.udt.qloudsonic;
  */
 
 import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
@@ -46,7 +47,6 @@ public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
             = PreferencesFactory.get();
 
     private final QloudsonicVoucherFinder voucher;
-
     private final HttpSession<?> session;
 
     public QloudsonicTransferAcceleration(final HttpSession<?> session) {
@@ -128,7 +128,8 @@ public class QloudsonicTransferAcceleration implements UDTTransferAcceleration {
             throw new AccessDeniedException("Cannot read bucket location");
         }
         final UDTProxyConfigurator configurator = new UDTProxyConfigurator(location, this.provider(),
-                new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(session.getHost())), new KeychainX509KeyManager(session.getHost()));
+            new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(session.getHost()), new DisabledCertificateStore()),
+            new KeychainX509KeyManager(session.getHost(), new DisabledCertificateStore()));
         configurator.configure(session);
     }
 

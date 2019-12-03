@@ -36,6 +36,9 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3PathContainerService;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -68,10 +71,11 @@ public class KMSEncryptionFeature extends S3EncryptionFeature {
 
     private final Location locationFeature;
 
-    public KMSEncryptionFeature(final S3Session session) {
+    public KMSEncryptionFeature(final S3Session session, final X509TrustManager trust, final X509KeyManager key) {
         super(session);
         this.bookmark = session.getHost();
-        this.configuration = new CustomClientConfiguration(bookmark);
+        this.configuration = new CustomClientConfiguration(bookmark,
+            new ThreadLocalHostnameDelegatingTrustManager(trust, bookmark.getHostname()), key);
         this.locationFeature = session.getFeature(Location.class);
     }
 

@@ -40,12 +40,13 @@ import ch.cyberduck.core.sftp.auth.SFTPPasswordAuthentication;
 import ch.cyberduck.core.sftp.auth.SFTPPublicKeyAuthentication;
 import ch.cyberduck.core.sftp.openssh.OpenSSHAgentAuthenticator;
 import ch.cyberduck.core.sftp.putty.PageantAuthenticator;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import javax.net.SocketFactory;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.PublicKey;
@@ -84,20 +85,16 @@ public class SFTPSession extends Session<SSHClient> {
         = PreferencesFactory.get();
 
     private SFTPEngine sftp;
-
     private StateDisconnectListener disconnectListener;
-
     private NegotiatedAlgorithms algorithms;
 
-    private final SocketFactory socketFactory;
+    private final X509TrustManager trust;
+    private final X509KeyManager key;
 
-    public SFTPSession(final Host h) {
-        this(h, new ProxySocketFactory(h));
-    }
-
-    public SFTPSession(final Host h, final SocketFactory socketFactory) {
+    public SFTPSession(final Host h, final X509TrustManager trust, final X509KeyManager key) {
         super(h);
-        this.socketFactory = socketFactory;
+        this.trust = trust;
+        this.key = key;
     }
 
     @Override
@@ -141,7 +138,7 @@ public class SFTPSession extends Session<SSHClient> {
         final SSHClient connection = new SSHClient(configuration);
         final int timeout = preferences.getInteger("connection.timeout.seconds") * 1000;
         connection.setTimeout(timeout);
-        connection.setSocketFactory(socketFactory);
+        connection.setSocketFactory(new ProxySocketFactory(host));
         connection.addHostKeyVerifier(new HostKeyVerifier() {
             @Override
             public boolean verify(String hostname, int port, PublicKey publicKey) {
@@ -398,7 +395,7 @@ public class SFTPSession extends Session<SSHClient> {
             return (T) new SFTPCompressFeature(this);
         }
         if(type == DistributionConfiguration.class) {
-            return (T) new CustomOriginCloudFrontDistributionConfiguration(host);
+            return (T) new CustomOriginCloudFrontDistributionConfiguration(host, trust, key);
         }
         if(type == Home.class) {
             return (T) new SFTPHomeDirectoryService(this);

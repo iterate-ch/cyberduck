@@ -17,7 +17,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
-import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.Command;
 import ch.cyberduck.core.features.Compress;
@@ -26,10 +25,9 @@ import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.proxy.ProxyFinder;
-import ch.cyberduck.core.proxy.ProxySocketFactory;
 import ch.cyberduck.core.sftp.openssh.OpenSSHHostKeyVerifier;
-import ch.cyberduck.core.socket.DefaultSocketConfigurator;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Ignore;
@@ -98,7 +96,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
             "jenkins", "p"
         ));
-        final SFTPSession session = new SFTPSession(host);
+        final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final AtomicBoolean fail = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -126,7 +124,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
             System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
-        final SFTPSession session = new SFTPSession(host);
+        final SFTPSession session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
         new SFTPHomeDirectoryService(session).find();
     }
@@ -134,7 +132,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     @Test
     public void testFeatures() {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
-        final Session session = new SFTPSession(host);
+        final Session session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.getFeature(Compress.class));
         assertNotNull(session.getFeature(UnixPermission.class));
         assertNotNull(session.getFeature(Timestamp.class));
@@ -147,7 +145,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     @Test(expected = ConnectionCanceledException.class)
     public void testConnectHostKeyDenied() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
-        final Session session = new SFTPSession(host);
+        final Session session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final AtomicBoolean verify = new AtomicBoolean();
         try {
             session.open(Proxy.DIRECT, new HostKeyCallback() {
@@ -167,7 +165,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     @Test(expected = LoginCanceledException.class)
     public void testConnectNoValidCredentials() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("user"));
-        final Session session = new SFTPSession(host);
+        final Session session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, String username, String title, String reason, LoginOptions options) throws LoginCanceledException {
@@ -181,7 +179,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     @Test(expected = LoginCanceledException.class)
     public void testValidateNoValidCredentials() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch");
-        final Session session = new SFTPSession(host);
+        final Session session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -208,7 +206,7 @@ public class SFTPSessionTest extends AbstractSFTPTest {
     @Ignore
     public void testUsernameChangeReconnect() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("u1", "p1"));
-        final Session session = new SFTPSession(host);
+        final Session session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final AtomicBoolean change = new AtomicBoolean();
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
@@ -236,41 +234,10 @@ public class SFTPSessionTest extends AbstractSFTPTest {
         assertTrue(change.get());
     }
 
-    @Ignore
-    @Test(expected = ConnectionRefusedException.class)
-    public void testConnectHttpProxy() throws Exception {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host,
-            new ProxySocketFactory(host,
-                new DefaultSocketConfigurator(), new ProxyFinder() {
-                @Override
-                public Proxy find(final Host target) {
-                    return new Proxy(Proxy.Type.HTTP, "localhost", 3128);
-                }
-            })
-        );
-        final LoginConnectionService c = new LoginConnectionService(
-            new DisabledLoginCallback(),
-            new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(),
-            new DisabledProgressListener());
-        try {
-            c.connect(session, PathCache.empty(), new DisabledCancelCallback());
-        }
-        catch(ConnectionRefusedException e) {
-            assertEquals("Invalid response HTTP/1.1 403 Forbidden from HTTP proxy localhost. The connection attempt was rejected. The server may be down, or your network may not be properly configured.", e.getDetail());
-            throw e;
-        }
-        assertTrue(session.isConnected());
-        session.close();
-    }
-
     @Test
     public void testHostKeySave() throws Exception {
         final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials("u1", "p1"));
-        final Session session = new SFTPSession(host);
+        final Session session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Local f = new Local("test/ch/cyberduck/core/sftp", "known_hosts");
         final AtomicReference<String> fingerprint = new AtomicReference<String>();
         try {

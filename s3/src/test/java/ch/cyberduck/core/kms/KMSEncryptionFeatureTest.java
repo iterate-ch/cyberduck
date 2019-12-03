@@ -31,6 +31,8 @@ import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.s3.S3TouchFeature;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -77,14 +79,14 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
 
     @Test
     public void testGetKeys_eu_west_1() throws Exception {
-        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session);
+        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertFalse(kms.getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback()).isEmpty());
         session.close();
     }
 
     @Test
     public void testGetKeys_ap_southeast_2() throws Exception {
-        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session);
+        final KMSEncryptionFeature kms = new KMSEncryptionFeature(session, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final Set<Encryption.Algorithm> keys = kms.getKeys(new Path("test-ap-southeast-2-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
         assertTrue(keys.contains(Encryption.Algorithm.NONE));
         assertTrue(keys.contains(S3EncryptionFeature.SSE_AES256));
@@ -102,7 +104,7 @@ public class KMSEncryptionFeatureTest extends AbstractS3Test {
         session.setSignatureVersion(S3Protocol.AuthenticationHeaderSignatureVersion.AWS4HMACSHA256);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        new KMSEncryptionFeature(session).getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
+        new KMSEncryptionFeature(session, new DisabledX509TrustManager(), new DefaultX509KeyManager()).getKeys(new Path("test-eu-west-1-cyberduck", EnumSet.of(Path.Type.volume)), new DisabledLoginCallback());
         session.close();
     }
 }
