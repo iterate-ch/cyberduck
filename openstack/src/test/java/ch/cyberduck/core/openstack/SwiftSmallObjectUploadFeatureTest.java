@@ -17,7 +17,6 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.test.IntegrationTest;
@@ -35,14 +34,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 @Category(IntegrationTest.class)
-public class SwiftSmallObjectUploadFeatureTest {
+public class SwiftSmallObjectUploadFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testDecorate() throws Exception {
         final NullInputStream n = new NullInputStream(1L);
-        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol()));
         assertSame(NullInputStream.class, new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
-                session, new SwiftRegionService(session))).decorate(n, null).getClass());
+            session, new SwiftRegionService(session))).decorate(n, null).getClass());
     }
 
     @Test(expected = ChecksumException.class)
@@ -50,10 +48,9 @@ public class SwiftSmallObjectUploadFeatureTest {
         final StorageObject o = new StorageObject("f");
         o.setMd5sum("d41d8cd98f00b204e9800998ecf8427f");
         try {
-            final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol()));
             new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
-                    session, new SwiftRegionService(session))).post(
-                    new Path("/f", EnumSet.of(Path.Type.file)), MessageDigest.getInstance("MD5"), o
+                session, new SwiftRegionService(session))).post(
+                new Path("/f", EnumSet.of(Path.Type.file)), MessageDigest.getInstance("MD5"), o
             );
         }
         catch(ChecksumException e) {
@@ -67,10 +64,9 @@ public class SwiftSmallObjectUploadFeatureTest {
     public void testPostChecksum() throws Exception {
         final StorageObject o = new StorageObject("f");
         o.setMd5sum("d41d8cd98f00b204e9800998ecf8427e");
-        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol()));
         new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(
-                session, new SwiftRegionService(session))).post(
-                new Path("/f", EnumSet.of(Path.Type.file)), MessageDigest.getInstance("MD5"), o
+            session, new SwiftRegionService(session))).post(
+            new Path("/f", EnumSet.of(Path.Type.file)), MessageDigest.getInstance("MD5"), o
         );
     }
 }

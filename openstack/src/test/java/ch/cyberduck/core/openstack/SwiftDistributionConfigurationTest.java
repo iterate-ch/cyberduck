@@ -1,11 +1,7 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -16,7 +12,6 @@ import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.identity.IdentityConfiguration;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -31,20 +26,17 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SwiftDistributionConfigurationTest {
+public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
 
     @Test
     public void testGetName() throws Exception {
-        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "h"));
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session, Collections.emptyMap());
         assertEquals("Akamai", configuration.getName());
         assertEquals("Akamai", configuration.getName(Distribution.DOWNLOAD));
-        session.close();
     }
 
     @Test
     public void testFeatures() throws Exception {
-        final SwiftSession session = new SwiftSession(new Host(new SwiftProtocol(), "h"));
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session, Collections.emptyMap());
         assertNotNull(configuration.getFeature(Purge.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(Index.class, Distribution.DOWNLOAD));
@@ -52,17 +44,10 @@ public class SwiftDistributionConfigurationTest {
         assertNotNull(configuration.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(AnalyticsProvider.class, Distribution.DOWNLOAD));
         assertNull(configuration.getFeature(Cname.class, Distribution.DOWNLOAD));
-        session.close();
     }
 
     @Test
     public void testWriteDownloadConfigurationRackspace() throws Exception {
-        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-        ));
-        final SwiftSession session = new SwiftSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
             new SwiftDistributionConfigurationLoader(session).operate(new DisabledPasswordCallback(),
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))));
@@ -72,17 +57,10 @@ public class SwiftDistributionConfigurationTest {
         configuration.write(container, new Distribution(Distribution.DOWNLOAD, true), new DisabledLoginCallback());
         assertTrue(configuration.read(container, Distribution.DOWNLOAD, new DisabledLoginCallback()).isEnabled());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 
     @Test
     public void testWriteWebsiteConfigurationRackspace() throws Exception {
-        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-        ));
-        final SwiftSession session = new SwiftSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final DistributionConfiguration configuration = new SwiftDistributionConfiguration(session,
             new SwiftDistributionConfigurationLoader(session).operate(new DisabledPasswordCallback(),
                 new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory))));
@@ -99,6 +77,5 @@ public class SwiftDistributionConfigurationTest {
         assertTrue(metadata.containsKey("X-Container-Meta-Web-Index"));
         assertEquals("index.html", metadata.get("X-Container-Meta-Web-Index"));
         new SwiftDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        session.close();
     }
 }

@@ -1,17 +1,14 @@
 package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -29,30 +26,17 @@ import ch.iterate.openstack.swift.Client;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SwiftFindFeatureTest {
+public class SwiftFindFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testFindContainer() throws Exception {
-        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-        ));
-        final SwiftSession session = new SwiftSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         assertTrue(new SwiftFindFeature(session).find(container));
-        session.close();
     }
 
     @Test
     public void testFindKey() throws Exception {
-        final Host host = new Host(new SwiftProtocol(), "identity.api.rackspacecloud.com", new Credentials(
-            System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
-        ));
-        final SwiftSession session = new SwiftSession(host);
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
@@ -67,12 +51,11 @@ public class SwiftFindFeatureTest {
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(file, new TransferStatus());
         assertTrue(new SwiftFindFeature(session).find(file));
         assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
-        session.close();
     }
 
     @Test
     public void testFindRoot() throws Exception {
-        assertTrue(new SwiftFindFeature(new SwiftSession(new Host(new SwiftProtocol()))).find(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(new SwiftFindFeature(session).find(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
@@ -81,7 +64,7 @@ public class SwiftFindFeatureTest {
         final AttributedList<Path> list = new AttributedList<Path>();
         cache.put(new Path("/g", EnumSet.of(Path.Type.directory)), list);
         final AtomicBoolean b = new AtomicBoolean();
-        final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host(new SwiftProtocol())) {
+        final Find finder = new SwiftFindFeature(new SwiftMetadataFeature(new SwiftSession(new Host(new SwiftProtocol()), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
             @Override
             public Client getClient() {
                 fail();
