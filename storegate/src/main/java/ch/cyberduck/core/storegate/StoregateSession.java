@@ -16,6 +16,7 @@ package ch.cyberduck.core.storegate;
  */
 
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
@@ -57,9 +58,14 @@ import ch.cyberduck.core.threading.CancelCallback;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -67,13 +73,21 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.migcomponents.migbase64.Base64;
 
 import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
+import static com.google.api.client.json.Json.MEDIA_TYPE;
 
 public class StoregateSession extends HttpSession<StoregateApiClient> {
     private static final Logger log = Logger.getLogger(StoregateSession.class);
@@ -125,6 +139,36 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
     public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
         try {
+            final HttpRequestBase request = new HttpPost(
+                new HostUrlProvider().withUsername(false).withPath(true).get(
+                    host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), "/identity/core/connect/userinfo")
+            );
+            request.addHeader(HttpHeaders.CONTENT_TYPE, MEDIA_TYPE);
+            final CloseableHttpResponse response = client.getClient().execute(request);
+            try {
+                switch(response.getStatusLine().getStatusCode()) {
+                    case HttpStatus.SC_OK:
+                        try {
+                            final JsonElement element = JsonParser.parseReader(new InputStreamReader(response.getEntity().getContent()));
+                            if(element.isJsonObject()) {
+                                final JsonObject json = element.getAsJsonObject();
+                                final JsonObject url = json.getAsJsonObject("web_url_api");
+                                host.setHostname(URI.create(url.getAsString()).getHost());
+                            }
+                        }
+                        catch(JsonParseException | IllegalArgumentException e) {
+                            log.warn(String.format("Ignore failure %s", e));
+                        }
+
+                        break;
+                    default:
+                        throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                            EntityUtils.toString(response.getEntity())));
+                }
+            }
+            finally {
+                EntityUtils.consume(response.getEntity());
+            }
             // Get username
             final ExtendedUser me = new UsersApi(client).usersGetMe();
             if(log.isDebugEnabled()) {
@@ -137,6 +181,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);
+        }
+        catch(IOException e) {
+            new DefaultIOExceptionMappingService().map(e);
         }
     }
 
