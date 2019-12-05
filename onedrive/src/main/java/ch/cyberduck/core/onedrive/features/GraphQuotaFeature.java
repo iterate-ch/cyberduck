@@ -57,8 +57,17 @@ public class GraphQuotaFeature implements Quota {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Failure to read attributes of {0}", e, home);
         }
-        return new Space(
-            metadata.getUsed() != null ? metadata.getUsed() : 0,
-            metadata.getTotal() != null ? metadata.getTotal() : Long.MAX_VALUE);
+        Long used = metadata.getUsed();
+        if(used != null) {
+            Long remaining = metadata.getRemaining();
+            if(remaining != null) {
+                return new Space(used, remaining);
+            }
+            Long total = metadata.getTotal();
+            if(total != null) {
+                return new Space(used, total - used);
+            }
+        }
+        return new Space(0L, Long.MAX_VALUE);
     }
 }
