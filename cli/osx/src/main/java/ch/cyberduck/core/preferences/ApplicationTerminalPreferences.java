@@ -16,7 +16,7 @@ package ch.cyberduck.core.preferences;
 
 import ch.cyberduck.cli.TerminalPreferences;
 import ch.cyberduck.core.IOKitSleepPreventer;
-import ch.cyberduck.core.Keychain;
+import ch.cyberduck.core.KeychainPasswordStore;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
 import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleRegexLocale;
@@ -53,8 +53,8 @@ public class ApplicationTerminalPreferences extends TerminalPreferences {
         this.setDefault("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());
         this.setDefault("factory.local.class", FinderLocal.class.getName());
         this.setDefault("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
-        this.setDefault("factory.passwordstore.class", Keychain.class.getName());
-        this.setDefault("factory.proxycredentialsstore.class", Keychain.class.getName());
+        this.setDefault("factory.passwordstore.class", KeychainPasswordStore.class.getName());
+        this.setDefault("factory.proxycredentialsstore.class", KeychainPasswordStore.class.getName());
         this.setDefault("factory.proxy.class", SystemConfigurationProxy.class.getName());
         this.setDefault("factory.sleeppreventer.class", IOKitSleepPreventer.class.getName());
         this.setDefault("factory.reachability.class", SystemConfigurationReachability.class.getName());

@@ -22,7 +22,7 @@ package ch.cyberduck.binding.foundation;
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.PointerType;
 
 /// <i>native declaration : :80</i>
 public abstract class NSMutableArray extends NSArray {
@@ -52,7 +52,7 @@ public abstract class NSMutableArray extends NSArray {
      */
     public abstract void addObject(NSObject anObject);
 
-    public abstract void addObject(PointerByReference anObject);
+    public abstract void addObject(PointerType pointerType);
 
     public abstract void addObject(String anObject);
 

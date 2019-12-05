@@ -15,8 +15,15 @@ package ch.cyberduck.core.keychain;
  * GNU General Public License for more details.
  */
 
-import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.Pointer;
+import com.sun.jna.PointerType;
 
-public class SecTrustRef extends PointerByReference {
+public class SecTrustRef extends PointerType {
 
+    public SecTrustRef() {
+    }
+
+    public SecTrustRef(final Pointer p) {
+        super(p);
+    }
 }

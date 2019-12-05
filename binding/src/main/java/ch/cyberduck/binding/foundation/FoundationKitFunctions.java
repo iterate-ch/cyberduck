@@ -28,6 +28,7 @@ import java.util.Collections;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.PointerType;
 
 public interface FoundationKitFunctions extends Library {
     FoundationKitFunctions library = Native.load(
@@ -293,5 +294,7 @@ public interface FoundationKitFunctions extends Library {
     void NSLog(String format, String... args);
 
     CFStringRef CFStringCreateWithCharacters(CFAllocatorRef allocator, char[] chars, CFIndex index);
+
+    void CFRelease(PointerType ref);
 }
 

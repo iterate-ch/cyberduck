@@ -1,6 +1,7 @@
 package ch.cyberduck.core;
 
-import org.junit.Ignore;
+import ch.cyberduck.binding.WindowController;
+
 import org.junit.Test;
 
 import java.io.FileInputStream;
@@ -9,27 +10,30 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class KeychainTest {
-
-    @Test
-    public void testFindPassword() {
-        final Keychain k = new Keychain();
-        assertNull(k.getPassword("cyberduck.ch", "u"));
-        assertNull(k.getPassword(Scheme.http, 80, "cyberduck.ch", "u"));
-    }
+public class KeychainCertificateStoreTest {
 
     @Test
     public void testTrustedEmptyCertificates() throws Exception {
-        final Keychain k = new Keychain();
+        final KeychainCertificateStore k = new KeychainCertificateStore(new WindowController() {
+            @Override
+            protected String getBundleName() {
+                return null;
+            }
+        });
         assertFalse(k.isTrusted("cyberduck.ch", Collections.emptyList()));
     }
 
     @Test
-    @Ignore
     public void testTrusted() throws Exception {
-        final Keychain k = new Keychain();
+        final KeychainCertificateStore k = new KeychainCertificateStore(new WindowController() {
+            @Override
+            protected String getBundleName() {
+                return null;
+            }
+        });
         InputStream inStream = new FileInputStream("src/test/resources/OXxlRDVcWqdPEvFm.cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
@@ -37,9 +41,13 @@ public class KeychainTest {
     }
 
     @Test
-    @Ignore
     public void testTrustedHostnameMismatch() throws Exception {
-        final Keychain k = new Keychain();
+        final KeychainCertificateStore k = new KeychainCertificateStore(new WindowController() {
+            @Override
+            protected String getBundleName() {
+                return null;
+            }
+        });
         InputStream inStream = new FileInputStream("src/test/resources/OXxlRDVcWqdPEvFm.cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
