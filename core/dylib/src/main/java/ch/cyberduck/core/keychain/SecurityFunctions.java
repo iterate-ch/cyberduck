@@ -18,6 +18,7 @@ package ch.cyberduck.core.keychain;
 import ch.cyberduck.binding.foundation.CFAllocatorRef;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.binding.foundation.NSData;
+import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSString;
 
 import org.rococoa.internal.RococoaTypeMapper;
@@ -147,4 +148,49 @@ public interface SecurityFunctions extends Library {
      * code. Call the CFRelease function to release this object when you are finished using it.
      */
     NSString SecCopyErrorMessageString(int status, Pointer reserved);
+
+    /**
+     * Returns a dictionary containing information about an evaluated trust.
+     *
+     * @param trust The evaluated trust.
+     * @return A dictionary containing keys with values that describe the result of the trust evaluation, or NULL when
+     * no information is available or if the trust has not been evaluated. See Trust Result Dictionary Keys for the list
+     * of possible keys. Use CFRelease to free the dictionary's memory when you are done with it.
+     */
+    NSDictionary SecTrustCopyResult(SecTrustRef trust);
+
+    int CSSM_CERT_STATUS_EXPIRED = 0x00000001;
+    int CSSM_CERT_STATUS_NOT_VALID_YET = 0x00000002;
+    int CSSM_CERT_STATUS_IS_IN_INPUT_CERTS = 0x00000004;
+    int CSSM_CERT_STATUS_IS_IN_ANCHORS = 0x00000008;
+    int CSSM_CERT_STATUS_IS_ROOT = 0x00000010;
+    int CSSM_CERT_STATUS_IS_FROM_NET = 0x00000020;
+
+    /**
+     * Retrieves details on the outcome of a call to the function SecTrustEvaluate. You can call the
+     * SFCertificateTrustPanel class in the SecurityInterface to display these results to the user.
+     *
+     * @param trustRef    A trust management object that has previously been sent to the SecTrustEvaluate function for
+     *                    evaluation.
+     * @param result      A pointer to the result type returned in the result parameter by the SecTrustEvaluate
+     *                    function.
+     * @param certChain   On return, points to an array of certificates that constitute the certificate chain used to
+     *                    verify the input certificate. Call the CFRelease function to release this object when you are
+     *                    finished with it.
+     * @param statusChain On return, points to an array of CSSM_TP_APPLE_EVIDENCE_INFO structures, one for each
+     *                    certificate in the certificate chain. The first item in the array corresponds to the leaf
+     *                    certificate, and the last item corresponds to the anchor (assuming that verification of the
+     *                    chain did not fail before reaching the anchor certificate). Each structure describes the
+     *                    status of one certificate in the chain. This structure is defined in cssmapple.h. Do not
+     *                    attempt to free this pointer; it remains valid until the trust management object is released
+     *                    or until the next call to the function SecTrustEvaluate that uses this trust management
+     *                    object.
+     *                    <p>
+     *                    typedef struct { CSSM_TP_APPLE_CERT_STATUS   StatusBits; uint32
+     *                    NumStatusCodes; CSSM_RETURN                 *StatusCodes; uint32                      Index;
+     *                    CSSM_DL_DB_HANDLE           DlDbHandle; CSSM_DB_UNIQUE_RECORD_PTR   UniqueRecord; }
+     *                    CSSM_TP_APPLE_EVIDENCE_INFO;
+     * @return A result code. See Security Framework Result Codes.
+     */
+    int SecTrustGetResult(SecTrustRef trustRef, SecTrustResultType result, PointerByReference certChain, PointerByReference statusChain);
 }
