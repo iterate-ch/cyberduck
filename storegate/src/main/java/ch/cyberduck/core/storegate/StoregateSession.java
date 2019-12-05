@@ -153,6 +153,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                             if(element.isJsonObject()) {
                                 final JsonObject json = element.getAsJsonObject();
                                 final URI url = URI.create(json.getAsJsonPrimitive("web_url_api").getAsString());
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Set base path to %s", url));
+                                }
                                 client.setBasePath(url.toString());
                             }
                         }
