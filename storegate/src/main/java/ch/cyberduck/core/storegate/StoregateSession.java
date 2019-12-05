@@ -84,6 +84,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.migcomponents.migbase64.Base64;
 
 import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
@@ -152,7 +153,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                             final JsonElement element = JsonParser.parseReader(new InputStreamReader(response.getEntity().getContent()));
                             if(element.isJsonObject()) {
                                 final JsonObject json = element.getAsJsonObject();
-                                final JsonObject url = json.getAsJsonObject("web_url_api");
+                                final JsonPrimitive url = json.getAsJsonPrimitive("web_url_api");
                                 host.setHostname(URI.create(url.getAsString()).getHost());
                             }
                         }
