@@ -159,7 +159,10 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                         catch(JsonParseException | IllegalArgumentException e) {
                             log.warn(String.format("Ignore failure %s", e));
                         }
-
+                        break;
+                    case HttpStatus.SC_FORBIDDEN:
+                        // Insufficient scope
+                        log.warn(String.format("Ignore failure %s", response));
                         break;
                     default:
                         throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
