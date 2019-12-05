@@ -97,7 +97,7 @@ public final class KeychainCertificateStore implements CertificateStore {
                     }
                 }, true);
                 final SFCertificateTrustPanel panel = ref.get();
-                panel.setInformativeText(LocaleFactory.localizedString("Certificate Error", "Keychain"));
+                panel.setInformativeText(null);
                 panel.setAlternateButtonTitle(LocaleFactory.localizedString("Disconnect"));
                 panel.setPolicies(policyRef);
                 panel.setShowsHelp(true);
@@ -106,8 +106,7 @@ public final class KeychainCertificateStore implements CertificateStore {
                     protected void beginSheet(final NSWindow sheet) {
                         panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message(
                             controller.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
-                            null, trustRef,
-                            library.SecCopyErrorMessageString(library.SecTrustGetTrustResult(trustRef, trustResultType), null).toString());
+                            null, trustRef, null);
                     }
                 }.beginSheet()) {
                     case SheetCallback.DEFAULT_OPTION:
