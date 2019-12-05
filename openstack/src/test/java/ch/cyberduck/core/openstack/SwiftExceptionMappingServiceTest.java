@@ -31,7 +31,7 @@ import ch.iterate.openstack.swift.exception.GenericException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class SwiftExceptionMappingServiceTest extends AbstractSwiftTest {
+public class SwiftExceptionMappingServiceTest {
 
     @Test
     public void testLoginFailure() {
