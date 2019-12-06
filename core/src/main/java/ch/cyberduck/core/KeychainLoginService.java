@@ -139,7 +139,10 @@ public class KeychainLoginService implements LoginService {
             credentials.setSaved(input.isSaved());
             credentials.setToken(input.getPassword());
         }
-        return options.password || options.token;
+        if(options.oauth) {
+            credentials.setOauth(OAuthTokens.EMPTY);
+        }
+        return options.password || options.token || options.oauth;
     }
 
     @Override
