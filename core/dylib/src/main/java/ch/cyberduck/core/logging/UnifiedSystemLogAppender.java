@@ -84,7 +84,7 @@ public class UnifiedSystemLogAppender extends AppenderSkeleton {
             }
         }
         // Category name
-        final String logger = event.getLogger().getName();
+        final String logger = String.format("%s %s", event.getThreadName(), event.getLogger().getName());
         switch(event.getLevel().toInt()) {
             case Level.FATAL_INT:
             case Level.ERROR_INT:
