@@ -26,9 +26,11 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.features.Versioning;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.model.MultipartUpload;
 
 import java.util.EnumSet;
@@ -57,6 +59,18 @@ public class S3ListService implements ListService {
                 log.warn(String.format("Ignore failure %s listing buckets.", e));
             }
         }
+        try {
+            return this.listObjects(directory, listener);
+        }
+        catch(ResolveFailedException e) {
+            log.warn(String.format("Failure %s resolving bucket name. Disable use of DNS bucket names", e));
+            final Jets3tProperties configuration = session.getClient().getJetS3tProperties();
+            configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+            return this.listObjects(directory, listener);
+        }
+    }
+
+    private AttributedList<Path> listObjects(final Path directory, final ListProgressListener listener) throws BackgroundException {
         AttributedList<Path> objects;
         final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
             containerService.getContainer(directory)
