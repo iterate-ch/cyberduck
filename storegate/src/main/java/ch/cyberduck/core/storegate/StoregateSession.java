@@ -25,6 +25,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -165,8 +166,9 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                         break;
                     case HttpStatus.SC_FORBIDDEN:
                         // Insufficient scope
-                        log.warn(String.format("Ignore failure %s", response));
-                        break;
+                        final BackgroundException failure = new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                            EntityUtils.toString(response.getEntity())));
+                        throw new LoginFailureException(failure.getDetail(), failure);
                     default:
                         throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
                             EntityUtils.toString(response.getEntity())));
