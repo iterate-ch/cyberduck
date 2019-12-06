@@ -33,6 +33,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
@@ -89,7 +90,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 // Read directory listing in chunks. List results are always returned
                 // in lexicographic (alphabetical) order.
                 final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
-                    PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
+                    bucket.isRoot() ? StringUtils.EMPTY : PathNormalizer.name(URIEncoder.encode(bucket.getName())), prefix, delimiter,
                     chunksize, priorLastKey, false);
 
                 final StorageObject[] objects = chunk.getObjects();
