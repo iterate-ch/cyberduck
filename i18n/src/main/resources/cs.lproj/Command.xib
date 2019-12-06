@@ -67,7 +67,7 @@ Gw
                     <textField verticalHuggingPriority="750" id="13">
                         <rect key="frame" x="90" y="235" width="306" height="14"/>
                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Zadejte příkaz, který má být odeslán na server:" id="14">
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Zadejte příkaz, pro server:" id="14">
                             <font key="font" metaFont="smallSystem"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
