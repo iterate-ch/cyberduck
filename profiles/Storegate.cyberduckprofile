@@ -60,7 +60,9 @@
         <key>Scopes</key>
         <array>
             <string>api4</string>
+            <string>api4.settings</string>
             <string>offline_access</string>
+            <string>openid</string>
         </array>
         <key>Disk</key>
         <string>
