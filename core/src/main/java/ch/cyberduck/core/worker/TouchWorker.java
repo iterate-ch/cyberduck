@@ -54,7 +54,8 @@ public class TouchWorker extends Worker<Path> {
         final TransferStatus status = new TransferStatus()
             .exists(false)
             .length(0L)
-            .withMime(new MappingMimeTypeService().getMime(file.getName()));
+            .withMime(new MappingMimeTypeService().getMime(file.getName()))
+            .withLockId(this.getLockId(file));
         final Encryption encryption = session.getFeature(Encryption.class);
         if(encryption != null) {
             status.setEncryption(encryption.getDefault(file));
@@ -75,6 +76,10 @@ public class TouchWorker extends Worker<Path> {
             }
         }
         return feature.touch(file, status);
+    }
+
+    protected String getLockId(final Path file) {
+        return null;
     }
 
     @Override
