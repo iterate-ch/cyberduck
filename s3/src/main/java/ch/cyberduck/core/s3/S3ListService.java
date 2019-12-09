@@ -26,9 +26,11 @@ import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.features.Versioning;
 
 import org.apache.log4j.Logger;
+import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.model.MultipartUpload;
 
 import java.util.EnumSet;
@@ -49,39 +51,55 @@ public class S3ListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         if(directory.isRoot()) {
             // List all buckets
-            return new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(directory, listener);
-        }
-        else {
-            AttributedList<Path> objects;
-            final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                containerService.getContainer(directory)
-            ) : VersioningConfiguration.empty();
-            if(versioning.isEnabled()) {
-                try {
-                    objects = new S3VersionedObjectListService(session).list(directory, listener);
-                }
-                catch(AccessDeniedException | InteroperabilityException e) {
-                    log.warn(String.format("Ignore failure listing versioned objects. %s", e));
-                    objects = new S3ObjectListService(session).list(directory, listener);
-                }
-            }
-            else {
-                objects = new S3ObjectListService(session).list(directory, listener);
-            }
             try {
-                for(MultipartUpload upload : new S3DefaultMultipartService(session).find(directory)) {
-                    final PathAttributes attributes = new PathAttributes();
-                    attributes.setDuplicate(true);
-                    attributes.setVersionId(upload.getUploadId());
-                    attributes.setModificationDate(upload.getInitiatedDate().getTime());
-                    objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
-                }
+                return new S3BucketListService(session, new S3LocationFeature.S3Region(session.getHost().getRegion())).list(directory, listener);
+            }
+            catch(InteroperabilityException e) {
+                // Bucket set in hostname that leads to parser failure for XML reply
+                log.warn(String.format("Ignore failure %s listing buckets.", e));
+            }
+        }
+        try {
+            return this.listObjects(directory, listener);
+        }
+        catch(ResolveFailedException e) {
+            log.warn(String.format("Failure %s resolving bucket name. Disable use of DNS bucket names", e));
+            final Jets3tProperties configuration = session.getClient().getJetS3tProperties();
+            configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+            return this.listObjects(directory, listener);
+        }
+    }
+
+    private AttributedList<Path> listObjects(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        AttributedList<Path> objects;
+        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+            containerService.getContainer(directory)
+        ) : VersioningConfiguration.empty();
+        if(versioning.isEnabled()) {
+            try {
+                objects = new S3VersionedObjectListService(session).list(directory, listener);
             }
             catch(AccessDeniedException | InteroperabilityException e) {
-                log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
+                log.warn(String.format("Ignore failure listing versioned objects. %s", e));
+                objects = new S3ObjectListService(session).list(directory, listener);
             }
-            return objects;
         }
+        else {
+            objects = new S3ObjectListService(session).list(directory, listener);
+        }
+        try {
+            for(MultipartUpload upload : new S3DefaultMultipartService(session).find(directory)) {
+                final PathAttributes attributes = new PathAttributes();
+                attributes.setDuplicate(true);
+                attributes.setVersionId(upload.getUploadId());
+                attributes.setModificationDate(upload.getInitiatedDate().getTime());
+                objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
+            }
+        }
+        catch(AccessDeniedException | InteroperabilityException e) {
+            log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
+        }
+        return objects;
     }
 
     @Override

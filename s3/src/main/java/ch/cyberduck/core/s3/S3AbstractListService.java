@@ -38,6 +38,9 @@ public abstract class S3AbstractListService implements ListService {
             // of Prefix for your query will be the empty string.
             // In other words, the results will be not be restricted by prefix.
             prefix = containerService.getKey(directory);
+            if(StringUtils.isBlank(prefix)) {
+                return StringUtils.EMPTY;
+            }
             if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
                 prefix += Path.DELIMITER;
             }
