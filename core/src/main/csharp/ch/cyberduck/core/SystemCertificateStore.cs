@@ -79,17 +79,6 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        public bool display(List certificates)
-        {
-            if (certificates.isEmpty())
-            {
-                return false;
-            }
-            X509Certificate2 cert = ConvertCertificate(certificates.iterator().next() as X509Certificate);
-            X509Certificate2UI.DisplayCertificate(cert);
-            return true;
-        }
-
         public bool isTrusted(String hostName, List certs)
         {
             X509Certificate2 serverCert = ConvertCertificate(certs.iterator().next() as X509Certificate);
@@ -124,9 +113,9 @@ namespace Ch.Cyberduck.Core
             if (null == errorFromChainStatus && hostnameMismatch)
             {
                 errorFromChainStatus =
-                    LocaleFactory.localizedString(
-                        "The certificate for this server is invalid. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                        "Keychain").Replace("%@", hostName);
+                    string.Format(LocaleFactory.localizedString(
+                        "The certificate for this server is invalid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
+                        "Keychain"), hostName);
             }
 
             if (null != errorFromChainStatus)
@@ -266,9 +255,9 @@ namespace Ch.Cyberduck.Core
                 {
                     //certificate is expired, CSSM_CERT_STATUS_EXPIRED
                     error =
-                        LocaleFactory.localizedString(
-                            "The certificate for this server has expired. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                            "Keychain").Replace("%@", hostName);
+                        string.Format(LocaleFactory.localizedString(
+                            "The certificate for this server has expired. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
+                            "Keychain"), hostName);
                     return error;
                 }
                 if (((status.Status & X509ChainStatusFlags.UntrustedRoot) == X509ChainStatusFlags.UntrustedRoot) ||
@@ -276,18 +265,18 @@ namespace Ch.Cyberduck.Core
                 {
                     // untrusted self-signed, !CSSM_CERT_STATUS_IS_IN_ANCHORS && CSSM_CERT_STATUS_IS_ROOT
                     error =
-                        LocaleFactory.localizedString(
-                            "The certificate for this server was signed by an unknown certifying authority. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                            "Keychain").Replace("%@", hostName);
+                        string.Format(LocaleFactory.localizedString(
+                            "The certificate for this server was signed by an unknown certifying authority. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
+                            "Keychain"), hostName);
                     return error;
                 }
 
                 //all other errors we map to !CSSM_CERT_STATUS_IS_IN_ANCHORS
                 Log.debug("Certificate error" + status.StatusInformation);
                 error =
-                    LocaleFactory.localizedString(
-                        "The certificate for this server is invalid. You might be connecting to a server that is pretending to be “%@” which could put your confidential information at risk. Would you like to connect to the server anyway?",
-                        "Keychain").Replace("%@", hostName);
+                    string.Format(LocaleFactory.localizedString(
+                        "The certificate for this server is invalid. You might be connecting to a server that is pretending to be {0} which could put your confidential information at risk. Would you like to connect to the server anyway?",
+                        "Keychain"), hostName);
             }
             return error;
         }

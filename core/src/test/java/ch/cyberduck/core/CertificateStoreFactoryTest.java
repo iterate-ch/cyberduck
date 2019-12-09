@@ -23,13 +23,8 @@ import ch.cyberduck.core.threading.MainAction;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
 
 public class CertificateStoreFactoryTest {
-
-    public void testGet() {
-        assertSame(CertificateStoreFactory.get(), CertificateStoreFactory.get());
-    }
 
     @Test
     public void testGetWithCustomController() {

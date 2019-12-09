@@ -22,6 +22,8 @@ package ch.cyberduck.binding.foundation;
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import com.sun.jna.PointerType;
+
 /// <i>native declaration : :80</i>
 public abstract class NSMutableArray extends NSArray {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSMutableArray", _Class.class);
@@ -49,6 +51,8 @@ public abstract class NSMutableArray extends NSArray {
      * <i>native declaration : :82</i>
      */
     public abstract void addObject(NSObject anObject);
+
+    public abstract void addObject(PointerType pointerType);
 
     public abstract void addObject(String anObject);
 

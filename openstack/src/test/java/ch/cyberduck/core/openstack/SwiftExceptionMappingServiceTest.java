@@ -36,7 +36,7 @@ public class SwiftExceptionMappingServiceTest {
     @Test
     public void testLoginFailure() {
         final GenericException f = new GenericException(
-                "message", new Header[]{}, new BasicStatusLine(new ProtocolVersion("http", 1, 1), 403, "Forbidden"));
+            "message", new Header[]{}, new BasicStatusLine(new ProtocolVersion("http", 1, 1), 403, "Forbidden"));
         assertTrue(new SwiftExceptionMappingService().map(f) instanceof AccessDeniedException);
         assertEquals("Access denied", new SwiftExceptionMappingService().map(f).getMessage());
         assertEquals("Message. 403 Forbidden. Please contact your web hosting service provider for assistance.", new SwiftExceptionMappingService().map(f).getDetail());
@@ -45,21 +45,21 @@ public class SwiftExceptionMappingServiceTest {
     @Test
     public void testMap() {
         assertEquals("Message. 500 reason. Please contact your web hosting service provider for assistance.", new SwiftExceptionMappingService().map(
-                new GenericException("message", null, new StatusLine() {
-                    @Override
-                    public ProtocolVersion getProtocolVersion() {
-                        throw new UnsupportedOperationException();
-                    }
+            new GenericException("message", null, new StatusLine() {
+                @Override
+                public ProtocolVersion getProtocolVersion() {
+                    throw new UnsupportedOperationException();
+                }
 
-                    @Override
-                    public int getStatusCode() {
-                        return 500;
-                    }
+                @Override
+                public int getStatusCode() {
+                    return 500;
+                }
 
-                    @Override
-                    public String getReasonPhrase() {
-                        return "reason";
-                    }
-                })).getDetail());
+                @Override
+                public String getReasonPhrase() {
+                    return "reason";
+                }
+            })).getDetail());
     }
 }

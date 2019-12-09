@@ -24,14 +24,15 @@ import ch.cyberduck.core.proxy.ProxyFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 public abstract class HttpSession<C> extends SSLSession<C> {
 
     protected HttpConnectionPoolBuilder builder;
 
-    protected HttpSession(final Host host, final ThreadLocalHostnameDelegatingTrustManager trust, final X509KeyManager key) {
+    protected HttpSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
-        this.builder = new HttpConnectionPoolBuilder(host, trust, key, ProxyFactory.get());
+        this.builder = new HttpConnectionPoolBuilder(host, new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, ProxyFactory.get());
     }
 
     public void setBuilder(final HttpConnectionPoolBuilder builder) {

@@ -15,7 +15,7 @@ package ch.cyberduck.core.preferences;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Keychain;
+import ch.cyberduck.core.KeychainPasswordStore;
 
 import org.junit.Test;
 
@@ -30,6 +30,6 @@ public class ApplicationTerminalPreferencesTest {
         prefs.setFactories();
         prefs.setDefaults();
         assertEquals("NativePRNG", prefs.getProperty("connection.ssl.securerandom.algorithm"));
-        assertEquals(Keychain.class.getName(), prefs.getProperty("factory.passwordstore.class"));
+        assertEquals(KeychainPasswordStore.class.getName(), prefs.getProperty("factory.passwordstore.class"));
     }
 }

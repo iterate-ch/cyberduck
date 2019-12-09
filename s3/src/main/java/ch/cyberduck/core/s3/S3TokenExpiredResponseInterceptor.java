@@ -21,6 +21,8 @@ import ch.cyberduck.core.exception.ExpiredTokenException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DisabledServiceUnavailableRetryStrategy;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.sts.STSCredentialsConfigurator;
 
 import org.apache.http.HttpResponse;
@@ -38,11 +40,15 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
 
     private static final int MAX_RETRIES = 1;
 
+    private final X509TrustManager trust;
+    private final X509KeyManager key;
     private final LoginCallback prompt;
     private final Host host;
 
-    public S3TokenExpiredResponseInterceptor(final S3Session session, final LoginCallback prompt) {
+    public S3TokenExpiredResponseInterceptor(final S3Session session, final X509TrustManager trust, final X509KeyManager key, final LoginCallback prompt) {
         this.host = session.getHost();
+        this.trust = trust;
+        this.key = key;
         this.prompt = prompt;
     }
 
@@ -59,7 +65,7 @@ public class S3TokenExpiredResponseInterceptor extends DisabledServiceUnavailabl
                                 EntityUtils.toString(response.getEntity()));
                             if(new S3ExceptionMappingService().map(failure) instanceof ExpiredTokenException) {
                                 try {
-                                    host.setCredentials(new STSCredentialsConfigurator(prompt).configure(host));
+                                    host.setCredentials(new STSCredentialsConfigurator(trust, key, prompt).configure(host));
                                     return true;
                                 }
                                 catch(LoginFailureException | LoginCanceledException e) {

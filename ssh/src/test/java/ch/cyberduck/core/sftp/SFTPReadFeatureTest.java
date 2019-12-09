@@ -18,10 +18,8 @@ package ch.cyberduck.core.sftp;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -113,10 +111,6 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testUnconfirmedReadsNumber() {
-        final Host host = new Host(new SFTPProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
-        final SFTPSession session = new SFTPSession(host);
         final SFTPReadFeature feature = new SFTPReadFeature(session);
         assertEquals(33, feature.getMaxUnconfirmedReads(new TransferStatus().length(TransferStatus.MEGA * 1L)));
         assertEquals(64, feature.getMaxUnconfirmedReads(new TransferStatus().length((long) (TransferStatus.GIGA * 1.3))));

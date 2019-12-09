@@ -39,7 +39,7 @@ import java.util.HashSet;
 
 import static org.junit.Assert.fail;
 
-public class AbstractS3Test {
+public abstract class AbstractS3Test {
 
     protected S3Session session;
 

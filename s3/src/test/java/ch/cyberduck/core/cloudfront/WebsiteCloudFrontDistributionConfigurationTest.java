@@ -12,6 +12,8 @@ import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -28,7 +30,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
     @Test
     public void testGetMethodsAWS() {
         final S3Session session = new S3Session(new Host(new S3Protocol()));
-        final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session, Collections.emptyMap()
+        final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager(), Collections.emptyMap()
         );
         assertTrue(configuration.getMethods(
             new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.DOWNLOAD));
@@ -47,7 +49,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
     @Test
     public void testGetMethodsNonAWS() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), "s3.cyberduck.io"));
-        final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session, Collections.emptyMap()
+        final WebsiteCloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager(), Collections.emptyMap()
         );
         assertFalse(configuration.getMethods(
             new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), "/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume))).contains(Distribution.DOWNLOAD));
@@ -67,7 +69,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
     public void testGetName() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(
-            session, Collections.emptyMap()
+            session, new DisabledX509TrustManager(), new DefaultX509KeyManager(), Collections.emptyMap()
         );
         assertEquals("Amazon CloudFront", configuration.getName());
         assertEquals("Amazon CloudFront", configuration.getName(Distribution.DOWNLOAD));
@@ -80,7 +82,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
     public void testGetOrigin() {
         final S3Session session = new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()));
         final CloudFrontDistributionConfiguration configuration = new WebsiteCloudFrontDistributionConfiguration(
-            session, Collections.emptyMap()
+            session, new DisabledX509TrustManager(), new DefaultX509KeyManager(), Collections.emptyMap()
         );
         assertEquals("bbb.s3.amazonaws.com",
             configuration.getOrigin(new Path("/bbb", EnumSet.of(Path.Type.directory, Path.Type.volume)), Distribution.DOWNLOAD).getHost());
@@ -98,7 +100,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
     @Test
     public void testReadNoWebsiteConfiguration() throws Exception {
         final WebsiteCloudFrontDistributionConfiguration configuration
-            = new WebsiteCloudFrontDistributionConfiguration(session, Collections.emptyMap()
+            = new WebsiteCloudFrontDistributionConfiguration(session, new DisabledX509TrustManager(), new DefaultX509KeyManager(), Collections.emptyMap()
         );
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Distribution distribution = configuration.read(container, Distribution.WEBSITE, new DisabledLoginCallback());
@@ -108,7 +110,7 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
     @Test
     public void testFeatures() {
         final CloudFrontDistributionConfiguration d = new WebsiteCloudFrontDistributionConfiguration(
-            new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())), Collections.emptyMap()
+            new S3Session(new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())), new DisabledX509TrustManager(), new DefaultX509KeyManager(), Collections.emptyMap()
         );
         assertNotNull(d.getFeature(Purge.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Purge.class, Distribution.WEBSITE_CDN));

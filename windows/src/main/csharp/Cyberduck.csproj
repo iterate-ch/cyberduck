@@ -54,6 +54,7 @@
         </Reference>
         <Reference Include="PresentationFramework" />
         <Reference Include="System.Design" />
+        <Reference Include="System.Security" />
         <Reference Include="System.ServiceModel" />
         <Reference Include="System.Web" />
     </ItemGroup>

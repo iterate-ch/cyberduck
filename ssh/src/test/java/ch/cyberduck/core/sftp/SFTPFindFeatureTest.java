@@ -2,7 +2,6 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -44,6 +43,6 @@ public class SFTPFindFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testFindRoot() throws Exception {
-        assertTrue(new SFTPFindFeature(new SFTPSession(new Host(new SFTPProtocol()))).find(new Path("/", EnumSet.of(Path.Type.directory))));
+        assertTrue(new SFTPFindFeature(session).find(new Path("/", EnumSet.of(Path.Type.directory))));
     }
 }

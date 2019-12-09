@@ -30,6 +30,8 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
@@ -112,7 +114,7 @@ public class AbstractSFTPTest {
         final Host host = new Host(profile, profile.getDefaultHostname(), 2202, new Credentials(
             System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
         ));
-        session = new SFTPSession(host);
+        session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {

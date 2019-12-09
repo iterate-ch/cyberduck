@@ -31,6 +31,8 @@ import ch.cyberduck.core.s3.S3BucketListService;
 import ch.cyberduck.core.s3.S3ExceptionMappingService;
 import ch.cyberduck.core.s3.S3LocationFeature;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jets3t.service.S3ServiceException;
@@ -50,8 +52,9 @@ import com.amazonaws.services.cloudfront.model.OriginProtocolPolicy;
 
 public class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
 
-    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final Map<Path, Distribution> distributions) {
-        super(session, distributions);
+    public WebsiteCloudFrontDistributionConfiguration(final S3Session session, final X509TrustManager trust, final X509KeyManager key,
+                                                      final Map<Path, Distribution> distributions) {
+        super(session, trust, key, distributions);
     }
 
     /**

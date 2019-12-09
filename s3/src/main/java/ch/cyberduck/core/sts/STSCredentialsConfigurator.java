@@ -27,6 +27,9 @@ import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
+import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
+import ch.cyberduck.core.ssl.X509KeyManager;
+import ch.cyberduck.core.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -58,9 +61,13 @@ import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
 public class STSCredentialsConfigurator {
     private static final Logger log = Logger.getLogger(STSCredentialsConfigurator.class);
 
+    private final X509TrustManager trust;
+    private final X509KeyManager key;
     private final PasswordCallback prompt;
 
-    public STSCredentialsConfigurator(final PasswordCallback prompt) {
+    public STSCredentialsConfigurator(final X509TrustManager trust, final X509KeyManager key, final PasswordCallback prompt) {
+        this.trust = trust;
+        this.key = key;
         this.prompt = prompt;
     }
 
@@ -229,7 +236,8 @@ public class STSCredentialsConfigurator {
     }
 
     protected AWSSecurityTokenService getTokenService(final Host host, final String region, final String accessKey, final String secretKey, final String sessionToken) {
-        final ClientConfiguration configuration = new CustomClientConfiguration(host);
+        final ClientConfiguration configuration = new CustomClientConfiguration(host,
+            new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key);
         return AWSSecurityTokenServiceClientBuilder.standard()
             .withCredentials(new AWSStaticCredentialsProvider(StringUtils.isBlank(sessionToken) ? new AWSCredentials() {
                 @Override
@@ -262,14 +270,13 @@ public class STSCredentialsConfigurator {
     }
 
     /**
-     * Implementation of AbstractProfilesConfigFileScanner that groups profile properties into a map
-     * while scanning through the credentials profile.
+     * Implementation of AbstractProfilesConfigFileScanner that groups profile properties into a map while scanning
+     * through the credentials profile.
      */
     private static final class ProfilesConfigFileLoaderHelper extends AbstractProfilesConfigFileScanner {
 
         /**
-         * Map from the parsed profile name to the map of all the property values included the
-         * specific profile
+         * Map from the parsed profile name to the map of all the property values included the specific profile
          */
         protected final Map<String, Map<String, String>> allProfileProperties = new LinkedHashMap<String, Map<String, String>>();
 

@@ -37,9 +37,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.ssl.DefaultTrustManagerHostnameCallback;
-import ch.cyberduck.core.ssl.KeychainX509KeyManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -58,28 +55,16 @@ public class CustomOriginCloudFrontDistributionConfiguration extends CloudFrontD
     private final PathContainerService containerService
         = new PathContainerService();
 
-    private final Map<Path, Distribution> cache
-        = new HashMap<Path, Distribution>();
+    private final Map<Path, Distribution> cache = new HashMap<Path, Distribution>();
 
     private final Host origin;
-
-    public CustomOriginCloudFrontDistributionConfiguration(final Host origin) {
-        this(origin,
-            new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname()))
-            ),
-            new KeychainX509KeyManager(
-                new Host(new S3Protocol(), new S3Protocol().getDefaultHostname())
-            )
-        );
-    }
 
     public CustomOriginCloudFrontDistributionConfiguration(final Host origin,
                                                            final X509TrustManager trust,
                                                            final X509KeyManager key) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         super(new S3Session(new Host(new S3Protocol(),
-            new S3Protocol().getDefaultHostname(), origin.getCdnCredentials()), trust, key), Collections.emptyMap());
+            new S3Protocol().getDefaultHostname(), origin.getCdnCredentials()), trust, key), trust, key, Collections.emptyMap());
         this.origin = origin;
     }
 

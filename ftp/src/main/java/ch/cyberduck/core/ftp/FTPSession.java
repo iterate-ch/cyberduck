@@ -333,7 +333,7 @@ public class FTPSession extends SSLSession<FTPClient> {
             return (T) new FTPCommandFeature(this);
         }
         if(type == DistributionConfiguration.class) {
-            return (T) new CustomOriginCloudFrontDistributionConfiguration(host);
+            return (T) new CustomOriginCloudFrontDistributionConfiguration(host, trust, key);
         }
         if(type == Home.class) {
             return (T) new FTPWorkdirService(this);

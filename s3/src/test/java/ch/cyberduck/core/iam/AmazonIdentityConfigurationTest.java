@@ -5,6 +5,8 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.ssl.DefaultX509KeyManager;
+import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
@@ -23,7 +25,7 @@ public class AmazonIdentityConfigurationTest {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
             System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
-        final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host);
+        final AmazonIdentityConfiguration iam = new AmazonIdentityConfiguration(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         final String username = UUID.randomUUID().toString();
 //        try {
 //            iam.create(username, "{}", new DisabledLoginController());
@@ -54,6 +56,6 @@ public class AmazonIdentityConfigurationTest {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
             "key", "secret"
         ));
-        new AmazonIdentityConfiguration(host).create("u", "{}", new DisabledLoginCallback());
+        new AmazonIdentityConfiguration(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()).create("u", "{}", new DisabledLoginCallback());
     }
 }

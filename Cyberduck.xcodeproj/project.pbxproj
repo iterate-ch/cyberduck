@@ -25,8 +25,6 @@
 		4705DFFF1C037AB5002466FA /* FinderLocal.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE51C037AB5002466FA /* FinderLocal.m */; };
 		4705E0021C037AB5002466FA /* IOKitSleepPreventer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */; };
 		4705E0031C037AB5002466FA /* IOKitSleepPreventer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */; };
-		4705E0041C037AB5002466FA /* Keychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFEA1C037AB5002466FA /* Keychain.h */; };
-		4705E0051C037AB5002466FA /* Keychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFEB1C037AB5002466FA /* Keychain.m */; };
 		4705E0061C037AB5002466FA /* LaunchServicesApplicationFinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFEC1C037AB5002466FA /* LaunchServicesApplicationFinder.h */; };
 		4705E0071C037AB5002466FA /* LaunchServicesFileDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705DFED1C037AB5002466FA /* LaunchServicesFileDescriptor.h */; };
 		4705E0081C037AB5002466FA /* LaunchServicesFileDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFEE1C037AB5002466FA /* LaunchServicesFileDescriptor.m */; };
@@ -191,6 +189,8 @@
 		47B331931668102400C9FFA0 /* s3.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331911668102400C9FFA0 /* s3.tiff */; };
 		47B331941668102400C9FFA0 /* swift.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47B331921668102400C9FFA0 /* swift.tiff */; };
 		47B6074A0DA420880068282C /* Keychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47B6072E0DA420880068282C /* Keychain.strings */; };
+		47B8B009239717AE00DD82CC /* KeychainPasswordStore.h in Headers */ = {isa = PBXBuildFile; fileRef = 47B8B007239717AD00DD82CC /* KeychainPasswordStore.h */; };
+		47B8B00A239717AE00DD82CC /* KeychainPasswordStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 47B8B008239717AD00DD82CC /* KeychainPasswordStore.m */; };
 		47BCF18E13BB4EC700D26E4C /* setup/app/container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */; };
 		47C9427D2175D451008871C8 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C9427C2175D451008871C8 /* AppKit.framework */; };
 		47C9427E2175D461008871C8 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C9427C2175D451008871C8 /* AppKit.framework */; };
@@ -354,8 +354,6 @@
 		4705DFE51C037AB5002466FA /* FinderLocal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FinderLocal.m; path = core/src/main/objc/FinderLocal.m; sourceTree = SOURCE_ROOT; };
 		4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IOKitSleepPreventer.h; path = core/src/main/objc/IOKitSleepPreventer.h; sourceTree = SOURCE_ROOT; };
 		4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = IOKitSleepPreventer.m; path = core/src/main/objc/IOKitSleepPreventer.m; sourceTree = SOURCE_ROOT; };
-		4705DFEA1C037AB5002466FA /* Keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Keychain.h; path = core/src/main/objc/Keychain.h; sourceTree = SOURCE_ROOT; };
-		4705DFEB1C037AB5002466FA /* Keychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Keychain.m; path = core/src/main/objc/Keychain.m; sourceTree = SOURCE_ROOT; };
 		4705DFEC1C037AB5002466FA /* LaunchServicesApplicationFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LaunchServicesApplicationFinder.h; path = core/src/main/objc/LaunchServicesApplicationFinder.h; sourceTree = SOURCE_ROOT; };
 		4705DFED1C037AB5002466FA /* LaunchServicesFileDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LaunchServicesFileDescriptor.h; path = core/src/main/objc/LaunchServicesFileDescriptor.h; sourceTree = SOURCE_ROOT; };
 		4705DFEE1C037AB5002466FA /* LaunchServicesFileDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LaunchServicesFileDescriptor.m; path = core/src/main/objc/LaunchServicesFileDescriptor.m; sourceTree = SOURCE_ROOT; };
@@ -1312,6 +1310,8 @@
 		47B607470DA420880068282C /* fi */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = fi; path = i18n/src/main/resources/fi.lproj/Keychain.strings; sourceTree = "<group>"; };
 		47B607480DA420880068282C /* es */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = es; path = i18n/src/main/resources/es.lproj/Keychain.strings; sourceTree = "<group>"; };
 		47B607490DA420880068282C /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = i18n/src/main/resources/da.lproj/Keychain.strings; sourceTree = "<group>"; };
+		47B8B007239717AD00DD82CC /* KeychainPasswordStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeychainPasswordStore.h; path = core/src/main/objc/KeychainPasswordStore.h; sourceTree = SOURCE_ROOT; };
+		47B8B008239717AD00DD82CC /* KeychainPasswordStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KeychainPasswordStore.m; path = core/src/main/objc/KeychainPasswordStore.m; sourceTree = SOURCE_ROOT; };
 		47BCF18D13BB4EC700D26E4C /* setup/app/container-migration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "setup/app/container-migration.plist"; sourceTree = "<group>"; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		47C2AD801A268C880047B67A /* duck.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = duck.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1792,10 +1792,10 @@
 				4705DFE31C037AB5002466FA /* EMKeychainProxy.m */,
 				4705DFE41C037AB5002466FA /* FinderLocal.h */,
 				4705DFE51C037AB5002466FA /* FinderLocal.m */,
+				47B8B007239717AD00DD82CC /* KeychainPasswordStore.h */,
+				47B8B008239717AD00DD82CC /* KeychainPasswordStore.m */,
 				4705DFE81C037AB5002466FA /* IOKitSleepPreventer.h */,
 				4705DFE91C037AB5002466FA /* IOKitSleepPreventer.m */,
-				4705DFEA1C037AB5002466FA /* Keychain.h */,
-				4705DFEB1C037AB5002466FA /* Keychain.m */,
 				4705DFEC1C037AB5002466FA /* LaunchServicesApplicationFinder.h */,
 				4705DFED1C037AB5002466FA /* LaunchServicesFileDescriptor.h */,
 				4705DFEE1C037AB5002466FA /* LaunchServicesFileDescriptor.m */,
@@ -2025,8 +2025,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47B8B009239717AE00DD82CC /* KeychainPasswordStore.h in Headers */,
 				47EEFDC72386ECD100A3CAB0 /* UnifiedSystemLogAppender.h in Headers */,
-				4705E0041C037AB5002466FA /* Keychain.h in Headers */,
 				4705DFFC1C037AB5002466FA /* EMKeychainProxy.h in Headers */,
 				4705E0021C037AB5002466FA /* IOKitSleepPreventer.h in Headers */,
 				4705DFF81C037AB5002466FA /* FinderSidebarService.h in Headers */,
@@ -2432,7 +2432,6 @@
 				4705E0081C037AB5002466FA /* LaunchServicesFileDescriptor.m in Sources */,
 				4705E00C1C037AB5002466FA /* LaunchServicesSchemeHandler.m in Sources */,
 				4705E00A1C037AB5002466FA /* LaunchServicesQuarantineService.m in Sources */,
-				4705E0051C037AB5002466FA /* Keychain.m in Sources */,
 				47F85C1C1C0F101F00FDA856 /* UKSystemInfo.m in Sources */,
 				4705DFFD1C037AB5002466FA /* EMKeychainProxy.m in Sources */,
 				47F85C1A1C0F101F00FDA856 /* UKCrashReporter.m in Sources */,
@@ -2446,6 +2445,7 @@
 				4705DFFB1C037AB5002466FA /* EMKeychainItem.m in Sources */,
 				4705DFFF1C037AB5002466FA /* FinderLocal.m in Sources */,
 				4705E0031C037AB5002466FA /* IOKitSleepPreventer.m in Sources */,
+				47B8B00A239717AE00DD82CC /* KeychainPasswordStore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
