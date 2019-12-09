@@ -23,6 +23,7 @@ import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
@@ -118,6 +119,19 @@ public abstract class SFChooseIdentityPanel extends NSPanel {
      */
     public abstract void beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_identities_message(
         NSWindow docWindow, ID delegate, Selector didEndSelector, PointerByReference contextInfo, NSArray identities, String message);
+
+    /**
+     * Displays a list of identities in a modal panel.
+     *
+     * @param identities An array of identity objects (objects of type SecIdentityRef. Use the SecIdentitySearchCopyNext
+     *                   function (in Security/SecIdentitySearch.h) to find identity objects.
+     * @param message    A message string to display in the panel.
+     * @return This method returns NSOKButton if the default button is clicked, or NSCancelButton if the alternate
+     * button is clicked.
+     * <p>
+     * Use the identity method to obtain the identity chosen by the user.
+     */
+    public abstract NSInteger runModalForIdentities_message(NSArray identities, String message);
 
     /**
      * @return Returns the identity that the user chose in the panel or sheet.

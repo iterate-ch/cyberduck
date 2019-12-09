@@ -61,10 +61,10 @@ import com.sun.jna.ptr.PointerByReference;
 public final class KeychainCertificateStore implements CertificateStore {
     private static final Logger log = Logger.getLogger(KeychainCertificateStore.class);
 
-    private final WindowController controller;
+    private final Controller controller;
     private final SecurityFunctions library = SecurityFunctions.library;
 
-    public KeychainCertificateStore(final WindowController controller) {
+    public KeychainCertificateStore(final Controller controller) {
         this.controller = controller;
     }
 
@@ -101,18 +101,28 @@ public final class KeychainCertificateStore implements CertificateStore {
                 panel.setAlternateButtonTitle(LocaleFactory.localizedString("Disconnect"));
                 panel.setPolicies(policyRef);
                 panel.setShowsHelp(true);
-                switch(new SheetInvoker(new DisabledSheetCallback(), controller, panel) {
-                    @Override
-                    protected void beginSheet(final NSWindow sheet) {
-                        panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message(
-                            controller.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
-                            null, trustRef, null);
+                if(controller instanceof WindowController) {
+                    switch(new SheetInvoker(new DisabledSheetCallback(), (WindowController) controller, panel) {
+                        @Override
+                        protected void beginSheet(final NSWindow sheet) {
+                            panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message(
+                                ((WindowController) controller).window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"),
+                                null, trustRef, null);
+                        }
+                    }.beginSheet()) {
+                        case SheetCallback.DEFAULT_OPTION:
+                            FoundationKitFunctions.library.CFRelease(trustRef);
+                            FoundationKitFunctions.library.CFRelease(policyRef);
+                            return true;
                     }
-                }.beginSheet()) {
-                    case SheetCallback.DEFAULT_OPTION:
-                        FoundationKitFunctions.library.CFRelease(trustRef);
-                        FoundationKitFunctions.library.CFRelease(policyRef);
-                        return true;
+                }
+                else {
+                    switch(panel.runModalForTrust_message(trustRef, null).intValue()) {
+                        case SheetCallback.DEFAULT_OPTION:
+                            FoundationKitFunctions.library.CFRelease(trustRef);
+                            FoundationKitFunctions.library.CFRelease(policyRef);
+                            return true;
+                    }
                 }
                 FoundationKitFunctions.library.CFRelease(trustRef);
                 FoundationKitFunctions.library.CFRelease(policyRef);
@@ -148,40 +158,54 @@ public final class KeychainCertificateStore implements CertificateStore {
             panel.setAlternateButtonTitle(LocaleFactory.localizedString("Disconnect"));
             panel.setInformativeText(prompt);
             final NSArray identities = toDEREncodedCertificates(certificates);
-            switch(new SheetInvoker(new DisabledSheetCallback(), controller.window(), panel) {
-                @Override
-                protected void beginSheet(final NSWindow sheet) {
-                    panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_identities_message(
-                        controller.window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null,
-                        identities, null
-                    );
+            if(controller instanceof WindowController) {
+                switch(new SheetInvoker(new DisabledSheetCallback(), ((WindowController) controller).window(), panel) {
+                    @Override
+                    protected void beginSheet(final NSWindow sheet) {
+                        panel.beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_identities_message(
+                            ((WindowController) controller).window(), this.id(), Foundation.selector("sheetDidClose:returnCode:contextInfo:"), null,
+                            identities, null
+                        );
+                    }
+                }.beginSheet()) {
+                    case SheetCallback.DEFAULT_OPTION:
+                        // Use the identity method to obtain the identity chosen by the user.
+                        final SecIdentityRef identityRef = panel.identity();
+                        return this.toX509Certificate(bookmark, identityRef);
                 }
-            }.beginSheet()) {
-                case SheetCallback.DEFAULT_OPTION:
-                    // Use the identity method to obtain the identity chosen by the user.
-                    final SecIdentityRef identityRef = panel.identity();
-                    if(null == identityRef) {
-                        log.warn(String.format("No identity selected for %s", bookmark));
-                        throw new ConnectionCanceledException();
-                    }
-                    final PointerByReference reference = new PointerByReference();
-                    library.SecIdentityCopyCertificate(identityRef, reference);
-                    final SecCertificateRef certificateRef = new SecCertificateRef(reference.getValue());
-                    final CertificateFactory factory = CertificateFactory.getInstance("X.509");
-                    final NSData dataRef = library.SecCertificateCopyData(certificateRef);
-                    final X509Certificate selected = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(
-                        Base64.decodeBase64(dataRef.base64Encoding())));
-                    if(log.isDebugEnabled()) {
-                        log.info(String.format("Selected certificate %s", selected));
-                    }
-                    FoundationKitFunctions.library.CFRelease(certificateRef);
-                    return selected;
+            }
+            else {
+                switch(panel.runModalForIdentities_message(identities, null).intValue()) {
+                    case SheetCallback.DEFAULT_OPTION:
+                        // Use the identity method to obtain the identity chosen by the user.
+                        final SecIdentityRef identityRef = panel.identity();
+                        return this.toX509Certificate(bookmark, identityRef);
+                }
             }
             throw new ConnectionCanceledException();
         }
         catch(CertificateException e) {
             throw new ConnectionCanceledException(e);
         }
+    }
+
+    private X509Certificate toX509Certificate(final Host bookmark, final SecIdentityRef identityRef) throws ConnectionCanceledException, CertificateException {
+        if(null == identityRef) {
+            log.warn(String.format("No identity selected for %s", bookmark));
+            throw new ConnectionCanceledException();
+        }
+        final PointerByReference reference = new PointerByReference();
+        library.SecIdentityCopyCertificate(identityRef, reference);
+        final SecCertificateRef certificateRef = new SecCertificateRef(reference.getValue());
+        final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+        final NSData dataRef = library.SecCertificateCopyData(certificateRef);
+        final X509Certificate selected = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(
+            Base64.decodeBase64(dataRef.base64Encoding())));
+        if(log.isDebugEnabled()) {
+            log.info(String.format("Selected certificate %s", selected));
+        }
+        FoundationKitFunctions.library.CFRelease(certificateRef);
+        return selected;
     }
 
     private static NSArray toDEREncodedCertificates(final List<X509Certificate> certificates) throws CertificateException {

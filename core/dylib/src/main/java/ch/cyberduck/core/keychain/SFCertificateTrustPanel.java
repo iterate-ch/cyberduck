@@ -21,6 +21,7 @@ import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
@@ -73,6 +74,18 @@ public abstract class SFCertificateTrustPanel extends SFCertificatePanel {
      */
     public abstract void beginSheetForWindow_modalDelegate_didEndSelector_contextInfo_trust_message(
         NSWindow docWindow, ID delegate, Selector didEndSelector, PointerByReference contextInfo, SecTrustRef trust, String message);
+
+    /**
+     * Displays a modal panel that shows the results of a certificate trust evaluation and that allows the user to edit
+     * trust settings.
+     *
+     * @param trust   A trust management object. Use the SecTrustCreateWithCertificates function (in
+     *                Security/SecTrust.h) to create the trust management object.
+     * @param message A message string to display in the panel.
+     * @return This method returns NSOKButton if the default button is clicked, or NSCancelButton if the alternate
+     * button is clicked.
+     */
+    public abstract NSInteger runModalForTrust_message(SecTrustRef trust, String message);
 
     /**
      * Sets the (optional) informative text displayed in the panel.
