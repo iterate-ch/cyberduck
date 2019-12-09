@@ -65,7 +65,7 @@ public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
             }
             return;
         }
-        if(store.isTrusted(hostname, Arrays.asList(certs))) {
+        if(store.verify(hostname, Arrays.asList(certs))) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Certificate for %s trusted in Keychain", hostname));
             }

@@ -38,7 +38,7 @@ public class CertificateStoreX509TrustManagerTest {
             }
         }, new DisabledCertificateStore() {
             @Override
-            public boolean isTrusted(final String hostname, List<X509Certificate> certificates) {
+            public boolean verify(final String hostname, List<X509Certificate> certificates) {
                 return false;
             }
         }

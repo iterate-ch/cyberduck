@@ -49,7 +49,7 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     }
 
     @Override
-    public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
+    public boolean verify(final String hostname, final List<X509Certificate> certificates) {
         if(certificates.isEmpty()) {
             return false;
         }

@@ -79,7 +79,7 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        public bool isTrusted(String hostName, List certs)
+        public bool verify(String hostName, List certs)
         {
             X509Certificate2 serverCert = ConvertCertificate(certs.iterator().next() as X509Certificate);
             X509Chain chain = new X509Chain();

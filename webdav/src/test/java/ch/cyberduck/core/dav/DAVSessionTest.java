@@ -438,7 +438,7 @@ public class DAVSessionTest extends AbstractDAVTest {
                 }
             }, new DisabledCertificateStore() {
                 @Override
-                public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
+                public boolean verify(final String hostname, final List<X509Certificate> certificates) {
                     return false;
                 }
             }

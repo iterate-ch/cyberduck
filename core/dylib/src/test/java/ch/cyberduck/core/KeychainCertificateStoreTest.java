@@ -18,6 +18,6 @@ public class KeychainCertificateStoreTest {
                 return null;
             }
         });
-        assertFalse(k.isTrusted("cyberduck.ch", Collections.emptyList()));
+        assertFalse(k.verify("cyberduck.ch", Collections.emptyList()));
     }
 }

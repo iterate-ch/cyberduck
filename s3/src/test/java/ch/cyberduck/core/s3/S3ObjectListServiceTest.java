@@ -259,7 +259,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final KeychainX509TrustManager trust = new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host),
             new DisabledCertificateStore() {
                 @Override
-                public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) {
+                public boolean verify(final String hostname, final List<X509Certificate> certificates) {
                     assertEquals("ch.s3.amazonaws.com", hostname);
                     return true;
                 }

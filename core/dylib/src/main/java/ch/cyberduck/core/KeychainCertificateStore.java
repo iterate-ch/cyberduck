@@ -73,7 +73,7 @@ public final class KeychainCertificateStore implements CertificateStore {
      * @return True if chain is trusted
      */
     @Override
-    public boolean isTrusted(final String hostname, final List<X509Certificate> certificates) throws CertificateException {
+    public boolean verify(final String hostname, final List<X509Certificate> certificates) throws CertificateException {
         if(certificates.isEmpty()) {
             return false;
         }

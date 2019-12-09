@@ -50,12 +50,12 @@ public class ThreadLocalHostnameDelegatingTrustManager implements X509TrustManag
 
     @Override
     public void checkClientTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
-        delegate.verify(target.get(), certs, cipher);
+        delegate.verify(this.getTarget(), certs, cipher);
     }
 
     @Override
     public void checkServerTrusted(final X509Certificate[] certs, final String cipher) throws CertificateException {
-        delegate.verify(target.get(), certs, cipher);
+        delegate.verify(this.getTarget(), certs, cipher);
     }
 
     @Override

@@ -30,7 +30,8 @@ public class LaxHostnameDelegatingTrustManager extends ThreadLocalHostnameDelega
     }
 
     @Override
-    public void setTarget(final String hostname) {
+    public String getTarget() {
+        final String hostname = super.getTarget();
         final String simple;
         final String[] parts = StringUtils.split(hostname, '.');
         if(parts.length > 4) {
@@ -42,6 +43,6 @@ public class LaxHostnameDelegatingTrustManager extends ThreadLocalHostnameDelega
         else {
             simple = hostname;
         }
-        super.setTarget(simple);
+        return simple;
     }
 }
