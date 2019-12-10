@@ -38,8 +38,8 @@ public class DriveQuotaFeature implements Quota {
             final About about = session.getClient().about().get().setFields("user, storageQuota").execute();
             final Long used = null == about.getStorageQuota().getUsageInDrive() ? 0L
                 : about.getStorageQuota().getUsageInDrive();
-            final Long available = null == about.getStorageQuota().getLimit() ? Long.MAX_VALUE
-                : about.getStorageQuota().getLimit() - used;
+            final Long available = (null == about.getStorageQuota().getLimit() ? Long.MAX_VALUE
+                : about.getStorageQuota().getLimit()) - used;
             return new Space(used, available);
         }
         catch(IOException e) {
