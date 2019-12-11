@@ -122,7 +122,7 @@ public class RenameExistingFilterTest {
                 if(type.equals(Move.class)) {
                     return (T) new Move() {
                         @Override
-                        public Path move(final Path source, final Path renamed, TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {
+                        public Path move(final Path source, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) {
                             if(moved.incrementAndGet() == 1) {
                                 // Rename existing target file
                                 assertEquals(file, source);
