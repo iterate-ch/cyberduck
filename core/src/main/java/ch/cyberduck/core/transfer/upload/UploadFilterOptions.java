@@ -66,6 +66,10 @@ public final class UploadFilterOptions {
 
     public UploadFilterOptions withPermission(boolean enabled) {
         permissions = enabled;
+        return this;
+    }
+
+    public UploadFilterOptions withAcl(boolean enabled) {
         acl = enabled;
         return this;
     }
