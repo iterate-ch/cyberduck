@@ -61,6 +61,11 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         if(file.getType().contains(Path.Type.upload)) {
+            // Pending multipart upload
+            return PathAttributes.EMPTY;
+        }
+        if(file.getType().contains(Path.Type.placeholder)) {
+            // Common prefix only
             return PathAttributes.EMPTY;
         }
         if(containerService.isContainer(file)) {
