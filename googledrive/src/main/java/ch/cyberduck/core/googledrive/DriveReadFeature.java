@@ -18,7 +18,9 @@ package ch.cyberduck.core.googledrive;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -76,40 +78,56 @@ public class DriveReadFeature implements Read {
                 return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
             }
             else {
-                final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s",
-                    session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
-                    PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
-                request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
-                if(status.isAppend()) {
-                    final HttpRange range = HttpRange.withStatus(status);
-                    final String header;
-                    if(-1 == range.getEnd()) {
-                        header = String.format("bytes=%d-", range.getStart());
-                    }
-                    else {
-                        header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
-                    }
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Add range header %s for file %s", header, file));
-                    }
-                    request.addHeader(new BasicHeader(HttpHeaders.RANGE, header));
-                    // Disable compression
-                    request.addHeader(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
+                try {
+                    final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s",
+                        session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
+                        PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
+                    return this.read(request, file, status);
                 }
-                final HttpClient client = session.getHttpClient();
-                final HttpResponse response = client.execute(request);
-                switch(response.getStatusLine().getStatusCode()) {
-                    case HttpStatus.SC_OK:
-                    case HttpStatus.SC_PARTIAL_CONTENT:
-                        return new HttpMethodReleaseInputStream(response);
-                    default:
-                        throw new DefaultHttpResponseExceptionMappingService().map(
-                            new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+                catch(AccessDeniedException e) {
+                    callback.warn(session.getHost(), null, null,
+                        LocaleFactory.localizedString("Continue", "Credentials"), LocaleFactory.localizedString("Cancel", "Localizable"),
+                        String.format("connection.unsecure.download.%s", session.getHost().getHostname()));
+                    // Continue with acknowledgeAbuse=true
+                    final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s&acknowledgeAbuse=true",
+                        session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
+                        PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
+                    return this.read(request, file, status);
                 }
             }
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Download {0} failed", e, file);
+        }
+    }
+
+    private InputStream read(final HttpUriRequest request, final Path file, final TransferStatus status) throws BackgroundException, IOException {
+        request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
+        if(status.isAppend()) {
+            final HttpRange range = HttpRange.withStatus(status);
+            final String header;
+            if(-1 == range.getEnd()) {
+                header = String.format("bytes=%d-", range.getStart());
+            }
+            else {
+                header = String.format("bytes=%d-%d", range.getStart(), range.getEnd());
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Add range header %s for file %s", header, file));
+            }
+            request.addHeader(new BasicHeader(HttpHeaders.RANGE, header));
+            // Disable compression
+            request.addHeader(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
+        }
+        final HttpClient client = session.getHttpClient();
+        final HttpResponse response = client.execute(request);
+        switch(response.getStatusLine().getStatusCode()) {
+            case HttpStatus.SC_OK:
+            case HttpStatus.SC_PARTIAL_CONTENT:
+                return new HttpMethodReleaseInputStream(response);
+            default:
+                throw new DefaultHttpResponseExceptionMappingService().map(
+                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
         }
     }
 }
