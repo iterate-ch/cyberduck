@@ -38,6 +38,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UserDateFormatterFactory;
@@ -403,7 +404,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
                 final Map<Path, Path> files = new HashMap<Path, Path>();
                 for(Path next : pasteboard) {
-                    final Path renamed = new Path(destination, next.getName(), next.getType(), next.attributes().withVersionId(null));
+                    final Path renamed = new Path(destination, next.getName(), next.getType(), new PathAttributes(next.attributes()).withVersionId(null));
                     files.put(next, renamed);
                 }
                 if(pasteboard.getBookmark().compareTo(controller.getSession().getHost()) != 0) {
