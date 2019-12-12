@@ -60,7 +60,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class Session<C> implements TranscriptListener {
     private static final Logger log = Logger.getLogger(Session.class);
 
-    private static final LoggingTranscriptListener transcript = new LoggingTranscriptListener();
+    /**
+     * Append HTTP transcript to logger
+     */
+    private static final TranscriptListener transcript = new LoggingTranscriptListener();
 
     /**
      * Encapsulating all the information of the remote host
