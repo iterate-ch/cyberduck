@@ -2938,7 +2938,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final Map<Path, Path> files = new HashMap<Path, Path>();
             final Path parent = workdir;
             for(final Path next : pasteboard) {
-                Path renamed = new Path(parent, next.getName(), next.getType(), next.attributes());
+                Path renamed = new Path(parent, next.getName(), next.getType(), new PathAttributes(next.attributes()));
                 files.put(next, renamed);
             }
             pasteboard.clear();
