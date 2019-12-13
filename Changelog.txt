@@ -5,6 +5,7 @@ https://cyberduck.io/
 - [Bugfix] Crash opening connection (macOS 10.[9-11]) (#10892)
 - [Bugfix] Interoperability with providers only supporting path-style requests (S3) (#10888)
 - [Bugfix] Display certificates as sheet in browser window (macOS) (#10897)
+- [Bugfix] Recursive search shows no result (#10799)
 
 7.2.1
 - [Bugfix] Failure to open application on Windows 7+ (Windows)
