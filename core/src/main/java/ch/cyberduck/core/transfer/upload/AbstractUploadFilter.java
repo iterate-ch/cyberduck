@@ -141,7 +141,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
                 }
             }
         }
-        if(local.isFile()) {
+        if(file.isFile()) {
             // Set content length from local file
             if(local.isSymbolicLink()) {
                 if(!symlinkResolver.resolve(local)) {
@@ -255,7 +255,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(options.redundancy) {
-            if(local.isFile()) {
+            if(file.isFile()) {
                 final Redundancy feature = session.getFeature(Redundancy.class);
                 if(feature != null) {
                     if(status.isExists()) {
@@ -275,7 +275,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
         }
         if(options.checksum) {
-            if(local.isFile()) {
+            if(file.isFile()) {
                 final ChecksumCompute feature = session.getFeature(Write.class).checksum(file, status);
                 if(feature != null) {
                     progress.message(MessageFormat.format(LocaleFactory.localizedString("Calculate checksum for {0}", "Status"),
