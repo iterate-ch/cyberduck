@@ -1,6 +1,17 @@
 package ch.cyberduck.core.openstack;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
+import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginFailureException;
@@ -44,14 +55,13 @@ public class SwiftSessionTest extends AbstractSwiftTest {
 
     @Test
     public void testConnectRackspace() throws Exception {
-        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
-            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
         assertTrue(session.isConnected());
         final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
         assertEquals(DescriptiveUrl.EMPTY, session.getFeature(UrlProvider.class).toUrl(new Path(container, "d/f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.cdn));
         final DistributionConfiguration cdn = session.getFeature(DistributionConfiguration.class);
         assertNotNull(cdn);
+        session.close();
         assertFalse(session.isConnected());
         assertEquals(Session.State.closed, session.getState());
     }
@@ -65,6 +75,7 @@ public class SwiftSessionTest extends AbstractSwiftTest {
             System.getProperties().getProperty("rackspace.key"), System.getProperties().getProperty("rackspace.secret")
         ));
         assertTrue(session.isConnected());
+        session.close();
         assertFalse(session.isConnected());
         assertEquals(Session.State.closed, session.getState());
     }
