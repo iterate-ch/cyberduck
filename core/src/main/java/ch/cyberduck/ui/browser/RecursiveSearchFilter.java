@@ -34,7 +34,7 @@ public class RecursiveSearchFilter extends NullFilter<Path> {
             return true;
         }
         for(Path f : list) {
-            if(f.isChild(file)) {
+            if(file.isChild(f)) {
                 return true;
             }
         }
