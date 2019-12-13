@@ -22,6 +22,9 @@ import ch.cyberduck.core.SimplePathPredicate;
 
 public class RecursiveSearchFilter extends NullFilter<Path> {
 
+    /**
+     * List of accepted files
+     */
     private final AttributedList<Path> list;
 
     public RecursiveSearchFilter(final AttributedList<Path> list) {
@@ -34,7 +37,7 @@ public class RecursiveSearchFilter extends NullFilter<Path> {
             return true;
         }
         for(Path f : list) {
-            if(file.isChild(f)) {
+            if(f.isChild(file)) {
                 return true;
             }
         }
