@@ -170,7 +170,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
             }
             status.withMime(new MappingMimeTypeService().getMime(file.getName()));
         }
-        if(local.isDirectory()) {
+        if(file.isDirectory()) {
             status.setLength(0L);
         }
         if(options.permissions) {
