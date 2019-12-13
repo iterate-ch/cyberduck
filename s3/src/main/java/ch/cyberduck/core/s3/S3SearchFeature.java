@@ -58,7 +58,7 @@ public class S3SearchFeature implements Search {
 
     @Override
     public boolean isRecursive() {
-        return false;
+        return true;
     }
 
     @Override

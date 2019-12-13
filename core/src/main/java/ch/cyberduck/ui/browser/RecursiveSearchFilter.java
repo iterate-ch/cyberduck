@@ -18,9 +18,13 @@ package ch.cyberduck.ui.browser;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.SimplePathPredicate;
 
 public class RecursiveSearchFilter extends NullFilter<Path> {
 
+    /**
+     * List of accepted files
+     */
     private final AttributedList<Path> list;
 
     public RecursiveSearchFilter(final AttributedList<Path> list) {
@@ -29,7 +33,7 @@ public class RecursiveSearchFilter extends NullFilter<Path> {
 
     @Override
     public boolean accept(final Path file) {
-        if(list.contains(file)) {
+        if(list.find(new SimplePathPredicate(file)) != null) {
             return true;
         }
         for(Path f : list) {

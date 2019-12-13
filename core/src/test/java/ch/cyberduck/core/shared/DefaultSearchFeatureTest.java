@@ -43,27 +43,24 @@ public class DefaultSearchFeatureTest {
         final DefaultSearchFeature feature = new DefaultSearchFeature(new NullSession(new Host(new TestProtocol())) {
             @Override
             public AttributedList<Path> list(final Path folder, final ListProgressListener listener) throws BackgroundException {
-                final AttributedList<Path> list = new AttributedList<>(Arrays.asList(f1, f2));
-                listener.chunk(folder, list);
-                return list;
+                if(folder.equals(workdir)) {
+                    final AttributedList<Path> list = new AttributedList<>(Arrays.asList(f1, f2));
+                    listener.chunk(folder, list);
+                    return list;
+                }
+                return AttributedList.emptyList();
             }
         });
         final Filter<Path> filter = new NullFilter<Path>() {
             @Override
             public boolean accept(final Path file) {
-                return file.equals(f1);
+                if(file.isDirectory()) {
+                    return true;
+                }
+                return file.getName().equals("f1");
             }
         };
-        final AttributedList<Path> search = feature.search(
-                workdir, filter, new DisabledListProgressListener() {
-                    @Override
-                    public void chunk(final Path parent, final AttributedList<Path> list) {
-                        assertTrue(list.contains(f1));
-                        assertFalse(list.contains(f2));
-                        assertEquals(1, list.size());
-                    }
-                }
-        );
+        final AttributedList<Path> search = feature.search(workdir, filter, new DisabledListProgressListener());
         assertTrue(search.contains(f1));
         assertFalse(search.contains(f2));
         assertEquals(1, search.size());

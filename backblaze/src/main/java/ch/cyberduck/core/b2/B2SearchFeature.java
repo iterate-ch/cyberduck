@@ -39,7 +39,7 @@ import synapticloop.b2.response.B2ListFilesResponse;
 public class B2SearchFeature implements Search {
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final B2Session session;
     private final B2FileidProvider fileid;
@@ -71,13 +71,13 @@ public class B2SearchFeature implements Search {
                 do {
                     final B2ListFilesResponse response = session.getClient().listFileNames(
                         fileid.withCache(cache).getFileid(container, listener),
-                            startFilename,
-                            PreferencesFactory.get().getInteger("b2.listing.chunksize"),
-                            prefix, null);
+                        startFilename,
+                        PreferencesFactory.get().getInteger("b2.listing.chunksize"),
+                        prefix, null);
                     for(B2FileInfoResponse info : response.getFiles()) {
                         if(PathNormalizer.name(info.getFileName()).startsWith(regex.toPattern().pattern())) {
                             list.add(new Path(String.format("%s%s%s", container.getAbsolute(),
-                                String.valueOf(Path.DELIMITER), info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session, fileid).parse(info)));
+                                Path.DELIMITER, info.getFileName()), EnumSet.of(Path.Type.file), new B2ObjectListService(session, fileid).parse(info)));
                         }
                     }
                     startFilename = response.getNextFileName();

@@ -55,10 +55,9 @@ public class SearchWorkerTest {
         assertFalse(found.contains(new Path("/t2.png", EnumSet.of(Path.Type.file))));
         assertFalse(found.contains(new Path("/t2.gif", EnumSet.of(Path.Type.file))));
         assertTrue(found.contains(new Path("/folder", EnumSet.of(Path.Type.directory))));
+        assertTrue(found.contains(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.png", EnumSet.of(Path.Type.file))));
+        assertFalse(found.contains(new Path(new Path("/folder2", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file))));
         assertFalse(found.contains(new Path("/folder2", EnumSet.of(Path.Type.directory))));
-        final AttributedList<Path> children = cache.get(new Path("/folder", EnumSet.of(Path.Type.directory)));
-        assertTrue(children.contains(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.png", EnumSet.of(Path.Type.file))));
-        assertTrue(children.contains(new Path(new Path("/folder", EnumSet.of(Path.Type.directory)), "/t2.gif", EnumSet.of(Path.Type.file))));
     }
 
     @Test
