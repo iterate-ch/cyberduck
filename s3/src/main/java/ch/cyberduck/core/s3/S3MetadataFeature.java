@@ -35,7 +35,6 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.StorageObject;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,19 +60,7 @@ public class S3MetadataFeature implements Headers {
 
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
-        if(file.isFile() || file.isPlaceholder()) {
-            try {
-                return new S3AttributesFinderFeature(session).find(file).getMetadata();
-            }
-            catch(NotfoundException e) {
-                if(file.isPlaceholder()) {
-                    // No placeholder file may exist but we just have a common prefix
-                    return Collections.emptyMap();
-                }
-                throw e;
-            }
-        }
-        return Collections.emptyMap();
+        return new S3AttributesFinderFeature(session).find(file).getMetadata();
     }
 
     @Override

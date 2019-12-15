@@ -72,23 +72,12 @@ public class S3EncryptionFeature implements Encryption {
 
     /**
      * @param file File or bucket
-     * @return Encryption algorithm used for file or null if not encrypted. For buckets, return setting in preferences if any.
+     * @return Encryption algorithm used for file or null if not encrypted. For buckets, return setting in preferences
+     * if any.
      */
     @Override
     public Algorithm getEncryption(final Path file) throws BackgroundException {
-        if(file.isFile() || file.isPlaceholder()) {
-            try {
-                return new S3AttributesFinderFeature(session).find(file).getEncryption();
-            }
-            catch(NotfoundException e) {
-                if(file.isPlaceholder()) {
-                    // No placeholder file may exist but we just have a common prefix
-                    return Algorithm.NONE;
-                }
-                throw e;
-            }
-        }
-        return Algorithm.NONE;
+        return new S3AttributesFinderFeature(session).find(file).getEncryption();
     }
 
     /**
