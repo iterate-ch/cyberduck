@@ -17,6 +17,8 @@ package ch.cyberduck.core.worker;
 
 import ch.cyberduck.core.BytecountStreamListener;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.DisabledCancelCallback;
+import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
@@ -34,6 +36,7 @@ import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.openstack.SwiftRegionService;
 import ch.cyberduck.core.openstack.SwiftSession;
 import ch.cyberduck.core.openstack.SwiftWriteFeature;
+import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -109,6 +112,8 @@ public class SingleTransferWorkerTest {
                 return super._getFeature(type);
             }
         };
+        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
