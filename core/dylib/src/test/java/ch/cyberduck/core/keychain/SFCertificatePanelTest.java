@@ -15,10 +15,12 @@ package ch.cyberduck.core.keychain;
  * GNU General Public License for more details.
  */
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 
+@Ignore
 public class SFCertificatePanelTest {
 
     @Test
