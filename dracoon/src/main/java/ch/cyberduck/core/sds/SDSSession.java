@@ -178,7 +178,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     final SoftwareVersionData softwareVersionData = this.softwareVersion();
                     Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(softwareVersionData.getRestApiVersion());
                     if(matcher.matches()) {
-                        if(new Version(matcher.group(1)).compareTo(new Version("4.16.0")) >= 0) {
+                        if(new Version(matcher.group(1)).compareTo(new Version("4.15.0")) >= 0) {
                             authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
                         }
                     }
