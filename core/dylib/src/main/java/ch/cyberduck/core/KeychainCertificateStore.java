@@ -90,6 +90,9 @@ public final class KeychainCertificateStore implements CertificateStore {
             case SecTrustResultType.kSecTrustResultProceed:
                 return true;
             default:
+                if(log.isDebugEnabled()) {
+                    log.debug("Evaluated recoverable trust result failure " + trustResultType.getValue());
+                }
                 final AtomicReference<SFCertificateTrustPanel> ref = new AtomicReference<>();
                 controller.invoke(new DefaultMainAction() {
                     @Override
@@ -103,6 +106,9 @@ public final class KeychainCertificateStore implements CertificateStore {
                 panel.setPolicies(policyRef);
                 panel.setShowsHelp(true);
                 if(controller instanceof WindowController) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Display trust panel for controller %s", controller));
+                    }
                     switch(new SheetInvoker(new DisabledSheetCallback(), (WindowController) controller, panel) {
                         @Override
                         protected void beginSheet(final NSWindow sheet) {
@@ -118,6 +124,9 @@ public final class KeychainCertificateStore implements CertificateStore {
                     }
                 }
                 else {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Display modal trust panel for controller %s", controller));
+                    }
                     final AtomicBoolean trusted = new AtomicBoolean(false);
                     controller.invoke(new DefaultMainAction() {
                         @Override
