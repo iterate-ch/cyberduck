@@ -174,15 +174,17 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         // The provided token is valid for two hours, every usage resets this period to two full hours again. Logging off invalidates the token.
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
-                final SoftwareVersionData softwareVersionData = this.softwareVersion();
-                Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(softwareVersionData.getRestApiVersion());
-                if(matcher.matches()) {
-                    if(new Version(matcher.group(1)).compareTo(new Version("4.16.0")) >= 0) {
-                        authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
+                if("x-dracoon-action:oauth".equals(CYBERDUCK_REDIRECT_URI)) {
+                    final SoftwareVersionData softwareVersionData = this.softwareVersion();
+                    Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(softwareVersionData.getRestApiVersion());
+                    if(matcher.matches()) {
+                        if(new Version(matcher.group(1)).compareTo(new Version("4.16.0")) >= 0) {
+                            authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
+                        }
                     }
-                }
-                else {
-                    log.warn(String.format("Failure to parse software version %s", softwareVersionData));
+                    else {
+                        log.warn(String.format("Failure to parse software version %s", softwareVersionData));
+                    }
                 }
                 authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));
                 break;
