@@ -2,6 +2,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.binding.ProxyController;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.FileInputStream;
@@ -21,6 +22,7 @@ public class KeychainCertificateStoreTest {
     }
 
     @Test
+    @Ignore
     public void testTrusted() throws Exception {
         final KeychainCertificateStore k = new KeychainCertificateStore(new ProxyController());
         InputStream inStream = new FileInputStream("src/test/resources/OXxlRDVcWqdPEvFm.cer");
@@ -30,6 +32,7 @@ public class KeychainCertificateStoreTest {
     }
 
     @Test
+    @Ignore
     public void testTrustedHostnameMismatch() throws Exception {
         final KeychainCertificateStore k = new KeychainCertificateStore(new ProxyController());
         InputStream inStream = new FileInputStream("src/test/resources/OXxlRDVcWqdPEvFm.cer");
