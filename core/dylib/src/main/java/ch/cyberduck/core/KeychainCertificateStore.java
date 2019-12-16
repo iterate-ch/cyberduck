@@ -54,6 +54,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.sun.jna.ptr.PointerByReference;
@@ -117,15 +118,22 @@ public final class KeychainCertificateStore implements CertificateStore {
                     }
                 }
                 else {
-                    switch(panel.runModalForTrust_message(trustRef, null).intValue()) {
-                        case SheetCallback.DEFAULT_OPTION:
-                            FoundationKitFunctions.library.CFRelease(trustRef);
-                            FoundationKitFunctions.library.CFRelease(policyRef);
-                            return true;
+                    final AtomicBoolean trusted = new AtomicBoolean(false);
+                    controller.invoke(new DefaultMainAction() {
+                        @Override
+                        public void run() {
+                            switch(panel.runModalForTrust_message(trustRef, null).intValue()) {
+                                case SheetCallback.DEFAULT_OPTION:
+                                    trusted.set(true);
+                            }
+                        }
+                    }, true);
+                    FoundationKitFunctions.library.CFRelease(trustRef);
+                    FoundationKitFunctions.library.CFRelease(policyRef);
+                    if(trusted.get()) {
+                        return true;
                     }
                 }
-                FoundationKitFunctions.library.CFRelease(trustRef);
-                FoundationKitFunctions.library.CFRelease(policyRef);
                 return false;
         }
     }
@@ -175,11 +183,20 @@ public final class KeychainCertificateStore implements CertificateStore {
                 }
             }
             else {
-                switch(panel.runModalForIdentities_message(identities, null).intValue()) {
-                    case SheetCallback.DEFAULT_OPTION:
-                        // Use the identity method to obtain the identity chosen by the user.
-                        final SecIdentityRef identityRef = panel.identity();
-                        return this.toX509Certificate(bookmark, identityRef);
+                final AtomicReference<X509Certificate> selected = new AtomicReference<>();
+                controller.invoke(new DefaultMainAction() {
+                    @Override
+                    public void run() {
+                        switch(panel.runModalForIdentities_message(identities, null).intValue()) {
+                            case SheetCallback.DEFAULT_OPTION:
+                                // Use the identity method to obtain the identity chosen by the user.
+                                final SecIdentityRef identityRef = panel.identity();
+                                selected.set(toX509Certificate(bookmark, identityRef));
+                        }
+                    }
+                }, true);
+                if(selected.get() != null) {
+                    return selected.get();
                 }
             }
             throw new ConnectionCanceledException();
@@ -189,23 +206,29 @@ public final class KeychainCertificateStore implements CertificateStore {
         }
     }
 
-    private X509Certificate toX509Certificate(final Host bookmark, final SecIdentityRef identityRef) throws ConnectionCanceledException, CertificateException {
+    private X509Certificate toX509Certificate(final Host bookmark, final SecIdentityRef identityRef) {
         if(null == identityRef) {
             log.warn(String.format("No identity selected for %s", bookmark));
-            throw new ConnectionCanceledException();
+            return null;
         }
         final PointerByReference reference = new PointerByReference();
         library.SecIdentityCopyCertificate(identityRef, reference);
         final SecCertificateRef certificateRef = new SecCertificateRef(reference.getValue());
-        final CertificateFactory factory = CertificateFactory.getInstance("X.509");
-        final NSData dataRef = library.SecCertificateCopyData(certificateRef);
-        final X509Certificate selected = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(
-            Base64.decodeBase64(dataRef.base64Encoding())));
-        if(log.isDebugEnabled()) {
-            log.info(String.format("Selected certificate %s", selected));
+        try {
+            final CertificateFactory factory = CertificateFactory.getInstance("X.509");
+            final NSData dataRef = library.SecCertificateCopyData(certificateRef);
+            final X509Certificate selected = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(
+                Base64.decodeBase64(dataRef.base64Encoding())));
+            if(log.isDebugEnabled()) {
+                log.info(String.format("Selected certificate %s", selected));
+            }
+            FoundationKitFunctions.library.CFRelease(certificateRef);
+            return selected;
         }
-        FoundationKitFunctions.library.CFRelease(certificateRef);
-        return selected;
+        catch(CertificateException e) {
+            log.error(String.format("Error %s creating certificate from reference", e));
+            return null;
+        }
     }
 
     private static NSArray toDEREncodedCertificates(final List<X509Certificate> certificates) throws CertificateException {
