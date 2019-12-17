@@ -169,7 +169,7 @@ public class CryptoVault implements Vault {
         }
         final String json = new ContentReader(session).read(masterkey);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Read master key %s", json));
+            log.debug(String.format("Read master key %s", masterkey));
         }
         final KeyFile masterKeyFileContent;
         try {
