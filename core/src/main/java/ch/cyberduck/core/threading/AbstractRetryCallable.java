@@ -79,7 +79,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                     return false;
                 }
                 if(++count > retry) {
-                    log.warn(String.format("Cancel retry for failure %s", failure));
+                    log.warn(String.format("Cancel retry for failure %s after %d counts", failure, retry));
                     return false;
                 }
                 delay = backoff;
@@ -93,7 +93,7 @@ public abstract class AbstractRetryCallable<T> implements Callable<T> {
                     }
                     else {
                         if(++count > retry) {
-                            log.warn(String.format("Cancel retry for failure %s", failure));
+                            log.warn(String.format("Cancel retry for failure %s after %d counts", failure, retry));
                             return false;
                         }
                         delay = PreferencesFactory.get().getInteger("connection.retry.delay");
