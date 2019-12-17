@@ -26,7 +26,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
-import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -61,7 +60,7 @@ public class SpectraDeleteFeatureTest {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("US");
         new S3DirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(container, null, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(container));
+        assertTrue(new SpectraFindFeature(session).find(container));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }

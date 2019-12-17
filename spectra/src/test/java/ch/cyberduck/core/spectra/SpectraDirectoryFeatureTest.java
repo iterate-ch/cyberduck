@@ -24,7 +24,6 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.s3.S3FindFeature;
 import ch.cyberduck.core.s3.S3HomeFinderService;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -62,7 +61,7 @@ public class SpectraDirectoryFeatureTest {
         final SpectraDirectoryFeature feature = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session));
         final Path test = new Path(new S3HomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         feature.mkdir(test, null, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new SpectraFindFeature(session).find(test));
         new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
@@ -98,7 +97,7 @@ public class SpectraDirectoryFeatureTest {
         final Path test = new SpectraDirectoryFeature(session, new SpectraWriteFeature(session)).mkdir(
                 new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(b.get());
-        assertTrue(new S3FindFeature(session).find(test));
+        assertTrue(new SpectraFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new SpectraDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
