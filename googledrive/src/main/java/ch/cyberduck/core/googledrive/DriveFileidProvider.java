@@ -26,6 +26,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class DriveFileidProvider implements IdProvider {
@@ -67,7 +68,14 @@ public class DriveFileidProvider implements IdProvider {
             }
             return this.set(file, found.attributes().getVersionId());
         }
-        final AttributedList<Path> list = new FileidDriveListService(session, this, file).list(file.getParent(), new DisabledListProgressListener());
+        final Path query;
+        if(file.getType().contains(Path.Type.placeholder)) {
+            query = new Path(file.getParent(), FilenameUtils.removeExtension(file.getName()), file.getType(), file.attributes());
+        }
+        else {
+            query = file;
+        }
+        final AttributedList<Path> list = new FileidDriveListService(session, this, query).list(file.getParent(), new DisabledListProgressListener());
         final Path found = list.find(new IgnoreTrashedPathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
