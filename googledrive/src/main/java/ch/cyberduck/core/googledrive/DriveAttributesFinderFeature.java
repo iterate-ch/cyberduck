@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.URI;
@@ -58,7 +59,14 @@ public class DriveAttributesFinderFeature implements AttributesFinder {
         if(new PathContainerService().isContainer(file)) {
             return PathAttributes.EMPTY;
         }
-        final AttributedList<Path> list = new FileidDriveListService(session, fileid, file).list(file.getParent(), new DisabledListProgressListener());
+        final Path query;
+        if(file.getType().contains(Path.Type.placeholder)) {
+            query = new Path(file.getParent(), FilenameUtils.removeExtension(file.getName()), file.getType(), file.attributes());
+        }
+        else {
+            query = file;
+        }
+        final AttributedList<Path> list = new FileidDriveListService(session, fileid, query).list(file.getParent(), new DisabledListProgressListener());
         final Path found = list.find(new DriveFileidProvider.IgnoreTrashedPathPredicate(file));
         if(null == found) {
             throw new NotfoundException(file.getAbsolute());
