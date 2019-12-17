@@ -36,6 +36,8 @@ import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.notification.NotificationService;
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.TransferBackgroundActionState;
 import ch.cyberduck.core.transfer.SynchronizingTransferErrorCallback;
 import ch.cyberduck.core.transfer.Transfer;
@@ -85,6 +87,7 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
     private final Cache<TransferItem> cache;
     private final ProgressListener progress;
     private final StreamListener stream;
+    private final Preferences preferences = PreferencesFactory.get();
 
     public AbstractTransferWorker(final Transfer transfer, final TransferOptions options,
                                   final TransferPrompt prompt, final TransferSpeedometer meter,
@@ -252,7 +255,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
             throw new TransferCanceledException();
         }
         if(prompt.isSelected(new TransferItem(file, local))) {
-            return this.submit(new RetryTransferCallable(transfer.getSource()) {
+            return this.submit(new RetryTransferCallable(transfer.getSource(),
+                preferences.getInteger("transfer.connection.retry"), preferences.getInteger("transfer.connection.retry.delay")) {
+
                 @Override
                 public TransferStatus call() throws BackgroundException {
                     parent.validate();
@@ -368,7 +373,9 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                 if(segment.isComplete()) {
                     continue;
                 }
-                this.submit(new RetryTransferCallable(transfer.getSource()) {
+                this.submit(new RetryTransferCallable(transfer.getSource(),
+                    preferences.getInteger("transfer.connection.retry"), preferences.getInteger("transfer.connection.retry.delay")) {
+
                     @Override
                     public TransferStatus call() throws BackgroundException {
                         status.validate();

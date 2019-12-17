@@ -938,11 +938,15 @@ public abstract class Preferences implements Locales {
           Retry to connect after a I/O failure automatically
          */
         this.setDefault("connection.retry", String.valueOf(1));
+        // Specific setting for transfer worker
+        this.setDefault("transfer.connection.retry", String.valueOf(1));
         this.setDefault("connection.retry.max", String.valueOf(20));
         /*
           In seconds
          */
         this.setDefault("connection.retry.delay", String.valueOf(0));
+        // Specific setting for transfer worker
+        this.setDefault("transfer.connection.retry.delay", String.valueOf(0));
         this.setDefault("connection.retry.backoff.enable", String.valueOf(false));
 
         /**
