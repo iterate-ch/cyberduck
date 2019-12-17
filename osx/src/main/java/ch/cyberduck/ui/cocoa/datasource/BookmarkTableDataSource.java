@@ -577,7 +577,10 @@ public class BookmarkTableDataSource extends ListDataSource {
             NSPoint dragPosition = view.convertPoint_fromView(event.locationInWindow(), null);
             NSRect imageRect = new NSRect(new NSPoint(dragPosition.x.doubleValue() - 16, dragPosition.y.doubleValue() - 16), new NSSize(32, 32));
             // Writing a promised file of the host as a bookmark file to the clipboard
-            view.dragPromisedFilesOfTypes(NSArray.arrayWithObject("duck"), imageRect, this.id(), true, event);
+            if(!view.dragPromisedFilesOfTypes(NSArray.arrayWithObject("duck"), imageRect, this.id(), true, event)) {
+                log.warn(String.format("Failure for drag promise operation of %s", event));
+                return false;
+            }
             return true;
         }
         return false;

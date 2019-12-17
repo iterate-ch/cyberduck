@@ -579,8 +579,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(event != null) {
                     NSPoint dragPosition = view.convertPoint_fromView(event.locationInWindow(), null);
                     NSRect imageRect = new NSRect(new NSPoint(dragPosition.x.doubleValue() - 16, dragPosition.y.doubleValue() - 16), new NSSize(32, 32));
-                    view.dragPromisedFilesOfTypes(NSMutableArray.arrayWithObject(fileTypes.iterator().next()), imageRect, this.id(), true, event);
-                    // @see http://www.cocoabuilder.com/archive/message/cocoa/2003/5/15/81424
+                    if(!view.dragPromisedFilesOfTypes(NSMutableArray.arrayWithObject(fileTypes.iterator().next()), imageRect, this.id(), true, event)) {
+                        log.warn(String.format("Failure for drag promise operation of %s", event));
+                        return false;
+                    }
                     return true;
                 }
             }
