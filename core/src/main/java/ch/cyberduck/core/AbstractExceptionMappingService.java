@@ -118,7 +118,7 @@ public abstract class AbstractExceptionMappingService<T extends Throwable> imple
             }
         }
         if(failure instanceof RuntimeException) {
-            return new ConnectionCanceledException(buffer.toString(), failure);
+            return new ConnectionCanceledException(title, buffer.toString(), failure);
         }
         return new BackgroundException(title, buffer.toString(), failure);
     }

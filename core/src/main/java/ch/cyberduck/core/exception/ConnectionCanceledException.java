@@ -29,14 +29,22 @@ public class ConnectionCanceledException extends BackgroundException {
     }
 
     public ConnectionCanceledException(final String detail) {
-        super(null, detail, null);
+        super(null, detail);
     }
 
     public ConnectionCanceledException(final Throwable cause) {
         super(cause);
     }
 
+    public ConnectionCanceledException(final String message, final String detail) {
+        super(message, detail);
+    }
+
     public ConnectionCanceledException(final String detail, final Throwable cause) {
         super(detail, cause);
+    }
+
+    public ConnectionCanceledException(final String message, final String detail, final Throwable cause) {
+        super(message, detail, cause);
     }
 }
