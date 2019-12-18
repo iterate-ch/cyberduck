@@ -179,7 +179,7 @@ public class SDSSessionTest extends AbstractSDSTest {
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DefaultX509TrustManager(),
-            new KeychainX509KeyManager(host, new DisabledCertificateStore())) {
+            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore())) {
         };
         final LoginConnectionService c = new LoginConnectionService(
             new DisabledLoginCallback() {

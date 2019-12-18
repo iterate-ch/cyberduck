@@ -18,19 +18,7 @@ package ch.cyberduck.core.preferences;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DefaultProviderHelpService;
-import ch.cyberduck.core.DisabledCertificateStore;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLocale;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledSleepPreventer;
-import ch.cyberduck.core.DisabledTerminalService;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.PreferencesProxyCredentialsStore;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.diagnostics.DefaultInetAddressReachability;
@@ -1298,6 +1286,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("factory.certificatestore.class", DisabledCertificateStore.class.getName());
         this.setDefault("factory.logincallback.class", DisabledLoginCallback.class.getName());
         this.setDefault("factory.passwordcallback.class", DisabledPasswordCallback.class.getName());
+        this.setDefault("factory.certificatetrustcallback.class", DisabledCertificateTrustCallback.class.getName());
+        this.setDefault("factory.certificateidentitycallback.class", DisabledCertificateIdentityCallback.class.getName());
         this.setDefault("factory.alertcallback.class", DisabledAlertCallback.class.getName());
         this.setDefault("factory.hostkeycallback.class", DisabledHostKeyCallback.class.getName());
         this.setDefault("factory.transfererrorcallback.class", DisabledTransferErrorCallback.class.getName());

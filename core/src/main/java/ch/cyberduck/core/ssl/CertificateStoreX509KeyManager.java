@@ -17,9 +17,9 @@ package ch.cyberduck.core.ssl;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.CertificateStore;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -39,7 +39,6 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,30 +48,31 @@ import java.util.List;
 public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
     private static final Logger log = Logger.getLogger(CertificateStoreX509KeyManager.class);
 
+    private final CertificateIdentityCallback prompt;
     private final Host bookmark;
-
     private final CertificateStore callback;
 
-    private KeyStore _keystore;
+    private KeyStore keystore;
 
-    public CertificateStoreX509KeyManager(final CertificateStore callback, final Host bookmark) {
-        this(bookmark, callback, null);
-    }
-
-    public CertificateStoreX509KeyManager(final Host bookmark, final CertificateStore callback, final KeyStore store) {
+    public CertificateStoreX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark, final CertificateStore callback) {
+        this.prompt = prompt;
         this.bookmark = bookmark;
         this.callback = callback;
-        this._keystore = store;
     }
 
     public CertificateStoreX509KeyManager init() {
         return this;
     }
 
+    public CertificateStoreX509KeyManager withKeyStore(final KeyStore keystore) {
+        this.keystore = keystore;
+        return this;
+    }
+
     private synchronized KeyStore getKeystore() throws IOException {
         String type = null;
         try {
-            if(null == _keystore) {
+            if(null == keystore) {
                 // Get the key manager factory for the default algorithm.
                 final Preferences preferences = PreferencesFactory.get();
                 type = preferences.getProperty("connection.ssl.keystore.type");
@@ -84,13 +84,13 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 }
                 final String provider = preferences.getProperty("connection.ssl.keystore.provider");
                 if(StringUtils.isBlank(provider)) {
-                    _keystore = KeyStore.getInstance(type);
+                    keystore = KeyStore.getInstance(type);
                 }
                 else {
-                    _keystore = KeyStore.getInstance(type, provider);
+                    keystore = KeyStore.getInstance(type, provider);
                 }
                 // Load default key store
-                _keystore.load(null, null);
+                keystore.load(null, null);
             }
         }
         catch(Exception e) {
@@ -99,15 +99,15 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                 if(log.isInfoEnabled()) {
                     log.info("Load default store of default type");
                 }
-                _keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-                _keystore.load(null, null);
+                keystore = KeyStore.getInstance(KeyStore.getDefaultType());
+                keystore.load(null, null);
             }
             catch(NoSuchAlgorithmException | KeyStoreException | CertificateException ex) {
                 log.error(String.format("Initialization of key store failed. %s", e.getMessage()));
                 throw new IOException(e);
             }
         }
-        return _keystore;
+        return keystore;
     }
 
     @Override
@@ -213,10 +213,7 @@ public class CertificateStoreX509KeyManager extends AbstractX509KeyManager {
                     log.info(String.format("Return saved certificate alias %s for host %s", alias, bookmark));
                     return alias;
                 }
-                selected = callback.choose(keyTypes,
-                        issuers, bookmark, MessageFormat.format(LocaleFactory.localizedString(
-                                "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
-                                hostname));
+                selected = callback.choose(prompt, keyTypes, issuers, bookmark);
             }
             catch(ConnectionCanceledException e) {
                 if(log.isInfoEnabled()) {

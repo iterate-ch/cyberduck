@@ -286,7 +286,7 @@ public class S3SessionTest extends AbstractS3Test {
                 super.verify(hostname, certs, cipher);
             }
         },
-            new KeychainX509KeyManager(host, new DisabledCertificateStore()));
+            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore()));
         final LoginConnectionService c = new LoginConnectionService(
             new DisabledLoginCallback(),
             new DisabledHostKeyCallback(),

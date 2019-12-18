@@ -19,6 +19,7 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.CertificateStore;
+import ch.cyberduck.core.CertificateTrustCallback;
 import ch.cyberduck.core.LocaleFactory;
 
 import org.apache.log4j.Logger;
@@ -30,10 +31,12 @@ import java.util.Arrays;
 public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
     private static final Logger log = Logger.getLogger(CertificateStoreX509TrustManager.class);
 
+    private final CertificateTrustCallback prompt;
     private final TrustManagerHostnameCallback callback;
     private final CertificateStore store;
 
-    public CertificateStoreX509TrustManager(final TrustManagerHostnameCallback callback, final CertificateStore store) {
+    public CertificateStoreX509TrustManager(final CertificateTrustCallback prompt, final TrustManagerHostnameCallback callback, final CertificateStore store) {
+        this.prompt = prompt;
         this.callback = callback;
         this.store = store;
     }
@@ -65,7 +68,7 @@ public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
             }
             return;
         }
-        if(store.verify(hostname, Arrays.asList(certs))) {
+        if(store.verify(prompt, hostname, Arrays.asList(certs))) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Certificate for %s trusted in Keychain", hostname));
             }

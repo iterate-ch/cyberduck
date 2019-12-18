@@ -18,13 +18,11 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.CertificateIdentityCallback;
 import ch.cyberduck.core.CertificateStore;
-import ch.cyberduck.core.CertificateStoreFactory;
-import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Host;
 
 import java.net.Socket;
-import java.security.KeyStore;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,19 +35,11 @@ import java.util.Set;
 
 public class KeychainX509KeyManager extends CertificateStoreX509KeyManager implements X509KeyManager {
 
-    private final Map<Key, String> memory = new HashMap<Key, String>();
+    private final Map<Key, String> memory = new HashMap<>();
     private final Set<String> aliases = new HashSet<>();
 
-    public KeychainX509KeyManager(final Host bookmark, final Controller controller) {
-        super(CertificateStoreFactory.get(controller), bookmark);
-    }
-
-    public KeychainX509KeyManager(final Host bookmark, final CertificateStore callback) {
-        super(callback, bookmark);
-    }
-
-    public KeychainX509KeyManager(final Host bookmark, final CertificateStore callback, final KeyStore store) {
-        super(bookmark, callback, store);
+    public KeychainX509KeyManager(final CertificateIdentityCallback prompt, final Host bookmark, final CertificateStore callback) {
+        super(prompt, bookmark, callback);
     }
 
     @Override

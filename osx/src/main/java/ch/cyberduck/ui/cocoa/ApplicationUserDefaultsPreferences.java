@@ -29,6 +29,8 @@ import ch.cyberduck.core.sparkle.SparklePeriodicUpdateChecker;
 import ch.cyberduck.core.threading.DispatchThreadPool;
 import ch.cyberduck.ui.browser.BrowserColumn;
 import ch.cyberduck.ui.cocoa.callback.PromptAlertCallback;
+import ch.cyberduck.ui.cocoa.callback.PromptCertificateIdentityCallback;
+import ch.cyberduck.ui.cocoa.callback.PromptCertificateTrustCallback;
 import ch.cyberduck.ui.cocoa.callback.PromptHostKeyCallback;
 import ch.cyberduck.ui.cocoa.callback.PromptLoginCallback;
 import ch.cyberduck.ui.cocoa.callback.PromptPasswordCallback;
@@ -86,6 +88,8 @@ public class ApplicationUserDefaultsPreferences extends ApplicationPreferences {
         this.setDefault("factory.hostkeycallback.class", PromptHostKeyCallback.class.getName());
         this.setDefault("factory.logincallback.class", PromptLoginCallback.class.getName());
         this.setDefault("factory.passwordcallback.class", PromptPasswordCallback.class.getName());
+        this.setDefault("factory.certificatetrustcallback.class", PromptCertificateTrustCallback.class.getName());
+        this.setDefault("factory.certificateidentitycallback.class", PromptCertificateIdentityCallback.class.getName());
         this.setDefault("factory.alertcallback.class", PromptAlertCallback.class.getName());
         this.setDefault("factory.transfererrorcallback.class", PromptTransferErrorCallback.class.getName());
         this.setDefault("factory.transferpromptcallback.download.class", DownloadPromptController.class.getName());

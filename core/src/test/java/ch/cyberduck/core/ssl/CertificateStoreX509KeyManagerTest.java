@@ -18,6 +18,8 @@ package ch.cyberduck.core.ssl;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.CertificateIdentityCallback;
+import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.DisabledCertificateStore;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.TestProtocol;
@@ -38,7 +40,7 @@ public class CertificateStoreX509KeyManagerTest {
 
     @Test
     public void testChooseClientAliasNotfound() throws Exception {
-        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(), new Host(new TestProtocol())).init();
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), new Host(new TestProtocol()), new DisabledCertificateStore()).init();
         assertNull(m.chooseClientAlias(new String[]{"RSA", "DSA"},
                 new Principal[]{new BasicUserPrincipal("user")}, new Socket("test.cyberduck.ch", 443)));
     }
@@ -46,18 +48,17 @@ public class CertificateStoreX509KeyManagerTest {
     @Test
     public void testChooseClientAliasStartcom() throws Exception {
         final AtomicBoolean choose = new AtomicBoolean();
-        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore() {
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), new Host(new TestProtocol(), "test2.cyberduck.ch"), new DisabledCertificateStore() {
             @Override
-            public X509Certificate choose(String[] keyTypes, Principal[] issuers, Host bookmark, String prompt) throws ConnectionCanceledException {
-                assertEquals("The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to test.cyberduck.ch.", prompt);
+            public X509Certificate choose(final CertificateIdentityCallback prompt, final String[] keyTypes, final Principal[] issuers, final Host bookmark) throws ConnectionCanceledException {
                 for(Principal issuer : issuers) {
                     assertEquals("CN=StartCom Class 2 Primary Intermediate Client CA", issuer.getName());
                 }
                 choose.set(true);
                 throw new ConnectionCanceledException();
             }
-        },
-                new Host(new TestProtocol(), "test2.cyberduck.ch")).init();
+        }
+        ).init();
         assertNull(m.chooseClientAlias(new String[]{"RSA", "DSA"},
                 new Principal[]{new X500Principal("CN=StartCom Class 2 Primary Intermediate Client CA")},
                 new Socket("test.cyberduck.ch", 443)));
@@ -66,19 +67,19 @@ public class CertificateStoreX509KeyManagerTest {
 
     @Test
     public void testGetCertificateChain() {
-        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(), new Host(new TestProtocol())).init();
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), new Host(new TestProtocol()), new DisabledCertificateStore()).init();
         m.getCertificateChain("a");
     }
 
     @Test
     public void testGetPrivateKey() {
-        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(), new Host(new TestProtocol())).init();
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), new Host(new TestProtocol()), new DisabledCertificateStore()).init();
         assertNull(m.getPrivateKey("unknown-alias"));
     }
 
     @Test
     public void testPrincipalNotFound() {
-        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(), new Host(new TestProtocol())).init();
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), new Host(new TestProtocol()), new DisabledCertificateStore()).init();
         assertNull(m.getClientAliases("RSA", new Principal[]{
                 new X500Principal("CN=g")
         }));
@@ -86,13 +87,13 @@ public class CertificateStoreX509KeyManagerTest {
 
     @Test
     public void testClientAliasesNoIssuer() {
-        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateStore(), new Host(new TestProtocol())).init();
+        final X509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), new Host(new TestProtocol()), new DisabledCertificateStore()).init();
         assertNull(m.getClientAliases("RSA", new Principal[]{}));
         assertNull(m.getClientAliases("RSA", null));
     }
 
     @Test
     public void testList() {
-        assertTrue(new CertificateStoreX509KeyManager(new DisabledCertificateStore(), new Host(new TestProtocol())).init().list().isEmpty());
+        assertTrue(new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), new Host(new TestProtocol()), new DisabledCertificateStore()).init().list().isEmpty());
     }
 }
