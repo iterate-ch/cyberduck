@@ -17,6 +17,7 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
@@ -27,9 +28,11 @@ import ch.cyberduck.core.cryptomator.features.CryptoBulkFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
+import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
 import ch.cyberduck.core.googledrive.DriveAttributesFinderFeature;
@@ -37,6 +40,7 @@ import ch.cyberduck.core.googledrive.DriveDeleteFeature;
 import ch.cyberduck.core.googledrive.DriveDirectoryFeature;
 import ch.cyberduck.core.googledrive.DriveFileidProvider;
 import ch.cyberduck.core.googledrive.DriveHomeFinderService;
+import ch.cyberduck.core.googledrive.DriveListService;
 import ch.cyberduck.core.googledrive.DriveReadFeature;
 import ch.cyberduck.core.googledrive.DriveTouchFeature;
 import ch.cyberduck.core.googledrive.DriveWriteFeature;
@@ -173,6 +177,14 @@ public class MoveWorkerTest extends AbstractDriveTest {
         new MoveWorker(Collections.singletonMap(folder, folderRenamed), new SessionPool.SingleSessionPool(session), cache, new DisabledProgressListener(), new DisabledLoginCallback()).run(session);
         assertFalse(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folder));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folderRenamed));
+        try {
+            new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(folder, new DisabledListProgressListener());
+            fail();
+        }
+        catch(NotfoundException e) {
+            //
+        }
+        assertEquals(1, new CryptoListService(session, new DriveListService(session, fileid), cryptomator).list(folderRenamed, new DisabledListProgressListener()).size());
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, filenameRenamed, EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
         new CryptoDeleteFeature(session, new DriveDeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());

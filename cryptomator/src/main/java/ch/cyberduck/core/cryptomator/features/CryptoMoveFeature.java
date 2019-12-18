@@ -22,14 +22,13 @@ import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.Vault;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 public class CryptoMoveFeature implements Move {
 
     private final Session<?> session;
     private final Move proxy;
-    private final Vault vault;
+    private final CryptoVault vault;
 
     public CryptoMoveFeature(final Session<?> session, final Move delegate, final Delete delete, final CryptoVault cryptomator) {
         this.session = session;
@@ -41,9 +40,12 @@ public class CryptoMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         // Move inside vault moves actual files and only metadata files for directories but not the actual directories
         final Path target = proxy.move(
-                vault.encrypt(session, file, file.isDirectory()),
-                vault.encrypt(session, renamed, file.isDirectory()),
-                status, callback, connectionCallback);
+            vault.encrypt(session, file, file.isDirectory()),
+            vault.encrypt(session, renamed, file.isDirectory()),
+            status, callback, connectionCallback);
+        if(file.isDirectory()) {
+            vault.getDirectoryProvider().delete(file);
+        }
         return vault.decrypt(session, target);
     }
 

@@ -62,6 +62,7 @@ public class CryptoDeleteFeature implements Delete {
                         log.debug(String.format("Add metadata file %s", metadata));
                     }
                     encrypted.add(metadata);
+                    vault.getDirectoryProvider().delete(f);
                 }
                 if(filenameProvider.isDeflated(metadata.getName())) {
                     filenameProvider.invalidate(filenameProvider.inflate(session, metadata.getName()));
