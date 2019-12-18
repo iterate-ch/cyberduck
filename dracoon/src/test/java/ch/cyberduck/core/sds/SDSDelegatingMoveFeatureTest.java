@@ -308,7 +308,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test(expected = InteroperabilityException.class)
+    @Test
     public void testMoveRoomToDirectory() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(
@@ -318,11 +318,6 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final SDSMoveFeature move = new SDSMoveFeature(session, nodeid);
         assertFalse(move.isSupported(test, target));
-        move.move(test, target, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertEquals(0, session.getMetrics().get(Copy.class));
-        assertFalse(new SDSFindFeature(nodeid).find(test));
-        assertTrue(new SDSFindFeature(nodeid).find(target));
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
