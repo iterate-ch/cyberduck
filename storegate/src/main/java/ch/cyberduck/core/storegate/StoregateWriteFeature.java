@@ -107,7 +107,7 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                 request = new HttpPost(String.format("%s/v4/upload/resumable", client.getBasePath()));
                 FileMetadata meta = new FileMetadata();
                 meta.setId(StringUtils.EMPTY);
-                if(StringUtils.startsWith(file.getName(), ".")) {
+                if(status.isHidden()) {
                     meta.setAttributes(2); // Hidden
                 }
                 else {
