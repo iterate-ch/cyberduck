@@ -97,10 +97,7 @@ public abstract class SFCertificateTrustPanel extends SFCertificatePanel {
     public abstract void setInformativeText(String informativeText);
 
     /**
-     * Specifies one or more policies that apply to the displayed certificates.Specifies one or more policies that apply
-     * to the displayed certificates.Specifies one or more policies that apply to the displayed certificates.Specifies
-     * one or more policies that apply to the displayed certificates.Specifies one or more policies that apply to the
-     * displayed certificates.
+     * Specifies one or more policies that apply to the displayed certificates.
      *
      * @param policies The policies to use when evaluating the certificates’ status. You can pass either a SecPolicyRef
      *                 object or an NSArray (containing one or more SecPolicyRef instances) in this parameter. If
