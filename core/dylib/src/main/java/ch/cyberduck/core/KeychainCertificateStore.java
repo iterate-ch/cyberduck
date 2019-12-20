@@ -78,7 +78,7 @@ public final class KeychainCertificateStore implements CertificateStore {
         if(certificates.isEmpty()) {
             return false;
         }
-        final SecPolicyRef policyRef = library.SecPolicyCreateSSL(false, hostname);
+        final SecPolicyRef policyRef = library.SecPolicyCreateSSL(true, hostname);
         final PointerByReference reference = new PointerByReference();
         library.SecTrustCreateWithCertificates(toDEREncodedCertificates(certificates), policyRef, reference);
         final SecTrustRef trustRef = new SecTrustRef(reference.getValue());
