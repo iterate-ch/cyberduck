@@ -21,7 +21,9 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -121,6 +123,9 @@ public class SharepointSession extends GraphSession {
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
             return (T) new SharepointListService(this, this.getFeature(IdProvider.class));
+        }
+        if(type == AttributesFinder.class) {
+            return (T) new DefaultAttributesFinderFeature(this);
         }
         return super._getFeature(type);
     }
