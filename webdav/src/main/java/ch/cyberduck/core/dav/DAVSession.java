@@ -209,6 +209,7 @@ public class DAVSession extends HttpSession<DAVClient> {
             }
             catch(SardineException e) {
                 switch(e.getStatusCode()) {
+                    case HttpStatus.SC_NOT_IMPLEMENTED:
                     case HttpStatus.SC_FORBIDDEN:
                     case HttpStatus.SC_NOT_FOUND:
                     case HttpStatus.SC_UNSUPPORTED_MEDIA_TYPE:
