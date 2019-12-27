@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+7.2.4
+- [Bugfix] Error downloading files from Microsoft SharePoint (SharePoint Server 2016)
+- [Bugfix] Certificate trust validation error (Google Drive, macOS)
+
 7.2.3
 - [Bugfix] Cannot open link to documents in Google Docs (Google Drive)
 
