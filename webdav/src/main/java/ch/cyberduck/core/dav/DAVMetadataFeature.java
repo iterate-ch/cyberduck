@@ -53,7 +53,7 @@ public class DAVMetadataFeature implements Headers {
     @Override
     public Map<String, String> getMetadata(final Path file) throws BackgroundException {
         try {
-            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(file));
+            final List<DavResource> resources = session.getClient().list(new DAVPathEncoder().encode(file), 0);
             for(DavResource resource : resources) {
                 return resource.getCustomProps();
             }

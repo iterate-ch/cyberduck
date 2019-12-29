@@ -47,7 +47,7 @@ public class MicrosoftIISDAVAttributesFinderFeature extends DAVAttributesFinderF
     }
 
     protected List<DavResource> list(final Path file) throws IOException {
-        return session.getClient().list(new DAVPathEncoder().encode(file), 1, true);
+        return session.getClient().list(new DAVPathEncoder().encode(file), 0, true);
     }
 
     protected PathAttributes toAttributes(final DavResource resource) {
