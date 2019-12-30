@@ -119,7 +119,7 @@ public class DAVAttributesFinderFeature implements AttributesFinder {
     }
 
     protected List<DavResource> list(final Path file) throws IOException {
-        return session.getClient().list(new DAVPathEncoder().encode(file), 1,
+        return session.getClient().list(new DAVPathEncoder().encode(file), 0,
             Stream.of(
                 DAVTimestampFeature.LAST_MODIFIED_CUSTOM_NAMESPACE,
                 DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
