@@ -86,7 +86,7 @@
         <dependency>
             <groupId>org.cryptomator</groupId>
             <artifactId>cryptofs</artifactId>
-            <version>1.8.9</version>
+            <version>1.9.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
