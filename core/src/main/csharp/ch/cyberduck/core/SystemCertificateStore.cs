@@ -37,7 +37,7 @@ namespace Ch.Cyberduck.Core
     {
         private static readonly Logger Log = Logger.getLogger(typeof(SystemCertificateStore).FullName);
 
-        public X509Certificate choose(string[] keyTypes, Principal[] issuers, Host bookmark, string prompt)
+        public X509Certificate choose(CertificateIdentityCallback prompt, string[] keyTypes, Principal[] issuers, Host bookmark)
         {
             X509Store store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
             try
@@ -65,7 +65,9 @@ namespace Ch.Cyberduck.Core
                 if (found.Count > 0)
                 {
                     X509Certificate2Collection selected = X509Certificate2UI.SelectFromCollection(found,
-                        LocaleFactory.localizedString("Choose"), prompt, X509SelectionFlag.SingleSelection);
+                        LocaleFactory.localizedString("Choose"), string.Format(LocaleFactory.localizedString(
+                             "The server requires a certificate to validate your identity. Select the certificate to authenticate yourself to {0}."),
+                             bookmark.getHostname()), X509SelectionFlag.SingleSelection);
                     foreach (X509Certificate2 c in selected)
                     {
                         return ConvertCertificate(c);
@@ -79,7 +81,7 @@ namespace Ch.Cyberduck.Core
             }
         }
 
-        public bool verify(String hostName, List certs)
+        public bool verify(CertificateTrustCallback prompt, String hostName, List certs)
         {
             X509Certificate2 serverCert = ConvertCertificate(certs.iterator().next() as X509Certificate);
             X509Chain chain = new X509Chain();

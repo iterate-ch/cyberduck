@@ -19,23 +19,18 @@ package ch.cyberduck.core.ssl;
  */
 
 import ch.cyberduck.core.CertificateStore;
+import ch.cyberduck.core.DisabledCertificateIdentityCallback;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import java.security.KeyStore;
-
 public class PreferencesX509KeyManager extends KeychainX509KeyManager {
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     public PreferencesX509KeyManager(final Host bookmark, final CertificateStore callback) {
-        super(bookmark, callback);
-    }
-
-    public PreferencesX509KeyManager(final Host bookmark, final CertificateStore callback, final KeyStore store) {
-        super(bookmark, callback, store);
+        super(new DisabledCertificateIdentityCallback(), bookmark, callback);
     }
 
     @Override

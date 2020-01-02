@@ -1,8 +1,5 @@
 package ch.cyberduck.core;
 
-import ch.cyberduck.binding.ProxyController;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.FileInputStream;
@@ -17,27 +14,25 @@ public class KeychainCertificateStoreTest {
 
     @Test
     public void testTrustedEmptyCertificates() throws Exception {
-        final KeychainCertificateStore k = new KeychainCertificateStore(new ProxyController());
-        assertFalse(k.verify("cyberduck.ch", Collections.emptyList()));
+        final KeychainCertificateStore k = new KeychainCertificateStore();
+        assertFalse(k.verify(new DisabledCertificateTrustCallback(), "cyberduck.ch", Collections.emptyList()));
     }
 
     @Test
-    @Ignore
     public void testTrusted() throws Exception {
-        final KeychainCertificateStore k = new KeychainCertificateStore(new ProxyController());
+        final KeychainCertificateStore k = new KeychainCertificateStore();
         InputStream inStream = new FileInputStream("src/test/resources/OXxlRDVcWqdPEvFm.cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
-        assertFalse(k.verify("test.cyberduck.ch", Collections.singletonList(cert)));
+        assertFalse(k.verify(new DisabledCertificateTrustCallback(), "test.cyberduck.ch", Collections.singletonList(cert)));
     }
 
     @Test
-    @Ignore
     public void testTrustedHostnameMismatch() throws Exception {
-        final KeychainCertificateStore k = new KeychainCertificateStore(new ProxyController());
+        final KeychainCertificateStore k = new KeychainCertificateStore();
         InputStream inStream = new FileInputStream("src/test/resources/OXxlRDVcWqdPEvFm.cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         final X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
-        assertFalse(k.verify("s.test.cyberduck.ch", Collections.singletonList(cert)));
+        assertFalse(k.verify(new DisabledCertificateTrustCallback(), "s.test.cyberduck.ch", Collections.singletonList(cert)));
     }
 }

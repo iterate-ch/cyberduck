@@ -35,6 +35,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -256,16 +257,16 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(), new Credentials(
             System.getProperties().getProperty("s3.key"), System.getProperties().getProperty("s3.secret")
         ));
-        final KeychainX509TrustManager trust = new KeychainX509TrustManager(new DefaultTrustManagerHostnameCallback(host),
+        final KeychainX509TrustManager trust = new KeychainX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host),
             new DisabledCertificateStore() {
                 @Override
-                public boolean verify(final String hostname, final List<X509Certificate> certificates) {
+                public boolean verify(final CertificateTrustCallback prompt, final String hostname, final List<X509Certificate> certificates) throws CertificateException {
                     assertEquals("ch.s3.amazonaws.com", hostname);
                     return true;
                 }
             });
         final S3Session session = new S3Session(host, new DisabledX509TrustManager(),
-            new KeychainX509KeyManager(host, new DisabledCertificateStore()));
+            new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DisabledCertificateStore()));
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {

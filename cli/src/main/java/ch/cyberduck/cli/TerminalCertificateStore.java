@@ -18,6 +18,7 @@ package ch.cyberduck.cli;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.CertificateTrustCallback;
 import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.LocaleFactory;
 
@@ -48,7 +49,7 @@ public class TerminalCertificateStore extends DefaultCertificateStore {
     }
 
     @Override
-    public boolean verify(final String hostname, final List<X509Certificate> certificates) {
+    public boolean verify(final CertificateTrustCallback callback, final String hostname, final List<X509Certificate> certificates) {
         if(certificates.isEmpty()) {
             return false;
         }

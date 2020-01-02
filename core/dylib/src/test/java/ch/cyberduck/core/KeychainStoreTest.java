@@ -55,7 +55,7 @@ public class KeychainStoreTest {
 
     @Test
     public void testGetAliasesForIssuerDN() {
-        final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
+        final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), new Host(new TestProtocol()), new DisabledCertificateStore()).withKeyStore(
             keychain).init();
         final String[] aliases = m.getClientAliases("RSA", new Principal[]{
             new X500Principal("CN=iterate GmbH - Test")
@@ -67,7 +67,7 @@ public class KeychainStoreTest {
     @Test
     @Ignore
     public void testLoadPrivateKeyFromKeychain() {
-        final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new Host(new TestProtocol()), new DisabledCertificateStore(),
+        final CertificateStoreX509KeyManager m = new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), new Host(new TestProtocol()), new DisabledCertificateStore()).withKeyStore(
             keychain).init();
         assertTrue(m.list().contains("myclient"));
         assertNotNull(m.getPrivateKey("myClient"));

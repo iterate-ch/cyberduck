@@ -1,7 +1,9 @@
 package ch.cyberduck.core.ssl;
 
+import ch.cyberduck.core.CertificateTrustCallback;
 import ch.cyberduck.core.DefaultCertificateStore;
 import ch.cyberduck.core.DisabledCertificateStore;
+import ch.cyberduck.core.DisabledCertificateTrustCallback;
 
 import org.junit.Test;
 
@@ -16,7 +18,7 @@ public class CertificateStoreX509TrustManagerTest {
 
     @Test(expected = CertificateException.class)
     public void testCheckExpired() throws Exception {
-        final CertificateStoreX509TrustManager m = new CertificateStoreX509TrustManager(new TrustManagerHostnameCallback() {
+        final CertificateStoreX509TrustManager m = new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new TrustManagerHostnameCallback() {
             @Override
             public String getTarget() {
                 return "cyberduck.ch";
@@ -31,14 +33,14 @@ public class CertificateStoreX509TrustManagerTest {
 
     @Test(expected = CertificateException.class)
     public void testCheckServerTrustedFailure() throws Exception {
-        final CertificateStoreX509TrustManager m = new CertificateStoreX509TrustManager(new TrustManagerHostnameCallback() {
+        final CertificateStoreX509TrustManager m = new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new TrustManagerHostnameCallback() {
             @Override
             public String getTarget() {
                 return "cyberduck.ch";
             }
         }, new DisabledCertificateStore() {
             @Override
-            public boolean verify(final String hostname, List<X509Certificate> certificates) {
+            public boolean verify(final CertificateTrustCallback prompt, final String hostname, final List<X509Certificate> certificates) throws CertificateException {
                 return false;
             }
         }

@@ -38,9 +38,8 @@ public class DefaultCertificateStore implements CertificateStore {
         = new DefaultHostnameVerifier();
 
     @Override
-    public X509Certificate choose(final String[] keyTypes, final Principal[] issuers,
-                                  final Host bookmark, final String prompt) throws ConnectionCanceledException {
-        final CertificateStoreX509KeyManager store = new KeychainX509KeyManager(bookmark, this).init();
+    public X509Certificate choose(final CertificateIdentityCallback prompt, final String[] keyTypes, final Principal[] issuers, final Host bookmark) throws ConnectionCanceledException {
+        final CertificateStoreX509KeyManager store = new KeychainX509KeyManager(prompt, bookmark, this).init();
         final String[] aliases = store.getClientAliases(keyTypes, issuers);
         if(null == aliases) {
             throw new ConnectionCanceledException(String.format("No certificate matching issuer %s found",
@@ -53,7 +52,7 @@ public class DefaultCertificateStore implements CertificateStore {
     }
 
     @Override
-    public boolean verify(final String hostname, final List<X509Certificate> certificates) {
+    public boolean verify(final CertificateTrustCallback prompt, final String hostname, final List<X509Certificate> certificates) {
         if(certificates.isEmpty()) {
             return false;
         }

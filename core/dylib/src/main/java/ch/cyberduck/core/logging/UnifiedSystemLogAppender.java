@@ -18,7 +18,6 @@ package ch.cyberduck.core.logging;
 import ch.cyberduck.core.library.Native;
 
 import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
@@ -72,35 +71,33 @@ public class UnifiedSystemLogAppender extends AppenderSkeleton {
 
     @Override
     protected void append(final LoggingEvent event) {
-        final StringBuilder buffer = new StringBuilder();
-        buffer.append(event.getMessage());
-        if(layout.ignoresThrowable()) {
-            final String[] trace = event.getThrowableStrRep();
-            if(trace != null) {
-                buffer.append(Layout.LINE_SEP);
-                for(final String t : trace) {
-                    buffer.append(t).append(Layout.LINE_SEP);
-                }
-            }
-        }
         // Category name
         final String logger = String.format("%s %s", event.getThreadName(), event.getLogger().getName());
         switch(event.getLevel().toInt()) {
             case Level.FATAL_INT:
             case Level.ERROR_INT:
-                this.log(OS_LOG_TYPE_ERROR, logger, buffer.toString());
+                this.log(OS_LOG_TYPE_ERROR, logger, event.getMessage().toString());
                 break;
             case Level.TRACE_INT:
             case Level.DEBUG_INT:
-                this.log(OS_LOG_TYPE_DEBUG, logger, buffer.toString());
+                this.log(OS_LOG_TYPE_DEBUG, logger, event.getMessage().toString());
                 break;
             case Level.INFO_INT:
-                this.log(OS_LOG_TYPE_INFO, logger, buffer.toString());
+                this.log(OS_LOG_TYPE_INFO, logger, event.getMessage().toString());
                 break;
             case Level.WARN_INT:
             default:
-                this.log(OS_LOG_TYPE_DEFAULT, logger, buffer.toString());
+                this.log(OS_LOG_TYPE_DEFAULT, logger, event.getMessage().toString());
                 break;
+        }
+        if(layout.ignoresThrowable()) {
+            // Appender responsible for rendering
+            final String[] trace = event.getThrowableStrRep();
+            if(trace != null) {
+                for(final String t : trace) {
+                    this.log(OS_LOG_TYPE_DEFAULT, logger, t);
+                }
+            }
         }
     }
 
@@ -116,3 +113,4 @@ public class UnifiedSystemLogAppender extends AppenderSkeleton {
         return true;
     }
 }
+

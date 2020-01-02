@@ -254,7 +254,7 @@ public class Terminal {
             final LoginConnectionService connect = new LoginConnectionService(new TerminalLoginService(input
             ), new TerminalLoginCallback(reader), new TerminalHostKeyVerifier(reader), progress);
             source = SessionPoolFactory.create(connect, transcript, cache, host,
-                new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
+                new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new TerminalCertificateStore(reader)),
                 new PreferencesX509KeyManager(host, new TerminalCertificateStore(reader)),
                 VaultRegistryFactory.create(new TerminalPasswordCallback()));
             final Path remote;
@@ -307,7 +307,7 @@ public class Terminal {
                 case copy:
                     final Host target = new CommandLineUriParser(input).parse(input.getOptionValues(action.name())[1]);
                     destination = SessionPoolFactory.create(connect, transcript, cache, target,
-                        new CertificateStoreX509TrustManager(new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
+                        new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(target), new TerminalCertificateStore(reader)),
                         new PreferencesX509KeyManager(target, new TerminalCertificateStore(reader)),
                         VaultRegistryFactory.create(new TerminalPasswordCallback()));
                     return this.transfer(new CopyTransfer(

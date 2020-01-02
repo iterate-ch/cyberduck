@@ -20,19 +20,19 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
 import java.security.Principal;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
 public class DisabledCertificateStore implements CertificateStore {
 
     @Override
-    public boolean verify(final String hostname, List<X509Certificate> certificates) {
+    public boolean verify(final CertificateTrustCallback prompt, final String hostname, final List<X509Certificate> certificates) throws CertificateException {
         return true;
     }
 
     @Override
-    public X509Certificate choose(String[] keyTypes, final Principal[] issuers, final Host bookmark, final String prompt)
-            throws ConnectionCanceledException {
-        throw new ConnectionCanceledException(prompt);
+    public X509Certificate choose(final CertificateIdentityCallback prompt, final String[] keyTypes, final Principal[] issuers, final Host bookmark) throws ConnectionCanceledException {
+        throw new ConnectionCanceledException();
     }
 }
