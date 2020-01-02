@@ -17,11 +17,9 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 public class CertificateStoreFactory extends Factory<CertificateStore> {
     private static final Logger log = Logger.getLogger(CertificateStoreFactory.class);
@@ -32,24 +30,7 @@ public class CertificateStoreFactory extends Factory<CertificateStore> {
         super("factory.certificatestore.class");
     }
 
-    public CertificateStore create(final Controller c) {
-        try {
-            if(null == constructor) {
-                constructor = ConstructorUtils.getMatchingAccessibleConstructor(clazz, c.getClass());
-            }
-            if(null == constructor) {
-                log.warn(String.format("No matching constructor for parameter %s", c.getClass()));
-                // Call default constructor for disabled implementations
-                return clazz.newInstance();
-            }
-            return constructor.newInstance(c);
-        }
-        catch(InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            throw new FactoryException(e.getMessage(), e);
-        }
-    }
-
-    public static CertificateStore get(final Controller c) {
-        return new CertificateStoreFactory().create(c);
+    public static synchronized CertificateStore get() {
+        return new CertificateStoreFactory().create();
     }
 }

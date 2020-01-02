@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.MainAction;
-
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotSame;
@@ -28,16 +26,6 @@ public class CertificateStoreFactoryTest {
 
     @Test
     public void testGetWithCustomController() {
-        assertNotSame(CertificateStoreFactory.get(new AbstractController() {
-            @Override
-            public void invoke(final MainAction runnable, final boolean wait) {
-                //
-            }
-        }), CertificateStoreFactory.get(new AbstractController() {
-            @Override
-            public void invoke(final MainAction runnable, final boolean wait) {
-                //
-            }
-        }));
+        assertNotSame(CertificateStoreFactory.get(), CertificateStoreFactory.get());
     }
 }

@@ -64,7 +64,7 @@ public class DefaultBookmarkController extends BookmarkController {
     private NSPopUpButton encodingPopup;
 
     private final KeychainX509KeyManager x509KeyManager = new KeychainX509KeyManager(new DisabledCertificateIdentityCallback(), bookmark,
-        CertificateStoreFactory.get(this));
+        CertificateStoreFactory.get());
 
     public DefaultBookmarkController(final Host bookmark) {
         this(bookmark, new LoginOptions(bookmark.getProtocol()));
