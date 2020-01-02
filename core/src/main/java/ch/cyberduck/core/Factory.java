@@ -20,6 +20,10 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+
+import java.lang.reflect.InvocationTargetException;
+
 public abstract class Factory<T> {
 
     protected final Class<T> clazz;
@@ -53,9 +57,9 @@ public abstract class Factory<T> {
             throw new FactoryException(String.format("No implementation given for factory %s", this.getClass().getSimpleName()));
         }
         try {
-            return clazz.newInstance();
+            return ConstructorUtils.getMatchingAccessibleConstructor(clazz).newInstance();
         }
-        catch(InstantiationException | IllegalAccessException e) {
+        catch(InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new FactoryException(e.getMessage(), e);
         }
     }
