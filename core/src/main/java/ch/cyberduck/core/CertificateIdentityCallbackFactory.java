@@ -31,7 +31,7 @@ public class CertificateIdentityCallbackFactory extends Factory<CertificateIdent
     private Constructor<CertificateIdentityCallback> constructor;
 
     protected CertificateIdentityCallbackFactory() {
-        super("CertificateTrustCallbackFactory");
+        super("factory.certificateidentitycallback.class");
     }
 
     public CertificateIdentityCallback create(final Controller controller) {
