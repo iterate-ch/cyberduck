@@ -55,12 +55,14 @@ public class GoogleStorageBucketListService implements ListService {
                     .setMaxResults(preferences.getLong("googlestorage.listing.chunksize"))
                     .setPageToken(page)
                     .execute();
-                for(Bucket item : response.getItems()) {
-                    final Path bucket = new Path(PathNormalizer.normalize(item.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory),
-                        attributes.toAttributes(item)
-                    );
-                    buckets.add(bucket);
-                    listener.chunk(directory, buckets);
+                if(null != response.getItems()) {
+                    for(Bucket item : response.getItems()) {
+                        final Path bucket = new Path(PathNormalizer.normalize(item.getName()), EnumSet.of(Path.Type.volume, Path.Type.directory),
+                            attributes.toAttributes(item)
+                        );
+                        buckets.add(bucket);
+                        listener.chunk(directory, buckets);
+                    }
                 }
                 page = response.getNextPageToken();
             }
