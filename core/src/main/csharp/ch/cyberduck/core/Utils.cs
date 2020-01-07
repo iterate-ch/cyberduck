@@ -578,25 +578,25 @@ namespace Ch.Cyberduck.Core
                 public static readonly System.Version V1903 = new System.Version(10, 0, 18362);
             }
 
-            public static bool IsVersion(System.Version version)
-            {
-                var os = Environment.OSVersion.Version;
+            public static bool IsVersion(System.Version version) => TestOSVersion(version, Environment.OSVersion.Version);
 
-                if (os.Major < version.Major)
+            public static bool TestOSVersion(System.Version version, System.Version osVersion)
+            {
+                if (osVersion.Major < version.Major)
                 {
-                	return false;
+                    return false;
                 }
 
-                if (os.Minor < version.Minor)
+                if (osVersion.Minor < version.Minor)
                 {
-                	return false;
+                    return false;
                 }
 
                 if (version.Build != 0)
                 {
-					return os.Build >= version.Build;
+                    return osVersion.Build >= version.Build;
                 }
-                
+
                 return true;
             }
         }
