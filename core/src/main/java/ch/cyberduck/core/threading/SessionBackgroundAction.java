@@ -50,8 +50,8 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
     /**
      * Contains the transcript of the session while this action was running
      */
-    private StringBuilder transcript
-        = new StringBuilder();
+    private StringBuffer transcript
+        = new StringBuffer();
 
     private static final String LINE_SEPARATOR
         = System.getProperty("line.separator");
@@ -193,7 +193,7 @@ public abstract class SessionBackgroundAction<T> extends AbstractBackgroundActio
             log.info(String.format("Run alert callback %s for failure %s", alert, failure));
         }
         // Display alert if the action was not canceled intentionally
-        return alert.alert(pool.getHost(), failure, transcript);
+        return alert.alert(pool.getHost(), failure, new StringBuilder(transcript.toString()));
     }
 
     @Override
