@@ -30,10 +30,6 @@ public final class IOKitSleepPreventer implements SleepPreventer {
     private static final String reason
             = PreferencesFactory.get().getProperty("application.name");
 
-    protected IOKitSleepPreventer() {
-        //
-    }
-
     private static final Object lock = new Object();
 
     @Override
