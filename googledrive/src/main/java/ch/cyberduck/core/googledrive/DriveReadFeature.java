@@ -22,6 +22,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.RetriableAccessDeniedException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.http.HttpMethodReleaseInputStream;
@@ -84,6 +85,9 @@ public class DriveReadFeature implements Read {
                         session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
                         PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
                     return this.read(request, file, status);
+                }
+                catch(RetriableAccessDeniedException e) {
+                    throw e;
                 }
                 catch(AccessDeniedException e) {
                     callback.warn(session.getHost(),
