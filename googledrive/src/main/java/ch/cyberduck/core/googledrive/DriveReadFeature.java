@@ -69,46 +69,41 @@ public class DriveReadFeature implements Read {
 
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            if(file.getType().contains(Path.Type.placeholder)) {
-                final DescriptiveUrl link = new DriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
-                if(DescriptiveUrl.EMPTY.equals(link)) {
-                    log.warn(String.format("Missing web link for file %s", file));
-                    return new NullInputStream(file.attributes().getSize());
-                }
-                // Write web link file
-                return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
+        if(file.getType().contains(Path.Type.placeholder)) {
+            final DescriptiveUrl link = new DriveUrlProvider().toUrl(file).find(DescriptiveUrl.Type.http);
+            if(DescriptiveUrl.EMPTY.equals(link)) {
+                log.warn(String.format("Missing web link for file %s", file));
+                return new NullInputStream(file.attributes().getSize());
             }
-            else {
-                try {
-                    final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s",
-                        session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
-                        PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
-                    return this.read(request, file, status);
-                }
-                catch(RetriableAccessDeniedException e) {
-                    throw e;
-                }
-                catch(AccessDeniedException e) {
-                    callback.warn(session.getHost(),
-                        MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                        "Acknowledge the risk of downloading known malware or other abusive file.",
-                        LocaleFactory.localizedString("Continue", "Credentials"), LocaleFactory.localizedString("Cancel", "Localizable"),
-                        String.format("connection.unsecure.download.%s", session.getHost().getHostname()));
-                    // Continue with acknowledgeAbuse=true
-                    final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s&acknowledgeAbuse=true",
-                        session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
-                        PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
-                    return this.read(request, file, status);
-                }
-            }
+            // Write web link file
+            return IOUtils.toInputStream(UrlFileWriterFactory.get().write(link), Charset.defaultCharset());
         }
-        catch(IOException e) {
-            throw new DriveExceptionMappingService().map("Download {0} failed", e, file);
+        else {
+            try {
+                final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s",
+                    session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
+                    PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
+                return this.read(request, file, status);
+            }
+            catch(RetriableAccessDeniedException e) {
+                throw e;
+            }
+            catch(AccessDeniedException e) {
+                callback.warn(session.getHost(),
+                    MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                    "Acknowledge the risk of downloading known malware or other abusive file.",
+                    LocaleFactory.localizedString("Continue", "Credentials"), LocaleFactory.localizedString("Cancel", "Localizable"),
+                    String.format("connection.unsecure.download.%s", session.getHost().getHostname()));
+                // Continue with acknowledgeAbuse=true
+                final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s&acknowledgeAbuse=true",
+                    session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
+                    PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")));
+                return this.read(request, file, status);
+            }
         }
     }
 
-    private InputStream read(final HttpUriRequest request, final Path file, final TransferStatus status) throws BackgroundException, IOException {
+    private InputStream read(final HttpUriRequest request, final Path file, final TransferStatus status) throws BackgroundException {
         request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
         if(status.isAppend()) {
             final HttpRange range = HttpRange.withStatus(status);
@@ -127,14 +122,19 @@ public class DriveReadFeature implements Read {
             request.addHeader(new BasicHeader(HttpHeaders.ACCEPT_ENCODING, "identity"));
         }
         final HttpClient client = session.getHttpClient();
-        final HttpResponse response = client.execute(request);
-        switch(response.getStatusLine().getStatusCode()) {
-            case HttpStatus.SC_OK:
-            case HttpStatus.SC_PARTIAL_CONTENT:
-                return new HttpMethodReleaseInputStream(response);
-            default:
-                throw new DefaultHttpResponseExceptionMappingService().map(
-                    new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+        try {
+            final HttpResponse response = client.execute(request);
+            switch(response.getStatusLine().getStatusCode()) {
+                case HttpStatus.SC_OK:
+                case HttpStatus.SC_PARTIAL_CONTENT:
+                    return new HttpMethodReleaseInputStream(response);
+                default:
+                    throw new DefaultHttpResponseExceptionMappingService().map(
+                        new HttpResponseException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()));
+            }
+        }
+        catch(IOException e) {
+            throw new DriveExceptionMappingService().map("Download {0} failed", e, file);
         }
     }
 }
