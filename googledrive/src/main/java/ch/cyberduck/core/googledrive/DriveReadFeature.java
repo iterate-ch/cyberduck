@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 
 import static com.google.api.client.json.Json.MEDIA_TYPE;
 
@@ -85,7 +86,9 @@ public class DriveReadFeature implements Read {
                     return this.read(request, file, status);
                 }
                 catch(AccessDeniedException e) {
-                    callback.warn(session.getHost(), null, null,
+                    callback.warn(session.getHost(),
+                        MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                        "Acknowledge the risk of downloading known malware or other abusive file.",
                         LocaleFactory.localizedString("Continue", "Credentials"), LocaleFactory.localizedString("Cancel", "Localizable"),
                         String.format("connection.unsecure.download.%s", session.getHost().getHostname()));
                     // Continue with acknowledgeAbuse=true
