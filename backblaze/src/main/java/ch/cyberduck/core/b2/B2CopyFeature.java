@@ -45,7 +45,9 @@ public class B2CopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final B2FileResponse response = session.getClient().copyFile(fileid.getFileid(source, new DisabledListProgressListener()), containerService.getKey(target));
+            final B2FileResponse response = session.getClient().copyFile(fileid.getFileid(source, new DisabledListProgressListener()),
+                fileid.getFileid(containerService.getContainer(target), new DisabledListProgressListener()),
+                containerService.getKey(target));
             return new Path(target.getParent(), target.getName(), target.getType(), new B2AttributesFinderFeature(session, fileid).toAttributes(response));
         }
         catch(B2ApiException e) {
