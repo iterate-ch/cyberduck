@@ -105,7 +105,7 @@ public class OverwriteFilterTest {
 
                         @Override
                         public void setTimestamp(final Path file, final TransferStatus status) {
-                            assertEquals(time, status);
+                            assertEquals(time, status.getTimestamp());
                             timestampWrite[0] = true;
                         }
                     };
