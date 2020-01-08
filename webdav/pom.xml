@@ -13,7 +13,8 @@
   ~ GNU General Public License for more details.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ch.cyberduck</groupId>
@@ -22,6 +23,10 @@
     </parent>
     <artifactId>webdav</artifactId>
     <packaging>jar</packaging>
+
+    <properties>
+        <sardine-version>5.13</sardine-version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -39,7 +44,7 @@
         <dependency>
             <groupId>ch.iterate.webdav</groupId>
             <artifactId>sardine</artifactId>
-            <version>5.12</version>
+            <version>${sardine-version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
