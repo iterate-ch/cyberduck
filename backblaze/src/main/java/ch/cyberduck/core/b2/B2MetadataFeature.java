@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public class B2MetadataFeature implements Headers {
     }
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) {
+    public void setMetadata(final Path file, final TransferStatus status) {
         // Only in file upload
     }
 }

@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -64,15 +65,15 @@ public class S3MetadataFeature implements Headers {
     }
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Write metadata %s for file %s", metadata, file));
+                log.debug(String.format("Write metadata %s for file %s", status, file));
             }
             try {
                 // Make sure to copy existing attributes
                 final StorageObject target = new S3AttributesFinderFeature(session).details(file);
-                target.replaceAllMetadata(new HashMap<String, Object>(metadata));
+                target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
                 // Apply non standard ACL
                 if(accessControlListFeature != null) {
                     Acl acl = Acl.EMPTY;

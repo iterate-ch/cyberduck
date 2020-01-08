@@ -22,6 +22,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
@@ -66,14 +67,14 @@ public class GoogleStorageMetadataFeature implements Headers {
     }
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         if(file.isFile() || file.isPlaceholder()) {
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Write metadata %s for file %s", metadata, file));
+                log.debug(String.format("Write metadata %s for file %s", status, file));
             }
             try {
                 session.getClient().objects().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
-                    new StorageObject().setMetadata(metadata)).execute();
+                    new StorageObject().setMetadata(status.getMetadata())).execute();
             }
             catch(IOException e) {
                 final BackgroundException failure = new GoogleStorageExceptionMappingService().map("Failure to write attributes of {0}", e, file);

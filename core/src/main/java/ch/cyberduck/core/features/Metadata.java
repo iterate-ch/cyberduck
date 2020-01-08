@@ -18,6 +18,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
 
@@ -26,5 +27,9 @@ public interface Metadata {
 
     Map<String, String> getMetadata(Path file) throws BackgroundException;
 
-    void setMetadata(Path file, Map<String, String> metadata) throws BackgroundException;
+    default void setMetadata(Path file, Map<String, String> metadata) throws BackgroundException {
+        this.setMetadata(file, new TransferStatus().withMetadata(metadata));
+    }
+
+    void setMetadata(Path file, TransferStatus status) throws BackgroundException;
 }
