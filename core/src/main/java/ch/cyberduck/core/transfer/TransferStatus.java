@@ -488,6 +488,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.timestamp = timestamp;
     }
 
+    public TransferStatus withTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
     public Map<String, String> getParameters() {
         return parameters;
     }

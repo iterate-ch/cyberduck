@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
@@ -37,11 +38,11 @@ public class DriveTimestampFeature extends DefaultTimestampFeature {
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
+    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final String fileid = this.fileid.getFileid(file, new DisabledListProgressListener());
             final File properties = new File();
-            properties.setModifiedTime(new DateTime(modified));
+            properties.setModifiedTime(new DateTime(status.getTimestamp()));
             session.getClient().files().update(fileid, properties).setFields("modifiedTime").
                 setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
         }

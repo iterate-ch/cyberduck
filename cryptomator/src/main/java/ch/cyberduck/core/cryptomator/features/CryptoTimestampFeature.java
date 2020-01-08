@@ -21,6 +21,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 public class CryptoTimestampFeature implements Timestamp {
 
@@ -35,8 +36,8 @@ public class CryptoTimestampFeature implements Timestamp {
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
-        proxy.setTimestamp(vault.encrypt(session, file), modified);
+    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
+        proxy.setTimestamp(vault.encrypt(session, file), status);
     }
 
     @Override

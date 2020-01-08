@@ -18,6 +18,7 @@ package ch.cyberduck.core.nio;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,9 +34,9 @@ public class LocalTimestampFeature extends DefaultTimestampFeature {
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
+    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            Files.setLastModifiedTime(session.toPath(file), FileTime.from(modified, TimeUnit.MILLISECONDS));
+            Files.setLastModifiedTime(session.toPath(file), FileTime.from(status.getTimestamp(), TimeUnit.MILLISECONDS));
         }
         catch(IOException e) {
             throw new LocalExceptionMappingService().map("Failure to write attributes of {0}", e, file);

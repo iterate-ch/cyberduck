@@ -22,6 +22,7 @@ import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
@@ -41,7 +42,7 @@ public class FTPUTIMETimestampFeature extends DefaultTimestampFeature implements
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
+    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         if(failure != null) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Skip setting timestamp for %s due to previous failure %s", file, failure.getMessage()));
@@ -56,12 +57,12 @@ public class FTPUTIMETimestampFeature extends DefaultTimestampFeature implements
             // and the modification time is set to the value of the second element
             // Accessed date, modified date, created date
             if(!session.getClient().sendSiteCommand(String.format("UTIME %s %s %s %s UTC",
-                    file.getAbsolute(),
-                    formatter.format(new Date(System.currentTimeMillis()), TimeZone.getTimeZone("UTC")),
-                    formatter.format(new Date(modified), TimeZone.getTimeZone("UTC")),
-                    formatter.format(new Date(modified), TimeZone.getTimeZone("UTC"))))) {
+                file.getAbsolute(),
+                formatter.format(new Date(System.currentTimeMillis()), TimeZone.getTimeZone("UTC")),
+                formatter.format(new Date(status.getTimestamp()), TimeZone.getTimeZone("UTC")),
+                formatter.format(new Date(status.getTimestamp()), TimeZone.getTimeZone("UTC"))))) {
                 throw failure = new FTPException(session.getClient().getReplyCode(),
-                        session.getClient().getReplyString());
+                    session.getClient().getReplyString());
             }
         }
         catch(IOException e) {

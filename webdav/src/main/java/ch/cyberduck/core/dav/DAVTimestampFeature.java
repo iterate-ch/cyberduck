@@ -21,13 +21,16 @@ import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.http.HttpHeaders;
+import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import com.github.sardine.DavResource;
@@ -48,8 +51,8 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
         SardineUtil.createQNameWithCustomNamespace("lastmodified");
 
     /**
-     * Contains the server side timestamp at the time we have set our custom lastmodified. If this value differs
-     * from the modification date on the server the resource has been modified by another user or application.
+     * Contains the server side timestamp at the time we have set our custom lastmodified. If this value differs from
+     * the modification date on the server the resource has been modified by another user or application.
      */
     public static final QName LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE =
         SardineUtil.createQNameWithCustomNamespace("lastmodified_server");
@@ -59,12 +62,18 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
+    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
-            final List<DavResource> resources = session.getClient().propfind(new DAVPathEncoder().encode(file), 1,
+            final List<DavResource> resources = session.getClient().propfind(new DAVPathEncoder().encode(file), 0,
                 Collections.singleton(SardineUtil.createQNameWithDefaultNamespace("getlastmodified")));
             for(DavResource resource : resources) {
-                session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, modified));
+                if(status.getLockId() != null) {
+                    session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getTimestamp()), Collections.emptyList(),
+                        Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
+                }
+                else {
+                    session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getTimestamp()), Collections.emptyList());
+                }
                 break;
             }
         }
@@ -76,14 +85,16 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
         }
     }
 
-    protected Map<QName, String> getCustomProperties(final DavResource resource, final Long modified) {
-        final HashMap<QName, String> props = new HashMap<>();
+    protected List<Element> getCustomProperties(final DavResource resource, final Long modified) {
+        final List<Element> props = new ArrayList<>();
         if(resource.getModified() != null) {
-            props.put(LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE,
-                new RFC1123DateFormatter().format(resource.getModified(), TimeZone.getTimeZone("UTC")));
+            Element element = SardineUtil.createElement(LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE);
+            element.setTextContent(new RFC1123DateFormatter().format(resource.getModified(), TimeZone.getTimeZone("UTC")));
+            props.add(element);
         }
-        props.put(LAST_MODIFIED_CUSTOM_NAMESPACE,
-            new RFC1123DateFormatter().format(modified, TimeZone.getTimeZone("UTC")));
+        Element element = SardineUtil.createElement(LAST_MODIFIED_CUSTOM_NAMESPACE);
+        element.setTextContent(new RFC1123DateFormatter().format(modified, TimeZone.getTimeZone("UTC")));
+        props.add(element);
         return props;
     }
 }

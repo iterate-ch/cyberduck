@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 public class VaultRegistryTimestampFeature implements Timestamp {
@@ -35,8 +36,8 @@ public class VaultRegistryTimestampFeature implements Timestamp {
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
-        registry.find(session, file).getFeature(session, Timestamp.class, proxy).setTimestamp(file, modified);
+    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
+        registry.find(session, file).getFeature(session, Timestamp.class, proxy).setTimestamp(file, status);
     }
 
     @Override
