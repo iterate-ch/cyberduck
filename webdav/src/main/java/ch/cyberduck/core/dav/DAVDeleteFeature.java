@@ -26,16 +26,14 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.github.sardine.impl.SardineException;
-import com.github.sardine.impl.handler.VoidResponseHandler;
 
 public class DAVDeleteFeature implements Delete {
 
@@ -62,12 +60,14 @@ public class DAVDeleteFeature implements Delete {
             deleted.add(file.getKey());
             callback.delete(file.getKey());
             try {
-                HttpDelete delete = new HttpDelete(new DAVPathEncoder().encode(file.getKey()));
                 if(file.getValue().getLockId() != null) {
                     // Indicate that the client has knowledge of that state token
-                    delete.addHeader(new BasicHeader(HttpHeaders.IF, String.format("(<%s>)", file.getValue().getLockId())));
+                    session.getClient().delete(new DAVPathEncoder().encode(file.getKey()),
+                        Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", file.getValue().getLockId())));
                 }
-                session.getClient().execute(delete, new VoidResponseHandler());
+                else {
+                    session.getClient().delete(new DAVPathEncoder().encode(file.getKey()));
+                }
             }
             catch(SardineException e) {
                 throw new DAVExceptionMappingService().map("Cannot delete {0}", e, file.getKey());
