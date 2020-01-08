@@ -147,13 +147,13 @@ public class ReadWriteMetadataWorkerTest {
                             // Test metadata against expected.
                             switch(file.getName()) {
                                 case "a":
-                                    assertEquals(expectedMetadataA, status);
+                                    assertEquals(expectedMetadataA, status.getMetadata());
                                     break;
                                 case "b":
-                                    assertEquals(expectedMetadataB, status);
+                                    assertEquals(expectedMetadataB, status.getMetadata());
                                     break;
                                 case "c":
-                                    assertEquals(expectedMetadataC, status);
+                                    assertEquals(expectedMetadataC, status.getMetadata());
                                     break;
                                 default:
                                     fail();
