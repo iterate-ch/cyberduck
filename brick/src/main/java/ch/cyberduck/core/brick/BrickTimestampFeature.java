@@ -18,12 +18,15 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
 
+import org.w3c.dom.Element;
+
 import javax.xml.namespace.QName;
-import java.util.Collections;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimeZone;
 
 import com.github.sardine.DavResource;
+import com.github.sardine.util.SardineUtil;
 
 public class BrickTimestampFeature extends DAVTimestampFeature {
 
@@ -37,7 +40,11 @@ public class BrickTimestampFeature extends DAVTimestampFeature {
         super(session);
     }
 
-    protected Map<QName, String> getCustomProperties(final DavResource resource, final Long modified) {
-        return Collections.singletonMap(LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE, new RFC1123DateFormatter().format(modified, TimeZone.getTimeZone("GMT")));
+    protected List<Element> getCustomProperties(final DavResource resource, final Long modified) {
+        final List<Element> props = new ArrayList<>();
+        final Element element = SardineUtil.createElement(LAST_MODIFIED_WIN32_CUSTOM_NAMESPACE);
+        element.setTextContent(new RFC1123DateFormatter().format(modified, TimeZone.getTimeZone("GMT")));
+        props.add(element);
+        return props;
     }
 }

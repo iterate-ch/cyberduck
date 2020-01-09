@@ -21,6 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.GraphExceptionMappingService;
 import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.nuxeo.onedrive.client.OneDriveAPIException;
 import org.nuxeo.onedrive.client.OneDriveItem;
@@ -39,10 +40,10 @@ public class GraphTimestampFeature extends DefaultTimestampFeature {
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
+    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         final OneDrivePatchOperation patchOperation = new OneDrivePatchOperation();
         final FileSystemInfoFacet info = new FileSystemInfoFacet();
-        info.setLastModifiedDateTime(Instant.ofEpochMilli(modified).atOffset(ZoneOffset.UTC));
+        info.setLastModifiedDateTime(Instant.ofEpochMilli(status.getTimestamp()).atOffset(ZoneOffset.UTC));
         patchOperation.facet("fileSystemInfo", info);
         final OneDriveItem item = session.toItem(file);
         try {

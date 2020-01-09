@@ -173,7 +173,7 @@ public abstract class AbstractCopyFilter implements TransferPathFilter {
                     listener.message(MessageFormat.format(LocaleFactory.localizedString("Changing timestamp of {0} to {1}", "Status"),
                         target.getName(), UserDateFormatterFactory.get().getShortFormat(status.getTimestamp())));
                     try {
-                        timestamp.setTimestamp(target, status.getTimestamp());
+                        timestamp.setTimestamp(target, status);
                     }
                     catch(BackgroundException e) {
                         // Ignore

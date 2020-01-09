@@ -25,6 +25,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -86,28 +87,28 @@ public class SwiftMetadataFeature implements Headers {
 
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
                 for(Map.Entry<String, String> entry : file.attributes().getMetadata().entrySet()) {
                     // Choose metadata values to remove
-                    if(!metadata.containsKey(entry.getKey())) {
+                    if(!status.getMetadata().containsKey(entry.getKey())) {
                         log.debug(String.format("Remove metadata with key %s", entry.getKey()));
-                        metadata.put(entry.getKey(), StringUtils.EMPTY);
+                        status.getMetadata().put(entry.getKey(), StringUtils.EMPTY);
                     }
                 }
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Write metadata %s for file %s", metadata, file));
+                    log.debug(String.format("Write metadata %s for file %s", status, file));
                 }
                 session.getClient().updateContainerMetadata(regionService.lookup(file),
-                        containerService.getContainer(file).getName(), metadata);
+                    containerService.getContainer(file).getName(), status.getMetadata());
             }
             else {
                 if(log.isDebugEnabled()) {
-                    log.debug(String.format("Write metadata %s for file %s", metadata, file));
+                    log.debug(String.format("Write metadata %s for file %s", status, file));
                 }
                 session.getClient().updateObjectMetadata(regionService.lookup(file),
-                        containerService.getContainer(file).getName(), containerService.getKey(file), metadata);
+                    containerService.getContainer(file).getName(), containerService.getKey(file), status.getMetadata());
             }
         }
         catch(GenericException e) {

@@ -8,6 +8,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -51,7 +52,7 @@ public class WriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) {
+                        public void setMetadata(final Path file, final TransferStatus status) {
                             fail();
                         }
                     };
@@ -95,7 +96,7 @@ public class WriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) {
+                        public void setMetadata(final Path file, final TransferStatus status) {
                             fail();
                         }
                     };
@@ -142,11 +143,11 @@ public class WriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> meta) {
-                            assertTrue(meta.containsKey("nullified"));
-                            assertTrue(meta.containsKey("key"));
-                            assertEquals("v2", meta.get("key"));
-                            assertEquals("hash", meta.get("nullified"));
+                        public void setMetadata(final Path file, final TransferStatus status) {
+                            assertTrue(status.getMetadata().containsKey("nullified"));
+                            assertTrue(status.getMetadata().containsKey("key"));
+                            assertEquals("v2", status.getMetadata().get("key"));
+                            assertEquals("hash", status.getMetadata().get("nullified"));
                             call.set(true);
                         }
                     };
@@ -193,11 +194,11 @@ public class WriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> meta) {
-                            assertTrue(meta.containsKey("k1"));
-                            assertTrue(meta.containsKey("k2"));
-                            assertEquals("v1", meta.get("k1"));
-                            assertEquals("v2", meta.get("k2"));
+                        public void setMetadata(final Path file, final TransferStatus status) {
+                            assertTrue(status.getMetadata().containsKey("k1"));
+                            assertTrue(status.getMetadata().containsKey("k2"));
+                            assertEquals("v1", status.getMetadata().get("k1"));
+                            assertEquals("v2", status.getMetadata().get("k2"));
                             call.set(true);
                         }
                     };
@@ -260,22 +261,22 @@ public class WriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) {
-                            assertTrue(metadata.containsKey("equal"));
-                            assertTrue(metadata.containsKey("different"));
-                            assertEquals("equal-changed", metadata.get("equal"));
+                        public void setMetadata(final Path file, final TransferStatus status) {
+                            assertTrue(status.getMetadata().containsKey("equal"));
+                            assertTrue(status.getMetadata().containsKey("different"));
+                            assertEquals("equal-changed", status.getMetadata().get("equal"));
 
                             switch(file.getName()) {
                                 case "a":
-                                    assertTrue(metadata.containsKey("unique"));
+                                    assertTrue(status.getMetadata().containsKey("unique"));
 
-                                    assertEquals("diff1", metadata.get("different"));
-                                    assertEquals("unique", metadata.get("unique"));
+                                    assertEquals("diff1", status.getMetadata().get("different"));
+                                    assertEquals("unique", status.getMetadata().get("unique"));
                                     break;
                                 case "b":
-                                    assertFalse(metadata.containsKey("unique"));
+                                    assertFalse(status.getMetadata().containsKey("unique"));
 
-                                    assertEquals("diff2", metadata.get("different"));
+                                    assertEquals("diff2", status.getMetadata().get("different"));
                                     break;
                                 default:
                                     fail();

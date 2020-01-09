@@ -18,6 +18,7 @@ package ch.cyberduck.core.shared;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Collections;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class DisabledHeadersFeature implements Headers {
     }
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) {
+    public void setMetadata(final Path file, final TransferStatus status) {
         //
     }
 }

@@ -18,9 +18,15 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 public interface Timestamp {
-    void setTimestamp(Path file, Long modified) throws BackgroundException;
+
+    default void setTimestamp(Path file, Long modified) throws BackgroundException {
+        this.setTimestamp(file, new TransferStatus().withTimestamp(modified));
+    }
+
+    void setTimestamp(Path file, TransferStatus status) throws BackgroundException;
 
     Long getDefault(Local file);
 }

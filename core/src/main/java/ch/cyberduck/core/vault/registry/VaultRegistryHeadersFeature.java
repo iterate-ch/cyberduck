@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultRegistry;
 
 import java.util.Map;
@@ -47,8 +48,8 @@ public class VaultRegistryHeadersFeature implements Headers {
     }
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
-        registry.find(session, file).getFeature(session, Headers.class, proxy).setMetadata(file, metadata);
+    public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
+        registry.find(session, file).getFeature(session, Headers.class, proxy).setMetadata(file, status);
     }
 
     @Override

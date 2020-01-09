@@ -26,7 +26,10 @@ import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.http.HttpHeaders;
+
 import java.io.IOException;
+import java.util.Collections;
 
 import com.github.sardine.impl.SardineException;
 
@@ -42,7 +45,14 @@ public class DAVCopyFeature implements Copy {
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
-            session.getClient().copy(new DAVPathEncoder().encode(source), target);
+            if(status.getLockId() != null) {
+                // Indicate that the client has knowledge of that state token
+                session.getClient().copy(new DAVPathEncoder().encode(source), target, true,
+                    Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
+            }
+            else {
+                session.getClient().copy(new DAVPathEncoder().encode(source), target, true);
+            }
             return copy;
         }
         catch(SardineException e) {

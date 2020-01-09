@@ -104,8 +104,8 @@ public class OverwriteFilterTest {
                     return (T) new DefaultTimestampFeature() {
 
                         @Override
-                        public void setTimestamp(final Path file, final Long modified) {
-                            assertEquals(time, modified);
+                        public void setTimestamp(final Path file, final TransferStatus status) {
+                            assertEquals(time, status.getTimestamp());
                             timestampWrite[0] = true;
                         }
                     };

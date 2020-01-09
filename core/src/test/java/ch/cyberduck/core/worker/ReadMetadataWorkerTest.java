@@ -6,6 +6,7 @@ import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -46,7 +47,7 @@ public class ReadMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) {
+                        public void setMetadata(final Path file, final TransferStatus status) {
                             throw new UnsupportedOperationException();
                         }
                     };
@@ -96,7 +97,7 @@ public class ReadMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) {
+                        public void setMetadata(final Path file, final TransferStatus status) {
                             throw new UnsupportedOperationException();
                         }
                     };
@@ -158,7 +159,7 @@ public class ReadMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) {
+                        public void setMetadata(final Path file, final TransferStatus status) {
                             throw new UnsupportedOperationException();
                         }
                     };

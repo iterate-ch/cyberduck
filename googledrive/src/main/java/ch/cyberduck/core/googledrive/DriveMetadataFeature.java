@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -60,11 +61,11 @@ public class DriveMetadataFeature implements Metadata {
     }
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final String fileid = this.fileid.getFileid(file, new DisabledListProgressListener());
             final File body = new File();
-            body.setProperties(metadata);
+            body.setProperties(status.getMetadata());
             session.getClient().files().update(fileid, body).setFields("properties").
                 setSupportsTeamDrives(PreferencesFactory.get().getBoolean("googledrive.teamdrive.enable")).execute();
         }

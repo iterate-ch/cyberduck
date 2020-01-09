@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 
@@ -35,12 +36,12 @@ public class SFTPTimestampFeature extends DefaultTimestampFeature implements Tim
     }
 
     @Override
-    public void setTimestamp(final Path file, final Long modified) throws BackgroundException {
+    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
             // All times are represented as seconds from Jan 1, 1970 in UTC.
             final FileAttributes attrs = new FileAttributes.Builder().withAtimeMtime(
-                    System.currentTimeMillis() / 1000, modified / 1000
+                System.currentTimeMillis() / 1000, status.getTimestamp() / 1000
             ).build();
             session.sftp().setAttributes(file.getAbsolute(), attrs);
         }

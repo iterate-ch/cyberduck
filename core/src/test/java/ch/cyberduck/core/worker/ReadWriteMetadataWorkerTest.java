@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -142,17 +143,17 @@ public class ReadWriteMetadataWorkerTest {
                         }
 
                         @Override
-                        public void setMetadata(final Path file, final Map<String, String> metadata) {
+                        public void setMetadata(final Path file, final TransferStatus status) {
                             // Test metadata against expected.
                             switch(file.getName()) {
                                 case "a":
-                                    assertEquals(expectedMetadataA, metadata);
+                                    assertEquals(expectedMetadataA, status.getMetadata());
                                     break;
                                 case "b":
-                                    assertEquals(expectedMetadataB, metadata);
+                                    assertEquals(expectedMetadataB, status.getMetadata());
                                     break;
                                 case "c":
-                                    assertEquals(expectedMetadataC, metadata);
+                                    assertEquals(expectedMetadataC, status.getMetadata());
                                     break;
                                 default:
                                     fail();

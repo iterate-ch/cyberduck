@@ -25,6 +25,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -48,7 +49,7 @@ public class AzureMetadataFeature implements Headers {
     private final OperationContext context;
 
     private final PathContainerService containerService
-            = new AzurePathContainerService();
+        = new AzurePathContainerService();
 
     public AzureMetadataFeature(final AzureSession session, final OperationContext context) {
         this.session = session;
@@ -70,7 +71,7 @@ public class AzureMetadataFeature implements Headers {
             }
             else {
                 final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlobReferenceFromServer(containerService.getKey(file));
+                    .getBlobReferenceFromServer(containerService.getKey(file));
                 // Populates the blob properties and metadata
                 blob.downloadAttributes(null, null, context);
                 final Map<String, String> metadata = new HashMap<String, String>(blob.getMetadata());
@@ -93,22 +94,22 @@ public class AzureMetadataFeature implements Headers {
     }
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
+    public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final BlobRequestOptions options = new BlobRequestOptions();
             if(containerService.isContainer(file)) {
                 final CloudBlobContainer container = session.getClient().getContainerReference(containerService.getContainer(file).getName());
-                container.setMetadata(new HashMap<String, String>(metadata));
+                container.setMetadata(new HashMap<>(status.getMetadata()));
                 container.uploadMetadata(AccessCondition.generateEmptyCondition(), options, context);
             }
             else {
                 final CloudBlob blob = session.getClient().getContainerReference(containerService.getContainer(file).getName())
-                        .getBlobReferenceFromServer(containerService.getKey(file));
+                    .getBlobReferenceFromServer(containerService.getKey(file));
                 // Populates the blob properties and metadata
                 blob.downloadAttributes();
                 // Replace metadata
-                final HashMap<String, String> pruned = new HashMap<String, String>();
-                for(Map.Entry<String, String> m : metadata.entrySet()) {
+                final HashMap<String, String> pruned = new HashMap<>();
+                for(Map.Entry<String, String> m : status.getMetadata().entrySet()) {
                     final BlobProperties properties = blob.getProperties();
                     if(HttpHeaders.CACHE_CONTROL.equalsIgnoreCase(m.getKey())) {
                         // Update properties

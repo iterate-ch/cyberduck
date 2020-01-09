@@ -21,6 +21,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Headers;
 import ch.cyberduck.core.features.Vault;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
 
@@ -48,8 +49,8 @@ public class CryptoHeadersFeature implements Headers {
     }
 
     @Override
-    public void setMetadata(final Path file, final Map<String, String> metadata) throws BackgroundException {
-        delegate.setMetadata(vault.encrypt(session, file), metadata);
+    public void setMetadata(final Path file, final TransferStatus status) throws BackgroundException {
+        delegate.setMetadata(vault.encrypt(session, file), status);
     }
 
     @Override
