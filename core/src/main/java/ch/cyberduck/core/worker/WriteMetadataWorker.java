@@ -27,6 +27,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Metadata;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
@@ -85,6 +86,10 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         return true;
     }
 
+    protected String getLockId(final Path file) {
+        return null;
+    }
+
     protected void write(final Session<?> session, final Metadata feature, final Path file) throws BackgroundException {
         if(this.isCanceled()) {
             throw new ConnectionCanceledException();
@@ -105,7 +110,7 @@ public class WriteMetadataWorker extends Worker<Boolean> {
         if(!update.equals(file.attributes().getMetadata())) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Writing metadata of {0}", "Status"),
                 file.getName()));
-            feature.setMetadata(file, update);
+            feature.setMetadata(file, new TransferStatus().withMetadata(update).withLockId(this.getLockId(file)));
             file.attributes().setMetadata(metadata);
         }
         if(file.isDirectory()) {
