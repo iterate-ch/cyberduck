@@ -41,6 +41,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeRequestUrl;
@@ -57,6 +60,7 @@ import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.common.util.concurrent.Uninterruptibles;
 
 public class OAuth2AuthorizationService {
     private static final Logger log = Logger.getLogger(OAuth2AuthorizationService.class);
@@ -156,7 +160,9 @@ public class OAuth2AuthorizationService {
         if(!browser.open(url)) {
             log.warn(String.format("Failed to launch web browser for %s", url));
         }
+        final AtomicReference<String> authenticationCode = new AtomicReference<>();
         if(StringUtils.contains(redirectUri, CYBERDUCK_REDIRECT_URI)) {
+            final CountDownLatch signal = new CountDownLatch(1);
             final OAuth2TokenListenerRegistry registry = OAuth2TokenListenerRegistry.get();
             registry.register(state, new OAuth2TokenListener() {
                 @Override
@@ -164,25 +170,34 @@ public class OAuth2AuthorizationService {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Callback with code %s", code));
                     }
-                    prompt.close(code);
+                    credentials.setSaved(PreferencesFactory.get().getBoolean("connection.login.keychain"));
+                    authenticationCode.set(code);
+                    signal.countDown();
                 }
             });
+            while(!Uninterruptibles.awaitUninterruptibly(signal, 500, TimeUnit.MILLISECONDS)) {
+                cancel.verify();
+            }
         }
-        final Credentials input = prompt.prompt(bookmark,
-            LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
-            LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
-            new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).oauth(true)
-                .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
-        );
+        else {
+            final Credentials input = prompt.prompt(bookmark,
+                LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
+                LocaleFactory.localizedString("Paste the authentication code from your web browser", "Credentials"),
+                new LoginOptions(bookmark.getProtocol()).keychain(true).user(false).oauth(true)
+                    .passwordPlaceholder(LocaleFactory.localizedString("Authentication Code", "Credentials"))
+            );
+            credentials.setSaved(input.isSaved());
+            authenticationCode.set(input.getPassword());
+        }
         try {
-            if(StringUtils.isBlank(input.getPassword())) {
+            if(StringUtils.isBlank(authenticationCode.get())) {
                 throw new LoginCanceledException();
             }
             if(log.isDebugEnabled()) {
-                log.debug(String.format("Request tokens for authentication code %s", input.getPassword()));
+                log.debug(String.format("Request tokens for authentication code %s", authenticationCode.get()));
             }
             // Swap the given authorization token for access/refresh tokens
-            final TokenResponse response = flow.newTokenRequest(input.getPassword())
+            final TokenResponse response = flow.newTokenRequest(authenticationCode.get())
                 .setRedirectUri(redirectUri).setScopes(scopes.isEmpty() ? null : scopes)
                 .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
             // Save access key and refresh key
@@ -191,7 +206,6 @@ public class OAuth2AuthorizationService {
                 null == response.getExpiresInSeconds() ? System.currentTimeMillis() :
                     System.currentTimeMillis() + response.getExpiresInSeconds() * 1000);
             credentials.setOauth(tokens);
-            credentials.setSaved(input.isSaved());
             return tokens;
         }
         catch(TokenResponseException e) {
