@@ -257,7 +257,7 @@
                             <button id="40">
                                 <rect key="frame" x="10" y="130" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Spara arbetsyta" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
+                                <buttonCell key="cell" type="check" title="Återställ anslutningarna vid start" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="41">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -315,7 +315,7 @@
                             <button id="53">
                                 <rect key="frame" x="10" y="157" width="449" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Använd nyckelring" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
+                                <buttonCell key="cell" type="check" title="Spara lösenord" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="54">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -331,7 +331,7 @@
                             <textField verticalHuggingPriority="750" id="57">
                                 <rect key="frame" x="9" y="123" width="449" height="27"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Leta efter lösenord i nyckelring. Spara automatiskt lösenord i nyckelring vid lyckad inloggning." id="58">
+                                <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Leta efter lösenord i nyckelring. Spara lösenord automatiskt vid lyckad inloggning." id="58">
                                     <font key="font" metaFont="smallSystem"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1359,7 +1359,7 @@
                         </subviews>
                     </view>
                 </box>
-                <box title="Proxy" id="288">
+                <box title="Proxyserver" id="288">
                     <rect key="frame" x="17" y="16" width="473" height="94"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="nIK-94-OGK">
@@ -1497,7 +1497,7 @@
                             <button verticalHuggingPriority="750" id="319">
                                 <rect key="frame" x="136" y="38" width="195" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
-                                <buttonCell key="cell" type="push" title="Leta efter uppdatering nu" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
+                                <buttonCell key="cell" type="push" title="Sök efter uppdatering" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1533,7 +1533,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="183"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Begränsa överföringar" id="328">
+                <box title="Bandbreddsbegränsning" id="328">
                     <rect key="frame" x="17" y="16" width="473" height="147"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="9Em-Vf-Pix">
@@ -1547,7 +1547,7 @@
                             <textField verticalHuggingPriority="750" id="330">
                                 <rect key="frame" x="9" y="104" width="449" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Hämta filer" id="331">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Nedladdning" id="331">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -1560,7 +1560,7 @@
                             <textField verticalHuggingPriority="750" id="333">
                                 <rect key="frame" x="9" y="41" width="451" height="14"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Skicka filer" id="334">
+                                <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="Uppladdning" id="334">
                                     <font key="font" metaFont="smallSystemBold"/>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
