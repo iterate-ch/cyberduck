@@ -41,4 +41,11 @@ public class UserAccountWrapper {
         return account.getUserRoles().getItems().stream().anyMatch(r -> StringUtils.equals(r.getName(), role.getName()));
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("UserAccountWrapper{");
+        sb.append("account=").append(account);
+        sb.append('}');
+        return sb.toString();
+    }
 }

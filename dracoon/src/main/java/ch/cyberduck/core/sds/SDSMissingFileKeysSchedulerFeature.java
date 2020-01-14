@@ -25,7 +25,6 @@ import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.api.UserApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileFileKeys;
 import ch.cyberduck.core.sds.io.swagger.client.model.MissingKeysResponse;
 import ch.cyberduck.core.sds.io.swagger.client.model.UserFileKeySetBatchRequest;
@@ -42,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -68,9 +68,14 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
     @Override
     public List<UserFileKeySetRequest> operate(final Session<SDSApiClient> session, final PasswordCallback callback, final Path file) throws BackgroundException {
         try {
+            final UserAccountWrapper account = ((SDSSession) session).userAccount();
+            if(!account.isEncryptionEnabled()) {
+                log.warn(String.format("No key pair found in user account %s", account));
+                return Collections.emptyList();
+            }
             final List<UserFileKeySetRequest> processed = new ArrayList<>();
             final UserPrivateKey privateKey = new UserPrivateKey();
-            final UserKeyPairContainer keyPairContainer = new UserApi(session.getClient()).getUserKeyPair(StringUtils.EMPTY);
+            final UserKeyPairContainer keyPairContainer = ((SDSSession) session).keyPair();
             privateKey.setPrivateKey(keyPairContainer.getPrivateKeyContainer().getPrivateKey());
             privateKey.setVersion(keyPairContainer.getPrivateKeyContainer().getVersion());
             final UserKeyPair userKeyPair = new UserKeyPair();
@@ -112,12 +117,10 @@ public class SDSMissingFileKeysSchedulerFeature extends AbstractSchedulerFeature
             while(!request.getItems().isEmpty());
             return processed;
         }
-        catch(
-            ApiException e) {
+        catch(ApiException e) {
             throw new SDSExceptionMappingService().map(e);
         }
-        catch(
-            CryptoException e) {
+        catch(CryptoException e) {
             throw new TripleCryptExceptionMappingService().map(e);
         }
     }
