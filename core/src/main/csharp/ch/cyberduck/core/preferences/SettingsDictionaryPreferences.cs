@@ -150,7 +150,7 @@ namespace Ch.Cyberduck.Core.Preferences
             RollingFileAppender appender = new RollingFileAppender(new PatternLayout(@"%d [%t] %-5p %c - %m%n"),
                 fileName, true);
             appender.setEncoding("UTF-8");
-            appender.setMaxFileSize("10MB");
+            appender.setMaxFileSize(Level.DEBUG.ToString().Equals(level) ? "250MB" : "10MB");
             appender.setMaxBackupIndex(0);
             root.addAppender(appender);
             if (Debugger.IsAttached)
