@@ -44,4 +44,10 @@ public class OAuth2TokenListenerRegistry {
         listeners.remove(state);
         listener.callback(token);
     }
+
+    public void shutdown() {
+        for(OAuth2TokenListener listener : listeners.values()) {
+            listener.callback(null);
+        }
+    }
 }

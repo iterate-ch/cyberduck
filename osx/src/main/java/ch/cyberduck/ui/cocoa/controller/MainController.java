@@ -1224,6 +1224,7 @@ public class MainController extends BundleController implements NSApplication.De
             log.debug(String.format("Application will quit with notification %s", notification));
         }
         this.invalidate();
+        OAuth2TokenListenerRegistry.get().shutdown();
         // Clear temporary files
         TemporaryFileServiceFactory.get().shutdown();
         //Terminating rendezvous discovery
