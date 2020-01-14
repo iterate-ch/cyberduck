@@ -234,7 +234,7 @@ CA
                             <menuItem title="Internetadresse öffnen" id="256">
                                 <menu key="submenu" title="Internetadresse öffnen" id="257"/>
                             </menuItem>
-                            <menuItem title="Share…" id="Dp0-uw-cX3">
+                            <menuItem title="Teilen…" id="Dp0-uw-cX3">
                                 <connections>
                                     <action selector="shareFileButtonClicked:" target="-1" id="div-9S-FkG"/>
                                 </connections>
