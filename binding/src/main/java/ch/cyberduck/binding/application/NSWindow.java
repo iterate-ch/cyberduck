@@ -57,7 +57,8 @@ public abstract class NSWindow extends NSResponder {
      */
     public static final int NSTexturedBackgroundWindowMask = 1 << 8;
     /**
-     * Specifies a window that ignores the userSpaceScaleFactor of the NSScreen on which it is created.  Currently restricted to borderless windows (NSBorderlessWindowMask)<br>
+     * Specifies a window that ignores the userSpaceScaleFactor of the NSScreen on which it is created.  Currently
+     * restricted to borderless windows (NSBorderlessWindowMask)<br>
      * <i>native declaration : line 42</i>
      */
     public static final int NSUnscaledWindowMask = 1 << 11;
@@ -113,32 +114,39 @@ public abstract class NSWindow extends NSResponder {
     /// <i>native declaration : line 80</i>
     public static final int NSWindowCollectionBehaviorMoveToActiveSpace = 1 << 1;
     /**
-     * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its window level<br>
-     * participates in spaces, expos\u00e9.  Default behavior if windowLevel == NSNormalWindowLevel<br>
+     * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or
+     * NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its
+     * window level<br> participates in spaces, expos\u00e9.  Default behavior if windowLevel ==
+     * NSNormalWindowLevel<br>
      * <i>native declaration : line 86</i>
      */
     public static final int NSWindowCollectionBehaviorManaged = 1 << 2;
     /**
-     * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its window level<br>
-     * floats in spaces, hidden by expos\u00e9.  Default behavior if windowLevel != NSNormalWindowLevel<br>
+     * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or
+     * NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its
+     * window level<br> floats in spaces, hidden by expos\u00e9.  Default behavior if windowLevel !=
+     * NSNormalWindowLevel<br>
      * <i>native declaration : line 87</i>
      */
     public static final int NSWindowCollectionBehaviorTransient = 1 << 3;
     /**
-     * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its window level<br>
-     * unaffected by expos\u00e9.  Stays visible and stationary, like desktop window<br>
+     * You may specify at most one of NSWindowCollectionBehaviorManaged, NSWindowCollectionBehaviorTransient, or
+     * NSWindowCollectionBehaviorStationary.  If unspecified, the window gets the default behavior determined by its
+     * window level<br> unaffected by expos\u00e9.  Stays visible and stationary, like desktop window<br>
      * <i>native declaration : line 88</i>
      */
     public static final int NSWindowCollectionBehaviorStationary = 1 << 4;
     /**
-     * You may specify at most one of NSWindowCollectionBehaviorParticipatesInCycle or NSWindowCollectionBehaviorIgnoresCycle.  If unspecified, the window gets the default behavior determined by its window level<br>
-     * default behavior if windowLevel == NSNormalWindowLevel<br>
+     * You may specify at most one of NSWindowCollectionBehaviorParticipatesInCycle or
+     * NSWindowCollectionBehaviorIgnoresCycle.  If unspecified, the window gets the default behavior determined by its
+     * window level<br> default behavior if windowLevel == NSNormalWindowLevel<br>
      * <i>native declaration : line 93</i>
      */
     public static final int NSWindowCollectionBehaviorParticipatesInCycle = 1 << 5;
     /**
-     * You may specify at most one of NSWindowCollectionBehaviorParticipatesInCycle or NSWindowCollectionBehaviorIgnoresCycle.  If unspecified, the window gets the default behavior determined by its window level<br>
-     * default behavior if windowLevel != NSNormalWindowLevel<br>
+     * You may specify at most one of NSWindowCollectionBehaviorParticipatesInCycle or
+     * NSWindowCollectionBehaviorIgnoresCycle.  If unspecified, the window gets the default behavior determined by its
+     * window level<br> default behavior if windowLevel != NSNormalWindowLevel<br>
      * <i>native declaration : line 94</i>
      */
     public static final int NSWindowCollectionBehaviorIgnoresCycle = 1 << 6;
@@ -238,19 +246,19 @@ public abstract class NSWindow extends NSResponder {
 
     public static void setAllowsAutomaticWindowTabbing(boolean automatic) {
         if(Rococoa.cast(CLASS, NSObject.class).respondsToSelector(
-                Foundation.selector("setAllowsAutomaticWindowTabbing:"))) {
+            Foundation.selector("setAllowsAutomaticWindowTabbing:"))) {
             CLASS.setAllowsAutomaticWindowTabbing(automatic);
         }
     }
 
     public interface Delegate {
         /**
-         * Tells the delegate that the user has attempted to close a window or the window has
-         * received a performClose: message. This method is optional.
+         * Tells the delegate that the user has attempted to close a window or the window has received a performClose:
+         * message. This method is optional.
          * <p/>
-         * This method may not always be called during window closing. Specifically, this method
-         * is not called when a user quits an application. You can find additional information on
-         * application termination in Graceful Application Termination.
+         * This method may not always be called during window closing. Specifically, this method is not called when a
+         * user quits an application. You can find additional information on application termination in Graceful
+         * Application Termination.
          *
          * @param sender
          * @return
@@ -258,8 +266,8 @@ public abstract class NSWindow extends NSResponder {
         boolean windowShouldClose(NSWindow sender);
 
         /**
-         * Tells the delegate that the user has attempted to close a window or the window has received
-         * a performClose: message. This method is optional.
+         * Tells the delegate that the user has attempted to close a window or the window has received a performClose:
+         * message. This method is optional.
          * <p/>
          * You can retrieve the NSWindow object in question by sending object to notification.
          *
@@ -342,10 +350,15 @@ public abstract class NSWindow extends NSResponder {
     public abstract void setTitle(String aString);
 
     /**
-     * setRepresentedURL:<br>
-     * If url is not nil and its path is not empty, the window will show a document icon in the titlebar.  <br>
-     * If the url represents a filename or other resource with a known icon, that icon will be used as the document icon.  Otherwise the default document icon will be used.  The icon can be customized using [[NSWindow standardWindowButton:NSWindowDocumentIconButton] setImage:customImage].  If url is not nil and its path is not empty, the window will have a pop-up menu which can be shown via command-click on the area containing the document icon and title.  By default, this menu will display the path components of the url.  The presence and contents of this menu can be controlled by the delegate method window:shouldPopUpDocumentPathMenu:If the url is nil or has an empty path, the window will not show a document icon and will not have a pop-up menu available via command-click.<br>
-     * Original signature : <code>void setRepresentedURL(NSURL*)</code><br>
+     * setRepresentedURL:<br> If url is not nil and its path is not empty, the window will show a document icon in the
+     * titlebar.  <br> If the url represents a filename or other resource with a known icon, that icon will be used as
+     * the document icon.  Otherwise the default document icon will be used.  The icon can be customized using
+     * [[NSWindow standardWindowButton:NSWindowDocumentIconButton] setImage:customImage].  If url is not nil and its
+     * path is not empty, the window will have a pop-up menu which can be shown via command-click on the area containing
+     * the document icon and title.  By default, this menu will display the path components of the url.  The presence
+     * and contents of this menu can be controlled by the delegate method window:shouldPopUpDocumentPathMenu:If the url
+     * is nil or has an empty path, the window will not show a document icon and will not have a pop-up menu available
+     * via command-click.<br> Original signature : <code>void setRepresentedURL(NSURL*)</code><br>
      * <i>native declaration : :237</i>
      */
     public abstract void setRepresentedURL(NSURL url);
@@ -449,22 +462,22 @@ public abstract class NSWindow extends NSResponder {
      */
     /**
      * <i>native declaration : :257</i><br>
-     * Conversion Error : /// Original signature : <code>void setFrameOrigin(null)</code><br>
-     * - (void)setFrameOrigin:(null)aPoint; (Argument aPoint cannot be converted)
+     * Conversion Error : /// Original signature : <code>void setFrameOrigin(null)</code><br> -
+     * (void)setFrameOrigin:(null)aPoint; (Argument aPoint cannot be converted)
      */
     public abstract void setFrameOrigin(NSPoint aPoint);
 
     /**
      * <i>native declaration : :258</i><br>
-     * Conversion Error : /// Original signature : <code>void setFrameTopLeftPoint(null)</code><br>
-     * - (void)setFrameTopLeftPoint:(null)aPoint; (Argument aPoint cannot be converted)
+     * Conversion Error : /// Original signature : <code>void setFrameTopLeftPoint(null)</code><br> -
+     * (void)setFrameTopLeftPoint:(null)aPoint; (Argument aPoint cannot be converted)
      */
     public abstract void setFrameTopLeftPoint(NSPoint aPoint);
 
     /**
      * <i>native declaration : :259</i><br>
-     * Conversion Error : /// Original signature : <code>cascadeTopLeftFromPoint(null)</code><br>
-     * - (null)cascadeTopLeftFromPoint:(null)topLeftPoint; (Argument topLeftPoint cannot be converted)
+     * Conversion Error : /// Original signature : <code>cascadeTopLeftFromPoint(null)</code><br> -
+     * (null)cascadeTopLeftFromPoint:(null)topLeftPoint; (Argument topLeftPoint cannot be converted)
      */
     public abstract NSPoint cascadeTopLeftFromPoint(NSPoint topLeftPoint);
 
@@ -484,8 +497,8 @@ public abstract class NSWindow extends NSResponder {
      * Conversion Error : NSRect
      */
     /**
-     * show/hide resize corner (does not affect whether window is resizable)<br>
-     * Original signature : <code>void setShowsResizeIndicator(BOOL)</code><br>
+     * show/hide resize corner (does not affect whether window is resizable)<br> Original signature : <code>void
+     * setShowsResizeIndicator(BOOL)</code><br>
      * <i>native declaration : :271</i>
      */
     public abstract void setShowsResizeIndicator(boolean show);
@@ -749,8 +762,8 @@ public abstract class NSWindow extends NSResponder {
     public abstract boolean hidesOnDeactivate();
 
     /**
-     * indicate whether a window can be hidden during -[NSApplication hide:].  Default is YES<br>
-     * Original signature : <code>void setCanHide(BOOL)</code><br>
+     * indicate whether a window can be hidden during -[NSApplication hide:].  Default is YES<br> Original signature :
+     * <code>void setCanHide(BOOL)</code><br>
      * <i>native declaration : :339</i>
      */
     public abstract void setCanHide(boolean flag);
@@ -1126,8 +1139,13 @@ public abstract class NSWindow extends NSResponder {
     public abstract boolean isOpaque();
 
     /**
-     * -setSharingType: specifies whether the window content can be read and/or written from another process.  The default sharing type is NSWindowSharingReadOnly, which means other processes can read the window content (eg. for window capture) but cannot modify it.  If you set your window sharing type to NSWindowSharingNone, so that the content cannot be captured, your window will also not be able to participate in a number of system services, so this setting should be used with caution.  If you set your window sharing type to NSWindowSharingReadWrite, other processes can both read and modify the window content.<br>
-     * Original signature : <code>void setSharingType(NSWindowSharingType)</code><br>
+     * -setSharingType: specifies whether the window content can be read and/or written from another process.  The
+     * default sharing type is NSWindowSharingReadOnly, which means other processes can read the window content (eg. for
+     * window capture) but cannot modify it.  If you set your window sharing type to NSWindowSharingNone, so that the
+     * content cannot be captured, your window will also not be able to participate in a number of system services, so
+     * this setting should be used with caution.  If you set your window sharing type to NSWindowSharingReadWrite, other
+     * processes can both read and modify the window content.<br> Original signature : <code>void
+     * setSharingType(NSWindowSharingType)</code><br>
      * <i>native declaration : :426</i>
      */
     public abstract void setSharingType(int type);
@@ -1139,22 +1157,23 @@ public abstract class NSWindow extends NSResponder {
     public abstract int sharingType();
 
     /**
-     * -setPreferredBackingLocation: sets the preferred location for the window backing store.  In general, you should not use this API unless indicated by performance measurement.<br>
-     * Original signature : <code>void setPreferredBackingLocation(NSWindowBackingLocation)</code><br>
+     * -setPreferredBackingLocation: sets the preferred location for the window backing store.  In general, you should
+     * not use this API unless indicated by performance measurement.<br> Original signature : <code>void
+     * setPreferredBackingLocation(NSWindowBackingLocation)</code><br>
      * <i>native declaration : :431</i>
      */
     public abstract void setPreferredBackingLocation(int backingLocation);
 
     /**
-     * -preferredBackingLocation gets the preferred location for the window backing store.  This may be different from the actual location.<br>
-     * Original signature : <code>NSWindowBackingLocation preferredBackingLocation()</code><br>
+     * -preferredBackingLocation gets the preferred location for the window backing store.  This may be different from
+     * the actual location.<br> Original signature : <code>NSWindowBackingLocation preferredBackingLocation()</code><br>
      * <i>native declaration : :434</i>
      */
     public abstract int preferredBackingLocation();
 
     /**
-     * -backingLocation gets the current location of the window backing store.<br>
-     * Original signature : <code>NSWindowBackingLocation backingLocation()</code><br>
+     * -backingLocation gets the current location of the window backing store.<br> Original signature :
+     * <code>NSWindowBackingLocation backingLocation()</code><br>
      * <i>native declaration : :437</i>
      */
     public abstract int backingLocation();
@@ -1178,8 +1197,9 @@ public abstract class NSWindow extends NSResponder {
     public abstract void disableScreenUpdatesUntilFlush();
 
     /**
-     * This API controls whether the receiver is permitted onscreen before the user has logged in.  This property is off by default.  Alert panels and windows presented by input managers are examples of windows which should have this property set.<br>
-     * Original signature : <code>BOOL canBecomeVisibleWithoutLogin()</code><br>
+     * This API controls whether the receiver is permitted onscreen before the user has logged in.  This property is off
+     * by default.  Alert panels and windows presented by input managers are examples of windows which should have this
+     * property set.<br> Original signature : <code>BOOL canBecomeVisibleWithoutLogin()</code><br>
      * <i>native declaration : :451</i>
      */
     public abstract boolean canBecomeVisibleWithoutLogin();
@@ -1203,8 +1223,9 @@ public abstract class NSWindow extends NSResponder {
     public abstract int collectionBehavior();
 
     /**
-     * -setCanBeVisibleOnAllSpaces: controls whether a window can be visible on all spaces (YES) or is associated with one space at a time (NO).  The default setting is NO.<br>
-     * Original signature : <code>BOOL canBeVisibleOnAllSpaces()</code><br>
+     * -setCanBeVisibleOnAllSpaces: controls whether a window can be visible on all spaces (YES) or is associated with
+     * one space at a time (NO).  The default setting is NO.<br> Original signature : <code>BOOL
+     * canBeVisibleOnAllSpaces()</code><br>
      * <i>native declaration : :462</i>
      */
     public abstract boolean canBeVisibleOnAllSpaces();
@@ -1234,8 +1255,8 @@ public abstract class NSWindow extends NSResponder {
     public abstract void saveFrameUsingName(String name);
 
     /**
-     * Set force=YES to use setFrameUsingName on a non-resizable window<br>
-     * Original signature : <code>BOOL setFrameUsingName(NSString*, BOOL)</code><br>
+     * Set force=YES to use setFrameUsingName on a non-resizable window<br> Original signature : <code>BOOL
+     * setFrameUsingName(NSString*, BOOL)</code><br>
      * <i>native declaration : :469</i>
      */
     public abstract boolean setFrameUsingName_force(String name, boolean force);
@@ -1454,8 +1475,8 @@ public abstract class NSWindow extends NSResponder {
     public abstract com.sun.jna.Pointer graphicsContext();
 
     /**
-     * Returns scale factor applied to view coordinate system to get to base coordinate system of window<br>
-     * Original signature : <code>CGFloat userSpaceScaleFactor()</code><br>
+     * Returns scale factor applied to view coordinate system to get to base coordinate system of window<br> Original
+     * signature : <code>CGFloat userSpaceScaleFactor()</code><br>
      * <i>native declaration : :533</i>
      */
     public abstract CGFloat userSpaceScaleFactor();
@@ -1619,4 +1640,21 @@ public abstract class NSWindow extends NSResponder {
     public abstract String tabbingIdentifier();
 
     public abstract void setTabbingIdentifier(String identifier);
+
+    /**
+     * @return A Boolean value that indicates whether the window prevents application termination when modal. The value
+     * of this property is YES if the window prevents application termination when modal; otherwise, NO. The default
+     * value is YES.
+     */
+    public abstract boolean preventsApplicationTerminationWhenModal();
+
+    /**
+     * Usually, application termination is prevented when a modal window or sheet is open, without consulting the
+     * application delegate. Some windows may wish not to prevent termination, however. Setting this property to NO
+     * overrides the default behavior and allows termination to proceed even if the window is open, either through the
+     * sudden termination path if enabled, or after consulting the application delegate.
+     *
+     * @param value A Boolean value that indicates whether the window prevents application termination when modal.
+     */
+    public abstract void setPreventsApplicationTerminationWhenModal(final boolean value);
 }
