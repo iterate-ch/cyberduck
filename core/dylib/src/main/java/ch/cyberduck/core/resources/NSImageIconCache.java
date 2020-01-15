@@ -126,8 +126,8 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     }
 
     /**
-     * @param name   When looking for files in the application bundle, it is better (but not required)
-     *               to include the filename extension in the name parameter
+     * @param name   When looking for files in the application bundle, it is better (but not required) to include the
+     *               filename extension in the name parameter
      * @param width  Requested size
      * @param height Requested size
      * @return Cached icon
@@ -145,6 +145,8 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
                 image = NSImage.imageWithContentsOfFile(name);
             }
             else {
+                // Search for an object whose name was set explicitly using the setName: method and currently
+                // resides in the image cache
                 image = NSImage.imageNamed(String.format("%d-%s", width, name));
                 if(null == image) {
                     image = NSImage.imageNamed(name);
@@ -269,12 +271,19 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     private NSImage convert(final String name, final NSImage icon, final Integer width, final Integer height) {
         if(StringUtils.endsWith(name, "pdf")) {
             icon.setTemplate(true);
+            // Images requested using this method and whose name ends in the word “Template”
+            // are automatically marked as template images
         }
         if(null == width || null == height) {
             log.debug(String.format("Return default size for %s", icon.name()));
             return icon;
         }
         // Cache sized image
+        // You can clear an image object from the cache explicitly by calling the object’s setName: method and
+        // passing nil for the image name.
+        icon.setName(null);
+        // When naming an image with the setName: method, it is convention not to include filename extensions
+        // in the names you specify
         icon.setName(String.format("%d-%s", width, name));
         icon.setSize(new NSSize(width, height));
         return icon;
