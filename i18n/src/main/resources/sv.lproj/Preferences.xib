@@ -1377,7 +1377,7 @@
                             <button id="291">
                                 <rect key="frame" x="10" y="48" width="445" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Använd systemets proxy-inställningar" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
+                                <buttonCell key="cell" type="check" title="Använd operativsystemets inställningar för proxy" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="292">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
