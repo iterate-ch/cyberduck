@@ -42,6 +42,9 @@ public class NSImageIconCache implements IconCache<NSImage> {
             log.warn(String.format("No icon named %s", name));
             return image;
         }
+        if(null == name) {
+            return image;
+        }
         // When naming an image with the setName: method, it is convention not to include filename extensions
         // in the names you specify
         image.setName(null == size ? name : toName(name, size));
