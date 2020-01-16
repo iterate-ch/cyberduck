@@ -44,6 +44,8 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         if(null == name) {
             return image;
         }
+        // When naming an image with the setName: method, it is convention not to include filename extensions
+        // in the names you specify
         image.setName(null == size ? name : String.format("%d-%s", size, name));
         return image;
     }
@@ -277,9 +279,6 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             log.debug(String.format("Return default size for %s", icon.name()));
             return icon;
         }
-        // When naming an image with the setName: method, it is convention not to include filename extensions
-        // in the names you specify
-        icon.setName(String.format("%d-%s", width, name));
         icon.setSize(new NSSize(width, height));
         return icon;
     }
