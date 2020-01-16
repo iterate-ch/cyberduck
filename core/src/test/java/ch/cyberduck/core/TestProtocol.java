@@ -27,8 +27,9 @@ public class TestProtocol extends AbstractProtocol {
         switch(scheme) {
             case ftp:
             case ftps:
-            case sftp:
                 return Type.ftp;
+            case sftp:
+                return Type.sftp;
             default:
                 return Type.dav;
         }

@@ -67,6 +67,7 @@ import ch.cyberduck.core.importer.FlowBookmarkCollection;
 import ch.cyberduck.core.importer.InterarchyBookmarkCollection;
 import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
 import ch.cyberduck.core.importer.Transmit4BookmarkCollection;
+import ch.cyberduck.core.importer.Transmit5BookmarkCollection;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
@@ -1368,7 +1369,7 @@ public class MainController extends BundleController implements NSApplication.De
 
         public ImporterBackgroundAction(final AbstractHostCollection bookmarks, final CountDownLatch lock) {
             this(bookmarks, lock, Arrays.asList(
-                new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
+                new Transmit5BookmarkCollection(), new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
                 new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
                 new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection(), new Expandrive6BookmarkCollection()));
         }
