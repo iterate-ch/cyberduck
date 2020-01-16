@@ -207,7 +207,6 @@ public class NSImageIconCacheTest {
         final NSImageIconCache cache = new NSImageIconCache();
         NSImage icon = cache.fileIcon(f, 16);
         assertNull(icon);
-        assertEquals(icon, cache.iconNamed("../../img/notfound.tiff"));
         LocalTouchFactory.get().touch(f);
         icon = cache.fileIcon(f, 16);
         assertNotNull(icon);

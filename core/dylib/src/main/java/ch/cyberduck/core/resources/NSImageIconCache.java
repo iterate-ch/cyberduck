@@ -135,24 +135,18 @@ public class NSImageIconCache implements IconCache<NSImage> {
      */
     @Override
     public NSImage iconNamed(final String name, final Integer width, final Integer height) {
+        // Search for an object whose name was set explicitly using the setName: method and currently
+        // resides in the image cache
         NSImage image = this.load(name, width);
         if(null == image) {
             if(null == name) {
                 return iconNamed("notfound.tiff", width, height);
             }
-            else if(name.startsWith("/")) {
+            else if(name.indexOf(Local.DELIMITER) != -1) {
                 image = NSImage.imageWithContentsOfFile(name);
             }
             else {
-                // Search for an object whose name was set explicitly using the setName: method and currently
-                // resides in the image cache
-                image = NSImage.imageNamed(String.format("%d-%s", width, name));
-                if(null == image) {
-                    image = NSImage.imageNamed(name);
-                }
-                else {
-                    return image;
-                }
+                image = NSImage.imageNamed(name);
             }
             if(null == image) {
                 log.warn(String.format("No icon named %s", name));
