@@ -24,11 +24,24 @@ import ch.cyberduck.core.local.Application;
 
 public interface IconCache<I> {
 
+    /**
+     * @param name Icon name
+     * @return Cached image
+     */
+    default I iconNamed(final String name) {
+        return this.iconNamed(name, null);
+    }
+
+    /**
+     * @param name Icon filename with extension
+     * @param size Requested size
+     * @return Cached image
+     */
+    default I iconNamed(final String name, final Integer size) {
+        return this.iconNamed(name, size, size);
+    }
+
     I iconNamed(String name, Integer width, Integer height);
-
-    I iconNamed(String name, Integer size);
-
-    I iconNamed(String name);
 
     I documentIcon(String extension, Integer size);
 
@@ -38,13 +51,17 @@ public interface IconCache<I> {
 
     I folderIcon(Integer size, I badge);
 
-    I fileIcon(Local item, Integer size);
+    default I fileIcon(final Local item, final Integer size) {
+        return this.documentIcon(item.getExtension(), size);
+    }
 
     I fileIcon(Path item, Integer size);
 
     I aliasIcon(String extension, Integer size);
 
-    I volumeIcon(Protocol protocol, Integer size);
+    default I volumeIcon(final Protocol protocol, final Integer size) {
+        return this.iconNamed(protocol.disk(), size);
+    }
 
     I applicationIcon(Application app, Integer size);
 }

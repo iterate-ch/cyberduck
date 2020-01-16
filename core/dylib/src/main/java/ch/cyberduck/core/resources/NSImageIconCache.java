@@ -31,7 +31,7 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 
-public class NSImageIconCache extends AbstractIconCache<NSImage> {
+public class NSImageIconCache implements IconCache<NSImage> {
     private static final Logger log = Logger.getLogger(NSImageIconCache.class);
 
     private final static NSRect NSZeroRect = new NSRect(0, 0);
@@ -113,8 +113,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
      * @param icon  Icon
      * @return Cached icon
      */
-    @Override
-    protected NSImage badge(final NSImage badge, final NSImage icon) {
+    private NSImage badge(final NSImage badge, final NSImage icon) {
         NSImage f = NSImage.imageWithSize(icon.size());
         f.lockFocus();
         icon.drawInRect(new NSRect(new NSPoint(0, 0), icon.size()),
@@ -262,6 +261,11 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             return this.folderIcon(size);
         }
         return this.iconNamed("notfound.tiff", size);
+    }
+
+    @Override
+    public NSImage aliasIcon(final String extension, final Integer size) {
+        return this.badge(this.iconNamed("aliasbadge.tiff", size), this.documentIcon(extension, size));
     }
 
     private NSImage convert(final String name, final NSImage icon, final Integer size) {
