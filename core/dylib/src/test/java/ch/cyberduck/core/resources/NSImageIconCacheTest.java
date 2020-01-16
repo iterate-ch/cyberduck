@@ -115,6 +115,7 @@ public class NSImageIconCacheTest {
         assertFalse(icon.isTemplate());
         assertEquals(64, icon.size().width.intValue());
         assertEquals(64, icon.size().height.intValue());
+        assertNotNull(NSImage.imageNamed("64-txt"));
     }
 
     @Test
@@ -184,33 +185,34 @@ public class NSImageIconCacheTest {
         assertNotNull(icon32);
         assertEquals(32, icon32.size().width.intValue());
         assertEquals(32, icon32.size().height.intValue());
+        assertNotNull(NSImage.imageNamed("32-../../img/ftp.tiff"));
         final NSImage icon16 = cache.fileIcon(new FinderLocal("../../img/ftp.tiff"), 16);
         assertNotNull(icon16);
         assertNotSame(icon16, icon32);
         assertEquals(16, icon16.size().width.intValue());
         assertEquals(16, icon16.size().height.intValue());
+        assertNotNull(NSImage.imageNamed("16-../../img/ftp.tiff"));
         final NSImage icon64 = cache.fileIcon(new FinderLocal("../../img/ftp.tiff"), 64);
         assertNotNull(icon64);
         assertNotSame(icon16, icon64);
         assertNotSame(icon32, icon64);
         assertEquals(64, icon64.size().width.intValue());
         assertEquals(64, icon64.size().height.intValue());
+        assertNotNull(NSImage.imageNamed("64-../../img/ftp.tiff"));
     }
 
     @Test
     public void testIconForPath() throws Exception {
-        final Local f
-            = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
+        final Local f = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
         final NSImageIconCache cache = new NSImageIconCache();
         NSImage icon = cache.fileIcon(f, 16);
         assertNull(icon);
-//        assertEquals(icon, cache.iconNamed("notfound.tiff"));
+        assertEquals(icon, cache.iconNamed("../../img/notfound.tiff"));
         LocalTouchFactory.get().touch(f);
         icon = cache.fileIcon(f, 16);
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
-//        assertEquals(4, icon.representations().count().intValue());
         f.delete();
     }
 
