@@ -37,7 +37,6 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     private final static NSRect NSZeroRect = new NSRect(0, 0);
 
     private NSImage cache(final String name, final NSImage image, final Integer size) {
-        image.setCacheMode(NSImage.NSImageCacheAlways);
         // You can clear an image object from the cache explicitly by calling the object’s setName: method and
         // passing nil for the image name.
         image.setName(null);
