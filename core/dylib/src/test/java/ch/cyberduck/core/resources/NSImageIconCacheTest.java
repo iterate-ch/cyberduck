@@ -176,6 +176,9 @@ public class NSImageIconCacheTest {
         assertNotNull(icon64);
         assertEquals(64, icon64.size().width.intValue());
         assertEquals(64, icon64.size().height.intValue());
+        assertNotNull(NSImage.imageNamed("16-NSComputer"));
+        assertNotNull(NSImage.imageNamed("32-NSComputer"));
+        assertNotNull(NSImage.imageNamed("64-NSComputer"));
     }
 
     @Test
@@ -185,19 +188,19 @@ public class NSImageIconCacheTest {
         assertNotNull(icon32);
         assertEquals(32, icon32.size().width.intValue());
         assertEquals(32, icon32.size().height.intValue());
-        assertNotNull(NSImage.imageNamed("32-../../img/ftp.tiff"));
         final NSImage icon16 = cache.fileIcon(new FinderLocal("../../img/ftp.tiff"), 16);
         assertNotNull(icon16);
         assertNotSame(icon16, icon32);
         assertEquals(16, icon16.size().width.intValue());
         assertEquals(16, icon16.size().height.intValue());
-        assertNotNull(NSImage.imageNamed("16-../../img/ftp.tiff"));
         final NSImage icon64 = cache.fileIcon(new FinderLocal("../../img/ftp.tiff"), 64);
         assertNotNull(icon64);
         assertNotSame(icon16, icon64);
         assertNotSame(icon32, icon64);
         assertEquals(64, icon64.size().width.intValue());
         assertEquals(64, icon64.size().height.intValue());
+        assertNotNull(NSImage.imageNamed("16-../../img/ftp.tiff"));
+        assertNotNull(NSImage.imageNamed("32-../../img/ftp.tiff"));
         assertNotNull(NSImage.imageNamed("64-../../img/ftp.tiff"));
     }
 
