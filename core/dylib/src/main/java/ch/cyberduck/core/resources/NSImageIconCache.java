@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.local.Application;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -37,20 +38,22 @@ public class NSImageIconCache implements IconCache<NSImage> {
     private final static NSRect NSZeroRect = new NSRect(0, 0);
 
     private NSImage cache(final String name, final NSImage image, final Integer size) {
-        // You can clear an image object from the cache explicitly by calling the object’s setName: method and
-        // passing nil for the image name.
-        image.setName(null);
-        if(null == name) {
+        if(null == image) {
+            log.warn(String.format("No icon named %s", name));
             return image;
         }
         // When naming an image with the setName: method, it is convention not to include filename extensions
         // in the names you specify
-        image.setName(null == size ? name : String.format("%d-%s", size, name));
+        image.setName(null == size ? name : toName(name, size));
         return image;
     }
 
+    private static String toName(final String name, final Integer size) {
+        return String.format("%s (%dpx)", name, size);
+    }
+
     private NSImage load(final String name, final Integer size) {
-        final NSImage cached = NSImage.imageNamed(String.format("%d-%s", size, name));
+        final NSImage cached = NSImage.imageNamed(toName(name, size));
         if(null == cached) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("No cached image for %s", name));
@@ -140,19 +143,15 @@ public class NSImageIconCache implements IconCache<NSImage> {
         NSImage image = this.load(name, width);
         if(null == image) {
             if(null == name) {
-                return iconNamed("notfound.tiff", width, height);
+                return this.iconNamed("notfound.tiff", width, height);
             }
             else if(name.indexOf(Local.DELIMITER) != -1) {
-                image = NSImage.imageWithContentsOfFile(name);
+                return this.cache(FilenameUtils.getName(name), this.convert(FilenameUtils.getName(name),
+                    NSImage.imageWithContentsOfFile(name), width, height), width);
             }
             else {
-                image = NSImage.imageNamed(name);
-            }
-            if(null == image) {
-                log.warn(String.format("No icon named %s", name));
-            }
-            else {
-                return this.cache(name, this.convert(name, image, width, height), width);
+                return this.cache(name, this.convert(name,
+                    NSImage.imageNamed(name), width, height), width);
             }
         }
         return image;
@@ -169,7 +168,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
         if(file.exists()) {
             icon = this.load(file.getAbsolute(), size);
             if(null == icon) {
-                return this.cache(file.getAbsolute(),
+                return this.cache(file.getName(),
                     this.convert(file.getName(), NSWorkspace.sharedWorkspace().iconForFile(file.getAbsolute()), size), size);
             }
         }
@@ -266,17 +265,22 @@ public class NSImageIconCache implements IconCache<NSImage> {
         return this.convert(name, icon, size, size);
     }
 
-    private NSImage convert(final String name, final NSImage icon, final Integer width, final Integer height) {
+    private NSImage convert(final String name, final NSImage image, final Integer width, final Integer height) {
+        if(null == image) {
+            return null;
+        }
         if(StringUtils.endsWith(name, "pdf")) {
-            icon.setTemplate(true);
+            image.setTemplate(true);
             // Images requested using this method and whose name ends in the word “Template”
             // are automatically marked as template images
         }
         if(null == width || null == height) {
-            log.debug(String.format("Return default size for %s", icon.name()));
-            return icon;
+            log.debug(String.format("Return default size for %s", image.name()));
+            return image;
         }
-        icon.setSize(new NSSize(width, height));
-        return icon;
+        // Make a copy of original image. Otherwise might resize other references already displayed
+        final NSImage copy = image.copy();
+        copy.setSize(new NSSize(width, height));
+        return copy;
     }
 }

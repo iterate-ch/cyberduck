@@ -115,7 +115,7 @@ public class NSImageIconCacheTest {
         assertFalse(icon.isTemplate());
         assertEquals(64, icon.size().width.intValue());
         assertEquals(64, icon.size().height.intValue());
-        assertNotNull(NSImage.imageNamed("64-txt"));
+        assertNotNull(NSImage.imageNamed("txt (64px)"));
     }
 
     @Test
@@ -176,9 +176,9 @@ public class NSImageIconCacheTest {
         assertNotNull(icon64);
         assertEquals(64, icon64.size().width.intValue());
         assertEquals(64, icon64.size().height.intValue());
-        assertNotNull(NSImage.imageNamed("16-NSComputer"));
-        assertNotNull(NSImage.imageNamed("32-NSComputer"));
-        assertNotNull(NSImage.imageNamed("64-NSComputer"));
+        assertNotNull(NSImage.imageNamed("NSComputer (16px)"));
+        assertNotNull(NSImage.imageNamed("NSComputer (32px)"));
+        assertNotNull(NSImage.imageNamed("NSComputer (64px)"));
     }
 
     @Test
@@ -199,9 +199,9 @@ public class NSImageIconCacheTest {
         assertNotSame(icon32, icon64);
         assertEquals(64, icon64.size().width.intValue());
         assertEquals(64, icon64.size().height.intValue());
-        assertNotNull(NSImage.imageNamed("16-../../img/ftp.tiff"));
-        assertNotNull(NSImage.imageNamed("32-../../img/ftp.tiff"));
-        assertNotNull(NSImage.imageNamed("64-../../img/ftp.tiff"));
+        assertNotNull(NSImage.imageNamed("ftp.tiff (16px)"));
+        assertNotNull(NSImage.imageNamed("ftp.tiff (32px)"));
+        assertNotNull(NSImage.imageNamed("ftp.tiff (64px)"));
     }
 
     @Test
