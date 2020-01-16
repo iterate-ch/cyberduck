@@ -23,40 +23,46 @@ import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.local.Application;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 
-public class NSImageIconCache extends AbstractIconCache<NSImage> {
+public class NSImageIconCache implements IconCache<NSImage> {
     private static final Logger log = Logger.getLogger(NSImageIconCache.class);
 
     private final static NSRect NSZeroRect = new NSRect(0, 0);
 
-    /**
-     * Cache limited to n entries
-     */
-    private final LRUCache<String, NSImage> cache
-        = LRUCache.build(PreferencesFactory.get().getInteger("icon.cache.size"));
-
-    private NSImage put(final String name, final NSImage image, final Integer size) {
-        cache.put(String.format("%d-%s", size, name), image);
+    private NSImage cache(final String name, final NSImage image, final Integer size) {
+        if(null == image) {
+            log.warn(String.format("No icon named %s", name));
+            return image;
+        }
+        if(null == name) {
+            return image;
+        }
+        // When naming an image with the setName: method, it is convention not to include filename extensions
+        // in the names you specify
+        image.setName(null == size ? name : toName(name, size));
         return image;
     }
 
+    private static String toName(final String name, final Integer size) {
+        return String.format("%s (%dpx)", name, size);
+    }
+
     private NSImage load(final String name, final Integer size) {
-        if(!cache.contains(String.format("%d-%s", size, name))) {
+        final NSImage cached = NSImage.imageNamed(toName(name, size));
+        if(null == cached) {
             if(log.isDebugEnabled()) {
                 log.debug(String.format("No cached image for %s", name));
             }
-            return null;
         }
-        return cache.get(String.format("%d-%s", size, name));
+        return cached;
     }
 
     /**
@@ -68,7 +74,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     public NSImage documentIcon(final String extension, final Integer size) {
         NSImage image = this.load(extension, size);
         if(null == image) {
-            return this.put(extension,
+            return this.cache(extension,
                 this.convert(extension, NSWorkspace.sharedWorkspace().iconForFileType(extension), size), size);
         }
         return image;
@@ -80,7 +86,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         NSImage icon = this.iconNamed(name, size);
         if(null == icon) {
             icon = this.badge(badge, this.documentIcon(extension, size));
-            this.put(name, icon, size);
+            this.cache(name, icon, size);
         }
         return icon;
     }
@@ -101,7 +107,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         if(null == folder) {
             folder = this.convert(name, this.iconNamed("NSFolder", size), size);
             folder = this.badge(badge, folder);
-            this.put(name, folder, size);
+            this.cache(name, folder, size);
         }
         return folder;
     }
@@ -113,8 +119,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
      * @param icon  Icon
      * @return Cached icon
      */
-    @Override
-    protected NSImage badge(final NSImage badge, final NSImage icon) {
+    private NSImage badge(final NSImage badge, final NSImage icon) {
         NSImage f = NSImage.imageWithSize(icon.size());
         f.lockFocus();
         icon.drawInRect(new NSRect(new NSPoint(0, 0), icon.size()),
@@ -126,8 +131,8 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
     }
 
     /**
-     * @param name   When looking for files in the application bundle, it is better (but not required)
-     *               to include the filename extension in the name parameter
+     * @param name   When looking for files in the application bundle, it is better (but not required) to include the
+     *               filename extension in the name parameter
      * @param width  Requested size
      * @param height Requested size
      * @return Cached icon
@@ -136,28 +141,20 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
      */
     @Override
     public NSImage iconNamed(final String name, final Integer width, final Integer height) {
+        // Search for an object whose name was set explicitly using the setName: method and currently
+        // resides in the image cache
         NSImage image = this.load(name, width);
         if(null == image) {
             if(null == name) {
-                return iconNamed("notfound.tiff", width, height);
+                return this.iconNamed("notfound.tiff", width, height);
             }
-            else if(name.startsWith("/")) {
-                image = NSImage.imageWithContentsOfFile(name);
-            }
-            else {
-                image = NSImage.imageNamed(String.format("%d-%s", width, name));
-                if(null == image) {
-                    image = NSImage.imageNamed(name);
-                }
-                else {
-                    return image;
-                }
-            }
-            if(null == image) {
-                log.warn(String.format("No icon named %s", name));
+            else if(name.indexOf(Local.DELIMITER) != -1) {
+                return this.cache(FilenameUtils.getName(name), this.convert(FilenameUtils.getName(name),
+                    NSImage.imageWithContentsOfFile(name), width, height), width);
             }
             else {
-                return this.put(name, this.convert(name, image, width, height), width);
+                return this.cache(name, this.convert(name,
+                    NSImage.imageNamed(name), width, height), width);
             }
         }
         return image;
@@ -174,7 +171,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         if(file.exists()) {
             icon = this.load(file.getAbsolute(), size);
             if(null == icon) {
-                return this.put(file.getAbsolute(),
+                return this.cache(file.getName(),
                     this.convert(file.getName(), NSWorkspace.sharedWorkspace().iconForFile(file.getAbsolute()), size), size);
             }
         }
@@ -196,7 +193,7 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
             final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(app.getIdentifier());
             // Null if the bundle cannot be found
             if(StringUtils.isNotBlank(path)) {
-                return this.put(app.getIdentifier(),
+                return this.cache(app.getIdentifier(),
                     this.convert(app.getIdentifier(), NSWorkspace.sharedWorkspace().iconForFile(path), size), size);
             }
         }
@@ -262,21 +259,31 @@ public class NSImageIconCache extends AbstractIconCache<NSImage> {
         return this.iconNamed("notfound.tiff", size);
     }
 
+    @Override
+    public NSImage aliasIcon(final String extension, final Integer size) {
+        return this.badge(this.iconNamed("aliasbadge.tiff", size), this.documentIcon(extension, size));
+    }
+
     private NSImage convert(final String name, final NSImage icon, final Integer size) {
         return this.convert(name, icon, size, size);
     }
 
-    private NSImage convert(final String name, final NSImage icon, final Integer width, final Integer height) {
+    private NSImage convert(final String name, final NSImage image, final Integer width, final Integer height) {
+        if(null == image) {
+            return null;
+        }
         if(StringUtils.endsWith(name, "pdf")) {
-            icon.setTemplate(true);
+            image.setTemplate(true);
+            // Images requested using this method and whose name ends in the word “Template”
+            // are automatically marked as template images
         }
         if(null == width || null == height) {
-            log.debug(String.format("Return default size for %s", icon.name()));
-            return icon;
+            log.debug(String.format("Return default size for %s", image.name()));
+            return image;
         }
-        // Cache sized image
-        icon.setName(String.format("%d-%s", width, name));
-        icon.setSize(new NSSize(width, height));
-        return icon;
+        // Make a copy of original image. Otherwise might resize other references already displayed
+        final NSImage copy = image.copy();
+        copy.setSize(new NSSize(width, height));
+        return copy;
     }
 }

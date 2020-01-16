@@ -85,15 +85,15 @@ public abstract class NSImage extends NSObject implements NSCopying {
 
     public interface _Class extends ObjCClass {
         /**
-         * Original signature : <code>id imageNamed(NSString*)</code><br>
-         * If this finds & creates the image, only name is saved when archived<br>
+         * Original signature : <code>id imageNamed(NSString*)</code><br> If this finds & creates the image, only name
+         * is saved when archived<br>
          * <i>native declaration : :73</i>
          */
         NSImage imageNamed(String name);
 
         /**
-         * These return union of all the types registered with NSImageRep.<br>
-         * Original signature : <code>NSArray* imageUnfilteredFileTypes()</code><br>
+         * These return union of all the types registered with NSImageRep.<br> Original signature : <code>NSArray*
+         * imageUnfilteredFileTypes()</code><br>
          * <i>native declaration : :138</i>
          */
         NSArray imageUnfilteredFileTypes();
@@ -143,36 +143,32 @@ public abstract class NSImage extends NSObject implements NSCopying {
     public abstract NSImage initWithSize(NSSize aSize);
 
     /**
-     * Original signature : <code>id initWithData(NSData*)</code><br>
-     * When archived, saves contents<br>
+     * Original signature : <code>id initWithData(NSData*)</code><br> When archived, saves contents<br>
      * <i>native declaration : :76</i>
      */
     public abstract NSImage initWithData(NSData data);
 
     /**
-     * Original signature : <code>id initWithContentsOfFile(NSString*)</code><br>
-     * When archived, saves contents<br>
+     * Original signature : <code>id initWithContentsOfFile(NSString*)</code><br> When archived, saves contents<br>
      * <i>native declaration : :77</i>
      */
     public abstract NSImage initWithContentsOfFile(String fileName);
 
     /**
-     * Original signature : <code>id initWithContentsOfURL(NSURL*)</code><br>
-     * When archived, saves contents<br>
+     * Original signature : <code>id initWithContentsOfURL(NSURL*)</code><br> When archived, saves contents<br>
      * <i>native declaration : :78</i>
      */
     public abstract NSImage initWithContentsOfURL(NSURL url);
 
     /**
-     * Original signature : <code>id initByReferencingFile(NSString*)</code><br>
-     * When archived, saves fileName<br>
+     * Original signature : <code>id initByReferencingFile(NSString*)</code><br> When archived, saves fileName<br>
      * <i>native declaration : :79</i>
      */
     public abstract NSImage initByReferencingFile(String fileName);
 
     /**
-     * Original signature : <code>id initByReferencingURL(NSURL*)</code><br>
-     * When archived, saves url, supports progressive loading<br>
+     * Original signature : <code>id initByReferencingURL(NSURL*)</code><br> When archived, saves url, supports
+     * progressive loading<br>
      * <i>native declaration : :81</i>
      */
     public abstract NSImage initByReferencingURL(NSURL url);
@@ -182,6 +178,11 @@ public abstract class NSImage extends NSObject implements NSCopying {
      * <i>native declaration : :86</i>
      */
     public abstract NSImage initWithPasteboard(NSPasteboard pasteboard);
+
+    /**
+     * @return Copy of original image
+     */
+    public abstract NSImage copy();
 
     /**
      * <i>native declaration : :88</i><br>
@@ -303,8 +304,9 @@ public abstract class NSImage extends NSObject implements NSCopying {
 
     /**
      * <i>native declaration : :115</i><br>
-     * Conversion Error : /// Original signature : <code>public abstract  void drawInRect(null, null, null, CGFloat)</code><br>
-     * - (void)drawInRect:(null)rect fromRect:(null)fromRect operation:(null)op fraction:(CGFloat)delta; (Argument rect cannot be converted)
+     * Conversion Error : /// Original signature : <code>public abstract  void drawInRect(null, null, null,
+     * CGFloat)</code><br> - (void)drawInRect:(null)rect fromRect:(null)fromRect operation:(null)op
+     * fraction:(CGFloat)delta; (Argument rect cannot be converted)
      */
     public abstract void drawInRect_fromRect_operation_fraction(NSRect rect, NSRect fromRect, int operation, CGFloat delta);
 
@@ -421,19 +423,28 @@ public abstract class NSImage extends NSObject implements NSCopying {
     public abstract int cacheMode();
 
     /**
-     * The alignmentRect of an image is metadata that a client may use to help determine layout. The bottom of the rect gives the baseline of the image. The other edges give similar information in other directions.<br>
-     * A 20x20 image of a phone icon with a glow might specify an alignmentRect of {{2,2},{16,16}} that excludes the glow. NSButtonCell can take advantage of the alignmentRect to place the image in the same visual location as an 16x16 phone icon without the glow. A 5x5 star that should render high when aligned with text might specify a rect of {{0,-7},{5,12}}.<br>
-     * The alignmentRect of an image has no effect on methods such as drawInRect:fromRect:operation:Fraction: or drawAtPoint:fromRect:operation:fraction:. It is the client's responsibility to take the alignmentRect into account where applicable.<br>
-     * The default alignmentRect of an image is {{0,0},imageSize}. The rect is adjusted when setSize: is called.<br>
-     * Original signature : <code>alignmentRect()</code><br>
+     * The alignmentRect of an image is metadata that a client may use to help determine layout. The bottom of the rect
+     * gives the baseline of the image. The other edges give similar information in other directions.<br> A 20x20 image
+     * of a phone icon with a glow might specify an alignmentRect of {{2,2},{16,16}} that excludes the glow.
+     * NSButtonCell can take advantage of the alignmentRect to place the image in the same visual location as an 16x16
+     * phone icon without the glow. A 5x5 star that should render high when aligned with text might specify a rect of
+     * {{0,-7},{5,12}}.<br> The alignmentRect of an image has no effect on methods such as
+     * drawInRect:fromRect:operation:Fraction: or drawAtPoint:fromRect:operation:fraction:. It is the client's
+     * responsibility to take the alignmentRect into account where applicable.<br> The default alignmentRect of an image
+     * is {{0,0},imageSize}. The rect is adjusted when setSize: is called.<br> Original signature :
+     * <code>alignmentRect()</code><br>
      * <i>native declaration : :169</i>
      */
     public abstract NSObject alignmentRect();
 
     /**
-     * The 'template' property is metadata that allows clients to be smarter about image processing.  An image should be marked as a template if it is basic glpyh-like black and white art that is intended to be processed into derived images for use on screen.<br>
-     * NSButtonCell applies effects to images based on the state of the button.  For example, images are shaded darker when the button is pressed.  If a template image is set on a cell, the cell can apply more sophisticated effects.  For example, it may be processed into an image that looks engraved when drawn into a cell whose interiorBackgroundStyle is NSBackgroundStyleRaised, like on a textured button.<br>
-     * Original signature : <code>BOOL isTemplate()</code><br>
+     * The 'template' property is metadata that allows clients to be smarter about image processing.  An image should be
+     * marked as a template if it is basic glpyh-like black and white art that is intended to be processed into derived
+     * images for use on screen.<br> NSButtonCell applies effects to images based on the state of the button.  For
+     * example, images are shaded darker when the button is pressed.  If a template image is set on a cell, the cell can
+     * apply more sophisticated effects.  For example, it may be processed into an image that looks engraved when drawn
+     * into a cell whose interiorBackgroundStyle is NSBackgroundStyleRaised, like on a textured button.<br> Original
+     * signature : <code>BOOL isTemplate()</code><br>
      * <i>native declaration : :176</i>
      */
     public abstract boolean isTemplate();

@@ -24,14 +24,12 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Ignore
 public class NSImageIconCacheTest {
 
     @Test
@@ -117,6 +115,7 @@ public class NSImageIconCacheTest {
         assertFalse(icon.isTemplate());
         assertEquals(64, icon.size().width.intValue());
         assertEquals(64, icon.size().height.intValue());
+        assertNotNull(NSImage.imageNamed("txt (64px)"));
     }
 
     @Test
@@ -146,7 +145,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testCacheSystemIcon() {
+    public void testCacheApplicationIcon() {
         final NSImageIconCache cache = new NSImageIconCache();
         final NSImage icon32 = cache.applicationIcon(new Application("com.apple.TextEdit"), 32);
         assertNotNull(icon32);
@@ -163,72 +162,59 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testCacheTiff() {
+    public void testCacheSystemIcon() {
         final NSImageIconCache cache = new NSImageIconCache();
-        final NSImage icon32 = cache.fileIcon(new FinderLocal("img/ftp.tiff"), 32);
+        final NSImage icon32 = cache.iconNamed("NSComputer", 32);
         assertNotNull(icon32);
         assertEquals(32, icon32.size().width.intValue());
         assertEquals(32, icon32.size().height.intValue());
-        final NSImage icon16 = cache.fileIcon(new FinderLocal("img/ftp.tiff"), 16);
+        final NSImage icon16 = cache.iconNamed("NSComputer", 16);
+        assertNotNull(icon16);
+        assertEquals(16, icon16.size().width.intValue());
+        assertEquals(16, icon16.size().height.intValue());
+        final NSImage icon64 = cache.iconNamed("NSComputer", 64);
+        assertNotNull(icon64);
+        assertEquals(64, icon64.size().width.intValue());
+        assertEquals(64, icon64.size().height.intValue());
+        assertNotNull(NSImage.imageNamed("NSComputer (16px)"));
+        assertNotNull(NSImage.imageNamed("NSComputer (32px)"));
+        assertNotNull(NSImage.imageNamed("NSComputer (64px)"));
+    }
+
+    @Test
+    public void testCacheTiff() {
+        final NSImageIconCache cache = new NSImageIconCache();
+        final NSImage icon32 = cache.fileIcon(new FinderLocal("../../img/ftp.tiff"), 32);
+        assertNotNull(icon32);
+        assertEquals(32, icon32.size().width.intValue());
+        assertEquals(32, icon32.size().height.intValue());
+        final NSImage icon16 = cache.fileIcon(new FinderLocal("../../img/ftp.tiff"), 16);
         assertNotNull(icon16);
         assertNotSame(icon16, icon32);
         assertEquals(16, icon16.size().width.intValue());
         assertEquals(16, icon16.size().height.intValue());
-        final NSImage icon64 = cache.fileIcon(new FinderLocal("img/ftp.tiff"), 64);
+        final NSImage icon64 = cache.fileIcon(new FinderLocal("../../img/ftp.tiff"), 64);
         assertNotNull(icon64);
         assertNotSame(icon16, icon64);
         assertNotSame(icon32, icon64);
         assertEquals(64, icon64.size().width.intValue());
         assertEquals(64, icon64.size().height.intValue());
-    }
-
-    @Test
-    public void testCacheTiffNamed() {
-        final NSImageIconCache cache = new NSImageIconCache();
-        final NSImage load = cache.fileIcon(new FinderLocal("img/ftp.tiff"), 32);
-        // Search for an object whose name was set explicitly using the setName: method and currently resides in the image cache.
-        assertNotNull(load);
-        load.setName("ftp.tiff");
-        final NSImage icon32First = cache.iconNamed("ftp.tiff", 32);
-        assertEquals(32, icon32First.size().width.intValue());
-        assertEquals(32, icon32First.size().height.intValue());
-        final NSImage icon16 = cache.iconNamed("ftp.tiff", 16);
-        assertNotNull(icon16);
-        assertEquals(icon16.id().toString(), cache.iconNamed("ftp.tiff", 16).id().toString());
-        assertEquals(16, icon16.size().width.intValue());
-        assertEquals(16, icon16.size().height.intValue());
-        assertEquals(32, icon32First.size().width.intValue());
-        assertEquals(32, icon32First.size().height.intValue());
-        assertNotSame(icon16, icon32First);
-        final NSImage icon64 = cache.iconNamed("ftp.tiff", 64);
-        assertNotNull(icon64);
-        assertEquals(64, icon64.size().width.intValue());
-        assertEquals(64, icon64.size().height.intValue());
-        assertEquals(32, icon32First.size().width.intValue());
-        assertEquals(32, icon32First.size().height.intValue());
-        {
-            final NSImage icon32 = cache.iconNamed("ftp.tiff", 32);
-            assertEquals(32, icon32.size().width.intValue());
-            assertEquals(32, icon32.size().height.intValue());
-        }
-        assertEquals(32, icon32First.size().width.intValue());
-        assertEquals(32, icon32First.size().height.intValue());
+        assertNotNull(NSImage.imageNamed("ftp.tiff (16px)"));
+        assertNotNull(NSImage.imageNamed("ftp.tiff (32px)"));
+        assertNotNull(NSImage.imageNamed("ftp.tiff (64px)"));
     }
 
     @Test
     public void testIconForPath() throws Exception {
-        final Local f
-                = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
+        final Local f = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
         final NSImageIconCache cache = new NSImageIconCache();
         NSImage icon = cache.fileIcon(f, 16);
         assertNull(icon);
-//        assertEquals(icon, cache.iconNamed("notfound.tiff"));
         LocalTouchFactory.get().touch(f);
         icon = cache.fileIcon(f, 16);
         assertNotNull(icon);
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
-//        assertEquals(4, icon.representations().count().intValue());
         f.delete();
     }
 
