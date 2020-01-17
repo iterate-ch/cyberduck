@@ -40,14 +40,14 @@ import org.apache.log4j.Logger;
 import org.rococoa.ObjCClass;
 import org.rococoa.Rococoa;
 
-public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
-    private static final Logger log = Logger.getLogger(TransmitBookmarkCollection.class);
+public class Transmit3BookmarkCollection extends ThirdpartyBookmarkCollection {
+    private static final Logger log = Logger.getLogger(Transmit3BookmarkCollection.class);
 
     private static final long serialVersionUID = 6406786269501430927L;
 
     @Override
     public Local getFile() {
-        return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.transmit.location"));
+        return LocalFactory.get(PreferencesFactory.get().getProperty("bookmark.import.transmit3.location"));
     }
 
     @Override
@@ -57,7 +57,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     @Override
     public String getName() {
-        return "Transmit";
+        return "Transmit 3";
     }
 
     @Override
