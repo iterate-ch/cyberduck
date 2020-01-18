@@ -55,6 +55,7 @@ import ch.cyberduck.core.bonjour.RendezvousFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
+import ch.cyberduck.core.importer.CloudMounterBookmarkCollection;
 import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
 import ch.cyberduck.core.importer.Expandrive3BookmarkCollection;
 import ch.cyberduck.core.importer.Expandrive4BookmarkCollection;
@@ -1371,7 +1372,8 @@ public class MainController extends BundleController implements NSApplication.De
             this(bookmarks, lock, Arrays.asList(
                 new Transmit5BookmarkCollection(), new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
                 new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
-                new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection(), new Expandrive6BookmarkCollection()));
+                new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection(), new Expandrive6BookmarkCollection(),
+                new CloudMounterBookmarkCollection()));
         }
 
         public ImporterBackgroundAction(final AbstractHostCollection bookmarks, final CountDownLatch lock, final List<ThirdpartyBookmarkCollection> collections) {
