@@ -66,20 +66,22 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found bookmarks file at %s", file));
             }
-            Checksum current = null;
-            try {
-                current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream(), new TransferStatus());
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Current checksum for %s is %s", file, current));
+            Checksum current = Checksum.NONE;
+            if(file.isFile()) {
+                try {
+                    current = ChecksumComputeFactory.get(HashAlgorithm.md5).compute(file.getInputStream(), new TransferStatus());
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Current checksum for %s is %s", file, current));
+                    }
                 }
-            }
-            catch(BackgroundException e) {
-                log.warn(String.format("Failure obtaining checksum for %s", file));
+                catch(BackgroundException e) {
+                    log.warn(String.format("Failure obtaining checksum for %s", file));
+                }
             }
             if(preferences.getBoolean(this.getConfiguration())) {
                 // Previously imported
                 final Checksum previous = new Checksum(HashAlgorithm.md5,
-                        preferences.getProperty(String.format("%s.checksum", this.getConfiguration())));
+                    preferences.getProperty(String.format("%s.checksum", this.getConfiguration())));
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Saved previous checksum %s for bookmark %s", previous, file));
                 }
