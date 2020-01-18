@@ -105,6 +105,6 @@ public class CloudMounterBookmarkCollection extends ThirdpartyBookmarkCollection
 
     @Override
     public String getBundleIdentifier() {
-        return "com.cloudmounter";
+        return "com.eltima.cloudmounter";
     }
 }
