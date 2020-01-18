@@ -95,7 +95,11 @@ public class CloudMounterBookmarkCollection extends ThirdpartyBookmarkCollection
                 log.warn(String.format("Unable to determine protocol for %s", identifier));
                 continue;
             }
-            final PlistDeserializer options = new PlistDeserializer(bookmark.objectForKey("MountFSOptions"));
+            final NSDictionary details = bookmark.objectForKey("MountFSOptions");
+            if(null == details) {
+                continue;
+            }
+            final PlistDeserializer options = new PlistDeserializer(details);
             final Host host = new Host(protocol, options.stringForKey("host"), new Credentials(options.stringForKey("login")));
             host.setNickname(bookmark.stringForKey("MountFSLabel"));
             host.setDefaultPath(options.stringForKey("remotePath"));
