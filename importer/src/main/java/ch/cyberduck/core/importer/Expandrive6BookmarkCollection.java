@@ -35,4 +35,8 @@ public class Expandrive6BookmarkCollection extends ExpandriveBookmarkCollection 
     public String getBundleIdentifier() {
         return "com.expandrive.ExpanDrive3";
     }
+
+    public String getConfiguration() {
+        return String.format("bookmark.import.%s%d", this.getBundleIdentifier(), 6);
+    }
 }

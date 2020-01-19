@@ -55,20 +55,7 @@ import ch.cyberduck.core.bonjour.RendezvousFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.HostParserException;
-import ch.cyberduck.core.importer.CloudMounterBookmarkCollection;
-import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
-import ch.cyberduck.core.importer.Expandrive3BookmarkCollection;
-import ch.cyberduck.core.importer.Expandrive4BookmarkCollection;
-import ch.cyberduck.core.importer.Expandrive5BookmarkCollection;
-import ch.cyberduck.core.importer.Expandrive6BookmarkCollection;
-import ch.cyberduck.core.importer.FetchBookmarkCollection;
-import ch.cyberduck.core.importer.FilezillaBookmarkCollection;
-import ch.cyberduck.core.importer.FireFtpBookmarkCollection;
-import ch.cyberduck.core.importer.FlowBookmarkCollection;
-import ch.cyberduck.core.importer.InterarchyBookmarkCollection;
-import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
-import ch.cyberduck.core.importer.Transmit4BookmarkCollection;
-import ch.cyberduck.core.importer.Transmit5BookmarkCollection;
+import ch.cyberduck.core.importer.*;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
@@ -1373,7 +1360,7 @@ public class MainController extends BundleController implements NSApplication.De
                 new Transmit5BookmarkCollection(), new Transmit4BookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
                 new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection(),
                 new Expandrive3BookmarkCollection(), new Expandrive4BookmarkCollection(), new Expandrive5BookmarkCollection(), new Expandrive6BookmarkCollection(),
-                new CloudMounterBookmarkCollection()));
+                new Expandrive7BookmarkCollection(), new CloudMounterBookmarkCollection()));
         }
 
         public ImporterBackgroundAction(final AbstractHostCollection bookmarks, final CountDownLatch lock, final List<ThirdpartyBookmarkCollection> collections) {
