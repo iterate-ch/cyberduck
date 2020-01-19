@@ -51,6 +51,10 @@ public class Transmit5BookmarkCollection extends ThirdpartyBookmarkCollection {
         return "Transmit 5";
     }
 
+    public String getConfiguration() {
+        return String.format("bookmark.import.%s%d", this.getBundleIdentifier(), 5);
+    }
+
     @Override
     protected void parse(final ProtocolFactory protocols, final Local folder) throws AccessDeniedException {
         for(Local f : folder.list().filter(new NullFilter<Local>() {
