@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-public abstract class AbstractFolderHostCollection extends AbstractHostCollection {
+public abstract class AbstractFolderHostCollection extends AbstractHostCollection implements FileWatcherListener {
     private static final Logger log = Logger.getLogger(AbstractFolderHostCollection.class);
 
     private static final long serialVersionUID = 6598370606581477494L;
@@ -47,6 +47,18 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     private final FileWatcher monitor
         = new FileWatcher(WatchServiceFactory.get());
+
+    private static final Filter<Local> filter = new Filter<Local>() {
+        @Override
+        public boolean accept(final Local file) {
+            return file.getName().endsWith(".duck");
+        }
+
+        @Override
+        public Pattern toPattern() {
+            return Pattern.compile(".*\\.duck");
+        }
+    };
 
     /**
      * Reading bookmarks from this folder
@@ -137,20 +149,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             if(!folder.exists()) {
                 new DefaultLocalDirectoryFeature().mkdir(folder);
             }
-            final AttributedList<Local> bookmarks = folder.list().filter(
-                new Filter<Local>() {
-                    @Override
-                    public boolean accept(final Local file) {
-                        return file.getName().endsWith(".duck");
-                    }
-
-                    @Override
-                    public Pattern toPattern() {
-                        return Pattern.compile(".*\\.duck");
-                    }
-
-                }
-            );
+            final AttributedList<Local> bookmarks = folder.list().filter(filter);
             for(Local f : bookmarks) {
                 try {
                     this.add(reader.read(f));
@@ -167,37 +166,37 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         }
         super.load();
         try {
-            monitor.register(folder, new FileWatcherListener() {
-                @Override
-                public void fileWritten(final Local file) {
-                    final Host bookmark = lookup(FilenameUtils.getBaseName(file.getName()));
-                    if(bookmark != null) {
-                        collectionItemChanged(bookmark);
-                    }
-                }
-
-                @Override
-                public void fileDeleted(final Local file) {
-                    final Host bookmark = lookup(FilenameUtils.getBaseName(file.getName()));
-                    if(bookmark != null) {
-                        remove(bookmark);
-                    }
-                }
-
-                @Override
-                public void fileCreated(final Local file) {
-                    try {
-                        final Host bookmark = HostReaderFactory.get().read(file);
-                        add(bookmark);
-                    }
-                    catch(AccessDeniedException e) {
-                        log.warn(String.format("Failure reading file %s", file));
-                    }
-                }
-            });
+            monitor.register(folder, filter, this);
         }
         catch(IOException e) {
             throw new LocalAccessDeniedException(String.format("Failure monitoring directory %s", folder.getName()), e);
+        }
+    }
+
+    @Override
+    public void fileWritten(final Local file) {
+        final Host bookmark = lookup(FilenameUtils.getBaseName(file.getName()));
+        if(bookmark != null) {
+            super.collectionItemChanged(bookmark);
+        }
+    }
+
+    @Override
+    public void fileDeleted(final Local file) {
+        final Host bookmark = lookup(FilenameUtils.getBaseName(file.getName()));
+        if(bookmark != null) {
+            this.remove(bookmark);
+        }
+    }
+
+    @Override
+    public void fileCreated(final Local file) {
+        try {
+            final Host bookmark = HostReaderFactory.get().read(file);
+            this.add(bookmark);
+        }
+        catch(AccessDeniedException e) {
+            log.warn(String.format("Failure reading file %s", file));
         }
     }
 
