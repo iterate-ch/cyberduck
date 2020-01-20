@@ -15,13 +15,10 @@ package ch.cyberduck.core.sftp;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -59,12 +56,6 @@ public class SFTPQuotaFeature implements Quota {
             catch(BackgroundException e) {
                 log.info(String.format("Failure obtaining disk quota. %s", e));
             }
-        }
-        try {
-            return this.getSpaceShellPrompt(home);
-        }
-        catch(BackgroundException e) {
-            log.info(String.format("Failure obtaining disk quota. %s", e));
         }
         return new Space(0L, Long.MAX_VALUE);
     }
@@ -157,36 +148,5 @@ public class SFTPQuotaFeature implements Quota {
         catch(IOException e) {
             throw new SFTPExceptionMappingService().map("Failure to read attributes of {0}", e, directory);
         }
-    }
-
-    private Space getSpaceShellPrompt(final Path directory) throws BackgroundException {
-        final ThreadLocal<Space> quota = new ThreadLocal<Space>();
-        new SFTPCommandFeature(session).send(String.format("df -Pk %s | awk '{print $3, $4}'", directory.getAbsolute()), new DisabledProgressListener(),
-            new TranscriptListener() {
-                @Override
-                public void log(final Type request, final String output) {
-                    switch(request) {
-                        case response:
-                            final String[] numbers = StringUtils.split(output, ' ');
-                            if(numbers.length == 2) {
-                                try {
-                                    Long used = Long.valueOf(numbers[0]) * 1000L;
-                                    Long available = Long.valueOf(numbers[1]) * 1000L;
-                                    quota.set(new Space(used, available));
-                                }
-                                catch(NumberFormatException e) {
-                                    log.warn(String.format("Ignore line %s", output));
-                                }
-                            }
-                            else {
-                                log.warn(String.format("Ignore line %s", output));
-                            }
-                    }
-                }
-            });
-        if(null == quota.get()) {
-            throw new SFTPExceptionMappingService().map("Failure to read attributes of {0}", new IOException(), directory);
-        }
-        return quota.get();
     }
 }
