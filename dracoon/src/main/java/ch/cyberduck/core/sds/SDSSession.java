@@ -30,6 +30,7 @@ import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.Version;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.*;
@@ -168,6 +169,15 @@ public class SDSSession extends HttpSession<SDSApiClient> {
 
     @Override
     public void login(final Proxy proxy, final LoginCallback controller, final CancelCallback cancel) throws BackgroundException {
+        final SoftwareVersionData version = this.softwareVersion();
+        Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(version.getRestApiVersion());
+        if(matcher.matches()) {
+            if(new Version(matcher.group(1)).compareTo(new Version(PreferencesFactory.get().getProperty("sds.version.lts"))) < 0) {
+                throw new InteroperabilityException(LocaleFactory.localizedString(
+                    "Your company is using an outdated version of the DRACOON backend that is no longer compatible with this app. Please contact your administrator to update the version of the DRACOON backend.",
+                    "SDS"));
+            }
+        }
         final Credentials credentials = host.getCredentials();
         final String login = credentials.getUsername();
         final String password = credentials.getPassword();
@@ -175,15 +185,13 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
                 if("x-dracoon-action:oauth".equals(CYBERDUCK_REDIRECT_URI)) {
-                    final SoftwareVersionData softwareVersionData = this.softwareVersion();
-                    Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(softwareVersionData.getRestApiVersion());
                     if(matcher.matches()) {
                         if(new Version(matcher.group(1)).compareTo(new Version("4.15.0")) >= 0) {
                             authorizationService.withRedirectUri(CYBERDUCK_REDIRECT_URI);
                         }
                     }
                     else {
-                        log.warn(String.format("Failure to parse software version %s", softwareVersionData));
+                        log.warn(String.format("Failure to parse software version %s", version));
                     }
                 }
                 authorizationService.setTokens(authorizationService.authorize(host, controller, cancel));

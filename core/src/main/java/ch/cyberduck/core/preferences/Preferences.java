@@ -785,6 +785,7 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("b2.metadata.default", StringUtils.EMPTY);
 
+        this.setDefault("sds.version.lts", "4.12");
         this.setDefault("sds.listing.chunksize", String.valueOf(500));
         this.setDefault("sds.upload.multipart.chunksize", String.valueOf(2 * 1024L * 1024L));
         // Run missing file keys in bulk feature after upload
