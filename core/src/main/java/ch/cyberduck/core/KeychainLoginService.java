@@ -140,6 +140,7 @@ public class KeychainLoginService implements LoginService {
             credentials.setToken(input.getPassword());
         }
         if(options.oauth) {
+            log.warn(String.format("Reset OAuth tokens for %s", bookmark));
             credentials.setOauth(OAuthTokens.EMPTY);
         }
         return options.password || options.token || options.oauth;
