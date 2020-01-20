@@ -95,7 +95,7 @@ public final class FileWatcher {
                         }
                         if(kind == OVERFLOW) {
                             log.error(String.format("Overflow event for %s", folder));
-                            break;
+                            continue;
                         }
                         // The filename is the context of the event. May be absolute or relative path name.
                         if(matches(normalize(LocalFactory.get(folder.toString()), event.context().toString()),
