@@ -42,7 +42,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     private final ReentrantLock locked = new ReentrantLock();
 
     private final Set<CollectionListener<E>> listeners
-            = Collections.synchronizedSet(new HashSet<CollectionListener<E>>());
+        = Collections.synchronizedSet(new HashSet<>());
 
     /**
      *
@@ -94,18 +94,22 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
 
     @Override
     public boolean addAll(java.util.Collection<? extends E> es) {
-        super.addAll(es);
-        for(E item : es) {
-            this.collectionItemAdded(item);
+        if(super.addAll(es)) {
+            for(E item : es) {
+                this.collectionItemAdded(item);
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean add(E object) {
-        super.add(object);
-        this.collectionItemAdded(object);
-        return true;
+        if(super.add(object)) {
+            this.collectionItemAdded(object);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -129,15 +133,19 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     @Override
     public E remove(int row) {
         E previous = super.remove(row);
-        this.collectionItemRemoved(previous);
+        if(previous != null) {
+            this.collectionItemRemoved(previous);
+        }
         return previous;
     }
 
     @Override
     public boolean remove(Object item) {
-        boolean previous = super.remove(item);
-        this.collectionItemRemoved((E) item);
-        return previous;
+        if(super.remove(item)) {
+            this.collectionItemRemoved((E) item);
+            return true;
+        }
+        return false;
     }
 
     @Override
