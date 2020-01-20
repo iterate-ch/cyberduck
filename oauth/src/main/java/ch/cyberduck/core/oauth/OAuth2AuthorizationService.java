@@ -116,6 +116,7 @@ public class OAuth2AuthorizationService {
         if(saved.validate()) {
             // Found existing tokens
             if(saved.isExpired()) {
+                log.warn(String.format("Refresh expired access tokens %s", saved));
                 // Refresh expired access key
                 try {
                     return this.refresh(saved);
@@ -133,7 +134,7 @@ public class OAuth2AuthorizationService {
             }
         }
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Start new OAuth flow for %s", bookmark));
+            log.debug(String.format("Start new OAuth flow for %s with missing access token", bookmark));
         }
         // Start OAuth2 flow within browser
         final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
