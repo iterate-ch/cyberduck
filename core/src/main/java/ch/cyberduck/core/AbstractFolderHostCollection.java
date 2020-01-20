@@ -175,15 +175,28 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void fileWritten(final Local file) {
-        final Host bookmark = lookup(FilenameUtils.getBaseName(file.getName()));
-        if(bookmark != null) {
-            super.collectionItemChanged(bookmark);
+        if(this.isLocked()) {
+            log.debug(String.format("Skip reading bookmark from %s", file));
+        }
+        else {
+            try {
+                // Read from disk and re-insert to collection
+                final Host bookmark = HostReaderFactory.get().read(file);
+                final int index = this.indexOf(bookmark);
+                if(index != -1) {
+                    super.remove(bookmark);
+                    super.add(bookmark);
+                }
+            }
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Failure reading file %s", file));
+            }
         }
     }
 
     @Override
     public void fileDeleted(final Local file) {
-        final Host bookmark = lookup(FilenameUtils.getBaseName(file.getName()));
+        final Host bookmark = this.lookup(FilenameUtils.getBaseName(file.getName()));
         if(bookmark != null) {
             this.remove(bookmark);
         }
