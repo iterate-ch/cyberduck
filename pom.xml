@@ -81,7 +81,7 @@
         <jackson-version>2.10.2</jackson-version>
         <slf4j-version>1.7.30</slf4j-version>
         <bouncycastle-version>1.64</bouncycastle-version>
-        <httpclient-version>4.5.10</httpclient-version>
+        <httpclient-version>4.5.11</httpclient-version>
     </properties>
 
     <dependencyManagement>
