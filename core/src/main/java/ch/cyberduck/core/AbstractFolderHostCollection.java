@@ -20,13 +20,19 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.io.watchservice.WatchServiceFactory;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
+import ch.cyberduck.core.local.FileWatcher;
+import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 public abstract class AbstractFolderHostCollection extends AbstractHostCollection {
@@ -35,10 +41,12 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     private static final long serialVersionUID = 6598370606581477494L;
 
     private final Writer<Host> writer = HostWriterFactory.get();
-
     private final Reader<Host> reader = HostReaderFactory.get();
 
     protected final Local folder;
+
+    private final FileWatcher monitor
+        = new FileWatcher(WatchServiceFactory.get());
 
     /**
      * Reading bookmarks from this folder
@@ -158,6 +166,39 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             this.unlock();
         }
         super.load();
+        try {
+            monitor.register(folder, new FileWatcherListener() {
+                @Override
+                public void fileWritten(final Local file) {
+                    final Host bookmark = lookup(FilenameUtils.getBaseName(file.getName()));
+                    if(bookmark != null) {
+                        collectionItemChanged(bookmark);
+                    }
+                }
+
+                @Override
+                public void fileDeleted(final Local file) {
+                    final Host bookmark = lookup(FilenameUtils.getBaseName(file.getName()));
+                    if(bookmark != null) {
+                        remove(bookmark);
+                    }
+                }
+
+                @Override
+                public void fileCreated(final Local file) {
+                    try {
+                        final Host bookmark = HostReaderFactory.get().read(file);
+                        add(bookmark);
+                    }
+                    catch(AccessDeniedException e) {
+                        log.warn(String.format("Failure reading file %s", file));
+                    }
+                }
+            });
+        }
+        catch(IOException e) {
+            throw new LocalAccessDeniedException(String.format("Failure monitoring directory %s", folder.getName()), e);
+        }
     }
 
     @Override
