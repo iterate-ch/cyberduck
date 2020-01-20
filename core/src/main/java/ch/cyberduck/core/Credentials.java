@@ -164,7 +164,7 @@ public class Credentials implements Comparable<Credentials> {
         this.oauth = oauth;
     }
 
-    public Credentials withOauthAccessToken(final OAuthTokens oauth) {
+    public Credentials withOauth(final OAuthTokens oauth) {
         this.oauth = oauth;
         return this;
     }
@@ -334,6 +334,7 @@ public class Credentials implements Comparable<Credentials> {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Credentials{");
         sb.append("user='").append(user).append('\'');
+        sb.append(", oauth='").append(oauth).append('\'');
         sb.append(", token='").append(token).append('\'');
         sb.append(", identity=").append(identity);
         sb.append('}');
