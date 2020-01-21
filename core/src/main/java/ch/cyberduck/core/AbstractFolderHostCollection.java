@@ -33,6 +33,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 public abstract class AbstractFolderHostCollection extends AbstractHostCollection implements FileWatcherListener {
@@ -87,9 +88,23 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     }
 
     @Override
-    public void collectionItemAdded(final Host bookmark) {
+    public boolean addAll(final Collection<? extends Host> c) {
+        return super.addAll(c);
+    }
+
+    @Override
+    public boolean add(final Host bookmark) {
+        if(super.add(bookmark)) {
+            this.save(bookmark);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void add(final int row, final Host bookmark) {
+        super.add(row, bookmark);
         this.save(bookmark);
-        super.collectionItemAdded(bookmark);
     }
 
     @Override
@@ -202,7 +217,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         else {
             final Host bookmark = this.lookup(FilenameUtils.getBaseName(file.getName()));
             if(bookmark != null) {
-                this.remove(bookmark);
+                super.remove(bookmark);
             }
         }
     }
@@ -215,7 +230,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         else {
             try {
                 final Host bookmark = HostReaderFactory.get().read(file);
-                this.add(bookmark);
+                super.add(bookmark);
             }
             catch(AccessDeniedException e) {
                 log.warn(String.format("Failure reading file %s", file));

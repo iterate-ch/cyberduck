@@ -24,10 +24,7 @@ import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 public abstract class AbstractHostCollection extends Collection<Host> implements EditableCollection {
     private static final long serialVersionUID = -255801158019850767L;
@@ -35,8 +32,6 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     private static final Logger log = Logger.getLogger(AbstractHostCollection.class);
 
     private static final AbstractHostCollection EMPTY = new AbstractHostCollection() {
-        private static final long serialVersionUID = -8444415684736364173L;
-
         @Override
         public String getName() {
             return LocaleFactory.localizedString("None");
@@ -69,37 +64,6 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
             return StringUtils.remove(StringUtils.remove(h.getComment(), CharUtils.LF), CharUtils.CR);
         }
         return null;
-    }
-
-    @Override
-    public boolean addAll(final java.util.Collection<? extends Host> c) {
-        List<Host> temporary = new ArrayList<Host>();
-        for(Host host : c) {
-            if(temporary.contains(host)) {
-                log.warn(String.format("Skip adding duplicate bookmark %s", host));
-                continue;
-            }
-            temporary.add(host);
-        }
-        return super.addAll(temporary);
-    }
-
-    @Override
-    public boolean add(final Host host) {
-        if(this.contains(host)) {
-            log.warn(String.format("Skip adding duplicate bookmark %s", host));
-            return false;
-        }
-        return super.add(host);
-    }
-
-    @Override
-    public void add(final int row, final Host host) {
-        if(this.contains(host)) {
-            log.warn(String.format("Skip adding duplicate bookmark %s", host));
-            return;
-        }
-        super.add(row, host);
     }
 
     @Override
@@ -156,7 +120,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     }
 
     public synchronized void doSort(final Comparator<Host> comparator) {
-        Collections.sort(FolderBookmarkCollection.favoritesCollection(), comparator);
+        this.sort(comparator);
         // Save new index
         this.save();
     }
