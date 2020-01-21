@@ -27,7 +27,6 @@ import ch.cyberduck.core.text.NaturalOrderComparator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Spliterator;
@@ -150,11 +149,11 @@ public final class RendezvousCollection extends AbstractHostCollection implement
 
     @Override
     protected synchronized void sort() {
-        Collections.sort(this, new Comparator<Host>() {
+        this.sort(new Comparator<Host>() {
             @Override
             public int compare(final Host o1, final Host o2) {
                 return comparator.compare(BookmarkNameProvider.toString(o1),
-                        BookmarkNameProvider.toString(o2));
+                    BookmarkNameProvider.toString(o2));
             }
         });
     }
