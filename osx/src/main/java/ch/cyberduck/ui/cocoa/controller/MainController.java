@@ -773,23 +773,18 @@ public class MainController extends BundleController implements NSApplication.De
             public void callback(int returncode) {
                 if(DEFAULT_OPTION == returncode) {
                     final String selected = bookmarksPopup.selectedItem().representedObject();
-                    for(Host bookmark : bookmarks) {
-                        // Determine selected bookmark
-                        if(bookmark.getUuid().equals(selected)) {
-                            if(bookmark.equals(mount)) {
-                                // Use current working directory of browser for destination
-                                upload(bookmark, files, destination);
-                            }
-                            else {
-                                // No mounted browser
-                                if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
-                                    upload(bookmark, files, new Path(PathNormalizer.normalize(bookmark.getDefaultPath()), EnumSet.of(Path.Type.directory)));
-                                }
-                                else {
-                                    upload(bookmark, files, destination);
-                                }
-                            }
-                            break;
+                    final Host bookmark = bookmarks.lookup(selected);
+                    if(bookmark.equals(mount)) {
+                        // Use current working directory of browser for destination
+                        upload(bookmark, files, destination);
+                    }
+                    else {
+                        // No mounted browser
+                        if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
+                            upload(bookmark, files, new Path(PathNormalizer.normalize(bookmark.getDefaultPath()), EnumSet.of(Path.Type.directory)));
+                        }
+                        else {
+                            upload(bookmark, files, destination);
                         }
                     }
                 }
