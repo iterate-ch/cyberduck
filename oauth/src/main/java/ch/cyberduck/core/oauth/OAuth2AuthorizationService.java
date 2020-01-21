@@ -38,6 +38,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,6 +136,17 @@ public class OAuth2AuthorizationService {
         }
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start new OAuth flow for %s with missing access token", bookmark));
+        }
+        if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
+            prompt.warn(bookmark,
+                LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
+                MessageFormat.format("{0}. {1}.",
+                    LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"),
+                    LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")
+                ),
+                LocaleFactory.localizedString("Continue", "Credentials"),
+                LocaleFactory.localizedString("Cancel"), "oauth.browser.open.warn"
+            );
         }
         // Start OAuth2 flow within browser
         final AuthorizationCodeFlow flow = new AuthorizationCodeFlow.Builder(
