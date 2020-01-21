@@ -20,7 +20,6 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -143,7 +142,7 @@ public class AttributedList<E extends Referenceable> implements Iterable<E> {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Sort list %s with comparator %s", this, comparator));
         }
-        Collections.sort(copy, comparator);
+        copy.sort(comparator);
     }
 
     /**

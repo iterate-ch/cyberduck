@@ -41,7 +41,6 @@ import org.rococoa.Foundation;
 import org.rococoa.Selector;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TimeZone;
@@ -183,7 +182,7 @@ public class DefaultBookmarkController extends BookmarkController {
         this.timezonePopup.addItemWithTitle(UTC.getID());
         this.timezonePopup.lastItem().setRepresentedObject(UTC.getID());
         this.timezonePopup.menu().addItem(NSMenuItem.separatorItem());
-        Collections.sort(timezones, new Comparator<String>() {
+        timezones.sort(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 return TimeZone.getTimeZone(o1).getID().compareTo(TimeZone.getTimeZone(o2).getID());

@@ -43,7 +43,6 @@ import java.security.spec.RSAPublicKeySpec;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 import com.dd.plist.NSData;
 import com.dd.plist.NSDictionary;
@@ -89,7 +88,7 @@ public abstract class DictionaryLicense extends AbstractLicense {
         StringBuilder values = new StringBuilder();
         final ArrayList<String> keys = new ArrayList<>(dictionary.keySet());
         // Sort lexicographically by key
-        Collections.sort(keys, new NaturalOrderComparator());
+        keys.sort(new NaturalOrderComparator());
         for(String key : keys) {
             if("Signature".equals(key)) {
                 continue;
