@@ -124,8 +124,8 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     @Override
-    public boolean addAll(java.util.Collection<? extends Transfer> hosts) {
-        return FolderTransferCollection.defaultCollection().addAll(hosts);
+    public boolean addAll(java.util.Collection<? extends Transfer> c) {
+        return FolderTransferCollection.defaultCollection().addAll(c);
     }
 
     @Override
