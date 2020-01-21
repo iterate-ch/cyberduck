@@ -31,7 +31,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -66,7 +65,7 @@ public class SwiftLocationFeature implements Location {
         }
         else {
             final List<Region> regions = new ArrayList<Region>(session.getClient().getRegions());
-            Collections.sort(regions, new Comparator<Region>() {
+            regions.sort(new Comparator<Region>() {
                 @Override
                 public int compare(final Region r1, final Region r2) {
                     if(r1.isDefault()) {

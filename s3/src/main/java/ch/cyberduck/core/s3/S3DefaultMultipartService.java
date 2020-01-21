@@ -88,7 +88,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
                 log.info(String.format("Found %d previous multipart uploads for %s", uploads.size(), directory));
             }
             // Sort with newest upload first in list
-            Collections.sort(uploads, new Comparator<MultipartUpload>() {
+            uploads.sort(new Comparator<MultipartUpload>() {
                 @Override
                 public int compare(final MultipartUpload o1, final MultipartUpload o2) {
                     return -o1.getInitiatedDate().compareTo(o2.getInitiatedDate());

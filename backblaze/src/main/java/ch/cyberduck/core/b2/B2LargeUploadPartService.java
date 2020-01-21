@@ -94,7 +94,7 @@ public class B2LargeUploadPartService {
                 }
             }
             // Uploads are listed in the order they were started, with the oldest one first
-            Collections.sort(uploads, new Comparator<B2FileInfoResponse>() {
+            uploads.sort(new Comparator<B2FileInfoResponse>() {
                 @Override
                 public int compare(final B2FileInfoResponse o1, final B2FileInfoResponse o2) {
                     return o1.getUploadTimestamp().compareTo(o2.getUploadTimestamp());
