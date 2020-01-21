@@ -26,7 +26,6 @@ import ch.cyberduck.binding.foundation.NSLocale;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSUserDefaults;
-import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.sparkle.Sandbox;
@@ -215,7 +214,7 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         else {
             this.setDefault("queue.download.folder", "~/Desktop");
         }
-        this.setDefault("browser.filesize.decimal", String.valueOf(!Factory.Platform.osversion.matches("10\\.5.*")));
+        this.setDefault("browser.filesize.decimal", String.valueOf(true));
 
         // SSL Keystore
         this.setDefault("connection.ssl.keystore.type", "KeychainStore");

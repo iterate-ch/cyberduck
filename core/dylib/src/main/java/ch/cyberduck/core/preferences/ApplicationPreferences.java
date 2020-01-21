@@ -16,7 +16,6 @@ package ch.cyberduck.core.preferences;
  */
 
 import ch.cyberduck.core.ApplescriptTerminalService;
-import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.KeychainCertificateStore;
 import ch.cyberduck.core.KeychainPasswordStore;
@@ -77,9 +76,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         if(null == this.getDefault("SUExpectsDSASignature")) {
             this.setDefault("factory.licensefactory.class", ReceiptFactory.class.getName());
         }
-        if(!Factory.Platform.osversion.matches("10\\.(5|6|7).*")) {
-            this.setDefault("factory.notification.class", NotificationCenter.class.getName());
-        }
+        this.setDefault("factory.notification.class", NotificationCenter.class.getName());
         this.setDefault("factory.iconservice.class", WorkspaceIconService.class.getName());
         this.setDefault("factory.filedescriptor.class", LaunchServicesFileDescriptor.class.getName());
         this.setDefault("factory.schemehandler.class", LaunchServicesSchemeHandler.class.getName());
