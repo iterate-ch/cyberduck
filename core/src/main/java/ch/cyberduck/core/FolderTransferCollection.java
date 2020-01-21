@@ -34,7 +34,6 @@ import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -52,12 +51,9 @@ public class FolderTransferCollection extends Collection<Transfer> {
         return TRANSFER_COLLECTION;
     }
 
-    private static final long serialVersionUID = -8276371611952331966L;
-
     private static final String DEFAULT_PREFIX = "transfer";
 
     private final Writer<Transfer> writer = TransferWriterFactory.get();
-
     private final Reader<Transfer> reader = TransferReaderFactory.get();
 
     private final String prefix;
@@ -258,7 +254,7 @@ public class FolderTransferCollection extends Collection<Transfer> {
     }
 
     protected synchronized void sort() {
-        Collections.sort(this, new Comparator<Transfer>() {
+        this.sort(new Comparator<Transfer>() {
             @Override
             public int compare(Transfer o1, Transfer o2) {
                 return Integer.compare(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid())), preferences.getInteger(String.format("%s%s", prefix, o2.getUuid())));
