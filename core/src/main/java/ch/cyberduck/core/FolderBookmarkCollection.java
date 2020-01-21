@@ -31,14 +31,11 @@ import java.util.Comparator;
 public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     private static final Logger log = Logger.getLogger(FolderBookmarkCollection.class);
 
-    private final Preferences preferences
-            = PreferencesFactory.get();
+    private final Preferences preferences = PreferencesFactory.get();
 
     private static final FolderBookmarkCollection FAVORITES_COLLECTION = new FolderBookmarkCollection(
         LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Bookmarks")
     ) {
-        private static final long serialVersionUID = 6302021296403107371L;
-
         @Override
         public void collectionItemAdded(final Host bookmark) {
             bookmark.setWorkdir(null);
@@ -46,9 +43,11 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         }
     };
 
-    private static final String DEFAULT_PREFIX = "bookmark";
+    private static String toProperty(final Host bookmark, final String prefix) {
+        return String.format("%s%s", prefix, bookmark.getUuid());
+    }
 
-    private static final long serialVersionUID = -675342412129904735L;
+    private static final String DEFAULT_PREFIX = "bookmark";
 
     private final String prefix;
 
@@ -91,7 +90,12 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     @Override
     public void collectionItemRemoved(final Host bookmark) {
         try {
-            preferences.deleteProperty(String.format("%s%s", prefix, bookmark.getUuid()));
+            if(this.isLocked()) {
+                log.debug("Skip indexing collection while loading");
+            }
+            else {
+                preferences.deleteProperty(toProperty(bookmark, prefix));
+            }
         }
         finally {
             super.collectionItemRemoved(bookmark);
@@ -105,7 +109,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         this.lock();
         try {
             for(int i = 0; i < this.size(); i++) {
-                preferences.setProperty(String.format("%s%s", prefix, this.get(i).getUuid()), i);
+                preferences.setProperty(toProperty(this.get(i), prefix), i);
             }
         }
         finally {
@@ -137,10 +141,10 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
 
     @Override
     protected synchronized void sort() {
-        Collections.sort(this, new Comparator<Host>() {
+        this.sort(new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
-                return Integer.compare(preferences.getInteger(String.format("%s%s", prefix, o1.getUuid())), preferences.getInteger(String.format("%s%s", prefix, o2.getUuid())));
+                return Integer.compare(preferences.getInteger(toProperty(o1, prefix)), preferences.getInteger(toProperty(o2, prefix)));
             }
         });
     }
