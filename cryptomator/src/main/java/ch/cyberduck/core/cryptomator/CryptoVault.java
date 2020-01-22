@@ -124,7 +124,7 @@ public class CryptoVault implements Vault {
                     new DefaultUrlProvider(bookmark).toUrl(masterkey).find(DescriptiveUrl.Type.provider).getUrl(), credentials.getPassword());
             }
             catch(LocalAccessDeniedException e) {
-                log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e));
+                log.error(String.format("Failure %s saving credentials for %s in password store", e, bookmark));
             }
         }
         final String passphrase = credentials.getPassword();

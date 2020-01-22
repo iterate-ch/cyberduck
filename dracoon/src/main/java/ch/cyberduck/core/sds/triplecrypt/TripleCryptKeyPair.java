@@ -76,7 +76,7 @@ public class TripleCryptKeyPair {
                         credentials.getPassword());
                 }
                 catch(LocalAccessDeniedException e) {
-                    log.error(String.format("Failure saving credentials for %s in keychain. %s", bookmark, e));
+                    log.error(String.format("Failure %s saving credentials for %s in password store", e, bookmark));
                 }
             }
             return credentials;

@@ -150,7 +150,7 @@ public class S3UrlProvider implements UrlProvider {
         expiry.add(Calendar.SECOND, seconds);
         final String secret = store.findLoginPassword(session.getHost());
         if(StringUtils.isBlank(secret)) {
-            log.warn("No secret found in keychain required to sign temporary URL");
+            log.warn("No secret found in password store required to sign temporary URL");
             return DescriptiveUrl.EMPTY;
         }
         String region = session.getHost().getRegion();

@@ -70,7 +70,7 @@ public class CertificateStoreX509TrustManager extends AbstractX509TrustManager {
         }
         if(store.verify(prompt, hostname, Arrays.asList(certs))) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Certificate for %s trusted in Keychain", hostname));
+                log.info(String.format("Certificate for %s trusted in certificate store", hostname));
             }
             // We still accept the certificate if we find it in the Keychain
             // regardless of its trust settings. There is currently no way I am
