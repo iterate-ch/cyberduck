@@ -20,25 +20,46 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.io.watchservice.WatchServiceFactory;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
+import ch.cyberduck.core.local.FileWatcher;
+import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
-public abstract class AbstractFolderHostCollection extends AbstractHostCollection {
+public abstract class AbstractFolderHostCollection extends AbstractHostCollection implements FileWatcherListener {
     private static final Logger log = Logger.getLogger(AbstractFolderHostCollection.class);
 
     private static final long serialVersionUID = 6598370606581477494L;
 
     private final Writer<Host> writer = HostWriterFactory.get();
-
     private final Reader<Host> reader = HostReaderFactory.get();
 
     protected final Local folder;
+
+    private final FileWatcher monitor
+        = new FileWatcher(WatchServiceFactory.get());
+
+    private static final Filter<Local> filter = new Filter<Local>() {
+        @Override
+        public boolean accept(final Local file) {
+            return file.getName().endsWith(".duck");
+        }
+
+        @Override
+        public Pattern toPattern() {
+            return Pattern.compile(".*\\.duck");
+        }
+    };
 
     /**
      * Reading bookmarks from this folder
@@ -67,9 +88,23 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     }
 
     @Override
-    public void collectionItemAdded(final Host bookmark) {
+    public boolean addAll(final Collection<? extends Host> c) {
+        return super.addAll(c);
+    }
+
+    @Override
+    public boolean add(final Host bookmark) {
+        if(super.add(bookmark)) {
+            this.save(bookmark);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void add(final int row, final Host bookmark) {
+        super.add(row, bookmark);
         this.save(bookmark);
-        super.collectionItemAdded(bookmark);
     }
 
     @Override
@@ -129,20 +164,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             if(!folder.exists()) {
                 new DefaultLocalDirectoryFeature().mkdir(folder);
             }
-            final AttributedList<Local> bookmarks = folder.list().filter(
-                new Filter<Local>() {
-                    @Override
-                    public boolean accept(final Local file) {
-                        return file.getName().endsWith(".duck");
-                    }
-
-                    @Override
-                    public Pattern toPattern() {
-                        return Pattern.compile(".*\\.duck");
-                    }
-
-                }
-            );
+            final AttributedList<Local> bookmarks = folder.list().filter(filter);
             for(Local f : bookmarks) {
                 try {
                     this.add(reader.read(f));
@@ -158,6 +180,62 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             this.unlock();
         }
         super.load();
+        try {
+            monitor.register(folder, filter, this);
+        }
+        catch(IOException e) {
+            throw new LocalAccessDeniedException(String.format("Failure monitoring directory %s", folder.getName()), e);
+        }
+    }
+
+    @Override
+    public void fileWritten(final Local file) {
+        if(this.isLocked()) {
+            log.debug(String.format("Skip reading bookmark from %s", file));
+        }
+        else {
+            try {
+                // Read from disk and re-insert to collection
+                final Host bookmark = HostReaderFactory.get().read(file);
+                final int index = this.indexOf(bookmark);
+                if(index != -1) {
+                    super.remove(bookmark);
+                    super.add(bookmark);
+                }
+            }
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Failure reading file %s", file));
+            }
+        }
+    }
+
+    @Override
+    public void fileDeleted(final Local file) {
+        if(this.isLocked()) {
+            log.debug(String.format("Skip reading bookmark from %s", file));
+        }
+        else {
+            final Host bookmark = this.lookup(FilenameUtils.getBaseName(file.getName()));
+            if(bookmark != null) {
+                super.remove(bookmark);
+            }
+        }
+    }
+
+    @Override
+    public void fileCreated(final Local file) {
+        if(this.isLocked()) {
+            log.debug(String.format("Skip reading bookmark from %s", file));
+        }
+        else {
+            try {
+                final Host bookmark = HostReaderFactory.get().read(file);
+                super.add(bookmark);
+            }
+            catch(AccessDeniedException e) {
+                log.warn(String.format("Failure reading file %s", file));
+            }
+        }
     }
 
     @Override

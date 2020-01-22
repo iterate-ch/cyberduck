@@ -41,12 +41,7 @@ public final class BookmarkControllerFactory {
                         super.invalidate();
                     }
                 };
-                c.addObserver(new BookmarkController.BookmarkObserver() {
-                    @Override
-                    public void change(Host bookmark) {
-                        collection.collectionItemChanged(bookmark);
-                    }
-                });
+                c.addObserver(collection::collectionItemChanged);
                 c.loadBundle();
                 open.put(host, c);
             }

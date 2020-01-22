@@ -802,6 +802,8 @@ public abstract class Preferences implements Locales {
         this.setDefault("storegate.upload.multipart.chunksize", String.valueOf(0.5 * 1024L * 1024L));
         this.setDefault("storegate.lock.ttl", String.valueOf(24 * 3600000)); // 24 hours
 
+        this.setDefault("oauth.browser.open.warn", String.valueOf(false));
+
         this.setDefault("brick.pairing.nickname.configure", String.valueOf(false));
         this.setDefault("brick.pairing.hostname.configure", String.valueOf(true));
         this.setDefault("brick.pairing.interval.ms", String.valueOf(1000L));

@@ -39,7 +39,7 @@ public class DefaultWatchEditor extends AbstractEditor {
     private static final Logger log = Logger.getLogger(DefaultWatchEditor.class);
 
     private final FileWatcher monitor
-            = new FileWatcher(new NIOEventWatchService());
+        = new FileWatcher(new NIOEventWatchService());
 
     public DefaultWatchEditor(final Application application,
                               final SessionPool session,
@@ -59,7 +59,7 @@ public class DefaultWatchEditor extends AbstractEditor {
 
     @Override
     protected void watch(final Local local, final FileWatcherListener listener) throws IOException {
-        Uninterruptibles.awaitUninterruptibly(monitor.register(local, listener));
+        Uninterruptibles.awaitUninterruptibly(monitor.register(local.getParent(), new FileWatcher.DefaultFileFilter(local), listener));
     }
 
     @Override

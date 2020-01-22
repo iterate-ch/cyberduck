@@ -42,7 +42,6 @@ import java.util.concurrent.TimeoutException;
 import static java.nio.file.StandardWatchEventKinds.*;
 import static org.junit.Assert.*;
 
-@Ignore
 public class NIOEventWatchServiceTest {
 
     @Test(expected = IOException.class)
@@ -50,7 +49,7 @@ public class NIOEventWatchServiceTest {
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
         final Local file = new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString());
         assertFalse(file.exists());
-        watcher.register(file, new DisabledFileWatcherListener());
+        watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), new DisabledFileWatcherListener());
     }
 
     @Test
@@ -65,6 +64,7 @@ public class NIOEventWatchServiceTest {
     }
 
     @Test
+    @Ignore
     public void testListenerEventWatchService() throws Exception {
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
         final Local file = new Local(System.getProperty("java.io.tmpdir") + "é", UUID.randomUUID().toString());
@@ -104,7 +104,7 @@ public class NIOEventWatchServiceTest {
             }
         };
         LocalTouchFactory.get().touch(file);
-        watcher.register(file, listener).await(1, TimeUnit.SECONDS);
+        watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS);
         final Process exec = Runtime.getRuntime().exec(String.format("echo 'Test' >> %s", file.getAbsolute()));
         assertEquals(0, exec.waitFor());
         update.await(1L, TimeUnit.SECONDS);

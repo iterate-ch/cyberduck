@@ -18,6 +18,7 @@ package ch.cyberduck.core.local;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.io.watchservice.RegisterWatchService;
@@ -36,6 +37,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.regex.Pattern;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
@@ -54,15 +56,33 @@ public final class FileWatcher {
         this.pool = new DefaultThreadPool("watcher", 1);
     }
 
-    public CountDownLatch register(final Local file, final FileWatcherListener listener) throws IOException {
-        // Make sure to canonicalize the watched folder
-        final Path folder = new File(file.getParent().getAbsolute()).getCanonicalFile().toPath();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Register folder %s watching for file %s", folder, file));
+    public static final class DefaultFileFilter implements Filter<Local> {
+        private final Local file;
+
+        public DefaultFileFilter(final Local file) {
+            this.file = file;
         }
-        final WatchKey key = monitor.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
+
+        @Override
+        public boolean accept(final Local f) {
+            return StringUtils.equals(file.getName(), file.getName());
+        }
+
+        @Override
+        public Pattern toPattern() {
+            return Pattern.compile(file.getName());
+        }
+    }
+
+    public CountDownLatch register(final Local folder, final Filter<Local> filter, final FileWatcherListener listener) throws IOException {
+        // Make sure to canonicalize the watched folder
+        final Path canonical = new File(folder.getAbsolute()).getCanonicalFile().toPath();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Register folder %s watching with filter %s", canonical, filter));
+        }
+        final WatchKey key = monitor.register(canonical, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
         if(!key.isValid()) {
-            throw new IOException(String.format("Failure registering for events in %s", file));
+            throw new IOException(String.format("Failure registering for events in %s", canonical));
         }
         final CountDownLatch lock = new CountDownLatch(1);
         pool.execute(new Callable<Boolean>() {
@@ -95,12 +115,11 @@ public final class FileWatcher {
                         }
                         if(kind == OVERFLOW) {
                             log.error(String.format("Overflow event for %s", folder));
-                            break;
+                            continue;
                         }
                         // The filename is the context of the event. May be absolute or relative path name.
-                        if(matches(normalize(LocalFactory.get(folder.toString()), event.context().toString()),
-                                LocalFactory.get(folder.toString(), file.getName()))) {
-                            callback(LocalFactory.get(folder.toString()), event, listener);
+                        if(filter.accept(normalize(LocalFactory.get(folder.toString()), event.context().toString()))) {
+                            callback(folder, event, listener);
                         }
                         else {
                             log.warn(String.format("Ignored file system event for unknown file %s", event.context()));
@@ -120,26 +139,9 @@ public final class FileWatcher {
 
     protected Local normalize(final Local parent, final String name) {
         if(StringUtils.startsWith(name, String.valueOf(parent.getDelimiter()))) {
-            return normalize(LocalFactory.get(name));
+            return LocalFactory.get(name);
         }
-        return normalize(LocalFactory.get(parent, name));
-    }
-
-    protected Local normalize(final Local file) {
-        try {
-            return LocalFactory.get(new File(file.getAbsolute()).getCanonicalPath());
-        }
-        catch(IOException e) {
-            log.warn(String.format("Failure getting real path for file %s", file));
-            return file;
-        }
-    }
-
-    protected boolean matches(final Local context, final Local file) {
-        if(!new File(context.getAbsolute()).isAbsolute()) {
-            return context.getName().equals(file.getName());
-        }
-        return this.normalize(context).equals(this.normalize(file));
+        return LocalFactory.get(parent, name);
     }
 
     private void callback(final Local folder, final WatchEvent<?> event, final FileWatcherListener l) {

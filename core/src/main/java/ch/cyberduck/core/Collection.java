@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
@@ -34,26 +35,17 @@ import java.util.function.Predicate;
 public class Collection<E> extends ArrayList<E> implements CollectionListener<E> {
     private static final Logger log = Logger.getLogger(Collection.class);
 
-    private static final long serialVersionUID = 2169368029038925573L;
-
-    /**
-     *
-     */
     private final ReentrantLock locked = new ReentrantLock();
+    private final AtomicBoolean loaded = new AtomicBoolean();
 
     private final Set<CollectionListener<E>> listeners
-            = Collections.synchronizedSet(new HashSet<CollectionListener<E>>());
-
-    /**
-     *
-     */
-    private final AtomicBoolean loaded = new AtomicBoolean();
+        = Collections.synchronizedSet(new HashSet<>());
 
     public Collection() {
         super();
     }
 
-    public Collection(java.util.Collection<E> c) {
+    public Collection(java.util.Collection c) {
         super(c);
     }
 
@@ -62,26 +54,6 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
      */
     public void load() throws AccessDeniedException {
         this.collectionLoaded();
-    }
-
-    @Override
-    public int indexOf(Object elem) {
-        for(int i = 0; i < this.size(); i++) {
-            if(this.get(i).equals(elem)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    @Override
-    public int lastIndexOf(Object elem) {
-        for(int i = this.size() - 1; i >= 0; i--) {
-            if(this.get(i).equals(elem)) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     public void addListener(CollectionListener<E> listener) {
@@ -93,25 +65,64 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     }
 
     @Override
-    public boolean addAll(java.util.Collection<? extends E> es) {
-        super.addAll(es);
-        for(E item : es) {
-            this.collectionItemAdded(item);
+    public boolean addAll(java.util.Collection<? extends E> c) {
+        final List<E> temporary = new ArrayList<>();
+        for(E item : c) {
+            if(temporary.contains(item)) {
+                log.warn(String.format("Skip adding duplicate %s", item));
+                continue;
+            }
+            temporary.add(item);
         }
-        return true;
+        if(super.addAll(temporary)) {
+            for(E item : temporary) {
+                this.collectionItemAdded(item);
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public boolean add(E object) {
-        super.add(object);
-        this.collectionItemAdded(object);
-        return true;
+    public boolean addAll(final int index, final java.util.Collection<? extends E> c) {
+        final List<E> temporary = new ArrayList<>();
+        for(E item : c) {
+            if(temporary.contains(item)) {
+                log.warn(String.format("Skip adding duplicate %s", item));
+                continue;
+            }
+            temporary.add(item);
+        }
+        if(super.addAll(index, temporary)) {
+            for(E item : temporary) {
+                this.collectionItemAdded(item);
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void add(int row, E object) {
-        super.add(row, object);
-        this.collectionItemAdded(object);
+    public boolean add(E item) {
+        if(this.contains(item)) {
+            log.warn(String.format("Skip adding duplicate %s", item));
+            return false;
+        }
+        if(super.add(item)) {
+            this.collectionItemAdded(item);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void add(int row, E item) {
+        if(this.contains(item)) {
+            log.warn(String.format("Skip adding duplicate %s", item));
+            return;
+        }
+        super.add(row, item);
+        this.collectionItemAdded(item);
     }
 
     @Override
@@ -129,29 +140,30 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     @Override
     public E remove(int row) {
         E previous = super.remove(row);
-        this.collectionItemRemoved(previous);
+        if(previous != null) {
+            this.collectionItemRemoved(previous);
+        }
         return previous;
     }
 
     @Override
     public boolean remove(Object item) {
-        boolean previous = super.remove(item);
-        this.collectionItemRemoved((E) item);
-        return previous;
+        if(super.remove(item)) {
+            this.collectionItemRemoved((E) item);
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean removeAll(java.util.Collection<?> c) {
-        boolean modified = false;
-        Iterator<?> e = iterator();
-        while(e.hasNext()) {
-            Object item = e.next();
-            if(c.contains(item)) {
-                e.remove();
-                modified = true;
+        if(super.removeAll(c)) {
+            for(Object item : c) {
+                this.collectionItemRemoved((E) item);
             }
+            return true;
         }
-        return modified;
+        return false;
     }
 
     @Override

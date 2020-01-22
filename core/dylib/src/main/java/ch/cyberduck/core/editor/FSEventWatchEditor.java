@@ -54,7 +54,7 @@ public class FSEventWatchEditor extends AbstractEditor {
     }
 
     public void watch(final Local local, final FileWatcherListener listener) throws IOException {
-        Uninterruptibles.awaitUninterruptibly(monitor.register(local, listener));
+        Uninterruptibles.awaitUninterruptibly(monitor.register(local.getParent(), new FileWatcher.DefaultFileFilter(local), listener));
     }
 
     @Override

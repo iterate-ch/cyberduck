@@ -49,7 +49,7 @@ public class FSEventWatchServiceTest {
         final FileWatcher watcher = new FileWatcher(new FSEventWatchService());
         final Local file = new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString());
         assertFalse(file.exists());
-        watcher.register(file, new DisabledFileWatcherListener()).await();
+        watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), new DisabledFileWatcherListener()).await();
         watcher.close();
     }
 
@@ -104,7 +104,7 @@ public class FSEventWatchServiceTest {
             }
         };
         LocalTouchFactory.get().touch(file);
-        watcher.register(file, listener).await(1, TimeUnit.SECONDS);
+        watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS);
         final Process exec = Runtime.getRuntime().exec(String.format("echo 'Test' >> %s", file.getAbsolute()));
         assertEquals(0, exec.waitFor());
         update.await(1L, TimeUnit.SECONDS);
