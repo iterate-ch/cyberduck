@@ -173,7 +173,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
         item.setKeyEquivalent(key);
         if(log.isDebugEnabled()) {
             if(!item.keyEquivalent().equals(key)) {
-                log.error("Failed to attach key equivalent to menu item:" + key);
+                log.error(String.format("Failed to attach key equivalent to menu item %s", key));
             }
         }
         item.setKeyEquivalentModifierMask(modifier);
