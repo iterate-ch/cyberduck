@@ -150,7 +150,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -1753,15 +1752,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             bookmarkModel.setFilter(null);
         }
         else {
-            bookmarkModel.setFilter(new HostFilter() {
-                @Override
-                public boolean accept(Host host) {
-                    return StringUtils.lowerCase(BookmarkNameProvider.toString(host)).contains(searchString.toLowerCase(Locale.ROOT))
-                        || ((null != host.getComment()) && StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase(Locale.ROOT)))
-                        || ((null != host.getCredentials().getUsername()) && StringUtils.lowerCase(host.getCredentials().getUsername()).contains(searchString.toLowerCase(Locale.ROOT)))
-                        || StringUtils.lowerCase(host.getHostname()).contains(searchString.toLowerCase(Locale.ROOT));
-                }
-            });
+            bookmarkModel.setFilter(new BookmarkSearchFilter(searchString));
         }
         this.reloadBookmarks();
     }
