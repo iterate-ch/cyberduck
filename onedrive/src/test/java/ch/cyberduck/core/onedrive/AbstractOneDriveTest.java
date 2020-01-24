@@ -20,13 +20,24 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostPasswordStore;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
+
+import org.junit.runners.Parameterized;
 
 import java.io.InputStream;
 
 public abstract class AbstractOneDriveTest extends AbstractGraphTest {
     protected OneDriveSession session;
+
+    @Parameterized.Parameters(name = "vaultVersion = {0}")
+    public static Object[] data() {
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+    }
+
+    @Parameterized.Parameter
+    public int vaultVersion;
 
     @Override
     protected Protocol protocol() {

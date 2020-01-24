@@ -1,12 +1,12 @@
 package ch.cyberduck.core.cryptomator.features;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -21,6 +21,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.ContentWriter;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.cryptomator.random.RandomNonceGenerator;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
@@ -33,9 +34,10 @@ import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
 
-public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
-    private static final Logger log = Logger.getLogger(CryptoDirectoryFeature.class);
+public class CryptoDirectoryV7Feature<Reply> implements Directory<Reply> {
+    private static final Logger log = Logger.getLogger(CryptoDirectoryV7Feature.class);
 
     private final Session<?> session;
     private final Directory<Reply> proxy;
@@ -43,7 +45,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     private final RandomStringService random
         = new UUIDRandomStringService();
 
-    public CryptoDirectoryFeature(final Session<?> session, final Directory<Reply> delegate, final Write<Reply> writer, final CryptoVault cryptomator) {
+    public CryptoDirectoryV7Feature(final Session<?> session, final Directory<Reply> delegate, final Write<Reply> writer, final CryptoVault cryptomator) {
         this.session = session;
         this.proxy = delegate.withWriter(new CryptoWriteFeature<Reply>(session, writer, cryptomator));
         this.vault = cryptomator;
@@ -54,11 +56,14 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
         final String directoryId = random.random();
         final Path encrypt = vault.encrypt(session, folder, directoryId, false);
         // Create metadata file for directory
-        final Path directoryMetadataFile = vault.encrypt(session, folder, true);
+        final Path metadataFolder = vault.encrypt(session, folder, true);
+        final Path metadataPath = new Path(proxy.mkdir(metadataFolder, region, status),
+            CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE,
+            EnumSet.of(Path.Type.file));
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Write metadata %s for folder %s", directoryMetadataFile, folder));
+            log.debug(String.format("Write metadata %s for folder %s", metadataPath, folder));
         }
-        new ContentWriter(session).write(directoryMetadataFile, directoryId.getBytes(StandardCharsets.UTF_8));
+        new ContentWriter(session).write(metadataPath, directoryId.getBytes(StandardCharsets.UTF_8));
         final Path intermediate = encrypt.getParent();
         if(!session._getFeature(Find.class).find(intermediate)) {
             session._getFeature(Directory.class).mkdir(intermediate, region, new TransferStatus());
@@ -84,7 +89,7 @@ public class CryptoDirectoryFeature<Reply> implements Directory<Reply> {
     }
 
     @Override
-    public CryptoDirectoryFeature<Reply> withWriter(final Write<Reply> writer) {
+    public CryptoDirectoryV7Feature<Reply> withWriter(final Write<Reply> writer) {
         return this;
     }
 

@@ -27,7 +27,6 @@ import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertFalse;
 
-@Category(IntegrationTest.class)
 public class FTPMlsdListServiceTest extends AbstractFTPTest {
 
     @Test

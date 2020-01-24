@@ -33,7 +33,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class FTPWriteFeatureTest extends AbstractFTPTest {
 
     @Test

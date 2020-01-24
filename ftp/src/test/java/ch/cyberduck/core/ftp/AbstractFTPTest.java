@@ -28,6 +28,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.preferences.TemporaryApplicationResourcesFinder;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -43,6 +44,7 @@ import org.apache.ftpserver.usermanager.impl.BaseUser;
 import org.apache.ftpserver.usermanager.impl.WritePermission;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runners.Parameterized;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,6 +60,14 @@ public class AbstractFTPTest {
 
     private FtpServer server;
     private static final int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
+
+    @Parameterized.Parameters(name = "vaultVersion = {0}")
+    public static Object[] data() {
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+    }
+
+    @Parameterized.Parameter
+    public int vaultVersion;
 
     @After
     public void disconnect() {

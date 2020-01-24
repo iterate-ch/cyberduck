@@ -52,7 +52,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
 
     public CryptoBulkFeature(final Session<?> session, final Bulk<R> delegate, final Delete delete, final CryptoVault cryptomator) {
         this.session = session;
-        this.delegate = delegate.withDelete(new CryptoDeleteFeature(session, delete, cryptomator));
+        this.delegate = delegate.withDelete(cryptomator.getFeature(session, Delete.class, delete));
         this.cryptomator = cryptomator;
     }
 
@@ -106,7 +106,7 @@ public class CryptoBulkFeature<R> implements Bulk<R> {
 
     @Override
     public Bulk<R> withDelete(final Delete delete) {
-        delegate.withDelete(new CryptoDeleteFeature(session, delete, cryptomator));
+        delegate.withDelete(cryptomator.getFeature(session, Delete.class, delete));
         return this;
     }
 

@@ -25,17 +25,27 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runners.Parameterized;
 
 import static org.junit.Assert.fail;
 
 public abstract class AbstractSwiftTest {
 
     protected SwiftSession session;
+
+    @Parameterized.Parameters(name = "vaultVersion = {0}")
+    public static Object[] data() {
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+    }
+
+    @Parameterized.Parameter
+    public int vaultVersion;
 
     @After
     public void disconnect() throws Exception {

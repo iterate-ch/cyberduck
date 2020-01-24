@@ -35,7 +35,6 @@ import ch.cyberduck.core.azure.AzureProtocol;
 import ch.cyberduck.core.azure.AzureReadFeature;
 import ch.cyberduck.core.azure.AzureSession;
 import ch.cyberduck.core.azure.AzureWriteFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
@@ -56,6 +55,8 @@ import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -69,12 +70,13 @@ import com.microsoft.azure.storage.OperationContext;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class AzureWriteFeatureTest {
+@RunWith(value = Parameterized.class)
+public class AzureWriteFeatureTest extends AbstractAzureTest {
 
     @Test
     public void testWrite() throws Exception {
         final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
-                System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
+            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
         ));
         final AzureSession session = new AzureSession(host);
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
@@ -85,7 +87,7 @@ public class AzureWriteFeatureTest {
         final Path home = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
-        final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, new AzureWriteFeature(session, null), cryptomator);
         final Cryptor cryptor = cryptomator.getCryptor();
@@ -107,7 +109,7 @@ public class AzureWriteFeatureTest {
         final InputStream in = new CryptoReadFeature(session, new AzureReadFeature(session, context), cryptomator).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(in, buffer);
         assertArrayEquals(content, buffer.toByteArray());
-        new CryptoDeleteFeature(session, new AzureDeleteFeature(session, context), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new AzureDeleteFeature(session, context)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

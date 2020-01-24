@@ -45,7 +45,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class FTPReadFeatureTest extends AbstractFTPTest {
 
     @Test(expected = NotfoundException.class)

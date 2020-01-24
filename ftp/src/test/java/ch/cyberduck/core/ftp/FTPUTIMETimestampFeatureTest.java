@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-@Category(IntegrationTest.class)
 public class FTPUTIMETimestampFeatureTest extends AbstractFTPTest {
 
     @Test(expected = BackgroundException.class)

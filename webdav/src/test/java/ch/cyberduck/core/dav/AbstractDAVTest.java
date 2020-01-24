@@ -16,6 +16,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.local.FlatTemporaryFileService;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -23,6 +24,7 @@ import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.util.Collections;
@@ -46,6 +48,14 @@ public class AbstractDAVTest {
 
     private SimpletonServer server;
     private static final int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
+
+    @Parameterized.Parameters(name = "vaultVersion = {0}")
+    public static Object[] data() {
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+    }
+
+    @Parameterized.Parameter
+    public int vaultVersion;
 
     @After
     public void disconnect() throws Exception {

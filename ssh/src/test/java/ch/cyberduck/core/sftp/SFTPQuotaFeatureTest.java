@@ -16,14 +16,11 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class SFTPQuotaFeatureTest extends AbstractSFTPTest {
 
     @Test

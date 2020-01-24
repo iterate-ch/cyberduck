@@ -32,7 +32,7 @@ public class CryptoMoveFeature implements Move {
 
     public CryptoMoveFeature(final Session<?> session, final Move delegate, final Delete delete, final CryptoVault cryptomator) {
         this.session = session;
-        this.proxy = delegate.withDelete(new CryptoDeleteFeature(session, delete, cryptomator));
+        this.proxy = delegate.withDelete(cryptomator.getFeature(session, Delete.class, delete));
         this.vault = cryptomator;
     }
 

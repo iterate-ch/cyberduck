@@ -34,7 +34,6 @@ import java.util.UUID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-@Category(IntegrationTest.class)
 public class FTPAttributesFinderFeatureTest extends AbstractFTPTest {
 
     @Test

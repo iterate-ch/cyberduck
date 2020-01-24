@@ -13,7 +13,8 @@
   ~ GNU General Public License for more details.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ch.cyberduck</groupId>
@@ -86,7 +87,7 @@
         <dependency>
             <groupId>org.cryptomator</groupId>
             <artifactId>cryptofs</artifactId>
-            <version>1.8.9</version>
+            <version>1.9.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -96,5 +97,12 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>bintray</id>
+            <name>bintray</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
+    </repositories>
 </project>
 

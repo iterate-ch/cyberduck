@@ -41,7 +41,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class FTPStatListServiceTest extends AbstractFTPTest {
 
     @Test

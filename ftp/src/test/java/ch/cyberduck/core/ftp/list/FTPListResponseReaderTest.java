@@ -35,7 +35,6 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class FTPListResponseReaderTest {
 
     @Test(expected = FTPInvalidListException.class)

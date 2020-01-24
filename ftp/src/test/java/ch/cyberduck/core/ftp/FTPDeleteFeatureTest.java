@@ -34,7 +34,6 @@ import java.util.UUID;
 
 import static org.junit.Assert.fail;
 
-@Category(IntegrationTest.class)
 public class FTPDeleteFeatureTest extends AbstractFTPTest {
 
     @Test

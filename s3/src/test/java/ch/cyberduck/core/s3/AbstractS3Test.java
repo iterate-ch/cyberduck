@@ -27,12 +27,14 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runners.Parameterized;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -42,6 +44,14 @@ import static org.junit.Assert.fail;
 public abstract class AbstractS3Test {
 
     protected S3Session session;
+
+    @Parameterized.Parameters(name = "vaultVersion = {0}")
+    public static Object[] data() {
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+    }
+
+    @Parameterized.Parameter
+    public int vaultVersion;
 
     @After
     public void disconnect() throws Exception {

@@ -11,7 +11,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
-@Category(IntegrationTest.class)
 public class DefaultHomeFinderServiceTest extends AbstractFTPTest {
 
     @Test

@@ -38,7 +38,6 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
 
-@Category(IntegrationTest.class)
 public class FTPDefaultListServiceTest extends AbstractFTPTest {
 
     @Test

@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
-@Category(IntegrationTest.class)
 public class FTPSessionTest extends AbstractFTPTest {
 
     @BeforeClass
