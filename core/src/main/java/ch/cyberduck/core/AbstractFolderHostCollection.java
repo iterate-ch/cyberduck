@@ -26,6 +26,7 @@ import ch.cyberduck.core.io.watchservice.WatchServiceFactory;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
 
@@ -180,11 +181,13 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             this.unlock();
         }
         super.load();
-        try {
-            monitor.register(folder, filter, this);
-        }
-        catch(IOException e) {
-            throw new LocalAccessDeniedException(String.format("Failure monitoring directory %s", folder.getName()), e);
+        if(PreferencesFactory.get().getBoolean("bookmarks.folder.monitor")) {
+            try {
+                monitor.register(folder, filter, this);
+            }
+            catch(IOException e) {
+                throw new LocalAccessDeniedException(String.format("Failure monitoring directory %s", folder.getName()), e);
+            }
         }
     }
 
