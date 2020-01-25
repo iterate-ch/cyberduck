@@ -594,11 +594,6 @@ public class BookmarkController extends SheetController implements CollectionLis
     }
 
     @Override
-    public void collectionSaved() {
-        //
-    }
-
-    @Override
     public void collectionItemAdded(Object item) {
         //
     }

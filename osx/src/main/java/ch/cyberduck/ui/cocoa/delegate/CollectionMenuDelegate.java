@@ -77,11 +77,6 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
     }
 
     @Override
-    public void collectionSaved() {
-        //
-    }
-
-    @Override
     public void invalidate() {
         this.collection.removeListener(this);
         super.invalidate();

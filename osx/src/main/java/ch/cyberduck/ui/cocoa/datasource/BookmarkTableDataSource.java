@@ -118,11 +118,6 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
 
             @Override
-            public void collectionSaved() {
-                //
-            }
-
-            @Override
             public void collectionItemAdded(final Host item) {
                 controller.invoke(new WindowMainAction(controller) {
                     @Override
@@ -227,11 +222,6 @@ public class BookmarkTableDataSource extends ListDataSource {
                 @Override
                 public void collectionLoaded() {
                     source.collectionLoaded();
-                }
-
-                @Override
-                public void collectionSaved() {
-                    source.collectionSaved();
                 }
 
                 @Override

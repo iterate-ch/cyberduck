@@ -26,11 +26,6 @@ public interface CollectionListener<L> {
     void collectionLoaded();
 
     /**
-     * Collection deserialized
-     */
-    void collectionSaved();
-
-    /**
      * @param item Item in collection
      */
     void collectionItemAdded(L item);
