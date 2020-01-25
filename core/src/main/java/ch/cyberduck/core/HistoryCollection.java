@@ -25,8 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Comparator;
 import java.util.Date;
 
-public class HistoryCollection extends AbstractFolderHostCollection {
-    private static final long serialVersionUID = 2270155702956300755L;
+public class HistoryCollection extends MonitorFolderHostCollection {
 
     private static final HistoryCollection HISTORY_COLLECTION = new HistoryCollection(
         LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "History")
@@ -88,7 +87,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
      * Sort by timestamp of bookmark file.
      */
     @Override
-    protected synchronized void sort() {
+    public void sort() {
         this.sort(new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {

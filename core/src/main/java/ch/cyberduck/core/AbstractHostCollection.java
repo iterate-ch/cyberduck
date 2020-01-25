@@ -32,15 +32,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class AbstractHostCollection extends Collection<Host> implements EditableCollection {
-    private static final long serialVersionUID = -255801158019850767L;
-
     private static final Logger log = Logger.getLogger(AbstractHostCollection.class);
 
     private static final AbstractHostCollection EMPTY = new AbstractHostCollection() {
-        @Override
-        public String getName() {
-            return LocaleFactory.localizedString("None");
-        }
+        // Empty
     };
 
     public static AbstractHostCollection empty() {
@@ -56,78 +51,16 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     }
 
     /**
-     * @return Group label
+     * Default ordering using natural order of bookmark name
      */
-    public abstract String getName();
-
-    /**
-     * @param h Bookmark
-     * @return User comment for bookmark or null
-     */
-    public String getComment(final Host h) {
-        if(StringUtils.isNotBlank(h.getComment())) {
-            return StringUtils.remove(StringUtils.remove(h.getComment(), CharUtils.LF), CharUtils.CR);
-        }
-        return null;
-    }
-
-    @Override
-    public void collectionItemAdded(final Host item) {
-        if(this.isLocked()) {
-            log.debug("Skip sorting bookmark collection while loading");
-        }
-        else {
-            this.sort();
-        }
-        super.collectionItemAdded(item);
-    }
-
-    @Override
-    public void collectionItemRemoved(final Host item) {
-        if(this.isLocked()) {
-            log.debug("Skip sorting bookmark collection while loading");
-        }
-        else {
-            this.sort();
-        }
-        super.collectionItemRemoved(item);
-    }
-
-    private final Comparator<String> comparator = new NaturalOrderComparator();
-
-    public synchronized void sortByNickname() {
-        this.doSort(new Comparator<Host>() {
+    public void sort() {
+        this.sort(new Comparator<Host>() {
             @Override
-            public int compare(Host o1, Host o2) {
-                return comparator.compare(
-                    BookmarkNameProvider.toString(o1), BookmarkNameProvider.toString(o2)
-                );
+            public int compare(final Host o1, final Host o2) {
+                return new NaturalOrderComparator().compare(BookmarkNameProvider.toString(o1),
+                    BookmarkNameProvider.toString(o2));
             }
         });
-    }
-
-    public synchronized void sortByHostname() {
-        this.doSort(new Comparator<Host>() {
-            @Override
-            public int compare(Host o1, Host o2) {
-                return comparator.compare(o1.getHostname(), o2.getHostname());
-            }
-        });
-    }
-
-    public synchronized void sortByProtocol() {
-        this.doSort(new Comparator<Host>() {
-            @Override
-            public int compare(Host o1, Host o2) {
-                return comparator.compare(o1.getProtocol().getIdentifier(), o2.getProtocol().getIdentifier());
-            }
-        });
-    }
-
-    public synchronized void doSort(final Comparator<Host> comparator) {
-        this.sort(comparator);
-        // Save new index
-        this.save();
     }
 
     /**
@@ -152,20 +85,6 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
             }
         }
         return labels;
-    }
-
-    protected void sort() {
-        //
-    }
-
-    /**
-     * Lookup bookmark by UUID
-     *
-     * @param uuid Identifier of bookmark
-     * @return Null if not found
-     */
-    public Host lookup(final String uuid) {
-        return this.stream().filter(h -> h.getUuid().equals(uuid)).findFirst().orElse(null);
     }
 
     /**
@@ -198,15 +117,6 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         return true;
     }
 
-    public void save() {
-        // Not persistent by default
-    }
-
-    protected void load(Collection<Host> c) {
-        this.addAll(c);
-        this.collectionLoaded();
-    }
-
     /**
      * Search using comparator
      *
@@ -214,5 +124,26 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
      */
     public boolean find(final Host bookmark) {
         return this.stream().anyMatch(h -> h.compareTo(bookmark) == 0);
+    }
+
+    /**
+     * Lookup bookmark by UUID
+     *
+     * @param uuid Identifier of bookmark
+     * @return Null if not found
+     */
+    public Host lookup(final String uuid) {
+        return this.stream().filter(h -> h.getUuid().equals(uuid)).findFirst().orElse(null);
+    }
+
+    /**
+     * @param h Bookmark
+     * @return User comment for bookmark or null
+     */
+    public String getComment(final Host h) {
+        if(StringUtils.isNotBlank(h.getComment())) {
+            return StringUtils.remove(StringUtils.remove(h.getComment(), CharUtils.LF), CharUtils.CR);
+        }
+        return null;
     }
 }

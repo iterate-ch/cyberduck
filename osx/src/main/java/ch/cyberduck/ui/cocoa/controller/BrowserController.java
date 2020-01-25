@@ -174,7 +174,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         = new BrowserToolbarValidator(this);
 
     private final AbstractHostCollection bookmarks
-        = FolderBookmarkCollection.favoritesCollection();
+        = BookmarkCollection.defaultCollection();
 
     private final BrowserToolbarFactory browserToolbarFactory
         = new BrowserToolbarFactory(this, bookmarks);
@@ -866,19 +866,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void sortBookmarksByNickame(final ID sender) {
-        bookmarks.sortByNickname();
+        bookmarks.sort(BookmarkCollection.SORT_BY_NICKNAME);
         this.reloadBookmarks();
     }
 
     @Action
     public void sortBookmarksByHostname(final ID sender) {
-        bookmarks.sortByHostname();
+        bookmarks.sort(BookmarkCollection.SORT_BY_HOSTNAME);
         this.reloadBookmarks();
     }
 
     @Action
     public void sortBookmarksByProtocol(final ID sender) {
-        bookmarks.sortByProtocol();
+        bookmarks.sort(BookmarkCollection.SORT_BY_PROTOCOL);
         this.reloadBookmarks();
     }
 

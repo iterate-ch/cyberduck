@@ -20,37 +20,54 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
-import ch.cyberduck.core.io.watchservice.WatchServiceFactory;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
-import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
+import ch.cyberduck.core.text.NaturalOrderComparator;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.regex.Pattern;
 
 public abstract class AbstractFolderHostCollection extends AbstractHostCollection implements FileWatcherListener {
     private static final Logger log = Logger.getLogger(AbstractFolderHostCollection.class);
 
-    private static final long serialVersionUID = 6598370606581477494L;
+    public static final Comparator<Host> SORT_BY_NICKNAME = new Comparator<Host>() {
+        @Override
+        public int compare(Host o1, Host o2) {
+            return new NaturalOrderComparator().compare(
+                BookmarkNameProvider.toString(o1), BookmarkNameProvider.toString(o2)
+            );
+        }
+    };
+
+    public static final Comparator<Host> SORT_BY_HOSTNAME = new Comparator<Host>() {
+        @Override
+        public int compare(Host o1, Host o2) {
+            return new NaturalOrderComparator().compare(o1.getHostname(), o2.getHostname());
+        }
+    };
+
+    public static final Comparator<Host> SORT_BY_PROTOCOL = new Comparator<Host>() {
+        @Override
+        public int compare(Host o1, Host o2) {
+            return new NaturalOrderComparator().compare(o1.getProtocol().getIdentifier(), o2.getProtocol().getIdentifier());
+        }
+    };
+
+    private final Preferences preferences = PreferencesFactory.get();
 
     private final Writer<Host> writer = HostWriterFactory.get();
     private final Reader<Host> reader = HostReaderFactory.get();
 
     protected final Local folder;
 
-    private final FileWatcher monitor
-        = new FileWatcher(WatchServiceFactory.get());
-
-    private static final Filter<Local> filter = new Filter<Local>() {
+    protected static final Filter<Local> FILE_FILTER = new Filter<Local>() {
         @Override
         public boolean accept(final Local file) {
             return file.getName().endsWith(".duck");
@@ -71,7 +88,6 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         this.folder = f;
     }
 
-    @Override
     public String getName() {
         return LocaleFactory.localizedString(folder.getName());
     }
@@ -89,44 +105,14 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     }
 
     @Override
-    public boolean addAll(final Collection<? extends Host> c) {
-        return super.addAll(c);
-    }
-
-    @Override
-    public boolean add(final Host bookmark) {
-        if(super.add(bookmark)) {
-            this.save(bookmark);
-            return true;
+    public void sort(final Comparator<? super Host> c) {
+        if(this.isLocked()) {
+            log.debug("Skip sorting bookmark collection while loading");
         }
-        return false;
-    }
-
-    @Override
-    public void add(final int row, final Host bookmark) {
-        super.add(row, bookmark);
-        this.save(bookmark);
-    }
-
-    @Override
-    public void collectionItemChanged(final Host bookmark) {
-        this.save(bookmark);
-        super.collectionItemChanged(bookmark);
-    }
-
-    @Override
-    public void collectionItemRemoved(final Host bookmark) {
-        try {
-            this.lock();
-            final Local file = this.getFile(bookmark);
-            file.delete();
-        }
-        catch(AccessDeniedException | NotfoundException e) {
-            log.error(String.format("Failure removing bookmark %s", e.getMessage()));
-        }
-        finally {
-            this.unlock();
-            super.collectionItemRemoved(bookmark);
+        else {
+            super.sort(c);
+            // Save new index
+            this.save();
         }
     }
 
@@ -135,7 +121,6 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             log.debug(String.format("Skip saving bookmark %s while loading", bookmark));
         }
         else {
-            this.lock();
             try {
                 if(!folder.exists()) {
                     new DefaultLocalDirectoryFeature().mkdir(folder);
@@ -148,9 +133,6 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             }
             catch(AccessDeniedException e) {
                 log.warn(String.format("Failure saving item in collection %s", e.getMessage()));
-            }
-            finally {
-                this.unlock();
             }
         }
     }
@@ -165,84 +147,50 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             if(!folder.exists()) {
                 new DefaultLocalDirectoryFeature().mkdir(folder);
             }
-            final AttributedList<Local> bookmarks = folder.list().filter(filter);
+            final AttributedList<Local> bookmarks = folder.list().filter(FILE_FILTER);
             for(Local f : bookmarks) {
                 try {
                     this.add(reader.read(f));
                 }
                 catch(AccessDeniedException e) {
-                    log.error(String.format("Failure reading bookmark from %s. %s", f, e.getMessage()));
+                    log.error(String.format("Failure %s reading bookmark from %s", e, f));
                 }
             }
-            // Sort using previously built index
-            this.sort();
         }
         finally {
             this.unlock();
         }
+        // Sort using previously built index
+        this.sort();
+        // Mark collection as loaded and notify listeners.
         super.load();
-        if(PreferencesFactory.get().getBoolean("bookmarks.folder.monitor")) {
-            try {
-                monitor.register(folder, filter, this);
-            }
-            catch(IOException e) {
-                throw new LocalAccessDeniedException(String.format("Failure monitoring directory %s", folder.getName()), e);
-            }
-        }
     }
 
     @Override
-    public void fileWritten(final Local file) {
-        if(this.isLocked()) {
-            log.debug(String.format("Skip reading bookmark from %s", file));
-        }
-        else {
-            try {
-                // Read from disk and re-insert to collection
-                final Host bookmark = HostReaderFactory.get().read(file);
-                final int index = this.indexOf(bookmark);
-                if(index != -1) {
-                    super.remove(bookmark);
-                    super.add(bookmark);
-                }
-            }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading file %s", file));
-            }
-        }
+    public void collectionItemAdded(final Host bookmark) {
+        this.save(bookmark);
+        this.sort();
+        // Notify listeners
+        super.collectionItemAdded(bookmark);
     }
 
     @Override
-    public void fileDeleted(final Local file) {
-        if(this.isLocked()) {
-            log.debug(String.format("Skip reading bookmark from %s", file));
+    public void collectionItemRemoved(final Host bookmark) {
+        final Local file = this.getFile(bookmark);
+        try {
+            file.delete();
         }
-        else {
-            final Host bookmark = this.lookup(FilenameUtils.getBaseName(file.getName()));
-            if(bookmark != null) {
-                super.remove(bookmark);
-            }
+        catch(AccessDeniedException | NotfoundException e) {
+            log.error(String.format("Failure removing bookmark %s", e.getMessage()));
         }
+        this.sort();
+        // Notify listeners
+        super.collectionItemRemoved(bookmark);
     }
 
     @Override
-    public void fileCreated(final Local file) {
-        if(this.isLocked()) {
-            log.debug(String.format("Skip reading bookmark from %s", file));
-        }
-        else {
-            try {
-                final Host bookmark = HostReaderFactory.get().read(file);
-                super.add(bookmark);
-            }
-            catch(AccessDeniedException e) {
-                log.warn(String.format("Failure reading file %s", file));
-            }
-        }
-    }
-
-    @Override
-    public void save() {
-        // Save individual bookmarks upon add but not collection itself.
+    public void collectionItemChanged(final Host bookmark) {
+        this.save(bookmark);
+        super.collectionItemChanged(bookmark);
     }
 }

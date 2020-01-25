@@ -24,10 +24,6 @@ public class AbstractHostCollectionTest {
     @Test
     public void testLookup() {
         final AbstractHostCollection c = new AbstractHostCollection() {
-            @Override
-            public String getName() {
-                return "N";
-            }
         };
         final Host bookmark = new Host(new TestProtocol());
         assertFalse(c.find(bookmark));

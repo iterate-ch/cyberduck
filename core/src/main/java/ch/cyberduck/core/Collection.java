@@ -56,6 +56,10 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         this.collectionLoaded();
     }
 
+    public void save() {
+        this.collectionSaved();
+    }
+
     public void addListener(CollectionListener<E> listener) {
         listeners.add(listener);
     }
@@ -123,6 +127,11 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         }
         super.add(row, item);
         this.collectionItemAdded(item);
+    }
+
+    public void replace(int row, E item) {
+        super.remove(row);
+        super.add(row, item);
     }
 
     @Override
@@ -194,6 +203,17 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         }
         for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
             listener.collectionLoaded();
+        }
+    }
+
+    @Override
+    public void collectionSaved() {
+        if(this.isLocked()) {
+            log.debug("Do not notify changes of locked collection");
+            return;
+        }
+        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+            listener.collectionSaved();
         }
     }
 

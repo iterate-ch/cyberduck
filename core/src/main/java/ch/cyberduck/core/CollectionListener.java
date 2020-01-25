@@ -20,7 +20,15 @@ package ch.cyberduck.core;
 
 public interface CollectionListener<L> {
 
+    /**
+     * Collection serialized
+     */
     void collectionLoaded();
+
+    /**
+     * Collection deserialized
+     */
+    void collectionSaved();
 
     /**
      * @param item Item in collection

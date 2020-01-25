@@ -21,6 +21,11 @@ package ch.cyberduck.core;
 public abstract class AbstractCollectionListener<L> implements CollectionListener<L> {
 
     @Override
+    public void collectionSaved() {
+        //
+    }
+
+    @Override
     public void collectionLoaded() {
         //
     }

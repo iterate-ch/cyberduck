@@ -118,6 +118,11 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
 
             @Override
+            public void collectionSaved() {
+                //
+            }
+
+            @Override
             public void collectionItemAdded(final Host item) {
                 controller.invoke(new WindowMainAction(controller) {
                     @Override
@@ -176,8 +181,8 @@ public class BookmarkTableDataSource extends ListDataSource {
     }
 
     /**
-     * @return The filtered collection currently to be displayed within the constraints
-     * given by the comparison with the bookmark filter
+     * @return The filtered collection currently to be displayed within the constraints given by the comparison with the
+     * bookmark filter
      * @see HostFilter
      */
     public AbstractHostCollection getSource() {
@@ -187,11 +192,6 @@ public class BookmarkTableDataSource extends ListDataSource {
         if(null == filtered) {
             filtered = new AbstractHostCollection() {
                 private static final long serialVersionUID = -2154002477046004380L;
-
-                @Override
-                public String getName() {
-                    return source.getName();
-                }
 
                 @Override
                 public boolean allowsAdd() {
@@ -227,6 +227,11 @@ public class BookmarkTableDataSource extends ListDataSource {
                 @Override
                 public void collectionLoaded() {
                     source.collectionLoaded();
+                }
+
+                @Override
+                public void collectionSaved() {
+                    source.collectionSaved();
                 }
 
                 @Override
@@ -376,10 +381,10 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     /**
      * @param info contains details on this dragging operation.
-     * @param row  The proposed location is row and action is operation.
-     *             The data source should incorporate the data from the dragging pasteboard at this time.
-     * @see NSTableView.DataSource
-     * Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
+     * @param row  The proposed location is row and action is operation. The data source should incorporate the data
+     *             from the dragging pasteboard at this time.
+     * @see NSTableView.DataSource Invoked by view when the mouse button is released over a table view that previously
+     * decided to allow a drop.
      */
     @Override
     public boolean tableView_acceptDrop_row_dropOperation(final NSTableView view, final NSDraggingInfo info,
@@ -541,12 +546,12 @@ public class BookmarkTableDataSource extends ListDataSource {
     }
 
     /**
-     * @param local indicates that the candidate destination object (the window or view over which the dragged
-     *              image is currently poised) is in the same application as the source, while a NO value indicates that
-     *              the destination object is in a different application
+     * @param local indicates that the candidate destination object (the window or view over which the dragged image is
+     *              currently poised) is in the same application as the source, while a NO value indicates that the
+     *              destination object is in a different application
      * @return A mask, created by combining the dragging operations listed in the NSDragOperation section of
-     * NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
-     * any dragging operations, it should return NSDragOperationNone.
+     * NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit any dragging
+     * operations, it should return NSDragOperationNone.
      * @see NSDraggingSource
      */
     @Override
@@ -559,12 +564,11 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     /**
      * @param rowIndexes is the list of row numbers that will be participating in the drag.
-     * @return To refuse the drag, return false. To start a drag, return true and place
-     * the drag data onto pboard (data, owner, and so on).
-     * @see NSTableView.DataSource
-     * Invoked by view after it has been determined that a drag should begin, but before the drag has been started.
-     * The drag image and other drag-related information will be set up and provided by the table view once this call
-     * returns with true.
+     * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard (data,
+     * owner, and so on).
+     * @see NSTableView.DataSource Invoked by view after it has been determined that a drag should begin, but before the
+     * drag has been started. The drag image and other drag-related information will be set up and provided by the table
+     * view once this call returns with true.
      */
     @Override
     public boolean tableView_writeRowsWithIndexes_toPasteboard(final NSTableView view, final NSIndexSet rowIndexes,
@@ -587,12 +591,11 @@ public class BookmarkTableDataSource extends ListDataSource {
     }
 
     /**
-     * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     * This method is invoked when the drop has been accepted by the destination and the destination,
-     * in the case of another Cocoa application, invokes the NSDraggingInfo method
-     * namesOfPromisedFilesDroppedAtDestination.
-     * For long operations, you can cache dropDestination and defer the creation of the files until the
-     * finishedDraggingImage method to avoid blocking the destination application.
+     * @return the names (not full paths) of the files that the receiver promises to create at dropDestination. This
+     * method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long
+     * operations, you can cache dropDestination and defer the creation of the files until the finishedDraggingImage
+     * method to avoid blocking the destination application.
      * @see NSTableView.DataSource
      */
     @Override

@@ -1,22 +1,18 @@
 package ch.cyberduck.core;
 
 /*
- * Copyright (c) 2002-2010 David Kocher. All rights reserved.
- *
- * http://cyberduck.ch/
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
- * Bug fixes, suggestions and comments should be sent to:
- * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.preferences.Preferences;
@@ -28,12 +24,12 @@ import org.apache.log4j.Logger;
 import java.util.Comparator;
 import java.util.stream.IntStream;
 
-public class FolderBookmarkCollection extends AbstractFolderHostCollection {
-    private static final Logger log = Logger.getLogger(FolderBookmarkCollection.class);
+public class BookmarkCollection extends MonitorFolderHostCollection {
+    private static final Logger log = Logger.getLogger(BookmarkCollection.class);
 
     private final Preferences preferences = PreferencesFactory.get();
 
-    private static final FolderBookmarkCollection FAVORITES_COLLECTION = new FolderBookmarkCollection(
+    private static final BookmarkCollection FAVORITES_COLLECTION = new BookmarkCollection(
         LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Bookmarks")
     ) {
         @Override
@@ -54,7 +50,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     /**
      * @return Singleton instance
      */
-    public static FolderBookmarkCollection favoritesCollection() {
+    public static BookmarkCollection defaultCollection() {
         return FAVORITES_COLLECTION;
     }
 
@@ -63,11 +59,11 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
      *
      * @param f Parent directory to look for bookmarks
      */
-    public FolderBookmarkCollection(final Local f) {
+    public BookmarkCollection(final Local f) {
         this(f, DEFAULT_PREFIX);
     }
 
-    public FolderBookmarkCollection(final Local f, final String prefix) {
+    public BookmarkCollection(final Local f, final String prefix) {
         super(f);
         this.prefix = String.format("%s.", prefix);
     }
@@ -106,39 +102,24 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
      * Update index of bookmark positions
      */
     private void index() {
-        this.lock();
-        try {
-            IntStream.range(0, this.size()).forEach(i -> preferences.setProperty(toProperty(this.get(i), prefix), i));
-        }
-        finally {
-            this.unlock();
-        }
+        IntStream.range(0, this.size()).forEach(i -> preferences.setProperty(toProperty(this.get(i), prefix), i));
     }
 
     @Override
     public void save() {
-        this.index();
+        try {
+            this.index();
+        }
+        finally {
+            super.save();
+        }
     }
 
     /**
-     * Importer for legacy bookmarks.
-     *
-     * @param c Existing collection
+     * Ordering using persisted indexes in preferences
      */
     @Override
-    protected void load(final Collection<Host> c) {
-        super.load(c);
-        // Create index for imported collection
-        this.index();
-        this.sort();
-        for(Host bookmark : this) {
-            this.save(bookmark);
-        }
-        this.collectionLoaded();
-    }
-
-    @Override
-    protected synchronized void sort() {
+    public void sort() {
         this.sort(new Comparator<Host>() {
             @Override
             public int compare(Host o1, Host o2) {
