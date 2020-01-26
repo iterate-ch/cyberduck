@@ -61,7 +61,10 @@ public abstract class MonitorFolderHostCollection extends AbstractFolderHostColl
                 final Host bookmark = HostReaderFactory.get().read(file);
                 final int index = this.indexOf(bookmark);
                 if(index != -1) {
-                    super.replace(index, bookmark);
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Replace bookmark %s at index %d", bookmark, index));
+                    }
+                    this.replace(index, bookmark);
                 }
             }
             catch(AccessDeniedException e) {
@@ -91,7 +94,8 @@ public abstract class MonitorFolderHostCollection extends AbstractFolderHostColl
         else {
             try {
                 final Host bookmark = HostReaderFactory.get().read(file);
-                super.add(bookmark);
+                log.warn(String.format("Add bookmark %s", bookmark));
+                this.add(bookmark);
             }
             catch(AccessDeniedException e) {
                 log.warn(String.format("Failure reading file %s", file));
