@@ -100,7 +100,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// Saved browsers
         /// </summary>
         private readonly AbstractHostCollection _sessions =
-            new FolderBookmarkCollection(
+            new BookmarkCollection(
                 LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Sessions"),
                 "session");
 
