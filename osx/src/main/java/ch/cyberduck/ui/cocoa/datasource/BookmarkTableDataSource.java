@@ -30,20 +30,7 @@ import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSMutableDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSURL;
-import ch.cyberduck.core.AbstractHostCollection;
-import ch.cyberduck.core.BookmarkNameProvider;
-import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostFilter;
-import ch.cyberduck.core.HostParser;
-import ch.cyberduck.core.HostReaderFactory;
-import ch.cyberduck.core.HostWriterFactory;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathNormalizer;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.SerializerFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
@@ -185,60 +172,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             return source;
         }
         if(null == filtered) {
-            filtered = new AbstractHostCollection() {
-                private static final long serialVersionUID = -2154002477046004380L;
-
-                @Override
-                public boolean allowsAdd() {
-                    return source.allowsAdd();
-                }
-
-                @Override
-                public boolean allowsDelete() {
-                    return source.allowsDelete();
-                }
-
-                @Override
-                public boolean allowsEdit() {
-                    return source.allowsEdit();
-                }
-
-                @Override
-                public void save() {
-                    source.save();
-                }
-
-                @Override
-                public void load() throws AccessDeniedException {
-                    source.load();
-                }
-            };
-            for(final Host bookmark : source) {
-                if(filter.accept(bookmark)) {
-                    filtered.add(bookmark);
-                }
-            }
-            filtered.addListener(new CollectionListener<Host>() {
-                @Override
-                public void collectionLoaded() {
-                    source.collectionLoaded();
-                }
-
-                @Override
-                public void collectionItemAdded(final Host item) {
-                    source.add(item);
-                }
-
-                @Override
-                public void collectionItemRemoved(final Host item) {
-                    source.remove(item);
-                }
-
-                @Override
-                public void collectionItemChanged(final Host item) {
-                    source.collectionItemChanged(item);
-                }
-            });
+            filtered = new FilterHostCollection(source, filter);
         }
         return filtered;
     }
@@ -611,4 +545,5 @@ public class BookmarkTableDataSource extends ListDataSource {
         }
         return promisedDragNames;
     }
+
 }

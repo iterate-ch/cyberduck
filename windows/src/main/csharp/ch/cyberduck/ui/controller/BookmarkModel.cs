@@ -49,15 +49,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 if (null == _filtered)
                 {
-                    _filtered = new FilterBookmarkCollection(_source);
-                    foreach (Host bookmark in _source)
-                    {
-                        if (_filter.accept(bookmark))
-                        {
-                            _filtered.add(bookmark);
-                        }
-                    }
-                    _filtered.addListener(new FilterBookmarkListener(_source));
+                    _filtered = new FilterHostCollection(_source, _filter);
                 }
                 return _filtered;
             }
@@ -162,76 +154,6 @@ namespace Ch.Cyberduck.Ui.Controller
             public void collectionItemChanged(object host)
             {
                 _controller.Invoke(() => _controller.View.RefreshBookmark(host as Host));
-            }
-        }
-
-        private class FilterBookmarkCollection : AbstractHostCollection
-        {
-            private readonly AbstractHostCollection _source;
-
-            public FilterBookmarkCollection(AbstractHostCollection source)
-            {
-                _source = source;
-            }
-
-            public override string getName()
-            {
-                return _source.getName();
-            }
-
-            public override bool allowsAdd()
-            {
-                return _source.allowsAdd();
-            }
-
-            public override bool allowsDelete()
-            {
-                return _source.allowsDelete();
-            }
-
-            public override bool allowsEdit()
-            {
-                return _source.allowsEdit();
-            }
-
-            public override void save()
-            {
-                _source.save();
-            }
-
-            public override void load()
-            {
-                _source.load();
-            }
-        }
-
-        private class FilterBookmarkListener : CollectionListener
-        {
-            private readonly AbstractHostCollection _source;
-
-            public FilterBookmarkListener(AbstractHostCollection source)
-            {
-                _source = source;
-            }
-
-            public void collectionLoaded()
-            {
-                _source.collectionLoaded();
-            }
-
-            public void collectionItemAdded(object host)
-            {
-                _source.add(host as Host);
-            }
-
-            public void collectionItemRemoved(object host)
-            {
-                _source.remove(host as Host);
-            }
-
-            public void collectionItemChanged(object host)
-            {
-                _source.collectionItemChanged(host);
             }
         }
     }
