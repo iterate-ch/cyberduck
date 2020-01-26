@@ -81,7 +81,8 @@ public abstract class MonitorFolderHostCollection extends AbstractFolderHostColl
         else {
             final Host bookmark = this.lookup(FilenameUtils.getBaseName(file.getName()));
             if(bookmark != null) {
-                log.warn(String.format("Ignore delete event for bookmark %s", bookmark));
+                log.warn(String.format("Delete bookmark %s", bookmark));
+                this.remove(bookmark);
             }
         }
     }
