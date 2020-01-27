@@ -155,7 +155,7 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * Saved browsers
      */
-    private final AbstractHostCollection sessions = new FolderBookmarkCollection(
+    private final AbstractHostCollection sessions = new BookmarkCollection(
         LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Sessions"), "session");
 
     private final NSWorkspace workspace = NSWorkspace.sharedWorkspace();
@@ -530,7 +530,7 @@ public class MainController extends BundleController implements NSApplication.De
             log.info("No default bookmark configured");
             return; //No default bookmark given
         }
-        final Host bookmark = FolderBookmarkCollection.favoritesCollection().lookup(defaultBookmark);
+        final Host bookmark = BookmarkCollection.defaultCollection().lookup(defaultBookmark);
         if(null == bookmark) {
             log.info("Default bookmark no more available");
             return;
@@ -700,7 +700,7 @@ public class MainController extends BundleController implements NSApplication.De
                 break;
             }
         }
-        final FolderBookmarkCollection bookmarks = FolderBookmarkCollection.favoritesCollection();
+        final BookmarkCollection bookmarks = BookmarkCollection.defaultCollection();
         if(bookmarks.isEmpty()) {
             log.warn("No bookmark for upload");
             return false;
@@ -933,7 +933,7 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             });
         }
-        final AbstractHostCollection bookmarks = FolderBookmarkCollection.favoritesCollection();
+        final AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
         // Load all bookmarks in background
         this.background(new AbstractBackgroundAction<Void>() {
             @Override

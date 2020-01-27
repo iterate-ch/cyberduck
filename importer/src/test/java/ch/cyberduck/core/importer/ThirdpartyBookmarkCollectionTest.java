@@ -61,10 +61,6 @@ public class ThirdpartyBookmarkCollectionTest {
 //        c.load();
 //        assertTrue(r.get());
         AbstractHostCollection bookmarks = new AbstractHostCollection() {
-            @Override
-            public String getName() {
-                return "b";
-            }
         };
         bookmarks.add(new Host(new TestProtocol()));
         c.filter(bookmarks);

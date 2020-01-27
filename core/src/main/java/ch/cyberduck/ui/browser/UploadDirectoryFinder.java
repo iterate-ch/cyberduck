@@ -19,7 +19,7 @@ package ch.cyberduck.ui.browser;
  */
 
 import ch.cyberduck.core.AbstractHostCollection;
-import ch.cyberduck.core.FolderBookmarkCollection;
+import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 public class UploadDirectoryFinder implements DirectoryFinder {
     private static final Logger log = Logger.getLogger(UploadDirectoryFinder.class);
 
-    private final AbstractHostCollection collection = FolderBookmarkCollection.favoritesCollection();
+    private final AbstractHostCollection collection = BookmarkCollection.defaultCollection();
 
     private final Preferences preferences
             = PreferencesFactory.get();

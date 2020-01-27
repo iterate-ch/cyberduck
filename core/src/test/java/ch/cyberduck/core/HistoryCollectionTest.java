@@ -39,7 +39,7 @@ public class HistoryCollectionTest {
         final CountDownLatch exit = new CountDownLatch(1);
         final HistoryCollection c = new HistoryCollection(new Local("src/test/resources/history")) {
             @Override
-            protected void sort() {
+            public void sort() {
                 if(loaded.getCount() == 0) {
                     return;
                 }

@@ -260,7 +260,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Override
     public void invalidate() {
-        FolderBookmarkCollection.favoritesCollection().removeListener(bookmarkCollectionListener);
+        BookmarkCollection.defaultCollection().removeListener(bookmarkCollectionListener);
         super.invalidate();
     }
 
@@ -500,7 +500,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultBookmarkCombobox.addItemWithTitle(LocaleFactory.localizedString("None"));
         this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());
         this.defaultBookmarkCombobox.menu().addItem(NSMenuItem.separatorItem());
-        for(Host bookmark : FolderBookmarkCollection.favoritesCollection()) {
+        for(Host bookmark : BookmarkCollection.defaultCollection()) {
             this.defaultBookmarkCombobox.addItemWithTitle(BookmarkNameProvider.toString(bookmark));
             this.defaultBookmarkCombobox.lastItem().setImage(
                 IconCacheFactory.<NSImage>get().iconNamed(bookmark.getProtocol().icon(), 16));
@@ -509,7 +509,7 @@ public class PreferencesController extends ToolbarWindowController {
                 this.defaultBookmarkCombobox.selectItem(this.defaultBookmarkCombobox.lastItem());
             }
         }
-        FolderBookmarkCollection.favoritesCollection().addListener(bookmarkCollectionListener);
+        BookmarkCollection.defaultCollection().addListener(bookmarkCollectionListener);
         this.defaultBookmarkCombobox.setTarget(this.id());
         final Selector action = Foundation.selector("defaultBookmarkComboboxClicked:");
         this.defaultBookmarkCombobox.setAction(action);

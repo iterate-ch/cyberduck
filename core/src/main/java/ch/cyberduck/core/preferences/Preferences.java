@@ -294,10 +294,10 @@ public abstract class Preferences implements Locales {
           Lowercase folder name to use when looking for bookmarks in user support directory
          */
         this.setDefault("bookmarks.folder.name", "Bookmarks");
-        /**
+        /*
          * Register file watcher in bookmark folders
          */
-        this.setDefault("bookmarks.folder.monitor", String.valueOf(false));
+        this.setDefault("bookmarks.folder.monitor", String.valueOf(true));
         /*
           Lowercase folder name to use when looking for profiles in user support directory
          */

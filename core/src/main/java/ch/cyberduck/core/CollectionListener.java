@@ -20,6 +20,9 @@ package ch.cyberduck.core;
 
 public interface CollectionListener<L> {
 
+    /**
+     * Collection serialized
+     */
     void collectionLoaded();
 
     /**

@@ -79,7 +79,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             BookmarkMenuCollectionListener bookmarkMenuCollectionListener = new BookmarkMenuCollectionListener(this,
                 ProtocolIconsImageList().Images);
-            FolderBookmarkCollection.favoritesCollection().addListener(bookmarkMenuCollectionListener);
+            BookmarkCollection.defaultCollection().addListener(bookmarkMenuCollectionListener);
             MenuCollectionListener historyMenuCollectionListener = new MenuCollectionListener(this, historyMainMenuItem,
                 HistoryCollection.defaultCollection(),
                 LocaleFactory.localizedString("None"),
@@ -233,7 +233,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     SaveUiSettings();
                 }
-                FolderBookmarkCollection.favoritesCollection().removeListener(bookmarkMenuCollectionListener);
+                BookmarkCollection.defaultCollection().removeListener(bookmarkMenuCollectionListener);
                 HistoryCollection.defaultCollection().removeListener(historyMenuCollectionListener);
                 RendezvousCollection.defaultCollection().removeListener(bonjourMenuCollectionListener);
             };
@@ -2456,7 +2456,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 _form = f;
                 _icons = icons;
-                if (FolderBookmarkCollection.favoritesCollection().size() > 0)
+                if (BookmarkCollection.defaultCollection().size() > 0)
                 {
                     BuildMenuItems();
                 }
@@ -2471,7 +2471,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 _form.Invoke(new AsyncController.AsyncDelegate(delegate
                 {
-                    int pos = FolderBookmarkCollection.favoritesCollection().indexOf(obj);
+                    int pos = BookmarkCollection.defaultCollection().indexOf(obj);
                     Host h = (Host) obj;
                     MenuItem i = new MenuItem(BookmarkNameProvider.toString(h));
                     i.Tag = h;
@@ -2485,7 +2485,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 _form.Invoke(new AsyncController.AsyncDelegate(delegate
                 {
-                    int pos = FolderBookmarkCollection.favoritesCollection().indexOf(obj);
+                    int pos = BookmarkCollection.defaultCollection().indexOf(obj);
                     Host h = (Host) obj;
                     MenuItem i = new MenuItem(BookmarkNameProvider.toString(h));
                     i.Tag = h;
@@ -2534,7 +2534,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
                 _bookmarkStartPosition = fix.Count;
                 List<MenuItem> items = new List<MenuItem>();
-                foreach (Host bookmark in FolderBookmarkCollection.favoritesCollection())
+                foreach (Host bookmark in BookmarkCollection.defaultCollection())
                 {
                     MenuItem item = new MenuItem(BookmarkNameProvider.toString(bookmark));
                     item.Tag = bookmark;

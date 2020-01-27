@@ -100,7 +100,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// Saved browsers
         /// </summary>
         private readonly AbstractHostCollection _sessions =
-            new FolderBookmarkCollection(
+            new BookmarkCollection(
                 LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "Sessions"),
                 "session");
 
@@ -286,7 +286,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return; //No default bookmark given
             }
-            Host bookmark = FolderBookmarkCollection.favoritesCollection().lookup(defaultBookmark);
+            Host bookmark = BookmarkCollection.defaultCollection().lookup(defaultBookmark);
             if (null == bookmark)
             {
                 Logger.info("Default bookmark no more available");
@@ -710,7 +710,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
                 {
-                    AbstractHostCollection bookmarks = FolderBookmarkCollection.favoritesCollection();
+                    AbstractHostCollection bookmarks = BookmarkCollection.defaultCollection();
                     c.filter(bookmarks);
                     if (!c.isEmpty())
                     {
@@ -734,7 +734,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 switch (option)
                                 {
                                     case 0:
-                                        FolderBookmarkCollection.favoritesCollection().addAll(c1);
+                                        BookmarkCollection.defaultCollection().addAll(c1);
                                         // Flag as imported
                                         PreferencesFactory.get().setProperty(c1.getConfiguration(), true);
                                         break;
@@ -755,7 +755,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Load all bookmarks in background
             _controller.Background(() =>
             {
-                AbstractHostCollection c = FolderBookmarkCollection.favoritesCollection();
+                AbstractHostCollection c = BookmarkCollection.defaultCollection();
                 c.load();
                 bookmarksSemaphore.Signal();
             }, () =>
@@ -885,7 +885,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 while (iterator.hasNext())
                 {
                     Host host = (Host)iterator.next();
-                    var file = FolderBookmarkCollection.favoritesCollection().getFile(host);
+                    var file = BookmarkCollection.defaultCollection().getFile(host);
                     if (file.exists())
                     {
                         bookmarkCategory.AddJumpListItems(new JumpListLink(file.getAbsolute(), BookmarkNameProvider.toString(host))

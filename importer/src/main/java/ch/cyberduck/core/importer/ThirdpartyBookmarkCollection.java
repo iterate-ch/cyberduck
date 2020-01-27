@@ -19,6 +19,7 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
@@ -42,13 +43,10 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 import java.util.Iterator;
 
-public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollection {
+public abstract class ThirdpartyBookmarkCollection extends Collection<Host> {
     private static final Logger log = Logger.getLogger(ThirdpartyBookmarkCollection.class);
 
-    private static final long serialVersionUID = -4582425984484543617L;
-
     private final Preferences preferences = PreferencesFactory.get();
-
     private final PasswordStore keychain;
 
     public ThirdpartyBookmarkCollection() {
@@ -123,6 +121,11 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
         super.load();
     }
 
+    /**
+     * @return Application name
+     */
+    public abstract String getName();
+
     public abstract Local getFile();
 
     protected void parse(Local file) throws AccessDeniedException {
@@ -132,7 +135,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     protected abstract void parse(final ProtocolFactory protocols, Local file) throws AccessDeniedException;
 
     public boolean isInstalled() {
-        return StringUtils.isNotBlank(this.getName());
+        return this.getFile().exists();
     }
 
     public abstract String getBundleIdentifier();

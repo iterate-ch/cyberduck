@@ -20,14 +20,10 @@ package ch.cyberduck.core.bonjour;
  */
 
 import ch.cyberduck.core.AbstractHostCollection;
-import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.text.NaturalOrderComparator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.stream.Stream;
@@ -49,7 +45,6 @@ public final class RendezvousCollection extends AbstractHostCollection implement
     }
 
     private final Rendezvous rendezvous;
-    private final Comparator<String> comparator = new NaturalOrderComparator();
 
     private RendezvousCollection() {
         this(RendezvousFactory.instance());
@@ -69,11 +64,6 @@ public final class RendezvousCollection extends AbstractHostCollection implement
     @Override
     public void serviceLost(final Host host) {
         this.collectionItemRemoved(host);
-    }
-
-    @Override
-    public String getName() {
-        return LocaleFactory.localizedString("Bonjour");
     }
 
     @Override
@@ -145,16 +135,5 @@ public final class RendezvousCollection extends AbstractHostCollection implement
     @Override
     public boolean allowsEdit() {
         return false;
-    }
-
-    @Override
-    protected synchronized void sort() {
-        this.sort(new Comparator<Host>() {
-            @Override
-            public int compare(final Host o1, final Host o2) {
-                return comparator.compare(BookmarkNameProvider.toString(o1),
-                    BookmarkNameProvider.toString(o2));
-            }
-        });
     }
 }
