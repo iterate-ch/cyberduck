@@ -139,7 +139,7 @@ public class OAuth2AuthorizationService {
         }
         if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
             prompt.warn(bookmark,
-                LocaleFactory.localizedString("OAuth2 Authentication", "Credentials"),
+                LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
                 MessageFormat.format("{0}. {1}.",
                     LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"),
                     LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")
