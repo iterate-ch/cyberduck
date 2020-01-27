@@ -15,6 +15,7 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -43,10 +44,20 @@ public class GoogleStorageDirectoryFeatureTest extends AbstractGoogleStorageTest
     }
 
     @Test
-    public void testMakeDirectory() throws Exception {
+    public void testDirectory() throws Exception {
         final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket,
-            UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(new GoogleStorageFindFeature(session).find(test));
+        assertTrue(new DefaultFindFeature(session).find(test));
+        new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testDirectoryWhitespace() throws Exception {
+        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path test = new GoogleStorageDirectoryFeature(session).mkdir(new Path(bucket,
+            String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new GoogleStorageFindFeature(session).find(test));
         assertTrue(new DefaultFindFeature(session).find(test));
         new GoogleStorageDeleteFeature(session).delete(Collections.<Path>singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
