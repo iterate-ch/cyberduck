@@ -1386,7 +1386,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                _bookmarkModel.Filter = new BookmarkFilter(searchString);
+                _bookmarkModel.Filter = new BookmarkSearchFilter(searchString);
             }
             ReloadBookmarks();
         }
@@ -3223,28 +3223,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     _controller.SetFilter(new RecursiveSearchFilter((AttributedList) result));
                     _controller.Reload();
                 }
-            }
-        }
-
-        private class BookmarkFilter : HostFilter
-        {
-            private readonly string _searchString;
-
-            public BookmarkFilter(String searchString)
-            {
-                _searchString = searchString;
-            }
-
-            public bool accept(Host host)
-            {
-                return BookmarkNameProvider.toString(host).ToLower().Contains(_searchString.ToLower()) ||
-                       (null == host.getComment()
-                           ? false
-                           : host.getComment().ToLower().Contains(_searchString.ToLower())) ||
-                       (null == host.getCredentials().getUsername()
-                           ? false
-                           : host.getCredentials().getUsername().ToLower().Contains(_searchString.ToLower())) ||
-                       host.getHostname().ToLower().Contains(_searchString.ToLower());
             }
         }
 
