@@ -983,6 +983,10 @@ public abstract class Preferences implements Locales {
         this.setDefault("connection.ssl.provider.bouncycastle.position", String.valueOf(1));
         // Failure loading default key store with bouncycastle provider
         System.setProperty("javax.net.ssl.trustStoreType", "JKS");
+        if(System.getProperty("java.version").matches("13\\..*")) {
+            // Workaround for https://github.com/bcgit/bc-java/issues/589
+            System.setProperty("jdk.tls.namedGroups", "secp256r1, secp384r1, ffdhe2048, ffdhe3072");
+        }
         // Register bouncy castle as preferred provider. Used in Cyptomator, SSL and SSH
         final int position = this.getInteger("connection.ssl.provider.bouncycastle.position");
         final BouncyCastleProvider provider = new BouncyCastleProvider();
