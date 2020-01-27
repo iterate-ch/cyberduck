@@ -35,9 +35,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -190,22 +187,7 @@ public class FinderLocal extends Local {
             log.warn(String.format("Failure obtaining lock for %s. %s", this, e));
             return super.getOutputStream(append);
         }
-        try {
-            return new ProxyOutputStream(new FileOutputStream(new File(resolved.path()), append)) {
-                @Override
-                public void close() throws IOException {
-                    try {
-                        super.close();
-                    }
-                    finally {
-                        release(resolved);
-                    }
-                }
-            };
-        }
-        catch(FileNotFoundException e) {
-            throw new LocalAccessDeniedException(e.getMessage(), e);
-        }
+        return new LockReleaseProxyOutputStream(super.getOutputStream(resolved.path(), append), resolved, append);
     }
 
     /**
@@ -250,8 +232,7 @@ public class FinderLocal extends Local {
             log.warn(String.format("Failure obtaining lock for %s. %s", this, e));
             return super.getInputStream();
         }
-        final InputStream proxy = super.getInputStream(resolved.path());
-        return new LockReleaseProxyInputStream(proxy, resolved);
+        return new LockReleaseProxyInputStream(super.getInputStream(resolved.path()), resolved);
     }
 
     private static String resolveAlias(final String absolute) {
@@ -276,6 +257,25 @@ public class FinderLocal extends Local {
         private final NSURL resolved;
 
         public LockReleaseProxyInputStream(final InputStream proxy, final NSURL resolved) {
+            super(proxy);
+            this.resolved = resolved;
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                super.close();
+            }
+            finally {
+                release(resolved);
+            }
+        }
+    }
+
+    private final class LockReleaseProxyOutputStream extends ProxyOutputStream {
+        private final NSURL resolved;
+
+        public LockReleaseProxyOutputStream(final OutputStream proxy, final NSURL resolved, final boolean append) {
             super(proxy);
             this.resolved = resolved;
         }
