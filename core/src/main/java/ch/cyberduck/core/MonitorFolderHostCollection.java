@@ -39,6 +39,7 @@ public abstract class MonitorFolderHostCollection extends AbstractFolderHostColl
 
     @Override
     public void load() throws AccessDeniedException {
+        super.load();
         if(preferences.getBoolean("bookmarks.folder.monitor")) {
             try {
                 monitor.register(folder, FILE_FILTER, this);
@@ -47,7 +48,6 @@ public abstract class MonitorFolderHostCollection extends AbstractFolderHostColl
                 throw new LocalAccessDeniedException(String.format("Failure monitoring directory %s", folder.getName()), e);
             }
         }
-        super.load();
     }
 
     @Override
