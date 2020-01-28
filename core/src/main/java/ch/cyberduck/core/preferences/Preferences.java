@@ -1109,6 +1109,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("threading.pool.keepalive.seconds", String.valueOf(60L));
 
         this.setDefault("cryptomator.enable", String.valueOf(true));
+        this.setDefault("cryptomator.vault.version", String.valueOf(6));
         this.setDefault("cryptomator.vault.autodetect", String.valueOf(true));
     }
 

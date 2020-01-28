@@ -60,6 +60,7 @@ import java.util.TimeZone;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
 public class FTPWriteFeatureTest extends AbstractFTPTest {
 

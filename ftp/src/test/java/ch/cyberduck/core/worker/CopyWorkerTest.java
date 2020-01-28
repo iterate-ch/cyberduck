@@ -45,6 +45,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
 
+@Category(IntegrationTest.class)
 public class CopyWorkerTest extends AbstractFTPTest {
 
     @Test

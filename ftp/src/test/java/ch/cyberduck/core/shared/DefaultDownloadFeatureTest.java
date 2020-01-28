@@ -47,6 +47,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
+@Category(IntegrationTest.class)
 public class DefaultDownloadFeatureTest extends AbstractFTPTest {
 
     @Test

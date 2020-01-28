@@ -46,6 +46,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+@Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
 public class FTPDirectoryFeatureTest extends AbstractFTPTest {
 

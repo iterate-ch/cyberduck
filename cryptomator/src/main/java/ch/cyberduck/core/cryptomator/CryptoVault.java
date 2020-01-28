@@ -74,7 +74,7 @@ public class CryptoVault implements Vault {
     private static final Logger log = Logger.getLogger(CryptoVault.class);
 
     public static final int VAULT_VERSION_DEPRECATED = 6;
-    public static final int VAULT_VERSION = 7;
+    public static final int VAULT_VERSION = PreferencesFactory.get().getInteger("cryptomator.vault.version");
 
     public static final String DIR_PREFIX = "0";
 
@@ -258,39 +258,38 @@ public class CryptoVault implements Vault {
     }
 
     private KeyFile upgrade(final Session<?> session, final KeyFile keyFile, final CharSequence passphrase) throws BackgroundException {
-        switch(keyFile.getVersion()) {
-            case VAULT_VERSION:
-            case VAULT_VERSION_DEPRECATED:
-                return keyFile;
-            case 5:
-                log.warn(String.format("Upgrade vault version %d to %d", keyFile.getVersion(), VAULT_VERSION));
-                try {
-                    final CryptorProvider provider = Cryptors.version1(FastSecureRandomProvider.get().provide());
-                    final Cryptor cryptor = provider.createFromKeyFile(keyFile, passphrase, pepper, keyFile.getVersion());
-                    // Create backup, as soon as we know the password was correct
-                    final Path masterKeyFileBackup = new Path(home, DefaultVaultRegistry.DEFAULT_BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
-                    new ContentWriter(session).write(masterKeyFileBackup, keyFile.serialize());
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Master key backup saved in %s", masterKeyFileBackup));
-                    }
-                    // Write updated masterkey file
-                    final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, pepper, VAULT_VERSION);
-                    final Path masterKeyFile = new Path(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
-                    final byte[] masterKeyFileContent = upgradedMasterKeyFile.serialize();
-                    new ContentWriter(session).write(masterKeyFile, masterKeyFileContent, new TransferStatus().exists(true).length(masterKeyFileContent.length));
-                    log.warn(String.format("Updated masterkey %s to version %d", masterKeyFile, VAULT_VERSION));
-                    return KeyFile.parse(upgradedMasterKeyFile.serialize());
-                }
-                catch(IllegalArgumentException e) {
-                    throw new VaultException("Failure reading key file", e);
-                }
-                catch(InvalidPassphraseException e) {
-                    throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
-                }
-            default:
-                log.error(String.format("Unsupported vault version %d", keyFile.getVersion()));
-                return keyFile;
+        int version = keyFile.getVersion();
+        if(version == VAULT_VERSION || version == VAULT_VERSION_DEPRECATED) {
+            return keyFile;
         }
+        else if(version == 5) {
+            log.warn(String.format("Upgrade vault version %d to %d", keyFile.getVersion(), VAULT_VERSION));
+            try {
+                final CryptorProvider provider = Cryptors.version1(FastSecureRandomProvider.get().provide());
+                final Cryptor cryptor = provider.createFromKeyFile(keyFile, passphrase, pepper, keyFile.getVersion());
+                // Create backup, as soon as we know the password was correct
+                final Path masterKeyFileBackup = new Path(home, DefaultVaultRegistry.DEFAULT_BACKUPKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+                new ContentWriter(session).write(masterKeyFileBackup, keyFile.serialize());
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Master key backup saved in %s", masterKeyFileBackup));
+                }
+                // Write updated masterkey file
+                final KeyFile upgradedMasterKeyFile = cryptor.writeKeysToMasterkeyFile(passphrase, pepper, VAULT_VERSION_DEPRECATED);
+                final Path masterKeyFile = new Path(home, DefaultVaultRegistry.DEFAULT_MASTERKEY_FILE_NAME, EnumSet.of(Path.Type.file, Path.Type.vault));
+                final byte[] masterKeyFileContent = upgradedMasterKeyFile.serialize();
+                new ContentWriter(session).write(masterKeyFile, masterKeyFileContent, new TransferStatus().exists(true).length(masterKeyFileContent.length));
+                log.warn(String.format("Updated masterkey %s to version %d", masterKeyFile, VAULT_VERSION_DEPRECATED));
+                return KeyFile.parse(upgradedMasterKeyFile.serialize());
+            }
+            catch(IllegalArgumentException e) {
+                throw new VaultException("Failure reading key file", e);
+            }
+            catch(InvalidPassphraseException e) {
+                throw new CryptoAuthenticationException("Failure to decrypt master key file", e);
+            }
+        }
+        log.error(String.format("Unsupported vault version %d", keyFile.getVersion()));
+        return keyFile;
     }
 
     private void open(final KeyFile keyFile, final CharSequence passphrase) throws VaultException, CryptoAuthenticationException {
@@ -418,13 +417,13 @@ public class CryptoVault implements Vault {
             return file;
         }
         final Path inflated = this.inflate(session, file);
-        final Pattern pattern = vaultVersion == VAULT_VERSION ? BASE64URL_PATTERN : BASE32_PATTERN;
+        final Pattern pattern = vaultVersion == VAULT_VERSION_DEPRECATED ? BASE32_PATTERN : BASE64URL_PATTERN;
         final Matcher m = pattern.matcher(inflated.getName());
         if(m.find()) {
             final String ciphertext = m.group(1);
             try {
                 final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
-                    vaultVersion == VAULT_VERSION ? BaseEncoding.base64Url() : BaseEncoding.base32(),
+                    vaultVersion == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
                     ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
                 final PathAttributes attributes = new PathAttributes(file.attributes());
                 if(inflated.getName().startsWith(DIR_PREFIX)) {

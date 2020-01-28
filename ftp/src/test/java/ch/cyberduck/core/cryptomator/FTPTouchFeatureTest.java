@@ -48,6 +48,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+@Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
 public class FTPTouchFeatureTest extends AbstractFTPTest {
 

@@ -75,6 +75,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
+@Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
 public class CopyWorkerTest extends AbstractFTPTest {
 

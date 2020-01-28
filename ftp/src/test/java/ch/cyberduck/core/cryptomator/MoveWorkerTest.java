@@ -67,6 +67,7 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeTrue;
 
+@Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
 public class MoveWorkerTest extends AbstractFTPTest {
 

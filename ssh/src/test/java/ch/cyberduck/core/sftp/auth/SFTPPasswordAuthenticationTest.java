@@ -21,11 +21,14 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.sftp.AbstractSFTPTest;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import static org.junit.Assert.assertFalse;
 
+@Category(IntegrationTest.class)
 public class SFTPPasswordAuthenticationTest extends AbstractSFTPTest {
 
     @Test(expected = LoginFailureException.class)

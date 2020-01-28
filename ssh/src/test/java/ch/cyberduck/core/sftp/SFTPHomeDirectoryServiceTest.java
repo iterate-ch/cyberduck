@@ -16,13 +16,16 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertEquals;
 
+@Category(IntegrationTest.class)
 public class SFTPHomeDirectoryServiceTest extends AbstractSFTPTest {
 
     @Test

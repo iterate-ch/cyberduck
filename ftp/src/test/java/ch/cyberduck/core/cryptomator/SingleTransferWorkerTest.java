@@ -70,6 +70,7 @@ import java.util.EnumSet;
 
 import static org.junit.Assert.*;
 
+@Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
 public class SingleTransferWorkerTest extends AbstractFTPTest {
 

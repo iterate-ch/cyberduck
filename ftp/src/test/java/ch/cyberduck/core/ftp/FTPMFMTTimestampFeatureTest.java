@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
+@Category(IntegrationTest.class)
 public class FTPMFMTTimestampFeatureTest extends AbstractFTPTest {
 
     @Test
