@@ -77,7 +77,9 @@ public class GoogleStorageAttributesFinderFeature implements AttributesFinder {
 
     protected PathAttributes toAttributes(final StorageObject object) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setSize(object.getSize().longValue());
+        if(object.getSize() != null) {
+            attributes.setSize(object.getSize().longValue());
+        }
         final DateTime lastmodified = object.getTimeCreated();
         if(lastmodified != null) {
             attributes.setModificationDate(lastmodified.getValue());

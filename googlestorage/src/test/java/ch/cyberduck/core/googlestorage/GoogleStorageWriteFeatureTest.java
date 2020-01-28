@@ -47,7 +47,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
     @Test
     public void testWrite() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(container, String.format("%s %s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random()), EnumSet.of(Path.Type.file));
         {
             final TransferStatus status = new TransferStatus();
             final byte[] content = RandomUtils.nextBytes(2048);
@@ -56,6 +56,7 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
             assertNotNull(out.getStatus().id);
+            assertTrue(new GoogleStorageFindFeature(session).find(test));
             final Write.Append append = new GoogleStorageWriteFeature(session).append(test, status.getLength(), PathCache.empty());
             assertTrue(append.override);
             assertEquals(content.length, append.size, 0L);
