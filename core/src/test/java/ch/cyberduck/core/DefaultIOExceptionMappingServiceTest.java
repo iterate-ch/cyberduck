@@ -38,9 +38,9 @@ public class DefaultIOExceptionMappingServiceTest {
 
     @Test
     public void testMap() {
-        assertEquals(ConnectionCanceledException.class,
+        assertEquals(ConnectionRefusedException.class,
             new DefaultIOExceptionMappingService().map(new SocketException("Software caused connection abort")).getClass());
-        assertEquals(ConnectionCanceledException.class,
+        assertEquals(ConnectionRefusedException.class,
             new DefaultIOExceptionMappingService().map(new SocketException("Socket closed")).getClass());
     }
 
