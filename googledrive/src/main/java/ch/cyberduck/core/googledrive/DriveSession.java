@@ -29,6 +29,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.DefaultHttpRateLimiter;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.RateLimitingHttpRequestInterceptor;
+import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -43,8 +44,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
@@ -54,10 +53,6 @@ public class DriveSession extends HttpSession<Drive> {
     private static final Logger log = Logger.getLogger(DriveSession.class);
 
     private ApacheHttpTransport transport;
-
-    private final UseragentProvider useragent
-        = new PreferencesUseragentProvider();
-
     private OAuth2RequestInterceptor authorizationService;
 
     private final DriveFileidProvider fileid = new DriveFileidProvider(this);
@@ -77,14 +72,9 @@ public class DriveSession extends HttpSession<Drive> {
             PreferencesFactory.get().getInteger("googledrive.limit.requests.second")
         )));
         this.transport = new ApacheHttpTransport(configuration.build());
-        return new Drive.Builder(transport, new JacksonFactory(), new HttpRequestInitializer() {
-            @Override
-            public void initialize(HttpRequest request) {
-                request.setSuppressUserAgentSuffix(true);
-                // OAuth Bearer added in interceptor
-            }
-        })
-            .setApplicationName(useragent.get())
+        final UseragentProvider ua = new PreferencesUseragentProvider();
+        return new Drive.Builder(transport, new JacksonFactory(), new UserAgentHttpRequestInitializer(ua))
+            .setApplicationName(ua.get())
             .build();
     }
 

@@ -29,6 +29,7 @@ import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -56,8 +57,6 @@ import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.v2.ApacheHttpTransport;
@@ -160,7 +159,7 @@ public class OAuth2AuthorizationService {
             clientid,
             authorizationServerUrl)
             .setScopes(scopes)
-            .setRequestInitializer(new UserAgentHttpRequestInitializer())
+            .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
             .build();
         final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
         authorizationCodeRequestUrl.setRedirectUri(redirectUri);
@@ -250,7 +249,7 @@ public class OAuth2AuthorizationService {
         try {
             final TokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                 tokens.getRefreshToken())
-                .setRequestInitializer(new UserAgentHttpRequestInitializer())
+                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
                 .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
                 .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
@@ -339,11 +338,4 @@ public class OAuth2AuthorizationService {
         }
     }
 
-    private static final class UserAgentHttpRequestInitializer implements HttpRequestInitializer {
-        @Override
-        public void initialize(final HttpRequest request) throws IOException {
-            request.getHeaders().setUserAgent(new PreferencesUseragentProvider().get());
-            request.setSuppressUserAgentSuffix(true);
-        }
-    }
 }
