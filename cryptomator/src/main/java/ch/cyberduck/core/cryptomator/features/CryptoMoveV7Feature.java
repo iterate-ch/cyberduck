@@ -69,11 +69,6 @@ public class CryptoMoveV7Feature implements Move {
     }
 
     @Override
-    public Move withDelete(final Delete delete) {
-        return this;
-    }
-
-    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("CryptoMoveFeature{");
         sb.append("proxy=").append(proxy);

@@ -66,8 +66,4 @@ public class MantaMoveFeature implements Move {
         return session.isUserWritable(target);
     }
 
-    @Override
-    public Move withDelete(final Delete delete) {
-        return this;
-    }
 }

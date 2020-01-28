@@ -72,8 +72,4 @@ public class DAVMoveFeature implements Move {
         return true;
     }
 
-    @Override
-    public Move withDelete(final Delete delete) {
-        return this;
-    }
 }

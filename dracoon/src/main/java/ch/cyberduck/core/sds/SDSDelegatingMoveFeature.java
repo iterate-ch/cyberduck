@@ -91,12 +91,6 @@ public class SDSDelegatingMoveFeature implements Move {
     }
 
     @Override
-    public Move withDelete(final Delete delete) {
-        proxy.withDelete(delete);
-        return this;
-    }
-
-    @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("SDSDelegatingMoveFeature{");
         sb.append("proxy=").append(proxy);

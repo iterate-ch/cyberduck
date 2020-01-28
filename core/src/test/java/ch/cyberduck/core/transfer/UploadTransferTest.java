@@ -342,11 +342,6 @@ public class UploadTransferTest {
                             return true;
                         }
 
-                        @Override
-                        public Move withDelete(final Delete delete) {
-                            return this;
-                        }
-
                     };
                 }
                 if(type.equals(AttributesFinder.class)) {

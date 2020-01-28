@@ -93,12 +93,6 @@ public class VaultRegistryMoveFeature implements Move {
     }
 
     @Override
-    public Move withDelete(final Delete delete) {
-        proxy.withDelete(delete);
-        return this;
-    }
-
-    @Override
     public Move withTarget(final Session<?> session) {
         this.destination = session.withRegistry(registry);
         return this;

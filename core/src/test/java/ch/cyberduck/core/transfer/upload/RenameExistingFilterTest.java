@@ -66,10 +66,6 @@ public class RenameExistingFilterTest {
                             return true;
                         }
 
-                        @Override
-                        public Move withDelete(final Delete delete) {
-                            return this;
-                        }
                     };
                 }
                 return super._getFeature(type);
@@ -140,11 +136,6 @@ public class RenameExistingFilterTest {
                         @Override
                         public boolean isRecursive(final Path source, final Path target) {
                             return true;
-                        }
-
-                        @Override
-                        public Move withDelete(final Delete delete) {
-                            return this;
                         }
 
                     };
@@ -233,11 +224,6 @@ public class RenameExistingFilterTest {
                         @Override
                         public boolean isRecursive(final Path source, final Path target) {
                             return true;
-                        }
-
-                        @Override
-                        public Move withDelete(final Delete delete) {
-                            return this;
                         }
 
                     };

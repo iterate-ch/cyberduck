@@ -43,9 +43,4 @@ public class DisabledMoveFeature implements Move {
         return false;
     }
 
-    @Override
-    public Move withDelete(final Delete delete) {
-        return this;
-    }
-
 }
