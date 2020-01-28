@@ -1,7 +1,7 @@
 package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -20,9 +20,9 @@ public class FTPExceptionMappingServiceTest {
 
     @Test
     public void testMap() {
-        assertEquals(ConnectionCanceledException.class,
+        assertEquals(ConnectionRefusedException.class,
             new FTPExceptionMappingService().map(new SocketException("Software caused connection abort")).getClass());
-        assertEquals(ConnectionCanceledException.class,
+        assertEquals(ConnectionRefusedException.class,
             new FTPExceptionMappingService().map(new SocketException("Socket closed")).getClass());
     }
 

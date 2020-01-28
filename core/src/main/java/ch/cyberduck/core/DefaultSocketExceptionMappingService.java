@@ -16,10 +16,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
-
-import org.apache.commons.lang3.StringUtils;
 
 import java.net.SocketException;
 
@@ -29,12 +26,6 @@ public class DefaultSocketExceptionMappingService extends AbstractExceptionMappi
     public BackgroundException map(final SocketException failure) {
         final StringBuilder buffer = new StringBuilder();
         this.append(buffer, failure.getMessage());
-        if(StringUtils.equals(failure.getMessage(), "Software caused connection abort")) {
-            return new ConnectionCanceledException(buffer.toString(), failure);
-        }
-        if(StringUtils.equals(failure.getMessage(), "Socket closed")) {
-            return new ConnectionCanceledException(buffer.toString(), failure);
-        }
         return new ConnectionRefusedException(buffer.toString(), failure);
     }
 }
