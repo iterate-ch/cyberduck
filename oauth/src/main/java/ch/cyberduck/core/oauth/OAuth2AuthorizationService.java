@@ -23,6 +23,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -55,6 +56,8 @@ import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.auth.oauth2.TokenResponseException;
 import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.apache.v2.ApacheHttpTransport;
@@ -157,6 +160,7 @@ public class OAuth2AuthorizationService {
             clientid,
             authorizationServerUrl)
             .setScopes(scopes)
+            .setRequestInitializer(new UserAgentHttpRequestInitializer())
             .build();
         final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
         authorizationCodeRequestUrl.setRedirectUri(redirectUri);
@@ -246,6 +250,7 @@ public class OAuth2AuthorizationService {
         try {
             final TokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                 tokens.getRefreshToken())
+                .setRequestInitializer(new UserAgentHttpRequestInitializer())
                 .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
                 .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
@@ -331,6 +336,14 @@ public class OAuth2AuthorizationService {
                 .setExpiresInSeconds(expiresInSeconds)
                 .setAccessToken(accessToken)
                 .setRefreshToken(refreshToken);
+        }
+    }
+
+    private static final class UserAgentHttpRequestInitializer implements HttpRequestInitializer {
+        @Override
+        public void initialize(final HttpRequest request) throws IOException {
+            request.getHeaders().setUserAgent(new PreferencesUseragentProvider().get());
+            request.setSuppressUserAgentSuffix(true);
         }
     }
 }
