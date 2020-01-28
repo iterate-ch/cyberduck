@@ -95,8 +95,8 @@ public class SFTPCryptomatorInteroperabilityTest {
     /**
      * Create file/folder with Cryptomator, read with Cyberduck
      */
-    @Test
-    public void testCryptomatorInteroperabilityTests() throws Exception {
+    @Test(expected = CryptoInvalidFilenameException.class)
+    public void testCryptomatorInteroperabilityLongFilename() throws Exception {
         // create folder
         final java.nio.file.Path targetFolder = cryptoFileSystem.getPath("/", new AlphanumericRandomStringService().random());
         Files.createDirectory(targetFolder);
@@ -131,7 +131,7 @@ public class SFTPCryptomatorInteroperabilityTest {
      * Create long file/folder with Cryptomator, read with Cyberduck
      */
     @Test
-    public void testCryptomatorInteroperability_longNames_Tests() throws Exception {
+    public void testCryptomatorInteroperability() throws Exception {
         // create folder
         final java.nio.file.Path targetFolder = cryptoFileSystem.getPath("/", new AlphanumericRandomStringService().random());
         Files.createDirectory(targetFolder);

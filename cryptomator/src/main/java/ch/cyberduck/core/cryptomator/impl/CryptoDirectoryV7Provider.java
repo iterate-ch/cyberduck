@@ -56,7 +56,7 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Encrypted filename %s to %s", filename, ciphertextName));
         }
-        return ciphertextName;
+        return cryptomator.getFilenameProvider().deflate(session, ciphertextName);
     }
 
     protected String load(final Session<?> session, final Path directory) throws BackgroundException {
