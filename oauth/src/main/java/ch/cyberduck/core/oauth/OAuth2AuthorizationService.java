@@ -23,11 +23,13 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
+import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
+import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.local.BrowserLauncher;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -157,6 +159,7 @@ public class OAuth2AuthorizationService {
             clientid,
             authorizationServerUrl)
             .setScopes(scopes)
+            .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
             .build();
         final AuthorizationCodeRequestUrl authorizationCodeRequestUrl = flow.newAuthorizationUrl();
         authorizationCodeRequestUrl.setRedirectUri(redirectUri);
@@ -246,6 +249,7 @@ public class OAuth2AuthorizationService {
         try {
             final TokenResponse response = new RefreshTokenRequest(transport, json, new GenericUrl(tokenServerUrl),
                 tokens.getRefreshToken())
+                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
                 .setClientAuthentication(new ClientParametersAuthentication(clientid, clientsecret))
                 .executeUnparsed().parseAs(PermissiveTokenResponse.class).toTokenResponse();
             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
@@ -333,4 +337,5 @@ public class OAuth2AuthorizationService {
                 .setRefreshToken(refreshToken);
         }
     }
+
 }

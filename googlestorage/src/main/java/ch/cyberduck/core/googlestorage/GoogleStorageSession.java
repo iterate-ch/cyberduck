@@ -27,6 +27,7 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
@@ -41,8 +42,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.storage.Storage;
@@ -50,10 +49,6 @@ import com.google.api.services.storage.Storage;
 public class GoogleStorageSession extends HttpSession<Storage> {
 
     private ApacheHttpTransport transport;
-
-    private final UseragentProvider useragent
-        = new PreferencesUseragentProvider();
-
     private OAuth2RequestInterceptor authorizationService;
 
     public GoogleStorageSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
@@ -68,14 +63,9 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         this.transport = new ApacheHttpTransport(configuration.build());
-        return new Storage.Builder(transport, new JacksonFactory(), new HttpRequestInitializer() {
-            @Override
-            public void initialize(HttpRequest request) {
-                request.setSuppressUserAgentSuffix(true);
-                // OAuth Bearer added in interceptor
-            }
-        })
-            .setApplicationName(useragent.get())
+        final UseragentProvider ua = new PreferencesUseragentProvider();
+        return new Storage.Builder(transport, new JacksonFactory(), new UserAgentHttpRequestInitializer(ua))
+            .setApplicationName(ua.get())
             .build();
     }
 
