@@ -996,7 +996,7 @@ public abstract class Preferences implements Locales {
             log.info(String.format("Install provider %s at position %d", provider, position));
         }
         Security.insertProviderAt(provider, position);
-        this.setDefault("connection.ssl.protocols", "TLSv1.2,TLSv1.1,TLSv1");
+        this.setDefault("connection.ssl.protocols", "TLSv1.3,TLSv1.2,TLSv1.1,TLSv1");
         this.setDefault("connection.ssl.cipher.blacklist", StringUtils.EMPTY);
 
         this.setDefault("connection.ssl.x509.revocation.online", String.valueOf(false));
