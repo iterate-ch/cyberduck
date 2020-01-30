@@ -31,6 +31,7 @@ import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.BookmarkNameProvider;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostFilter;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.preferences.Preferences;
@@ -45,6 +46,8 @@ import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
+import java.text.MessageFormat;
+
 public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private static final Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
 
@@ -53,8 +56,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private final Preferences preferences
         = PreferencesFactory.get();
 
-    private final AbstractHostCollection collection;
-
+    private final AbstractHostCollection bookmarks;
     private final int index;
 
     private final MenuCallback callback;
@@ -88,10 +90,10 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         this(BookmarkCollection.defaultCollection(), BOOKMARKS_INDEX, callback, history, rendezvous);
     }
 
-    public BookmarkMenuDelegate(final AbstractHostCollection collection, final int index,
+    public BookmarkMenuDelegate(final AbstractHostCollection bookmarks, final int index,
                                 final MenuCallback callback, final HistoryMenuDelegate history, final RendezvousMenuDelegate rendezvous) {
-        super(collection);
-        this.collection = collection;
+        super(bookmarks);
+        this.bookmarks = bookmarks;
         this.index = index;
         this.historyMenuDelegate = history;
         this.rendezvousMenuDelegate = rendezvous;
@@ -101,62 +103,78 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     }
 
     @Override
-    public NSInteger numberOfItemsInMenu(NSMenu menu) {
-        if(this.isPopulated()) {
-            // If you return a negative value, the number of items is left unchanged
-            // and menu:updateItem:atIndex:shouldCancel: is not called.
-            return new NSInteger(-1);
-        }
-        /**
-         * Toogle Bookmarks
-         * Sort By
-         * ----------------
-         * New Bookmark
-         * Edit Bookmark
-         * Delete Bookmark
-         * Duplicate Bookmark
-         * ----------------
-         * History
-         * Bonjour
-         * ----------------
-         * ...
-         */
-        return new NSInteger(collection.size() + index + 3);
+    public NSInteger numberOfItemsInMenu(final NSMenu menu) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Host itemForIndex(final NSInteger row) {
-        return collection.get(row.intValue() - (index + 3));
+    public boolean menuUpdateItemAtIndex(final NSMenu menu, final NSMenuItem item, final NSInteger index, final boolean cancel) {
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger row, boolean cancel) {
-        if(row.intValue() == index) {
-            item.setEnabled(true);
-            item.setTitle(LocaleFactory.get().localize("History", "Localizable"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("history.tiff", 16));
-            item.setTarget(this.id());
-            item.setAction(Foundation.selector("historyMenuClicked:"));
-            item.setSubmenu(historyMenu);
+    public void menuNeedsUpdate(final NSMenu menu) {
+        if(!this.isPopulated()) {
+            if(log.isTraceEnabled()) {
+                log.trace(String.format("Build menu %s", menu));
+            }
+            for(int i = menu.numberOfItems().intValue() - 1; i >= BOOKMARKS_INDEX; i--) {
+                menu.removeItemAtIndex(new NSInteger(i));
+            }
+            {
+                final NSMenuItem item = NSMenuItem.itemWithTitle(LocaleFactory.get().localize("History", "Localizable"), null, StringUtils.EMPTY);
+                item.setEnabled(true);
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("history.tiff", 16));
+                item.setTarget(this.id());
+                item.setAction(Foundation.selector("historyMenuClicked:"));
+                historyMenu.setSupermenu(null);
+                item.setSubmenu(historyMenu);
+                menu.addItem(item);
+            }
+            {
+                final NSMenuItem item = NSMenuItem.itemWithTitle(LocaleFactory.get().localize("Bonjour", "Main"), null, StringUtils.EMPTY);
+                item.setEnabled(true);
+                item.setImage(IconCacheFactory.<NSImage>get().iconNamed("rendezvous.tiff", 16));
+                rendezvousMenu.setSupermenu(null);
+                item.setSubmenu(rendezvousMenu);
+                menu.addItem(item);
+            }
+            menu.addItem(NSMenuItem.separatorItem());
+            bookmarks.groups(HostFilter.NONE).forEach((label, bookmarks) -> {
+                final NSMenu submenu;
+                if(StringUtils.isNotBlank(label)) {
+                    final NSMenuItem group = NSMenuItem.itemWithTitle(label, null, StringUtils.EMPTY);
+                    final NSMutableAttributedString title = NSMutableAttributedString.create(label);
+                    title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
+                        String.format("\n%s", MessageFormat.format(LocaleFactory.localizedString("{0} Bookmarks", "Localizable"),
+                            bookmarks.size())), BundleController.MENU_HELP_FONT_ATTRIBUTES));
+                    group.setAttributedTitle(title);
+                    switch(preferences.getInteger("bookmark.menu.icon.size")) {
+                        default:
+                            group.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSFolder", CollectionMenuDelegate.SMALL_ICON_SIZE));
+                            break;
+                        case BookmarkCell.MEDIUM_BOOKMARK_SIZE:
+                            group.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSFolder", CollectionMenuDelegate.MEDIUM_ICON_SIZE));
+                            break;
+                        case BookmarkCell.LARGE_BOOKMARK_SIZE:
+                            group.setImage(IconCacheFactory.<NSImage>get().iconNamed("NSFolder", CollectionMenuDelegate.LARGE_ICON_SIZE));
+                            break;
+                    }
+                    submenu = NSMenu.menu();
+                    group.setSubmenu(submenu);
+                    menu.addItem(group);
+                }
+                else {
+                    submenu = menu;
+                }
+                for(Host h : bookmarks) {
+                    submenu.addItem(build(h));
+                }
+            });
         }
-        if(row.intValue() == index + 1) {
-            item.setEnabled(true);
-            item.setTitle(LocaleFactory.get().localize("Bonjour", "Main"));
-            item.setImage(IconCacheFactory.<NSImage>get().iconNamed("rendezvous.tiff", 16));
-            item.setSubmenu(rendezvousMenu);
-        }
-        if(row.intValue() == index + 2) {
-            menu.removeItemAtIndex(row);
-            menu.insertItem_atIndex(this.seperator(), row);
-        }
-        if(row.intValue() > index + 2) {
-            Host h = this.itemForIndex(row);
-            this.build(item, h);
-        }
-        return super.menuUpdateItemAtIndex(menu, item, row, cancel);
     }
 
-    private void build(final NSMenuItem item, final Host h) {
+    private NSMenuItem build(final Host h) {
+        final NSMenuItem item = NSMenuItem.itemWithTitle(BookmarkNameProvider.toString(h), this.getDefaultAction(), StringUtils.EMPTY);
         final NSMutableAttributedString title = NSMutableAttributedString.create(BookmarkNameProvider.toString(h));
         if(preferences.getInteger("bookmark.menu.icon.size") >= BookmarkCell.MEDIUM_BOOKMARK_SIZE) {
             title.appendAttributedString(NSAttributedString.attributedStringWithAttributes(
@@ -182,6 +200,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         item.setTarget(this.id());
         item.setAction(this.getDefaultAction());
         item.setRepresentedObject(h.getUuid());
+        return item;
     }
 
     @Action
