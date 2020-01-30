@@ -47,7 +47,7 @@ public abstract class AbstractS3Test {
 
     @Parameterized.Parameters(name = "vaultVersion = {0}")
     public static Object[] data() {
-        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, CryptoVault.VAULT_VERSION};
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, 7};
     }
 
     @Parameterized.Parameter
