@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
@@ -40,6 +39,8 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -50,6 +51,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
+@RunWith(value = Parameterized.class)
 public class SwiftListServiceTest extends AbstractSwiftTest {
 
     @Test
@@ -59,14 +61,14 @@ public class SwiftListServiceTest extends AbstractSwiftTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, new SwiftObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         final SwiftRegionService regionService = new SwiftRegionService(session);
         new CryptoTouchFeature<StorageObject>(session, new DefaultTouchFeature<StorageObject>(new SwiftSmallObjectUploadFeature(new SwiftWriteFeature(session, regionService)),
             new SwiftAttributesFinderFeature(session)), new SwiftWriteFeature(session, regionService), cryptomator).touch(test, new TransferStatus());
         assertEquals(test, new CryptoListService(session, new SwiftObjectListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
-        new CryptoDeleteFeature(session, new SwiftDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new SwiftDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         session.close();
     }
 }

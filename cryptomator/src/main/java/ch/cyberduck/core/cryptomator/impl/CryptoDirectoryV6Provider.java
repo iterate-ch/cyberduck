@@ -1,12 +1,12 @@
 package ch.cyberduck.core.cryptomator.impl;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -24,6 +24,7 @@ import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.cryptomator.ContentReader;
+import ch.cyberduck.core.cryptomator.CryptoDirectory;
 import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -35,8 +36,8 @@ import org.apache.log4j.Logger;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 
-public class CryptoDirectoryProvider {
-    private static final Logger log = Logger.getLogger(CryptoDirectoryProvider.class);
+public class CryptoDirectoryV6Provider implements CryptoDirectory {
+    private static final Logger log = Logger.getLogger(CryptoDirectoryV6Provider.class);
 
     private static final String DATA_DIR_NAME = "d";
     private static final String ROOT_DIR_ID = StringUtils.EMPTY;
@@ -51,21 +52,13 @@ public class CryptoDirectoryProvider {
     private final LRUCache<CacheReference<Path>, String> cache = LRUCache.build(
         PreferencesFactory.get().getInteger("browser.cache.size"));
 
-    public CryptoDirectoryProvider(final Path vault, final CryptoVault cryptomator) {
+    public CryptoDirectoryV6Provider(final Path vault, final CryptoVault cryptomator) {
         this.home = vault;
         this.dataRoot = new Path(vault, DATA_DIR_NAME, vault.getType());
         this.cryptomator = cryptomator;
     }
 
-    /**
-     * Get encrypted filename for given clear text filename with id of parent encrypted directory.
-     *
-     * @param session     Connection
-     * @param directoryId Parent folder directory id
-     * @param filename    Clear text filename
-     * @param type        File type
-     * @return Encrypted filename
-     */
+    @Override
     public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
@@ -76,13 +69,7 @@ public class CryptoDirectoryProvider {
         return cryptomator.getFilenameProvider().deflate(session, ciphertextName);
     }
 
-    /**
-     * Get encrypted reference for clear text directory path.
-     *
-     * @param session     Connection
-     * @param directoryId Directory ID or null to read directory id from metadata file
-     * @param directory   Clear text
-     */
+    @Override
     public Path toEncrypted(final Session<?> session, final String directoryId, final Path directory) throws BackgroundException {
         if(!directory.isDirectory()) {
             throw new NotfoundException(directory.getAbsolute());
@@ -128,7 +115,7 @@ public class CryptoDirectoryProvider {
         return directoryId;
     }
 
-    private String load(final Session<?> session, final Path directory) throws BackgroundException {
+    protected String load(final Session<?> session, final Path directory) throws BackgroundException {
         final Path parent = this.toEncrypted(session, directory.getParent().attributes().getDirectoryId(), directory.getParent());
         final String cleartextName = directory.getName();
         final String ciphertextName = this.toEncrypted(session, parent.attributes().getDirectoryId(), cleartextName, EnumSet.of(Path.Type.directory));
@@ -146,13 +133,11 @@ public class CryptoDirectoryProvider {
         }
     }
 
-    /**
-     * Remove from cache
-     */
     public void delete(final Path directory) {
         cache.remove(new SimplePathPredicate(directory));
     }
 
+    @Override
     public void destroy() {
         cache.clear();
     }

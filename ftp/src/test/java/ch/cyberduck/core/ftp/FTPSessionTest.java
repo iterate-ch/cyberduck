@@ -99,6 +99,7 @@ public class FTPSessionTest extends AbstractFTPTest {
     }
 
     @Test
+    @Category(IntegrationTest.class)
     public void testConnectionTlsUpgrade() throws Exception {
         final Host host = new Host(new FTPProtocol(), "test.cyberduck.ch", new Credentials(
             System.getProperties().getProperty("ftp.user"), System.getProperties().getProperty("ftp.password")

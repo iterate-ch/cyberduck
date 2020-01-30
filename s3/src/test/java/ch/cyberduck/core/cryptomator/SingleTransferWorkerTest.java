@@ -27,7 +27,6 @@ import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.features.Delete;
@@ -58,6 +57,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -69,6 +70,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
+@RunWith(value = Parameterized.class)
 public class SingleTransferWorkerTest extends AbstractS3Test {
 
     @Test
@@ -90,7 +92,7 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
         IOUtils.write(content, out2);
         out2.close();
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Transfer t = new UploadTransfer(new Host(new TestProtocol()), Collections.singletonList(new TransferItem(dir1, localDirectory1)), new NullFilter<>());
         assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
@@ -117,7 +119,7 @@ public class SingleTransferWorkerTest extends AbstractS3Test {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        new CryptoDeleteFeature(session, new S3DefaultDeleteFeature(session), cryptomator).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new S3DefaultDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();

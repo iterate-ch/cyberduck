@@ -27,12 +27,14 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runners.Parameterized;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,6 +45,14 @@ public class AbstractB2Test {
 
     protected final PathCache cache = new PathCache(100);
     protected B2Session session;
+
+    @Parameterized.Parameters(name = "vaultVersion = {0}")
+    public static Object[] data() {
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, 7};
+    }
+
+    @Parameterized.Parameter
+    public int vaultVersion;
 
     @After
     public void disconnect() throws Exception {

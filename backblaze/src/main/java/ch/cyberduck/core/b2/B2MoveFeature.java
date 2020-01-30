@@ -58,8 +58,4 @@ public class B2MoveFeature implements Move {
         return new B2CopyFeature(session, fileid).isRecursive(source, target);
     }
 
-    @Override
-    public Move withDelete(final Delete delete) {
-        return this;
-    }
 }

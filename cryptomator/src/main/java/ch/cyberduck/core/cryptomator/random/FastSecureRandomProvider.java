@@ -18,7 +18,7 @@ package ch.cyberduck.core.cryptomator.random;
 import ch.cyberduck.core.random.DefaultSecureRandomProvider;
 import ch.cyberduck.core.random.SecureRandomProvider;
 
-import org.cryptomator.cryptolib.common.SecureRandomModule;
+import org.cryptomator.cryptolib.common.ReseedingSecureRandom;
 
 import java.security.SecureRandom;
 
@@ -44,7 +44,7 @@ public class FastSecureRandomProvider extends DefaultSecureRandomProvider implem
         synchronized(lock) {
             if(null == seeder) {
                 final SecureRandom implementation = super.provide();
-                seeder = new SecureRandomModule(implementation).provideFastSecureRandom(implementation);
+                seeder = ReseedingSecureRandom.create(implementation);
             }
             return seeder;
         }

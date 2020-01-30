@@ -29,6 +29,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.cryptomator.CryptoVault;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -44,6 +45,7 @@ import org.apache.sshd.server.session.ServerSession;
 import org.apache.sshd.server.subsystem.sftp.SftpSubsystemFactory;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runners.Parameterized;
 
 import java.nio.file.Paths;
 import java.security.PublicKey;
@@ -59,6 +61,14 @@ public class AbstractSFTPTest {
 
     protected SFTPSession session;
 
+    @Parameterized.Parameters(name = "vaultVersion = {0}")
+    public static Object[] data() {
+        return new Object[]{CryptoVault.VAULT_VERSION_DEPRECATED, 7};
+    }
+
+    @Parameterized.Parameter
+    public int vaultVersion;
+
     @Before
     public void start() throws Exception {
         sshServer = SshServer.setUpDefaultServer();
@@ -66,10 +76,10 @@ public class AbstractSFTPTest {
         sshServer.setPasswordAuthenticator(new PasswordAuthenticator() {
             @Override
             public boolean authenticate(String username, String password, ServerSession session) {
-                if(!StringUtils.equals(System.getProperties().getProperty("sftp.user"), username)) {
+                if(!StringUtils.equals("test", username)) {
                     return false;
                 }
-                if(!StringUtils.equals(System.getProperties().getProperty("sftp.password"), password)) {
+                if(!StringUtils.equals("test", password)) {
                     return false;
                 }
                 return true;
@@ -111,9 +121,7 @@ public class AbstractSFTPTest {
         final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singleton(new SFTPProtocol())));
         final Profile profile = new ProfilePlistReader(factory).read(
             this.getClass().getResourceAsStream("/SFTP.cyberduckprofile"));
-        final Host host = new Host(profile, profile.getDefaultHostname(), 2202, new Credentials(
-            System.getProperties().getProperty("sftp.user"), System.getProperties().getProperty("sftp.password")
-        ));
+        final Host host = new Host(profile, profile.getDefaultHostname(), 2202, new Credentials("test", "test"));
         session = new SFTPSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         new LoginConnectionService(new DisabledLoginCallback() {
             @Override

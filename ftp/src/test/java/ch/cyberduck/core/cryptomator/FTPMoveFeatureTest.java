@@ -21,12 +21,11 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoMoveFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
 import ch.cyberduck.core.ftp.FTPDeleteFeature;
 import ch.cyberduck.core.ftp.FTPDirectoryFeature;
@@ -44,6 +43,8 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -52,6 +53,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
+@RunWith(value = Parameterized.class)
 public class FTPMoveFeatureTest extends AbstractFTPTest {
 
     @Test
@@ -61,12 +63,12 @@ public class FTPMoveFeatureTest extends AbstractFTPTest {
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoDirectoryFeature<Integer>(session, new FTPDirectoryFeature(session), new FTPWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new FTPDirectoryFeature(session)).mkdir(folder, null, new TransferStatus());
         new CryptoTouchFeature<Integer>(session, new DefaultTouchFeature<Integer>(new DefaultUploadFeature<Integer>(new FTPWriteFeature(session)), new DefaultAttributesFinderFeature(session)), new FTPWriteFeature(session), cryptomator).touch(file, new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
-        final CryptoMoveFeature move = new CryptoMoveFeature(session, new FTPMoveFeature(session), new FTPDeleteFeature(session), cryptomator);
+        final Move move = cryptomator.getFeature(session, Move.class, new FTPMoveFeature(session));
         // rename file
         final Path fileRenamed = new Path(folder, "f1", EnumSet.of(Path.Type.file));
         move.move(file, fileRenamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
@@ -79,7 +81,7 @@ public class FTPMoveFeatureTest extends AbstractFTPTest {
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
-        new CryptoDeleteFeature(session, new FTPDeleteFeature(session), cryptomator).delete(Arrays.asList(
+        cryptomator.getFeature(session, Delete.class, new FTPDeleteFeature(session)).delete(Arrays.asList(
             fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

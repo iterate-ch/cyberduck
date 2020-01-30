@@ -45,12 +45,6 @@ public class DriveMoveFeature implements Move {
     }
 
     @Override
-    public Move withDelete(final Delete delete) {
-        this.delete = delete;
-        return this;
-    }
-
-    @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {

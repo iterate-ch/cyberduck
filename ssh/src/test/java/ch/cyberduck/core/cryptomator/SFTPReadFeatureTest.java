@@ -23,7 +23,6 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
@@ -49,6 +48,8 @@ import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -60,6 +61,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
+@RunWith(value = Parameterized.class)
 public class SFTPReadFeatureTest extends AbstractSFTPTest {
 
     @Test
@@ -72,7 +74,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final CryptoWriteFeature<Void> writer = new CryptoWriteFeature<>(session, new SFTPWriteFeature(session), cryptomator);
         final Cryptor cryptor = cryptomator.getCryptor();
@@ -97,7 +99,7 @@ public class SFTPReadFeatureTest extends AbstractSFTPTest {
         final byte[] reference = new byte[30000];
         System.arraycopy(content, 40000, reference, 0, reference.length);
         assertArrayEquals(reference, buffer.toByteArray());
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
 
     }
 }

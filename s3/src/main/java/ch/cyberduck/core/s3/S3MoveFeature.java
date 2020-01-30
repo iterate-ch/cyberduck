@@ -114,10 +114,4 @@ public class S3MoveFeature implements Move {
         return !containerService.isContainer(source);
     }
 
-    @Override
-    public Move withDelete(final Delete delete) {
-        this.delete = delete;
-        return this;
-    }
-
 }

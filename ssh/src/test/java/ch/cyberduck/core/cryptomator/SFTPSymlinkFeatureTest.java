@@ -21,7 +21,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoSymlinkFeature;
@@ -44,22 +43,27 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 @Category(IntegrationTest.class)
+@RunWith(value = Parameterized.class)
 public class SFTPSymlinkFeatureTest extends AbstractSFTPTest {
 
     @Test
     public void testSymlink() throws Exception {
+        assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
         final Path home = new SFTPHomeDirectoryService(session).find();
         final Path vault = new Path(home, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final Path target = new Path(vault, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<Void>(new SFTPWriteFeature(session)),
@@ -69,9 +73,9 @@ public class SFTPSymlinkFeatureTest extends AbstractSFTPTest {
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(link));
         assertEquals(EnumSet.of(Path.Type.file, Path.Type.symboliclink, Path.Type.decrypted),
             new CryptoListService(session, new SFTPListService(session), cryptomator).list(vault, new DisabledListProgressListener()).get(link).getType());
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Collections.singletonList(link), new DisabledLoginCallback(), new Delete.DisabledCallback());
         assertFalse(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(link));
         assertTrue(new CryptoFindFeature(session, new SFTPFindFeature(session), cryptomator).find(target));
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -1,12 +1,12 @@
 package ch.cyberduck.core.cryptomator.features;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -20,8 +20,8 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.cryptomator.CryptoVault;
-import ch.cyberduck.core.cryptomator.impl.CryptoFilenameProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Find;
@@ -33,15 +33,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CryptoDeleteFeature implements Delete {
-    private static final Logger log = Logger.getLogger(CryptoDeleteFeature.class);
+public class CryptoDeleteV6Feature implements Delete {
+    private static final Logger log = Logger.getLogger(CryptoDeleteV6Feature.class);
 
     private final Session<?> session;
     private final Delete proxy;
     private final CryptoVault vault;
-    private final CryptoFilenameProvider filenameProvider;
+    private final CryptoFilename filenameProvider;
 
-    public CryptoDeleteFeature(final Session<?> session, final Delete proxy, final CryptoVault vault) {
+    public CryptoDeleteV6Feature(final Session<?> session, final Delete proxy, final CryptoVault vault) {
         this.session = session;
         this.proxy = proxy;
         this.vault = vault;

@@ -49,12 +49,6 @@ public interface Move {
     }
 
     /**
-     * @param delete Delete feature if move operation requires delete after copy
-     * @return This
-     */
-    Move withDelete(Delete delete);
-
-    /**
      * @param session Target session for stateful protocols when move can only be made with copy/delete
      * @return This
      */

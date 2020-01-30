@@ -29,8 +29,6 @@ import ch.cyberduck.core.NullFilter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoWriteFeature;
@@ -43,6 +41,7 @@ import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVReadFeature;
 import ch.cyberduck.core.dav.DAVWriteFeature;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
@@ -71,6 +70,8 @@ import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -82,6 +83,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
+@RunWith(value = Parameterized.class)
 public class SingleTransferWorkerTest extends AbstractDAVTest {
 
     @Test
@@ -103,7 +105,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         IOUtils.write(content, out2);
         out2.close();
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
@@ -136,7 +138,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();
@@ -149,14 +151,14 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         final Path home = new DefaultHomeFinderService(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
                 return new VaultCredentials("test");
             }
         }));
-        final Path dir1 = new CryptoDirectoryFeature<String>(session, new DAVDirectoryFeature(session), new DAVWriteFeature(session), cryptomator).mkdir(new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path dir1 = cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final Path file1 = new Path(dir1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Cryptor cryptor = cryptomator.getCryptor();
@@ -180,7 +182,7 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService()) {
 
         }.run(session));
-        new CryptoDeleteFeature(session, new DAVDeleteFeature(session), cryptomator).delete(Arrays.asList(file1, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DAVDeleteFeature(session)).delete(Arrays.asList(file1, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localDirectory1.delete();
     }

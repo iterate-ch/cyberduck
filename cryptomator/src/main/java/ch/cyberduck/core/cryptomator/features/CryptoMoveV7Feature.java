@@ -19,31 +19,39 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.impl.CryptoDirectoryV7Provider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-public class CryptoMoveFeature implements Move {
+import java.util.EnumSet;
+
+public class CryptoMoveV7Feature implements Move {
 
     private final Session<?> session;
     private final Move proxy;
     private final CryptoVault vault;
 
-    public CryptoMoveFeature(final Session<?> session, final Move delegate, final Delete delete, final CryptoVault cryptomator) {
+    public CryptoMoveV7Feature(final Session<?> session, final Move delegate, final CryptoVault cryptomator) {
         this.session = session;
-        this.proxy = delegate.withDelete(new CryptoDeleteFeature(session, delete, cryptomator));
+        this.proxy = delegate;
         this.vault = cryptomator;
     }
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         // Move inside vault moves actual files and only metadata files for directories but not the actual directories
-        final Path target = proxy.move(
-            vault.encrypt(session, file, file.isDirectory()),
-            vault.encrypt(session, renamed, file.isDirectory()),
+        final Path sourceEncrypted = vault.encrypt(session, file, file.isDirectory());
+        final Path targetEncrypted = vault.encrypt(session, renamed, file.isDirectory());
+        final Path target = proxy.move(sourceEncrypted, targetEncrypted,
             status, callback, connectionCallback);
         if(file.isDirectory()) {
+            if(!proxy.isRecursive(file, renamed)) {
+                proxy.move(new Path(sourceEncrypted, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file)),
+                    new Path(targetEncrypted, CryptoDirectoryV7Provider.DIRECTORY_METADATAFILE, EnumSet.of(Path.Type.file)),
+                    new TransferStatus(status), callback, connectionCallback);
+            }
             vault.getDirectoryProvider().delete(file);
         }
         return vault.decrypt(session, target);
@@ -58,11 +66,6 @@ public class CryptoMoveFeature implements Move {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         return proxy.isSupported(source, target);
-    }
-
-    @Override
-    public Move withDelete(final Delete delete) {
-        return this;
     }
 
     @Override

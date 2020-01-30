@@ -1,12 +1,12 @@
 package ch.cyberduck.core.cryptomator.impl;
 
 /*
- * Copyright (c) 2002-2016 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -20,6 +20,7 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.ContentWriter;
+import ch.cyberduck.core.cryptomator.CryptoFilename;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
@@ -35,8 +36,8 @@ import com.google.common.io.BaseEncoding;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class CryptoFilenameProvider {
-    private static final Logger log = Logger.getLogger(CryptoFilenameProvider.class);
+public class CryptoFilenameV6Provider implements CryptoFilename {
+    private static final Logger log = Logger.getLogger(CryptoFilenameV6Provider.class);
 
     private static final BaseEncoding BASE32 = BaseEncoding.base32();
     private static final String LONG_NAME_FILE_EXT = ".lng";
@@ -49,18 +50,21 @@ public class CryptoFilenameProvider {
     private final LRUCache<String, String> cache = LRUCache.build(
         PreferencesFactory.get().getLong("browser.cache.size"));
 
-    public CryptoFilenameProvider(final Path vault) {
+    public CryptoFilenameV6Provider(final Path vault) {
         this.metadataRoot = new Path(vault, METADATA_DIR_NAME, vault.getType());
     }
 
+    @Override
     public boolean isDeflated(final String filename) {
         return filename.endsWith(LONG_NAME_FILE_EXT);
     }
 
+    @Override
     public String inflate(final Session<?> session, final String shortName) throws BackgroundException {
         return new ContentReader(session).read(this.resolve(shortName));
     }
 
+    @Override
     public String deflate(final Session<?> session, final String filename) throws BackgroundException {
         if(filename.length() < NAME_SHORTENING_THRESHOLD) {
             return filename;
@@ -95,6 +99,7 @@ public class CryptoFilenameProvider {
         return shortName;
     }
 
+    @Override
     public Path resolve(final String filename) {
         // Intermediate directory
         final Path first = new Path(metadataRoot, filename.substring(0, 2), metadataRoot.getType());
@@ -103,10 +108,12 @@ public class CryptoFilenameProvider {
         return new Path(second, filename, EnumSet.of(Path.Type.file, Path.Type.encrypted, Path.Type.vault));
     }
 
+    @Override
     public void invalidate(final String filename) {
         cache.remove(filename);
     }
 
+    @Override
     public void destroy() {
         cache.clear();
     }

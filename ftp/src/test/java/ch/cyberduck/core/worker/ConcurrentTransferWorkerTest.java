@@ -15,25 +15,23 @@ package ch.cyberduck.core.worker;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledHostKeyCallback;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.DisabledPasswordStore;
-import ch.cyberduck.core.DisabledProgressListener;
-import ch.cyberduck.core.DisabledTranscriptListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginConnectionService;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ftp.AbstractFTPTest;
+import ch.cyberduck.core.ftp.FTPDeleteFeature;
+import ch.cyberduck.core.ftp.FTPSession;
+import ch.cyberduck.core.ftp.FTPWriteFeature;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.pool.DefaultSessionPool;
+import ch.cyberduck.core.pool.PooledSessionFactory;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
+import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
@@ -43,23 +41,120 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferItem;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.CountingOutputStream;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @Ignore
 public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
+
+    @Test
+    public void testTransferredSizeRepeat() throws Exception {
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final byte[] content = new byte[98305];
+        new Random().nextBytes(content);
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        out.close();
+        final AtomicBoolean failed = new AtomicBoolean();
+        final Path test = new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
+        final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
+        final LoginConnectionService connect = new LoginConnectionService(new DisabledLoginCallback() {
+            @Override
+            public void warn(final Host bookmark, final String title, final String message, final String continueButton, final String disconnectButton, final String preference) throws LoginCanceledException {
+                //
+            }
+
+            @Override
+            public Credentials prompt(final Host bookmark, final String username, final String title, final String reason, final LoginOptions options) {
+                return new Credentials("test", "test");
+            }
+        }, new DisabledHostKeyCallback(), new DisabledPasswordStore(), new DisabledProgressListener());
+        final DefaultSessionPool pool = new DefaultSessionPool(connect,
+            new DefaultVaultRegistry(new DisabledPasswordCallback()), PathCache.empty(), new DisabledTranscriptListener(), session.getHost(),
+            new GenericObjectPool<Session>(new PooledSessionFactory(connect, new DisabledX509TrustManager(), new DefaultX509KeyManager(),
+                PathCache.empty(), session.getHost(), new DefaultVaultRegistry(new DisabledPasswordCallback())) {
+                @Override
+                public Session create() {
+                    return new FTPSession(session.getHost()) {
+                        final FTPWriteFeature write = new FTPWriteFeature(this) {
+                            @Override
+                            public StatusOutputStream<Integer> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+                                final StatusOutputStream<Integer> proxy = super.write(file, status, callback);
+                                if(failed.get()) {
+                                    // Second attempt successful
+                                    return proxy;
+                                }
+                                return new StatusOutputStream<Integer>(new CountingOutputStream(proxy) {
+                                    @Override
+                                    protected void afterWrite(final int n) throws IOException {
+                                        super.afterWrite(n);
+                                        if(this.getByteCount() >= 42768L) {
+                                            // Buffer size
+                                            assertEquals(32768L, status.getOffset());
+                                            failed.set(true);
+                                            throw new SocketTimeoutException();
+                                        }
+                                    }
+                                }) {
+                                    @Override
+                                    public Integer getStatus() throws BackgroundException {
+                                        return proxy.getStatus();
+                                    }
+                                };
+                            }
+                        };
+
+                        @Override
+                        @SuppressWarnings("unchecked")
+                        public <T> T _getFeature(final Class<T> type) {
+                            if(type == Write.class) {
+                                return (T) write;
+                            }
+                            return super._getFeature(type);
+                        }
+                    };
+                }
+            }));
+        final ConcurrentTransferWorker worker = new ConcurrentTransferWorker(
+            pool, SessionPool.DISCONNECTED, t, new TransferOptions(),
+            new TransferSpeedometer(t), new DisabledTransferPrompt() {
+            @Override
+            public TransferAction prompt(final TransferItem file) {
+                return TransferAction.overwrite;
+            }
+        }, new DisabledTransferErrorCallback(),
+            new DisabledConnectionCallback(), new DisabledProgressListener(), counter, new DisabledNotificationService()
+        );
+        assertTrue(worker.run(session));
+        local.delete();
+        assertEquals(98305L, counter.getSent(), 0L);
+        assertEquals(98305L, new DefaultAttributesFinderFeature(session).find(test).getSize());
+        assertTrue(failed.get());
+        new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 
     @Test
     public void testConcurrentSessions() throws Exception {

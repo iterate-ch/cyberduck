@@ -17,7 +17,6 @@ package ch.cyberduck.core.cryptomator;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoReadFeature;
@@ -53,6 +52,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -64,6 +65,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
+@RunWith(value = Parameterized.class)
 public class SingleTransferWorkerTest extends AbstractSFTPTest {
 
     @Test
@@ -90,7 +92,7 @@ public class SingleTransferWorkerTest extends AbstractSFTPTest {
         IOUtils.write(content, out2);
         out2.close();
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback() {
             @Override
             public Credentials prompt(final Host bookmark, final String title, final String reason, final LoginOptions options) {
@@ -128,7 +130,7 @@ public class SingleTransferWorkerTest extends AbstractSFTPTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(in, buffer);
             assertArrayEquals(content, buffer.toByteArray());
         }
-        new CryptoDeleteFeature(session, new SFTPDeleteFeature(session), cryptomator).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new SFTPDeleteFeature(session)).delete(Arrays.asList(file1, file2, dir1, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
         localFile1.delete();
         localFile2.delete();
         localDirectory1.delete();

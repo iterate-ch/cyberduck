@@ -22,12 +22,11 @@ import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cryptomator.features.CryptoAttributesFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoFindFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoMoveFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
+import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.onedrive.AbstractOneDriveTest;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
@@ -46,6 +45,8 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -53,6 +54,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
+@RunWith(value = Parameterized.class)
 public class GraphMoveFeatureTest extends AbstractOneDriveTest {
 
     @Test
@@ -61,15 +63,15 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
-        new CryptoDirectoryFeature<Void>(session, new GraphDirectoryFeature(session), new GraphWriteFeature(session), cryptomator).mkdir(folder, null, new TransferStatus());
+        cryptomator.getFeature(session, Directory.class, new GraphDirectoryFeature(session)).mkdir(folder, null, new TransferStatus());
         final String filename = new AlphanumericRandomStringService().random();
         final Path file = new CryptoTouchFeature<Void>(session, new DefaultTouchFeature<Void>(new DefaultUploadFeature<>(new GraphWriteFeature(session)),
             new GraphAttributesFinderFeature(session)), new GraphWriteFeature(session), cryptomator).touch(
             new Path(folder, filename, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new CryptoFindFeature(session, new DefaultFindFeature(session), cryptomator).find(file));
-        final CryptoMoveFeature move = new CryptoMoveFeature(session, new GraphMoveFeature(session), new GraphDeleteFeature(session), cryptomator);
+        final Move move = cryptomator.getFeature(session, Move.class, new GraphMoveFeature(session));
         // rename file
         final Path fileRenamed = move.move(file, new Path(folder, "f1", EnumSet.of(Path.Type.file)), new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
         assertEquals(file.attributes().getVersionId(), fileRenamed.attributes().getVersionId());
@@ -83,7 +85,7 @@ public class GraphMoveFeatureTest extends AbstractOneDriveTest {
         assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(folderRenamed));
         final Path fileRenamedInRenamedFolder = new Path(folderRenamed, "f1", EnumSet.of(Path.Type.file));
         assertTrue(new CryptoFindFeature(session, new GraphFindFeature(session), cryptomator).find(fileRenamedInRenamedFolder));
-        new CryptoDeleteFeature(session, new GraphDeleteFeature(session), cryptomator).delete(Arrays.asList(
-                fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new GraphDeleteFeature(session)).delete(Arrays.asList(
+            fileRenamedInRenamedFolder, folderRenamed, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -25,11 +25,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersionId;
-import ch.cyberduck.core.cryptomator.features.CryptoDeleteFeature;
-import ch.cyberduck.core.cryptomator.features.CryptoDirectoryFeature;
 import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.googledrive.AbstractDriveTest;
 import ch.cyberduck.core.googledrive.DriveAttributesFinderFeature;
 import ch.cyberduck.core.googledrive.DriveDefaultListService;
@@ -48,6 +47,8 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -56,6 +57,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
+@RunWith(value = Parameterized.class)
 public class DriveListServiceTest extends AbstractDriveTest {
 
     @Test
@@ -63,7 +65,7 @@ public class DriveListServiceTest extends AbstractDriveTest {
         final Path home = DriveHomeFinderService.MYDRIVE_FOLDER;
         final CryptoVault cryptomator = new CryptoVault(
             new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
-        final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final DriveFileidProvider fileid = new DriveFileidProvider(session).withCache(cache);
         assertTrue(new CryptoListService(session, new DriveDefaultListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
@@ -71,12 +73,12 @@ public class DriveListServiceTest extends AbstractDriveTest {
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertNotNull(testFile.attributes().getVersionId());
         assertEquals(testFile, new CryptoListService(session, new DriveDefaultListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
-        new CryptoDeleteFeature(session, new DriveDeleteFeature(session, fileid), cryptomator).delete(Collections.singletonList(testFile), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        final Path testDir = new CryptoDirectoryFeature<VersionId>(session, new DriveDirectoryFeature(session, fileid), new DriveWriteFeature(session, fileid), cryptomator).mkdir(
+        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Collections.singletonList(testFile), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        final Path testDir = cryptomator.getFeature(session, Directory.class, new DriveDirectoryFeature(session, fileid)).mkdir(
             new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new CryptoListService(session, new DriveDefaultListService(session, fileid), cryptomator).list(testDir, new DisabledListProgressListener()).isEmpty());
         assertEquals(testDir, new CryptoListService(session, new DriveDefaultListService(session, fileid), cryptomator).list(vault, new DisabledListProgressListener()).get(0));
-        new CryptoDeleteFeature(session, new DriveDeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(testDir, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(testDir, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
@@ -89,11 +91,11 @@ public class DriveListServiceTest extends AbstractDriveTest {
         final ListService listService = session._getFeature(ListService.class);
         cache.put(home, listService.withCache(cache).list(home, new DisabledListProgressListener()));
         final CryptoVault cryptomator = new CryptoVault(vault);
-        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
+        cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         assertTrue(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).isEmpty());
         new CryptoTouchFeature<VersionId>(session, new DefaultTouchFeature<VersionId>(new DefaultUploadFeature<>(new DriveWriteFeature(session, fileid)), new DriveAttributesFinderFeature(session, fileid)), new DriveWriteFeature(session, fileid), cryptomator).touch(test, new TransferStatus());
         assertEquals(new SimplePathPredicate(test), new SimplePathPredicate(new CryptoListService(session, listService, cryptomator).list(vault, new DisabledListProgressListener()).get(0)));
-        new CryptoDeleteFeature(session, new DriveDeleteFeature(session, fileid), cryptomator).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        cryptomator.getFeature(session, Delete.class, new DriveDeleteFeature(session, fileid)).delete(Arrays.asList(test, vault), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

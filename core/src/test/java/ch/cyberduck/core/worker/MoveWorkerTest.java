@@ -111,10 +111,6 @@ public class MoveWorkerTest {
                             return false;
                         }
 
-                        @Override
-                        public Move withDelete(final Delete delete) {
-                            return this;
-                        }
                     };
                 }
                 return super._getFeature(type);

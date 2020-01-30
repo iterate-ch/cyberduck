@@ -59,9 +59,4 @@ public class DropboxMoveFeature implements Move {
         return true;
     }
 
-    @Override
-    public Move withDelete(final Delete delete) {
-        this.delete = delete;
-        return this;
-    }
 }

@@ -37,7 +37,6 @@ import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
 import ch.cyberduck.core.vault.VaultCredentials;
-import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -53,7 +52,6 @@ import org.cryptomator.cryptofs.CryptoFileSystemProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -63,7 +61,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertArrayEquals;
 
-@Category(IntegrationTest.class)
 public class SFTPCryptomatorInteroperabilityTest {
 
     private static int PORT_NUMBER = ThreadLocalRandom.current().nextInt(2000, 3000);
@@ -98,8 +95,8 @@ public class SFTPCryptomatorInteroperabilityTest {
     /**
      * Create file/folder with Cryptomator, read with Cyberduck
      */
-    @Test
-    public void testCryptomatorInteroperabilityTests() throws Exception {
+    @Test(expected = CryptoInvalidFilenameException.class)
+    public void testCryptomatorInteroperabilityLongFilename() throws Exception {
         // create folder
         final java.nio.file.Path targetFolder = cryptoFileSystem.getPath("/", new AlphanumericRandomStringService().random());
         Files.createDirectory(targetFolder);
@@ -127,13 +124,14 @@ public class SFTPCryptomatorInteroperabilityTest {
         final byte[] readContent = new byte[content.length];
         IOUtils.readFully(read, readContent);
         assertArrayEquals(content, readContent);
+        session.close();
     }
 
     /**
      * Create long file/folder with Cryptomator, read with Cyberduck
      */
     @Test
-    public void testCryptomatorInteroperability_longNames_Tests() throws Exception {
+    public void testCryptomatorInteroperability() throws Exception {
         // create folder
         final java.nio.file.Path targetFolder = cryptoFileSystem.getPath("/", new AlphanumericRandomStringService().random());
         Files.createDirectory(targetFolder);
@@ -161,5 +159,6 @@ public class SFTPCryptomatorInteroperabilityTest {
         final byte[] readContent = new byte[content.length];
         IOUtils.readFully(read, readContent);
         assertArrayEquals(content, readContent);
+        session.close();
     }
 }
