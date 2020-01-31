@@ -71,6 +71,9 @@ public class UnifiedSystemLogAppender extends AppenderSkeleton {
 
     @Override
     protected void append(final LoggingEvent event) {
+        if(null == event.getMessage()) {
+            return;
+        }
         // Category name
         final String logger = String.format("%s %s", event.getThreadName(), event.getLogger().getName());
         switch(event.getLevel().toInt()) {
