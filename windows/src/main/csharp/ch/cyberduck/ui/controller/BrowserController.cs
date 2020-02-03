@@ -1454,7 +1454,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     ToggleView(BrowserView.File);
                 }
             };
-            Disconnect(run);
+            UnmountImpl(run);
         }
 
         /**
