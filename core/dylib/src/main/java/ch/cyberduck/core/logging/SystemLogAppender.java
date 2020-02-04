@@ -40,6 +40,9 @@ public class SystemLogAppender extends AppenderSkeleton {
 
     @Override
     protected void append(final LoggingEvent event) {
+        if(null == event.getMessage()) {
+            return;
+        }
         final StringBuilder buffer = new StringBuilder();
         buffer.append(layout.format(event));
         if(layout.ignoresThrowable()) {
