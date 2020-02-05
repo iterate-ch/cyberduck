@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14868" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15705" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment version="1070" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14868"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15705"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -16,6 +16,7 @@
                 <outlet property="downloadPathPopup" destination="61" id="97"/>
                 <outlet property="encodingPopup" destination="75" id="98"/>
                 <outlet property="hostField" destination="20" id="99"/>
+                <outlet property="labelsField" destination="r1Q-0b-l5s" id="noh6Wai"/>
                 <outlet property="nicknameField" destination="10" id="100"/>
                 <outlet property="passwordField" destination="M47-nG-TjI" id="ohWoosh"/>
                 <outlet property="passwordLabel" destination="EHm-Mw-ghh" id="phe7doo"/>
@@ -25,7 +26,6 @@
                 <outlet property="protocolPopup" destination="24" id="105"/>
                 <outlet property="timezonePopup" destination="36" id="106"/>
                 <outlet property="toggleOptionsButton" destination="31" id="107"/>
-                <outlet property="labelsField" destination="r1Q-0b-l5s" id="noh6Wai"/>
                 <outlet property="transferPopup" destination="55" id="108"/>
                 <outlet property="urlField" destination="16" id="109"/>
                 <outlet property="usernameField" destination="12" id="110"/>
@@ -390,11 +390,11 @@
                                         </textView>
                                     </subviews>
                                 </clipView>
-                                <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="51">
+                                <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="YES" id="51">
                                     <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
-                                <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="52">
+                                <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" doubleValue="1" controlSize="small" horizontal="NO" id="52">
                                     <rect key="frame" x="-30" y="1" width="15" height="56"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
