@@ -20,10 +20,9 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.exception.AccessDeniedException;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -31,37 +30,28 @@ import static org.junit.Assert.*;
 
 public class HistoryCollectionTest {
 
+    @BeforeClass
+    public static void register() {
+        ProtocolFactory.get().register(new TestProtocol());
+    }
+
     @Test
     public void testAdd() throws Exception {
-        ProtocolFactory.get().register(new TestProtocol());
         final CountDownLatch lock = new CountDownLatch(1);
         final CountDownLatch loaded = new CountDownLatch(1);
         final CountDownLatch exit = new CountDownLatch(1);
         final HistoryCollection c = new HistoryCollection(new Local("src/test/resources/history")) {
             @Override
-            public void sort() {
-                if(loaded.getCount() == 0) {
-                    return;
-                }
+            public void load() throws AccessDeniedException {
+                super.load();
                 loaded.countDown();
-                Collections.sort(this, new Comparator<Host>() {
-                    @Override
-                    public int compare(Host o1, Host o2) {
-                        try {
-                            lock.await(1, TimeUnit.SECONDS);
-                        }
-                        catch(InterruptedException e) {
-                            fail();
-                        }
-                        return 0;
-                    }
-                });
+                try {
+                    lock.await(1, TimeUnit.SECONDS);
+                }
+                catch(InterruptedException e) {
+                    fail();
+                }
                 exit.countDown();
-            }
-
-            @Override
-            public void collectionItemRemoved(Host bookmark) {
-                assertEquals("mirror.switch.ch", bookmark.getHostname());
             }
         };
         new Thread(() -> {
@@ -76,8 +66,9 @@ public class HistoryCollectionTest {
         assertEquals(1, c.size());
         final Host host = c.get(0);
         // Add again to history upon connect before history finished loading
-        assertTrue(c.add(host));
+        assertFalse(c.add(host));
         lock.countDown();
         exit.await(1, TimeUnit.SECONDS);
+        assertEquals(1, c.size());
     }
 }
