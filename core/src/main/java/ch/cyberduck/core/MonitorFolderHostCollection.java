@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
-public abstract class MonitorFolderHostCollection extends AbstractFolderHostCollection {
+public class MonitorFolderHostCollection extends AbstractFolderHostCollection {
     private static final Logger log = Logger.getLogger(MonitorFolderHostCollection.class);
 
     private final Preferences preferences = PreferencesFactory.get();
