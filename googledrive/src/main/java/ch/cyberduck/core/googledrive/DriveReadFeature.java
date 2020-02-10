@@ -89,11 +89,14 @@ public class DriveReadFeature implements Read {
                 throw e;
             }
             catch(AccessDeniedException e) {
-                callback.warn(session.getHost(),
-                    MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
-                    "Acknowledge the risk of downloading known malware or other abusive file.",
-                    LocaleFactory.localizedString("Continue", "Credentials"), LocaleFactory.localizedString("Cancel", "Localizable"),
-                    String.format("connection.unsecure.download.%s", session.getHost().getHostname()));
+                if(!PreferencesFactory.get().getBoolean(String.format("connection.unsecure.download.%s", session.getHost().getHostname()))) {
+                    // Not previously dismissed
+                    callback.warn(session.getHost(),
+                        MessageFormat.format(LocaleFactory.localizedString("Download {0} failed", "Error"), file.getName()),
+                        "Acknowledge the risk of downloading known malware or other abusive file.",
+                        LocaleFactory.localizedString("Continue", "Credentials"), LocaleFactory.localizedString("Cancel", "Localizable"),
+                        String.format("connection.unsecure.download.%s", session.getHost().getHostname()));
+                }
                 // Continue with acknowledgeAbuse=true
                 final HttpUriRequest request = new HttpGet(String.format("%sdrive/v3/files/%s?alt=media&supportsTeamDrives=%s&acknowledgeAbuse=true",
                     session.getClient().getRootUrl(), fileid.getFileid(file, new DisabledListProgressListener()),
