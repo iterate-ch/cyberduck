@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.*;
 
@@ -73,6 +74,52 @@ public class BookmarkCollectionTest {
         assertTrue(source.exists());
         final BookmarkCollection collection = new BookmarkCollection(source);
         collection.load();
+        assertFalse(collection.isEmpty());
+        assertEquals(1, collection.size());
+        assertEquals(uid, collection.get(0).getUuid());
+        assertEquals(uid + ".duck", collection.getFile(collection.get(0)).getName());
+        collection.getFile(collection.get(0)).delete();
+    }
+
+    @Test
+    public void testLoadAwaitFilesystemChange() throws Exception {
+        final Local source = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        final CountDownLatch wait = new CountDownLatch(1);
+        final BookmarkCollection collection = new BookmarkCollection(source) {
+            @Override
+            public void collectionItemAdded(final Host bookmark) {
+                super.collectionItemAdded(bookmark);
+                wait.countDown();
+            }
+        };
+        collection.load();
+        final String uid = "4d6b034c-8635-4e2f-93b1-7306ba22da22";
+        final Local b = new Local(source, String.format("%s.duck", uid));
+        final String bookmark = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n" +
+            "<plist version=\"1.0\">\n" +
+            "<dict>\n" +
+            "\t<key>Access Timestamp</key>\n" +
+            "\t<string>1296634123295</string>\n" +
+            "\t<key>Hostname</key>\n" +
+            "\t<string>mirror.switch.ch</string>\n" +
+            "\t<key>Nickname</key>\n" +
+            "\t<string>mirror.switch.ch – FTP</string>\n" +
+            "\t<key>Port</key>\n" +
+            "\t<string>21</string>\n" +
+            "\t<key>Protocol</key>\n" +
+            "\t<string>test</string>\n" +
+            "\t<key>UUID</key>\n" +
+            "\t<string>" + uid + "</string>\n" +
+            "\t<key>Username</key>\n" +
+            "\t<string>anonymous</string>\n" +
+            "</dict>\n" +
+            "</plist>\n";
+        final OutputStream os = b.getOutputStream(false);
+        os.write(bookmark.getBytes(StandardCharsets.UTF_8));
+        os.close();
+        assertTrue(source.exists());
+        wait.await();
         assertFalse(collection.isEmpty());
         assertEquals(1, collection.size());
         assertEquals(uid, collection.get(0).getUuid());

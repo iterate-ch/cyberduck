@@ -60,30 +60,6 @@ public class HistoryCollection extends MonitorFolderHostCollection {
     }
 
     /**
-     * Does not allow duplicate entries.
-     *
-     * @param row      Row number
-     * @param bookmark Bookmark
-     */
-    @Override
-    public void add(final int row, final Host bookmark) {
-        this.remove(bookmark);
-        super.add(row, bookmark);
-    }
-
-    /**
-     * Does not allow duplicate entries.
-     *
-     * @param bookmark Bookmark
-     * @return Always true
-     */
-    @Override
-    public boolean add(final Host bookmark) {
-        this.remove(bookmark);
-        return super.add(bookmark);
-    }
-
-    /**
      * Sort by timestamp of bookmark file.
      */
     @Override
