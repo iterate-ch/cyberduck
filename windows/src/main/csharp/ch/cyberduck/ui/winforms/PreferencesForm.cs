@@ -771,6 +771,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler UpdateFeedChangedEvent = delegate { };
         public event VoidHandler BookmarkSizeChangedEvent = delegate { };
         public event VoidHandler CryptomatorAutoDetectVaultChangedEvent = delegate { };
+        public event VoidHandler PrivacyPolicyLinkClickedEvent = delegate { };
 
         public bool AutomaticUpdateCheck
         {
@@ -1506,6 +1507,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void segmentedDownloadsCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             SegmentedDownloadsChangedEvent();
+        }
+
+        private void updatePrivacyPolicyLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            PrivacyPolicyLinkClickedEvent();            
         }
     }
 }
