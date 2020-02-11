@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.DonationKeyFactory;
 import ch.cyberduck.core.date.DefaultUserDateFormatter;
 import ch.cyberduck.core.diagnostics.DefaultInetAddressReachability;
+import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.formatter.DecimalSizeFormatter;
 import ch.cyberduck.core.i18n.Locales;
@@ -1342,6 +1343,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("factory.vault.class", DisabledVault.class.getName());
         this.setDefault("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
         this.setDefault("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
+        this.setDefault("factory.editorfactory.class", DefaultEditorFactory.class.getName());
     }
 
     /**

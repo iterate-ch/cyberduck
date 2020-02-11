@@ -42,12 +42,14 @@ import java.nio.file.NoSuchFileException;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+
 public class DefaultWatchEditorTest {
 
     @Test(expected = NoSuchFileException.class)
     public void testNotfound() throws Exception {
         final DefaultWatchEditor editor = new DefaultWatchEditor(null, new StatelessSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())),
-                new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+            new Path("/remote", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         editor.watch(new Local(System.getProperty("java.io.tmpdir") + "/notfound", UUID.randomUUID().toString()), new DisabledFileWatcherListener());
     }
 
@@ -61,8 +63,35 @@ public class DefaultWatchEditorTest {
     @Test(expected = IOException.class)
     public void testEditNullApplication() throws Exception {
         final DefaultWatchEditor editor = new DefaultWatchEditor(Application.notfound, new StatelessSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol())), PathCache.empty(), new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())),
-                new Path("/remote.txt", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
+            new Path("/remote.txt", EnumSet.of(Path.Type.file)), new DisabledListProgressListener());
         new DefaultLocalTouchFeature().touch(editor.getLocal());
         editor.edit(new DisabledApplicationQuitCallback(), new DisabledFileWatcherListener());
+    }
+
+    @Test
+    public void testTemporaryPath() {
+        final Path path = new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file));
+        path.attributes().setDuplicate(true);
+        path.attributes().setVersionId("1");
+        final DefaultWatchEditor editor = new DefaultWatchEditor(new Application("com.apple.TextEdit", null),
+            new StatelessSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "h")), PathCache.empty(),
+                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), path, new DisabledListProgressListener());
+        assertEquals(new Application("com.apple.TextEdit", null), editor.getApplication());
+        assertEquals("t.txt", editor.getRemote().getName());
+        final Local local = editor.getLocal();
+        assertEquals("t.txt", local.getName());
+        assertEquals("1", local.getParent().getName());
+        assertEquals("f2", local.getParent().getParent().getName());
+        assertEquals("f1", local.getParent().getParent().getParent().getName());
+    }
+
+    @Test
+    public void testSymlinkTarget() {
+        final Path file = new Path("/f1/f2/s.txt", EnumSet.of(Path.Type.file, Path.Type.symboliclink));
+        file.setSymlinkTarget(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)));
+        final DefaultWatchEditor editor = new DefaultWatchEditor(new Application("com.apple.TextEdit", null),
+            new StatelessSessionPool(new TestLoginConnectionService(), new NullSession(new Host(new TestProtocol(), "h")), PathCache.empty(),
+                new DisabledTranscriptListener(), new DefaultVaultRegistry(new DisabledPasswordCallback())), file, new DisabledListProgressListener());
+        assertEquals(new Path("/f1/f2/t.txt", EnumSet.of(Path.Type.file)), editor.getRemote());
     }
 }

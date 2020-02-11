@@ -24,7 +24,6 @@ import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -37,7 +36,6 @@ import java.util.UUID;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 import static org.junit.Assert.*;
@@ -56,7 +54,7 @@ public class NIOEventWatchServiceTest {
     public void testRegister() throws Exception {
         final RegisterWatchService fs = new NIOEventWatchService();
         final Watchable folder = Paths.get(
-                File.createTempFile(UUID.randomUUID().toString(), "t").getParent());
+            File.createTempFile(UUID.randomUUID().toString(), "t").getParent());
         final WatchKey key = fs.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
         assertTrue(key.isValid());
         fs.close();
@@ -64,7 +62,6 @@ public class NIOEventWatchServiceTest {
     }
 
     @Test
-    @Ignore
     public void testListenerEventWatchService() throws Exception {
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
         final Local file = new Local(System.getProperty("java.io.tmpdir") + "é", UUID.randomUUID().toString());
@@ -80,9 +77,9 @@ public class NIOEventWatchServiceTest {
                     fail();
                 }
                 try {
-                    update.await(1L, TimeUnit.SECONDS);
+                    update.await();
                 }
-                catch(InterruptedException | BrokenBarrierException | TimeoutException e) {
+                catch(InterruptedException | BrokenBarrierException e) {
                     fail();
                 }
             }
@@ -96,20 +93,21 @@ public class NIOEventWatchServiceTest {
                     fail();
                 }
                 try {
-                    delete.await(1L, TimeUnit.SECONDS);
+                    delete.await();
                 }
-                catch(InterruptedException | BrokenBarrierException | TimeoutException e) {
+                catch(InterruptedException | BrokenBarrierException e) {
                     fail();
                 }
             }
         };
         LocalTouchFactory.get().touch(file);
         watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS);
-        final Process exec = Runtime.getRuntime().exec(String.format("echo 'Test' >> %s", file.getAbsolute()));
-        assertEquals(0, exec.waitFor());
-        update.await(1L, TimeUnit.SECONDS);
+        final ProcessBuilder sh = new ProcessBuilder("sh", "-c", String.format("echo 'Test' >> %s", file.getAbsolute()));
+        final Process cat = sh.start();
+        assertEquals(0, cat.waitFor());
+        update.await();
         file.delete();
-        delete.await(1L, TimeUnit.SECONDS);
+        delete.await();
         watcher.close();
     }
 }
