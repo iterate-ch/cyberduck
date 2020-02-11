@@ -1705,6 +1705,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 (sender, args) =>
                     BrowserLauncherFactory.get()
                         .open(PreferencesFactory.get().getProperty("website.acknowledgments")), () => true);
+            Commands.Add(new ToolStripItem[] { privacyPolicyToolStripMenuItem }, new[] { privacyPolicyMainMenuItem },
+                (sender, args) =>
+                    BrowserLauncherFactory.get()
+                        .open(PreferencesFactory.get().getProperty("website.privacypolicy")), () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
                 (sender, args) =>
                     BrowserLauncherFactory.get().open(ProviderHelpServiceFactory.get().help()),
@@ -3076,6 +3080,5 @@ namespace Ch.Cyberduck.Ui.Winforms
                 e.Graphics.DrawImage(img, rect);
             }
         }
-
     }
 }

@@ -249,6 +249,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cyberduckHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.licenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.acknowledgmentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.privacyPolicyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator21 = new System.Windows.Forms.ToolStripSeparator();
             this.reportABugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator22 = new System.Windows.Forms.ToolStripSeparator();
@@ -420,6 +421,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.sortByNicknameBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
             this.sortByHostnameBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
             this.sortByProtocolBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.privacyPolicyMainMenuItem = new System.Windows.Forms.MenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.toolbarContextMenu.SuspendLayout();
@@ -992,6 +994,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.helpMainMenuItem,
             this.licenseMainMenuItem,
             this.acknowledgmentsMainMenuItem,
+            this.privacyPolicyMainMenuItem,
             this.menuItem84,
             this.bugMainMenuItem,
             this.menuItem86,
@@ -1850,6 +1853,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cyberduckHelpToolStripMenuItem,
             this.licenseToolStripMenuItem,
             this.acknowledgmentsToolStripMenuItem,
+            this.privacyPolicyToolStripMenuItem,
             this.toolStripSeparator21,
             this.reportABugToolStripMenuItem,
             this.toolStripSeparator22,
@@ -1877,6 +1881,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.acknowledgmentsToolStripMenuItem.Name = "acknowledgmentsToolStripMenuItem";
             this.acknowledgmentsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.acknowledgmentsToolStripMenuItem.Text = "Acknowledgments";
+            // 
+            // privacyPolicyToolStripMenuItem
+            // 
+            this.privacyPolicyToolStripMenuItem.Name = "privacyPolicyToolStripMenuItem";
+            this.privacyPolicyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.privacyPolicyToolStripMenuItem.Text = "Privacy Policy";
             // 
             // toolStripSeparator21
             // 
@@ -3284,6 +3294,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.sortByProtocolBookmarkContextMenuItem.Index = 2;
             this.sortByProtocolBookmarkContextMenuItem.Text = "Protocol";
             // 
+            // privacyPolicyMainMenuItem
+            // 
+            this.privacyPolicyMainMenuItem.Index = 3;
+            this.privacyPolicyMainMenuItem.Text = "Privacy Policy";
+            // 
             // BrowserForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -3720,6 +3735,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         private MenuItem shareMainMenuItem;
         private ToolStripMenuItem shareContextToolStripMenuItem;
         private ToolStripMenuItem shareToolStripMenuItem;
+        private ToolStripMenuItem privacyPolicyToolStripMenuItem;
+        private MenuItem privacyPolicyMainMenuItem;
     }
 }
 
