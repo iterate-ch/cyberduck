@@ -155,7 +155,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label10 = new System.Windows.Forms.Label();
             this.duplicateDownloadOverwriteCheckbox = new System.Windows.Forms.CheckBox();
             this.showDownloadFolderDialogButton = new System.Windows.Forms.Button();
-            this.segmentedDownloadsCheckbox = new System.Windows.Forms.CheckBox();
             this.groupBox29 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.transfersToFrontCheckbox = new System.Windows.Forms.CheckBox();
@@ -248,7 +247,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cryptomatorButton = new System.Windows.Forms.ToolStripButton();
             this.updateButton = new System.Windows.Forms.ToolStripButton();
             this.languageButton = new System.Windows.Forms.ToolStripButton();
-            this.updatePrivacyPolicyLink = new System.Windows.Forms.LinkLabel();
+            this.segmentedDownloadsCheckbox = new System.Windows.Forms.CheckBox();
             this.panelManager.SuspendLayout();
             this.managedGeneralPanel.SuspendLayout();
             this.tableLayoutPanelGeneral.SuspendLayout();
@@ -1323,7 +1322,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel41.ColumnCount = 1;
             this.tableLayoutPanel41.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel41.Controls.Add(this.groupBox27, 0, 0);
-            this.tableLayoutPanel41.Controls.Add(this.updatePrivacyPolicyLink, 0, 1);
             this.tableLayoutPanel41.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel41.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel41.Name = "tableLayoutPanel41";
@@ -1989,18 +1987,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.showDownloadFolderDialogButton.Text = "Choose…";
             this.showDownloadFolderDialogButton.UseVisualStyleBackColor = true;
             this.showDownloadFolderDialogButton.Click += new System.EventHandler(this.showDownloadFolderDialogButton_Click);
-            // 
-            // segmentedDownloadsCheckbox
-            // 
-            this.segmentedDownloadsCheckbox.AutoSize = true;
-            this.tableLayoutPanel7.SetColumnSpan(this.segmentedDownloadsCheckbox, 3);
-            this.segmentedDownloadsCheckbox.Location = new System.Drawing.Point(8, 8);
-            this.segmentedDownloadsCheckbox.Name = "segmentedDownloadsCheckbox";
-            this.segmentedDownloadsCheckbox.Size = new System.Drawing.Size(327, 19);
-            this.segmentedDownloadsCheckbox.TabIndex = 4;
-            this.segmentedDownloadsCheckbox.Text = "Segmented downloads with multiple connections per file";
-            this.segmentedDownloadsCheckbox.UseVisualStyleBackColor = true;
-            this.segmentedDownloadsCheckbox.CheckedChanged += new System.EventHandler(this.segmentedDownloadsCheckbox_CheckedChanged);
             // 
             // groupBox29
             // 
@@ -3235,16 +3221,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.languageButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.languageButton.Click += new System.EventHandler(this.languageButton_Click);
             // 
-            // updatePrivacyPolicyLink
+            // segmentedDownloadsCheckbox
             // 
-            this.updatePrivacyPolicyLink.AutoSize = true;
-            this.updatePrivacyPolicyLink.Location = new System.Drawing.Point(3, 118);
-            this.updatePrivacyPolicyLink.Name = "updatePrivacyPolicyLink";
-            this.updatePrivacyPolicyLink.Size = new System.Drawing.Size(80, 15);
-            this.updatePrivacyPolicyLink.TabIndex = 1;
-            this.updatePrivacyPolicyLink.TabStop = true;
-            this.updatePrivacyPolicyLink.Text = "Privacy Policy";
-            this.updatePrivacyPolicyLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.updatePrivacyPolicyLink_LinkClicked);
+            this.segmentedDownloadsCheckbox.AutoSize = true;
+            this.tableLayoutPanel7.SetColumnSpan(this.segmentedDownloadsCheckbox, 3);
+            this.segmentedDownloadsCheckbox.Location = new System.Drawing.Point(8, 8);
+            this.segmentedDownloadsCheckbox.Name = "segmentedDownloadsCheckbox";
+            this.segmentedDownloadsCheckbox.Size = new System.Drawing.Size(327, 19);
+            this.segmentedDownloadsCheckbox.TabIndex = 4;
+            this.segmentedDownloadsCheckbox.Text = "Segmented downloads with multiple connections per file";
+            this.segmentedDownloadsCheckbox.UseVisualStyleBackColor = true;
+            this.segmentedDownloadsCheckbox.CheckedChanged += new System.EventHandler(this.segmentedDownloadsCheckbox_CheckedChanged);
             // 
             // PreferencesForm
             // 
@@ -3661,6 +3648,5 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel32;
         private System.Windows.Forms.CheckBox verifyChecksumUploadCheckbox;
         private System.Windows.Forms.CheckBox segmentedDownloadsCheckbox;
-        private System.Windows.Forms.LinkLabel updatePrivacyPolicyLink;
     }
 }
