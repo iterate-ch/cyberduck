@@ -18,13 +18,15 @@ package ch.cyberduck.core.io.watchservice;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -34,13 +36,12 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.Watchable;
 import java.util.UUID;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 public class NIOEventWatchServiceTest {
 
@@ -56,7 +57,7 @@ public class NIOEventWatchServiceTest {
     public void testRegister() throws Exception {
         final RegisterWatchService fs = new NIOEventWatchService();
         final Watchable folder = Paths.get(
-                File.createTempFile(UUID.randomUUID().toString(), "t").getParent());
+            File.createTempFile(UUID.randomUUID().toString(), "t").getParent());
         final WatchKey key = fs.register(folder, new WatchEvent.Kind[]{ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY});
         assertTrue(key.isValid());
         fs.close();
@@ -64,12 +65,12 @@ public class NIOEventWatchServiceTest {
     }
 
     @Test
-    @Ignore
-    public void testListenerEventWatchService() throws Exception {
+    public void testListenerEventWatchServiceWindows() throws Exception {
+        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
-        final Local file = new Local(System.getProperty("java.io.tmpdir") + "é", UUID.randomUUID().toString());
-        final CyclicBarrier update = new CyclicBarrier(2);
-        final CyclicBarrier delete = new CyclicBarrier(2);
+        final Local file = LocalFactory.get(LocalFactory.get(System.getProperty("java.io.tmpdir")), String.format("é%s", new AlphanumericRandomStringService().random()));
+        final CountDownLatch update = new CountDownLatch(1);
+        final CountDownLatch delete = new CountDownLatch(1);
         final FileWatcherListener listener = new DisabledFileWatcherListener() {
             @Override
             public void fileWritten(final Local file) {
@@ -79,12 +80,7 @@ public class NIOEventWatchServiceTest {
                 catch(IOException e) {
                     fail();
                 }
-                try {
-                    update.await(1L, TimeUnit.SECONDS);
-                }
-                catch(InterruptedException | BrokenBarrierException | TimeoutException e) {
-                    fail();
-                }
+                update.countDown();
             }
 
             @Override
@@ -95,21 +91,58 @@ public class NIOEventWatchServiceTest {
                 catch(IOException e) {
                     fail();
                 }
-                try {
-                    delete.await(1L, TimeUnit.SECONDS);
-                }
-                catch(InterruptedException | BrokenBarrierException | TimeoutException e) {
-                    fail();
-                }
+                delete.countDown();
             }
         };
         LocalTouchFactory.get().touch(file);
         watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS);
-        final Process exec = Runtime.getRuntime().exec(String.format("echo 'Test' >> %s", file.getAbsolute()));
-        assertEquals(0, exec.waitFor());
-        update.await(1L, TimeUnit.SECONDS);
+        final ProcessBuilder sh = new ProcessBuilder("cmd", "/c", String.format("echo 'Test' >> %s", file.getAbsolute()));
+        final Process cat = sh.start();
+        assertEquals(0, cat.waitFor());
+        update.await();
         file.delete();
-        delete.await(1L, TimeUnit.SECONDS);
+        delete.await();
+        watcher.close();
+    }
+
+    @Test
+    public void testListenerEventWatchServiceLinux() throws Exception {
+        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.linux) || Factory.Platform.getDefault().equals(Factory.Platform.Name.mac));
+        final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
+        final Local file = LocalFactory.get(LocalFactory.get(System.getProperty("java.io.tmpdir")), String.format("é%s", new AlphanumericRandomStringService().random()));
+        final CountDownLatch update = new CountDownLatch(1);
+        final CountDownLatch delete = new CountDownLatch(1);
+        final FileWatcherListener listener = new DisabledFileWatcherListener() {
+            @Override
+            public void fileWritten(final Local file) {
+                try {
+                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
+                }
+                catch(IOException e) {
+                    fail();
+                }
+                update.countDown();
+            }
+
+            @Override
+            public void fileDeleted(final Local file) {
+                try {
+                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
+                }
+                catch(IOException e) {
+                    fail();
+                }
+                delete.countDown();
+            }
+        };
+        LocalTouchFactory.get().touch(file);
+        watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS);
+        final ProcessBuilder sh = new ProcessBuilder("sh", "-c", String.format("echo 'Test' >> %s", file.getAbsolute()));
+        final Process cat = sh.start();
+        assertEquals(0, cat.waitFor());
+        update.await();
+        file.delete();
+        delete.await();
         watcher.close();
     }
 }
