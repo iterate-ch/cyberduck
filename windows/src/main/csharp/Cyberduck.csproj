@@ -4,8 +4,9 @@
         <OutputType>WinExe</OutputType>
         <TargetFramework>net47</TargetFramework>
         <UseWindowsForms>true</UseWindowsForms>
-        <Platforms>x64</Platforms>
-        <PlatformTarget>x64</PlatformTarget>
+        <Platforms>x64;x86</Platforms>
+        <Platform Condition="'$(Platform)' == ''">x64</Platform>
+        
         <ApplicationIcon>$(CyberduckDir)cyberduck-application.ico</ApplicationIcon>
         <DefaultItemExcludes>$(DefaultItemExcludes);ch/cyberduck/ui/winforms/commondialog/**</DefaultItemExcludes>
         <ApplicationManifest>ch\cyberduck\properties\app.manifest</ApplicationManifest>
