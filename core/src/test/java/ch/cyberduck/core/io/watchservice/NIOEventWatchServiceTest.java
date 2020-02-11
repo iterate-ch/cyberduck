@@ -18,6 +18,7 @@ package ch.cyberduck.core.io.watchservice;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcher;
@@ -64,7 +65,7 @@ public class NIOEventWatchServiceTest {
     @Test
     public void testListenerEventWatchService() throws Exception {
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
-        final Local file = new Local(System.getProperty("java.io.tmpdir") + "é", UUID.randomUUID().toString());
+        final Local file = new Local(System.getProperty("java.io.tmpdir"), String.format("é%s", new AlphanumericRandomStringService().random()));
         final CyclicBarrier update = new CyclicBarrier(2);
         final CyclicBarrier delete = new CyclicBarrier(2);
         final FileWatcherListener listener = new DisabledFileWatcherListener() {
