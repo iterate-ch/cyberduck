@@ -261,6 +261,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("website.cli", "https://duck.sh/");
         this.setDefault("website.license", "https://cyberduck.io/license");
         this.setDefault("website.acknowledgments", "https://cyberduck.io/acknowledgments");
+        this.setDefault("website.privacypolicy", "https://cyberduck.io/privacy/");
 
         this.setDefault("rendezvous.enable", String.valueOf(true));
         this.setDefault("rendezvous.loopback.suppress", String.valueOf(true));
