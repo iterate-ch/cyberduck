@@ -36,8 +36,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.Watchable;
 import java.util.UUID;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -70,8 +69,8 @@ public class NIOEventWatchServiceTest {
         assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
         final Local file = LocalFactory.get(LocalFactory.get(System.getProperty("java.io.tmpdir")), String.format("é%s", new AlphanumericRandomStringService().random()));
-        final CyclicBarrier update = new CyclicBarrier(2);
-        final CyclicBarrier delete = new CyclicBarrier(2);
+        final CountDownLatch update = new CountDownLatch(1);
+        final CountDownLatch delete = new CountDownLatch(1);
         final FileWatcherListener listener = new DisabledFileWatcherListener() {
             @Override
             public void fileWritten(final Local file) {
@@ -81,12 +80,7 @@ public class NIOEventWatchServiceTest {
                 catch(IOException e) {
                     fail();
                 }
-                try {
-                    update.await();
-                }
-                catch(InterruptedException | BrokenBarrierException e) {
-                    fail();
-                }
+                update.countDown();
             }
 
             @Override
@@ -97,12 +91,7 @@ public class NIOEventWatchServiceTest {
                 catch(IOException e) {
                     fail();
                 }
-                try {
-                    delete.await();
-                }
-                catch(InterruptedException | BrokenBarrierException e) {
-                    fail();
-                }
+                delete.countDown();
             }
         };
         LocalTouchFactory.get().touch(file);
@@ -121,8 +110,8 @@ public class NIOEventWatchServiceTest {
         assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.linux) || Factory.Platform.getDefault().equals(Factory.Platform.Name.mac));
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
         final Local file = LocalFactory.get(LocalFactory.get(System.getProperty("java.io.tmpdir")), String.format("é%s", new AlphanumericRandomStringService().random()));
-        final CyclicBarrier update = new CyclicBarrier(2);
-        final CyclicBarrier delete = new CyclicBarrier(2);
+        final CountDownLatch update = new CountDownLatch(1);
+        final CountDownLatch delete = new CountDownLatch(1);
         final FileWatcherListener listener = new DisabledFileWatcherListener() {
             @Override
             public void fileWritten(final Local file) {
@@ -132,12 +121,7 @@ public class NIOEventWatchServiceTest {
                 catch(IOException e) {
                     fail();
                 }
-                try {
-                    update.await();
-                }
-                catch(InterruptedException | BrokenBarrierException e) {
-                    fail();
-                }
+                update.countDown();
             }
 
             @Override
@@ -148,12 +132,7 @@ public class NIOEventWatchServiceTest {
                 catch(IOException e) {
                     fail();
                 }
-                try {
-                    delete.await();
-                }
-                catch(InterruptedException | BrokenBarrierException e) {
-                    fail();
-                }
+                delete.countDown();
             }
         };
         LocalTouchFactory.get().touch(file);
