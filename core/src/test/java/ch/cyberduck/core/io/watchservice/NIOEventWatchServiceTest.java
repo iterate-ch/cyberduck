@@ -19,7 +19,9 @@ package ch.cyberduck.core.io.watchservice;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.local.DisabledFileWatcherListener;
 import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
@@ -40,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 public class NIOEventWatchServiceTest {
 
@@ -63,9 +66,61 @@ public class NIOEventWatchServiceTest {
     }
 
     @Test
-    public void testListenerEventWatchService() throws Exception {
+    public void testListenerEventWatchServiceWindows() throws Exception {
+        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
-        final Local file = new Local(System.getProperty("java.io.tmpdir"), String.format("é%s", new AlphanumericRandomStringService().random()));
+        final Local file = LocalFactory.get(LocalFactory.get(System.getProperty("java.io.tmpdir")), String.format("é%s", new AlphanumericRandomStringService().random()));
+        final CyclicBarrier update = new CyclicBarrier(2);
+        final CyclicBarrier delete = new CyclicBarrier(2);
+        final FileWatcherListener listener = new DisabledFileWatcherListener() {
+            @Override
+            public void fileWritten(final Local file) {
+                try {
+                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
+                }
+                catch(IOException e) {
+                    fail();
+                }
+                try {
+                    update.await();
+                }
+                catch(InterruptedException | BrokenBarrierException e) {
+                    fail();
+                }
+            }
+
+            @Override
+            public void fileDeleted(final Local file) {
+                try {
+                    assertEquals(new File(file.getAbsolute()).getCanonicalPath(), new File(file.getAbsolute()).getCanonicalPath());
+                }
+                catch(IOException e) {
+                    fail();
+                }
+                try {
+                    delete.await();
+                }
+                catch(InterruptedException | BrokenBarrierException e) {
+                    fail();
+                }
+            }
+        };
+        LocalTouchFactory.get().touch(file);
+        watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS);
+        final ProcessBuilder sh = new ProcessBuilder("cmd", "/c", String.format("echo 'Test' >> %s", file.getAbsolute()));
+        final Process cat = sh.start();
+        assertEquals(0, cat.waitFor());
+        update.await();
+        file.delete();
+        delete.await();
+        watcher.close();
+    }
+
+    @Test
+    public void testListenerEventWatchServiceLinux() throws Exception {
+        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.linux));
+        final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
+        final Local file = LocalFactory.get(LocalFactory.get(System.getProperty("java.io.tmpdir")), String.format("é%s", new AlphanumericRandomStringService().random()));
         final CyclicBarrier update = new CyclicBarrier(2);
         final CyclicBarrier delete = new CyclicBarrier(2);
         final FileWatcherListener listener = new DisabledFileWatcherListener() {
