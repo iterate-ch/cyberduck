@@ -190,6 +190,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler RetryDelayChangedEvent;
         event VoidHandler RetriesChangedEvent;
         event VoidHandler CryptomatorAutoDetectVaultChangedEvent;
+        event VoidHandler PrivacyPolicyLinkClickedEvent;
         //todo introduce Enums to handle the objects directly instead of using strings
         void PopulateBookmarks(List<KeyValueIconTriple<Host, string>> bookmarks);
         void PopulateEditors(List<KeyValueIconTriple<Application, string>> editors);

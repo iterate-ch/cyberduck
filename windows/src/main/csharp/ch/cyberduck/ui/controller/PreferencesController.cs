@@ -159,8 +159,13 @@ namespace Ch.Cyberduck.Ui.Controller
             View.AutomaticUpdateChangedEvent += View_AutomaticUpdateChangedEvent;
             View.CheckForUpdateEvent += View_CheckForUpdateEvent;
             View.UpdateFeedChangedEvent += View_UpdateFeedChangedEvent;
-
+            View.PrivacyPolicyLinkClickedEvent += View_PrivacyPolicyLinkClickedEvent;
             #endregion
+        }
+
+        private void View_PrivacyPolicyLinkClickedEvent()
+        {
+            BrowserLauncherFactory.get().open(PreferencesFactory.get().getProperty("website.privacypolicy"));
         }
 
         private void View_SegmentedDownloadsChangedEvent()
