@@ -118,7 +118,7 @@ public final class FileWatcher {
                             continue;
                         }
                         // The filename is the context of the event. May be absolute or relative path name.
-                        if(filter.accept(normalize(LocalFactory.get(folder.toString()), event.context().toString()))) {
+                        if(filter.accept(normalize(folder, event.context().toString()))) {
                             callback(folder, event, listener);
                         }
                         else {
