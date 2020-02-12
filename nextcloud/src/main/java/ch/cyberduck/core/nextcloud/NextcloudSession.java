@@ -19,6 +19,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
 import ch.cyberduck.core.features.PromptUrlProvider;
+import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
@@ -31,6 +32,9 @@ public class NextcloudSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Timestamp.class) {
+            return (T) new NextcloudTimestampFeature(this);
+        }
         if(type == UrlProvider.class) {
             return (T) new NextcloudUrlProvider(this);
         }
