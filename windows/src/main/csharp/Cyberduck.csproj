@@ -1,11 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project>
+
+    <PropertyGroup>
+        <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    </PropertyGroup>
+
+    <Import Project="Sdk.props" Sdk="Microsoft.Net.Sdk.WindowsDesktop" />
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net47</TargetFramework>
         <UseWindowsForms>true</UseWindowsForms>
-        <Platforms>x64</Platforms>
-        <PlatformTarget>x64</PlatformTarget>
+        <Platforms>x64;x86</Platforms>
+
         <ApplicationIcon>$(CyberduckDir)cyberduck-application.ico</ApplicationIcon>
         <DefaultItemExcludes>$(DefaultItemExcludes);ch/cyberduck/ui/winforms/commondialog/**</DefaultItemExcludes>
         <ApplicationManifest>ch\cyberduck\properties\app.manifest</ApplicationManifest>
@@ -100,5 +106,7 @@
         <Generator>PublicResXFileCodeGenerator</Generator>
       </EmbeddedResource>
     </ItemGroup>
+
+    <Import Project="Sdk.targets" Sdk="Microsoft.Net.Sdk.WindowsDesktop" />
 
 </Project>
