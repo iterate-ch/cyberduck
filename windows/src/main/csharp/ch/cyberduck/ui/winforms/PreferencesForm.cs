@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.preferences;
+using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Core.Resources;
 using Ch.Cyberduck.Ui.Winforms.Controls;
@@ -124,6 +125,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             //todo
             CenterToParent();
+
+            updateButton.Visible = !Utils.IsRunningAsUWP;
         }
 
         public override string[] BundleNames
