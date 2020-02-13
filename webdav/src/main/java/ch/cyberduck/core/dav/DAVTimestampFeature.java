@@ -30,7 +30,9 @@ import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import com.github.sardine.DavResource;
@@ -67,13 +69,8 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
             final List<DavResource> resources = session.getClient().propfind(new DAVPathEncoder().encode(file), 0,
                 Collections.singleton(SardineUtil.createQNameWithDefaultNamespace("getlastmodified")));
             for(DavResource resource : resources) {
-                if(status.getLockId() != null) {
-                    session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getTimestamp()), Collections.emptyList(),
-                        Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
-                }
-                else {
-                    session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getTimestamp()), Collections.emptyList());
-                }
+                session.getClient().patch(new DAVPathEncoder().encode(file), this.getCustomProperties(resource, status.getTimestamp()), Collections.emptyList(),
+                    this.getCustomHeaders(file, status));
                 break;
             }
         }
@@ -96,5 +93,13 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
         element.setTextContent(new RFC1123DateFormatter().format(modified, TimeZone.getTimeZone("UTC")));
         props.add(element);
         return props;
+    }
+
+    protected Map<String, String> getCustomHeaders(final Path file, final TransferStatus status) {
+        final Map<String, String> headers = new HashMap<>();
+        if(status.getLockId() != null) {
+            headers.put(HttpHeaders.IF, String.format("(<%s>)", status.getLockId()));
+        }
+        return headers;
     }
 }

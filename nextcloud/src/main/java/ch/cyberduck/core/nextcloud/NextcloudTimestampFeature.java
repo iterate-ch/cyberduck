@@ -15,58 +15,24 @@ package ch.cyberduck.core.nextcloud;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.dav.DAVExceptionMappingService;
-import ch.cyberduck.core.dav.DAVPathEncoder;
 import ch.cyberduck.core.dav.DAVTimestampFeature;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.http.HttpHeaders;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import com.github.sardine.DavResource;
-import com.github.sardine.impl.SardineException;
-import com.github.sardine.util.SardineUtil;
 
 public class NextcloudTimestampFeature extends DAVTimestampFeature {
 
-    private final NextcloudSession session;
-
     public NextcloudTimestampFeature(final NextcloudSession session) {
         super(session);
-        this.session = session;
     }
 
     @Override
-    public void setTimestamp(final Path file, final TransferStatus status) throws BackgroundException {
-        try {
-            final List<DavResource> resources = session.getClient().propfind(new DAVPathEncoder().encode(file), 0,
-                Collections.singleton(SardineUtil.createQNameWithDefaultNamespace("getlastmodified")));
-            final Map<String, String> headers = new HashMap<>();
-            if(null != status.getTimestamp()) {
-                headers.put("X-OC-Mtime", String.valueOf(status.getTimestamp()));
-            }
-            if(status.getLockId() != null) {
-                headers.put(HttpHeaders.IF, String.format("(<%s>)", status.getLockId()));
-            }
-            for(DavResource resource : resources) {
-                session.getClient().patch(new DAVPathEncoder().encode(file),
-                    this.getCustomProperties(resource, status.getTimestamp()), Collections.emptyList(), headers);
-                break;
-            }
+    protected Map<String, String> getCustomHeaders(final Path file, final TransferStatus status) {
+        final Map<String, String> headers = super.getCustomHeaders(file, status);
+        if(null != status.getTimestamp()) {
+            headers.put("X-OC-Mtime", String.valueOf(status.getTimestamp()));
         }
-        catch(SardineException e) {
-            throw new DAVExceptionMappingService().map("Failure to write attributes of {0}", e, file);
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e, file);
-        }
+        return headers;
     }
 }
