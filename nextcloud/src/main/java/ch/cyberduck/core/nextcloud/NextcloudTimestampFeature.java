@@ -53,10 +53,10 @@ public class NextcloudTimestampFeature extends DAVTimestampFeature {
             if(null != status.getTimestamp()) {
                 headers.put("X-OC-Mtime", String.valueOf(status.getTimestamp()));
             }
+            if(status.getLockId() != null) {
+                headers.put(HttpHeaders.IF, String.format("(<%s>)", status.getLockId()));
+            }
             for(DavResource resource : resources) {
-                if(status.getLockId() != null) {
-                    headers.put(HttpHeaders.IF, String.format("(<%s>)", status.getLockId()));
-                }
                 session.getClient().patch(new DAVPathEncoder().encode(file),
                     this.getCustomProperties(resource, status.getTimestamp()), Collections.emptyList(), headers);
                 break;
