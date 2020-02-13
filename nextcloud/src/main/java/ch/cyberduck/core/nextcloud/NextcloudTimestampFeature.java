@@ -31,7 +31,7 @@ public class NextcloudTimestampFeature extends DAVTimestampFeature {
     protected Map<String, String> getCustomHeaders(final Path file, final TransferStatus status) {
         final Map<String, String> headers = super.getCustomHeaders(file, status);
         if(null != status.getTimestamp()) {
-            headers.put("X-OC-Mtime", String.valueOf(status.getTimestamp()));
+            headers.put("X-OC-Mtime", String.valueOf(status.getTimestamp() / 1000));
         }
         return headers;
     }
