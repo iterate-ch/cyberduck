@@ -74,6 +74,11 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
 
     @Override
     public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final List<Header> headers = this.getHeaders(file, status);
+        return this.write(file, headers, status);
+    }
+
+    protected List<Header> getHeaders(final Path file, final TransferStatus status) throws UnsupportedException {
         final List<Header> headers = new ArrayList<Header>();
         if(status.isAppend()) {
             final HttpRange range = HttpRange.withStatus(status);
@@ -100,7 +105,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
             // Indicate that the client has knowledge of that state token
             headers.add(new BasicHeader(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
         }
-        return this.write(file, headers, status);
+        return headers;
     }
 
     private HttpResponseOutputStream<String> write(final Path file, final List<Header> headers, final TransferStatus status)
