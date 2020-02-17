@@ -39,6 +39,9 @@ public class FileidDriveListService extends AbstractDriveListService {
         String escaped = file.getName();
         escaped = StringUtils.replace(escaped, "\\", "\\\\");
         escaped = StringUtils.replace(escaped, "'", "\\'");
+        if(directory.equals(DriveHomeFinderService.SHARED_FOLDER_NAME)) {
+            return String.format("name = '%s' and sharedWithMe", escaped);
+        }
         return String.format("name = '%s' and '%s' in parents", escaped, provider.getFileid(directory, new DisabledListProgressListener()));
     }
 }
