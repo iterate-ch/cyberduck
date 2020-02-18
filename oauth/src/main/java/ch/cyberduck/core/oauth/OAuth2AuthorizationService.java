@@ -24,6 +24,7 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.OAuthTokens;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.StringAppender;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -40,7 +41,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,10 +142,9 @@ public class OAuth2AuthorizationService {
         if(PreferencesFactory.get().getBoolean("oauth.browser.open.warn")) {
             prompt.warn(bookmark,
                 LocaleFactory.localizedString("Provide additional login credentials", "Credentials"),
-                MessageFormat.format("{0}. {1}.",
-                    LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"),
-                    LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")
-                ),
+                new StringAppender()
+                    .append(LocaleFactory.localizedString("Open web browser to authenticate and obtain an authorization code", "Credentials"))
+                    .append(LocaleFactory.localizedString("Please contact your web hosting service provider for assistance", "Support")).toString(),
                 LocaleFactory.localizedString("Continue", "Credentials"),
                 LocaleFactory.localizedString("Cancel"), "oauth.browser.open.warn"
             );
