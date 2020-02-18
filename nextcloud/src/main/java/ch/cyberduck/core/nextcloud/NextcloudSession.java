@@ -18,6 +18,7 @@ package ch.cyberduck.core.nextcloud;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.dav.DAVSession;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.ssl.X509KeyManager;
@@ -32,6 +33,10 @@ public class NextcloudSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
+        if(type == Lock.class) {
+            // https://github.com/nextcloud/server/issues/1308
+            return null;
+        }
         if(type == Write.class) {
             return (T) new NextcloudWriteFeature(this);
         }
