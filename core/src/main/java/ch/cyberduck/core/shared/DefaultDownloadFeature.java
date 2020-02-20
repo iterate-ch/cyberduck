@@ -44,7 +44,7 @@ public class DefaultDownloadFeature implements Download {
     public void download(final Path file, final Local local, final BandwidthThrottle throttle, final StreamListener listener,
                          final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         final InputStream in = reader.read(file, status, callback);
-        final OutputStream out = local.getOutputStream(status.isAppend());
+        final OutputStream out = local.getOutputStream(!status.isSegment() && status.isAppend());
         new StreamCopier(status, status)
                 .withOffset(0L)
                 .withLimit(status.getLength())
