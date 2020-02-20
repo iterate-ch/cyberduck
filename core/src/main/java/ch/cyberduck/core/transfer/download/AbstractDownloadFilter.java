@@ -235,7 +235,7 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                                     break;
                                 }
                                 // Last part can be less than 5 MB. Adjust part size.
-                                Long length = Math.min(partsize, remaining);
+                                long length = Math.min(partsize, remaining);
                                 final TransferStatus segmentStatus = new TransferStatus()
                                     .segment(true) // Skip completion filter for single segment
                                     .append(true) // Read with offset
