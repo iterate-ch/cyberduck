@@ -1133,7 +1133,7 @@ public abstract class Preferences implements Locales {
         final URL configuration;
         final String file = this.getDefault("logging.config");
         if(null == file) {
-            configuration = Preferences.class.getClassLoader().getResource("log4j-default.xml");
+            configuration = Preferences.class.getClassLoader().getResource("log4j.xml");
         }
         else {
             configuration = Preferences.class.getClassLoader().getResource(file);

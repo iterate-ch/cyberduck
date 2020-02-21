@@ -15,10 +15,12 @@
   -->
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration debug="false" xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender name="disabled" class="org.apache.log4j.varia.NullAppender"/>
     <logger name="org.apache.http.wire" additivity="false">
         <level value="error"/>
     </logger>
     <root>
         <level value="error"/>
+        <appender-ref ref="disabled"/>
     </root>
 </log4j:configuration>
