@@ -7,6 +7,7 @@ https://cyberduck.io/
 - [Feature] Group bookmarks by labels in menu (macOS)
 - [Feature] Support TLS 1.3 (#10962)
 - [Bugfix] Download fails for files with whitespace in name (Google Storage) (#10931)
+- [Bugfix] Unable to access documents in Shared with me (Google Drive)
 
 7.2.6
 - [Feature] Importer for bookmarks from Transmit 5 (macOS)
