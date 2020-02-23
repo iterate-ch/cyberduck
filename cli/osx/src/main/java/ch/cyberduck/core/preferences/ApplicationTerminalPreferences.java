@@ -45,6 +45,7 @@ public class ApplicationTerminalPreferences extends TerminalPreferences {
         this.setDefault("factory.supportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
         this.setDefault("factory.localsupportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
         this.setDefault("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
+        this.setDefault("factory.applicationloginregistry.class", SharedFileListApplicationLoginRegistry.class.getName());
         this.setDefault("factory.locale.class", BundleRegexLocale.class.getName());
         this.setDefault("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
         this.setDefault("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());

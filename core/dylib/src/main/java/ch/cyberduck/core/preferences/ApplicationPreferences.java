@@ -53,6 +53,7 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
         this.setDefault("factory.supportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
         this.setDefault("factory.localsupportdirectoryfinder.class", SecurityApplicationGroupSupportDirectoryFinder.class.getName());
         this.setDefault("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
+        this.setDefault("factory.applicationloginregistry.class", SharedFileListApplicationLoginRegistry.class.getName());
         this.setDefault("factory.autorelease.class", AutoreleaseActionOperationBatcher.class.getName());
         this.setDefault("factory.local.class", FinderLocal.class.getName());
         this.setDefault("factory.locale.class", BundleRegexLocale.class.getName());
