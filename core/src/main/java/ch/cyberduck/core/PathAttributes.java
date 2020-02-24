@@ -89,6 +89,11 @@ public class PathAttributes extends Attributes implements Serializable {
     private String versionId;
 
     /**
+     * References to previous versions if any
+     */
+    private AttributedList<Path> versions = AttributedList.emptyList();
+
+    /**
      * Lock id
      */
     private String lockId;
@@ -366,6 +371,14 @@ public class PathAttributes extends Attributes implements Serializable {
     public PathAttributes withVersionId(final String versionId) {
         this.setVersionId(versionId);
         return this;
+    }
+
+    public AttributedList<Path> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(final AttributedList<Path> versions) {
+        this.versions = versions;
     }
 
     public String getLockId() {

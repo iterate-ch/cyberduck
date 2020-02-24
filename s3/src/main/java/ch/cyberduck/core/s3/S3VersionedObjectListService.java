@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -115,7 +116,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         revision = 0L;
                     }
                     attributes.setRevision(++revision);
-                    attributes.setDuplicate((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest());
+                    attributes.setDuplicate(marker.isDeleteMarker() && marker.isLatest() || !marker.isLatest());
                     if(marker.isDeleteMarker()) {
                         attributes.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                     }
@@ -132,6 +133,21 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         }
                     }
                     final Path f = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
+                    if(attributes.isDuplicate()) {
+                        final Path current = children.find(new SimplePathPredicate(f) {
+                            @Override
+                            public boolean test(final Path test) {
+                                if(super.test(test)) {
+                                    return !test.attributes().isDuplicate();
+                                }
+                                return false;
+                            }
+                        });
+                        // Reference version
+                        final AttributedList<Path> versions = new AttributedList<>(current.attributes().getVersions());
+                        versions.add(f);
+                        current.attributes().setVersions(versions);
+                    }
                     children.add(f);
                     lastKey = key;
                 }
