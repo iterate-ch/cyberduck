@@ -37,18 +37,29 @@ public interface TransferPathFilter {
     boolean accept(Path file, Local local, TransferStatus parent) throws BackgroundException;
 
     /**
-     * Called before the file will actually get transferred. Should prepare for the transfer such as calculating its size.
+     * Called before the file will actually get transferred. Should prepare for the transfer such as calculating its
+     * size.
      *
-     * @param file     File
+     * @param file     Remote file
+     * @param local    File on disk
      * @param parent   Parent transfer status
-     * @param progress Callback
+     * @param listener Progress listener
      * @return Transfer status
      */
-    TransferStatus prepare(Path file, Local local, TransferStatus parent, ProgressListener progress)
-            throws BackgroundException;
+    TransferStatus prepare(Path file, Local local, TransferStatus parent, ProgressListener listener)
+        throws BackgroundException;
 
+    /**
+     * Apply filter outcome such as renaming file prior transfer
+     *
+     * @param file     Remote file
+     * @param local    File on disk
+     * @param status   Transfer status
+     * @param listener Progress listener
+     * @throws BackgroundException
+     */
     void apply(Path file, Local local, TransferStatus status, ProgressListener listener)
-            throws BackgroundException;
+        throws BackgroundException;
 
     /**
      * Post processing of completed transfer.
@@ -56,7 +67,7 @@ public interface TransferPathFilter {
      * @param file     File
      * @param options  Options
      * @param status   Transfer status
-     * @param listener Progress callback
+     * @param listener Progress listener
      */
     void complete(Path file, Local local, TransferOptions options,
                   TransferStatus status, ProgressListener listener) throws BackgroundException;
