@@ -40,7 +40,7 @@ public class DefaultLocalTouchFeatureTest {
         }
         catch(AccessDeniedException e) {
             final String s = l.getName();
-            assertEquals("Cannot create /" + s + ". Please verify disk permissions.", e.getDetail());
+            assertEquals("Cannot create " + Local.DELIMITER + s + ". Please verify disk permissions.", e.getDetail());
             assertEquals("Access denied", e.getMessage());
         }
     }
