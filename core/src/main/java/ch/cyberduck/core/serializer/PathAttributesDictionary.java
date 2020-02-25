@@ -18,13 +18,16 @@ package ch.cyberduck.core.serializer;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DeserializerFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.io.Checksum;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
 
 public class PathAttributesDictionary {
 
@@ -52,6 +55,14 @@ public class PathAttributesDictionary {
         final String revisionObj = dict.stringForKey("Revision");
         if(revisionObj != null) {
             attributes.setRevision(Long.parseLong(revisionObj));
+        }
+        final List<T> versionsObj = dict.listForKey("Versions");
+        if(versionsObj != null) {
+            final AttributedList<Path> versions = new AttributedList<>();
+            for(T versionDict : versionsObj) {
+                versions.add(new PathDictionary(factory).deserialize(versionDict));
+            }
+            attributes.setVersions(versions);
         }
         final String etagObj = dict.stringForKey("ETag");
         if(etagObj != null) {
