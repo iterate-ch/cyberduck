@@ -51,6 +51,10 @@ public class DefaultLocalTouchFeature implements Touch {
             }
             catch(FileAlreadyExistsException e) {
                 log.warn(String.format("File %s already exists", file));
+                if(Files.isDirectory(Paths.get(file.getAbsolute()))) {
+                    throw new LocalAccessDeniedException(MessageFormat.format(
+                        LocaleFactory.localizedString("Cannot create {0}", "Error"), file.getAbsolute()), e);
+                }
                 return;
             }
         }

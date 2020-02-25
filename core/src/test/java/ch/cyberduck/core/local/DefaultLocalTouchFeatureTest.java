@@ -3,6 +3,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.junit.Test;
 
@@ -44,8 +45,8 @@ public class DefaultLocalTouchFeatureTest {
         }
     }
 
-    @Test
-    public void testSkipWhenFolderExists() throws Exception {
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testFolderExists() throws Exception {
         Local l = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final DefaultLocalTouchFeature f = new DefaultLocalTouchFeature();
         new DefaultLocalDirectoryFeature().mkdir(l);
