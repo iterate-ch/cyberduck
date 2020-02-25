@@ -17,6 +17,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
@@ -169,10 +170,32 @@ public class FinderLocalTest {
     }
 
     @Test
+    public void testSkipSecurityScopeBookmarkInTemporary() throws Exception {
+        final FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver()) {
+            @Override
+            public NSURL lock(final boolean interactive) throws AccessDeniedException {
+                final NSURL lock = super.lock(interactive);
+                assertNull(lock);
+                return lock;
+            }
+        };
+        new DefaultLocalTouchFeature().touch(l);
+        final InputStream in = l.getInputStream();
+        in.close();
+        l.delete();
+    }
+
+    @Test
     public void testReleaseSecurityScopeBookmarkInputStreamClose() throws Exception {
         final AtomicBoolean released = new AtomicBoolean(false);
-        final FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString(),
-            new AliasFilesystemBookmarkResolver()) {
+        final FinderLocal l = new FinderLocal(System.getProperty("user.home"), UUID.randomUUID().toString(), new AliasFilesystemBookmarkResolver()) {
+            @Override
+            public NSURL lock(final boolean interactive) throws AccessDeniedException {
+                final NSURL lock = super.lock(interactive);
+                assertNotNull(lock);
+                return lock;
+            }
+
             @Override
             public void release(final Object lock) {
                 released.set(true);

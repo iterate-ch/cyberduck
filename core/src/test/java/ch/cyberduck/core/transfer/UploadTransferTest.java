@@ -12,6 +12,8 @@ import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamListener;
+import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
+import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.local.LocalTouchFactory;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
@@ -223,22 +225,23 @@ public class UploadTransferTest {
     @Test
     public void testPrepareUploadOverrideFilter() throws Exception {
         final Host host = new Host(new TestProtocol());
+        final String directoryname = new AlphanumericRandomStringService().random();
         final Session<?> session = new NullSession(host) {
             @Override
             public AttributedList<Path> list(final Path file, final ListProgressListener listener) {
                 if(file.equals(new Path("/", EnumSet.of(Path.Type.volume, Path.Type.directory)))) {
-                    return new AttributedList<>(Collections.singletonList(new Path("/transfer", EnumSet.of(Path.Type.directory))));
+                    return new AttributedList<>(Collections.singletonList(new Path("/" + directoryname, EnumSet.of(Path.Type.directory))));
                 }
-                final Path f = new Path("/transfer/test", EnumSet.of(Path.Type.file));
+                final Path f = new Path("/" + directoryname + "/test", EnumSet.of(Path.Type.file));
                 f.attributes().setSize(5L);
                 return new AttributedList<>(Collections.singletonList(f));
             }
         };
-        final Path test = new Path("/transfer", EnumSet.of(Path.Type.directory));
+        final Path test = new Path(directoryname, EnumSet.of(Path.Type.directory));
         final String name = UUID.randomUUID().toString();
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), "transfer");
-        LocalTouchFactory.get().touch(local);
-        LocalTouchFactory.get().touch(new Local(local, name));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), directoryname);
+        new DefaultLocalDirectoryFeature().mkdir(local);
+        new DefaultLocalTouchFeature().touch(new Local(local, name));
         final Transfer transfer = new UploadTransfer(host, test, local);
         final SingleTransferWorker worker = new SingleTransferWorker(session, null, transfer, new TransferOptions(),
             new TransferSpeedometer(transfer), new DisabledTransferPrompt() {
@@ -249,11 +252,11 @@ public class UploadTransferTest {
             }
         }, new DisabledTransferErrorCallback(),
             new DisabledProgressListener(), new DisabledStreamListener(), new DisabledLoginCallback(), new DisabledNotificationService());
-        worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), "transfer"), new TransferStatus().exists(true),
+        worker.prepare(test, new Local(System.getProperty("java.io.tmpdir"), directoryname), new TransferStatus().exists(true),
             TransferAction.overwrite);
         assertEquals(new TransferStatus().exists(true), worker.getStatus().get(new TransferItem(test, local)));
         final TransferStatus expected = new TransferStatus();
-        assertEquals(expected, worker.getStatus().get(new TransferItem(new Path("/transfer/" + name, EnumSet.of(Path.Type.file)), new Local(local, name))));
+        assertEquals(expected, worker.getStatus().get(new TransferItem(new Path(directoryname + "/" + name, EnumSet.of(Path.Type.file)), new Local(local, name))));
     }
 
     @Test

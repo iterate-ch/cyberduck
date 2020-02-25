@@ -1,7 +1,9 @@
 package ch.cyberduck.core.local;
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 import org.junit.Test;
 
@@ -14,13 +16,19 @@ public class DefaultLocalTouchFeatureTest {
 
     @Test
     public void testTouch() throws Exception {
-        Local l = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        Local parent = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        Local l = new Local(parent, UUID.randomUUID().toString());
         final DefaultLocalTouchFeature f = new DefaultLocalTouchFeature();
+        // Test create missing parent directory
         f.touch(l);
+        assertTrue(parent.exists());
         assertTrue(l.exists());
         f.touch(l);
         assertTrue(l.exists());
+        // Test fail silently
+        f.touch(l);
         l.delete();
+        parent.delete();
     }
 
     @Test
@@ -32,13 +40,13 @@ public class DefaultLocalTouchFeatureTest {
         }
         catch(AccessDeniedException e) {
             final String s = l.getName();
-            assertEquals("Cannot create /" + s + ". Please verify disk permissions.", e.getDetail());
+            assertEquals("Cannot create " + Local.DELIMITER + s + ". Please verify disk permissions.", e.getDetail());
             assertEquals("Access denied", e.getMessage());
         }
     }
 
-    @Test
-    public void testSkipWhenFolderExists() throws Exception {
+    @Test(expected = LocalAccessDeniedException.class)
+    public void testFolderExists() throws Exception {
         Local l = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final DefaultLocalTouchFeature f = new DefaultLocalTouchFeature();
         new DefaultLocalDirectoryFeature().mkdir(l);
