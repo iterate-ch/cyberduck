@@ -134,15 +134,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     }
                     final Path f = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
                     if(attributes.isDuplicate()) {
-                        final Path current = children.find(new SimplePathPredicate(f) {
-                            @Override
-                            public boolean test(final Path test) {
-                                if(super.test(test)) {
-                                    return !test.attributes().isDuplicate();
-                                }
-                                return false;
-                            }
-                        });
+                        final Path current = children.find(new LatestVersionPathPredicate(f));
                         // Reference version
                         final AttributedList<Path> versions = new AttributedList<>(current.attributes().getVersions());
                         versions.add(f);
@@ -244,5 +236,19 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
     @Override
     public ListService withCache(final Cache<Path> cache) {
         return this;
+    }
+
+    private static final class LatestVersionPathPredicate extends SimplePathPredicate {
+        public LatestVersionPathPredicate(final Path f) {
+            super(f);
+        }
+
+        @Override
+        public boolean test(final Path test) {
+            if(super.test(test)) {
+                return !test.attributes().isDuplicate();
+            }
+            return false;
+        }
     }
 }
