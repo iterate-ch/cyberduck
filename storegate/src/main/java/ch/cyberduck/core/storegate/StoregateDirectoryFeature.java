@@ -57,4 +57,9 @@ public class StoregateDirectoryFeature implements Directory<VersionId> {
     public Directory<VersionId> withWriter(final Write<VersionId> writer) {
         return this;
     }
+
+    @Override
+    public boolean isSupported(final Path workdir, final String name) {
+        return !workdir.isRoot();
+    }
 }

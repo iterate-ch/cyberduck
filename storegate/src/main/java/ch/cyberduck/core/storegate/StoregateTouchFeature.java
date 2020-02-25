@@ -54,4 +54,9 @@ public class StoregateTouchFeature implements Touch<VersionId> {
         this.writer = writer;
         return this;
     }
+
+    @Override
+    public boolean isSupported(final Path workdir, final String filename) {
+        return !workdir.isRoot();
+    }
 }
