@@ -122,7 +122,7 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
             assertEquals(content.length, attr.getSize());
             assertNotNull(attr.getVersionId());
         }
-        final AttributedList<Path> list = new S3VersionedObjectListService(session).list(bucket, new DisabledListProgressListener()).filter(
+        final AttributedList<Path> list = new S3VersionedObjectListService(session, 1, true).list(bucket, new DisabledListProgressListener()).filter(
             new Filter<Path>() {
                 @Override
                 public boolean accept(final Path f) {
