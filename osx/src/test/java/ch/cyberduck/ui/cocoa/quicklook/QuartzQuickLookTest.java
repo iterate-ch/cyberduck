@@ -1,7 +1,9 @@
 package ch.cyberduck.ui.cocoa.quicklook;
 
+import ch.cyberduck.binding.quicklook.QuartzQuickLook;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.ui.quicklook.QuickLook;
 
 import org.junit.Ignore;
 import org.junit.Test;

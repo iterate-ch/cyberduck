@@ -38,8 +38,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.vault.VaultRegistry;
 import ch.cyberduck.ui.browser.UploadTargetFinder;
 import ch.cyberduck.ui.cocoa.controller.BrowserController;
-import ch.cyberduck.ui.cocoa.quicklook.QuickLook;
-import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.rococoa.Foundation;
@@ -49,8 +47,6 @@ import org.rococoa.Selector;
 import static ch.cyberduck.ui.cocoa.toolbar.BrowserToolbarFactory.BrowserToolbarItem.*;
 
 public class BrowserToolbarValidator implements ToolbarValidator {
-
-    private final QuickLook quicklook = QuickLookFactory.get();
 
     private final BrowserController controller;
 

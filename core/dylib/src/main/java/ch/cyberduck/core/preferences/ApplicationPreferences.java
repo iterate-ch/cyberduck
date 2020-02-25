@@ -15,6 +15,7 @@ package ch.cyberduck.core.preferences;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.binding.quicklook.QuartzQuickLook;
 import ch.cyberduck.core.ApplescriptTerminalService;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.KeychainCertificateStore;
@@ -89,5 +90,6 @@ public class ApplicationPreferences extends UserDefaultsPreferences {
             this.setDefault("factory.bookmarkresolver.class", DisabledFilesystemBookmarkResolver.class.getName());
         }
         this.setDefault("factory.urlfilewriter.class", WeblocFileWriter.class.getName());
+        this.setDefault("factory.quicklook.class", QuartzQuickLook.class.getName());
     }
 }
