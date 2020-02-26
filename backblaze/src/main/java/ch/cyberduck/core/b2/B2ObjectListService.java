@@ -128,7 +128,7 @@ public class B2ObjectListService implements ListService {
                 continue;
             }
             final PathAttributes attributes = this.parse(info);
-            final Long revision;
+            final long revision;
             if(revisions.containsKey(info.getFileName())) {
                 // Later version already found
                 attributes.setDuplicate(true);
@@ -159,7 +159,7 @@ public class B2ObjectListService implements ListService {
         );
         final long timestamp = response.getUploadTimestamp();
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
-            attributes.setModificationDate(Long.valueOf(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
+            attributes.setModificationDate(Long.parseLong(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
         }
         else {
             attributes.setModificationDate(timestamp);

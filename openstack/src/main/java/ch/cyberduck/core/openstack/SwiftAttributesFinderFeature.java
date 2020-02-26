@@ -132,7 +132,7 @@ public class SwiftAttributesFinderFeature implements AttributesFinder {
 
     protected PathAttributes toAttributes(final ObjectMetadata metadata) {
         final PathAttributes attributes = new PathAttributes();
-        attributes.setSize(Long.valueOf(metadata.getContentLength()));
+        attributes.setSize(Long.parseLong(metadata.getContentLength()));
         final String lastModified = metadata.getLastModified();
         try {
             attributes.setModificationDate(rfc1123DateFormatter.parse(lastModified).getTime());

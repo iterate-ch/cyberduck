@@ -90,7 +90,7 @@ public class B2AttributesFinderFeature implements AttributesFinder {
         }
         attributes.setVersionId(response.getFileId());
         if(response.getFileInfo().containsKey(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)) {
-            attributes.setModificationDate(Long.valueOf(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
+            attributes.setModificationDate(Long.parseLong(response.getFileInfo().get(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS)));
         }
         return attributes;
     }

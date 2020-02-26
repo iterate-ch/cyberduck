@@ -89,7 +89,7 @@ public abstract class GraphCommonsHttpRequestExecutor implements RequestExecutor
             public long getContentLength() {
                 for(RequestHeader header : headers) {
                     if(header.getKey().equals(HTTP.CONTENT_LEN)) {
-                        return Long.valueOf(header.getValue());
+                        return Long.parseLong(header.getValue());
                     }
                 }
                 // Content-Encoding: chunked

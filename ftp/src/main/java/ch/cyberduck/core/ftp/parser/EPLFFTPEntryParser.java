@@ -139,7 +139,7 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
                 facts.put("m", timeString);
                 long secsSince1970;
                 try {
-                    secsSince1970 = Long.valueOf(timeString);
+                    secsSince1970 = Long.parseLong(timeString);
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(secsSince1970 * 1000);
                     file.setTimestamp(calendar);

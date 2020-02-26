@@ -103,7 +103,7 @@ public class DropboxCommonsHttpRequestExecutor extends HttpRequestor implements 
             public long getContentLength() {
                 for(Header header : headers) {
                     if(header.getKey().equals(HTTP.CONTENT_LEN)) {
-                        return Long.valueOf(header.getValue());
+                        return Long.parseLong(header.getValue());
                     }
                 }
                 // Content-Encoding: chunked
