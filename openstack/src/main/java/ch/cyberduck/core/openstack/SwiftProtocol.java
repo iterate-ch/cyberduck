@@ -50,16 +50,6 @@ public class SwiftProtocol extends AbstractProtocol {
     }
 
     @Override
-    public String getUsernamePlaceholder() {
-        return "Tenant ID:Access Key";
-    }
-
-    @Override
-    public String getPasswordPlaceholder() {
-        return "Secret Key";
-    }
-
-    @Override
     public String getContext() {
         return PreferencesFactory.get().getProperty("openstack.authentication.context");
     }
