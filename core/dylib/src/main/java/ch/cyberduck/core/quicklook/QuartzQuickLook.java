@@ -1,4 +1,4 @@
-package ch.cyberduck.binding.quicklook;
+package ch.cyberduck.core.quicklook;
 
 /*
  * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
@@ -16,6 +16,9 @@ package ch.cyberduck.binding.quicklook;
  */
 
 import ch.cyberduck.binding.foundation.NSURL;
+import ch.cyberduck.binding.quicklook.QLPreviewItem;
+import ch.cyberduck.binding.quicklook.QLPreviewPanel;
+import ch.cyberduck.binding.quicklook.QLPreviewPanelDataSource;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.ui.quicklook.QuickLook;
 

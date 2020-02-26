@@ -15,7 +15,6 @@ package ch.cyberduck.core.preferences;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.quicklook.QuartzQuickLook;
 import ch.cyberduck.core.ApplescriptTerminalService;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.KeychainCertificateStore;
@@ -39,6 +38,7 @@ import ch.cyberduck.core.local.WorkspaceRevealService;
 import ch.cyberduck.core.local.WorkspaceSymlinkFeature;
 import ch.cyberduck.core.notification.NotificationCenter;
 import ch.cyberduck.core.proxy.SystemConfigurationProxy;
+import ch.cyberduck.core.quicklook.QuartzQuickLook;
 import ch.cyberduck.core.resources.NSImageIconCache;
 import ch.cyberduck.core.sparkle.Sandbox;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
