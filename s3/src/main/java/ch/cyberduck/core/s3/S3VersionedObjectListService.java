@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -65,16 +66,22 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         = new S3PathContainerService();
 
     private final S3Session session;
-
     private final Integer concurrency;
+    private final boolean references;
 
     public S3VersionedObjectListService(final S3Session session) {
-        this(session, PreferencesFactory.get().getInteger("s3.listing.concurrency"));
+        this(session, PreferencesFactory.get().getInteger("s3.listing.concurrency"), PreferencesFactory.get().getBoolean("s3.versioning.references.enable"));
     }
 
-    public S3VersionedObjectListService(final S3Session session, final Integer concurrency) {
+    /**
+     * @param session     Connection
+     * @param concurrency Number of threads to handle prefixes
+     * @param references  Set references of previous versions in file attributes
+     */
+    public S3VersionedObjectListService(final S3Session session, final Integer concurrency, final boolean references) {
         this.session = session;
         this.concurrency = concurrency;
+        this.references = references;
     }
 
     @Override
@@ -115,7 +122,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         revision = 0L;
                     }
                     attributes.setRevision(++revision);
-                    attributes.setDuplicate((marker.isDeleteMarker() && marker.isLatest()) || !marker.isLatest());
+                    attributes.setDuplicate(marker.isDeleteMarker() && marker.isLatest() || !marker.isLatest());
                     if(marker.isDeleteMarker()) {
                         attributes.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
                     }
@@ -132,6 +139,15 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         }
                     }
                     final Path f = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
+                    if(references) {
+                        if(attributes.isDuplicate()) {
+                            final Path current = children.find(new LatestVersionPathPredicate(f));
+                            // Reference version
+                            final AttributedList<Path> versions = new AttributedList<>(current.attributes().getVersions());
+                            versions.add(f);
+                            current.attributes().setVersions(versions);
+                        }
+                    }
                     children.add(f);
                     lastKey = key;
                 }
@@ -228,5 +244,19 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
     @Override
     public ListService withCache(final Cache<Path> cache) {
         return this;
+    }
+
+    private static final class LatestVersionPathPredicate extends SimplePathPredicate {
+        public LatestVersionPathPredicate(final Path f) {
+            super(f);
+        }
+
+        @Override
+        public boolean test(final Path test) {
+            if(super.test(test)) {
+                return !test.attributes().isDuplicate();
+            }
+            return false;
+        }
     }
 }

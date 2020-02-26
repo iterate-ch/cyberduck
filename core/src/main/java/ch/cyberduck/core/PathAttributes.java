@@ -89,6 +89,11 @@ public class PathAttributes extends Attributes implements Serializable {
     private String versionId;
 
     /**
+     * References to previous versions if any
+     */
+    private AttributedList<Path> versions = AttributedList.emptyList();
+
+    /**
      * Lock id
      */
     private String lockId;
@@ -180,6 +185,9 @@ public class PathAttributes extends Attributes implements Serializable {
         }
         if(revision != null) {
             dict.setStringForKey(String.valueOf(revision), "Revision");
+        }
+        if(!versions.isEmpty()) {
+            dict.setListForKey(versions.toList(), "Versions");
         }
         if(etag != null) {
             dict.setStringForKey(etag, "ETag");
@@ -368,6 +376,14 @@ public class PathAttributes extends Attributes implements Serializable {
         return this;
     }
 
+    public AttributedList<Path> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(final AttributedList<Path> versions) {
+        this.versions = versions;
+    }
+
     public String getLockId() {
         return lockId;
     }
@@ -536,6 +552,7 @@ public class PathAttributes extends Attributes implements Serializable {
         result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
         result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
         result = 31 * result + (revision != null ? revision.hashCode() : 0);
+        result = 31 * result + (versions != null ? versions.hashCode() : 0);
         result = 31 * result + (region != null ? region.hashCode() : 0);
         return result;
     }
@@ -559,6 +576,7 @@ public class PathAttributes extends Attributes implements Serializable {
         sb.append(", lockId='").append(lockId).append('\'');
         sb.append(", duplicate=").append(duplicate);
         sb.append(", revision=").append(revision);
+        sb.append(", versions=").append(versions);
         sb.append(", region='").append(region).append('\'');
         sb.append(", metadata=").append(metadata);
         sb.append('}');

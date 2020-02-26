@@ -22,8 +22,10 @@ import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
@@ -45,6 +47,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.*;
 
@@ -118,11 +121,27 @@ public class S3VersionedObjectListServiceTest extends AbstractS3Test {
             final PathAttributes attr = new DefaultAttributesFinderFeature(session).find(file);
             assertEquals(content.length, attr.getSize());
             assertNotNull(attr.getVersionId());
-
-            new S3DefaultDeleteFeature(session).delete(Arrays.asList(
-                new Path(file).withAttributes(new PathAttributes().withVersionId("null")),
-                new Path(file).withAttributes(attr), bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
+        final AttributedList<Path> list = new S3VersionedObjectListService(session, 1, true).list(bucket, new DisabledListProgressListener()).filter(
+            new Filter<Path>() {
+                @Override
+                public boolean accept(final Path f) {
+                    return new SimplePathPredicate(file).test(f);
+                }
+
+                @Override
+                public Pattern toPattern() {
+                    return null;
+                }
+            }
+        );
+        assertEquals(2, list.size());
+        assertEquals(1, list.get(0).attributes().getVersions().size());
+        assertEquals(0, list.get(1).attributes().getVersions().size());
+        assertSame(list.get(0).attributes().getVersions().get(0), list.get(1));
+        new S3DefaultDeleteFeature(session).delete(Arrays.asList(
+            new Path(file).withAttributes(new PathAttributes().withVersionId("null")),
+            new Path(file).withAttributes(new DefaultAttributesFinderFeature(session).find(file)), bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
