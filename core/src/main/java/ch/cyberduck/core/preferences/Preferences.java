@@ -63,6 +63,7 @@ import ch.cyberduck.core.updater.DisabledUpdateCheckerArguments;
 import ch.cyberduck.core.urlhandler.DisabledSchemeHandler;
 import ch.cyberduck.core.vault.DisabledVault;
 import ch.cyberduck.core.webloc.InternetShortcutFileWriter;
+import ch.cyberduck.ui.quicklook.ApplicationLauncherQuicklook;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -1350,6 +1351,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("factory.securerandom.class", DefaultSecureRandomProvider.class.getName());
         this.setDefault("factory.providerhelpservice.class", DefaultProviderHelpService.class.getName());
         this.setDefault("factory.editorfactory.class", DefaultEditorFactory.class.getName());
+        this.setDefault("factory.quicklook.class", ApplicationLauncherQuicklook.class.getName());
     }
 
     /**
