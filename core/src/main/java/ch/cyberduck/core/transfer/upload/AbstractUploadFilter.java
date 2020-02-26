@@ -17,20 +17,7 @@ package ch.cyberduck.core.transfer.upload;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.MappingMimeTypeService;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.PathCache;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.UserDateFormatterFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -57,6 +44,7 @@ import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
+import ch.cyberduck.ui.browser.RegexFilter;
 
 import org.apache.log4j.Logger;
 
@@ -71,6 +59,7 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     private final Session<?> session;
     private final SymlinkResolver<Local> symlinkResolver;
+    private final Filter<Path> hidden = new RegexFilter();
 
     protected Find find;
     protected AttributesFinder attribute;
@@ -118,7 +107,9 @@ public abstract class AbstractUploadFilter implements TransferPathFilter {
 
     @Override
     public TransferStatus prepare(final Path file, final Local local, final TransferStatus parent, final ProgressListener progress) throws BackgroundException {
-        final TransferStatus status = new TransferStatus().withLockId(parent.getLockId());
+        final TransferStatus status = new TransferStatus()
+            .hidden(!hidden.accept(file))
+            .withLockId(parent.getLockId());
         // Read remote attributes first
         if(parent.isExists()) {
             if(find.withCache(cache).find(file)) {
