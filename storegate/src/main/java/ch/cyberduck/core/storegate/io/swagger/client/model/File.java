@@ -140,7 +140,9 @@ public class File {
 
         Doc(64),
 
-        StreamableDoc(128);
+        StreamableDoc(128),
+
+        Hidden(512);
 
         private Integer value;
 

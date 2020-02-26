@@ -86,6 +86,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private boolean rejected = false;
 
     /**
+     * Set hidden flag on file if applicable
+     */
+    private boolean hidden = false;
+
+    /**
      * The number of transferred bytes. Must be less or equals size.
      */
     private final AtomicLong offset
@@ -190,6 +195,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.segment = copy.segment;
         this.segments = copy.segments;
         this.rejected = copy.rejected;
+        this.hidden = copy.hidden;
         this.offset.set(copy.offset.get());
         this.length = copy.length;
         this.canceled.set(copy.canceled.get());
@@ -369,6 +375,19 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public boolean isRejected() {
         return rejected;
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(final boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    public TransferStatus hidden(final boolean hidden) {
+        this.setHidden(hidden);
+        return this;
     }
 
     public Rename getRename() {

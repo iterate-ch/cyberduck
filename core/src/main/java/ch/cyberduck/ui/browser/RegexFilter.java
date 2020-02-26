@@ -41,6 +41,9 @@ public class RegexFilter implements Filter<Path> {
         if(file.attributes().isDuplicate()) {
             return false;
         }
+        if(file.attributes().isHidden()) {
+            return false;
+        }
         return true;
     }
 

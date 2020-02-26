@@ -107,7 +107,12 @@ public class StoregateWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                 request = new HttpPost(String.format("%s/v4/upload/resumable", client.getBasePath()));
                 FileMetadata meta = new FileMetadata();
                 meta.setId(StringUtils.EMPTY);
-                meta.setAttributes(0);
+                if(status.isHidden()) {
+                    meta.setAttributes(2); // Hidden
+                }
+                else {
+                    meta.setAttributes(0);
+                }
                 meta.setFlags(FileMetadata.FlagsEnum.NUMBER_0);
                 if(status.getLockId() != null) {
                     request.addHeader("X-Lock-Id", status.getLockId().toString());
