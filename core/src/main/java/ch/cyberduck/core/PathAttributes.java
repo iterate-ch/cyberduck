@@ -537,6 +537,9 @@ public class PathAttributes extends Attributes implements Serializable {
         if(!Objects.equals(revision, that.revision)) {
             return false;
         }
+        if(!Objects.equals(versions, that.versions)) {
+            return false;
+        }
         if(!Objects.equals(region, that.region)) {
             return false;
         }
