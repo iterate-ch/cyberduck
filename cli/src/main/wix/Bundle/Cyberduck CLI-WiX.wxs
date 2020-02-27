@@ -226,8 +226,11 @@
       <Component Id="sftp.cyberduckprofile">
         <File Source="$(var.CLI.TargetDir)/profiles/SFTP.cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
-      <Component Id="swift.cyberduckprofile">
-        <File Source="$(var.CLI.TargetDir)/profiles/Swift.cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      <Component Id="swift-2.cyberduckprofile">
+        <File Source="$(var.CLI.TargetDir)/profiles/Openstack Swift (Keystone 2).cyberduckprofile" KeyPath="yes" Checksum="yes" />
+      </Component>
+      <Component Id="swift-3.cyberduckprofile">
+        <File Source="$(var.CLI.TargetDir)/profiles/Openstack Swift (Keystone 3).cyberduckprofile" KeyPath="yes" Checksum="yes" />
       </Component>
     </ComponentGroup>
 
