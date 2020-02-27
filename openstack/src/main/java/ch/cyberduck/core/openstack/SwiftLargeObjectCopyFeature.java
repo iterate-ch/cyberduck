@@ -17,9 +17,11 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -33,6 +35,7 @@ import java.util.Objects;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftLargeObjectCopyFeature extends SwiftCopy {
+    private final SwiftObjectListService listService;
     private final SwiftSegmentService segmentService;
 
     public SwiftLargeObjectCopyFeature(final SwiftSession session) {
@@ -45,8 +48,14 @@ public class SwiftLargeObjectCopyFeature extends SwiftCopy {
 
     public SwiftLargeObjectCopyFeature(final SwiftSession session, final SwiftRegionService regionService,
                                        final SwiftSegmentService segmentService) {
+        this(session, regionService, segmentService, new SwiftObjectListService(session, regionService));
+    }
+
+    public SwiftLargeObjectCopyFeature(final SwiftSession session, final SwiftRegionService regionService,
+                                       final SwiftSegmentService segmentService, final SwiftObjectListService listService) {
         super(session, regionService);
         this.segmentService = segmentService;
+        this.listService = listService;
     }
 
     @Override
@@ -58,13 +67,16 @@ public class SwiftLargeObjectCopyFeature extends SwiftCopy {
                      final ConnectionCallback callback) throws BackgroundException {
         final PathContainerService containerService = containerService();
         final List<Path> completed = new ArrayList<>();
+        final Path copySegmentsDirectory = segmentService.getSegmentsDirectory(target, status.getLength());
 
-        final List<Path> existingParts = segmentService.list(target);
-        if(!existingParts.isEmpty()) {
-            completed.addAll(existingParts);
+        // Get a lexicographically ordered list of the existing file segments
+        try {
+            completed.addAll(listService.list(copySegmentsDirectory, new DisabledListProgressListener()).toList());
+        }
+        catch(NotfoundException e) {
+            // Ignore
         }
 
-        final Path copySegmentsDirectory = segmentService.getSegmentsDirectory(target, status.getLength());
         for(final Path copyPart : sourceParts) {
             if(completed.stream().anyMatch(c -> Objects.equals(copyPart.getName(), c.getName()))) {
                 continue;

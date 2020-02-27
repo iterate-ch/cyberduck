@@ -17,9 +17,7 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.List;
@@ -41,7 +39,8 @@ public class SwiftSegmentCopyService extends SwiftCopy {
             return new SwiftCopyFeature(session(), regionService()).copy(source, target, status, callback);
         }
         else {
-            return new SwiftLargeObjectCopyFeature(session(), regionService(), segmentService).copy(source, segments, target, status, callback);
+            return new SwiftLargeObjectCopyFeature(session(), regionService(), segmentService)
+                .copy(source, segments, target, status, callback);
         }
     }
 }
