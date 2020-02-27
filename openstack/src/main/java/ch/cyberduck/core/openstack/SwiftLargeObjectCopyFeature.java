@@ -126,7 +126,8 @@ public class SwiftLargeObjectCopyFeature implements Copy {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
         }
-        target.attributes().setChecksum(new Checksum(HashAlgorithm.md5, stored.getMd5sum()));
-        return new Path(target.getParent(), target.getName(), target.getType(), target.attributes());
+        final PathAttributes attributes = new PathAttributes(source.attributes());
+        attributes.setChecksum(new Checksum(HashAlgorithm.md5, stored.getMd5sum()));
+        return new Path(target.getParent(), target.getName(), target.getType(), attributes);
     }
 }
