@@ -18,6 +18,7 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -50,9 +51,20 @@ public class SwiftMoveFeature implements Move {
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy = new SwiftSegmentCopyService(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
-        delete.delete(Collections.singletonMap(file, status), connectionCallback, callback);
-        return copy;
+        final boolean atomicMove = containerService.getContainer(file).equals(containerService.getContainer(renamed));
+        if(atomicMove) {
+            // either copy complete file contents (small file) or copy manifest (large file)
+            final Path rename = new SwiftCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
+            final TransferStatus moveStatus = new TransferStatus(status);
+            moveStatus.rename(file);
+            delete.delete(Collections.singletonMap(file, moveStatus), connectionCallback, callback);
+            return rename;
+        }
+        else {
+            final Path copy = new SwiftSegmentCopyService(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
+            delete.delete(Collections.singletonMap(file, status), connectionCallback, callback);
+            return copy;
+        }
     }
 
     @Override

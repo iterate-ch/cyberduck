@@ -41,7 +41,7 @@ public class SwiftDeleteFeature implements Delete {
     private final SwiftSession session;
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final SwiftSegmentService segmentService;
 
@@ -71,22 +71,26 @@ public class SwiftDeleteFeature implements Delete {
                     // Collect a list of existing segments. Must do this before deleting the manifest file.
                     final List<Path> segments = segmentService.list(file);
                     session.getClient().deleteObject(regionService.lookup(file),
-                            containerService.getContainer(file).getName(), containerService.getKey(file));
-                    // Clean up any old segments
-                    for(Path segment : segments) {
-                        session.getClient().deleteObject(regionService.lookup(segment),
+                        containerService.getContainer(file).getName(), containerService.getKey(file));
+                    // Clean up any old segments, only if rename.remote-transferstatus has not been
+                    // set. This indicates this has been run as a move-operation, which in turn
+                    // copies a manifest for a given file as long as it is on the same container.
+                    if(null == files.get(file).getRename().remote) {
+                        for(Path segment : segments) {
+                            session.getClient().deleteObject(regionService.lookup(segment),
                                 containerService.getContainer(segment).getName(), containerService.getKey(segment));
+                        }
                     }
                 }
                 else if(file.isDirectory()) {
                     if(containerService.isContainer(file)) {
                         session.getClient().deleteContainer(regionService.lookup(file),
-                                containerService.getContainer(file).getName());
+                            containerService.getContainer(file).getName());
                     }
                     else {
                         try {
                             session.getClient().deleteObject(regionService.lookup(file),
-                                    containerService.getContainer(file).getName(), containerService.getKey(file));
+                                containerService.getContainer(file).getName(), containerService.getKey(file));
                         }
                         catch(GenericException e) {
                             if(new SwiftExceptionMappingService().map(e) instanceof NotfoundException) {
