@@ -157,7 +157,7 @@ public class SwiftSession extends HttpSession<Client> {
             return (T) new SwiftMetadataFeature(this, regionService);
         }
         if(type == Copy.class) {
-            return (T) new SwiftCopyFeature(this, regionService);
+            return (T) new SwiftSegmentCopyService(this, regionService);
         }
         if(type == Move.class) {
             return (T) new SwiftMoveFeature(this, regionService);

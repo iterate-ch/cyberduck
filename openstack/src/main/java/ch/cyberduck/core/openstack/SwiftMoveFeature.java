@@ -50,7 +50,7 @@ public class SwiftMoveFeature implements Move {
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy = new SwiftCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
+        final Path copy = new SwiftSegmentCopyService(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
         delete.delete(Collections.singletonMap(file, status), connectionCallback, callback);
         return copy;
     }
