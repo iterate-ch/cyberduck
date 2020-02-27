@@ -17,30 +17,50 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.List;
 
-public class SwiftSegmentCopyService extends SwiftCopy {
+public class SwiftSegmentCopyService implements Copy {
+
+    private final PathContainerService containerService
+        = new PathContainerService();
+
+    private final SwiftSession session;
+    private final SwiftRegionService regionService;
+
     public SwiftSegmentCopyService(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
     }
 
     public SwiftSegmentCopyService(final SwiftSession session, final SwiftRegionService regionService) {
-        super(session, regionService);
+        this.session = session;
+        this.regionService = regionService;
     }
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final SwiftSegmentService segmentService = new SwiftSegmentService(session());
+        final SwiftSegmentService segmentService = new SwiftSegmentService(session);
         final List<Path> segments = segmentService.list(source);
         if(segments.isEmpty()) {
-            return new SwiftCopyFeature(session(), regionService()).copy(source, target, status, callback);
+            return new SwiftCopyFeature(session, regionService).copy(source, target, status, callback);
         }
         else {
-            return new SwiftLargeObjectCopyFeature(session(), regionService(), segmentService)
+            return new SwiftLargeObjectCopyFeature(session, regionService, segmentService)
                 .copy(source, segments, target, status, callback);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return !containerService.isContainer(source) && !containerService.isContainer(target);
     }
 }

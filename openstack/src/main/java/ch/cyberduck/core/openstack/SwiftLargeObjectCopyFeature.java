@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -34,9 +35,15 @@ import java.util.Objects;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
-public class SwiftLargeObjectCopyFeature extends SwiftCopy {
-    private final SwiftObjectListService listService;
+public class SwiftLargeObjectCopyFeature implements Copy {
+
+    private final PathContainerService containerService
+        = new PathContainerService();
+
+    private final SwiftSession session;
+    private final SwiftRegionService regionService;
     private final SwiftSegmentService segmentService;
+    private final SwiftObjectListService listService;
 
     public SwiftLargeObjectCopyFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
@@ -53,7 +60,8 @@ public class SwiftLargeObjectCopyFeature extends SwiftCopy {
 
     public SwiftLargeObjectCopyFeature(final SwiftSession session, final SwiftRegionService regionService,
                                        final SwiftSegmentService segmentService, final SwiftObjectListService listService) {
-        super(session, regionService);
+        this.session = session;
+        this.regionService = regionService;
         this.segmentService = segmentService;
         this.listService = listService;
     }
@@ -63,9 +71,18 @@ public class SwiftLargeObjectCopyFeature extends SwiftCopy {
         return copy(source, segmentService.list(source), target, status, callback);
     }
 
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return !containerService.isContainer(source) && !containerService.isContainer(target);
+    }
+
     public Path copy(final Path source, final List<Path> sourceParts, final Path target, final TransferStatus status,
                      final ConnectionCallback callback) throws BackgroundException {
-        final PathContainerService containerService = containerService();
         final List<Path> completed = new ArrayList<>();
         final Path copySegmentsDirectory = segmentService.getSegmentsDirectory(target, status.getLength());
 
@@ -84,7 +101,7 @@ public class SwiftLargeObjectCopyFeature extends SwiftCopy {
 
             final Path destination = new Path(copySegmentsDirectory, copyPart.getName(), copyPart.getType());
             try {
-                session().getClient().copyObject(regionService().lookup(copyPart),
+                session.getClient().copyObject(regionService.lookup(copyPart),
                     containerService.getContainer(copyPart).getName(), containerService.getKey(copyPart),
                     containerService.getContainer(target).getName(), containerService.getKey(destination));
 
@@ -108,7 +125,7 @@ public class SwiftLargeObjectCopyFeature extends SwiftCopy {
         final String manifest = segmentService.manifest(containerService.getContainer(target).getName(), manifestObjects);
         final StorageObject stored = new StorageObject(containerService.getKey(target));
         try {
-            final String checksum = session().getClient().createSLOManifestObject(regionService().lookup(
+            final String checksum = session.getClient().createSLOManifestObject(regionService.lookup(
                 containerService.getContainer(target)),
                 containerService.getContainer(target).getName(),
                 status.getMime(),

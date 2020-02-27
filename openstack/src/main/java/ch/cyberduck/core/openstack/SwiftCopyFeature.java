@@ -31,24 +31,30 @@ import java.io.IOException;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
-public class SwiftCopyFeature extends SwiftCopy {
+public class SwiftCopyFeature implements Copy {
+
+    private final PathContainerService containerService
+        = new PathContainerService();
+
+    private final SwiftSession session;
+    private final SwiftRegionService regionService;
 
     public SwiftCopyFeature(final SwiftSession session) {
-        super(session);
+        this(session, new SwiftRegionService(session));
     }
 
     public SwiftCopyFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        super(session, regionService);
+        this.session = session;
+        this.regionService = regionService;
     }
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final PathContainerService containerService = containerService();
         try {
             // Copies file
             // If segmented file, copies manifest (creating a link between new object and original segments)
             // Use with caution.
-            session().getClient().copyObject(regionService().lookup(source),
+            session.getClient().copyObject(regionService.lookup(source),
                 containerService.getContainer(source).getName(), containerService.getKey(source),
                 containerService.getContainer(target).getName(), containerService.getKey(target));
             // Copy original file attributes
@@ -60,5 +66,15 @@ public class SwiftCopyFeature extends SwiftCopy {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
         }
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return false;
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return !containerService.isContainer(source) && !containerService.isContainer(target);
     }
 }
