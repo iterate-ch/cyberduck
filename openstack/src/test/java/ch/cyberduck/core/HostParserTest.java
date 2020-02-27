@@ -30,7 +30,7 @@ public class HostParserTest {
     @Test
     public void testParseCustomHostname() throws Exception {
         final ProtocolFactory factory = new ProtocolFactory(new LinkedHashSet<>(Collections.singletonList(new SwiftProtocol())));
-        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Swift.cyberduckprofile")));
+        factory.register(new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Openstack Swift (Keystone 2).cyberduckprofile")));
         final Host host = new HostParser(factory).get("swift://auth.cloud.ovh.net/container/");
         assertEquals("auth.cloud.ovh.net", host.getHostname());
         assertEquals(Protocol.Type.swift, host.getProtocol().getType());

@@ -238,8 +238,11 @@
     <LayoutFile Include="$(OutputPath)profiles\SFTP.cyberduckprofile">
       <PackagePath>$(PackageLayout)\profiles\SFTP.cyberduckprofile</PackagePath>
     </LayoutFile>
-    <LayoutFile Include="$(OutputPath)profiles\Swift.cyberduckprofile">
-      <PackagePath>$(PackageLayout)\profiles\Swift.cyberduckprofile</PackagePath>
+    <LayoutFile Include="$(OutputPath)profiles\Openstack Swift (Keystone 2).cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\Openstack Swift (Keystone 2).cyberduckprofile</PackagePath>
+    </LayoutFile>
+    <LayoutFile Include="$(OutputPath)profiles\Openstack Swift (Keystone 3).cyberduckprofile">
+      <PackagePath>$(PackageLayout)\profiles\Openstack Swift (Keystone 3).cyberduckprofile</PackagePath>
     </LayoutFile>
 
     <LayoutFile Include="$(OutputPath)msvcr100.dll">

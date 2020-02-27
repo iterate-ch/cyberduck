@@ -30,10 +30,10 @@
         <key>Port Configurable</key>
         <false/>
         <key>Username Placeholder</key>
-        <string>OS_TENANT_ID:OS_USERNAME</string>
+        <string>Project:Domain:Username</string>
         <key>Password Placeholder</key>
         <string>Password</string>
         <key>Context</key>
-        <string>/v2.0/tokens</string>
+        <string>/v3/tokens</string>
     </dict>
 </plist>

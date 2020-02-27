@@ -93,7 +93,7 @@ public class CommandLineUriParserTest {
         final Profile rackspace = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile"));
         assertEquals(new SwiftProtocol(), rackspace.getProtocol());
         factory.register(rackspace);
-        final Profile generic = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Swift.cyberduckprofile"));
+        final Profile generic = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Openstack Swift (Keystone 2).cyberduckprofile"));
         assertEquals(new SwiftProtocol(), generic.getProtocol());
         factory.register(generic);
         assertEquals(rackspace, new CommandLineUriParser(input, factory).parse("rackspace://container//").getProtocol());
