@@ -50,7 +50,6 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             Log.debug("deleteProperty: " + property);
             settings.Remove(property);
-            save();
         }
 
         public override string getProperty(string property)
@@ -85,7 +84,6 @@ namespace Ch.Cyberduck.Core.Preferences
         {
             Log.info("setProperty: " + property + "," + value);
             settings[property] = value;
-            save();
         }
 
         public override List systemLocales() => locales.systemLocales();

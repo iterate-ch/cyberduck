@@ -36,7 +36,16 @@ namespace Ch.Cyberduck.Cli
             java.lang.System.setProperty("file.encoding", "UTF-8");
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
-            open(args, new WindowsTerminalPreferences());
+            var preferences = new WindowsTerminalPreferences();
+            open(args, preferences);
+            try
+            {
+                preferences.save();
+            }
+            catch
+            {
+                // Ignore failures saving preferences.
+            }
         }
     }
 }
