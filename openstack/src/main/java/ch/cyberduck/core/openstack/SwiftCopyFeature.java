@@ -31,30 +31,26 @@ import java.io.IOException;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
-public class SwiftCopyFeature implements Copy {
-
-    private final SwiftSession session;
-
-    private final PathContainerService containerService
-            = new PathContainerService();
-
-    private final SwiftRegionService regionService;
+public class SwiftCopyFeature extends SwiftCopy {
 
     public SwiftCopyFeature(final SwiftSession session) {
-        this(session, new SwiftRegionService(session));
+        super(session);
     }
 
     public SwiftCopyFeature(final SwiftSession session, final SwiftRegionService regionService) {
-        this.session = session;
-        this.regionService = regionService;
+        super(session, regionService);
     }
 
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        final PathContainerService containerService = containerService();
         try {
-            session.getClient().copyObject(regionService.lookup(source),
-                    containerService.getContainer(source).getName(), containerService.getKey(source),
-                    containerService.getContainer(target).getName(), containerService.getKey(target));
+            // Copies file
+            // If segmented file, copies manifest (creating a link between new object and original segments)
+            // Use with caution.
+            session().getClient().copyObject(regionService().lookup(source),
+                containerService.getContainer(source).getName(), containerService.getKey(source),
+                containerService.getContainer(target).getName(), containerService.getKey(target));
             // Copy original file attributes
             return new Path(target.getParent(), target.getName(), target.getType(), new PathAttributes(source.attributes()));
         }
@@ -64,15 +60,5 @@ public class SwiftCopyFeature implements Copy {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Cannot copy {0}", e, source);
         }
-    }
-
-    @Override
-    public boolean isRecursive(final Path source, final Path target) {
-        return false;
-    }
-
-    @Override
-    public boolean isSupported(final Path source, final Path target) {
-        return !containerService.isContainer(source) && !containerService.isContainer(target);
     }
 }
