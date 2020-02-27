@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -86,19 +87,7 @@ public class SwiftLargeObjectCopyFeature implements Copy {
         final List<Path> completed = new ArrayList<>();
         final Path copySegmentsDirectory = segmentService.getSegmentsDirectory(target, status.getLength());
 
-        // Get a lexicographically ordered list of the existing file segments
-        try {
-            completed.addAll(listService.list(copySegmentsDirectory, new DisabledListProgressListener()).toList());
-        }
-        catch(NotfoundException e) {
-            // Ignore
-        }
-
         for(final Path copyPart : sourceParts) {
-            if(completed.stream().anyMatch(c -> Objects.equals(copyPart.getName(), c.getName()))) {
-                continue;
-            }
-
             final Path destination = new Path(copySegmentsDirectory, copyPart.getName(), copyPart.getType());
             try {
                 session.getClient().copyObject(regionService.lookup(copyPart),
