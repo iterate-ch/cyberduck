@@ -18,10 +18,13 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
@@ -72,6 +75,18 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             return attributes;
         }
         try {
+            if(file.isFile()) {
+                final AttributedList<Path> list = new S3ListService(session).list(file, new DisabledListProgressListener());
+                final Path versioned = list.find(new DefaultPathPredicate(file));
+                if(null != versioned) {
+                    return versioned.attributes();
+                }
+                final Path simple = list.find(new SimplePathPredicate(file));
+                if(null != simple) {
+                    return simple.attributes();
+                }
+                throw new NotfoundException(file.getAbsolute());
+            }
             return this.toAttributes(this.details(file));
         }
         catch(NotfoundException e) {

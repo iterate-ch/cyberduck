@@ -41,8 +41,10 @@ public abstract class S3AbstractListService implements ListService {
             if(StringUtils.isBlank(prefix)) {
                 return StringUtils.EMPTY;
             }
-            if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
-                prefix += Path.DELIMITER;
+            if(directory.isDirectory()) {
+                if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
+                    prefix += Path.DELIMITER;
+                }
             }
         }
         return prefix;

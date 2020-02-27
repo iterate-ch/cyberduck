@@ -115,7 +115,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                         file = new Path(String.format("%s%s", bucket.getAbsolute(), key), types, attr);
                     }
                     else {
-                        file = new Path(directory, PathNormalizer.name(key), types, attr);
+                        file = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), types, attr);
                     }
                     children.add(file);
                 }
@@ -135,7 +135,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                         file = new Path(String.format("%s%s", bucket.getAbsolute(), key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                     }
                     else {
-                        file = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
+                        file = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                     }
                     attributes.setRegion(bucket.attributes().getRegion());
                     children.add(file);
