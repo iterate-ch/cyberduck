@@ -928,9 +928,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 PreferencesFactory.get().save();
             }
-            catch (UnauthorizedAccessException unauthorizedAccessException)
+            catch (Exception e)
             {
-                Logger.fatal("Could not save preferences", unauthorizedAccessException);
+                Logger.fatal("Could not save preferences", e);
             }
             if (_updater != null && !updating)
             {
