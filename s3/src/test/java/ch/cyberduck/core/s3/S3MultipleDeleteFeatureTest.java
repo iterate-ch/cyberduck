@@ -46,7 +46,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeleteFile() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
@@ -56,7 +56,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeletePlaceholder() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new S3FindFeature(session).find(test));
@@ -67,7 +67,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeleteVersionedPlaceholder() throws Exception {
-        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final String name = new AlphanumericRandomStringService().random();
         {
             final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
@@ -100,7 +100,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
 
     @Test
     public void testDeleteNotFoundKey() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final List<ObjectKeyAndVersion> keys = new ArrayList<ObjectKeyAndVersion>();
         for(int i = 0; i < 1010; i++) {
             keys.add(new ObjectKeyAndVersion(UUID.randomUUID().toString()));
@@ -110,7 +110,7 @@ public class S3MultipleDeleteFeatureTest extends AbstractS3Test {
 
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundBucket() throws Exception {
-        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.volume));
+        final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
         new S3MultipleDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
