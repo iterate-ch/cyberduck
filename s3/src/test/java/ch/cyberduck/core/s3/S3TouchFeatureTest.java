@@ -64,7 +64,7 @@ public class S3TouchFeatureTest extends AbstractS3Test {
 
     @Test
     public void testTouchVersioning() throws Exception {
-        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final Path file = new Path(container, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final String version1 = new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId();
         final String version2 = new S3TouchFeature(session).touch(file, new TransferStatus()).attributes().getVersionId();
