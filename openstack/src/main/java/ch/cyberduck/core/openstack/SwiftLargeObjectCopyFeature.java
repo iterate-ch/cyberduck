@@ -17,12 +17,10 @@ package ch.cyberduck.core.openstack;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.HashAlgorithm;
@@ -32,7 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import ch.iterate.openstack.swift.model.StorageObject;
 
@@ -86,7 +83,6 @@ public class SwiftLargeObjectCopyFeature implements Copy {
                      final ConnectionCallback callback) throws BackgroundException {
         final List<Path> completed = new ArrayList<>();
         final Path copySegmentsDirectory = segmentService.getSegmentsDirectory(target, status.getLength());
-
         for(final Path copyPart : sourceParts) {
             final Path destination = new Path(copySegmentsDirectory, copyPart.getName(), copyPart.getType());
             try {
@@ -102,7 +98,6 @@ public class SwiftLargeObjectCopyFeature implements Copy {
                 throw new DefaultIOExceptionMappingService().map(e);
             }
         }
-
         final List<StorageObject> manifestObjects = new ArrayList<>();
         for(final Path part : completed) {
             final StorageObject model = new StorageObject(containerService.getKey(part));
@@ -110,7 +105,6 @@ public class SwiftLargeObjectCopyFeature implements Copy {
             model.setMd5sum(part.attributes().getChecksum().hash);
             manifestObjects.add(model);
         }
-
         final String manifest = segmentService.manifest(containerService.getContainer(target).getName(), manifestObjects);
         final StorageObject stored = new StorageObject(containerService.getKey(target));
         try {
