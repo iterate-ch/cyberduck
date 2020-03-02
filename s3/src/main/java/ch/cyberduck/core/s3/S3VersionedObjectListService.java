@@ -140,12 +140,12 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
                     if(references) {
                         if(attributes.isDuplicate()) {
-                            final Path current = children.find(new LatestVersionPathPredicate(f));
-                            if(current != null) {
+                            final Path latest = children.find(new LatestVersionPathPredicate(f));
+                            if(latest != null) {
                                 // Reference version
-                                final AttributedList<Path> versions = new AttributedList<>(current.attributes().getVersions());
+                                final AttributedList<Path> versions = new AttributedList<>(latest.attributes().getVersions());
                                 versions.add(f);
-                                current.attributes().setVersions(versions);
+                                latest.attributes().setVersions(versions);
                             }
                             else {
                                 log.warn(String.format("No current version found for %s", f));
