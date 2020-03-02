@@ -46,7 +46,6 @@ import java.util.Map;
 
 import static org.jets3t.service.Constants.AMZ_DELETE_MARKER;
 import static org.jets3t.service.Constants.AMZ_VERSION_ID;
-import static org.jets3t.service.model.S3Object.S3_VERSION_ID;
 
 public class S3AttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(S3AttributesFinderFeature.class);
@@ -105,18 +104,16 @@ public class S3AttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected StorageObject details(final Path file) throws BackgroundException {
+    protected PathAttributes details(final Path file) throws BackgroundException {
         final String container = containerService.getContainer(file).getName();
         try {
-            return session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
-                container, containerService.getKey(file));
+            return this.toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
+                container, containerService.getKey(file)));
         }
         catch(ServiceException e) {
             if(null != e.getResponseHeaders()) {
                 if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
-                    final S3Object marker = new S3Object();
-                    marker.addMetadata(S3_VERSION_ID, e.getResponseHeaders().get(AMZ_VERSION_ID));
-                    return marker;
+                    return new PathAttributes().withVersionId(e.getResponseHeaders().get(AMZ_VERSION_ID));
                 }
             }
             final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -131,7 +128,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                             final S3Object object = session.getClient().getVersionedObject(file.attributes().getVersionId(),
                                 containerService.getContainer(file).getName(), containerService.getKey(file));
                             IOUtils.closeQuietly(object.getDataInputStream());
-                            return object;
+                            return this.toAttributes(object);
                         }
                         catch(ServiceException f) {
                             throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", f, file);
@@ -142,7 +139,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 log.warn(String.format("Missing permission to read object details for %s %s", file, e.getMessage()));
                 final StorageObject object = new StorageObject(containerService.getKey(file));
                 object.setBucketName(container);
-                return object;
+                return this.toAttributes(object);
             }
             throw failure;
         }
