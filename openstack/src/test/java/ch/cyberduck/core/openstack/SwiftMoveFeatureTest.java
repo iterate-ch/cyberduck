@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -39,6 +40,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -108,35 +110,13 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final Path originFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(originFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-
-        final int length = 1024 * 1024;
-        final byte[] content = RandomUtils.nextBytes(length);
-
-        final OutputStream out = local.getOutputStream(false);
-        IOUtils.write(content, out);
-        out.close();
-        final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
 
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final SwiftSegmentService segmentService = new SwiftSegmentService(session, ".segments-test/");
-        final SwiftObjectListService listService = new SwiftObjectListService(session, regionService);
-        final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
-            regionService,
-            listService,
-            segmentService,
-            new SwiftWriteFeature(session, regionService), (long) (512 * 1024), 1);
-
-        final StorageObject object = upload.upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            status, new DisabledConnectionCallback());
+        prepareFile(sourceFile, regionService, segmentService);
 
         final SwiftFindFeature findFeature = new SwiftFindFeature(session);
         assertTrue(findFeature.find(sourceFile));
-        local.delete();
-        assertTrue(status.isComplete());
-        // Verify not canceled
-        status.validate();
 
         final List<Path> sourceSegments = segmentService.list(sourceFile);
 
@@ -175,35 +155,13 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         container.attributes().setRegion("IAD");
         final Path originFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path sourceFile = new Path(originFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-
-        final int length = 1024 * 1024;
-        final byte[] content = RandomUtils.nextBytes(length);
-
-        final OutputStream out = local.getOutputStream(false);
-        IOUtils.write(content, out);
-        out.close();
-        final TransferStatus status = new TransferStatus();
-        status.setLength(content.length);
 
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final SwiftSegmentService segmentService = new SwiftSegmentService(session, ".segments-test/");
-        final SwiftObjectListService listService = new SwiftObjectListService(session, regionService);
-        final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
-            regionService,
-            listService,
-            segmentService,
-            new SwiftWriteFeature(session, regionService), (long) (512 * 1024), 1);
-
-        final StorageObject object = upload.upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-            status, new DisabledConnectionCallback());
+        prepareFile(sourceFile, regionService, segmentService);
 
         final SwiftFindFeature findFeature = new SwiftFindFeature(session);
         assertTrue(findFeature.find(sourceFile));
-        local.delete();
-        assertTrue(status.isComplete());
-        // Verify not canceled
-        status.validate();
 
         final List<Path> sourceSegments = segmentService.list(sourceFile);
 
@@ -242,5 +200,14 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
             Collections.singletonMap(targetFile, new TransferStatus()),
             new DisabledPasswordCallback(), new Delete.DisabledCallback(), true);
         assertFalse(findFeature.find(movedFile));
+    }
+
+    private void prepareFile(final Path path, final SwiftRegionService regionService, final SwiftSegmentService segmentService) throws BackgroundException {
+        final SwiftLargeUploadWriteFeature upload = new SwiftLargeUploadWriteFeature(session, regionService, segmentService);
+        final OutputStream out = upload.write(path, new TransferStatus(), new DisabledConnectionCallback());
+        final byte[] content = RandomUtils.nextBytes(1024 * 1024);
+        final ByteArrayInputStream in = new ByteArrayInputStream(content);
+        final TransferStatus progress = new TransferStatus();
+        new StreamCopier(new TransferStatus(), progress).transfer(in, out);
     }
 }
