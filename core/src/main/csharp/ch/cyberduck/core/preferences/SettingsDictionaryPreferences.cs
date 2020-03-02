@@ -16,17 +16,13 @@
 // feedback@cyberduck.io
 //
 
-using ch.cyberduck.core.preferences;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Properties;
-using java.io;
 using java.security;
 using java.util;
 using org.apache.log4j;
 using sun.security.mscapi;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -35,9 +31,7 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Windows.Storage;
-using File = System.IO.File;
 using StringUtils = org.apache.commons.lang3.StringUtils;
-
 
 namespace Ch.Cyberduck.Core.Preferences
 {
@@ -170,7 +164,6 @@ namespace Ch.Cyberduck.Core.Preferences
 
             this.setDefault("application.version", ApplicationVersion);
             this.setDefault("application.revision", ApplicationRevision);
-            this.setDefault("application.language", GetDefaultLanguage());
             this.setDefault("application.language.custom", false.ToString());
             this.setDefault("application.localization.enable", true.ToString());
 
