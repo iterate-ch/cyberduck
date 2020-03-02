@@ -258,4 +258,75 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
             new DisabledPasswordCallback(), new Delete.DisabledCallback(), true);
         assertFalse(findFeature.find(copiedFile));
     }
+
+    @Test
+    public void testCopyLargeObjectDifferentBucket() throws Exception {
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
+        final Path originFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path sourceFile = new Path(originFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+
+        final int length = 1024 * 1024;
+        final byte[] content = RandomUtils.nextBytes(length);
+
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        out.close();
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final SwiftSegmentService segmentService = new SwiftSegmentService(session, ".segments-test/");
+        final SwiftObjectListService listService = new SwiftObjectListService(session, regionService);
+        final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
+            regionService,
+            listService,
+            segmentService,
+            new SwiftWriteFeature(session, regionService), (long) (512 * 1024), 1);
+
+        final StorageObject object = upload.upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            status, new DisabledConnectionCallback());
+
+        final SwiftFindFeature findFeature = new SwiftFindFeature(session);
+        assertTrue(findFeature.find(sourceFile));
+        local.delete();
+        assertTrue(status.isComplete());
+        // Verify not canceled
+        status.validate();
+
+        final List<Path> sourceSegments = segmentService.list(sourceFile);
+
+        final Path targetBucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        targetBucket.attributes().setRegion("IAD");
+        final Path targetFolder = new Path(targetBucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path copiedFile = new SwiftLargeObjectCopyFeature(session, regionService, segmentService, listService)
+            .copy(sourceFile, targetFile, new TransferStatus().length(status.getLength()), new DisabledConnectionCallback());
+        // copied file exists
+        assertTrue(findFeature.find(copiedFile));
+
+        final List<Path> targetSegments = segmentService.list(targetFile);
+
+        // delete source, without deleting copy
+        new SwiftDeleteFeature(session, segmentService, regionService).delete(
+            Collections.singletonMap(sourceFile, new TransferStatus()),
+            new DisabledPasswordCallback(), new Delete.DisabledCallback(), true);
+        assertFalse(findFeature.find(sourceFile));
+
+        assertTrue(targetSegments.stream().allMatch(p -> {
+            try {
+                return findFeature.find(p);
+            }
+            catch(BackgroundException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }));
+
+        new SwiftDeleteFeature(session, segmentService, regionService).delete(
+            Collections.singletonMap(copiedFile, new TransferStatus()),
+            new DisabledPasswordCallback(), new Delete.DisabledCallback(), true);
+        assertFalse(findFeature.find(copiedFile));
+    }
 }
