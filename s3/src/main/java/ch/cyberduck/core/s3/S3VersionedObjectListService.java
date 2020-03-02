@@ -73,6 +73,10 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         this(session, PreferencesFactory.get().getInteger("s3.listing.concurrency"), PreferencesFactory.get().getBoolean("s3.versioning.references.enable"));
     }
 
+    public S3VersionedObjectListService(final S3Session session, final boolean references) {
+        this(session, PreferencesFactory.get().getInteger("s3.listing.concurrency"), references);
+    }
+
     /**
      * @param session     Connection
      * @param concurrency Number of threads to handle prefixes

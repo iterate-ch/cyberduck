@@ -24,14 +24,16 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
+import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,8 +57,18 @@ public class S3AttributesFinderFeature implements AttributesFinder {
     private final PathContainerService containerService
         = new S3PathContainerService();
 
+    /**
+     * Lookup previous versions
+     */
+    private final boolean references;
+
     public S3AttributesFinderFeature(final S3Session session) {
+        this(session, PreferencesFactory.get().getBoolean("s3.versioning.references.enable"));
+    }
+
+    public S3AttributesFinderFeature(final S3Session session, final boolean references) {
         this.session = session;
+        this.references = references;
     }
 
     @Override
@@ -74,19 +86,23 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             return attributes;
         }
         try {
-            if(file.isFile()) {
-                final AttributedList<Path> list = new S3ListService(session).list(file, new DisabledListProgressListener());
-                final Path versioned = list.find(new DefaultPathPredicate(file));
-                if(null != versioned) {
-                    return versioned.attributes();
+            final PathAttributes attr = this.details(file);
+            if(references) {
+                if(StringUtils.isNotBlank(attr.getVersionId())) {
+                    final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                        containerService.getContainer(file)
+                    ) : VersioningConfiguration.empty();
+                    if(versioning.isEnabled()) {
+                        // Add references to previous versions
+                        final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
+                        final Path versioned = list.find(new DefaultPathPredicate(file));
+                        if(null != versioned) {
+                            attr.setVersions(versioned.attributes().getVersions());
+                        }
+                    }
                 }
-                final Path simple = list.find(new SimplePathPredicate(file));
-                if(null != simple) {
-                    return simple.attributes();
-                }
-                throw new NotfoundException(file.getAbsolute());
             }
-            return this.details(file);
+            return attr;
         }
         catch(NotfoundException e) {
             if(file.isPlaceholder()) {
