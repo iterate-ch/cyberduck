@@ -29,7 +29,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -114,8 +113,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
     }
 
     @Test
-    @Ignore("Branch version is changing with background task only")
-    public void testBranchVersion() throws Exception {
+    public void testVersioning() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
@@ -135,8 +133,13 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         final VersionId version = out.getStatus();
         assertNotNull(version);
+        assertNotEquals(version.id, test.attributes().getVersionId());
+        final PathAttributes updated = new SDSAttributesFinderFeature(session, nodeid, true).find(
+            new Path(test.getParent(), test.getName(), test.getType(), new PathAttributes().withVersionId(version.id)));
+        assertFalse(updated.getVersions().isEmpty());
         assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder).getModificationDate());
-        assertNotEquals(previous.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(folder).getRevision());
+        // Branch version is changing with background task only
+        // assertNotEquals(previous.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(folder).getRevision());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

@@ -16,16 +16,21 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNode;
+import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNodeVersionsList;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,12 +44,25 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
     public static final String KEY_CNT_DOWNLOADSHARES = "count_downloadshares";
     public static final String KEY_CNT_UPLOADSHARES = "count_uploadshares";
 
+    private final PathContainerService containerService
+        = new SDSPathContainerService();
+
+    /**
+     * Lookup previous versions
+     */
+    private final boolean references;
+
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
 
     public SDSAttributesFinderFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
+        this(session, nodeid, PreferencesFactory.get().getBoolean("sds.versioning.references.enable"));
+    }
+
+    public SDSAttributesFinderFeature(final SDSSession session, final SDSNodeIdProvider nodeid, final boolean references) {
         this.session = session;
         this.nodeid = nodeid;
+        this.references = references;
     }
 
     @Override
@@ -56,7 +74,35 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         try {
             final Node node = new NodesApi(session.getClient()).getFsNode(
                 Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
-            return this.toAttributes(node);
+            final PathAttributes attr = this.toAttributes(node);
+            if(references) {
+                attr.setVersions(this.versions(file));
+            }
+            return attr;
+        }
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        }
+    }
+
+    protected AttributedList<Path> versions(final Path file) throws BackgroundException {
+        try {
+            final int chunksize = PreferencesFactory.get().getInteger("sds.listing.chunksize");
+            int offset = 0;
+            DeletedNodeVersionsList nodes;
+            final AttributedList<Path> versions = new AttributedList<>();
+            do {
+                nodes = new NodesApi(session.getClient()).getFsDeletedNodeVersions(file.getName(),
+                    Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())),
+                    file.isFile() ? "file" : "folder", StringUtils.EMPTY, null,
+                    chunksize, offset, null);
+                for(DeletedNode item : nodes.getItems()) {
+                    versions.add(new Path(file.getParent(), file.getName(), file.getType(),
+                        this.toAttributes(item)));
+                }
+            }
+            while(nodes.getItems().size() == chunksize);
+            return versions;
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);
@@ -82,6 +128,16 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             custom.put(SDSAttributesFinderFeature.KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
         }
         attributes.setCustom(custom);
+        return attributes;
+    }
+
+    public PathAttributes toAttributes(final DeletedNode node) {
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setVersionId(String.valueOf(node.getId()));
+        attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getMillis() : -1L);
+        attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getMillis() : -1L);
+        attributes.setSize(node.getSize());
+        attributes.setOwner(node.getUpdatedBy().getDisplayName());
         return attributes;
     }
 
