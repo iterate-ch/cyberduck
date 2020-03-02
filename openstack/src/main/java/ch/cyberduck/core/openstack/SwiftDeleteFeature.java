@@ -64,6 +64,14 @@ public class SwiftDeleteFeature implements Delete {
 
     @Override
     public void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback) throws BackgroundException {
+        this.delete(files, prompt, callback, true);
+    }
+
+    /**
+     * @param deleteSegments Delete segment files referenced in manifest for large file objects
+     */
+    protected void delete(final Map<Path, TransferStatus> files, final PasswordCallback prompt, final Callback callback,
+                          final boolean deleteSegments) throws BackgroundException {
         for(Path file : files.keySet()) {
             callback.delete(file);
             try {
@@ -75,7 +83,7 @@ public class SwiftDeleteFeature implements Delete {
                     // Clean up any old segments, only if rename.remote-transferstatus has not been
                     // set. This indicates this has been run as a move-operation, which in turn
                     // copies a manifest for a given file as long as it is on the same container.
-                    if(null == files.get(file).getRename().remote) {
+                    if(deleteSegments) {
                         for(Path segment : segments) {
                             session.getClient().deleteObject(regionService.lookup(segment),
                                 containerService.getContainer(segment).getName(), containerService.getKey(segment));

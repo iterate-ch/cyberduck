@@ -18,7 +18,6 @@ package ch.cyberduck.core.openstack;
  * feedback@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
@@ -46,7 +45,6 @@ public class SwiftMoveFeature implements Move {
     public SwiftMoveFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
         this.regionService = regionService;
-        this.delete = new SwiftDeleteFeature(session);
     }
 
     @Override
@@ -55,14 +53,12 @@ public class SwiftMoveFeature implements Move {
         if(atomicMove) {
             // either copy complete file contents (small file) or copy manifest (large file)
             final Path rename = new SwiftCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
-            final TransferStatus moveStatus = new TransferStatus(status);
-            moveStatus.rename(file);
-            delete.delete(Collections.singletonMap(file, moveStatus), connectionCallback, callback);
+            new SwiftDeleteFeature(session).delete(Collections.singletonMap(file, status), connectionCallback, callback, false);
             return rename;
         }
         else {
             final Path copy = new SwiftSegmentCopyService(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
-            delete.delete(Collections.singletonMap(file, status), connectionCallback, callback);
+            new SwiftDeleteFeature(session).delete(Collections.singletonMap(file, status), connectionCallback, callback);
             return copy;
         }
     }
