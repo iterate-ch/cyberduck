@@ -208,6 +208,7 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         final List<Path> sourceSegments = segmentService.list(sourceFile);
 
         final Path targetBucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        targetBucket.attributes().setRegion("IAD");
         final Path targetFolder = new Path(targetBucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path movedFile = new SwiftMoveFeature(session, regionService).move(sourceFile, targetFile,
@@ -216,33 +217,30 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         assertFalse(findFeature.find(sourceFile));
         // moved file exists
         assertTrue(findFeature.find(movedFile));
-        assertArrayEquals(new PathAttributes[0], sourceSegments.stream().filter(p -> {
+        assertTrue(sourceSegments.stream().noneMatch(p -> {
             try {
                 return findFeature.find(p);
             }
             catch(BackgroundException e) {
-                e.printStackTrace();
                 return false;
             }
-        }).toArray());
+        }));
 
         final List<Path> targetSegments = segmentService.list(targetFile);
+        assertTrue(targetSegments.size() != 0);
 
-        assertTrue(sourceSegments.containsAll(targetSegments) && targetSegments.containsAll(sourceSegments));
+        assertTrue(targetSegments.stream().allMatch(p -> {
+            try {
+                return findFeature.find(p);
+            }
+            catch(BackgroundException e) {
+                return false;
+            }
+        }));
 
         new SwiftDeleteFeature(session, segmentService, regionService).delete(
             Collections.singletonMap(targetFile, new TransferStatus()),
             new DisabledPasswordCallback(), new Delete.DisabledCallback(), true);
         assertFalse(findFeature.find(movedFile));
-
-        assertArrayEquals(new PathAttributes[0], targetSegments.stream().filter(p -> {
-            try {
-                return findFeature.find(p);
-            }
-            catch(BackgroundException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }).toArray());
     }
 }

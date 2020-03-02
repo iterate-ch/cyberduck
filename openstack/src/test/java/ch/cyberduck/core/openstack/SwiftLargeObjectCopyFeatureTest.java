@@ -101,15 +101,14 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
             new DisabledPasswordCallback(), new Delete.DisabledCallback(), false);
         assertFalse(findFeature.find(sourceFile));
 
-        assertArrayEquals(new PathAttributes[0], targetSegments.stream().filter(p -> {
+        assertTrue(targetSegments.stream().allMatch(p -> {
             try {
-                return !findFeature.find(p);
+                return findFeature.find(p);
             }
             catch(BackgroundException e) {
-                e.printStackTrace();
                 return false;
             }
-        }).toArray());
+        }));
 
         new SwiftDeleteFeature(session, segmentService, regionService).delete(
             Collections.singletonMap(copiedFile, new TransferStatus()),
@@ -170,15 +169,14 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
             new DisabledPasswordCallback(), new Delete.DisabledCallback(), true);
         assertFalse(findFeature.find(sourceFile));
 
-        assertArrayEquals(new PathAttributes[0], targetSegments.stream().filter(p -> {
+        assertTrue(targetSegments.stream().allMatch(p -> {
             try {
-                return !findFeature.find(p);
+                return findFeature.find(p);
             }
             catch(BackgroundException e) {
-                e.printStackTrace();
                 return false;
             }
-        }).toArray());
+        }));
 
         new SwiftDeleteFeature(session, segmentService, regionService).delete(
             Collections.singletonMap(copiedFile, new TransferStatus()),
@@ -243,15 +241,14 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
             new DisabledPasswordCallback(), new Delete.DisabledCallback(), false);
         assertFalse(findFeature.find(sourceFile));
 
-        assertArrayEquals(new PathAttributes[0], targetSegments.stream().filter(p -> {
+        assertTrue(targetSegments.stream().allMatch(p -> {
             try {
-                return !findFeature.find(p);
+                return findFeature.find(p);
             }
             catch(BackgroundException e) {
-                e.printStackTrace();
                 return false;
             }
-        }).toArray());
+        }));
 
         new SwiftDeleteFeature(session, segmentService, regionService).delete(
             Collections.singletonMap(copiedFile, new TransferStatus()),
