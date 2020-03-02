@@ -74,7 +74,9 @@ public class SDSListService implements ListService {
                     final EnumSet<Path.Type> type = feature.toType(node);
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     if(references && node.getCntDeletedVersions() > 0) {
-                        attributes.setVersions(feature.versions(file));
+                        final AttributedList<Path> versions = feature.versions(file);
+                        children.addAll(versions);
+                        attributes.setVersions(versions);
                     }
                     children.add(file);
                     listener.chunk(directory, children);

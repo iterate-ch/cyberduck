@@ -133,6 +133,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     public PathAttributes toAttributes(final DeletedNode node) {
         final PathAttributes attributes = new PathAttributes();
+        attributes.setDuplicate(true);
         attributes.setVersionId(String.valueOf(node.getId()));
         attributes.setCreationDate(node.getCreatedAt() != null ? node.getCreatedAt().getMillis() : -1L);
         attributes.setModificationDate(node.getUpdatedAt() != null ? node.getUpdatedAt().getMillis() : -1L);
