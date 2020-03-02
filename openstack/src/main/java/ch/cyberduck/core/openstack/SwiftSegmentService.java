@@ -95,7 +95,7 @@ public class SwiftSegmentService {
             }
             final List<Path> objects = new ArrayList<Path>();
             for(final String containerName : segments.keySet()) {
-                final Path containerPath = new Path(containerName, EnumSet.of(Path.Type.directory, Path.Type.volume));
+                final Path containerPath = new Path(containerName, container.getType(), container.attributes());
                 for(StorageObject s : segments.get(containerName)) {
                     final Path segment = new Path(containerPath, s.getName(), EnumSet.of(Path.Type.file));
                     segment.attributes().setSize(s.getSize());
