@@ -86,7 +86,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 }
                 throw new NotfoundException(file.getAbsolute());
             }
-            return this.toAttributes(this.details(file));
+            return this.details(file);
         }
         catch(NotfoundException e) {
             if(file.isPlaceholder()) {
