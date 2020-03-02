@@ -27,8 +27,15 @@ import java.util.regex.Pattern;
 
 public class RegexFilter implements Filter<Path> {
 
-    private final Pattern pattern = Pattern.compile(
-            PreferencesFactory.get().getProperty("browser.hidden.regex"));
+    private final Pattern pattern;
+
+    public RegexFilter() {
+        this(Pattern.compile(PreferencesFactory.get().getProperty("browser.hidden.regex")));
+    }
+
+    public RegexFilter(final Pattern pattern) {
+        this.pattern = pattern;
+    }
 
     @Override
     public boolean accept(final Path file) {
