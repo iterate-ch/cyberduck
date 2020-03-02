@@ -13,7 +13,6 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.SHA256ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -115,17 +114,13 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
         out.close();
-        PreferencesFactory.get().setProperty("s3.versioning.references.enable", true);
-        assertTrue(new S3AttributesFinderFeature(session).find(test).getVersions().isEmpty());
+        assertTrue(new S3AttributesFinderFeature(session, true).find(test).getVersions().isEmpty());
         final Path update = new Path(bucket, test.getName(), test.getType(),
             new PathAttributes().withVersionId(out.getStatus().getServiceMetadata("version-id").toString()));
-        final AttributedList<Path> versions = new S3AttributesFinderFeature(session).find(update).getVersions();
+        final AttributedList<Path> versions = new S3AttributesFinderFeature(session, true).find(update).getVersions();
         assertFalse(versions.isEmpty());
         assertEquals(test, versions.get(0));
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        final String deleteMarker = new S3AttributesFinderFeature(session).find(test).getVersionId();
-        assertNotNull(deleteMarker);
-        assertNotEquals(versionId, deleteMarker);
     }
 
     @Test
