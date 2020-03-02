@@ -36,8 +36,6 @@ public class SwiftMoveFeature implements Move {
     private final SwiftSession session;
     private final SwiftRegionService regionService;
 
-    private Delete delete;
-
     public SwiftMoveFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
     }
