@@ -17,23 +17,38 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.DisabledStreamListener;
+import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import ch.iterate.openstack.swift.model.StorageObject;
+
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class SwiftMoveFeatureTest extends AbstractSwiftTest {
@@ -85,5 +100,72 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         assertFalse(new SwiftMoveFeature(null).isSupported(c, c));
         final Path cf = new Path("/c/f", EnumSet.of(Path.Type.directory));
         assertTrue(new SwiftMoveFeature(null).isSupported(cf, cf));
+    }
+
+    @Test
+    public void testMoveLargeObjectToSameBucket() throws Exception {
+        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
+        final Path originFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path sourceFile = new Path(originFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+
+        final int length = 1024 * 1024;
+        final byte[] content = RandomUtils.nextBytes(length);
+
+        final OutputStream out = local.getOutputStream(false);
+        IOUtils.write(content, out);
+        out.close();
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final SwiftSegmentService segmentService = new SwiftSegmentService(session, ".segments-test/");
+        final SwiftObjectListService listService = new SwiftObjectListService(session, regionService);
+        final SwiftLargeObjectUploadFeature upload = new SwiftLargeObjectUploadFeature(session,
+            regionService,
+            listService,
+            segmentService,
+            new SwiftWriteFeature(session, regionService), (long) (512 * 1024), 1);
+
+        final StorageObject object = upload.upload(sourceFile, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
+            status, new DisabledConnectionCallback());
+
+        final SwiftFindFeature findFeature = new SwiftFindFeature(session);
+        assertTrue(findFeature.find(sourceFile));
+        local.delete();
+        assertTrue(status.isComplete());
+        // Verify not canceled
+        status.validate();
+
+        final List<Path> sourceSegments = segmentService.list(sourceFile);
+
+        final Path targetFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
+        final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path movedFile = new SwiftMoveFeature(session, regionService).move(sourceFile, targetFile,
+            new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
+        // source file does not exist anymore
+        assertFalse(findFeature.find(sourceFile));
+        // moved file exists
+        assertTrue(findFeature.find(movedFile));
+
+        final List<Path> targetSegments = segmentService.list(targetFile);
+
+        assertTrue(sourceSegments.containsAll(targetSegments) && targetSegments.containsAll(sourceSegments));
+
+        new SwiftDeleteFeature(session, segmentService, regionService).delete(
+            Collections.singletonMap(targetFile, new TransferStatus()),
+            new DisabledPasswordCallback(), new Delete.DisabledCallback(), true);
+        assertFalse(findFeature.find(movedFile));
+
+        assertArrayEquals(new PathAttributes[0], targetSegments.stream().filter(p -> {
+            try {
+                return findFeature.find(movedFile);
+            }
+            catch(BackgroundException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }).toArray());
     }
 }
