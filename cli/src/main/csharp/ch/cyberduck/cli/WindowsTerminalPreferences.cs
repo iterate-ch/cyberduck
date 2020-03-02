@@ -40,6 +40,7 @@ namespace Ch.Cyberduck.Cli
         {
             base.setDefaults();
 
+            this.setDefault("application.language", "en");
             this.setDefault("application.datafolder.name", "Cyberduck");
 
             Security.addProvider(new SunMSCAPI());

@@ -1,29 +1,28 @@
-﻿// 
+﻿//
 // Copyright (c) 2010-2017 Yves Langisch. All rights reserved.
 // http://cyberduck.io/
-// 
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
-// 
+//
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
-// 
+//
 
 using ch.cyberduck.core.bonjour;
 using ch.cyberduck.core.cryptomator;
 using ch.cyberduck.core.cryptomator.random;
 using ch.cyberduck.core.local;
-using ch.cyberduck.core.notification;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.AquaticPrime;
-using Ch.Cyberduck.Core.Bonjour;
+using Ch.Cyberduck.Core.Date;
 using Ch.Cyberduck.Core.Diagnostics;
 using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Core.I18n;
@@ -33,10 +32,11 @@ using Ch.Cyberduck.Core.Proxy;
 using Ch.Cyberduck.Core.Sparkle;
 using Ch.Cyberduck.Core.Urlhandler;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Threading;
-using Ch.Cyberduck.Core.Date;
 using org.apache.log4j;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using Application = System.Windows.Forms.Application;
 using Rendezvous = Ch.Cyberduck.Core.Bonjour.Rendezvous;
 
 namespace Ch.Cyberduck.Ui.Core.Preferences
@@ -44,6 +44,17 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
     public class ApplicationPreferences : SettingsDictionaryPreferences
     {
         private static readonly Logger Log = Logger.getLogger(typeof(ApplicationPreferences).FullName);
+
+        protected override void setDefaults()
+        {
+            base.setDefaults();
+
+            this.setDefault("application.language", GetDefaultLanguage());
+
+            this.setDefault("website.store", "ms-windows-store://pdp/?ProductId=9NBLGGH43HTB");
+
+            this.setDefault("update.check.privilege", false.ToString());
+        }
 
         protected override void setFactories()
         {
@@ -108,15 +119,6 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
             }
             this.setDefault("factory.vault.class", typeof(CryptoVault).AssemblyQualifiedName);
             this.setDefault("factory.securerandom.class", typeof(FastSecureRandomProvider).AssemblyQualifiedName);
-        }
-
-        protected override void setDefaults()
-        {
-            base.setDefaults();
-
-            this.setDefault("website.store", "ms-windows-store://pdp/?ProductId=9NBLGGH43HTB");
-
-            this.setDefault("update.check.privilege", false.ToString());
         }
     }
 }
