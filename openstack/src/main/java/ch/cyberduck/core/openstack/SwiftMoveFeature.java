@@ -36,8 +36,6 @@ public class SwiftMoveFeature implements Move {
     private final SwiftSession session;
     private final SwiftRegionService regionService;
 
-    private Delete delete;
-
     public SwiftMoveFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
     }
@@ -45,14 +43,21 @@ public class SwiftMoveFeature implements Move {
     public SwiftMoveFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
         this.regionService = regionService;
-        this.delete = new SwiftDeleteFeature(session);
     }
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
-        final Path copy = new SwiftCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
-        delete.delete(Collections.singletonMap(file, status), connectionCallback, callback);
-        return copy;
+        if(containerService.getContainer(file).equals(containerService.getContainer(renamed))) {
+            // Either copy complete file contents (small file) or copy manifest (large file)
+            final Path rename = new SwiftDefaultCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
+            new SwiftDeleteFeature(session).delete(Collections.singletonMap(file, status), connectionCallback, callback, false);
+            return rename;
+        }
+        else {
+            final Path copy = new SwiftSegmentCopyService(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
+            new SwiftDeleteFeature(session).delete(Collections.singletonMap(file, status), connectionCallback, callback);
+            return copy;
+        }
     }
 
     @Override

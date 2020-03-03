@@ -31,20 +31,19 @@ import java.io.IOException;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
-public class SwiftCopyFeature implements Copy {
-
-    private final SwiftSession session;
+public class SwiftDefaultCopyFeature implements Copy {
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
+    private final SwiftSession session;
     private final SwiftRegionService regionService;
 
-    public SwiftCopyFeature(final SwiftSession session) {
+    public SwiftDefaultCopyFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
     }
 
-    public SwiftCopyFeature(final SwiftSession session, final SwiftRegionService regionService) {
+    public SwiftDefaultCopyFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
         this.regionService = regionService;
     }
@@ -52,9 +51,12 @@ public class SwiftCopyFeature implements Copy {
     @Override
     public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
+            // Copies file
+            // If segmented file, copies manifest (creating a link between new object and original segments)
+            // Use with caution.
             session.getClient().copyObject(regionService.lookup(source),
-                    containerService.getContainer(source).getName(), containerService.getKey(source),
-                    containerService.getContainer(target).getName(), containerService.getKey(target));
+                containerService.getContainer(source).getName(), containerService.getKey(source),
+                containerService.getContainer(target).getName(), containerService.getKey(target));
             // Copy original file attributes
             return new Path(target.getParent(), target.getName(), target.getType(), new PathAttributes(source.attributes()));
         }

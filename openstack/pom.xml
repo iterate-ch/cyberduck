@@ -23,7 +23,7 @@
     <artifactId>openstack</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <openstack-swift-version>2.5.11</openstack-swift-version>
+        <openstack-swift-version>2.5.12</openstack-swift-version>
     </properties>
     <dependencies>
         <dependency>
