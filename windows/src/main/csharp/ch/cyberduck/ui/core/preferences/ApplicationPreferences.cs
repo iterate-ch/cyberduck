@@ -51,6 +51,8 @@ namespace Ch.Cyberduck.Ui.Core.Preferences
 
             this.setDefault("application.language", GetDefaultLanguage());
 
+            this.setDefault("editor.bundleIdentifier", new SystemWatchEditorFactory.Notepad().getIdentifier());
+
             this.setDefault("website.store", "ms-windows-store://pdp/?ProductId=9NBLGGH43HTB");
 
             this.setDefault("update.check.privilege", false.ToString());
