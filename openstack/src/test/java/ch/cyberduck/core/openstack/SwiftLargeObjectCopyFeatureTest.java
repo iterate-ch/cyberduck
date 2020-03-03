@@ -15,21 +15,15 @@ package ch.cyberduck.core.openstack;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -41,10 +35,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
-import ch.iterate.openstack.swift.model.StorageObject;
-
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
 public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
@@ -67,7 +59,7 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
 
         final Path targetFolder = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Path copiedFile = new SwiftCopyFeature(session, regionService)
+        final Path copiedFile = new SwiftDefaultCopyFeature(session, regionService)
             .copy(sourceFile, targetFile, new TransferStatus(), new DisabledConnectionCallback());
         // copied file exists
         assertTrue(findFeature.find(copiedFile));
@@ -162,7 +154,7 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
         targetBucket.attributes().setRegion("IAD");
         final Path targetFolder = new Path(targetBucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Path copiedFile = new SwiftCopyFeature(session, regionService)
+        final Path copiedFile = new SwiftDefaultCopyFeature(session, regionService)
             .copy(sourceFile, targetFile, new TransferStatus(), new DisabledConnectionCallback());
         // copied file exists
         assertTrue(findFeature.find(copiedFile));

@@ -50,7 +50,7 @@ public class SwiftMoveFeature implements Move {
         final boolean atomicMove = containerService.getContainer(file).equals(containerService.getContainer(renamed));
         if(atomicMove) {
             // either copy complete file contents (small file) or copy manifest (large file)
-            final Path rename = new SwiftCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
+            final Path rename = new SwiftDefaultCopyFeature(session, regionService).copy(file, renamed, new TransferStatus().length(file.attributes().getSize()), connectionCallback);
             new SwiftDeleteFeature(session).delete(Collections.singletonMap(file, status), connectionCallback, callback, false);
             return rename;
         }

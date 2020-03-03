@@ -46,7 +46,7 @@ public class SwiftSegmentCopyService implements Copy {
         final SwiftSegmentService segmentService = new SwiftSegmentService(session);
         final List<Path> segments = segmentService.list(source);
         if(segments.isEmpty()) {
-            return new SwiftCopyFeature(session, regionService).copy(source, target, status, callback);
+            return new SwiftDefaultCopyFeature(session, regionService).copy(source, target, status, callback);
         }
         else {
             return new SwiftLargeObjectCopyFeature(session, regionService, segmentService)

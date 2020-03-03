@@ -37,7 +37,7 @@ import java.util.UUID;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class SwiftCopyFeatureTest extends AbstractSwiftTest {
+public class SwiftDefaultCopyFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testCopy() throws Exception {
@@ -46,7 +46,7 @@ public class SwiftCopyFeatureTest extends AbstractSwiftTest {
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final Path copy = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new SwiftCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
+        new SwiftDefaultCopyFeature(session).copy(test, copy, new TransferStatus(), new DisabledConnectionCallback());
         assertTrue(new SwiftFindFeature(session).find(test));
         assertTrue(new SwiftFindFeature(session).find(copy));
         new SwiftDeleteFeature(session).delete(Arrays.asList(test, copy), new DisabledLoginCallback(), new Delete.DisabledCallback());
@@ -62,7 +62,7 @@ public class SwiftCopyFeatureTest extends AbstractSwiftTest {
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(copy, new TransferStatus());
-        new SwiftCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
+        new SwiftDefaultCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
         final Find find = new DefaultFindFeature(session);
         assertTrue(find.find(test));
         assertTrue(find.find(copy));

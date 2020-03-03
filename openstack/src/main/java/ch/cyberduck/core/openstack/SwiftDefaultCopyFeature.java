@@ -31,7 +31,7 @@ import java.io.IOException;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 
-public class SwiftCopyFeature implements Copy {
+public class SwiftDefaultCopyFeature implements Copy {
 
     private final PathContainerService containerService
         = new PathContainerService();
@@ -39,11 +39,11 @@ public class SwiftCopyFeature implements Copy {
     private final SwiftSession session;
     private final SwiftRegionService regionService;
 
-    public SwiftCopyFeature(final SwiftSession session) {
+    public SwiftDefaultCopyFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
     }
 
-    public SwiftCopyFeature(final SwiftSession session, final SwiftRegionService regionService) {
+    public SwiftDefaultCopyFeature(final SwiftSession session, final SwiftRegionService regionService) {
         this.session = session;
         this.regionService = regionService;
     }
