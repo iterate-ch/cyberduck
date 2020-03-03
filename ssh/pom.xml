@@ -91,8 +91,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.sshd</groupId>
-            <artifactId>sshd-core</artifactId>
-            <version>1.7.0</version>
+            <artifactId>sshd-sftp</artifactId>
+            <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
