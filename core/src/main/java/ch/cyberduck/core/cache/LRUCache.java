@@ -145,4 +145,11 @@ public class LRUCache<Key, Value> {
     public void clear() {
         delegate.invalidateAll();
     }
+
+    /**
+     * Performs any pending maintenance operations needed by the cache
+     */
+    public void evict() {
+        delegate.cleanUp();
+    }
 }
