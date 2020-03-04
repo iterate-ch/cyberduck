@@ -21,10 +21,12 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UUIDRandomStringService;
 import ch.cyberduck.core.cryptomator.ContentReader;
 import ch.cyberduck.core.cryptomator.CryptoVault;
+import ch.cyberduck.core.cryptomator.CryptorCache;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.log4j.Logger;
+import org.cryptomator.cryptolib.api.FileNameCryptor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
@@ -39,6 +41,7 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
     public static final String DIRECTORY_METADATAFILE = String.format("%s%s", FILENAME_DIRECTORYID, EXTENSION_REGULAR);
 
     private final CryptoVault cryptomator;
+    private final FileNameCryptor cryptor;
 
     private final RandomStringService random
         = new UUIDRandomStringService();
@@ -46,12 +49,13 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
     public CryptoDirectoryV7Provider(final Path vault, final CryptoVault cryptomator) {
         super(vault, cryptomator);
         this.cryptomator = cryptomator;
+        this.cryptor = new CryptorCache(cryptomator.getCryptor().fileNameCryptor());
     }
 
     @Override
     public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final String ciphertextName = String.format("%s%s",
-            cryptomator.getCryptor().fileNameCryptor().encryptFilename(BaseEncoding.base64Url(),
+            cryptor.encryptFilename(BaseEncoding.base64Url(),
                 filename, directoryId.getBytes(StandardCharsets.UTF_8)), EXTENSION_REGULAR);
         if(log.isDebugEnabled()) {
             log.debug(String.format("Encrypted filename %s to %s", filename, ciphertextName));
