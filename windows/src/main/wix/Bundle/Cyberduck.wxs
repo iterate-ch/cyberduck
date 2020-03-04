@@ -314,17 +314,19 @@
       <Component Id="URLAssociations">
         <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.ProtocolHandler">
           <RegistryValue Value="Cyberduck Protocol" Type="string" />
-          <RegistryValue Key="DefaultIcon" Value="[INSTALLLOCATION]Cyberduck.exe,0" Type="string" />
-          <RegistryValue Key="shell\open\command" Value='"[INSTALLLOCATION]Cyberduck.exe" "%1"' Type="string" />
+          <RegistryValue Key="DefaultIcon" Value="[#product.exe],0" Type="string" />
+          <RegistryValue Key="shell\open\command" Value='"[#product.exe]" "%1"' Type="string" />
         </RegistryKey>
-        
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\URLAssociations" Name="ftp" Value="Cyberduck.ProtocolHandler" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\URLAssociations" Name="ftps" Value="Cyberduck.ProtocolHandler" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\URLAssociations" Name="dav" Value="Cyberduck.ProtocolHandler" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\URLAssociations" Name="davs" Value="Cyberduck.ProtocolHandler" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\URLAssociations" Name="sftp" Value="Cyberduck.ProtocolHandler" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\URLAssociations" Name="s3" Value="Cyberduck.ProtocolHandler" Type="string" />
-        <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\URLAssociations" Name="irods" Value="Cyberduck.ProtocolHandler" Type="string" />
+          
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\URLAssociations">
+          <RegistryValue Name="ftp" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="ftps" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="dav" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="davs" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="sftp" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="s3" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="irods" Value="Cyberduck.ProtocolHandler" Type="string" />
+        </RegistryKey>
       </Component>
       <Component Id="FTP.Handler" Permanent="yes" NeverOverwrite="yes">
         <RegistryValue Root="HKCR" Key="ftp" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
