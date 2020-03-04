@@ -54,7 +54,6 @@ import org.cryptomator.cryptolib.Cryptors;
 import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
-import org.cryptomator.cryptolib.api.FileNameCryptor;
 import org.cryptomator.cryptolib.api.InvalidPassphraseException;
 import org.cryptomator.cryptolib.api.KeyFile;
 
@@ -93,7 +92,7 @@ public class CryptoVault implements Vault {
     private final Preferences preferences = PreferencesFactory.get();
 
     private Cryptor cryptor;
-    private FileNameCryptor fileNameCryptor;
+    private CryptorCache fileNameCryptor;
 
     private CryptoFilename filenameProvider;
     private CryptoDirectory directoryProvider;

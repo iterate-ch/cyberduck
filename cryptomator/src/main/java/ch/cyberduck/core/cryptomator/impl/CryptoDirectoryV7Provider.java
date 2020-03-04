@@ -26,7 +26,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import org.apache.log4j.Logger;
-import org.cryptomator.cryptolib.api.FileNameCryptor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
@@ -41,7 +40,7 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
     public static final String DIRECTORY_METADATAFILE = String.format("%s%s", FILENAME_DIRECTORYID, EXTENSION_REGULAR);
 
     private final CryptoVault cryptomator;
-    private final FileNameCryptor cryptor;
+    private final CryptorCache cryptor;
 
     private final RandomStringService random
         = new UUIDRandomStringService();

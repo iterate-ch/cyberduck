@@ -33,7 +33,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.cryptomator.cryptolib.api.FileNameCryptor;
 
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
@@ -47,7 +46,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     private final Path dataRoot;
     private final Path home;
     private final CryptoVault cryptomator;
-    private final FileNameCryptor cryptor;
+    private final CryptorCache cryptor;
 
     private final RandomStringService random
         = new UUIDRandomStringService();
@@ -66,7 +65,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
-            cryptor.encryptFilename(filename, directoryId.getBytes(StandardCharsets.UTF_8)));
+            cryptor.encryptFilename(CryptorCache.BASE32, filename, directoryId.getBytes(StandardCharsets.UTF_8)));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Encrypted filename %s to %s", filename, ciphertextName));
         }
