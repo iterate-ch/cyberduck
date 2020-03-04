@@ -106,6 +106,10 @@ namespace Ch.Cyberduck.Ui
                                     }
 
                                     break;
+
+                                default:
+                                    proxy.QuickConnect(item);
+                                    break;
                             }
                         }
                     }
