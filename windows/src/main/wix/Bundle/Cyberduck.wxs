@@ -7,13 +7,13 @@
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
 
     <Condition Message="Windows 7 SP1, Windows Server 2008 R2 or later is required to run this application.">
-        <![CDATA[VersionNT >= 601 AND (VersionNT <> 601 OR (ServicePackLevel >= 1 OR MsiNTProductType <> 1))]]>
+      <![CDATA[VersionNT >= 601 AND (VersionNT <> 601 OR (ServicePackLevel >= 1 OR MsiNTProductType <> 1))]]>
     </Condition>
     <Condition Message="Installation on Windows 8 is not supported.">
-        <![CDATA[VersionNT <> 602 OR MsiNTProductType <> 1]]>
+      <![CDATA[VersionNT <> 602 OR MsiNTProductType <> 1]]>
     </Condition>
     <Condition Message="Windows 10 Anniversary Update (14393) or later is required to run this application.">
-        <![CDATA[VersionNT < 1000 OR WindowsBuild >= 14393]]>
+      <![CDATA[VersionNT < 1000 OR WindowsBuild >= 14393]]>
     </Condition>
 
     <Directory Id="TARGETDIR" Name="SourceDir">
@@ -57,7 +57,7 @@
             <Verb Id="open" Command="Open" Argument='"%1"' />
           </Extension>
         </ProgId>
-        <ProgId Id="Cyberduck Connection.Profile" Description="Cyberduck Connection Profile" Icon="cd_document.ico" Advertise="yes"> 
+        <ProgId Id="Cyberduck Connection.Profile" Description="Cyberduck Connection Profile" Icon="cd_document.ico" Advertise="yes">
           <Extension Id="cyberduckprofile">
             <Verb Id="open" Command="Open" Argument='"%1"' />
           </Extension>
@@ -68,7 +68,7 @@
           </Extension>
         </ProgId>
         <RemoveFolder Id="ApplicationProgramsFolder" Directory="ApplicationProgramsFolder" On="uninstall" />
-        
+
         <!-- Capabilities keys for Vista/7 "Set Program Access and Defaults" -->
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationDescription" Value="Libre FTP, SFTP, WebDAV, S3 and OpenStack Swift browser for Mac and Windows." Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities" Name="ApplicationIcon" Value="[INSTALLLOCATION]Cyberduck.exe,0" Type="string" />
@@ -77,6 +77,7 @@
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".duck" Value="Cyberduck.Bookmark" Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".cyberduckprofile" Value="Cyberduck Connection.Profile" Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\FileAssociations" Name=".cyberducklicense" Value="Cyberduck.License" Type="string" />
+
         <RegistryValue Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\shell\Open\command" Value='"[INSTALLLOCATION]Cyberduck.exe" "%1"' Type="string" />
         <RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="!(bind.property.ProductName)" Value="SOFTWARE\Cyberduck\Capabilities" Type="string" />
 
@@ -308,107 +309,55 @@
         <File Source="$(var.cyberduck.TargetDir)/Acknowledgments.rtf" Checksum="yes" />
         <File Source="$(var.cyberduck.TargetDir)/License.txt" Checksum="yes" />
       </Component>
-
-      <!-- protocol handlers -->
-      <Component Id="ftp" Guid="B7619F7A-1CCC-451D-95D4-1AE3A267FC05">
-        <RegistryKey Root="HKCR"
-          Key="ftp"
-          Action="createAndRemoveOnUninstall">
-          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
-          <RegistryValue Type="string" Value="URL:ftp Protocol"/>
-          <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
-          </RegistryKey>
-          <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
-          </RegistryKey>
+      
+      <!-- Protocol Handlers -->
+      <Component Id="URLAssociations">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Classes\Cyberduck.ProtocolHandler">
+          <RegistryValue Value="Cyberduck Protocol" Type="string" />
+          <RegistryValue Key="DefaultIcon" Value="[#product.exe],0" Type="string" />
+          <RegistryValue Key="shell\open\command" Value='"[#product.exe]" "%1"' Type="string" />
+        </RegistryKey>
+          
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Cyberduck\Capabilities\URLAssociations">
+          <RegistryValue Name="ftp" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="ftps" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="dav" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="davs" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="sftp" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="s3" Value="Cyberduck.ProtocolHandler" Type="string" />
+          <RegistryValue Name="irods" Value="Cyberduck.ProtocolHandler" Type="string" />
         </RegistryKey>
       </Component>
-      <Component Id="ftps" Guid="D6870ED1-BE4B-43E6-B405-9362DC12EB48">
-        <RegistryKey Root="HKCR"
-          Key="ftps"
-          Action="createAndRemoveOnUninstall">
-          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
-          <RegistryValue Type="string" Value="URL:ftps Protocol"/>
-          <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
-          </RegistryKey>
-          <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
-          </RegistryKey>
-        </RegistryKey>
+      <Component Id="FTP.Handler" Permanent="yes" NeverOverwrite="yes">
+        <RegistryValue Root="HKCR" Key="ftp" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKCR" Key="ftp" Value="URL:File Transfer Protocol" Type="string" />
       </Component>
-      <Component Id="dav" Guid="300BA5DE-87BE-4F08-B78B-991E15AE3C6D">
-        <RegistryKey Root="HKCR"
-          Key="dav"
-          Action="createAndRemoveOnUninstall">
-          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
-          <RegistryValue Type="string" Value="URL:dav Protocol"/>
-          <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
-          </RegistryKey>
-          <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
-          </RegistryKey>
-        </RegistryKey>
+      <Component Id="FTPS.Handler" Permanent="yes" NeverOverwrite="yes">
+        <RegistryValue Root="HKCR" Key="ftps" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKCR" Key="ftps" Value="URL:File Transfer Protocol over TLS" Type="string" />
       </Component>
-      <Component Id="davs" Guid="25ECEBD0-8F2F-4C72-8445-8466A1E799C0">
-        <RegistryKey Root="HKCR"
-          Key="davs"
-          Action="createAndRemoveOnUninstall">
-          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
-          <RegistryValue Type="string" Value="URL:davs Protocol"/>
-          <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
-          </RegistryKey>
-          <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
-          </RegistryKey>
-        </RegistryKey>
+      <Component Id="SFTP.Handler" Permanent="yes" NeverOverwrite="yes">
+        <RegistryValue Root="HKCR" Key="sftp" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKCR" Key="sftp" Value="URL:Secure Shell File Transfer Protocol" Type="string" />
       </Component>
-      <Component Id="sftp" Guid="7C828847-5026-478C-B0C5-E7CD720A94FC">
-        <RegistryKey Root="HKCR"
-          Key="sftp"
-          Action="createAndRemoveOnUninstall">
-          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
-          <RegistryValue Type="string" Value="URL:sftp Protocol"/>
-          <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
-          </RegistryKey>
-          <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
-          </RegistryKey>
-        </RegistryKey>
+      <Component Id="DAV.Handler" Permanent="yes" NeverOverwrite="yes">
+        <RegistryValue Root="HKCR" Key="dav" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKCR" Key="dav" Value="URL:Distributed Authoring and Versioning Protocol" Type="string" />
       </Component>
-      <Component Id="s3" Guid="5F33A7F5-0DBA-437C-914E-A0CF6E016C11">
-        <RegistryKey Root="HKCR"
-          Key="s3"
-          Action="createAndRemoveOnUninstall">
-          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
-          <RegistryValue Type="string" Value="URL:s3 Protocol"/>
-          <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
-          </RegistryKey>
-          <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
-          </RegistryKey>
-        </RegistryKey>
+      <Component Id="DAVS.Handler" Permanent="yes" NeverOverwrite="yes">
+        <RegistryValue Root="HKCR" Key="davs" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKCR" Key="davs" Value="URL:Distributed Authoring and Versioning Protocol over TLS" Type="string" />
       </Component>
-      <Component Id="irods" Guid="4E5C043F-B5E3-4C6C-84C9-0D7EAF69D338">
-        <RegistryKey Root="HKCR"
-          Key="irods"
-          Action="createAndRemoveOnUninstall">
-          <RegistryValue Type="string" Name="URL Protocol" Value=""/>
-          <RegistryValue Type="string" Value="URL:irods Protocol"/>
-          <RegistryKey Key="DefaultIcon">
-            <RegistryValue Type="string" Value="[INSTALLLOCATION]Cyberduck.exe"/>
-          </RegistryKey>
-          <RegistryKey Key="shell\open\command">
-            <RegistryValue Type="string" Value="&quot;[INSTALLLOCATION]Cyberduck.exe&quot; &quot;%1&quot;"/>
-          </RegistryKey>
-        </RegistryKey>
+      <Component Id="S3.Handler" Permanent="yes" NeverOverwrite="yes">
+        <RegistryValue Root="HKCR" Key="s3" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKCR" Key="s3" Value="URL:Simple Storage Services Protocol" Type="string" />
+      </Component>
+      <Component Id="IRODS.Handler" Permanent="yes" NeverOverwrite="yes">
+        <RegistryValue Root="HKCR" Key="irods" Name="URL Protocol" Value="" KeyPath="yes" Type="string" />
+        <RegistryValue Root="HKCR" Key="irods" Value="URL:Integrated Rule-Oriented Data System Protocol" Type="string" />
       </Component>
     </ComponentGroup>
+
     <ComponentGroup Id="Profiles" Directory="PROFILES">
       <Component Id="azure.cyberduckprofile">
         <File Source="$(var.cyberduck.TargetDir)/profiles/Azure.cyberduckprofile" KeyPath="yes" Checksum="yes" />
