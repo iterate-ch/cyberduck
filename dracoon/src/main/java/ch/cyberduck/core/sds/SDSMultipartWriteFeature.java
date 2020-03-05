@@ -35,6 +35,7 @@ import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
+import ch.cyberduck.core.sds.io.swagger.client.api.UploadsApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -168,7 +169,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                                 if(log.isInfoEnabled()) {
                                     log.info(String.format("Cancel failed upload %s for %s", uploadToken, file));
                                 }
-                                new NodesApi(session.getClient()).cancelFileUpload(uploadToken, StringUtils.EMPTY);
+                                new UploadsApi(session.getClient()).cancelFileUploadByToken(uploadToken);
                             }
                             catch(ApiException f) {
                                 throw new SDSExceptionMappingService().map(f);
