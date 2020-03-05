@@ -24,10 +24,12 @@ import ch.cyberduck.core.DeserializerFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.HashAlgorithm;
 
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class PathAttributesDictionary {
 
@@ -80,7 +82,13 @@ public class PathAttributesDictionary {
         if(linkObj != null) {
             attributes.setLink(new DescriptiveUrl(URI.create(dict.stringForKey("Link")), DescriptiveUrl.Type.http));
         }
-        attributes.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));
+        if(dict.mapForKey("Checksum") != null) {
+            final Map<String, String> checksum = dict.mapForKey("Checksum");
+            attributes.setChecksum(new Checksum(HashAlgorithm.valueOf(checksum.get("Algorithm")), checksum.get("Hash")));
+        }
+        else {
+            attributes.setChecksum(Checksum.parse(dict.stringForKey("Checksum")));
+        }
         attributes.setVersionId(dict.stringForKey("Version"));
         attributes.setLockId(dict.stringForKey("Lock Id"));
         final String duplicateObj = dict.stringForKey("Duplicate");
