@@ -36,11 +36,19 @@ public interface Deserializer<T> {
     T objectForKey(String key);
 
     /**
+     * Find multiple values for key
+     *
      * @param key Key name
      * @return List values for key
      */
     <L> List<L> listForKey(String key);
 
+    /**
+     * Find dictionary for key
+     *
+     * @param key Key name
+     * @return Dictionary values for key
+     */
     Map<String, String> mapForKey(String key);
 
     /**
