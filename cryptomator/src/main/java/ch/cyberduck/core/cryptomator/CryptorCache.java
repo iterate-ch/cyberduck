@@ -48,13 +48,13 @@ public class CryptorCache {
 
     public String encryptFilename(final BaseEncoding encoding, final String cleartextName, final byte[] associatedData) {
         final CacheKey key = new CacheKey(encoding, cleartextName, associatedData);
-        if(decryptCache.contains(key)) {
-            return decryptCache.get(key);
+        if(encryptCache.contains(key)) {
+            return encryptCache.get(key);
         }
         final String ciphertextName = impl.encryptFilename(encoding, cleartextName, associatedData);
         encryptCache.put(key, ciphertextName);
         decryptCache.put(new CacheKey(encoding, ciphertextName, associatedData), cleartextName);
-        return cleartextName;
+        return ciphertextName;
     }
 
     public String decryptFilename(final BaseEncoding encoding, final String ciphertextName, final byte[] associatedData) throws AuthenticationFailedException {
