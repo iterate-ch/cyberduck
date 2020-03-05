@@ -46,7 +46,6 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
     private final Path dataRoot;
     private final Path home;
     private final CryptoVault cryptomator;
-    private final CryptorCache cryptor;
 
     private final RandomStringService random
         = new UUIDRandomStringService();
@@ -58,14 +57,13 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
         this.home = vault;
         this.dataRoot = new Path(vault, DATA_DIR_NAME, vault.getType());
         this.cryptomator = cryptomator;
-        this.cryptor = new CryptorCache(cryptomator.getCryptor().fileNameCryptor());
     }
 
     @Override
     public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
         final String prefix = type.contains(Path.Type.directory) ? CryptoVault.DIR_PREFIX : "";
         final String ciphertextName = String.format("%s%s", prefix,
-            cryptor.encryptFilename(CryptorCache.BASE32, filename, directoryId.getBytes(StandardCharsets.UTF_8)));
+            cryptomator.getFileNameCryptor().encryptFilename(CryptorCache.BASE32, filename, directoryId.getBytes(StandardCharsets.UTF_8)));
         if(log.isDebugEnabled()) {
             log.debug(String.format("Encrypted filename %s to %s", filename, ciphertextName));
         }
@@ -90,7 +88,7 @@ public class CryptoDirectoryV6Provider implements CryptoDirectory {
             }
             attributes.setDirectoryId(id);
             attributes.setDecrypted(directory);
-            final String directoryIdHash = cryptor.hashDirectoryId(id);
+            final String directoryIdHash = cryptomator.getFileNameCryptor().hashDirectoryId(id);
             // Intermediate directory
             final Path intermediate = new Path(dataRoot, directoryIdHash.substring(0, 2), dataRoot.getType());
             // Add encrypted type

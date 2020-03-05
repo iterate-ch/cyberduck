@@ -512,12 +512,12 @@ public class CryptoVault implements Vault {
         return masterkey;
     }
 
-    public byte[] getPepper() {
-        return pepper;
-    }
-
     public Cryptor getCryptor() {
         return cryptor;
+    }
+
+    public CryptorCache getFileNameCryptor() {
+        return fileNameCryptor;
     }
 
     public CryptoFilename getFilenameProvider() {
