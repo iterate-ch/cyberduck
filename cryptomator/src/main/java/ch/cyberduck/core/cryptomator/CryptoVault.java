@@ -422,7 +422,7 @@ public class CryptoVault implements Vault {
         final Path inflated = this.inflate(session, file);
         final Pattern pattern = vaultVersion == VAULT_VERSION_DEPRECATED ? BASE32_PATTERN : BASE64URL_PATTERN;
         final Matcher m = pattern.matcher(inflated.getName());
-        if(m.find()) {
+        if(m.matches()) {
             final String ciphertext = m.group(1);
             try {
                 final String cleartextFilename = fileNameCryptor.decryptFilename(
