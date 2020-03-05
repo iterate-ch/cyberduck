@@ -208,7 +208,10 @@ public class PathAttributes extends Attributes implements Serializable {
             dict.setStringForKey(link.getUrl(), "Link");
         }
         if(checksum != Checksum.NONE) {
-            dict.setStringForKey(checksum.hash, "Checksum");
+            final Map<String, String> wrapper = new HashMap<>();
+            wrapper.put("Algorithm", checksum.algorithm.name());
+            wrapper.put("Hash", checksum.hash);
+            dict.setMapForKey(wrapper, "Checksum");
         }
         if(StringUtils.isNotBlank(versionId)) {
             dict.setStringForKey(versionId, "Version");
