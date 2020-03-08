@@ -48,9 +48,9 @@ public class SwiftUrlProviderTest extends AbstractSwiftTest {
 
     @Test
     public void testGet() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        assertEquals("https://storage101.iad3.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test-iad-cyberduck/f",
+        assertEquals("https://storage101.iad3.clouddrive.com/v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/f",
             new SwiftUrlProvider(session).toUrl(new Path(container, "f", EnumSet.of(Path.Type.file))).find(DescriptiveUrl.Type.provider).getUrl());
     }
 
@@ -59,7 +59,7 @@ public class SwiftUrlProviderTest extends AbstractSwiftTest {
         final Map<Region, AccountInfo> accounts = new SwiftAccountLoader(session).operate(new DisabledPasswordCallback(),
             new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)));
         final UrlProvider provider = new SwiftUrlProvider(session, accounts);
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         container.attributes().setRegion("IAD");

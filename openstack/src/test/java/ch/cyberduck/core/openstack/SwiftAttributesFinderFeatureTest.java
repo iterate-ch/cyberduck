@@ -22,7 +22,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
 
     @Test(expected = NotfoundException.class)
     public void testFindNotFound() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final SwiftAttributesFinderFeature f = new SwiftAttributesFinderFeature(session);
@@ -31,7 +31,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testFind() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final String name = UUID.randomUUID().toString() + ".txt";
         final Path test = new Path(container, name, EnumSet.of(Path.Type.file));
@@ -55,7 +55,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testFindContainer() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final PathAttributes attributes = new SwiftAttributesFinderFeature(session).find(container);
         assertEquals(EnumSet.of(Path.Type.volume, Path.Type.directory), container.getType());
@@ -63,7 +63,7 @@ public class SwiftAttributesFinderFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testFindPlaceholder() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final String name = UUID.randomUUID().toString();
         final Path file = new Path(container, name, EnumSet.of(Path.Type.directory));

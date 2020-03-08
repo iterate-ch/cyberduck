@@ -42,7 +42,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
         status.setMime("text/plain");
         final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
         status.setLength(content.length);
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString() + ".txt", EnumSet.of(Path.Type.file));
         final SwiftRegionService regionService = new SwiftRegionService(session);
@@ -73,7 +73,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testAppendNoSegmentFound() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final AtomicBoolean list = new AtomicBoolean();
         final SwiftRegionService regionService = new SwiftRegionService(session);
@@ -92,7 +92,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testAppendSegmentFound() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SwiftSegmentService segments = new SwiftSegmentService(session, ".test");
@@ -116,7 +116,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testOverride() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final AtomicBoolean list = new AtomicBoolean();
@@ -149,7 +149,7 @@ public class SwiftWriteFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testNotFound() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final AtomicBoolean list = new AtomicBoolean();

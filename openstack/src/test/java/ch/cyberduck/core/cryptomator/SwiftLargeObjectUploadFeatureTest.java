@@ -68,7 +68,7 @@ public class SwiftLargeObjectUploadFeatureTest extends AbstractSwiftTest {
     @Test
     public void testLargeObjectUpload() throws Exception {
         // 5L * 1024L * 1024L
-        final Path home = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         home.attributes().setRegion("IAD");
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

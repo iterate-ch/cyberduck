@@ -41,7 +41,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
 
     @Test
     public void testList() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
         for(Path p : list) {
@@ -63,7 +63,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
 
     @Test(expected = NotfoundException.class)
     public void testListNotFoundFolder() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         new SwiftObjectListService(session).list(new Path(container, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
     }
@@ -76,7 +76,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
 
     @Test
     public void testListPlaceholder() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
@@ -87,7 +87,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
 
     @Test
     public void testListPlaceholderParent() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final String name = UUID.randomUUID().toString();
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
@@ -101,7 +101,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
 
     @Test
     public void testPlaceholderAndObjectSameName() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path base = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());

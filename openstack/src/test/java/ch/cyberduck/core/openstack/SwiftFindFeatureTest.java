@@ -30,14 +30,14 @@ public class SwiftFindFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testFindContainer() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         assertTrue(new SwiftFindFeature(session).find(container));
     }
 
     @Test
     public void testFindKey() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         assertFalse(new SwiftFindFeature(session).find(file));

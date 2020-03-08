@@ -58,13 +58,13 @@ public class SwiftDirectoryFeatureTest extends AbstractSwiftTest {
             public void log(final Type request, final String message) {
                 switch(request) {
                     case request:
-                        if(("PUT /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test-iad-cyberduck/" + name + " HTTP/1.1").equals(message)) {
+                        if(("PUT /v1/MossoCloudFS_59113590-c679-46c3-bf62-9d7c3d5176ee/test.cyberduck.ch/" + name + " HTTP/1.1").equals(message)) {
                             put.set(true);
                         }
                 }
             }
         });
-        final Path container = new Path("/test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path("/test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
         final SwiftDirectoryFeature feature = new SwiftDirectoryFeature(session, new SwiftRegionService(session), new SwiftWriteFeature(session, new SwiftRegionService(session)));
         final Path placeholder = feature.mkdir(new Path(container, name, EnumSet.of(Path.Type.directory)), null, new TransferStatus());

@@ -31,7 +31,7 @@ public class SwiftAccountLoaderTest extends AbstractSwiftTest {
 
     @Test
     public void testOperate() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         assertFalse(new SwiftAccountLoader(session).operate(new DisabledLoginCallback(), container).isEmpty());
     }
 }

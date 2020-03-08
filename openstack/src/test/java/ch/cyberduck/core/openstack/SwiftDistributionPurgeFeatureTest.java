@@ -21,7 +21,7 @@ public class SwiftDistributionPurgeFeatureTest extends AbstractSwiftTest {
     @Test(expected = InteroperabilityException.class)
     public void testInvalidateContainer() throws Exception {
         final SwiftDistributionPurgeFeature feature = new SwiftDistributionPurgeFeature(session);
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
         feature.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(container), new DisabledLoginCallback());
     }
@@ -29,7 +29,7 @@ public class SwiftDistributionPurgeFeatureTest extends AbstractSwiftTest {
     @Test
     public void testInvalidateFile() throws Exception {
         final SwiftDistributionPurgeFeature feature = new SwiftDistributionPurgeFeature(session);
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         container.attributes().setRegion("IAD");
         feature.invalidate(container, Distribution.DOWNLOAD, Collections.singletonList(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))), new DisabledLoginCallback());
     }

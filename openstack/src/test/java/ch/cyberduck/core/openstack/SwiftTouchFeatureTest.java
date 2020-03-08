@@ -25,7 +25,7 @@ public class SwiftTouchFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testTouch() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
             new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());

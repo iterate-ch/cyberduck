@@ -41,7 +41,7 @@ public class SwiftDefaultCopyFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testCopy() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(test, new TransferStatus());
@@ -54,7 +54,7 @@ public class SwiftDefaultCopyFeatureTest extends AbstractSwiftTest {
 
     @Test
     public void testCopyToExistingFile() throws Exception {
-        final Path container = new Path("test-iad-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path folder = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
