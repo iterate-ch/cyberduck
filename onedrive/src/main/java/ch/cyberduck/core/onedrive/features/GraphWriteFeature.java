@@ -78,8 +78,9 @@ public class GraphWriteFeature implements Write<Void> {
                 URIEncoder.encode(file.getName()), OneDriveItem.ItemIdentifierType.Path);
             final OneDriveUploadSession upload = oneDriveFile.createUploadSession();
             final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, new TransferStatus(status));
-            return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy,
-                preferences.getInteger("onedrive.upload.multipart.partsize.minimum"))) {
+            final int partsize = preferences.getInteger("onedrive.upload.multipart.partsize.minimum")
+                * preferences.getInteger("onedrive.upload.multipart.partsize.factor");
+            return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy, partsize)) {
                 @Override
                 public Void getStatus() {
                     return null;

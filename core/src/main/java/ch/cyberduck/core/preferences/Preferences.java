@@ -731,6 +731,12 @@ public abstract class Preferences implements Locales {
          * divide evenly by 320 KiB will result in errors committing some files.
          */
         this.setDefault("onedrive.upload.multipart.partsize.minimum", String.valueOf(320 * 1024));
+        /*
+         * A byte range size of 10 MiB for stable high speed connections is optimal.
+         * For slower or less reliable connections you may get better results from a smaller fragment size.
+         * The recommended fragment size is between 5-10 MiB.
+         */
+        this.setDefault("onedrive.upload.multipart.partsize.factor", String.valueOf(20)); // ~6,25 MB
 
         final int month = 60 * 60 * 24 * 30; //30 days in seconds
         this.setDefault("s3.cache.seconds", String.valueOf(month));
