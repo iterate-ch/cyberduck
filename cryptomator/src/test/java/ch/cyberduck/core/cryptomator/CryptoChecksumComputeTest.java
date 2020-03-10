@@ -29,7 +29,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.VaultCredentials;
 
 import org.apache.commons.io.input.NullInputStream;
-import org.cryptomator.cryptolib.api.Cryptor;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
@@ -66,8 +65,7 @@ public class CryptoChecksumComputeTest {
         };
         final CryptoVault cryptomator = new CryptoVault(vault);
         cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
-        final Cryptor cryptor = cryptomator.getCryptor();
-        final ByteBuffer header = cryptor.fileHeaderCryptor().encryptHeader(cryptor.fileHeaderCryptor().create());
+        final ByteBuffer header = cryptomator.getFileHeaderCryptor().encryptHeader(cryptomator.getFileHeaderCryptor().create());
         // DEFAULT_PIPE_SIZE=1024
         final Path file = new Path(vault, "f", EnumSet.of(Path.Type.file));
         final SHA256ChecksumCompute sha = new SHA256ChecksumCompute();

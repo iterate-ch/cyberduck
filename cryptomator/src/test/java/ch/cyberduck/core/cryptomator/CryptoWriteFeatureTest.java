@@ -61,18 +61,18 @@ public class CryptoWriteFeatureTest {
         };
         final CryptoVault vault = new CryptoVault(home);
         vault.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore());
-        int headerSize = vault.getCryptor().fileHeaderCryptor().headerSize();
+        int headerSize = vault.getFileHeaderCryptor().headerSize();
         // zero file size
         assertEquals(headerSize, vault.toCiphertextSize(0));
         // one-byte file
         assertEquals(headerSize + 48 + 1, vault.toCiphertextSize(1));
         // file with chunk size length
-        assertEquals(headerSize + vault.getCryptor().fileContentCryptor().ciphertextChunkSize(), vault.toCiphertextSize(vault.getCryptor().fileContentCryptor().cleartextChunkSize()));
+        assertEquals(headerSize + vault.getFileContentCryptor().ciphertextChunkSize(), vault.toCiphertextSize(vault.getFileContentCryptor().cleartextChunkSize()));
         // file with chunk size length + 1
-        assertEquals(headerSize + vault.getCryptor().fileContentCryptor().ciphertextChunkSize() + 48 + 1, vault.toCiphertextSize(vault.getCryptor().fileContentCryptor().cleartextChunkSize() + 1));
+        assertEquals(headerSize + vault.getFileContentCryptor().ciphertextChunkSize() + 48 + 1, vault.toCiphertextSize(vault.getFileContentCryptor().cleartextChunkSize() + 1));
         // file with 2 * chunk size length
-        assertEquals(headerSize + 2 * vault.getCryptor().fileContentCryptor().ciphertextChunkSize(), vault.toCiphertextSize(2 * vault.getCryptor().fileContentCryptor().cleartextChunkSize()));
+        assertEquals(headerSize + 2 * vault.getFileContentCryptor().ciphertextChunkSize(), vault.toCiphertextSize(2 * vault.getFileContentCryptor().cleartextChunkSize()));
         // file with 2 * chunk size length + 100
-        assertEquals(headerSize + 2 * vault.getCryptor().fileContentCryptor().ciphertextChunkSize() + 48 + 100, vault.toCiphertextSize(2 * vault.getCryptor().fileContentCryptor().cleartextChunkSize() + 100));
+        assertEquals(headerSize + 2 * vault.getFileContentCryptor().ciphertextChunkSize() + 48 + 100, vault.toCiphertextSize(2 * vault.getFileContentCryptor().cleartextChunkSize() + 100));
     }
 }

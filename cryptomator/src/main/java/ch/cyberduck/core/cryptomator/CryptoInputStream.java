@@ -18,7 +18,7 @@ package ch.cyberduck.core.cryptomator;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ProxyInputStream;
 import org.cryptomator.cryptolib.api.CryptoException;
-import org.cryptomator.cryptolib.api.Cryptor;
+import org.cryptomator.cryptolib.api.FileContentCryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
@@ -28,7 +28,7 @@ import java.nio.ByteBuffer;
 public class CryptoInputStream extends ProxyInputStream {
 
     private final InputStream proxy;
-    private final Cryptor cryptor;
+    private final FileContentCryptor cryptor;
     private final FileHeader header;
 
     private ByteBuffer buffer = ByteBuffer.allocate(0);
@@ -39,12 +39,12 @@ public class CryptoInputStream extends ProxyInputStream {
     private long chunkIndexOffset;
     private final int chunkSize;
 
-    public CryptoInputStream(final InputStream proxy, final Cryptor cryptor, final FileHeader header, final long chunkIndexOffset) {
+    public CryptoInputStream(final InputStream proxy, final FileContentCryptor cryptor, final FileHeader header, final long chunkIndexOffset) {
         super(proxy);
         this.proxy = proxy;
         this.cryptor = cryptor;
         this.header = header;
-        this.chunkSize = cryptor.fileContentCryptor().ciphertextChunkSize();
+        this.chunkSize = cryptor.ciphertextChunkSize();
         this.chunkIndexOffset = chunkIndexOffset;
     }
 
@@ -88,7 +88,7 @@ public class CryptoInputStream extends ProxyInputStream {
         ciphertextBuf.position(read);
         ciphertextBuf.flip();
         try {
-            buffer = cryptor.fileContentCryptor().decryptChunk(ciphertextBuf, chunkIndexOffset++, header, true);
+            buffer = cryptor.decryptChunk(ciphertextBuf, chunkIndexOffset++, header, true);
         }
         catch(CryptoException e) {
             throw new IOException(e.getMessage(), new CryptoAuthenticationException(e.getMessage(), e));

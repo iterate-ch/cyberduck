@@ -433,18 +433,18 @@ public class CryptoVaultTest {
         catch(CryptoInvalidFilesizeException e) {
         }
         // ciphertextFileSize == headerSize
-        assertEquals(0L, vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize()));
+        assertEquals(0L, vault.toCleartextSize(vault.getFileHeaderCryptor().headerSize()));
         // ciphertextFileSize == headerSize + 1
         try {
-            vault.toCleartextSize(vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize()) + 1);
+            vault.toCleartextSize(vault.toCleartextSize(vault.getFileHeaderCryptor().headerSize()) + 1);
             fail();
         }
         catch(CryptoInvalidFilesizeException e) {
         }
         // ciphertextFileSize == headerSize + chunkHeaderSize + 1
-        assertEquals(1L, vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize() + 48 + 1));
+        assertEquals(1L, vault.toCleartextSize(vault.getFileHeaderCryptor().headerSize() + 48 + 1));
         // ciphertextFileSize == headerSize + (32768 + chunkHeaderSize) + (1 + chunkHeaderSize) + 1
-        assertEquals(32769L, vault.toCleartextSize(vault.getCryptor().fileHeaderCryptor().headerSize() + (32768 + 48) + (1 + 48)));
+        assertEquals(32769L, vault.toCleartextSize(vault.getFileHeaderCryptor().headerSize() + (32768 + 48) + (1 + 48)));
     }
 
     @Test

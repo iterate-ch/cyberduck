@@ -26,7 +26,6 @@ import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
-import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
@@ -53,25 +52,24 @@ public class CryptoReadFeature implements Read {
     public InputStream readEncrypted(final Path encrypted, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             // Header
-            final Cryptor cryptor = vault.getCryptor();
             final TransferStatus headerStatus = new TransferStatus(status);
             headerStatus.setOffset(0);
             final InputStream in = proxy.read(encrypted, headerStatus.length(status.isAppend() ?
-                cryptor.fileHeaderCryptor().headerSize() :
+                vault.getFileHeaderCryptor().headerSize() :
                 vault.toCiphertextSize(status.getLength())), callback);
-            final ByteBuffer headerBuffer = ByteBuffer.allocate(cryptor.fileHeaderCryptor().headerSize());
+            final ByteBuffer headerBuffer = ByteBuffer.allocate(vault.getFileHeaderCryptor().headerSize());
             final int read = IOUtils.read(in, headerBuffer.array());
-            final FileHeader header = cryptor.fileHeaderCryptor().decryptHeader(headerBuffer);
+            final FileHeader header = vault.getFileHeaderCryptor().decryptHeader(headerBuffer);
             if(status.isAppend()) {
                 IOUtils.closeQuietly(in);
                 final TransferStatus s = new TransferStatus(status).length(-1L);
                 s.setOffset(this.align(status.getOffset()));
-                final CryptoInputStream crypto = new CryptoInputStream(proxy.read(encrypted, s, callback), cryptor, header, this.chunk(status.getOffset()));
+                final CryptoInputStream crypto = new CryptoInputStream(proxy.read(encrypted, s, callback), vault.getFileContentCryptor(), header, this.chunk(status.getOffset()));
                 crypto.skip(this.position(status.getOffset()));
                 return crypto;
             }
             else {
-                return new CryptoInputStream(in, cryptor, header, vault.numberOfChunks(status.getOffset()));
+                return new CryptoInputStream(in, vault.getFileContentCryptor(), header, vault.numberOfChunks(status.getOffset()));
             }
         }
         catch(IOException e) {
@@ -80,15 +78,15 @@ public class CryptoReadFeature implements Read {
     }
 
     protected long chunk(final long offset) {
-        return offset / vault.getCryptor().fileContentCryptor().cleartextChunkSize();
+        return offset / vault.getFileContentCryptor().cleartextChunkSize();
     }
 
     protected long align(final long offset) {
-        return vault.getCryptor().fileHeaderCryptor().headerSize() + this.chunk(offset) * vault.getCryptor().fileContentCryptor().ciphertextChunkSize();
+        return vault.getFileHeaderCryptor().headerSize() + this.chunk(offset) * vault.getFileContentCryptor().ciphertextChunkSize();
     }
 
     protected long position(final long offset) {
-        return offset % vault.getCryptor().fileContentCryptor().cleartextChunkSize();
+        return offset % vault.getFileContentCryptor().cleartextChunkSize();
     }
 
     @Override

@@ -54,6 +54,8 @@ import org.cryptomator.cryptolib.Cryptors;
 import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
+import org.cryptomator.cryptolib.api.FileContentCryptor;
+import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 import org.cryptomator.cryptolib.api.InvalidPassphraseException;
 import org.cryptomator.cryptolib.api.KeyFile;
 
@@ -512,8 +514,12 @@ public class CryptoVault implements Vault {
         return masterkey;
     }
 
-    public Cryptor getCryptor() {
-        return cryptor;
+    public FileHeaderCryptor getFileHeaderCryptor() {
+        return cryptor.fileHeaderCryptor();
+    }
+
+    public FileContentCryptor getFileContentCryptor() {
+        return cryptor.fileContentCryptor();
     }
 
     public CryptorCache getFileNameCryptor() {

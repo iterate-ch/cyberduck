@@ -74,13 +74,13 @@ public class CryptoOutputStreamTest {
     public void testSmallChunksToWrite() throws Exception {
         final CryptoVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
-        final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
+        final FileHeader header = vault.getFileHeaderCryptor().create();
         final CryptoOutputStream<?> stream = new CryptoOutputStream<>(new StatusOutputStream<Void>(cipherText) {
             @Override
             public Void getStatus() {
                 return null;
             }
-        }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);
+        }, vault.getFileContentCryptor(), header, new RandomNonceGenerator(), 0);
 
         final byte[] part1 = RandomUtils.nextBytes(1024);
         final byte[] part2 = RandomUtils.nextBytes(1024);
@@ -90,7 +90,7 @@ public class CryptoOutputStreamTest {
 
         final byte[] read = new byte[part1.length + part2.length];
         final byte[] expected = ByteBuffer.allocate(part1.length + part2.length).put(part1).put(part2).array();
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header, 0);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getFileContentCryptor(), header, 0);
         assertEquals(expected.length, cryptoInputStream.read(read));
         cryptoInputStream.close();
 
@@ -101,20 +101,20 @@ public class CryptoOutputStreamTest {
     public void testWriteWithChunkSize() throws Exception {
         final CryptoVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
-        final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
+        final FileHeader header = vault.getFileHeaderCryptor().create();
         final CryptoOutputStream<?> stream = new CryptoOutputStream<>(new StatusOutputStream<Void>(cipherText) {
             @Override
             public Void getStatus() {
                 return null;
             }
-        }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);
+        }, vault.getFileContentCryptor(), header, new RandomNonceGenerator(), 0);
 
-        final byte[] cleartext = RandomUtils.nextBytes(vault.getCryptor().fileContentCryptor().cleartextChunkSize());
+        final byte[] cleartext = RandomUtils.nextBytes(vault.getFileContentCryptor().cleartextChunkSize());
         stream.write(cleartext, 0, cleartext.length);
         stream.close();
 
         final byte[] read = new byte[cleartext.length];
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header, 0);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getFileContentCryptor(), header, 0);
         assertEquals(cleartext.length, cryptoInputStream.read(read));
         cryptoInputStream.close();
 
@@ -125,20 +125,20 @@ public class CryptoOutputStreamTest {
     public void testWriteLargeChunk() throws Exception {
         final CryptoVault vault = this.getVault();
         final ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
-        final FileHeader header = vault.getCryptor().fileHeaderCryptor().create();
+        final FileHeader header = vault.getFileHeaderCryptor().create();
         final CryptoOutputStream<?> stream = new CryptoOutputStream<>(new StatusOutputStream<Void>(cipherText) {
             @Override
             public Void getStatus() {
                 return null;
             }
-        }, vault.getCryptor(), header, new RandomNonceGenerator(), 0);
+        }, vault.getFileContentCryptor(), header, new RandomNonceGenerator(), 0);
 
-        final byte[] cleartext = RandomUtils.nextBytes(vault.getCryptor().fileContentCryptor().cleartextChunkSize() + 1);
+        final byte[] cleartext = RandomUtils.nextBytes(vault.getFileContentCryptor().cleartextChunkSize() + 1);
         stream.write(cleartext, 0, cleartext.length);
         stream.close();
 
         final byte[] read = new byte[cleartext.length];
-        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getCryptor(), header, 0);
+        final CryptoInputStream cryptoInputStream = new CryptoInputStream(new ByteArrayInputStream(cipherText.toByteArray()), vault.getFileContentCryptor(), header, 0);
         IOUtils.readFully(cryptoInputStream, read);
         cryptoInputStream.close();
 

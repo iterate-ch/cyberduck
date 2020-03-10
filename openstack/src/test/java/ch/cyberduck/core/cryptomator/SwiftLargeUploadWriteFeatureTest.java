@@ -41,7 +41,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -74,11 +73,10 @@ public class SwiftLargeUploadWriteFeatureTest extends AbstractSwiftTest {
         session.withRegistry(new DefaultVaultRegistry(new DisabledPasswordStore(), new DisabledPasswordCallback(), cryptomator));
         final SwiftRegionService regionService = new SwiftRegionService(session);
         final CryptoWriteFeature feature = new CryptoWriteFeature<List<StorageObject>>(session, new SwiftLargeUploadWriteFeature(session, regionService,
-                new SwiftSegmentService(session, ".segments-test/")), cryptomator);
+            new SwiftSegmentService(session, ".segments-test/")), cryptomator);
         final TransferStatus writeStatus = new TransferStatus();
-        final Cryptor cryptor = cryptomator.getCryptor();
-        final FileHeader header = cryptor.fileHeaderCryptor().create();
-        writeStatus.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
+        writeStatus.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         writeStatus.setNonces(new RandomNonceGenerator());
         writeStatus.setLength(-1L);
         final OutputStream out = feature.write(test, writeStatus, new DisabledConnectionCallback());
