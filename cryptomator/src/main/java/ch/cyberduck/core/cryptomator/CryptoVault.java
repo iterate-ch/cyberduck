@@ -54,6 +54,8 @@ import org.cryptomator.cryptolib.Cryptors;
 import org.cryptomator.cryptolib.api.AuthenticationFailedException;
 import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.CryptorProvider;
+import org.cryptomator.cryptolib.api.FileContentCryptor;
+import org.cryptomator.cryptolib.api.FileHeaderCryptor;
 import org.cryptomator.cryptolib.api.InvalidPassphraseException;
 import org.cryptomator.cryptolib.api.KeyFile;
 
@@ -92,6 +94,7 @@ public class CryptoVault implements Vault {
     private final Preferences preferences = PreferencesFactory.get();
 
     private Cryptor cryptor;
+    private CryptorCache fileNameCryptor;
 
     private CryptoFilename filenameProvider;
     private CryptoDirectory directoryProvider;
@@ -255,6 +258,7 @@ public class CryptoVault implements Vault {
             }
         }
         cryptor = null;
+        fileNameCryptor = null;
     }
 
     private KeyFile upgrade(final Session<?> session, final KeyFile keyFile, final CharSequence passphrase) throws BackgroundException {
@@ -300,6 +304,7 @@ public class CryptoVault implements Vault {
         }
         try {
             cryptor = provider.createFromKeyFile(keyFile, new NFCNormalizer().normalize(passphrase), pepper, keyFile.getVersion());
+            fileNameCryptor = new CryptorCache(cryptor.fileNameCryptor());
         }
         catch(IllegalArgumentException e) {
             throw new VaultException("Failure reading key file", e);
@@ -419,10 +424,10 @@ public class CryptoVault implements Vault {
         final Path inflated = this.inflate(session, file);
         final Pattern pattern = vaultVersion == VAULT_VERSION_DEPRECATED ? BASE32_PATTERN : BASE64URL_PATTERN;
         final Matcher m = pattern.matcher(inflated.getName());
-        if(m.find()) {
+        if(m.matches()) {
             final String ciphertext = m.group(1);
             try {
-                final String cleartextFilename = cryptor.fileNameCryptor().decryptFilename(
+                final String cleartextFilename = fileNameCryptor.decryptFilename(
                     vaultVersion == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
                     ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
                 final PathAttributes attributes = new PathAttributes(file.attributes());
@@ -509,12 +514,16 @@ public class CryptoVault implements Vault {
         return masterkey;
     }
 
-    public byte[] getPepper() {
-        return pepper;
+    public FileHeaderCryptor getFileHeaderCryptor() {
+        return cryptor.fileHeaderCryptor();
     }
 
-    public Cryptor getCryptor() {
-        return cryptor;
+    public FileContentCryptor getFileContentCryptor() {
+        return cryptor.fileContentCryptor();
+    }
+
+    public CryptorCache getFileNameCryptor() {
+        return fileNameCryptor;
     }
 
     public CryptoFilename getFilenameProvider() {

@@ -33,8 +33,6 @@ import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.cryptomator.cryptolib.api.Cryptor;
-
 import java.io.IOException;
 
 public class CryptoWriteFeature<Reply> implements Write<Reply> {
@@ -67,7 +65,6 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
 
     public StatusOutputStream<Reply> writeEncrypted(final Path encrypted, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final Cryptor cryptor = vault.getCryptor();
             final StatusOutputStream<Reply> out;
             if(status.getOffset() == 0) {
                 out = proxy.write(encrypted,
@@ -77,11 +74,11 @@ public class CryptoWriteFeature<Reply> implements Write<Reply> {
             else {
                 out = proxy.write(encrypted,
                     new TransferStatus(status).
-                        length(vault.toCiphertextSize(status.getLength()) - cryptor.fileHeaderCryptor().headerSize()).
+                        length(vault.toCiphertextSize(status.getLength()) - vault.getFileHeaderCryptor().headerSize()).
                         skip(vault.toCiphertextSize(status.getOffset())).
                         withMime(null), callback);
             }
-            return new CryptoOutputStream<Reply>(out, cryptor, cryptor.fileHeaderCryptor().decryptHeader(status.getHeader()),
+            return new CryptoOutputStream<Reply>(out, vault.getFileContentCryptor(), vault.getFileHeaderCryptor().decryptHeader(status.getHeader()),
                 status.getNonces(), vault.numberOfChunks(status.getOffset()));
         }
         catch(IOException e) {

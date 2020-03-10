@@ -29,7 +29,6 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
-import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.nio.charset.StandardCharsets;
@@ -64,9 +63,8 @@ public class CryptoDirectoryV6Feature<Reply> implements Directory<Reply> {
             session._getFeature(Directory.class).mkdir(intermediate, region, new TransferStatus());
         }
         // Write header
-        final Cryptor cryptor = vault.getCryptor();
-        final FileHeader header = cryptor.fileHeaderCryptor().create();
-        status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+        final FileHeader header = vault.getFileHeaderCryptor().create();
+        status.setHeader(vault.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RandomNonceGenerator());
         final Path target = proxy.mkdir(encrypt, region, status);
         // Implementation may return new copy of attributes without encryption attributes

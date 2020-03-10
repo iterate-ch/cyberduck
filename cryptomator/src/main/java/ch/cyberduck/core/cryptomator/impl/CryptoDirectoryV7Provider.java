@@ -50,9 +50,8 @@ public class CryptoDirectoryV7Provider extends CryptoDirectoryV6Provider {
 
     @Override
     public String toEncrypted(final Session<?> session, final String directoryId, final String filename, final EnumSet<Path.Type> type) throws BackgroundException {
-        final String ciphertextName = String.format("%s%s",
-            cryptomator.getCryptor().fileNameCryptor().encryptFilename(BaseEncoding.base64Url(),
-                filename, directoryId.getBytes(StandardCharsets.UTF_8)), EXTENSION_REGULAR);
+        final String ciphertextName = cryptomator.getFileNameCryptor().encryptFilename(BaseEncoding.base64Url(),
+            filename, directoryId.getBytes(StandardCharsets.UTF_8)) + EXTENSION_REGULAR;
         if(log.isDebugEnabled()) {
             log.debug(String.format("Encrypted filename %s to %s", filename, ciphertextName));
         }

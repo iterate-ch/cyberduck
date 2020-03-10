@@ -66,7 +66,6 @@ import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -161,11 +160,10 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
         final Path dir1 = cryptomator.getFeature(session, Directory.class, new DAVDirectoryFeature(session)).mkdir(new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Local localDirectory1 = new Local(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         final Path file1 = new Path(dir1, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        final Cryptor cryptor = cryptomator.getCryptor();
-        final FileHeader header = cryptor.fileHeaderCryptor().create();
+        final FileHeader header = cryptomator.getFileHeaderCryptor().create();
         final byte[] content = RandomUtils.nextBytes(62768);
         final TransferStatus status = new TransferStatus();
-        status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+        status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(content.length)));
         final StatusOutputStream<String> out = new CryptoWriteFeature<String>(session, new DAVWriteFeature(session), cryptomator).write(
             file1, status, new DisabledConnectionCallback());

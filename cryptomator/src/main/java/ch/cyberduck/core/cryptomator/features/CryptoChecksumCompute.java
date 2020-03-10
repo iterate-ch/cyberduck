@@ -35,7 +35,6 @@ import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.log4j.Logger;
-import org.cryptomator.cryptolib.api.Cryptor;
 import org.cryptomator.cryptolib.api.FileHeader;
 
 import java.io.IOException;
@@ -65,9 +64,8 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
         }
         if(null == status.getHeader()) {
             // Write header to be reused in writer
-            final Cryptor cryptor = cryptomator.getCryptor();
-            final FileHeader header = cryptor.fileHeaderCryptor().create();
-            status.setHeader(cryptor.fileHeaderCryptor().encryptHeader(header));
+            final FileHeader header = cryptomator.getFileHeaderCryptor().create();
+            status.setHeader(cryptomator.getFileHeaderCryptor().encryptHeader(header));
         }
         // Make nonces reusable in case we need to compute a checksum
         status.setNonces(new RotatingNonceGenerator(cryptomator.numberOfChunks(status.getLength())));
@@ -80,8 +78,8 @@ public class CryptoChecksumCompute extends AbstractChecksumCompute {
         }
         try {
             final PipedOutputStream source = new PipedOutputStream();
-            final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), cryptomator.getCryptor(),
-                cryptomator.getCryptor().fileHeaderCryptor().decryptHeader(header), nonces, cryptomator.numberOfChunks(offset));
+            final CryptoOutputStream<Void> out = new CryptoOutputStream<Void>(new VoidStatusOutputStream(source), cryptomator.getFileContentCryptor(),
+                cryptomator.getFileHeaderCryptor().decryptHeader(header), nonces, cryptomator.numberOfChunks(offset));
             final PipedInputStream sink = new PipedInputStream(source, PreferencesFactory.get().getInteger("connection.chunksize"));
             final ThreadPool pool = ThreadPoolFactory.get("checksum", 1);
             try {
