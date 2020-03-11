@@ -233,6 +233,7 @@ public class Host implements Serializable, Comparable<Host> {
         this.volume = other.volume;
         this.readonly = other.readonly;
         this.custom = other.custom;
+        this.labels = other.labels;
     }
 
     @Override
