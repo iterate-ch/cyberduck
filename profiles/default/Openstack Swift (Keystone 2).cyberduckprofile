@@ -5,7 +5,9 @@
         <key>Protocol</key>
         <string>swift</string>
         <key>Vendor</key>
-        <string>keystone2</string>
+        <string>iterate GmbH</string>
+        <key>Bundled</key>
+        <true/>
         <key>Context</key>
         <string>/v2.0/tokens</string>
         <key>Description</key>
