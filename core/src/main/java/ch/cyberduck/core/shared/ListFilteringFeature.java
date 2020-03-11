@@ -74,7 +74,7 @@ public abstract class ListFilteringFeature {
     /**
      * Filter previous versions and delete markers
      */
-    private final class IgnoreDuplicateFilter implements CacheReference<Path> {
+    private static final class IgnoreDuplicateFilter implements CacheReference<Path> {
         private final CacheReference<Path> proxy;
 
         public IgnoreDuplicateFilter(final CacheReference<Path> proxy) {
