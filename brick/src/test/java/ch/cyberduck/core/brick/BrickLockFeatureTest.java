@@ -24,6 +24,7 @@ import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVLockFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.dav.DAVWriteFeature;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -42,7 +43,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class BrickLockFeatureTest extends AbstractBrickTest {
@@ -61,7 +62,15 @@ public class BrickLockFeatureTest extends AbstractBrickTest {
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
             new DisabledStreamListener(), status, new DisabledConnectionCallback());
         assertTrue(new DAVFindFeature(session).find(test));
-        new DAVLockFeature(session).lock(test);
-        new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+        final String lockid = new DAVLockFeature(session).lock(test);
+        assertNotNull(lockid);
+        try {
+            new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(null)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+            fail();
+        }
+        catch(AccessDeniedException e) {
+            // Expected
+        }
+        new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lockid)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 }
