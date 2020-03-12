@@ -16,12 +16,12 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
@@ -65,7 +65,7 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
         assertEquals(1, updated.getVersions().size());
         assertEquals(test, updated.getVersions().get(0));
         new SDSVersioningFeature(session, nodeid).revert(test);
-        final Path reverted = new SDSListService(session, nodeid, true).list(room, new DisabledListProgressListener()).find(new SimplePathPredicate(test));
+        final Path reverted = new SDSListService(session, nodeid, true).list(room, new DisabledListProgressListener()).find(new DefaultPathPredicate(test));
         assertEquals(test.attributes().getVersionId(), reverted.attributes().getVersionId());
         assertEquals(1, reverted.attributes().getVersions().size());
         assertEquals(new Path(test.getParent(), test.getName(), test.getType(), new PathAttributes().withVersionId(version.id)), reverted.attributes().getVersions().get(0));
