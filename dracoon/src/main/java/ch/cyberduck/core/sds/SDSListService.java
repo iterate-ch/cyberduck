@@ -39,9 +39,19 @@ public class SDSListService implements ListService {
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
 
+    /**
+     * Lookup previous versions
+     */
+    private final boolean references;
+
     public SDSListService(final SDSSession session, final SDSNodeIdProvider nodeid) {
+        this(session, nodeid, PreferencesFactory.get().getBoolean("sds.versioning.references.enable"));
+    }
+
+    public SDSListService(final SDSSession session, final SDSNodeIdProvider nodeid, final boolean references) {
         this.session = session;
         this.nodeid = nodeid;
+        this.references = references;
     }
 
     @Override
@@ -52,7 +62,7 @@ public class SDSListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<Path>();
         try {
-            Integer offset = 0;
+            int offset = 0;
             final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
             NodeList nodes;
             do {
@@ -63,6 +73,11 @@ public class SDSListService implements ListService {
                     final PathAttributes attributes = feature.toAttributes(node);
                     final EnumSet<Path.Type> type = feature.toType(node);
                     final Path file = new Path(directory, node.getName(), type, attributes);
+                    if(references && node.getCntDeletedVersions() > 0) {
+                        final AttributedList<Path> versions = feature.versions(file);
+                        children.addAll(versions);
+                        attributes.setVersions(versions);
+                    }
                     children.add(file);
                     listener.chunk(directory, children);
                 }
