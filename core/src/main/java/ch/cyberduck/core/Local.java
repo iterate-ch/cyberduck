@@ -406,10 +406,6 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
         }
     }
 
-    /**
-     * Compares the two files using their path with a string comparision ignoring case.
-     * Implementations should override this depending on the case sensitivity of the file system.
-     */
     @Override
     public boolean equals(final Object o) {
         if(this == o) {
@@ -419,15 +415,12 @@ public class Local extends AbstractPath implements Referenceable, Serializable {
             return false;
         }
         final Local local = (Local) o;
-        if(path != null ? !path.equalsIgnoreCase(local.path) : local.path != null) {
-            return false;
-        }
-        return true;
+        return Objects.equals(path, local.path);
     }
 
     @Override
     public int hashCode() {
-        return path != null ? StringUtils.lowerCase(path).hashCode() : 0;
+        return Objects.hash(path);
     }
 
     public String toURL() {
