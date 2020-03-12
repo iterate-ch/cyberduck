@@ -71,8 +71,7 @@ public class S3MetadataFeature implements Headers {
                 log.debug(String.format("Write metadata %s for file %s", status, file));
             }
             try {
-                // Make sure to copy existing attributes
-                final StorageObject target = new S3AttributesFinderFeature(session).details(file);
+                final StorageObject target = new StorageObject(containerService.getKey(file));
                 target.replaceAllMetadata(new HashMap<>(status.getMetadata()));
                 // Apply non standard ACL
                 if(accessControlListFeature != null) {

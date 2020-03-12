@@ -1,19 +1,27 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.SHA256ChecksumCompute;
+import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
+import org.apache.commons.lang3.RandomUtils;
+import org.jets3t.service.model.StorageObject;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -91,6 +99,28 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final String deleteMarker = new S3AttributesFinderFeature(session).find(test).getVersionId();
         assertNotNull(deleteMarker);
         assertNotEquals(versionId, deleteMarker);
+    }
+
+    @Test
+    public void testPreviousVersionReferences() throws Exception {
+        final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path test = new S3TouchFeature(session).touch(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final String versionId = new S3AttributesFinderFeature(session).find(test).getVersionId();
+        assertEquals(test.attributes().getVersionId(), versionId);
+        final byte[] content = RandomUtils.nextBytes(512);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        status.setChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), status));
+        final HttpResponseOutputStream<StorageObject> out = new S3WriteFeature(session).write(test, status, new DisabledConnectionCallback());
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        out.close();
+        assertTrue(new S3AttributesFinderFeature(session, true).find(test).getVersions().isEmpty());
+        final Path update = new Path(bucket, test.getName(), test.getType(),
+            new PathAttributes().withVersionId(out.getStatus().getServiceMetadata("version-id").toString()));
+        final AttributedList<Path> versions = new S3AttributesFinderFeature(session, true).find(update).getVersions();
+        assertFalse(versions.isEmpty());
+        assertEquals(test, versions.get(0));
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 
     @Test

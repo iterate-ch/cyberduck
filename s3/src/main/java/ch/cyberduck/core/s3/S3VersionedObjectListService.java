@@ -73,6 +73,10 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         this(session, PreferencesFactory.get().getInteger("s3.listing.concurrency"), PreferencesFactory.get().getBoolean("s3.versioning.references.enable"));
     }
 
+    public S3VersionedObjectListService(final S3Session session, final boolean references) {
+        this(session, PreferencesFactory.get().getInteger("s3.listing.concurrency"), references);
+    }
+
     /**
      * @param session     Connection
      * @param concurrency Number of threads to handle prefixes
@@ -102,8 +106,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     bucket.getName(), prefix, String.valueOf(Path.DELIMITER),
                     preferences.getInteger("s3.listing.chunksize"),
                     priorLastKey, priorLastVersionId, false);
-                // Amazon S3 returns object versions in the order in which they were
-                // stored, with the most recently stored returned first.
+                // Amazon S3 returns object versions in the order in which they were stored, with the most recently stored returned first.
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {
                     final String key = PathNormalizer.normalize(URLDecoder.decode(marker.getKey(), StandardCharsets.UTF_8.name()));
                     if(String.valueOf(Path.DELIMITER).equals(key)) {
@@ -138,15 +141,15 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                             attributes.setStorageClass(object.getStorageClass());
                         }
                     }
-                    final Path f = new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
+                    final Path f = new Path(directory.isDirectory() ? directory : directory.getParent(), PathNormalizer.name(key), EnumSet.of(Path.Type.file), attributes);
                     if(references) {
                         if(attributes.isDuplicate()) {
-                            final Path current = children.find(new LatestVersionPathPredicate(f));
-                            if(current != null) {
+                            final Path latest = children.find(new LatestVersionPathPredicate(f));
+                            if(latest != null) {
                                 // Reference version
-                                final AttributedList<Path> versions = new AttributedList<>(current.attributes().getVersions());
+                                final AttributedList<Path> versions = new AttributedList<>(latest.attributes().getVersions());
                                 versions.add(f);
-                                current.attributes().setVersions(versions);
+                                latest.attributes().setVersions(versions);
                             }
                             else {
                                 log.warn(String.format("No current version found for %s", f));
