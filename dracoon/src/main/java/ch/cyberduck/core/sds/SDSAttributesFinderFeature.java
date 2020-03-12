@@ -72,13 +72,20 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
             return PathAttributes.EMPTY;
         }
         try {
-            final Node node = new NodesApi(session.getClient()).getFsNode(
-                Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
-            final PathAttributes attr = this.toAttributes(node);
-            if(references) {
-                attr.setVersions(this.versions(file));
+            if(file.attributes().isDuplicate()) {
+                final DeletedNode node = new NodesApi(session.getClient()).getFsDeletedNode(Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())),
+                    StringUtils.EMPTY, null);
+                return this.toAttributes(node);
             }
-            return attr;
+            else {
+                final Node node = new NodesApi(session.getClient()).getFsNode(
+                    Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
+                final PathAttributes attr = this.toAttributes(node);
+                if(references) {
+                    attr.setVersions(this.versions(file));
+                }
+                return attr;
+            }
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Failure to read attributes of {0}", e, file);

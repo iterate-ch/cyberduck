@@ -64,6 +64,8 @@ public class SDSVersioningFeatureTest extends AbstractSDSTest {
         assertFalse(updated.getVersions().isEmpty());
         assertEquals(1, updated.getVersions().size());
         assertEquals(test, updated.getVersions().get(0));
+        assertTrue(new SDSFindFeature(nodeid).find(updated.getVersions().get(0)));
+        assertEquals(test.attributes().getVersionId(), new SDSAttributesFinderFeature(session, nodeid).find(updated.getVersions().get(0)).getVersionId());
         new SDSVersioningFeature(session, nodeid).revert(test);
         final Path reverted = new SDSListService(session, nodeid, true).list(room, new DisabledListProgressListener()).find(new DefaultPathPredicate(test));
         assertEquals(test.attributes().getVersionId(), reverted.attributes().getVersionId());
