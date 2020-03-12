@@ -24,7 +24,7 @@ import ch.cyberduck.core.dav.DAVFindFeature;
 import ch.cyberduck.core.dav.DAVLockFeature;
 import ch.cyberduck.core.dav.DAVUploadFeature;
 import ch.cyberduck.core.dav.DAVWriteFeature;
-import ch.cyberduck.core.exception.AccessDeniedException;
+import ch.cyberduck.core.exception.LockedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpUploadFeature;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -65,10 +65,10 @@ public class BrickLockFeatureTest extends AbstractBrickTest {
         final String lockid = new DAVLockFeature(session).lock(test);
         assertNotNull(lockid);
         try {
-            new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(null)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
+            new DAVLockFeature(session).lock(test);
             fail();
         }
-        catch(AccessDeniedException e) {
+        catch(LockedException e) {
             // Expected
         }
         new DAVDeleteFeature(session).delete(Collections.singletonMap(test, new TransferStatus().withLockId(lockid)), new DisabledPasswordCallback(), new Delete.DisabledCallback());
