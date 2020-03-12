@@ -100,6 +100,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
                     versions.add(new Path(file.getParent(), file.getName(), file.getType(),
                         this.toAttributes(item)));
                 }
+                offset += chunksize;
             }
             while(nodes.getItems().size() == chunksize);
             return versions;
