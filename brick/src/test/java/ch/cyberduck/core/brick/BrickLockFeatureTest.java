@@ -45,7 +45,7 @@ import java.util.UUID;
 public class BrickLockFeatureTest extends AbstractBrickTest {
 
     @Test
-    public void testLockNotSupported() throws Exception {
+    public void testLock() throws Exception {
         final TransferStatus status = new TransferStatus();
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
         final byte[] content = "test".getBytes(StandardCharsets.UTF_8);
