@@ -474,6 +474,7 @@ public class InfoController extends ToolbarWindowController {
 
     public void setFilenameField(NSTextField filenameField) {
         this.filenameField = filenameField;
+        this.filenameField.setSelectable(true);
         this.filenameField.setEditable(false);
     }
 
