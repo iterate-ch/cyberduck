@@ -156,6 +156,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (Utils.IsNotBlank(password))
                 {
                     View.Password = password;
+                    // Make sure password fetched from keychain and set in field is set in model
+                    credentials.setPassword(password);
                 }
             }
             Update(credentials, options);

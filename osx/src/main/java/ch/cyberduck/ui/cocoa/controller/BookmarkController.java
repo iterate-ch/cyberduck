@@ -432,7 +432,11 @@ public class BookmarkController extends SheetController implements CollectionLis
                         bookmark.getPort(),
                         bookmark.getHostname(),
                         bookmark.getCredentials().getUsername());
-                    updateField(passwordField, password);
+                    if(StringUtils.isNotBlank(password)) {
+                        updateField(passwordField, password);
+                        // Make sure password fetched from keychain and set in field is set in model
+                        bookmark.getCredentials().setPassword(password);
+                    }
                 }
             }
         });
