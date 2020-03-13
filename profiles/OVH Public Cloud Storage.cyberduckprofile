@@ -34,6 +34,6 @@
         <key>Password Placeholder</key>
         <string>Password</string>
         <key>Context</key>
-        <string>/v3/tokens</string>
+        <string>/v3/auth/tokens</string>
     </dict>
 </plist>
