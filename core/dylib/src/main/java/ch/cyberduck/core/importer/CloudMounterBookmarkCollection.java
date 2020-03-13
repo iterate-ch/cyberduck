@@ -100,7 +100,11 @@ public class CloudMounterBookmarkCollection extends ThirdpartyBookmarkCollection
                 continue;
             }
             final PlistDeserializer options = new PlistDeserializer(details);
-            final Host host = new Host(protocol, options.stringForKey("host"), new Credentials(options.stringForKey("login")));
+            final String hostname = options.stringForKey("host");
+            if(StringUtils.isBlank(hostname)) {
+                continue;
+            }
+            final Host host = new Host(protocol, hostname, new Credentials(options.stringForKey("login")));
             host.setNickname(bookmark.stringForKey("MountFSLabel"));
             host.setDefaultPath(options.stringForKey("remotePath"));
             this.add(host);

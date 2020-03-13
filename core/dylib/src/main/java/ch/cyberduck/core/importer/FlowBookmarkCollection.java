@@ -81,10 +81,10 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
         }
     }
 
-    private boolean read(final ProtocolFactory protocols, final PlistDeserializer bookmark) {
+    private void read(final ProtocolFactory protocols, final PlistDeserializer bookmark) {
         final String server = bookmark.stringForKey("Server");
-        if(null == server) {
-            return false;
+        if(StringUtils.isBlank(server)) {
+            return;
         }
         final Host host = new Host(protocols.forScheme(Scheme.ftp), server);
         final String port = bookmark.stringForKey("Port");
@@ -147,6 +147,5 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
             }
         }
         this.add(host);
-        return true;
     }
 }

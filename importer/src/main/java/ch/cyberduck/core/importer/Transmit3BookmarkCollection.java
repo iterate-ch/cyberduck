@@ -111,7 +111,6 @@ public class Transmit3BookmarkCollection extends ThirdpartyBookmarkCollection {
     private void parse(final ProtocolFactory protocols, final TransmitFavorite favorite) {
         String server = favorite.server();
         if(StringUtils.isBlank(server)) {
-            log.warn("No server name:" + server);
             return;
         }
         int port = favorite.port();

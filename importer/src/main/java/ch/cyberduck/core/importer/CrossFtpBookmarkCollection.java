@@ -25,6 +25,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 
@@ -69,7 +70,11 @@ public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
         public void startElement(String name, Attributes attrs) {
             switch(name) {
                 case "site":
-                    current = new Host(protocols.forScheme(Scheme.ftp), attrs.getValue("hName"));
+                    final String hostname = attrs.getValue("hName");
+                    if(StringUtils.isBlank(hostname)) {
+                        break;
+                    }
+                    current = new Host(protocols.forScheme(Scheme.ftp), hostname);
                     current.setNickname(attrs.getValue("name"));
                     current.getCredentials().setUsername(attrs.getValue("un"));
                     current.setWebURL(attrs.getValue("wURL"));
