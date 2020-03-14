@@ -48,23 +48,23 @@ public final class DefaultFailureDiagnostics implements FailureDiagnostics<Backg
         if(log.isDebugEnabled()) {
             log.debug(String.format("Determine cause for failure %s", failure));
         }
-        if(failure instanceof LoginFailureException) {
-            return Type.login;
-        }
-        if(failure instanceof ConnectionCanceledException) {
-            return Type.cancel;
-        }
-        if(failure instanceof UnsupportedException) {
-            return Type.unsupported;
-        }
         for(Throwable cause : ExceptionUtils.getThrowableList(failure)) {
+            if(failure instanceof UnsupportedException) {
+                return Type.unsupported;
+            }
+            if(failure instanceof LoginFailureException) {
+                return Type.login;
+            }
+            if(cause instanceof ResolveFailedException) {
+                return Type.network;
+            }
+            if(failure instanceof ConnectionCanceledException) {
+                return Type.cancel;
+            }
             if(cause instanceof ConnectionTimeoutException) {
                 return Type.network;
             }
             if(cause instanceof ConnectionRefusedException) {
-                return Type.network;
-            }
-            if(cause instanceof ResolveFailedException) {
                 return Type.network;
             }
             if(cause instanceof SSLNegotiateException) {
