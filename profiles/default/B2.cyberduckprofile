@@ -28,7 +28,7 @@
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
-        <string>api.backblaze.com</string>
+        <string>api.backblazeb2.com</string>
         <key>Hostname Configurable</key>
         <false/>
         <key>Default Port</key>
