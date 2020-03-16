@@ -34,7 +34,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.LoginFailureException;
-import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Pairing;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.features.Upload;
@@ -134,10 +133,6 @@ public class BrickSession extends DAVSession {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
-        if(type == Lock.class) {
-            // HTTP/1.1 500 <html><body><h1>Internal Server Error (500)</h1></body></html>
-            return null;
-        }
         if(type == Write.class) {
             return (T) new BrickWriteFeature(this);
         }
