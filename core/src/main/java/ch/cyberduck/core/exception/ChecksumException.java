@@ -17,7 +17,7 @@ package ch.cyberduck.core.exception;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-public class ChecksumException extends BackgroundException {
+public class ChecksumException extends RetriableAccessDeniedException {
     private static final long serialVersionUID = 3459390972588992492L;
 
     public ChecksumException(final String detail, final Throwable cause) {
