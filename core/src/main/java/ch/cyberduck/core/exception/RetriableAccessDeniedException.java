@@ -25,14 +25,6 @@ public class RetriableAccessDeniedException extends AccessDeniedException {
         super(detail);
     }
 
-    public RetriableAccessDeniedException(final String message, final String detail) {
-        super(message, detail);
-    }
-
-    public RetriableAccessDeniedException(final String message, final String detail, final Throwable cause) {
-        super(message, detail, cause);
-    }
-
     public RetriableAccessDeniedException(final String detail, final Throwable cause) {
         super(detail, cause);
     }

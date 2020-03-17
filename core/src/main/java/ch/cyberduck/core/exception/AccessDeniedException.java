@@ -27,14 +27,6 @@ public class AccessDeniedException extends BackgroundException {
         super();
     }
 
-    public AccessDeniedException(final String message, final String detail) {
-        super(message, detail);
-    }
-
-    public AccessDeniedException(final String message, final String detail, final Throwable cause) {
-        super(message, detail, cause);
-    }
-
     public AccessDeniedException(final String detail) {
         super(LocaleFactory.localizedString("Access denied", "Error"), detail);
     }
