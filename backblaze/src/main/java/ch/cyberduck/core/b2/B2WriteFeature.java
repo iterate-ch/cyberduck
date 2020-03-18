@@ -101,35 +101,29 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                         return session.getClient().uploadLargeFilePart(uploadUrl, status.getPart(), entity, checksum.hash);
                     }
                     else {
-                        final B2GetUploadUrlResponse uploadUrl;
                         if(null == urls.get()) {
-                            uploadUrl = session.getClient().getUploadUrl(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
+                            final B2GetUploadUrlResponse uploadUrl = session.getClient().getUploadUrl(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()));
                             if(log.isDebugEnabled()) {
                                 log.debug(String.format("Obtained upload URL %s for file %s", uploadUrl, file));
                             }
                             urls.set(uploadUrl);
+                            return this.upload(uploadUrl, entity, checksum);
                         }
                         else {
-                            uploadUrl = urls.get();
+                            final B2GetUploadUrlResponse uploadUrl = urls.get();
                             if(log.isDebugEnabled()) {
-                                log.debug(String.format("Use upload URL %s for file %s", uploadUrl, file));
+                                log.debug(String.format("Use cached upload URL %s for file %s", uploadUrl, file));
                             }
-                        }
-                        try {
-                            final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
-                            if(null != status.getTimestamp()) {
-                                fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
+                            try {
+                                return this.upload(uploadUrl, entity, checksum);
                             }
-                            return session.getClient().uploadFile(uploadUrl,
-                                containerService.getKey(file),
-                                entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
-                                status.getMime(),
-                                fileinfo);
-                        }
-                        catch(IOException | B2ApiException e) {
-                            // Upload many files to the same upload_url until that URL gives an error
-                            urls.remove();
-                            throw e;
+                            catch(IOException | B2ApiException e) {
+                                // Upload many files to the same upload_url until that URL gives an error
+                                log.warn(String.format("Remove cached upload URL after failure %s", e));
+                                urls.remove();
+                                // Retry
+                                return this.upload(uploadUrl, entity, checksum);
+                            }
                         }
                     }
                 }
@@ -139,6 +133,18 @@ public class B2WriteFeature extends AbstractHttpWriteFeature<BaseB2Response> imp
                 catch(IOException e) {
                     throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
                 }
+            }
+
+            protected BaseB2Response upload(final B2GetUploadUrlResponse uploadUrl, final AbstractHttpEntity entity, final Checksum checksum) throws B2ApiException, IOException, BackgroundException {
+                final Map<String, String> fileinfo = new HashMap<>(status.getMetadata());
+                if(null != status.getTimestamp()) {
+                    fileinfo.put(X_BZ_INFO_SRC_LAST_MODIFIED_MILLIS, String.valueOf(status.getTimestamp()));
+                }
+                return session.getClient().uploadFile(uploadUrl,
+                    containerService.getKey(file),
+                    entity, checksum.algorithm == HashAlgorithm.sha1 ? checksum.hash : "do_not_verify",
+                    status.getMime(),
+                    fileinfo);
             }
 
             @Override
