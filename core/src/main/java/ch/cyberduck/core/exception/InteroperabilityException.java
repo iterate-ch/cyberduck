@@ -31,6 +31,14 @@ public class InteroperabilityException extends BackgroundException {
         super(LocaleFactory.localizedString("Interoperability failure", "Error"), detail, null);
     }
 
+    public InteroperabilityException(final String message, final String detail) {
+        super(message, detail);
+    }
+
+    public InteroperabilityException(final String message, final String detail, final Throwable cause) {
+        super(message, detail, cause);
+    }
+
     public InteroperabilityException(final String detail, final Throwable cause) {
         super(LocaleFactory.localizedString("Interoperability failure", "Error"), detail, cause);
     }
