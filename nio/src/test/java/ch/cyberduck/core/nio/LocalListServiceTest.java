@@ -94,7 +94,8 @@ public class LocalListServiceTest {
             final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
             assertTrue(list.contains(file));
             assertTrue(list.contains(symlinkRelative));
-            assertTrue(list.get(symlinkRelative).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
+            assertFalse(list.get(symlinkRelative).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
+            assertTrue(list.get(symlinkRelative).getSymlinkTarget().getAbsolute().endsWith(file.getName()));
             assertTrue(list.contains(symlinkAbsolute));
             assertTrue(list.get(symlinkAbsolute).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
             new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative), new DisabledLoginCallback(), new Delete.DisabledCallback());

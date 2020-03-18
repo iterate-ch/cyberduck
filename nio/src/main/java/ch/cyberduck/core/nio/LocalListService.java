@@ -82,11 +82,11 @@ public class LocalListService implements ListService {
 
     protected boolean post(final java.nio.file.Path path, final Path file) {
         if(Files.isSymbolicLink(path)) {
-            final Path target;
-            Path.Type type;
             try {
-                target = new Path(path.toRealPath().toString(), EnumSet.of(Path.Type.file));
-                if(Files.isDirectory(path.toRealPath())) {
+                final java.nio.file.Path p = Files.readSymbolicLink(path);
+                final Path target = new Path(p.toString(), EnumSet.of(Path.Type.file));
+                final Path.Type type;
+                if(Files.isDirectory(p)) {
                     type = Path.Type.directory;
                 }
                 else {
