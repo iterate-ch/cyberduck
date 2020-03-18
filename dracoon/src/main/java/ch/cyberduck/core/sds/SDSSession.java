@@ -173,9 +173,9 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         Matcher matcher = Pattern.compile(VERSION_REGEX).matcher(version.getRestApiVersion());
         if(matcher.matches()) {
             if(new Version(matcher.group(1)).compareTo(new Version(PreferencesFactory.get().getProperty("sds.version.lts"))) < 0) {
-                throw new InteroperabilityException(LocaleFactory.localizedString(
-                    "Your company is using an outdated version of the DRACOON backend that is no longer compatible with this app. Please contact your administrator to update the version of the DRACOON backend.",
-                    "SDS"));
+                throw new InteroperabilityException(
+                    LocaleFactory.localizedString("DRACOON environment needs to be updated", "SDS"),
+                    LocaleFactory.localizedString("Your DRACOON environment is outdated and no longer works with this application. Please contact your administrator.", "SDS"));
             }
         }
         final Credentials credentials = host.getCredentials();
