@@ -156,7 +156,7 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         final List<Path> sourceSegments = segmentService.list(sourceFile);
 
         final Path targetBucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        targetBucket.attributes().setRegion("IAD");
+        targetBucket.attributes().setRegion("DFW");
         final Path targetFolder = new Path(targetBucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final Path movedFile = new SwiftMoveFeature(session, regionService).move(sourceFile, targetFile,
