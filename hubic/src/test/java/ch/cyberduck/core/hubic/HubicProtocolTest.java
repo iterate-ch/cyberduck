@@ -25,7 +25,8 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class HubicProtocolTest {
 
@@ -41,7 +42,7 @@ public class HubicProtocolTest {
             new Local("../profiles/hubiC.cyberduckprofile"));
         assertFalse(profile.isHostnameConfigurable());
         assertFalse(profile.isPortConfigurable());
-        assertTrue(profile.isUsernameConfigurable());
+        assertFalse(profile.isUsernameConfigurable());
         assertFalse(profile.isPasswordConfigurable());
     }
 }
