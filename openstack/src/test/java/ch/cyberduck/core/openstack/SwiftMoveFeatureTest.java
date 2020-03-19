@@ -139,7 +139,7 @@ public class SwiftMoveFeatureTest extends AbstractSwiftTest {
         }).toArray());
     }
 
-    @Test
+    @Test(expected = BackgroundException.class)
     public void testMoveLargeObjectToDifferentBucket() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");

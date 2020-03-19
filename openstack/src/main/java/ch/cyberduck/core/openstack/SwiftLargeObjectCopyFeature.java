@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 public class SwiftLargeObjectCopyFeature implements Copy {
@@ -41,7 +42,6 @@ public class SwiftLargeObjectCopyFeature implements Copy {
     private final SwiftSession session;
     private final SwiftRegionService regionService;
     private final SwiftSegmentService segmentService;
-    private final SwiftObjectListService listService;
 
     public SwiftLargeObjectCopyFeature(final SwiftSession session) {
         this(session, new SwiftRegionService(session));
@@ -53,15 +53,9 @@ public class SwiftLargeObjectCopyFeature implements Copy {
 
     public SwiftLargeObjectCopyFeature(final SwiftSession session, final SwiftRegionService regionService,
                                        final SwiftSegmentService segmentService) {
-        this(session, regionService, segmentService, new SwiftObjectListService(session, regionService));
-    }
-
-    public SwiftLargeObjectCopyFeature(final SwiftSession session, final SwiftRegionService regionService,
-                                       final SwiftSegmentService segmentService, final SwiftObjectListService listService) {
         this.session = session;
         this.regionService = regionService;
         this.segmentService = segmentService;
-        this.listService = listService;
     }
 
     @Override
@@ -94,6 +88,9 @@ public class SwiftLargeObjectCopyFeature implements Copy {
                 destination.setAttributes(copyPart.attributes());
                 completed.add(destination);
             }
+            catch(GenericException e) {
+                throw new SwiftExceptionMappingService().map(e);
+            }
             catch(IOException e) {
                 throw new DefaultIOExceptionMappingService().map(e);
             }
@@ -116,6 +113,9 @@ public class SwiftLargeObjectCopyFeature implements Copy {
             // The value of the Content-Length header is the total size of all segment objects, and the value of the ETag header is calculated by taking
             // the ETag value of each segment, concatenating them together, and then returning the MD5 checksum of the result.
             stored.setMd5sum(checksum);
+        }
+        catch(GenericException e) {
+            throw new SwiftExceptionMappingService().map(e);
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);

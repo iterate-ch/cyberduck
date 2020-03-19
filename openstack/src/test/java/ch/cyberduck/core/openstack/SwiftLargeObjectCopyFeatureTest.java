@@ -203,7 +203,7 @@ public class SwiftLargeObjectCopyFeatureTest extends AbstractSwiftTest {
         final Path targetFolder = new Path(targetBucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
         final Path targetFile = new Path(targetFolder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final SwiftObjectListService listService = new SwiftObjectListService(session, regionService);
-        final Path copiedFile = new SwiftLargeObjectCopyFeature(session, regionService, segmentService, listService)
+        final Path copiedFile = new SwiftLargeObjectCopyFeature(session, regionService, segmentService)
             .copy(sourceFile, targetFile, new TransferStatus(), new DisabledConnectionCallback());
         // copied file exists
         assertTrue(findFeature.find(copiedFile));
