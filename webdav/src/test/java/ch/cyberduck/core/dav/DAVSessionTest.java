@@ -32,14 +32,12 @@ import ch.cyberduck.core.ssl.TrustManagerHostnameCallback;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import javax.security.auth.x500.X500Principal;
 import java.security.Principal;
-import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -59,10 +57,7 @@ public class DAVSessionTest extends AbstractDAVTest {
 
     @Test
     public void testConnect() throws Exception {
-        //PreferencesFactory.set(new ch.cyberduck.core.preferences.ApplicationUserDefaultsPreferences());
-        Security.insertProviderAt(new BouncyCastleProvider(), 1);
-        Host host = new Host(new DAVSSLProtocol(), "demo.owncloud.com", 443, "/remote.php/webdav",
-            new Credentials("demo", "demo"));
+        final Host host = new Host(new DAVSSLProtocol(), "svn.cyberduck.io");
         final DAVSession session = new DAVSession(host,
             new CertificateStoreX509TrustManager(new DisabledCertificateTrustCallback(), new DefaultTrustManagerHostnameCallback(host), new DefaultCertificateStore()),
             new CertificateStoreX509KeyManager(new DisabledCertificateIdentityCallback(), host, new DefaultCertificateStore()));
