@@ -10,6 +10,9 @@ https://cyberduck.io/
 - [Bugfix] Download fails for files with whitespace in name (Google Storage) (#10931)
 - [Bugfix] Unable to access documents in Shared with me (Google Drive)
 - [Bugfix] Read timeout after copying large file (OpenStack Swift)
+- [Bugfix] Repeated prompt for authorization code (hubiC)
+- [Bugfix] Immediate retry for failure with cached upload channel (Backblaze B2)
+- [Bugfix] Set timestamp with X-OC-Mtime header (Nextcloud, ownCloud)
 
 7.2.6
 - [Feature] Importer for bookmarks from Transmit 5 (macOS)
