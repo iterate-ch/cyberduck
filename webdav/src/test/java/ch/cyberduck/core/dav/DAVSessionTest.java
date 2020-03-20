@@ -91,21 +91,6 @@ public class DAVSessionTest extends AbstractDAVTest {
     }
 
     @Test(expected = InteroperabilityException.class)
-    public void testSsl() throws Exception {
-        final Host host = new Host(new DAVSSLProtocol(), "test.cyberduck.ch");
-        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertFalse(session.alert(new DisabledConnectionCallback()));
-        try {
-            session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-            session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        }
-        catch(BackgroundException e) {
-            assertEquals("Unexpected response (405 Method Not Allowed). Please contact your web hosting service provider for assistance.", e.getDetail());
-            throw e;
-        }
-    }
-
-    @Test(expected = InteroperabilityException.class)
     public void testHtmlResponse() throws Exception {
         final Host host = new Host(new DAVProtocol(), "media.cyberduck.ch");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
