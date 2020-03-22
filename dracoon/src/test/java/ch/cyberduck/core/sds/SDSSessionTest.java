@@ -16,7 +16,6 @@ package ch.cyberduck.core.sds;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.ConnectionRefusedException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
 import ch.cyberduck.core.exception.LoginCanceledException;
@@ -56,19 +55,6 @@ public class SDSSessionTest extends AbstractSDSTest {
         assertNotNull(session.getClient());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         assertFalse(new SDSListService(session, new SDSNodeIdProvider(session)).list(new Path("/", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener()).isEmpty());
-    }
-
-    @Test(expected = AccessDeniedException.class)
-    public void testLoginNotfound() throws Exception {
-        final Host host = new Host(new SDSProtocol(), "heroes.dracoon.team", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
-        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-        assertTrue(session.isConnected());
-        assertNotNull(session.getClient());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        fail();
     }
 
     @Test
