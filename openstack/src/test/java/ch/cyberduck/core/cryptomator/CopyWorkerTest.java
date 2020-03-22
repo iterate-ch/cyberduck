@@ -70,6 +70,7 @@ import java.util.EnumSet;
 import ch.iterate.openstack.swift.model.StorageObject;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
@@ -127,6 +128,7 @@ public class CopyWorkerTest extends AbstractSwiftTest {
 
     @Test
     public void testCopyToDifferentFolderLongFilenameCryptomator() throws Exception {
+        assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
         final Path home = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.volume, Path.Type.directory));
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));

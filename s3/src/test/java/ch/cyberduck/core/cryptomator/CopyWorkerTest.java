@@ -66,6 +66,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 @Category(IntegrationTest.class)
 @RunWith(value = Parameterized.class)
@@ -122,6 +123,7 @@ public class CopyWorkerTest extends AbstractS3Test {
 
     @Test
     public void testCopyToDifferentFolderLongFilenameCryptomator() throws Exception {
+        assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
         final Path home = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final CryptoVault cryptomator = new CryptoVault(new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)));
         final Path vault = cryptomator.create(session, null, new VaultCredentials("test"), new DisabledPasswordStore(), vaultVersion);
