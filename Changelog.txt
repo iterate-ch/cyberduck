@@ -1,7 +1,7 @@
 Cyberduck
 https://cyberduck.io/
 
-8.0.0
+7.3.0
 - [Feature] Support for vault format version 7 (Cryptomator) (#10825)
 - [Feature] Labels for bookmarks (macOS) (#9719)
 - [Feature] Group bookmarks by labels in menu (macOS)
@@ -13,6 +13,8 @@ https://cyberduck.io/
 - [Bugfix] Repeated prompt for authorization code (hubiC)
 - [Bugfix] Immediate retry for failure with cached upload channel (Backblaze B2)
 - [Bugfix] Set timestamp with X-OC-Mtime header (Nextcloud, ownCloud)
+- [Bugfix] Copy files to different bucket (Backblaze B2) (#10924)
+- [Bugfix] Allow downloading files marked as abusive (Google Drive) (#10377)
 
 7.2.6
 - [Feature] Importer for bookmarks from Transmit 5 (macOS)
