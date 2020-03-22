@@ -158,6 +158,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
         final byte[] buffer = new byte[1 * 1024];
         try {
             assertEquals(content.length, IOUtils.copyLarge(in, out, buffer));
+            out.close();
         }
         catch(IOException e) {
             final BackgroundException failure = new DefaultIOExceptionMappingService().map(e);
