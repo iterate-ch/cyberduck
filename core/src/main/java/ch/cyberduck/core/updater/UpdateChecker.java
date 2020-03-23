@@ -16,8 +16,21 @@ package ch.cyberduck.core.updater;
  */
 
 public interface UpdateChecker {
+    /**
+     * Check for new version
+     *
+     * @param background Run in background
+     */
     void check(boolean background);
+
+    /**
+     * @return True if user has privilege to update installed application
+     */
     boolean hasUpdatePrivileges();
 
-    boolean isUpdateInProgress();
+    /**
+     * @param item Menu item or button to validate
+     * @return True if user interface to check for update should be enabled
+     */
+    boolean isUpdateInProgress(Object item);
 }

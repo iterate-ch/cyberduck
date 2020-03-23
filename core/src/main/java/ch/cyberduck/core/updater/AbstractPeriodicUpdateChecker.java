@@ -86,7 +86,7 @@ public abstract class AbstractPeriodicUpdateChecker implements PeriodicUpdateChe
     }
 
     @Override
-    public boolean isUpdateInProgress() {
+    public boolean isUpdateInProgress(final Object item) {
         return false;
     }
 

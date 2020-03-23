@@ -16,6 +16,7 @@ package ch.cyberduck.core.sparkle;
  */
 
 import ch.cyberduck.binding.Outlet;
+import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.PreferencesUseragentProvider;
@@ -50,7 +51,7 @@ public class SparklePeriodicUpdateChecker extends AbstractPeriodicUpdateChecker 
     }
 
     @Override
-    public boolean isUpdateInProgress() {
-        return null != updater && updater.updateInProgress();
+    public boolean isUpdateInProgress(final Object item) {
+        return null != updater && !updater.validateMenuItem((NSMenuItem) item);
     }
 }
