@@ -23,6 +23,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
@@ -31,10 +32,12 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 
 public class SDSListService implements ListService {
+    private static final Logger log = Logger.getLogger(SDSListService.class);
 
     private final SDSSession session;
     private final SDSNodeIdProvider nodeid;
@@ -74,9 +77,14 @@ public class SDSListService implements ListService {
                     final EnumSet<Path.Type> type = feature.toType(node);
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     if(references && node.getCntDeletedVersions() != null && node.getCntDeletedVersions() > 0) {
-                        final AttributedList<Path> versions = feature.versions(file);
-                        children.addAll(versions);
-                        attributes.setVersions(versions);
+                        try {
+                            final AttributedList<Path> versions = feature.versions(file);
+                            children.addAll(versions);
+                            attributes.setVersions(versions);
+                        }
+                        catch(AccessDeniedException e) {
+                            log.warn(String.format("Ignore failure %s fetching versions for %s", e, file));
+                        }
                     }
                     children.add(file);
                     listener.chunk(directory, children);

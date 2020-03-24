@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.io.Checksum;
@@ -34,12 +35,14 @@ import ch.cyberduck.core.sds.io.swagger.client.model.DeletedNodeVersionsList;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SDSAttributesFinderFeature implements AttributesFinder {
+    private static final Logger log = Logger.getLogger(SDSAttributesFinderFeature.class);
 
     public static final String KEY_CNT_DOWNLOADSHARES = "count_downloadshares";
     public static final String KEY_CNT_UPLOADSHARES = "count_uploadshares";
@@ -82,7 +85,12 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
                     Long.parseLong(nodeid.getFileid(file, new DisabledListProgressListener())), StringUtils.EMPTY, null);
                 final PathAttributes attr = this.toAttributes(node);
                 if(references) {
-                    attr.setVersions(this.versions(file));
+                    try {
+                        attr.setVersions(this.versions(file));
+                    }
+                    catch(AccessDeniedException e) {
+                        log.warn(String.format("Ignore failure %s fetching versions for %s", e, file));
+                    }
                 }
                 return attr;
             }
