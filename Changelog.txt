@@ -15,6 +15,7 @@ https://cyberduck.io/
 - [Bugfix] Set timestamp with X-OC-Mtime header (Nextcloud, ownCloud)
 - [Bugfix] Copy files to different bucket (Backblaze B2) (#10924)
 - [Bugfix] Allow downloading files marked as abusive (Google Drive) (#10377)
+- [Bugfix] Apply public read permissions to files selec (Google Drive)
 
 7.2.6
 - [Feature] Importer for bookmarks from Transmit 5 (macOS)
