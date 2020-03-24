@@ -54,7 +54,7 @@ public class DriveSharingUrlProvider implements PromptUrlProvider {
         permission.setType("anyone");
         try {
             session.getClient().permissions().create(fileid.getFileid(file, new DisabledListProgressListener()),
-                permission);
+                permission).execute();
         }
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Failure to write attributes of {0}", e, file);
