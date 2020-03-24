@@ -18,6 +18,15 @@ package ch.cyberduck.core.updater;
 import java.time.Duration;
 
 public interface PeriodicUpdateChecker extends UpdateChecker {
+
+    /**
+     * Disable periodic update checks
+     */
     void unregister();
+
+    /**
+     * Enable periodic update checks
+     * @return Delay until next scheduled update check
+     */
     Duration register();
 }
