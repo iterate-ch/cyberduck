@@ -179,8 +179,7 @@ public class Credentials implements Comparable<Credentials> {
     /**
      * Use this to define if passwords should be added to the keychain
      *
-     * @param saved If true, the password of the login is added to the keychain upon
-     *              successful login
+     * @param saved If true, the password of the login is added to the keychain upon successful login
      */
     public void setSaved(final boolean saved) {
         this.persist = saved;
@@ -224,8 +223,8 @@ public class Credentials implements Comparable<Credentials> {
     /**
      * SSH specific
      *
-     * @return true if public key authentication should be used. This is the case, if a
-     * private key file has been specified
+     * @return true if public key authentication should be used. This is the case, if a private key file has been
+     * specified
      * @see #setIdentity
      */
     public boolean isPublicKeyAuthentication() {
@@ -293,6 +292,16 @@ public class Credentials implements Comparable<Credentials> {
      */
     public boolean validate(final Protocol protocol, final LoginOptions options) {
         return protocol.validate(this, options);
+    }
+
+    /**
+     * Clear secrets in memory
+     */
+    public void reset() {
+        this.setPassword(StringUtils.EMPTY);
+        this.setToken(StringUtils.EMPTY);
+        this.setOauth(OAuthTokens.EMPTY);
+        this.setIdentityPassphrase(StringUtils.EMPTY);
     }
 
     @Override
