@@ -52,9 +52,9 @@ public class SDSNodeIdProviderTest extends AbstractSDSTest {
     public void getFileIdFile() throws Exception {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path bucket = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
-        final String name = new AlphanumericRandomStringService().random();
+        final String name = String.format("%s%s", new AlphanumericRandomStringService().random(), new AlphanumericRandomStringService().random());
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(bucket, name, EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertNotNull(nodeid.getFileid(file, new DisabledListProgressListener()));
+        assertNotNull(nodeid.getFileid(new Path(bucket, name, EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
         try {
             assertNull(nodeid.getFileid(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new DisabledListProgressListener()));
             fail();
