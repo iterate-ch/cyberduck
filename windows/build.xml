@@ -169,7 +169,7 @@
             <include name="changelog.rss"/>
             <replacefilter token="${TIMESTAMP}" value="${touch.time}"/>
             <replacefilter token="${ARCHIVE}"
-                           value="https://update.cyberduck.io/windows/${sparkle.feed}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
+                           value="https://update.cyberduck.io/${sparkle.feed}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
             <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
             <replacefilter token="${FULLVERSION}" value="${normalized.version}.${revision}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
