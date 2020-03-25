@@ -52,14 +52,23 @@ public class HttpRange {
         this.length = length;
     }
 
+    /**
+     * @return First byte position
+     */
     public long getStart() {
         return this.start;
     }
 
+    /**
+     * @return Last byte position
+     */
     public long getEnd() {
         return this.end;
     }
 
+    /**
+     * @return Number of bytes
+     */
     public long getLength() {
         return length;
     }
