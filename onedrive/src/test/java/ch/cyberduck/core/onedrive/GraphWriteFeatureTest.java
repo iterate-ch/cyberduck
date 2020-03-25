@@ -123,6 +123,29 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
     }
 
     @Test
+    public void testWriteSingleByte() throws Exception {
+        final GraphWriteFeature feature = new GraphWriteFeature(session);
+        final Path container = new DefaultHomeFinderService(session).find();
+        final byte[] content = RandomUtils.nextBytes(1);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(content.length);
+        final Path file = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final HttpResponseOutputStream<Void> out = feature.write(file, status, new DisabledConnectionCallback());
+        final ByteArrayInputStream in = new ByteArrayInputStream(content);
+        assertEquals(content.length, IOUtils.copyLarge(in, out));
+        in.close();
+        out.close();
+        assertNull(out.getStatus());
+        assertTrue(new DefaultFindFeature(session).find(file));
+        final byte[] compare = new byte[content.length];
+        final InputStream stream = new GraphReadFeature(session).read(file, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(content, compare);
+        new GraphDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
     public void testWriteZeroLength() throws Exception {
         final GraphWriteFeature feature = new GraphWriteFeature(session);
         final Path container = new DefaultHomeFinderService(session).find();

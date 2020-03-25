@@ -108,11 +108,13 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
         private final AtomicBoolean close = new AtomicBoolean();
 
         private Long offset = 0L;
+        private final Long length;
 
         public MultipartOutputStream(final String uploadToken, final Path file, final TransferStatus status) {
             this.uploadToken = uploadToken;
             this.file = file;
             this.overall = status;
+            this.length = status.getOffset() + status.getLength();
         }
 
         @Override
@@ -141,7 +143,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                                     header = String.format("%d-%d/*", range.getStart(), range.getEnd());
                                 }
                                 else {
-                                    header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), overall.getOffset() + overall.getLength());
+                                    header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), length);
                                 }
                                 request.addHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %s", header));
                             }

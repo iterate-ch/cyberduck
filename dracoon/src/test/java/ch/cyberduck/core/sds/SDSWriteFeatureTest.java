@@ -129,4 +129,22 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
         final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
         final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
     }
+
+    @Test
+    public void testWriteZeroSingleByte() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final byte[] content = RandomUtils.nextBytes(2);
+        final TransferStatus status = new TransferStatus().length(content.length);
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        final VersionId version = out.getStatus();
+        assertNotNull(version);
+        assertTrue(new DefaultFindFeature(session).find(test));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }
