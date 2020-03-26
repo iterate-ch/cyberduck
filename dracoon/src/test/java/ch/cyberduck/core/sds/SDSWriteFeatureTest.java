@@ -69,6 +69,8 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
         }
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));
+        assertTrue(new SDSFindFeature(nodeid).find(test));
+        assertEquals(version.id, new SDSAttributesFinderFeature(session, nodeid).find(test).getVersionId());
         final byte[] compare = new byte[content.length];
         final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
         IOUtils.readFully(stream, compare);
