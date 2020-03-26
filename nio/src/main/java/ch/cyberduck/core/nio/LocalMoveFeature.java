@@ -19,6 +19,7 @@ import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -36,6 +37,9 @@ public class LocalMoveFeature implements Move {
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
+        if(!new LocalFindFeature(session).find(file)) {
+            throw new NotfoundException(file.getAbsolute());
+        }
         if(status.isExists()) {
             new LocalDeleteFeature(session).delete(Collections.singletonMap(renamed, status), new DisabledPasswordCallback(), callback);
         }
