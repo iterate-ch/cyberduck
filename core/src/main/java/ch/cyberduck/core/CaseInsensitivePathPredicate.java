@@ -15,18 +15,23 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.unicode.NFCNormalizer;
+import ch.cyberduck.core.unicode.UnicodeNormalizer;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
 public final class CaseInsensitivePathPredicate implements CacheReference<Path> {
 
+    private static final UnicodeNormalizer normalizer = new NFCNormalizer();
+
     private final Path.Type type;
     private final String path;
 
     public CaseInsensitivePathPredicate(final Path file) {
         this.type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
-        this.path = StringUtils.lowerCase(file.getAbsolute());
+        this.path = StringUtils.lowerCase(normalizer.normalize(file.getAbsolute()).toString());
     }
 
     @Override

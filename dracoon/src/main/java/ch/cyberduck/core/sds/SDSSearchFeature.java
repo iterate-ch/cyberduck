@@ -27,6 +27,7 @@ import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
+import ch.cyberduck.core.unicode.NFCNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -47,7 +48,7 @@ public class SDSSearchFeature implements Search {
         try {
             final AttributedList<Path> result = new AttributedList<>();
             final NodeList list = new NodesApi(session.getClient()).searchFsNodes(
-                String.format("*%s*", regex.toPattern().pattern()), StringUtils.EMPTY, null,
+                String.format("*%s*", new NFCNormalizer().normalize(regex.toPattern().pattern())), StringUtils.EMPTY, null,
                 -1, null, null, null, Long.valueOf(nodeid.getFileid(workdir, listener)), null);
             final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
             for(Node node : list.getItems()) {

@@ -18,12 +18,17 @@ package ch.cyberduck.core;
  * feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.unicode.NFCNormalizer;
+import ch.cyberduck.core.unicode.UnicodeNormalizer;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
  * Path predicate that takes the region and version id of the path into account for comparisons.
  */
 public class DefaultPathPredicate implements CacheReference<Path> {
+
+    private static final UnicodeNormalizer normalizer = new NFCNormalizer();
 
     private final String reference;
 
@@ -40,8 +45,7 @@ public class DefaultPathPredicate implements CacheReference<Path> {
                 qualifier += file.attributes().getVersionId();
             }
         }
-        final String path = file.getAbsolute();
-        reference = "[" + type + "]" + "-" + qualifier + path;
+        reference = "[" + type + "]" + "-" + qualifier + normalizer.normalize(file.getAbsolute());
     }
 
     /**
