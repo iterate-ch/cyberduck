@@ -19,6 +19,7 @@ import ch.cyberduck.core.Controller;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
+import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.worker.TransferWorker;
 
@@ -58,6 +59,11 @@ public class TransferWorkerBackgroundAction<T> extends RegistryBackgroundAction<
             worker.cancel();
             throw e;
         }
+    }
+
+    @Override
+    protected boolean login(final Session<?> session, final LoginFailureException e) {
+        return false;
     }
 
     @Override
