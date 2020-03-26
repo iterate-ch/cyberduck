@@ -35,6 +35,8 @@ import ch.cyberduck.core.sds.io.swagger.client.model.Node;
 import ch.cyberduck.core.sds.io.swagger.client.model.NodeList;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptConverter;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.unicode.NFCNormalizer;
+import ch.cyberduck.core.unicode.UnicodeNormalizer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -49,6 +51,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 public class SDSNodeIdProvider implements IdProvider {
     private static final Logger log = Logger.getLogger(SDSNodeIdProvider.class);
 
+    private static final UnicodeNormalizer normalizer = new NFCNormalizer();
     private static final String ROOT_NODE_ID = "0";
 
     private final SDSSession session;
@@ -88,12 +91,12 @@ public class SDSNodeIdProvider implements IdProvider {
                 type = "file";
             }
             // Top-level nodes only
-            final NodeList nodes = new NodesApi(session.getClient()).searchFsNodes(URIEncoder.encode(file.getName()),
+            final NodeList nodes = new NodesApi(session.getClient()).searchFsNodes(URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
                 StringUtils.EMPTY, null, -1,
                 String.format("type:eq:%s|parentPath:eq:%s/", type, file.getParent().isRoot() ? StringUtils.EMPTY : file.getParent().getAbsolute()),
                 null, null, null, null);
             for(Node node : nodes.getItems()) {
-                if(node.getName().equals(file.getName())) {
+                if(node.getName().equals(normalizer.normalize(file.getName()))) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Return node %s for file %s", node.getId(), file));
                     }
