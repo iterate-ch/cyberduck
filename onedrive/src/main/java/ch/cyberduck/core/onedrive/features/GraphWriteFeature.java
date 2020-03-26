@@ -77,7 +77,7 @@ public class GraphWriteFeature implements Write<Void> {
             final OneDriveFile oneDriveFile = new OneDriveFile(session.getClient(), folder,
                 URIEncoder.encode(file.getName()), OneDriveItem.ItemIdentifierType.Path);
             final OneDriveUploadSession upload = oneDriveFile.createUploadSession();
-            final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, new TransferStatus(status));
+            final ChunkedOutputStream proxy = new ChunkedOutputStream(upload, file, status);
             final int partsize = preferences.getInteger("onedrive.upload.multipart.partsize.minimum")
                 * preferences.getInteger("onedrive.upload.multipart.partsize.factor");
             return new HttpResponseOutputStream<Void>(new MemorySegementingOutputStream(proxy, partsize)) {
@@ -121,11 +121,13 @@ public class GraphWriteFeature implements Write<Void> {
         private final AtomicBoolean close = new AtomicBoolean();
 
         private Long offset = 0L;
+        private final Long length;
 
         public ChunkedOutputStream(final OneDriveUploadSession upload, final Path file, final TransferStatus status) {
             this.upload = upload;
             this.file = file;
             this.overall = status;
+            this.length = status.getOffset() + status.getLength();
         }
 
         @Override
@@ -142,7 +144,7 @@ public class GraphWriteFeature implements Write<Void> {
                 header = String.format("%d-%d/*", range.getStart(), range.getEnd());
             }
             else {
-                header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), overall.getOffset() + overall.getLength());
+                header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), length);
             }
             try {
                 new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
