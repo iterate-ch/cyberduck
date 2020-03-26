@@ -29,7 +29,15 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_logging_UnifiedSystemLogAppender_l
         category = OS_LOG_DEFAULT;
     }
     else {
-        category = os_log_create([appBundleIdentifier cStringUsingEncoding:kUnicodeUTF8Format], [JNFJavaToNSString(env, logger)  cStringUsingEncoding:kUnicodeUTF8Format]);
+        const char* subsystem = [appBundleIdentifier cStringUsingEncoding:kUnicodeUTF8Format];
+        if(NULL == subsystem) {
+            return;
+        }
+        const char* name = [JNFJavaToNSString(env, logger)  cStringUsingEncoding:kUnicodeUTF8Format];
+        if(NULL == name) {
+            return;
+        }
+        category = os_log_create(subsystem, name);
     }
     os_log_with_type(category, type, "%{public}@", (CFStringRef)JNFJavaToNSString(env, message));
 }

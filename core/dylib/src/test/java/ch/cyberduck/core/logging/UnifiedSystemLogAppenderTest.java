@@ -32,4 +32,11 @@ public class UnifiedSystemLogAppenderTest {
         a.append(new LoggingEvent("f", Logger.getLogger(UnifiedSystemLogAppender.class),
             Level.ERROR, "Test", new RuntimeException()));
     }
+
+    @Test
+    public void testAppend유준환() {
+        final UnifiedSystemLogAppender a = new UnifiedSystemLogAppender();
+        a.setLayout(new SimpleLayout());
+        a.log(UnifiedSystemLogAppender.OS_LOG_TYPE_INFO, "http-유준환.txt-1", "유준환");
+    }
 }
