@@ -431,7 +431,7 @@ public class CryptoVault implements Vault {
                     vaultVersion == VAULT_VERSION_DEPRECATED ? BaseEncoding.base32() : BaseEncoding.base64Url(),
                     ciphertext, file.getParent().attributes().getDirectoryId().getBytes(StandardCharsets.UTF_8));
                 final PathAttributes attributes = new PathAttributes(file.attributes());
-                if(inflated.getName().startsWith(DIR_PREFIX)) {
+                if(this.isDirectory(inflated)) {
                     final Permission permission = attributes.getPermission();
                     permission.setUser(permission.getUser().or(Permission.Action.execute));
                     permission.setGroup(permission.getGroup().or(Permission.Action.execute));
@@ -449,10 +449,8 @@ public class CryptoVault implements Vault {
                 // Add reference for vault
                 attributes.setVault(home);
                 final EnumSet<Path.Type> type = EnumSet.copyOf(file.getType());
-                if(vaultVersion == VAULT_VERSION_DEPRECATED) {
-                    type.remove(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.file : Path.Type.directory);
-                    type.add(inflated.getName().startsWith(DIR_PREFIX) ? Path.Type.directory : Path.Type.file);
-                }
+                type.remove(this.isDirectory(inflated) ? Path.Type.file : Path.Type.directory);
+                type.add(this.isDirectory(inflated) ? Path.Type.directory : Path.Type.file);
                 type.remove(Path.Type.encrypted);
                 type.add(Path.Type.decrypted);
                 final Path decrypted = new Path(file.getParent().attributes().getDecrypted(), cleartextFilename, type, attributes);
@@ -470,6 +468,13 @@ public class CryptoVault implements Vault {
             throw new CryptoFilenameMismatchException(
                 String.format("Failure to decrypt %s due to missing pattern match for %s", inflated.getName(), pattern));
         }
+    }
+
+    private boolean isDirectory(final Path p) {
+        if(vaultVersion == VAULT_VERSION_DEPRECATED) {
+            return p.getName().startsWith(DIR_PREFIX);
+        }
+        return p.isDirectory();
     }
 
     @Override
