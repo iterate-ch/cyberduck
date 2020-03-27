@@ -20,7 +20,6 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
@@ -72,21 +71,15 @@ public class B2LargeUploadServiceTest extends AbstractB2Test {
 
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         final B2LargeUploadService upload = new B2LargeUploadService(session, fileid, new B2WriteFeature(session, fileid),
-                PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
-                PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency"));
+            PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
+            PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency"));
 
         upload.upload(test, local, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new DisabledStreamListener(),
-                status, new DisabledConnectionCallback());
+            status, new DisabledConnectionCallback());
         assertEquals(checksum, new B2AttributesFinderFeature(session, fileid).find(test).getChecksum());
-
+        assertEquals(content.length, status.getOffset(), 0L);
+        status.validate();
         assertTrue(status.isComplete());
-        try {
-            status.validate();
-            fail();
-        }
-        catch(ConnectionCanceledException e) {
-
-        }
         assertEquals(content.length, status.getOffset());
 
         assertTrue(new DefaultFindFeature(session).find(test));
