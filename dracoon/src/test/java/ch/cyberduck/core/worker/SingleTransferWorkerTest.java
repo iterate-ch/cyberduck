@@ -182,9 +182,9 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
 
         }.run(session));
         local.delete();
-        assertEquals(98305L, counter.getSent(), 0L);
+        assertEquals(content.length, new SDSAttributesFinderFeature(conn, fileid).find(test).getSize());
+        assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        assertEquals(98305L, new SDSAttributesFinderFeature(conn, fileid).find(test).getSize());
         new SDSDeleteFeature(conn, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 

@@ -141,9 +141,9 @@ public class SingleTransferWorkerTest extends AbstractSFTPTest {
 
         }.run(session));
         local.delete();
-        assertEquals(98305L, counter.getSent(), 0L);
+        assertEquals(content.length, new SFTPAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        assertEquals(98305L, new SFTPAttributesFinderFeature(session).find(test).getSize());
         new SFTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

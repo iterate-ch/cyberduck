@@ -130,8 +130,8 @@ public class SingleTransferWorkerTest extends AbstractDAVTest {
 
         }.run(session));
         local.delete();
-        assertEquals(98305L, counter.getSent(), 0L);
-        assertEquals(98305L, new DAVAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

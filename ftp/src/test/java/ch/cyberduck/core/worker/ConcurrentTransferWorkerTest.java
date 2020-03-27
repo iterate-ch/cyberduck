@@ -150,8 +150,8 @@ public class ConcurrentTransferWorkerTest extends AbstractFTPTest {
         );
         assertTrue(worker.run(session));
         local.delete();
-        assertEquals(98305L, counter.getSent(), 0L);
-        assertEquals(98305L, new DefaultAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
         new FTPDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }

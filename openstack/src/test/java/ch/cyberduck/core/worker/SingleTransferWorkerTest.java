@@ -129,8 +129,8 @@ public class SingleTransferWorkerTest {
 
         }.run(session));
         local.delete();
-        assertEquals(2L * 1024L * 1024L, counter.getSent(), 0L);
-        assertEquals(2L * 1024L * 1024L, new SwiftAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new SwiftAttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
         new SwiftDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
