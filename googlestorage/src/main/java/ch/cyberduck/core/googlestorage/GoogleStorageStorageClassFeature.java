@@ -67,8 +67,8 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
                 ).execute();
             }
             else {
-                session.getClient().objects().patch(containerService.getContainer(file).getName(),
-                    containerService.getKey(file),
+                session.getClient().objects().copy(containerService.getContainer(file).getName(),
+                    containerService.getKey(file), containerService.getContainer(file).getName(), containerService.getKey(file),
                     new StorageObject().setStorageClass(redundancy)
                 ).execute();
             }
