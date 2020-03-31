@@ -71,4 +71,20 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
         assertEquals("COLDLINE", new GoogleStorageAttributesFinderFeature(session).find(test).getStorageClass());
         new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
+
+    @Test
+    public void testSetClassObject() throws Exception {
+        final Path bucket = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
+        final Path test = new GoogleStorageTouchFeature(session).touch(new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final GoogleStorageStorageClassFeature feature = new GoogleStorageStorageClassFeature(session);
+        assertEquals("STANDARD", feature.getClass(test));
+        feature.setClass(test, "MULTI_REGIONAL");
+        assertEquals("MULTI_REGIONAL", feature.getClass(test));
+        feature.setClass(test, "NEARLINE");
+        assertEquals("NEARLINE", feature.getClass(test));
+        feature.setClass(test, "COLDLINE");
+        assertEquals("COLDLINE", feature.getClass(test));
+        assertEquals("COLDLINE", new GoogleStorageAttributesFinderFeature(session).find(test).getStorageClass());
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 }
