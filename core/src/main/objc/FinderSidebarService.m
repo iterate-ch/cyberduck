@@ -31,6 +31,29 @@ NSString* getBundleName() {
     return bundleName;
 }
 
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_containsItem(JNIEnv *env, jobject this, jstring file, jstring name) {
+    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, name), NULL);
+    if (!list) {
+        NSLog(@"Error getting shared file list reference");
+        return NO;
+    }
+    CFArrayRef items = LSSharedFileListCopySnapshot(list, NULL);
+    if (!items) {
+        NSLog(@"Error getting shared file list items snapshot copy reference");
+        return NO;
+    }
+    OSStatus err;
+    for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
+        LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
+        if([(NSString*) LSSharedFileListItemCopyDisplayName(item) isEqualToString:[JNFJavaToNSString(env, file) lastPathComponent]]) {
+            return YES;
+        }
+    }
+    CFRelease(items);
+    CFRelease(list);
+	return NO;
+}
+
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_addItem(JNIEnv *env, jobject this, jstring file, jstring name) {
     LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, name), NULL);
     if (!list) {

@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     ch_cyberduck_core_local_FinderSidebarService
+ * Method:    containsItem
+ * Signature: (Ljava/lang/String;Ljava/lang/String;)V
+ */
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_containsItem
+  (JNIEnv *, jobject, jstring, jstring);
+
+/*
+ * Class:     ch_cyberduck_core_local_FinderSidebarService
  * Method:    addItem
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
