@@ -202,6 +202,9 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                         overall.setVersion(new SDSWriteFeature(session, nodeid).complete(file, uploadToken, new TransferStatus(overall).exists(true)));
                     }
                 }
+                else {
+                    new SDSWriteFeature(session, nodeid).cancel(file, uploadToken);
+                }
             }
             catch(BackgroundException e) {
                 throw new IOException(e);
