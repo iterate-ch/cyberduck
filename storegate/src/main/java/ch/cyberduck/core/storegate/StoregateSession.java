@@ -22,6 +22,7 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -55,6 +56,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.model.RootFolder;
 import ch.cyberduck.core.storegate.provider.HttpComponentsProvider;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -156,7 +158,7 @@ public class StoregateSession extends HttpSession<StoregateApiClient> {
                                 if(log.isInfoEnabled()) {
                                     log.info(String.format("Set base path to %s", url));
                                 }
-                                client.setBasePath(url.toString());
+                                client.setBasePath(StringUtils.removeEnd(url.toString(), String.valueOf(Path.DELIMITER)));
                             }
                         }
                         catch(JsonParseException | IllegalArgumentException e) {
