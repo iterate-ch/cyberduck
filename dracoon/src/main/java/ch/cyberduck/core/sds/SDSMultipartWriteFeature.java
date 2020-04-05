@@ -194,13 +194,11 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                     log.warn(String.format("Skip double close of stream %s", this));
                     return;
                 }
-                if(overall.isComplete()) {
-                    try {
-                        overall.setVersion(new SDSWriteFeature(session, nodeid).complete(file, uploadToken, overall));
-                    }
-                    catch(ConflictException e) {
-                        overall.setVersion(new SDSWriteFeature(session, nodeid).complete(file, uploadToken, new TransferStatus(overall).exists(true)));
-                    }
+                try {
+                    overall.setVersion(new SDSWriteFeature(session, nodeid).complete(file, uploadToken, overall));
+                }
+                catch(ConflictException e) {
+                    overall.setVersion(new SDSWriteFeature(session, nodeid).complete(file, uploadToken, new TransferStatus(overall).exists(true)));
                 }
             }
             catch(BackgroundException e) {
