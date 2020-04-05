@@ -136,9 +136,6 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                             status.setVersion(version);
                             return version;
                         }
-                        else {
-                            cancel(file, uploadToken);
-                        }
                         return new VersionId(null);
                     }
                     catch(IOException e) {
@@ -193,16 +190,6 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
-        }
-    }
-
-    protected void cancel(final Path file, final String uploadToken) throws BackgroundException {
-        final SDSApiClient client = session.getClient();
-        try {
-            new UploadsApi(client).cancelFileUploadByToken(uploadToken);
-        }
-        catch(ApiException e) {
-            throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 
