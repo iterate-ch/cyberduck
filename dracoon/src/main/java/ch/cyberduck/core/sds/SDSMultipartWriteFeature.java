@@ -35,7 +35,6 @@ import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.api.UploadsApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
 import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
@@ -162,20 +161,17 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                                                 EntityUtils.toString(response.getEntity())));
                                 }
                             }
+                            catch(BackgroundException e) {
+                                // Cancel upload on error reply
+                                new SDSWriteFeature(session, nodeid).cancel(file, uploadToken);
+                            }
                             finally {
                                 EntityUtils.consume(response.getEntity());
                             }
                         }
                         catch(IOException e) {
-                            try {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Cancel failed upload %s for %s", uploadToken, file));
-                                }
-                                new UploadsApi(session.getClient()).cancelFileUploadByToken(uploadToken);
-                            }
-                            catch(ApiException f) {
-                                throw new SDSExceptionMappingService().map(f);
-                            }
+                            // Cancel upload on I/O failure
+                            new SDSWriteFeature(session, nodeid).cancel(file, uploadToken);
                             throw new DefaultIOExceptionMappingService().map(e);
                         }
                         return null; //Void

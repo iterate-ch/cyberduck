@@ -122,6 +122,10 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                                             EntityUtils.toString(response.getEntity())));
                             }
                         }
+                        catch(BackgroundException e) {
+                            // Cancel upload on error reply
+                            cancel(file, uploadToken);
+                        }
                         finally {
                             EntityUtils.consume(response.getEntity());
                         }
@@ -135,6 +139,10 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                             }
                             status.setVersion(version);
                             return version;
+                        }
+                        else {
+                            // Cancel upload with missing parts
+                            cancel(file, uploadToken);
                         }
                         return new VersionId(null);
                     }
@@ -190,6 +198,17 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+    }
+
+    protected void cancel(final Path file, final String uploadToken) throws BackgroundException {
+        final SDSApiClient client = session.getClient();
+        try {
+            log.warn(String.format("Cancel failed upload %s for %s", uploadToken, file));
+            new UploadsApi(client).cancelFileUploadByToken(uploadToken);
+        }
+        catch(ApiException e) {
+            throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
         }
     }
 
