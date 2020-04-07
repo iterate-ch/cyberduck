@@ -27,6 +27,7 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.TransferCanceledException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -58,10 +59,11 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
         final Path test = new Path(room, new NFDNormalizer().normalize(String.format("ä%s", new AlphanumericRandomStringService().random())).toString(), EnumSet.of(Path.Type.file));
         final VersionId version;
         {
+            final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
+            status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
             status.setMime("text/plain");
-            final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
             final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
