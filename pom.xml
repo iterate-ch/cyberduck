@@ -80,7 +80,7 @@
         <jersey-version>2.30.1</jersey-version>
         <jackson-version>2.10.3</jackson-version>
         <slf4j-version>1.7.30</slf4j-version>
-        <bouncycastle-version>1.64</bouncycastle-version>
+        <bouncycastle-version>1.65</bouncycastle-version>
         <httpclient-version>4.5.12</httpclient-version>
         <google-http-client.version>1.34.2</google-http-client.version>
     </properties>
