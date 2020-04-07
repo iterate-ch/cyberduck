@@ -147,15 +147,8 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                         return new VersionId(null);
                     }
                     catch(IOException e) {
-                        try {
-                            if(log.isInfoEnabled()) {
-                                log.info(String.format("Cancel failed upload %s for %s", uploadToken, file));
-                            }
-                            new UploadsApi(session.getClient()).cancelFileUploadByToken(uploadToken);
-                        }
-                        catch(ApiException f) {
-                            throw new SDSExceptionMappingService().map(f);
-                        }
+                        // Cancel upload on I/O failure
+                        cancel(file, uploadToken);
                         throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
                     }
                 }
