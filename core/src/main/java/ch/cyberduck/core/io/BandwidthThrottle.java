@@ -2,9 +2,12 @@ package ch.cyberduck.core.io;
 
 import org.apache.log4j.Logger;
 
+import java.util.concurrent.TimeUnit;
+
+import com.google.common.util.concurrent.Uninterruptibles;
+
 /**
- * Limits throughput of a stream to at most N bytes per T seconds.  Mutable and
- * thread-safe.<p>
+ * Limits throughput of a stream to at most N bytes per T seconds.  Mutable and thread-safe.<p>
  * <p/>
  * In the following example, <tt>throttle</tt> is used to send the contents of
  * <tt>buf</tt> to <tt>out</tt> at no more than <tt>N/T</tt> bytes per second:
@@ -19,21 +22,16 @@ import org.apache.log4j.Logger;
  *      }
  * </pre>
  * <p/>
- * This class works by allowing exactly N bytes to be sent every T seconds.  If
- * the number of bytes for a given window have been exceeded, subsequent calls
- * to request(..) will block.  The default value of T is 100 milliseconds.
- * Smaller window values T allow fairer bandwidth sharing and less noticeable
- * pauses but may decrease efficiency slightly.<p>
+ * This class works by allowing exactly N bytes to be sent every T seconds.  If the number of bytes for a given window
+ * have been exceeded, subsequent calls to request(..) will block.  The default value of T is 100 milliseconds. Smaller
+ * window values T allow fairer bandwidth sharing and less noticeable pauses but may decrease efficiency slightly.<p>
  * <p/>
- * Note that throttles are <i>not</i> cumulative.  In the future, this may allow
- * enable fancier control.  Also, BandwidthThrottle may be able delegate to
- * other throttles.  This would allow, for example, a 15 KB/s Gnutella messaging
- * throttle, with no more than 10 KB/s devoted to uploads.<p>
+ * Note that throttles are <i>not</i> cumulative.  In the future, this may allow enable fancier control.  Also,
+ * BandwidthThrottle may be able delegate to other throttles.  This would allow, for example, a 15 KB/s Gnutella
+ * messaging throttle, with no more than 10 KB/s devoted to uploads.<p>
  * <p/>
  * This implementation is based on the <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/freenet/freenet/src/freenet/support/io/Bandwidth.java">Bandwidth</a>
- * class from
- * the Freenet project.  It has been simplified and better documented.<p>
-
+ * class from the Freenet project.  It has been simplified and better documented.<p>
  */
 public final class BandwidthThrottle {
     private static final Logger log = Logger.getLogger(BandwidthThrottle.class);
@@ -53,8 +51,7 @@ public final class BandwidthThrottle {
     private volatile int bytesPerTick;
 
     /**
-     * Whether or not we're only allowing bandwidth to be used every other
-     * second.
+     * Whether or not we're only allowing bandwidth to be used every other second.
      */
     private volatile boolean switching = false;
 
@@ -68,28 +65,22 @@ public final class BandwidthThrottle {
     private long nextTickTime;
 
     /**
-     * Creates a new bandwidth throttle at the given throttle rate.
-     * The default windows size T is used.  The bytes per windows N
-     * is calculated from bytesPerSecond.
+     * Creates a new bandwidth throttle at the given throttle rate. The default windows size T is used.  The bytes per
+     * windows N is calculated from bytesPerSecond.
      *
-     * @param bytesPerSecond the limits in bytes (not bits!) per second
-     *                       (not milliseconds!)
+     * @param bytesPerSecond the limits in bytes (not bits!) per second (not milliseconds!)
      */
     public BandwidthThrottle(float bytesPerSecond) {
         this.setRate(bytesPerSecond);
     }
 
     /**
-     * Creates a new bandwidth throttle at the given throttle rate,
-     * only allowing bandwidth to be used every other second if
-     * switching is true.
-     * The default windows size T is used.  The bytes per windows N
-     * is calculated from bytesPerSecond.
+     * Creates a new bandwidth throttle at the given throttle rate, only allowing bandwidth to be used every other
+     * second if switching is true. The default windows size T is used.  The bytes per windows N is calculated from
+     * bytesPerSecond.
      *
-     * @param bytesPerSecond the limits in bytes (not bits!) per second
-     *                       (not milliseconds!)
-     * @param switching      true if we should only allow bandwidth to be used
-     *                       every other second.
+     * @param bytesPerSecond the limits in bytes (not bits!) per second (not milliseconds!)
+     * @param switching      true if we should only allow bandwidth to be used every other second.
      */
     public BandwidthThrottle(float bytesPerSecond, boolean switching) {
         this.setRate(bytesPerSecond);
@@ -108,11 +99,10 @@ public final class BandwidthThrottle {
     private float rate = UNLIMITED;
 
     /**
-     * Sets the throttle to the given throttle rate.  The default windows size
-     * T is used.  The bytes per windows N is calculated from bytesPerSecond.
+     * Sets the throttle to the given throttle rate.  The default windows size T is used.  The bytes per windows N is
+     * calculated from bytesPerSecond.
      *
-     * @param bytesPerSecond the limits in bytes (not bits!) per second
-     *                       (not milliseconds!)
+     * @param bytesPerSecond the limits in bytes (not bits!) per second (not milliseconds!)
      */
     public void setRate(float bytesPerSecond) {
         if(bytesPerSecond < 0) {
@@ -149,9 +139,8 @@ public final class BandwidthThrottle {
     }
 
     /**
-     * Modifies bytesPerTick to either be double or half of what it was.
-     * This is necessary because of the 'switching', which can effectively
-     * reduce or raise the amount of data transferred.
+     * Modifies bytesPerTick to either be double or half of what it was. This is necessary because of the 'switching',
+     * which can effectively reduce or raise the amount of data transferred.
      */
     private void fixBytesPerTick(boolean raise) {
         int newBytesPerTick = bytesPerTick;
@@ -169,12 +158,12 @@ public final class BandwidthThrottle {
     }
 
     /**
-     * Blocks until the caller can send at least one byte without violating
-     * bandwidth constraints.  Records the number of byte sent.
+     * Blocks until the caller can send at least one byte without violating bandwidth constraints.  Records the number
+     * of byte sent.
      *
      * @param desired the number of bytes the caller would like to send
-     * @return the number of bytes the sender is expected to send, which
-     *         is always greater than one and less than or equal to desired
+     * @return the number of bytes the sender is expected to send, which is always greater than one and less than or
+     * equal to desired
      */
     public synchronized int request(int desired) {
         if(UNLIMITED == rate) {
@@ -196,15 +185,10 @@ public final class BandwidthThrottle {
             if(availableBytes != 0) {
                 break;
             }
-            try {
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Throttling bandwidth for %d milliseconds", nextTickTime - now));
-                }
-                Thread.sleep(nextTickTime - now);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Throttling bandwidth for %d milliseconds", nextTickTime - now));
             }
-            catch(InterruptedException e) {
-                log.error(e.getMessage(), e);
-            }
+            Uninterruptibles.sleepUninterruptibly(nextTickTime - now, TimeUnit.MILLISECONDS);
         }
     }
 
