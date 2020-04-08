@@ -19,11 +19,13 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ChecksumException;
 import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -32,6 +34,10 @@ import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
+import ch.cyberduck.core.io.Checksum;
+import ch.cyberduck.core.io.ChecksumCompute;
+import ch.cyberduck.core.io.ChecksumComputeFactory;
+import ch.cyberduck.core.io.HashAlgorithm;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -58,6 +64,7 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Collections;
 
 import com.dracoon.sdk.crypto.Crypto;
@@ -181,6 +188,19 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                 body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
             }
             final Node upload = new UploadsApi(client).completeFileUploadByToken(uploadToken, null, body);
+            final Checksum checksum = status.getChecksum();
+            if(Checksum.NONE != checksum) {
+                final Checksum server = Checksum.parse(upload.getHash());
+                if(Checksum.NONE != server) {
+                    if(checksum.algorithm.equals(server.algorithm)) {
+                        if(!server.equals(checksum)) {
+                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                    checksum.hash, server.hash));
+                        }
+                    }
+                }
+            }
             return new VersionId(String.valueOf(upload.getId()));
         }
         catch(ApiException e) {
@@ -203,6 +223,11 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
         }
+    }
+
+    @Override
+    public ChecksumCompute checksum(final Path file, final TransferStatus status) {
+        return ChecksumComputeFactory.get(HashAlgorithm.md5);
     }
 
     @Override

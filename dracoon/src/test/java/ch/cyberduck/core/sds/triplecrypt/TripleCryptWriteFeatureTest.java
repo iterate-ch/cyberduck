@@ -23,6 +23,7 @@ import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.StatusOutputStream;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.sds.AbstractSDSTest;
@@ -59,14 +60,15 @@ public class TripleCryptWriteFeatureTest extends AbstractSDSTest {
     @Test
     public void testWrite() throws Exception {
         final Path room = new Path("test", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt));
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSWriteFeature(session, nodeid));
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
+        status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file, Path.Type.triplecrypt));
-        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final SDSEncryptionBulkFeature bulk = new SDSEncryptionBulkFeature(session, nodeid);
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status), new DisabledConnectionCallback());
-        final TripleCryptWriteFeature writer = new TripleCryptWriteFeature(session, nodeid, new SDSWriteFeature(session, nodeid));
         final StatusOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
