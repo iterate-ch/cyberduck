@@ -50,23 +50,29 @@ public class RenameExistingFilter extends AbstractDownloadFilter {
     public void apply(final Path file, final Local local, final TransferStatus status,
                       final ProgressListener listener) throws BackgroundException {
         if(status.isExists()) {
-            Local rename;
-            do {
-                String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.download.file.rename.format"),
+            if(local.attributes().getSize() == 0) {
+                // Placeholder from drag operation
+                log.warn(String.format("Skip renaming placeholder file %s", local));
+            }
+            else {
+                Local rename;
+                do {
+                    String proposal = MessageFormat.format(PreferencesFactory.get().getProperty("queue.download.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
                         UserDateFormatterFactory.get().getMediumFormat(System.currentTimeMillis(), false).replace(local.getDelimiter(), '-').replace(':', '-'),
                         StringUtils.isNotBlank(file.getExtension()) ? String.format(".%s", file.getExtension()) : StringUtils.EMPTY);
-                rename = LocalFactory.get(local.getParent().getAbsolute(), proposal);
+                    rename = LocalFactory.get(local.getParent().getAbsolute(), proposal);
+                }
+                while(rename.exists());
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Rename existing file %s to %s", local, rename));
+                }
+                LocalFactory.get(local.getAbsolute()).rename(rename);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Clear exist flag for file %s", local));
+                }
+                status.setExists(false);
             }
-            while(rename.exists());
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Rename existing file %s to %s", local, rename));
-            }
-            LocalFactory.get(local.getAbsolute()).rename(rename);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Clear exist flag for file %s", local));
-            }
-            status.setExists(false);
         }
         super.apply(file, local, status, listener);
     }
