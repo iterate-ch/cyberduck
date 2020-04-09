@@ -22,17 +22,11 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * A CreateUser request object
+ * 
  */
-@ApiModel(description = "A CreateUser request object")
+@ApiModel(description = "")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-04-08T17:57:06.518+02:00")
-public class CreateUserRequest {
-  @JsonProperty("username")
-  private String username = null;
-
-  @JsonProperty("password")
-  private String password = null;
-
+public class InviteUserRequest {
   @JsonProperty("socialSecurityNumber")
   private String socialSecurityNumber = null;
 
@@ -100,43 +94,7 @@ public class CreateUserRequest {
   @JsonProperty("commonRootPermission")
   private CommonRootPermissionEnum commonRootPermission = null;
 
-  public CreateUserRequest username(String username) {
-    this.username = username;
-    return this;
-  }
-
-   /**
-   * The username
-   * @return username
-  **/
-  @ApiModelProperty(value = "The username")
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public CreateUserRequest password(String password) {
-    this.password = password;
-    return this;
-  }
-
-   /**
-   * The password
-   * @return password
-  **/
-  @ApiModelProperty(value = "The password")
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public CreateUserRequest socialSecurityNumber(String socialSecurityNumber) {
+  public InviteUserRequest socialSecurityNumber(String socialSecurityNumber) {
     this.socialSecurityNumber = socialSecurityNumber;
     return this;
   }
@@ -154,7 +112,7 @@ public class CreateUserRequest {
     this.socialSecurityNumber = socialSecurityNumber;
   }
 
-  public CreateUserRequest nonEId(Boolean nonEId) {
+  public InviteUserRequest nonEId(Boolean nonEId) {
     this.nonEId = nonEId;
     return this;
   }
@@ -172,7 +130,7 @@ public class CreateUserRequest {
     this.nonEId = nonEId;
   }
 
-  public CreateUserRequest firstName(String firstName) {
+  public InviteUserRequest firstName(String firstName) {
     this.firstName = firstName;
     return this;
   }
@@ -190,7 +148,7 @@ public class CreateUserRequest {
     this.firstName = firstName;
   }
 
-  public CreateUserRequest lastName(String lastName) {
+  public InviteUserRequest lastName(String lastName) {
     this.lastName = lastName;
     return this;
   }
@@ -208,7 +166,7 @@ public class CreateUserRequest {
     this.lastName = lastName;
   }
 
-  public CreateUserRequest email(String email) {
+  public InviteUserRequest email(String email) {
     this.email = email;
     return this;
   }
@@ -226,7 +184,7 @@ public class CreateUserRequest {
     this.email = email;
   }
 
-  public CreateUserRequest reservedSpaceSize(Long reservedSpaceSize) {
+  public InviteUserRequest reservedSpaceSize(Long reservedSpaceSize) {
     this.reservedSpaceSize = reservedSpaceSize;
     return this;
   }
@@ -245,7 +203,7 @@ public class CreateUserRequest {
     this.reservedSpaceSize = reservedSpaceSize;
   }
 
-  public CreateUserRequest allowProductRegistration(Boolean allowProductRegistration) {
+  public InviteUserRequest allowProductRegistration(Boolean allowProductRegistration) {
     this.allowProductRegistration = allowProductRegistration;
     return this;
   }
@@ -263,7 +221,7 @@ public class CreateUserRequest {
     this.allowProductRegistration = allowProductRegistration;
   }
 
-  public CreateUserRequest commonRootPermission(CommonRootPermissionEnum commonRootPermission) {
+  public InviteUserRequest commonRootPermission(CommonRootPermissionEnum commonRootPermission) {
     this.commonRootPermission = commonRootPermission;
     return this;
   }
@@ -290,32 +248,28 @@ public class CreateUserRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    CreateUserRequest createUserRequest = (CreateUserRequest) o;
-    return Objects.equals(this.username, createUserRequest.username) &&
-        Objects.equals(this.password, createUserRequest.password) &&
-        Objects.equals(this.socialSecurityNumber, createUserRequest.socialSecurityNumber) &&
-        Objects.equals(this.nonEId, createUserRequest.nonEId) &&
-        Objects.equals(this.firstName, createUserRequest.firstName) &&
-        Objects.equals(this.lastName, createUserRequest.lastName) &&
-        Objects.equals(this.email, createUserRequest.email) &&
-        Objects.equals(this.reservedSpaceSize, createUserRequest.reservedSpaceSize) &&
-        Objects.equals(this.allowProductRegistration, createUserRequest.allowProductRegistration) &&
-        Objects.equals(this.commonRootPermission, createUserRequest.commonRootPermission);
+    InviteUserRequest inviteUserRequest = (InviteUserRequest) o;
+    return Objects.equals(this.socialSecurityNumber, inviteUserRequest.socialSecurityNumber) &&
+        Objects.equals(this.nonEId, inviteUserRequest.nonEId) &&
+        Objects.equals(this.firstName, inviteUserRequest.firstName) &&
+        Objects.equals(this.lastName, inviteUserRequest.lastName) &&
+        Objects.equals(this.email, inviteUserRequest.email) &&
+        Objects.equals(this.reservedSpaceSize, inviteUserRequest.reservedSpaceSize) &&
+        Objects.equals(this.allowProductRegistration, inviteUserRequest.allowProductRegistration) &&
+        Objects.equals(this.commonRootPermission, inviteUserRequest.commonRootPermission);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(username, password, socialSecurityNumber, nonEId, firstName, lastName, email, reservedSpaceSize, allowProductRegistration, commonRootPermission);
+    return Objects.hash(socialSecurityNumber, nonEId, firstName, lastName, email, reservedSpaceSize, allowProductRegistration, commonRootPermission);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class CreateUserRequest {\n");
+    sb.append("class InviteUserRequest {\n");
     
-    sb.append("    username: ").append(toIndentedString(username)).append("\n");
-    sb.append("    password: ").append(toIndentedString(password)).append("\n");
     sb.append("    socialSecurityNumber: ").append(toIndentedString(socialSecurityNumber)).append("\n");
     sb.append("    nonEId: ").append(toIndentedString(nonEId)).append("\n");
     sb.append("    firstName: ").append(toIndentedString(firstName)).append("\n");

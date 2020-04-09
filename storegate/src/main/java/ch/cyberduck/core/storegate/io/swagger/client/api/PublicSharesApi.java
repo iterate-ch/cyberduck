@@ -8,6 +8,7 @@ import ch.cyberduck.core.storegate.io.swagger.client.Pair;
 
 import javax.ws.rs.core.GenericType;
 
+import ch.cyberduck.core.storegate.io.swagger.client.model.File;
 import ch.cyberduck.core.storegate.io.swagger.client.model.FileContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.MediaItemContents;
 import ch.cyberduck.core.storegate.io.swagger.client.model.PublicShareInfo;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-12-02T20:20:31.369+01:00")
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-04-08T17:57:06.518+02:00")
 public class PublicSharesApi {
   private ApiClient apiClient;
 
@@ -142,10 +143,10 @@ public class PublicSharesApi {
    * Gets the root folder/file on a share.
    * 
    * @param id The share id (required)
-   * @return ch.cyberduck.core.storegate.io.swagger.client.model.File
+   * @return File
    * @throws ApiException if fails to make API call
    */
-  public ch.cyberduck.core.storegate.io.swagger.client.model.File publicSharesGetPublicFileShareFile(String id) throws ApiException {
+  public File publicSharesGetPublicFileShareFile(String id) throws ApiException {
     return publicSharesGetPublicFileShareFileWithHttpInfo(id).getData();
       }
 
@@ -153,10 +154,10 @@ public class PublicSharesApi {
    * Gets the root folder/file on a share.
    * 
    * @param id The share id (required)
-   * @return ApiResponse&lt;ch.cyberduck.core.storegate.io.swagger.client.model.File&gt;
+   * @return ApiResponse&lt;File&gt;
    * @throws ApiException if fails to make API call
    */
-  public ApiResponse<ch.cyberduck.core.storegate.io.swagger.client.model.File> publicSharesGetPublicFileShareFileWithHttpInfo(String id) throws ApiException {
+  public ApiResponse<File> publicSharesGetPublicFileShareFileWithHttpInfo(String id) throws ApiException {
     Object localVarPostBody = null;
     
     // verify the required parameter 'id' is set
@@ -188,7 +189,7 @@ public class PublicSharesApi {
 
     String[] localVarAuthNames = new String[] { "oauth2" };
 
-    GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File> localVarReturnType = new GenericType<ch.cyberduck.core.storegate.io.swagger.client.model.File>() {};
+    GenericType<File> localVarReturnType = new GenericType<File>() {};
     return apiClient.invokeAPI(localVarPath, "GET", localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarAccept, localVarContentType, localVarAuthNames, localVarReturnType);
       }
   /**

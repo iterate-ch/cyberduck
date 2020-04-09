@@ -21,22 +21,23 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Contains a list of PathFiles.
+ * Contains a list of grouped file items.
  */
-@ApiModel(description = "Contains a list of PathFiles.")
+@ApiModel(description = "Contains a list of grouped file items.")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-04-08T17:57:06.518+02:00")
-public class SearchFileContents {
+public class RecentGroupedContents {
   @JsonProperty("totalRowCount")
   private Integer totalRowCount = null;
 
-  @JsonProperty("files")
-  private List<File> files = null;
+  @JsonProperty("groups")
+  private Map<String, List<File>> groups = null;
 
-  public SearchFileContents totalRowCount(Integer totalRowCount) {
+  public RecentGroupedContents totalRowCount(Integer totalRowCount) {
     this.totalRowCount = totalRowCount;
     return this;
   }
@@ -54,30 +55,30 @@ public class SearchFileContents {
     this.totalRowCount = totalRowCount;
   }
 
-  public SearchFileContents files(List<File> files) {
-    this.files = files;
+  public RecentGroupedContents groups(Map<String, List<File>> groups) {
+    this.groups = groups;
     return this;
   }
 
-  public SearchFileContents addFilesItem(File filesItem) {
-    if (this.files == null) {
-      this.files = new ArrayList<>();
+  public RecentGroupedContents putGroupsItem(String key, List<File> groupsItem) {
+    if (this.groups == null) {
+      this.groups = new HashMap<>();
     }
-    this.files.add(filesItem);
+    this.groups.put(key, groupsItem);
     return this;
   }
 
    /**
    * The list of items.
-   * @return files
+   * @return groups
   **/
   @ApiModelProperty(value = "The list of items.")
-  public List<File> getFiles() {
-    return files;
+  public Map<String, List<File>> getGroups() {
+    return groups;
   }
 
-  public void setFiles(List<File> files) {
-    this.files = files;
+  public void setGroups(Map<String, List<File>> groups) {
+    this.groups = groups;
   }
 
 
@@ -89,24 +90,24 @@ public class SearchFileContents {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    SearchFileContents searchFileContents = (SearchFileContents) o;
-    return Objects.equals(this.totalRowCount, searchFileContents.totalRowCount) &&
-        Objects.equals(this.files, searchFileContents.files);
+    RecentGroupedContents recentGroupedContents = (RecentGroupedContents) o;
+    return Objects.equals(this.totalRowCount, recentGroupedContents.totalRowCount) &&
+        Objects.equals(this.groups, recentGroupedContents.groups);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(totalRowCount, files);
+    return Objects.hash(totalRowCount, groups);
   }
 
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class SearchFileContents {\n");
+    sb.append("class RecentGroupedContents {\n");
     
     sb.append("    totalRowCount: ").append(toIndentedString(totalRowCount)).append("\n");
-    sb.append("    files: ").append(toIndentedString(files)).append("\n");
+    sb.append("    groups: ").append(toIndentedString(groups)).append("\n");
     sb.append("}");
     return sb.toString();
   }
