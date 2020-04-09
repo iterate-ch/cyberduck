@@ -25,112 +25,114 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "DEPRECATED")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:25:40.305+02:00")
 public class BrandingServerInfo {
-  @JsonProperty("brandingServerBrandingId")
-  private String brandingServerBrandingId = null;
+    @JsonProperty("brandingServerBrandingId")
+    private String brandingServerBrandingId = null;
 
-  @JsonProperty("brandingServerCustomer")
-  private String brandingServerCustomer = null;
+    @JsonProperty("brandingServerCustomer")
+    private String brandingServerCustomer = null;
 
-  @JsonProperty("brandingServerUrl")
-  private String brandingServerUrl = null;
+    @JsonProperty("brandingServerUrl")
+    private String brandingServerUrl = null;
 
-  public BrandingServerInfo brandingServerBrandingId(String brandingServerBrandingId) {
-    this.brandingServerBrandingId = brandingServerBrandingId;
-    return this;
-  }
-
-   /**
-   * UUID of Branding
-   * @return brandingServerBrandingId
-  **/
-  @ApiModelProperty(required = true, value = "UUID of Branding")
-  public String getBrandingServerBrandingId() {
-    return brandingServerBrandingId;
-  }
-
-  public void setBrandingServerBrandingId(String brandingServerBrandingId) {
-    this.brandingServerBrandingId = brandingServerBrandingId;
-  }
-
-  public BrandingServerInfo brandingServerCustomer(String brandingServerCustomer) {
-    this.brandingServerCustomer = brandingServerCustomer;
-    return this;
-  }
-
-   /**
-    * &#x60;DEPRECATED&#x60;: Branding server customer UUID  [Deprecated since version 4.6.0]
-   * @return brandingServerCustomer
-  **/
-   @ApiModelProperty(required = true, value = "`DEPRECATED`: Branding server customer UUID  [Deprecated since version 4.6.0]")
-  public String getBrandingServerCustomer() {
-    return brandingServerCustomer;
-  }
-
-  public void setBrandingServerCustomer(String brandingServerCustomer) {
-    this.brandingServerCustomer = brandingServerCustomer;
-  }
-
-  public BrandingServerInfo brandingServerUrl(String brandingServerUrl) {
-    this.brandingServerUrl = brandingServerUrl;
-    return this;
-  }
-
-   /**
-    * &#x60;DEPRECATED&#x60;: Branding server URL  [Deprecated since version 4.6.0]
-   * @return brandingServerUrl
-  **/
-   @ApiModelProperty(example = "https://www.random-url.com", value = "`DEPRECATED`: Branding server URL  [Deprecated since version 4.6.0]")
-  public String getBrandingServerUrl() {
-    return brandingServerUrl;
-  }
-
-  public void setBrandingServerUrl(String brandingServerUrl) {
-    this.brandingServerUrl = brandingServerUrl;
-  }
-
-
-  @Override
-  public boolean equals(java.lang.Object o) {
-    if (this == o) {
-      return true;
+    public BrandingServerInfo brandingServerBrandingId(String brandingServerBrandingId) {
+        this.brandingServerBrandingId = brandingServerBrandingId;
+        return this;
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
+
+    /**
+     * UUID of Branding
+     *
+     * @return brandingServerBrandingId
+     **/
+    @ApiModelProperty(required = true, value = "UUID of Branding")
+    public String getBrandingServerBrandingId() {
+        return brandingServerBrandingId;
     }
-    BrandingServerInfo brandingServerInfo = (BrandingServerInfo) o;
-    return Objects.equals(this.brandingServerBrandingId, brandingServerInfo.brandingServerBrandingId) &&
-        Objects.equals(this.brandingServerCustomer, brandingServerInfo.brandingServerCustomer) &&
-        Objects.equals(this.brandingServerUrl, brandingServerInfo.brandingServerUrl);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(brandingServerBrandingId, brandingServerCustomer, brandingServerUrl);
-  }
-
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class BrandingServerInfo {\n");
-
-      sb.append("    brandingServerBrandingId: ").append(toIndentedString(brandingServerBrandingId)).append("\n");
-    sb.append("    brandingServerCustomer: ").append(toIndentedString(brandingServerCustomer)).append("\n");
-    sb.append("    brandingServerUrl: ").append(toIndentedString(brandingServerUrl)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(java.lang.Object o) {
-    if (o == null) {
-      return "null";
+    public void setBrandingServerBrandingId(String brandingServerBrandingId) {
+        this.brandingServerBrandingId = brandingServerBrandingId;
     }
-    return o.toString().replace("\n", "\n    ");
-  }
+
+    public BrandingServerInfo brandingServerCustomer(String brandingServerCustomer) {
+        this.brandingServerCustomer = brandingServerCustomer;
+        return this;
+    }
+
+    /**
+     * &#x60;DEPRECATED&#x60;: Branding server customer UUID  [Deprecated since version 4.6.0]
+     *
+     * @return brandingServerCustomer
+     **/
+    @ApiModelProperty(required = true, value = "`DEPRECATED`: Branding server customer UUID  [Deprecated since version 4.6.0]")
+    public String getBrandingServerCustomer() {
+        return brandingServerCustomer;
+    }
+
+    public void setBrandingServerCustomer(String brandingServerCustomer) {
+        this.brandingServerCustomer = brandingServerCustomer;
+    }
+
+    public BrandingServerInfo brandingServerUrl(String brandingServerUrl) {
+        this.brandingServerUrl = brandingServerUrl;
+        return this;
+    }
+
+    /**
+     * &#x60;DEPRECATED&#x60;: Branding server URL  [Deprecated since version 4.6.0]
+     *
+     * @return brandingServerUrl
+     **/
+    @ApiModelProperty(example = "https://www.random-url.com", value = "`DEPRECATED`: Branding server URL  [Deprecated since version 4.6.0]")
+    public String getBrandingServerUrl() {
+        return brandingServerUrl;
+    }
+
+    public void setBrandingServerUrl(String brandingServerUrl) {
+        this.brandingServerUrl = brandingServerUrl;
+    }
+
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BrandingServerInfo brandingServerInfo = (BrandingServerInfo) o;
+        return Objects.equals(this.brandingServerBrandingId, brandingServerInfo.brandingServerBrandingId) &&
+            Objects.equals(this.brandingServerCustomer, brandingServerInfo.brandingServerCustomer) &&
+            Objects.equals(this.brandingServerUrl, brandingServerInfo.brandingServerUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(brandingServerBrandingId, brandingServerCustomer, brandingServerUrl);
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class BrandingServerInfo {\n");
+
+        sb.append("    brandingServerBrandingId: ").append(toIndentedString(brandingServerBrandingId)).append("\n");
+        sb.append("    brandingServerCustomer: ").append(toIndentedString(brandingServerCustomer)).append("\n");
+        sb.append("    brandingServerUrl: ").append(toIndentedString(brandingServerUrl)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces (except the first line).
+     */
+    private String toIndentedString(java.lang.Object o) {
+        if(o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
 }
 

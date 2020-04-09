@@ -25,135 +25,138 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "DEPRECATED")
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:25:40.305+02:00")
 public class UpdateBrandingConfig {
-  @JsonProperty("brandingProviderUrl")
-  private String brandingProviderUrl = null;
+    @JsonProperty("brandingProviderUrl")
+    private String brandingProviderUrl = null;
 
-  @JsonProperty("brandingQualifier")
-  private String brandingQualifier = null;
+    @JsonProperty("brandingQualifier")
+    private String brandingQualifier = null;
 
-  @JsonProperty("resetBrandingProviderUrl")
-  private Boolean resetBrandingProviderUrl = null;
+    @JsonProperty("resetBrandingProviderUrl")
+    private Boolean resetBrandingProviderUrl = null;
 
-  @JsonProperty("resetBrandingQualifier")
-  private Boolean resetBrandingQualifier = null;
+    @JsonProperty("resetBrandingQualifier")
+    private Boolean resetBrandingQualifier = null;
 
-  public UpdateBrandingConfig brandingProviderUrl(String brandingProviderUrl) {
-    this.brandingProviderUrl = brandingProviderUrl;
-    return this;
-  }
-
-   /**
-   * Access URL to to the Branding Portal
-   * @return brandingProviderUrl
-  **/
-  @ApiModelProperty(example = "https://www.random-url.com", value = "Access URL to to the Branding Portal")
-  public String getBrandingProviderUrl() {
-    return brandingProviderUrl;
-  }
-
-  public void setBrandingProviderUrl(String brandingProviderUrl) {
-    this.brandingProviderUrl = brandingProviderUrl;
-  }
-
-  public UpdateBrandingConfig brandingQualifier(String brandingQualifier) {
-    this.brandingQualifier = brandingQualifier;
-    return this;
-  }
-
-   /**
-   * Branding UUID
-   * @return brandingQualifier
-  **/
-  @ApiModelProperty(value = "Branding UUID")
-  public String getBrandingQualifier() {
-    return brandingQualifier;
-  }
-
-  public void setBrandingQualifier(String brandingQualifier) {
-    this.brandingQualifier = brandingQualifier;
-  }
-
-  public UpdateBrandingConfig resetBrandingProviderUrl(Boolean resetBrandingProviderUrl) {
-    this.resetBrandingProviderUrl = resetBrandingProviderUrl;
-    return this;
-  }
-
-   /**
-    * Set &#x60;true&#x60; to reset &#x60;brandingProviderUrl&#x60;.
-   * @return resetBrandingProviderUrl
-  **/
-   @ApiModelProperty(example = "false", value = "Set `true` to reset `brandingProviderUrl`.")
-   public Boolean isResetBrandingProviderUrl() {
-    return resetBrandingProviderUrl;
-  }
-
-  public void setResetBrandingProviderUrl(Boolean resetBrandingProviderUrl) {
-    this.resetBrandingProviderUrl = resetBrandingProviderUrl;
-  }
-
-  public UpdateBrandingConfig resetBrandingQualifier(Boolean resetBrandingQualifier) {
-    this.resetBrandingQualifier = resetBrandingQualifier;
-    return this;
-  }
-
-   /**
-    * Set &#x60;true&#x60; to reset &#x60;brandingQualifier&#x60;.
-   * @return resetBrandingQualifier
-  **/
-   @ApiModelProperty(example = "false", value = "Set `true` to reset `brandingQualifier`.")
-   public Boolean isResetBrandingQualifier() {
-    return resetBrandingQualifier;
-  }
-
-  public void setResetBrandingQualifier(Boolean resetBrandingQualifier) {
-    this.resetBrandingQualifier = resetBrandingQualifier;
-  }
-
-
-  @Override
-  public boolean equals(java.lang.Object o) {
-    if (this == o) {
-      return true;
+    public UpdateBrandingConfig brandingProviderUrl(String brandingProviderUrl) {
+        this.brandingProviderUrl = brandingProviderUrl;
+        return this;
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
+
+    /**
+     * Access URL to to the Branding Portal
+     *
+     * @return brandingProviderUrl
+     **/
+    @ApiModelProperty(example = "https://www.random-url.com", value = "Access URL to to the Branding Portal")
+    public String getBrandingProviderUrl() {
+        return brandingProviderUrl;
     }
-    UpdateBrandingConfig updateBrandingConfig = (UpdateBrandingConfig) o;
-    return Objects.equals(this.brandingProviderUrl, updateBrandingConfig.brandingProviderUrl) &&
-        Objects.equals(this.brandingQualifier, updateBrandingConfig.brandingQualifier) &&
-        Objects.equals(this.resetBrandingProviderUrl, updateBrandingConfig.resetBrandingProviderUrl) &&
-        Objects.equals(this.resetBrandingQualifier, updateBrandingConfig.resetBrandingQualifier);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(brandingProviderUrl, brandingQualifier, resetBrandingProviderUrl, resetBrandingQualifier);
-  }
-
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class UpdateBrandingConfig {\n");
-
-      sb.append("    brandingProviderUrl: ").append(toIndentedString(brandingProviderUrl)).append("\n");
-    sb.append("    brandingQualifier: ").append(toIndentedString(brandingQualifier)).append("\n");
-    sb.append("    resetBrandingProviderUrl: ").append(toIndentedString(resetBrandingProviderUrl)).append("\n");
-    sb.append("    resetBrandingQualifier: ").append(toIndentedString(resetBrandingQualifier)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(java.lang.Object o) {
-    if (o == null) {
-      return "null";
+    public void setBrandingProviderUrl(String brandingProviderUrl) {
+        this.brandingProviderUrl = brandingProviderUrl;
     }
-    return o.toString().replace("\n", "\n    ");
-  }
+
+    public UpdateBrandingConfig brandingQualifier(String brandingQualifier) {
+        this.brandingQualifier = brandingQualifier;
+        return this;
+    }
+
+    /**
+     * Branding UUID
+     *
+     * @return brandingQualifier
+     **/
+    @ApiModelProperty(value = "Branding UUID")
+    public String getBrandingQualifier() {
+        return brandingQualifier;
+    }
+
+    public void setBrandingQualifier(String brandingQualifier) {
+        this.brandingQualifier = brandingQualifier;
+    }
+
+    public UpdateBrandingConfig resetBrandingProviderUrl(Boolean resetBrandingProviderUrl) {
+        this.resetBrandingProviderUrl = resetBrandingProviderUrl;
+        return this;
+    }
+
+    /**
+     * Set &#x60;true&#x60; to reset &#x60;brandingProviderUrl&#x60;.
+     *
+     * @return resetBrandingProviderUrl
+     **/
+    @ApiModelProperty(example = "false", value = "Set `true` to reset `brandingProviderUrl`.")
+    public Boolean isResetBrandingProviderUrl() {
+        return resetBrandingProviderUrl;
+    }
+
+    public void setResetBrandingProviderUrl(Boolean resetBrandingProviderUrl) {
+        this.resetBrandingProviderUrl = resetBrandingProviderUrl;
+    }
+
+    public UpdateBrandingConfig resetBrandingQualifier(Boolean resetBrandingQualifier) {
+        this.resetBrandingQualifier = resetBrandingQualifier;
+        return this;
+    }
+
+    /**
+     * Set &#x60;true&#x60; to reset &#x60;brandingQualifier&#x60;.
+     *
+     * @return resetBrandingQualifier
+     **/
+    @ApiModelProperty(example = "false", value = "Set `true` to reset `brandingQualifier`.")
+    public Boolean isResetBrandingQualifier() {
+        return resetBrandingQualifier;
+    }
+
+    public void setResetBrandingQualifier(Boolean resetBrandingQualifier) {
+        this.resetBrandingQualifier = resetBrandingQualifier;
+    }
+
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UpdateBrandingConfig updateBrandingConfig = (UpdateBrandingConfig) o;
+        return Objects.equals(this.brandingProviderUrl, updateBrandingConfig.brandingProviderUrl) &&
+            Objects.equals(this.brandingQualifier, updateBrandingConfig.brandingQualifier) &&
+            Objects.equals(this.resetBrandingProviderUrl, updateBrandingConfig.resetBrandingProviderUrl) &&
+            Objects.equals(this.resetBrandingQualifier, updateBrandingConfig.resetBrandingQualifier);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(brandingProviderUrl, brandingQualifier, resetBrandingProviderUrl, resetBrandingQualifier);
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class UpdateBrandingConfig {\n");
+
+        sb.append("    brandingProviderUrl: ").append(toIndentedString(brandingProviderUrl)).append("\n");
+        sb.append("    brandingQualifier: ").append(toIndentedString(brandingQualifier)).append("\n");
+        sb.append("    resetBrandingProviderUrl: ").append(toIndentedString(resetBrandingProviderUrl)).append("\n");
+        sb.append("    resetBrandingQualifier: ").append(toIndentedString(resetBrandingQualifier)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces (except the first line).
+     */
+    private String toIndentedString(java.lang.Object o) {
+        if(o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
 }
 
