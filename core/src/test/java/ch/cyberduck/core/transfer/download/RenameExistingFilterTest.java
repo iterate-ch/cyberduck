@@ -1,19 +1,24 @@
 package ch.cyberduck.core.transfer.download;
 
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullTransferSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TestProtocol;
+import ch.cyberduck.core.io.StreamCopier;
+import ch.cyberduck.core.local.DefaultLocalTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DisabledDownloadSymlinkResolver;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.util.EnumSet;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -24,8 +29,9 @@ public class RenameExistingFilterTest {
         final DownloadFilterOptions options = new DownloadFilterOptions();
         options.icon = false;
         RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())),
-                options);
-        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t-1") {
+            options);
+        final String name = new AsciiRandomStringService().random();
+        final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), name) {
             @Override
             public boolean exists() {
                 return false;
@@ -33,47 +39,53 @@ public class RenameExistingFilterTest {
 
             @Override
             public void rename(final Local renamed) {
+                // Must not rename original file but copy
                 fail();
             }
         };
-        final Path p = new Path("t-1", EnumSet.of(Path.Type.file));
+        final Path p = new Path(name, EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(p, local, new TransferStatus(), new DisabledProgressListener());
         assertNull(status.getRename().local);
+        assertFalse(status.isExists());
         f.apply(p, local, new TransferStatus(), new DisabledProgressListener());
     }
 
     @Test
-    public void testPrepareRename() throws Exception {
-        final AtomicBoolean r = new AtomicBoolean();
+    public void testApplyRename() throws Exception {
         RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())));
-        final NullLocal local = new NullLocal(System.getProperty("java.io.tmpdir"), "t-2") {
-            @Override
-            public boolean exists() {
-                return "t-2".equals(this.getName());
-            }
+        final String name = new AsciiRandomStringService().random();
+        final Local local = LocalFactory.get(System.getProperty("java.io.tmpdir"), name);
+        new DefaultLocalTouchFeature().touch(local);
+        new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(RandomUtils.nextBytes(1)),
+            local.getOutputStream(false));
+        final Path p = new Path(name, EnumSet.of(Path.Type.file));
+        final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true), new DisabledProgressListener());
+        assertTrue(status.isExists());
+        assertNull(status.getRename().local);
+        f.apply(p, local, status, new DisabledProgressListener());
+        assertEquals(name, local.getName());
+        assertFalse(status.isExists());
+    }
 
-            @Override
-            public boolean isDirectory() {
-                return false;
-            }
-
-            @Override
-            public boolean isFile() {
-                return true;
-            }
-
+    @Test
+    public void testPrepareRenameEmptyFile() throws Exception {
+        RenameExistingFilter f = new RenameExistingFilter(new DisabledDownloadSymlinkResolver(), new NullTransferSession(new Host(new TestProtocol())));
+        final String name = new AsciiRandomStringService().random();
+        final Local local = new NullLocal(System.getProperty("java.io.tmpdir"), name) {
             @Override
             public void rename(final Local renamed) {
-                assertTrue(renamed.getName().startsWith("t-2"));
-                r.set(true);
+                // Must not rename original file but copy
+                fail();
             }
         };
-        final Path p = new Path("t-2", EnumSet.of(Path.Type.file));
+        new DefaultLocalTouchFeature().touch(local);
+        final Path p = new Path(name, EnumSet.of(Path.Type.file));
         final TransferStatus status = f.prepare(p, local, new TransferStatus().exists(true), new DisabledProgressListener());
+        assertTrue(status.isExists());
         assertNull(status.getRename().local);
-        assertFalse(r.get());
         f.apply(p, local, status, new DisabledProgressListener());
-        assertEquals("t-2", local.getName());
-        assertTrue(r.get());
+        assertEquals(name, local.getName());
+        assertTrue(status.isExists());
+        local.delete();
     }
 }
