@@ -166,7 +166,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
     protected String start(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final CreateFileUploadRequest body = new CreateFileUploadRequest()
-                .size(status.getLength())
+                .size(-1 == status.getLength() ? null : status.getLength())
                 .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
             final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
