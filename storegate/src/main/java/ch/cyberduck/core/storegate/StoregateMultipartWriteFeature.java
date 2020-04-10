@@ -195,29 +195,31 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
                     log.warn(String.format("Skip double close of stream %s", this));
                     return;
                 }
-                final StoregateApiClient client = session.getClient();
-                final HttpPut put = new HttpPut(location);
-                put.addHeader(HttpHeaders.CONTENT_RANGE, "bytes */0");
-                final HttpResponse response = client.getClient().execute(put);
-                try {
-                    switch(response.getStatusLine().getStatusCode()) {
-                        case HttpStatus.SC_OK:
-                        case HttpStatus.SC_CREATED:
-                            final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
-                                FileMetadata.class);
-                            overall.setVersion(new VersionId(result.getId()));
-                        case HttpStatus.SC_NO_CONTENT:
-                            break;
-                        default:
-                            throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                EntityUtils.toString(response.getEntity())));
+                if(overall.getLength() <= 0) {
+                    final StoregateApiClient client = session.getClient();
+                    final HttpPut put = new HttpPut(location);
+                    put.addHeader(HttpHeaders.CONTENT_RANGE, "bytes */0");
+                    final HttpResponse response = client.getClient().execute(put);
+                    try {
+                        switch(response.getStatusLine().getStatusCode()) {
+                            case HttpStatus.SC_OK:
+                            case HttpStatus.SC_CREATED:
+                                final FileMetadata result = new JSON().getContext(FileMetadata.class).readValue(new InputStreamReader(response.getEntity().getContent(), StandardCharsets.UTF_8),
+                                    FileMetadata.class);
+                                overall.setVersion(new VersionId(result.getId()));
+                            case HttpStatus.SC_NO_CONTENT:
+                                break;
+                            default:
+                                throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
+                                    EntityUtils.toString(response.getEntity())));
+                        }
                     }
-                }
-                catch(BackgroundException e) {
-                    throw new IOException(e);
-                }
-                finally {
-                    EntityUtils.consume(response.getEntity());
+                    catch(BackgroundException e) {
+                        throw new IOException(e);
+                    }
+                    finally {
+                        EntityUtils.consume(response.getEntity());
+                    }
                 }
             }
             finally {
