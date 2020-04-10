@@ -18,7 +18,6 @@ package ch.cyberduck.core.sds;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
@@ -34,9 +33,6 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
-import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadRequest;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -81,23 +77,15 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
 
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final CreateFileUploadRequest body = new CreateFileUploadRequest()
-            .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
-            .name(file.getName());
-        try {
-            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
-            final MultipartOutputStream proxy = new MultipartOutputStream(response.getToken(), file, status);
-            return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
-                PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
-                @Override
-                public VersionId getStatus() {
-                    return proxy.getVersionId();
-                }
-            };
-        }
-        catch(ApiException e) {
-            throw new SDSExceptionMappingService().map(e);
-        }
+        final String uploadToken = new SDSWriteFeature(session, nodeid).start(file, status);
+        final MultipartOutputStream proxy = new MultipartOutputStream(uploadToken, file, status);
+        return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
+            PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
+            @Override
+            public VersionId getStatus() {
+                return proxy.getVersionId();
+            }
+        };
     }
 
     private final class MultipartOutputStream extends OutputStream {
@@ -126,7 +114,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
             try {
                 final byte[] content = Arrays.copyOfRange(b, off, len);
                 final HttpEntity entity = EntityBuilder.create().setBinary(content).build();
-                new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
+                new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
                         final SDSApiClient client = session.getClient();
@@ -164,14 +152,13 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                             catch(BackgroundException e) {
                                 // Cancel upload on error reply
                                 new SDSWriteFeature(session, nodeid).cancel(file, uploadToken);
+                                throw e;
                             }
                             finally {
                                 EntityUtils.consume(response.getEntity());
                             }
                         }
                         catch(IOException e) {
-                            // Cancel upload on I/O failure
-                            new SDSWriteFeature(session, nodeid).cancel(file, uploadToken);
                             throw new DefaultIOExceptionMappingService().map(e);
                         }
                         return null; //Void
