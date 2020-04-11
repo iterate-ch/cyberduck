@@ -188,15 +188,17 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                 body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
             }
             final Node upload = new UploadsApi(client).completeFileUploadByToken(uploadToken, null, body);
-            final Checksum checksum = status.getChecksum();
-            if(Checksum.NONE != checksum) {
-                final Checksum server = Checksum.parse(upload.getHash());
-                if(Checksum.NONE != server) {
-                    if(checksum.algorithm.equals(server.algorithm)) {
-                        if(!server.equals(checksum)) {
-                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                    checksum.hash, server.hash));
+            if(!upload.isIsEncrypted()) {
+                final Checksum checksum = status.getChecksum();
+                if(Checksum.NONE != checksum) {
+                    final Checksum server = Checksum.parse(upload.getHash());
+                    if(Checksum.NONE != server) {
+                        if(checksum.algorithm.equals(server.algorithm)) {
+                            if(!server.equals(checksum)) {
+                                throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                                    MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                        checksum.hash, server.hash));
+                            }
                         }
                     }
                 }
