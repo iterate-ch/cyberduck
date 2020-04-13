@@ -29,13 +29,15 @@ import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public abstract class AbstractMenuDelegate extends ProxyController implements NSMenu.Delegate, NSMenu.Validation {
     private static final Logger log = Logger.getLogger(AbstractMenuDelegate.class);
 
     /**
      * Menu needs revalidation
      */
-    private boolean update = true;
+    private final AtomicBoolean update = new AtomicBoolean(true);
 
     /**
      * Called to let you update a menu item before it is displayed. If your
@@ -134,14 +136,14 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
         if(log.isTraceEnabled()) {
             log.trace("setNeedsUpdate:" + u);
         }
-        update = u;
+        update.set(u);
     }
 
     /**
      * @return True if the menu is populated and needs no update.
      */
     protected boolean isPopulated() {
-        return !update;
+        return !update.get();
     }
 
     /**
