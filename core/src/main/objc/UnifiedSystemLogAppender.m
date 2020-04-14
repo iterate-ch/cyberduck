@@ -20,13 +20,12 @@
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_logging_UnifiedSystemLogAppender_log(JNIEnv *env, jobject this, jint type, jstring logger, jstring message)
 {
-    os_log_t category;
     static NSString* appBundleIdentifier;
     if (!appBundleIdentifier) {
         appBundleIdentifier = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleIdentifier"];
     }
     if (!appBundleIdentifier) {
-        category = OS_LOG_DEFAULT;
+        os_log_with_type(OS_LOG_DEFAULT, type, "%{public}@", (CFStringRef)JNFJavaToNSString(env, message));
     }
     else {
         const char* subsystem = [appBundleIdentifier cStringUsingEncoding:kUnicodeUTF8Format];
@@ -37,7 +36,9 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_logging_UnifiedSystemLogAppender_l
         if(NULL == name) {
             return;
         }
-        category = os_log_create(subsystem, name);
+        os_log_t category = os_log_create(subsystem, name);
+        os_log_with_type(category, type, "%{public}@", (CFStringRef)JNFJavaToNSString(env, message));
+        // A value is always returned and should be released when no longer needed.
+        CFRelease(category);
     }
-    os_log_with_type(category, type, "%{public}@", (CFStringRef)JNFJavaToNSString(env, message));
 }
