@@ -18,7 +18,6 @@ package ch.cyberduck.core.storegate;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
@@ -40,22 +39,14 @@ import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.entity.EntityBuilder;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -65,10 +56,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.google.api.client.json.Json.MEDIA_TYPE;
-
 public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId> {
-
     private static final Logger log = Logger.getLogger(StoregateMultipartWriteFeature.class);
 
     private final StoregateSession session;
@@ -108,65 +96,15 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
 
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        try {
-            final StoregateApiClient client = session.getClient();
-            // Initiate a resumable upload
-            final HttpEntityEnclosingRequestBase request;
-            request = new HttpPost(String.format("%s/v4/upload/resumable", client.getBasePath()));
-            FileMetadata meta = new FileMetadata();
-            meta.setId(StringUtils.EMPTY);
-            if(status.isHidden()) {
-                meta.setAttributes(2); // Hidden
+        final String location = new StoregateWriteFeature(session, fileid).start(file, status);
+        final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);
+        return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
+            PreferencesFactory.get().getInteger("storegate.upload.multipart.chunksize"))) {
+            @Override
+            public VersionId getStatus() {
+                return proxy.getVersionId();
             }
-            else {
-                meta.setAttributes(0);
-            }
-            meta.setFlags(FileMetadata.FlagsEnum.NUMBER_0);
-            if(status.getLockId() != null) {
-                request.addHeader("X-Lock-Id", status.getLockId().toString());
-            }
-            meta.setFileName(file.getName());
-            meta.setParentId(fileid.getFileid(file.getParent(), new DisabledListProgressListener()));
-            meta.setFileSize(0L);
-            meta.setCreated(DateTime.now());
-            if(null != status.getTimestamp()) {
-                meta.setModified(new DateTime(status.getTimestamp()));
-            }
-            request.setEntity(new StringEntity(new JSON().getContext(meta.getClass()).writeValueAsString(meta),
-                ContentType.create("application/json", StandardCharsets.UTF_8.name())));
-            request.addHeader(HTTP.CONTENT_TYPE, MEDIA_TYPE);
-            final HttpResponse response = client.getClient().execute(request);
-            try {
-                switch(response.getStatusLine().getStatusCode()) {
-                    case HttpStatus.SC_OK:
-                        break;
-                    default:
-                        throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                            EntityUtils.toString(response.getEntity())));
-                }
-            }
-            finally {
-                EntityUtils.consume(response.getEntity());
-            }
-            if(response.containsHeader(HttpHeaders.LOCATION)) {
-                final String location = response.getFirstHeader(HttpHeaders.LOCATION).getValue();
-                final MultipartOutputStream proxy = new MultipartOutputStream(location, file, status);
-                return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
-                    PreferencesFactory.get().getInteger("storegate.upload.multipart.chunksize"))) {
-                    @Override
-                    public VersionId getStatus() {
-                        return proxy.getVersionId();
-                    }
-                };
-            }
-            else {
-                throw new StoregateExceptionMappingService().map(new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                    EntityUtils.toString(response.getEntity())));
-            }
-        }
-        catch(IOException e) {
-            throw new DefaultIOExceptionMappingService().map(e);
-        }
+        };
     }
 
     private final class MultipartOutputStream extends OutputStream {
@@ -194,7 +132,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
                 final byte[] content = Arrays.copyOfRange(b, off, len);
-                new DefaultRetryCallable<Void>(session.getHost(), new BackgroundExceptionCallable<Void>() {
+                new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
                     public Void call() throws BackgroundException {
                         final StoregateApiClient client = session.getClient();
@@ -230,21 +168,16 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
                                             EntityUtils.toString(response.getEntity())));
                                 }
                             }
+                            catch(BackgroundException e) {
+                                new StoregateWriteFeature(session, fileid).cancel(file, location);
+                                throw e;
+                            }
                             finally {
                                 EntityUtils.consume(response.getEntity());
                             }
                         }
                         catch(IOException e) {
-                            try {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Cancel failed upload %s for %s", location, file));
-                                }
-                                final HttpDelete delete = new HttpDelete(location);
-                                client.getClient().execute(delete);
-                            }
-                            catch(IOException ex) {
-                                throw new DefaultIOExceptionMappingService().map(e);
-                            }
+                            throw new DefaultIOExceptionMappingService().map(e);
                         }
                         return null; //Void
                     }
@@ -262,8 +195,8 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
                     log.warn(String.format("Skip double close of stream %s", this));
                     return;
                 }
-                final StoregateApiClient client = session.getClient();
-                try {
+                if(overall.getLength() <= 0) {
+                    final StoregateApiClient client = session.getClient();
                     final HttpPut put = new HttpPut(location);
                     put.addHeader(HttpHeaders.CONTENT_RANGE, "bytes */0");
                     final HttpResponse response = client.getClient().execute(put);
@@ -287,13 +220,6 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
                     finally {
                         EntityUtils.consume(response.getEntity());
                     }
-                }
-                catch(IOException e) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Cancel failed upload %s for %s", location, file));
-                    }
-                    final HttpDelete delete = new HttpDelete(location);
-                    client.getClient().execute(delete);
                 }
             }
             finally {
