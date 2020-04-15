@@ -168,6 +168,9 @@ public final class TerminalOptionsBuilder {
         options.addOption(Option.builder("v")
             .longOpt(Params.verbose.name())
             .desc("Print transcript").build());
+        options.addOption(Option.builder()
+            .longOpt(Params.debug.name())
+            .desc("Print debug output").build());
         options.addOption(Option.builder("q")
             .longOpt(Params.quiet.name())
             .desc("Suppress progress messages").build());
@@ -203,6 +206,7 @@ public final class TerminalOptionsBuilder {
         identity,
         application,
         chmod,
-        profile
+        profile,
+        debug
     }
 }
