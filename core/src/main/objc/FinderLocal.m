@@ -25,6 +25,7 @@
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAliasNative(JNIEnv *env, jobject this, jstring absolute)
 {
+JNF_COCOA_ENTER(env);
     NSString *path = JNFJavaToNSString(env, absolute);
     NSString *resolvedPath = nil;
 
@@ -54,5 +55,6 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAliasN
     {
         resolvedPath = [NSString stringWithString:path];
     }
-	return JNFNSToJavaString(env, resolvedPath);
+    return JNFNSToJavaString(env, resolvedPath);
+JNF_COCOA_EXIT(env);
 }

@@ -23,20 +23,24 @@
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_IOKitSleepPreventer_createAssertion
   (JNIEnv *env, jobject this, jstring reason)
 {
-     IOPMAssertionID assertionID;
-     // Prevents the system from sleeping automatically due to a lack of user activity.
+JNF_COCOA_ENTER(env);
+    IOPMAssertionID assertionID;
+    // Prevents the system from sleeping automatically due to a lack of user activity.
     IOReturn success = IOPMAssertionCreateWithName(kIOPMAssertionTypeNoIdleSleep,
                                               kIOPMAssertionLevelOn, (CFStringRef)JNFJavaToNSString(env, reason), &assertionID);
     if (success == kIOReturnSuccess) {
        return JNFNSToJavaString(env, [NSString stringWithFormat: @"%u", assertionID]);
     }
     return nil;
+JNF_COCOA_EXIT(env);
 }
 
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_IOKitSleepPreventer_releaseAssertion
   (JNIEnv *env, jobject this, jstring assertionID)
 {
+JNF_COCOA_ENTER(env);
     NSString* id = JNFJavaToNSString(env, assertionID);
     IOPMAssertionRelease([id intValue]);
+JNF_COCOA_EXIT(env);
 }

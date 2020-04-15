@@ -25,15 +25,18 @@
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_setDefaultHandlerForURLScheme
   (JNIEnv *env, jobject this, jstring scheme, jstring bundleIdentifier)
 {
+JNF_COCOA_ENTER(env);
 	LSSetDefaultHandlerForURLScheme(
 		(CFStringRef)JNFJavaToNSString(env, scheme),
 		(CFStringRef)JNFJavaToNSString(env, bundleIdentifier)
 	);
+JNF_COCOA_EXIT(env);
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getDefaultHandlerForURLScheme
   (JNIEnv *env, jobject this, jstring scheme)
 {
+JNF_COCOA_ENTER(env);
     NSString *bundleIdentifier = nil;
 	bundleIdentifier = (NSString *)LSCopyDefaultHandlerForURLScheme((CFStringRef)JNFJavaToNSString(env, scheme));
     if(nil == bundleIdentifier) {
@@ -44,11 +47,13 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesScheme
         [bundleIdentifier release];
     }
     return result;
+JNF_COCOA_EXIT(env);
 }
 
 JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getAllHandlersForURLScheme
   (JNIEnv *env, jobject this, jstring scheme)
 {
+JNF_COCOA_ENTER(env);
     NSArray *handlers = [(NSArray *)LSCopyAllHandlersForURLScheme(
 		(CFStringRef)JNFJavaToNSString(env, scheme)) autorelease];
     if(nil == handlers) {
@@ -62,4 +67,5 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesS
         (*env)->SetObjectArrayElement(env, result, i, JNFNSToJavaString(env, [handlers objectAtIndex:i]));
     }
     return result;
+JNF_COCOA_EXIT(env);
 }

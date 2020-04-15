@@ -25,6 +25,7 @@
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setQuarantine(JNIEnv *env, jobject this, jstring path, jstring originUrl, jstring dataUrl)
 {
+JNF_COCOA_ENTER(env);
 	NSURL* url = [NSURL fileURLWithPath:JNFJavaToNSString(env, path)];
 	FSRef ref;
 	if(CFURLGetFSRef((CFURLRef) url, &ref)) {
@@ -42,10 +43,12 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantine
         return TRUE;
 	}
     return FALSE;
+JNF_COCOA_EXIT(env);
 }
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setWhereFrom(JNIEnv *env, jobject this, jstring path, jstring dataUrl)
 {
+JNF_COCOA_ENTER(env);
 	typedef OSStatus (*MDItemSetAttribute_type)(MDItemRef, CFStringRef, CFTypeRef);
 	static MDItemSetAttribute_type mdItemSetAttributeFunc = NULL;
 	static bool didSymbolLookup = false;
@@ -67,4 +70,5 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantine
 	mdItemSetAttributeFunc(mdItem, kMDItemWhereFroms, (CFMutableArrayRef)[NSMutableArray arrayWithObject:JNFJavaToNSString(env, dataUrl)]);
 	CFRelease(mdItem);
     return TRUE;
+JNF_COCOA_EXIT(env);
 }

@@ -25,6 +25,7 @@
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_LaunchServicesFileDescriptor_kind(JNIEnv *env, jobject this, jstring extension)
 {
+JNF_COCOA_ENTER(env);
 	NSString *kind = nil;
 	OSStatus status = LSCopyKindStringForTypeInfo(kLSUnknownType, kLSUnknownCreator,
 		(CFStringRef)JNFJavaToNSString(env, extension), (CFStringRef *)&kind);
@@ -39,4 +40,5 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_LaunchServicesFileDescrip
         jstring result = (*env)->NewStringUTF(env, [NSLocalizedString(@"Unknown", @"") UTF8String]);
         return result;
 	}
+JNF_COCOA_EXIT(env);
 }

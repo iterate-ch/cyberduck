@@ -28,6 +28,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplication
 										jobject this,
                                         jstring extension)
 {
+JNF_COCOA_ENTER(env);
     CFURLRef url; // Path of the application bundle
 	// Locates the preferred application for opening items with a specified file type,
 	// creator signature, filename extension, or any combination of these characteristics.
@@ -42,7 +43,8 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplication
     }
     NSString *result = [(NSURL *)url path];
     CFRelease(url);
-	return JNFNSToJavaString(env, result);
+    return JNFNSToJavaString(env, result);
+JNF_COCOA_EXIT(env);
 }
 
 
@@ -51,6 +53,7 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplic
 										jobject this,
                                         jstring extension)
 {
+JNF_COCOA_ENTER(env);
     NSArray *handlers = [(NSArray *)LSCopyAllRoleHandlersForContentType(
         UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)JNFJavaToNSString(env, extension), NULL),
         kLSRolesEditor) autorelease];
@@ -65,6 +68,7 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplic
         (*env)->SetObjectArrayElement(env, result, i, JNFNSToJavaString(env, [handlers objectAtIndex:i]));
     }
     return result;
+JNF_COCOA_EXIT(env);
 }
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplicationFinder_register(
@@ -72,6 +76,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplicatio
 										jobject this,
                                         jstring bundle)
 {
+JNF_COCOA_ENTER(env);
     NSURL *url = [NSURL fileURLWithPath:JNFJavaToNSString(env, bundle)];
     OSStatus status = LSRegisterURL((CFURLRef)url, YES);
     switch(status) {
@@ -83,4 +88,5 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesApplicatio
             return FALSE;
     }
     return TRUE;
+JNF_COCOA_EXIT(env);
 }
