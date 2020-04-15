@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -142,5 +144,53 @@ public class ProtocolFactoryTest {
         }))).read(
             new Local("src/test/resources/Unknown.cyberduckprofile")
         );
+    }
+
+    @Test
+    public void testOverrideBundledProviderProtocols() {
+        final TestProtocol baseProtocol = new TestProtocol(Scheme.http);
+        final TestProtocol overrideProtocol = new TestProtocol(Scheme.http) {
+            @Override
+            public String getProvider() {
+                return "test-provider";
+            }
+
+            @Override
+            public boolean isBundled() {
+                return false;
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(Stream.of(baseProtocol, overrideProtocol).collect(Collectors.toSet()));
+        assertEquals(baseProtocol, f.forName("test"));
+        assertEquals(overrideProtocol, f.forName("test", "test-provider"));
+    }
+
+    @Test
+    public void testOverrideBundledProtocols() {
+        final TestProtocol baseProtocol = new TestProtocol(Scheme.http) {
+            @Override
+            public String getProvider() {
+                return "test-provider1";
+            }
+
+            @Override
+            public boolean isBundled() {
+                return false;
+            }
+        };
+        final TestProtocol overrideProtocol = new TestProtocol(Scheme.http) {
+            @Override
+            public String getProvider() {
+                return "test-provider2";
+            }
+
+            @Override
+            public boolean isBundled() {
+                return false;
+            }
+        };
+        final ProtocolFactory f = new ProtocolFactory(Stream.of(baseProtocol, overrideProtocol).collect(Collectors.toSet()));
+        assertEquals(overrideProtocol, f.forName("test", "test-provider2"));
+        assertEquals(baseProtocol, f.forName("test", "test-provider1"));
     }
 }
