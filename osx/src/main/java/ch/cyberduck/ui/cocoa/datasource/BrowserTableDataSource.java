@@ -336,7 +336,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     @Override
     public NSUInteger draggingSourceOperationMaskForLocal(final boolean local) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Request dragging source operation mask for %s", local));
+            log.debug(String.format("Request dragging source operation mask for local %s", local));
         }
         if(local) {
             // Move or copy within the browser
