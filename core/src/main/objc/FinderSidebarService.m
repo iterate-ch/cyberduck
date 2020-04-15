@@ -32,6 +32,7 @@ NSString* getBundleName() {
 }
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_containsItem(JNIEnv *env, jobject this, jstring file, jstring name) {
+JNF_COCOA_ENTER(env);
     LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, name), NULL);
     if (!list) {
         NSLog(@"Error getting shared file list reference");
@@ -51,9 +52,11 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_con
     CFRelease(items);
     CFRelease(list);
 	return NO;
+JNF_COCOA_EXIT(env);
 }
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_addItem(JNIEnv *env, jobject this, jstring file, jstring name) {
+JNF_COCOA_ENTER(env);
     LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, name), NULL);
     if (!list) {
 		NSLog(@"Error getting shared file list reference");
@@ -75,9 +78,11 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_add
     }
     CFRelease(item);
     return YES;
+JNF_COCOA_EXIT(env);
 }
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeItem(JNIEnv *env, jobject this, jstring file, jstring name) {
+JNF_COCOA_ENTER(env);
     LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, name), NULL);
     if (!list) {
         NSLog(@"Error getting shared file list reference");
@@ -103,9 +108,11 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_rem
     CFRelease(items);
     CFRelease(list);
 	return err == noErr;
+JNF_COCOA_EXIT(env);
 }
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeAllItems(JNIEnv *env, jobject this, jstring name) {
+JNF_COCOA_ENTER(env);
     LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, name), NULL);
     if (!list) {
         NSLog(@"Error getting shared file list reference");
@@ -129,4 +136,5 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_rem
     CFRelease(items);
     CFRelease(list);
     return err == noErr;
+JNF_COCOA_EXIT(env);
 }

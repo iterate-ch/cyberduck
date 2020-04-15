@@ -20,6 +20,7 @@
 
 JNIEXPORT void JNICALL Java_ch_cyberduck_core_logging_UnifiedSystemLogAppender_log(JNIEnv *env, jobject this, jint type, jstring logger, jstring message)
 {
+JNF_COCOA_ENTER(env);
     static NSString* appBundleIdentifier;
     if (!appBundleIdentifier) {
         appBundleIdentifier = [[[NSBundle mainBundle] infoDictionary] objectForKey: @"CFBundleIdentifier"];
@@ -41,4 +42,5 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_logging_UnifiedSystemLogAppender_l
         // A value is always returned and should be released when no longer needed.
         CFRelease(category);
     }
+JNF_COCOA_EXIT(env);
 }

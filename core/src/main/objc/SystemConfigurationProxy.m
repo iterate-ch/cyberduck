@@ -21,16 +21,20 @@
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_usePassiveFTPNative(JNIEnv *env, jobject this)
 {
+JNF_COCOA_ENTER(env);
 	return [Proxy usePassiveFTP];
+JNF_COCOA_EXIT(env);
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_proxy_SystemConfigurationProxy_findNative(JNIEnv *env, jobject this, jstring target)
 {
+JNF_COCOA_ENTER(env);
     NSString *uri = [Proxy find:JNFJavaToNSString(env, target)];
     if(nil == uri) {
         return NULL;
     }
 	return (*env)->NewStringUTF(env, [uri UTF8String]);
+JNF_COCOA_EXIT(env);
 }
 
 @implementation Proxy
