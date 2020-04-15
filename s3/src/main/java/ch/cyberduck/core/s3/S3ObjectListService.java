@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -39,9 +38,6 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.model.StorageObject;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.EnumSet;
 
@@ -95,7 +91,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
 
                 final StorageObject[] objects = chunk.getObjects();
                 for(StorageObject object : objects) {
-                    final String key = PathNormalizer.normalize(URLDecoder.decode(object.getKey(), StandardCharsets.UTF_8.name()));
+                    final String key = PathNormalizer.normalize(URIEncoder.decode(object.getKey()));
                     if(String.valueOf(Path.DELIMITER).equals(key)) {
                         log.warn(String.format("Skipping prefix %s", key));
                         continue;
@@ -125,7 +121,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                         log.warn(String.format("Skipping prefix %s", common));
                         continue;
                     }
-                    final String key = PathNormalizer.normalize(URLDecoder.decode(common, StandardCharsets.UTF_8.name()));
+                    final String key = PathNormalizer.normalize(URIEncoder.decode(common));
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
@@ -140,7 +136,7 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                     attributes.setRegion(bucket.attributes().getRegion());
                     children.add(file);
                 }
-                priorLastKey = null != chunk.getPriorLastKey() ? URLDecoder.decode(chunk.getPriorLastKey(), StandardCharsets.UTF_8.name()) : null;
+                priorLastKey = null != chunk.getPriorLastKey() ? URIEncoder.decode(chunk.getPriorLastKey()) : null;
                 listener.chunk(directory, children);
             }
             while(priorLastKey != null);
@@ -156,9 +152,6 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 }
             }
             return children;
-        }
-        catch(UnsupportedEncodingException e) {
-            throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);
