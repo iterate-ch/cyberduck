@@ -110,6 +110,9 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         if(type == AttributesFinder.class) {
             return (T) new GoogleStorageAttributesFinderFeature(this);
         }
+        if(type == AclPermission.class) {
+            return (T) new GoogleStorageAccessControlListFeature(this);
+        }
         if(type == Delete.class) {
             return (T) new GoogleStorageDeleteFeature(this);
         }
