@@ -42,7 +42,6 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_con
         NSLog(@"Error getting shared file list items snapshot copy reference");
         return NO;
     }
-    OSStatus err;
     for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
         LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
         if([(NSString*) LSSharedFileListItemCopyDisplayName(item) isEqualToString:[JNFJavaToNSString(env, file) lastPathComponent]]) {
