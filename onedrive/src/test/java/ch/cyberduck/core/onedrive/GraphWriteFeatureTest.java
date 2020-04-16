@@ -28,7 +28,6 @@ import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphReadFeature;
 import ch.cyberduck.core.onedrive.features.GraphWriteFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -51,7 +50,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testWrite() throws Exception {
         final GraphWriteFeature feature = new GraphWriteFeature(session);
-        final Path container = new DefaultHomeFinderService(session).find();
+        final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -79,7 +78,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testWriteUmlaut() throws Exception {
         final GraphWriteFeature feature = new GraphWriteFeature(session);
-        final Path container = new DefaultHomeFinderService(session).find();
+        final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(2048);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -102,7 +101,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testWriteUmlautZeroLength() throws Exception {
         final GraphWriteFeature feature = new GraphWriteFeature(session);
-        final Path container = new DefaultHomeFinderService(session).find();
+        final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -125,7 +124,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testWriteSingleByte() throws Exception {
         final GraphWriteFeature feature = new GraphWriteFeature(session);
-        final Path container = new DefaultHomeFinderService(session).find();
+        final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(1);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -148,7 +147,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
     @Test
     public void testWriteZeroLength() throws Exception {
         final GraphWriteFeature feature = new GraphWriteFeature(session);
-        final Path container = new DefaultHomeFinderService(session).find();
+        final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(0);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
@@ -171,7 +170,7 @@ public class GraphWriteFeatureTest extends AbstractOneDriveTest {
     @Test(expected = InteroperabilityException.class)
     public void testWriteUnknownLength() throws Exception {
         final GraphWriteFeature feature = new GraphWriteFeature(session);
-        final Path container = new DefaultHomeFinderService(session).find();
+        final Path container = new OneDriveHomeFinderService(session).find();
         final byte[] content = RandomUtils.nextBytes(5 * 1024 * 1024);
         final TransferStatus status = new TransferStatus();
         status.setLength(-1L);

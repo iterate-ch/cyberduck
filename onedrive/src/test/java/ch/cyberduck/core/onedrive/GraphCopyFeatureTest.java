@@ -31,7 +31,6 @@ import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -54,7 +53,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
         final Copy copy = new GraphCopyFeature(session);
         final Delete delete = new GraphDeleteFeature(session);
         final AttributesFinder attributesFinder = new GraphAttributesFinderFeature(session);
-        final Path drive = new DefaultHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService(session).find();
         Path targetDirectory = new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         directory.mkdir(targetDirectory, null, null);
         assertNotNull(attributesFinder.find(targetDirectory));
@@ -74,7 +73,7 @@ public class GraphCopyFeatureTest extends AbstractOneDriveTest {
 
     @Test
     public void testCopyToExistingFile() throws Exception {
-        final Path folder = new GraphDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path folder = new GraphDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path test = new GraphTouchFeature(session).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final String target = new AlphanumericRandomStringService().random();
         final Path copy = new GraphTouchFeature(session).touch(new Path(folder, target, EnumSet.of(Path.Type.file)), new TransferStatus());
