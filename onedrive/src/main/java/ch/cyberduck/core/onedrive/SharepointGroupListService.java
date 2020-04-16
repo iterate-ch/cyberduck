@@ -15,22 +15,19 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.GroupsIterator;
-import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 import org.nuxeo.onedrive.client.resources.GroupItem;
 
 import java.util.EnumSet;
+import java.util.Iterator;
 
-public class SharepointGroupListService implements ListService {
+public class SharepointGroupListService extends AbstractListService<GroupItem.Metadata> {
     private static final Logger log = Logger.getLogger(SharepointGroupListService.class);
 
     private final SharepointSession session;
@@ -40,26 +37,15 @@ public class SharepointGroupListService implements ListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> children = new AttributedList<>();
-        final GroupsIterator groupsIterator = new GroupsIterator(session.getClient());
+    protected Iterator<GroupItem.Metadata> getIterator(final Path directory) {
+        return new GroupsIterator(session.getClient());
+    }
 
-        while(groupsIterator.hasNext()) {
-            final GroupItem.Metadata metadata;
-            try {
-                metadata = groupsIterator.next();
-            }
-            catch(OneDriveRuntimeException e) {
-                log.warn(e.getMessage());
-                continue;
-            }
-            final PathAttributes attributes = new PathAttributes();
-            attributes.setVersionId(metadata.getId());
-            children.add(new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
-            listener.chunk(directory, children);
-        }
-
-        return children;
+    @Override
+    protected Path toPath(final GroupItem.Metadata metadata, final Path directory) {
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setVersionId(metadata.getId());
+        return new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes);
     }
 
     @Override
