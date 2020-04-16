@@ -46,7 +46,7 @@ public class OneDriveSession extends GraphSession {
      */
     @Override
     public OneDriveItem toItem(final Path file, final boolean resolveLastItem) throws BackgroundException {
-        if(file.isRoot()) {
+        if(file.equals(OneDriveListService.MYFILES_NAME)) {
             return OneDriveDrive.getDefaultDrive(getClient()).getRoot();
         }
         final String versionId = fileIdProvider.getFileid(file, new DisabledListProgressListener());
@@ -82,7 +82,12 @@ public class OneDriveSession extends GraphSession {
 
     @Override
     public boolean isAccessible(final Path file, final boolean container) {
-        return true;
+        if(file.isRoot()) {
+            return false;
+        }
+        else {
+            return !OneDriveListService.SHARED_NAME.equals(file);
+        }
     }
 
     @Override
@@ -94,7 +99,7 @@ public class OneDriveSession extends GraphSession {
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new GraphItemListService(this);
+            return (T) new OneDriveListService(this);
         }
         if(type == UrlProvider.class) {
             return (T) new OneDriveUrlProvider();
