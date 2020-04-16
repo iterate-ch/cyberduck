@@ -22,7 +22,9 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 import java.util.List;
 
@@ -59,6 +61,16 @@ public class TerminalPreferences extends Preferences {
     }
 
     @Override
+    public void setLogging(final String level) {
+        super.setLogging(level);
+        // Send log output to system.log
+        Logger root = Logger.getRootLogger();
+        final Appender appender = new TerminalAppender();
+        appender.setLayout(new PatternLayout("[%t] %-5p %c - %m%n"));
+        root.addAppender(appender);
+    }
+
+    @Override
     protected void setDefaults() {
         super.setDefaults();
 
@@ -86,6 +98,10 @@ public class TerminalPreferences extends Preferences {
             this.setDefault("queue.upload.permissions.change", String.valueOf(true));
             this.setDefault("queue.upload.permissions.default", String.valueOf(true));
             this.setDefault("queue.upload.permissions.file.default", permission.getMode());
+        }
+        if(input.hasOption(TerminalOptionsBuilder.Params.debug.name())) {
+            this.setLogging("debug");
+
         }
         return this;
     }
