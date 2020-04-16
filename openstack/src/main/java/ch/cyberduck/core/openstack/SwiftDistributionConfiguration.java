@@ -19,11 +19,13 @@ package ch.cyberduck.core.openstack;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.DefaultPathPredicate;
 import ch.cyberduck.core.DescriptiveUrlBag;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -45,6 +47,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import ch.iterate.openstack.swift.exception.GenericException;
 import ch.iterate.openstack.swift.exception.NotFoundException;
@@ -55,7 +58,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     private static final Logger log = Logger.getLogger(SwiftDistributionConfiguration.class);
 
     private final PathContainerService containerService
-            = new PathContainerService();
+        = new PathContainerService();
 
     private final SwiftSession session;
     private final Map<Path, Distribution> distributions;
@@ -77,11 +80,11 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
         try {
             if(StringUtils.isNotBlank(configuration.getIndexDocument())) {
                 session.getClient().updateContainerMetadata(regionService.lookup(container),
-                        container.getName(), Collections.singletonMap("X-Container-Meta-Web-Index", configuration.getIndexDocument()));
+                    container.getName(), Collections.singletonMap("X-Container-Meta-Web-Index", configuration.getIndexDocument()));
             }
             try {
                 final CDNContainer info
-                        = session.getClient().getCDNContainerInfo(regionService.lookup(container), container.getName());
+                    = session.getClient().getCDNContainerInfo(regionService.lookup(container), container.getName());
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Found existing CDN configuration %s", info));
                 }
@@ -98,7 +101,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 log.debug(String.format("Update CDN configuration for %s", container));
             }
             session.getClient().cdnUpdateContainer(regionService.lookup(container),
-                    container.getName(), -1, configuration.isEnabled(), configuration.isLogging());
+                container.getName(), -1, configuration.isEnabled(), configuration.isLogging());
         }
         catch(GenericException e) {
             throw new SwiftExceptionMappingService().map("Cannot write CDN configuration", e);
@@ -114,9 +117,9 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
         try {
             try {
                 final CDNContainer info = session.getClient().getCDNContainerInfo(regionService.lookup(container),
-                        container.getName());
+                    container.getName());
                 final Distribution distribution = new Distribution(regionService.lookup(container).getStorageUrl(container.getName()),
-                        method, info.isEnabled());
+                    method, info.isEnabled());
                 distribution.setId(info.getName());
                 distribution.setStatus(info.isEnabled() ? LocaleFactory.localizedString("CDN Enabled", "Mosso") : LocaleFactory.localizedString("CDN Disabled", "Mosso"));
                 if(StringUtils.isNotBlank(info.getCdnURL())) {
@@ -134,7 +137,7 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
                 distribution.setLogging(info.getRetainLogs());
                 distribution.setLoggingContainer(".CDN_ACCESS_LOGS");
                 final ContainerMetadata metadata = session.getClient().getContainerMetaData(regionService.lookup(container),
-                        container.getName());
+                    container.getName());
                 if(metadata.getMetaData().containsKey("X-Container-Meta-Web-Index")) {
                     distribution.setIndexDocument(metadata.getMetaData().get("X-Container-Meta-Web-Index"));
                 }
@@ -183,8 +186,15 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
         final Path container = containerService.getContainer(file);
-        if(distributions.containsKey(container)) {
-            return new DistributionUrlProvider(distributions.get(container)).toUrl(file);
+        // Filter including region
+        final Optional<Path> byRegion = distributions.keySet().stream().filter(new DefaultPathPredicate(container)).findFirst();
+        if(byRegion.isPresent()) {
+            return new DistributionUrlProvider(distributions.get(byRegion.get())).toUrl(file);
+        }
+        // Filter by matching container name
+        final Optional<Path> byName = distributions.keySet().stream().filter(new SimplePathPredicate(container)).findFirst();
+        if(byName.isPresent()) {
+            return new DistributionUrlProvider(distributions.get(byName.get())).toUrl(file);
         }
         return DescriptiveUrlBag.empty();
     }

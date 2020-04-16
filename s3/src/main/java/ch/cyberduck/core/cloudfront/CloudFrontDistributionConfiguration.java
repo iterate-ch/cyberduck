@@ -18,19 +18,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AlphanumericRandomStringService;
-import ch.cyberduck.core.DescriptiveUrlBag;
-import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.KeychainLoginService;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.LoginService;
-import ch.cyberduck.core.PasswordStoreFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
-import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
@@ -71,6 +59,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import com.amazonaws.AmazonClientException;
@@ -159,8 +148,16 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
 
     @Override
     public DescriptiveUrlBag toUrl(final Path file) {
-        if(distributions.containsKey(containerService.getContainer(file))) {
-            return new DistributionUrlProvider(distributions.get(containerService.getContainer(file))).toUrl(file);
+        final Path container = containerService.getContainer(file);
+        // Filter including region
+        final Optional<Path> byRegion = distributions.keySet().stream().filter(new DefaultPathPredicate(container)).findFirst();
+        if(byRegion.isPresent()) {
+            return new DistributionUrlProvider(distributions.get(byRegion.get())).toUrl(file);
+        }
+        // Filter by matching container name
+        final Optional<Path> byName = distributions.keySet().stream().filter(new SimplePathPredicate(container)).findFirst();
+        if(byName.isPresent()) {
+            return new DistributionUrlProvider(distributions.get(byName.get())).toUrl(file);
         }
         return DescriptiveUrlBag.empty();
     }
