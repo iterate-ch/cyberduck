@@ -17,7 +17,6 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -25,6 +24,7 @@ import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.SimplePathPredicate;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.exception.NotfoundException;
@@ -42,9 +42,6 @@ import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.model.BaseVersionOrDeleteMarker;
 import org.jets3t.service.model.S3Version;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -108,7 +105,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     priorLastKey, priorLastVersionId, false);
                 // Amazon S3 returns object versions in the order in which they were stored, with the most recently stored returned first.
                 for(BaseVersionOrDeleteMarker marker : chunk.getItems()) {
-                    final String key = PathNormalizer.normalize(URLDecoder.decode(marker.getKey(), StandardCharsets.UTF_8.name()));
+                    final String key = PathNormalizer.normalize(URIEncoder.decode(marker.getKey()));
                     if(String.valueOf(Path.DELIMITER).equals(key)) {
                         log.warn(String.format("Skipping prefix %s", key));
                         continue;
@@ -165,13 +162,13 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                         log.warn(String.format("Skipping prefix %s", common));
                         continue;
                     }
-                    final String key = PathNormalizer.normalize(URLDecoder.decode(common, StandardCharsets.UTF_8.name()));
+                    final String key = PathNormalizer.normalize(URIEncoder.decode(common));
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
-                    folders.add(this.submit(pool, bucket, URLDecoder.decode(common, StandardCharsets.UTF_8.name())));
+                    folders.add(this.submit(pool, bucket, URIEncoder.decode(common)));
                 }
-                priorLastKey = null != chunk.getNextKeyMarker() ? URLDecoder.decode(chunk.getNextKeyMarker(), StandardCharsets.UTF_8.name()) : null;
+                priorLastKey = null != chunk.getNextKeyMarker() ? URIEncoder.decode(chunk.getNextKeyMarker()) : null;
                 priorLastVersionId = chunk.getNextVersionIdMarker();
                 listener.chunk(directory, children);
             }
@@ -197,9 +194,6 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                 throw new NotfoundException(directory.getAbsolute());
             }
             return children;
-        }
-        catch(UnsupportedEncodingException e) {
-            throw new DefaultIOExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Listing directory {0} failed", e, directory);

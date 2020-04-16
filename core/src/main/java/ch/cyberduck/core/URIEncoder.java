@@ -19,13 +19,16 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.StringTokenizer;
 
 public final class URIEncoder {
+    private static final Logger log = Logger.getLogger(URIEncoder.class);
 
     private URIEncoder() {
         //
@@ -34,18 +37,18 @@ public final class URIEncoder {
     /**
      * URL encode a path
      *
-     * @param p Path
+     * @param input Path
      * @return URI encoded
      * @see java.net.URLEncoder#encode(String, String)
      */
-    public static String encode(final String p) {
+    public static String encode(final String input) {
         try {
             final StringBuilder b = new StringBuilder();
-            final StringTokenizer t = new StringTokenizer(p, "/");
+            final StringTokenizer t = new StringTokenizer(input, "/");
             if(!t.hasMoreTokens()) {
-                return p;
+                return input;
             }
-            if(StringUtils.startsWith(p, String.valueOf(Path.DELIMITER))) {
+            if(StringUtils.startsWith(input, String.valueOf(Path.DELIMITER))) {
                 b.append(Path.DELIMITER);
             }
             while(t.hasMoreTokens()) {
@@ -54,7 +57,7 @@ public final class URIEncoder {
                     b.append(Path.DELIMITER);
                 }
             }
-            if(StringUtils.endsWith(p, String.valueOf(Path.DELIMITER))) {
+            if(StringUtils.endsWith(input, String.valueOf(Path.DELIMITER))) {
                 b.append(Path.DELIMITER);
             }
             // Because URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
@@ -64,7 +67,18 @@ public final class URIEncoder {
                 new String[]{"%20", "%2A", "~", "@"});
         }
         catch(UnsupportedEncodingException e) {
-            return p;
+            log.warn(String.format("Failure %s encoding input %s", e, input));
+            return input;
+        }
+    }
+
+    public static String decode(final String input) {
+        try {
+            return URLDecoder.decode(input, StandardCharsets.UTF_8.name());
+        }
+        catch(UnsupportedEncodingException | IllegalArgumentException e) {
+            log.warn(String.format("Failure %s decoding input %s", e, input));
+            return input;
         }
     }
 }
