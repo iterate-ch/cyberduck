@@ -22,6 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -106,6 +107,9 @@ public class OneDriveSession extends GraphSession {
         }
         if(type == PromptUrlProvider.class) {
             return (T) new OneDriveSharingLinkUrlProvider(this);
+        }
+        if(type == Home.class) {
+            return (T) new OneDriveHomeFinderService(this);
         }
         return super._getFeature(type);
     }
