@@ -17,7 +17,6 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.shared.DefaultCopyFeature;
@@ -62,11 +61,5 @@ public class SDSDelegatingCopyFeature implements Copy {
             return true;
         }
         return copy.isSupported(source, target);
-    }
-
-    @Override
-    public Copy withTarget(final Session<?> session) {
-        proxy.withTarget(session);
-        return this;
     }
 }
