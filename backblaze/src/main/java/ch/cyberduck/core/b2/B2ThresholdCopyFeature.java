@@ -1,0 +1,64 @@
+package ch.cyberduck.core.b2;
+
+/*
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
+ * https://cyberduck.io/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+import ch.cyberduck.core.ConnectionCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
+
+import org.apache.log4j.Logger;
+
+public class B2ThresholdCopyFeature implements Copy {
+
+    private static final Logger log = Logger.getLogger(B2ThresholdUploadService.class);
+
+    private final B2Session session;
+    private final B2FileidProvider fileid;
+    private final Long threshold;
+
+    public B2ThresholdCopyFeature(final B2Session session, final B2FileidProvider fileid) {
+        this(session, fileid, PreferencesFactory.get().getLong("b2.upload.largeobject.threshold"));
+    }
+
+    public B2ThresholdCopyFeature(final B2Session session, final B2FileidProvider fileid, final Long threshold) {
+        this.session = session;
+        this.fileid = fileid;
+        this.threshold = threshold;
+    }
+
+    @Override
+    public Path copy(final Path source, final Path target, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
+        if(new B2ThresholdUploadService(session, fileid, threshold).threshold(status.getLength())) {
+            return new B2LargeCopyFeature(session, fileid).copy(source, target, status, callback);
+        }
+        else {
+            return new B2CopyFeature(session, fileid).copy(source, target, status, callback);
+        }
+    }
+
+    @Override
+    public boolean isSupported(final Path source, final Path target) {
+        return new B2CopyFeature(session, fileid).isSupported(source, target);
+    }
+
+    @Override
+    public boolean isRecursive(final Path source, final Path target) {
+        return new B2CopyFeature(session, fileid).isRecursive(source, target);
+    }
+}

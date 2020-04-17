@@ -31,6 +31,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.io.StreamProgress;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
 import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.threading.ThreadPool;
@@ -65,6 +66,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
      * The maximum allowed parts in a multipart upload.
      */
     public static final int MAXIMUM_UPLOAD_PARTS = 10000;
+    public static final String X_BZ_INFO_LARGE_FILE_SHA1 = "large_file_sha1";
 
     private final PathContainerService containerService
         = new B2PathContainerService();
@@ -73,12 +75,14 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
     private final B2FileidProvider fileid;
 
     private final Long partSize;
-
     private final Integer concurrency;
 
-    private static final String X_BZ_INFO_LARGE_FILE_SHA1 = "large_file_sha1";
-
     private Write<BaseB2Response> writer;
+
+    public B2LargeUploadService(final B2Session session, final B2FileidProvider fileid, final Write<BaseB2Response> writer) {
+        this(session, fileid, writer, PreferencesFactory.get().getLong("b2.upload.largeobject.size"),
+            PreferencesFactory.get().getInteger("b2.upload.largeobject.concurrency"));
+    }
 
     public B2LargeUploadService(final B2Session session, final B2FileidProvider fileid, final Write<BaseB2Response> writer, final Long partSize, final Integer concurrency) {
         super(writer);
@@ -115,10 +119,10 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
             }
             if(status.isAppend()) {
                 // Add already completed parts
-                final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, this.fileid);
+                final B2LargeUploadPartService partService = new B2LargeUploadPartService(session, fileid);
                 final List<B2FileInfoResponse> uploads = partService.find(file);
                 if(uploads.isEmpty()) {
-                    status.setVersion(new VersionId(session.getClient().startLargeFileUpload(this.fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
+                    status.setVersion(new VersionId(session.getClient().startLargeFileUpload(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
                         containerService.getKey(file), status.getMime(), fileinfo).getFileId()));
                 }
                 else {
@@ -127,7 +131,7 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 }
             }
             else {
-                status.setVersion(new VersionId(session.getClient().startLargeFileUpload(this.fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
+                status.setVersion(new VersionId(session.getClient().startLargeFileUpload(fileid.getFileid(containerService.getContainer(file), new DisabledListProgressListener()),
                     containerService.getKey(file), status.getMime(), fileinfo).getFileId()));
             }
             // Full size of file
