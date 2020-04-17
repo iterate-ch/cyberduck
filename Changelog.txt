@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+7.3.1
+- [Feature] Edit ACLs for files (Google Storage)$ (#11008)
+- [Bugfix] Reduced memory usage (macOS)
+
 7.3.0
 - [Feature] Support for vault format version 7 (Cryptomator) (#10825)
 - [Feature] Labels for bookmarks (macOS) (#9719)
