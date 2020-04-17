@@ -146,7 +146,7 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
     @Test
     public void testFeatures() {
         assertNull(session.getFeature(Versioning.class));
-        assertNull(session.getFeature(AclPermission.class));
+        assertNotNull(session.getFeature(AclPermission.class));
         assertNotNull(session.getFeature(Lifecycle.class));
         assertNotNull(session.getFeature(DistributionConfiguration.class));
         assertNotNull(session.getFeature(IdentityConfiguration.class));
