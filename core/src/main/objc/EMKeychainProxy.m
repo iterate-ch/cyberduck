@@ -65,12 +65,12 @@ static EMKeychainProxy* sharedProxy;
 	void *password = nil;
 	
 	SecKeychainItemRef itemRef = nil;
-	OSStatus returnStatus = SecKeychainFindGenericPassword(NULL, strlen(serviceName), serviceName, strlen(username), username, &passwordLength, (void **)&password, &itemRef);
+	OSStatus returnStatus = SecKeychainFindGenericPassword(NULL, (UInt32)strlen(serviceName), serviceName, (UInt32)strlen(username), username, &passwordLength, (void **)&password, &itemRef);
 	if (returnStatus != noErr || !itemRef)
 	{
 		if (_logErrors)
 		{
-			NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
+			NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), [NSError errorWithDomain:NSOSStatusErrorDomain code:returnStatus userInfo:nil].description.UTF8String);
 		}
 		return nil;
 	}
@@ -102,13 +102,13 @@ static EMKeychainProxy* sharedProxy;
 	void *password = nil;
 	
 	SecKeychainItemRef itemRef = nil;
-	OSStatus returnStatus = SecKeychainFindInternetPassword(NULL, strlen(server), server, 0, NULL, strlen(username), username, strlen(path), path, port, protocol, kSecAuthenticationTypeDefault, &passwordLength, (void **)&password, &itemRef);
+	OSStatus err = SecKeychainFindInternetPassword(NULL, (UInt32)strlen(server), server, 0, NULL, (UInt32)strlen(username), username, (UInt32)strlen(path), path, port, protocol, kSecAuthenticationTypeDefault, &passwordLength, (void **)&password, &itemRef);
 	
-	if (returnStatus != noErr || !itemRef)
+	if (err != noErr || !itemRef)
 	{
 		if (_logErrors)
 		{
-			NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
+			NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:nil].description.UTF8String);
 		}
 		return nil;
 	}
@@ -138,7 +138,7 @@ static EMKeychainProxy* sharedProxy;
 	const char *password = [passwordString UTF8String];
 	
 	SecKeychainItemRef item = nil;
-	OSStatus returnStatus = SecKeychainAddGenericPassword(NULL, strlen(serviceName), serviceName, strlen(username), username, strlen(password), (void *)password, &item);
+	OSStatus returnStatus = SecKeychainAddGenericPassword(NULL, (UInt32)strlen(serviceName), serviceName, (UInt32)strlen(username), username, (UInt32)strlen(password), (void *)password, &item);
 	
 	if (returnStatus != noErr || !item)
 	{
@@ -155,7 +155,7 @@ static EMKeychainProxy* sharedProxy;
         }
 		if (_logErrors)
 		{
-            NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
+            NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), [NSError errorWithDomain:NSOSStatusErrorDomain code:returnStatus userInfo:nil].description.UTF8String);
 		}
 		return nil;
 	}
@@ -178,7 +178,7 @@ static EMKeychainProxy* sharedProxy;
 	}
 
 	SecKeychainItemRef item = nil;
-	OSStatus returnStatus = SecKeychainAddInternetPassword(NULL, strlen(server), server, 0, NULL, strlen(username), username, strlen(path), path, port, protocol, kSecAuthenticationTypeDefault, strlen(password), (void *)password, &item);
+	OSStatus returnStatus = SecKeychainAddInternetPassword(NULL, (UInt32)strlen(server), server, 0, NULL, (UInt32)strlen(username), username, (UInt32)strlen(path), path, port, protocol, kSecAuthenticationTypeDefault, (UInt32)strlen(password), (void *)password, &item);
 	
 	if (returnStatus != noErr)
 	{
@@ -198,7 +198,7 @@ static EMKeychainProxy* sharedProxy;
         }
 		if (_logErrors)
 		{
-    		NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
+    		NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), [NSError errorWithDomain:NSOSStatusErrorDomain code:returnStatus userInfo:nil].description.UTF8String);
         }
         return nil;
 	}
