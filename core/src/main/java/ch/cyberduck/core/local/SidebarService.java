@@ -22,7 +22,13 @@ import ch.cyberduck.core.exception.LocalAccessDeniedException;
 
 public interface SidebarService {
 
-    void add(Local file) throws LocalAccessDeniedException;
+    default void add(Local file) throws LocalAccessDeniedException {
+        this.add(file, file.getName());
+    }
+
+    void add(Local file, String name) throws LocalAccessDeniedException;
+
+    boolean contains(Local file);
 
     void remove(Local file) throws LocalAccessDeniedException;
 

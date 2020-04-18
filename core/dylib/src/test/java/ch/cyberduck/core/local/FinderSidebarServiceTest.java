@@ -17,122 +17,56 @@ package ch.cyberduck.core.local;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.io
  */
 
-import ch.cyberduck.binding.application.NSWorkspace;
-import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.rococoa.cocoa.foundation.NSUInteger;
 
-import java.util.UUID;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-@Ignore
 public class FinderSidebarServiceTest {
 
     @Test
-    public void testAddNotFound() throws Exception {
+    public void testAddDirectoryFavorite() throws Exception {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
         final Local file = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"));
         f.add(file);
+        assertTrue(f.contains(file));
         f.remove(file);
+        assertFalse(f.contains(file));
     }
 
-    @Test(expected = LocalAccessDeniedException.class)
-    public void testRemoveNotfound() throws Exception {
-        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
+    @Test
+    public void testAddDirectoryVolumes() throws Exception {
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.volume);
         final Local file = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"));
+        f.add(file);
+        assertTrue(f.contains(file));
+        f.remove(file);
+    }
+
+    @Ignore
+    @Test
+    public void testAddDirectoryServer() throws Exception {
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.server);
+        final Local file = new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir"));
+        f.add(file);
+        assertTrue(f.contains(file));
         f.remove(file);
     }
 
     @Test
-    public void testAddMountedVolumesInFavorites() throws Exception {
+    public void testAddFile() throws Exception {
         FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
-        final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
-        for(int i = 0; i < volumes.count().intValue(); i++) {
-            final Local volume = new FinderLocal(volumes.objectAtIndex(new NSUInteger(i)).toString());
-            f.add(volume);
-            f.remove(volume);
-        }
-    }
-
-    @Test
-    @Ignore
-    public void testAddMountedVolumesInVolumes() throws Exception {
-        FinderSidebarService f = new FinderSidebarService(SidebarService.List.volume);
-        final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
-        for(int i = 0; i < volumes.count().intValue(); i++) {
-            final Local volume = new FinderLocal(volumes.objectAtIndex(new NSUInteger(i)).toString());
-            f.add(volume);
-            f.remove(volume);
-        }
-    }
-
-    @Test
-    @Ignore
-    public void testAddMountedVolumesInServers() throws Exception {
-        FinderSidebarService f = new FinderSidebarService(SidebarService.List.server);
-        final NSArray volumes = NSWorkspace.sharedWorkspace().mountedLocalVolumePaths();
-        for(int i = 0; i < volumes.count().intValue(); i++) {
-            final Local volume = new FinderLocal(volumes.objectAtIndex(new NSUInteger(i)).toString());
-            f.add(volume);
-            f.remove(volume);
-        }
-    }
-
-    @Test
-    public void testAddTemporaryFileInFavorites() throws Exception {
-        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
-        final String name = UUID.randomUUID().toString();
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
+        Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
         new DefaultLocalTouchFeature().touch(l);
         f.add(l);
+        assertTrue(f.contains(l));
         f.remove(l);
+        assertFalse(f.contains(l));
         l.delete();
-    }
-
-    @Test(expected = LocalAccessDeniedException.class)
-    public void testRemoveFail() throws Exception {
-        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
-        final String name = UUID.randomUUID().toString();
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
-        new DefaultLocalTouchFeature().touch(l);
-        f.add(l);
-        l.delete();
-        f.remove(l);
-    }
-
-    @Test
-    public void testAddTemporaryDirectoryInFavorites() throws Exception {
-        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
-        final String name = UUID.randomUUID().toString();
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
-        new DefaultLocalDirectoryFeature().mkdir(l);
-        FinderLocal t = new FinderLocal(l, name);
-        new DefaultLocalTouchFeature().touch(t);
-        f.add(l);
-        f.remove(l);
-        t.delete();
-        l.delete();
-    }
-
-    @Test
-    @Ignore
-    public void testAddTemporaryFileInVolumes() throws Exception {
-        FinderSidebarService f = new FinderSidebarService(SidebarService.List.volume);
-        final String name = UUID.randomUUID().toString();
-        FinderLocal l = new FinderLocal(System.getProperty("java.io.tmpdir"), name);
-        new DefaultLocalTouchFeature().touch(l);
-        f.add(l);
-        f.remove(l);
-        l.delete();
-    }
-
-    @Test(expected = LocalAccessDeniedException.class)
-    public void testRemove() throws Exception {
-        FinderSidebarService f = new FinderSidebarService(SidebarService.List.favorite);
-        f.remove(new FinderLocal(PreferencesFactory.get().getProperty("tmp.dir")));
     }
 }
