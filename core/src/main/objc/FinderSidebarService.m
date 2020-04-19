@@ -31,9 +31,9 @@ NSString* getBundleName() {
     return bundleName;
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_containsItem(JNIEnv *env, jobject this, jstring file, jstring name) {
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_containsItem(JNIEnv *env, jobject this, jstring file, jstring sharedListName) {
 JNF_COCOA_ENTER(env);
-    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, name), NULL);
+    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, sharedListName), NULL);
     if (!list) {
         NSLog(@"Error getting shared file list reference");
         return NO;
@@ -43,30 +43,37 @@ JNF_COCOA_ENTER(env);
         NSLog(@"Error getting shared file list items snapshot copy reference");
         return NO;
     }
+    BOOL found = NO;
     for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
         LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
-        if([(NSString*) LSSharedFileListItemCopyDisplayName(item) isEqualToString:[JNFJavaToNSString(env, file) lastPathComponent]]) {
-            return YES;
+        CFURLRef urlRef = (CFURLRef) ((NSURL *)LSSharedFileListItemCopyResolvedURL(item, kLSSharedFileListNoUserInteraction | kLSSharedFileListDoNotMountVolumes, NULL)).URLByStandardizingPath;
+        if (urlRef) {
+            if(CFEqual(urlRef, (CFURLRef)[NSURL fileURLWithPath:JNFJavaToNSString(env, file)].URLByStandardizingPath)) {
+                found = YES;
+            }
+        }
+        if (found) {
+            break;
         }
     }
     CFRelease(items);
     CFRelease(list);
-	return NO;
+	return found;
 JNF_COCOA_EXIT(env);
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_addItem(JNIEnv *env, jobject this, jstring file, jstring name) {
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_addItem(JNIEnv *env, jobject this, jstring file, jstring displayName, jstring sharedListName) {
 JNF_COCOA_ENTER(env);
-    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, name), NULL);
+    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, sharedListName), NULL);
     if (!list) {
 		NSLog(@"Error getting shared file list reference");
         return NO;
     }
-    NSURL* url = [NSURL fileURLWithPath:JNFJavaToNSString(env, file)];
+    NSURL* url = [NSURL fileURLWithPath:JNFJavaToNSString(env, file)].URLByStandardizingPath;
     NSDictionary* dict =  [NSDictionary dictionaryWithObject:@"NULL" forKey:getBundleName()];
     LSSharedFileListItemRef item = LSSharedFileListInsertItemURL(list,
                                                                  kLSSharedFileListItemLast,
-                                                                 (CFStringRef)[JNFJavaToNSString(env, file) lastPathComponent],
+                                                                 (CFStringRef)JNFJavaToNSString(env, displayName),
                                                                  NULL,
                                                                  (CFURLRef)url,
                                                                  (CFDictionaryRef)dict,
@@ -81,9 +88,9 @@ JNF_COCOA_ENTER(env);
 JNF_COCOA_EXIT(env);
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeItem(JNIEnv *env, jobject this, jstring file, jstring name) {
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeItem(JNIEnv *env, jobject this, jstring file, jstring sharedListName) {
 JNF_COCOA_ENTER(env);
-    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, name), NULL);
+    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, sharedListName), NULL);
     if (!list) {
         NSLog(@"Error getting shared file list reference");
         return NO;
@@ -96,12 +103,15 @@ JNF_COCOA_ENTER(env);
     OSStatus err;
     for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
         LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
-        if([(NSString*) LSSharedFileListItemCopyDisplayName(item) isEqualToString:[JNFJavaToNSString(env, file) lastPathComponent]]) {
-            if(noErr == (err = LSSharedFileListItemRemove(list, item))) {
-                break;
-            }
-            else {
-                NSLog(@"Error removing shared file list item. %s", GetMacOSStatusErrorString(err));
+        CFURLRef urlRef = (CFURLRef) ((NSURL *)LSSharedFileListItemCopyResolvedURL(item, kLSSharedFileListNoUserInteraction | kLSSharedFileListDoNotMountVolumes, NULL)).URLByStandardizingPath;
+        if (urlRef) {
+            if(CFEqual(urlRef, (CFURLRef)[NSURL fileURLWithPath:JNFJavaToNSString(env, file)].URLByStandardizingPath)) {
+                if(noErr == (err = LSSharedFileListItemRemove(list, item))) {
+                    break;
+                }
+                else {
+                    NSLog(@"Error removing shared file list item. %s", [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:nil].description.UTF8String);
+                }
             }
         }
     }
@@ -111,9 +121,9 @@ JNF_COCOA_ENTER(env);
 JNF_COCOA_EXIT(env);
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeAllItems(JNIEnv *env, jobject this, jstring name) {
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeAllItems(JNIEnv *env, jobject this, jstring sharedListName) {
 JNF_COCOA_ENTER(env);
-    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, name), NULL);
+    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, sharedListName), NULL);
     if (!list) {
         NSLog(@"Error getting shared file list reference");
         return NO;
@@ -128,7 +138,7 @@ JNF_COCOA_ENTER(env);
         LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
         if (LSSharedFileListItemCopyProperty(item, (CFStringRef)getBundleName())) {
             if(noErr != (err = LSSharedFileListItemRemove(list, item))) {
-                NSLog(@"Error removing shared file list item. %s", GetMacOSStatusErrorString(err));
+                NSLog(@"Error removing shared file list item. %s", [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:nil].description.UTF8String);
                 break;
             }
         }
