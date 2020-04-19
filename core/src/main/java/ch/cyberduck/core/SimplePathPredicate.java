@@ -28,8 +28,12 @@ public class SimplePathPredicate implements CacheReference<Path> {
     private final String path;
 
     public SimplePathPredicate(final Path file) {
-        this.type = file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory;
-        this.path = normalizer.normalize(file.getAbsolute()).toString();
+        this(file.isSymbolicLink() ? Path.Type.symboliclink : file.isFile() ? Path.Type.file : Path.Type.directory, file.getAbsolute());
+    }
+
+    public SimplePathPredicate(final Path.Type type, final String path) {
+        this.type = type;
+        this.path = normalizer.normalize(path).toString();
     }
 
     @Override
