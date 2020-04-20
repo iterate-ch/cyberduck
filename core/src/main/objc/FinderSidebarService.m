@@ -43,14 +43,16 @@ JNF_COCOA_ENTER(env);
         NSLog(@"Error getting shared file list items snapshot copy reference");
         return NO;
     }
+    NSString *reference = JNFJavaToNSString(env, file);
     BOOL found = NO;
     for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
-        LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
-        CFURLRef urlRef = (CFURLRef) ((NSURL *)LSSharedFileListItemCopyResolvedURL(item, kLSSharedFileListNoUserInteraction | kLSSharedFileListDoNotMountVolumes, NULL)).URLByStandardizingPath;
-        if (urlRef) {
-            if(CFEqual(urlRef, (CFURLRef)[NSURL fileURLWithPath:JNFJavaToNSString(env, file)].URLByStandardizingPath)) {
+        LSSharedFileListItemRef itemRef = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
+        CFStringRef propertyRef = LSSharedFileListItemCopyProperty(itemRef, (CFStringRef)@"Reference");
+        if (propertyRef) {
+            if(CFEqual(propertyRef, (CFStringRef)reference)) {
                 found = YES;
             }
+            CFRelease(propertyRef);
         }
         if (found) {
             break;
@@ -70,20 +72,19 @@ JNF_COCOA_ENTER(env);
         return NO;
     }
     NSURL* url = [NSURL fileURLWithPath:JNFJavaToNSString(env, file)].URLByStandardizingPath;
-    NSDictionary* dict =  [NSDictionary dictionaryWithObject:@"NULL" forKey:getBundleName()];
-    LSSharedFileListItemRef item = LSSharedFileListInsertItemURL(list,
-                                                                 kLSSharedFileListItemLast,
-                                                                 (CFStringRef)JNFJavaToNSString(env, displayName),
-                                                                 NULL,
-                                                                 (CFURLRef)url,
-                                                                 (CFDictionaryRef)dict,
-                                                                 NULL);
+    LSSharedFileListItemRef itemRef = LSSharedFileListInsertItemURL(list,
+                                                                    kLSSharedFileListItemLast,
+                                                                    (CFStringRef)JNFJavaToNSString(env, displayName),
+                                                                    NULL,
+                                                                    (CFURLRef)url,
+                                                                    (CFDictionaryRef)[NSDictionary dictionaryWithObject:JNFJavaToNSString(env, file) forKey:@"Reference"],
+                                                                    NULL);
     CFRelease(list);
-    if(!item) {
+    if (!itemRef) {
         NSLog(@"Error getting shared file list item reference");
         return NO;
     }
-    CFRelease(item);
+    CFRelease(itemRef);
     return YES;
 JNF_COCOA_EXIT(env);
 }
@@ -100,19 +101,21 @@ JNF_COCOA_ENTER(env);
         NSLog(@"Error getting shared file list items snapshot copy reference");
         return NO;
     }
+    NSString *reference = JNFJavaToNSString(env, file);
     OSStatus err;
     for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
-        LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
-        CFURLRef urlRef = (CFURLRef) ((NSURL *)LSSharedFileListItemCopyResolvedURL(item, kLSSharedFileListNoUserInteraction | kLSSharedFileListDoNotMountVolumes, NULL)).URLByStandardizingPath;
-        if (urlRef) {
-            if(CFEqual(urlRef, (CFURLRef)[NSURL fileURLWithPath:JNFJavaToNSString(env, file)].URLByStandardizingPath)) {
-                if(noErr == (err = LSSharedFileListItemRemove(list, item))) {
+        LSSharedFileListItemRef itemRef = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
+        CFStringRef propertyRef = LSSharedFileListItemCopyProperty(itemRef, (CFStringRef)@"Reference");
+        if (propertyRef) {
+            if(CFEqual(propertyRef, (CFStringRef)reference)) {
+                if(noErr == (err = LSSharedFileListItemRemove(list, itemRef))) {
                     break;
                 }
                 else {
                     NSLog(@"Error removing shared file list item. %s", [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:nil].description.UTF8String);
                 }
             }
+            CFRelease(propertyRef);
         }
     }
     CFRelease(items);
