@@ -24,6 +24,7 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.threading.BackgroundExceptionCallable;
@@ -165,8 +166,9 @@ public class B2LargeCopyFeature implements Copy {
             public B2UploadPartResponse call() throws BackgroundException {
                 overall.validate();
                 try {
-                    //todo set offset and length
-                    return session.getClient().copyLargePart(fileid.getFileid(file, new DisabledListProgressListener()), largeFileId, partNumber);
+                    HttpRange range = HttpRange.byLength(offset, length);
+                    return session.getClient().copyLargePart(fileid.getFileid(file, new DisabledListProgressListener()), largeFileId, partNumber,
+                        String.format("bytes=%d-%d", range.getStart(), range.getEnd()));
                 }
                 catch(B2ApiException e) {
                     throw new B2ExceptionMappingService().map("Cannot copy {0}", e, file);
