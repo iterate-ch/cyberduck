@@ -76,16 +76,6 @@ public class FinderSidebarService implements SidebarService {
         }
     }
 
-    @Override
-    public void removeAll() throws LocalAccessDeniedException {
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Remove all our added items in %s", this.forList(list)));
-        }
-        if(!this.removeAllItems(this.forList(list))) {
-            throw new LocalAccessDeniedException(String.format("Failure removing all items from %s", this.forList(list)));
-        }
-    }
-
     private String forList(final List list) {
         switch(list) {
             case volume:
@@ -118,10 +108,4 @@ public class FinderSidebarService implements SidebarService {
      * @return False on failure
      */
     private native boolean removeItem(final String file, final String list);
-
-    /**
-     * @param list Shared item list name
-     * @return False on failure
-     */
-    private native boolean removeAllItems(final String list);
 }

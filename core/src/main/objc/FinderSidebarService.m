@@ -120,31 +120,3 @@ JNF_COCOA_ENTER(env);
 	return err == noErr;
 JNF_COCOA_EXIT(env);
 }
-
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_FinderSidebarService_removeAllItems(JNIEnv *env, jobject this, jstring sharedListName) {
-JNF_COCOA_ENTER(env);
-    LSSharedFileListRef list = LSSharedFileListCreate(kCFAllocatorDefault, (CFStringRef)JNFJavaToNSString(env, sharedListName), NULL);
-    if (!list) {
-        NSLog(@"Error getting shared file list reference");
-        return NO;
-    }
-    CFArrayRef items = LSSharedFileListCopySnapshot(list, NULL);
-    if (!items) {
-        NSLog(@"Error getting shared file list items snapshot copy reference");
-        return NO;
-    }
-    OSStatus err;
-    for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
-        LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
-        if (LSSharedFileListItemCopyProperty(item, (CFStringRef)getBundleName())) {
-            if(noErr != (err = LSSharedFileListItemRemove(list, item))) {
-                NSLog(@"Error removing shared file list item. %s", [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:nil].description.UTF8String);
-                break;
-            }
-        }
-    }
-    CFRelease(items);
-    CFRelease(list);
-    return err == noErr;
-JNF_COCOA_EXIT(env);
-}
