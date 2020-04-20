@@ -25,8 +25,7 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import org.apache.log4j.Logger;
 
 public class B2ThresholdCopyFeature implements Copy {
-
-    private static final Logger log = Logger.getLogger(B2ThresholdUploadService.class);
+    private static final Logger log = Logger.getLogger(B2ThresholdCopyFeature.class);
 
     private final B2Session session;
     private final B2FileidProvider fileid;
