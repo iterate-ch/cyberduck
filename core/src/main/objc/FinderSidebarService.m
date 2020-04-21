@@ -47,15 +47,24 @@ JNF_COCOA_ENTER(env);
     BOOL found = NO;
     for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
         LSSharedFileListItemRef itemRef = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
+        // Lookup by reference which allows to find items where referenced file is not found
         CFStringRef propertyRef = LSSharedFileListItemCopyProperty(itemRef, (CFStringRef)@"Reference");
         if (propertyRef) {
             if(CFEqual(propertyRef, (CFStringRef)reference)) {
                 found = YES;
             }
             CFRelease(propertyRef);
+            if (found) {
+                break;
+            }
         }
-        if (found) {
-            break;
+        // For login item lists it looks like the custom property is not returned.
+        CFURLRef urlRef = (CFURLRef) ((NSURL *)LSSharedFileListItemCopyResolvedURL(itemRef, kLSSharedFileListNoUserInteraction | kLSSharedFileListDoNotMountVolumes, NULL)).URLByStandardizingPath;
+        if (urlRef) {
+            if(CFEqual(urlRef, (CFURLRef)[NSURL fileURLWithPath:JNFJavaToNSString(env, file)].URLByStandardizingPath)) {
+                found = YES;
+                break;
+            }
         }
     }
     CFRelease(items);
@@ -105,10 +114,12 @@ JNF_COCOA_ENTER(env);
     OSStatus err;
     for (CFIndex i = 0; i < CFArrayGetCount(items); i++) {
         LSSharedFileListItemRef itemRef = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(items, i);
+        // Lookup by reference which allows to find items where referenced file is not found
         CFStringRef propertyRef = LSSharedFileListItemCopyProperty(itemRef, (CFStringRef)@"Reference");
         if (propertyRef) {
             if(CFEqual(propertyRef, (CFStringRef)reference)) {
                 if(noErr == (err = LSSharedFileListItemRemove(list, itemRef))) {
+                    CFRelease(propertyRef);
                     break;
                 }
                 else {
@@ -116,6 +127,18 @@ JNF_COCOA_ENTER(env);
                 }
             }
             CFRelease(propertyRef);
+        }
+        // For login item lists it looks like the custom property is not returned.
+        CFURLRef urlRef = (CFURLRef) ((NSURL *)LSSharedFileListItemCopyResolvedURL(itemRef, kLSSharedFileListNoUserInteraction | kLSSharedFileListDoNotMountVolumes, NULL)).URLByStandardizingPath;
+        if (urlRef) {
+            if(CFEqual(urlRef, (CFURLRef)[NSURL fileURLWithPath:JNFJavaToNSString(env, file)].URLByStandardizingPath)) {
+                if(noErr == (err = LSSharedFileListItemRemove(list, itemRef))) {
+                    break;
+                }
+                else {
+                    NSLog(@"Error removing shared file list item. %s", [NSError errorWithDomain:NSOSStatusErrorDomain code:err userInfo:nil].description.UTF8String);
+                }
+            }
         }
     }
     CFRelease(items);
