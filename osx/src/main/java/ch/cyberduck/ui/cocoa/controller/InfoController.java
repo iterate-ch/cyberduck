@@ -1822,8 +1822,10 @@ public class InfoController extends ToolbarWindowController {
                             bucketLoggingPopup.selectItemWithTitle(logging.getLoggingTarget());
                         }
                         else {
-                            // Default to write log files to origin bucket
-                            bucketLoggingPopup.selectItemAtIndex(bucketLoggingPopup.indexOfItemWithRepresentedObject(containerService.getContainer(file).getName()));
+                            if(!logging.getContainers().isEmpty()) {
+                                // Default to write log files to origin bucket
+                                bucketLoggingPopup.selectItemAtIndex(bucketLoggingPopup.indexOfItemWithRepresentedObject(containerService.getContainer(file).getName()));
+                            }
                         }
                     }
                     if(location != null) {
