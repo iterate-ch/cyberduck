@@ -1,6 +1,6 @@
 Package: APPLICATION_PACKAGE
 Version: APPLICATION_VERSION
-Maintainer: cyberduck.io <feedback@cyberduck.io>
+Maintainer: cyberduck.io <support@cyberduck.io>
 Priority: optional
 Architecture: APPLICATION_ARCH
 Provides: APPLICATION_PACKAGE
