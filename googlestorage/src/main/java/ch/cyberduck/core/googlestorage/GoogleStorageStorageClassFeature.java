@@ -65,12 +65,13 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
     public void setClass(final Path file, final String redundancy) throws BackgroundException {
         try {
             if(containerService.isContainer(file)) {
+                // Changing the default storage class of a bucket
                 session.getClient().buckets().patch(containerService.getContainer(file).getName(),
                     new Bucket().setStorageClass(redundancy)
                 ).execute();
             }
             else {
-                session.getClient().objects().copy(containerService.getContainer(file).getName(),
+                session.getClient().objects().rewrite(containerService.getContainer(file).getName(),
                     containerService.getKey(file), containerService.getContainer(file).getName(), containerService.getKey(file),
                     new StorageObject().setStorageClass(redundancy)
                 ).execute();
