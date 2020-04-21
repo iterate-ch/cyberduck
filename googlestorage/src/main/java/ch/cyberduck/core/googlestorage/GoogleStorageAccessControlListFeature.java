@@ -33,10 +33,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.BucketAccessControl;
 import com.google.api.services.storage.model.BucketAccessControls;
 import com.google.api.services.storage.model.ObjectAccessControl;
 import com.google.api.services.storage.model.ObjectAccessControls;
+import com.google.api.services.storage.model.StorageObject;
 
 public class GoogleStorageAccessControlListFeature extends DefaultAclFeature implements AclPermission {
     private static final Logger log = Logger.getLogger(GoogleStorageAccessControlListFeature.class);
@@ -129,17 +131,13 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
         try {
             if(containerService.isContainer(file)) {
                 final List<BucketAccessControl> bucketAccessControls = this.toBucketAccessControl(acl);
-                for(BucketAccessControl control : bucketAccessControls) {
-                    session.getClient().bucketAccessControls().patch(containerService.getContainer(file).getName(),
-                        control.getEntity(), control).execute();
-                }
+                session.getClient().buckets().update(containerService.getContainer(file).getName(),
+                    new Bucket().setAcl(bucketAccessControls)).execute();
             }
             else {
                 final List<ObjectAccessControl> objectAccessControls = this.toObjectAccessControl(acl);
-                for(ObjectAccessControl control : objectAccessControls) {
-                    session.getClient().objectAccessControls().patch(containerService.getContainer(file).getName(), containerService.getKey(file),
-                        control.getEntity(), control).execute();
-                }
+                session.getClient().objects().update(containerService.getContainer(file).getName(), containerService.getKey(file),
+                    new StorageObject().setAcl(objectAccessControls)).execute();
             }
         }
         catch(IOException e) {
@@ -162,7 +160,15 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
                 continue;
             }
             final BucketAccessControl control = new BucketAccessControl();
-            control.setRole(userAndRole.getRole().getName());
+            switch(userAndRole.getRole().getName()) {
+                // Caveat that this API uses READER and OWNER instead of READ and FULL_CONTROL.
+                case Acl.Role.READ:
+                    control.setRole("READER");
+                    break;
+                case Acl.Role.FULL:
+                    control.setRole("OWNER");
+                    break;
+            }
             if(userAndRole.getUser() instanceof Acl.EmailUser) {
                 control.setEntity(String.format("user-%s", userAndRole.getUser().getIdentifier()));
                 control.setEmail(userAndRole.getUser().getIdentifier());
@@ -186,7 +192,7 @@ public class GoogleStorageAccessControlListFeature extends DefaultAclFeature imp
                 control.setEntity(String.format("domain-%s", userAndRole.getUser().getIdentifier()));
                 control.setDomain(userAndRole.getUser().getIdentifier());
             }
-            if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
+            else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
                 control.setEntity(userAndRole.getUser().getIdentifier());
                 control.setEmail(userAndRole.getUser().getIdentifier());
             }
