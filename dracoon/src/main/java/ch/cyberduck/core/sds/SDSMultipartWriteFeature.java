@@ -55,6 +55,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
@@ -93,6 +94,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
+        private final AtomicReference<BackgroundException> canceled = new AtomicReference<>();
 
         private Long offset = 0L;
         private final Long length;
@@ -112,6 +114,9 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
+                if(null != canceled.get()) {
+                    throw canceled.get();
+                }
                 final byte[] content = Arrays.copyOfRange(b, off, len);
                 final HttpEntity entity = EntityBuilder.create().setBinary(content).build();
                 new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Void>() {
@@ -152,6 +157,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                             catch(BackgroundException e) {
                                 // Cancel upload on error reply
                                 new SDSWriteFeature(session, nodeid).cancel(file, uploadToken);
+                                canceled.set(e);
                                 throw e;
                             }
                             finally {
@@ -175,6 +181,9 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
             try {
                 if(close.get()) {
                     log.warn(String.format("Skip double close of stream %s", this));
+                    return;
+                }
+                if(null != canceled.get()) {
                     return;
                 }
                 try {
