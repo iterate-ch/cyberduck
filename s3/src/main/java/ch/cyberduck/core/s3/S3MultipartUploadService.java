@@ -130,102 +130,100 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
                     completed.addAll(multipartService.list(multipart));
                 }
             }
-            try {
-                // Full size of file
-                final long size = status.getLength() + status.getOffset();
-                final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
-                long remaining = status.getLength();
-                long offset = 0;
-                for(int partNumber = 1; remaining > 0; partNumber++) {
-                    boolean skip = false;
-                    if(status.isAppend()) {
-                        if(log.isInfoEnabled()) {
-                            log.info(String.format("Determine if part number %d can be skipped", partNumber));
-                        }
-                        for(MultipartPart c : completed) {
-                            if(c.getPartNumber().equals(partNumber)) {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Skip completed part number %d", partNumber));
-                                }
-                                skip = true;
-                                offset += c.getSize();
-                                break;
+            // Full size of file
+            final long size = status.getLength() + status.getOffset();
+            final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
+            long remaining = status.getLength();
+            long offset = 0;
+            for(int partNumber = 1; remaining > 0; partNumber++) {
+                boolean skip = false;
+                if(status.isAppend()) {
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Determine if part number %d can be skipped", partNumber));
+                    }
+                    for(MultipartPart c : completed) {
+                        if(c.getPartNumber().equals(partNumber)) {
+                            if(log.isInfoEnabled()) {
+                                log.info(String.format("Skip completed part number %d", partNumber));
                             }
-                        }
-                    }
-                    if(!skip) {
-                        // Last part can be less than 5 MB. Adjust part size.
-                        final Long length = Math.min(Math.max((size / (S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
-                        // Submit to queue
-                        parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length, callback));
-                        remaining -= length;
-                        offset += length;
-                    }
-                }
-                for(Future<MultipartPart> future : parts) {
-                    try {
-                        completed.add(future.get());
-                    }
-                    catch(InterruptedException e) {
-                        log.error("Part upload failed with interrupt failure");
-                        status.setCanceled();
-                        throw new ConnectionCanceledException(e);
-                    }
-                    catch(ExecutionException e) {
-                        log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
-                        if(e.getCause() instanceof BackgroundException) {
-                            throw (BackgroundException) e.getCause();
-                        }
-                        throw new BackgroundException(e.getCause());
-                    }
-                }
-                // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request
-                // could take several minutes to complete. Because a request could fail after the initial 200 OK response
-                // has been sent, it is important that you check the response body to determine whether the request succeeded.
-                final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Completed multipart upload for %s with %d parts and checksum %s",
-                        complete.getObjectKey(), completed.size(), complete.getEtag()));
-                }
-                if(file.getType().contains(Path.Type.encrypted)) {
-                    log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
-                }
-                else {
-                    if(S3Session.isAwsHostname(session.getHost().getHostname())) {
-                        completed.sort(new MultipartPart.PartNumberComparator());
-                        final StringBuilder concat = new StringBuilder();
-                        for(MultipartPart part : completed) {
-                            concat.append(part.getEtag());
-                        }
-                        final String expected = String.format("%s-%d",
-                            ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
-                        final String reference;
-                        if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
-                            reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
-                        }
-                        else {
-                            reference = complete.getEtag();
-                        }
-                        if(!StringUtils.equalsIgnoreCase(expected, reference)) {
-                            throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
-                                MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
-                                    expected, reference));
+                            skip = true;
+                            offset += c.getSize();
+                            break;
                         }
                     }
                 }
-                // Mark parent status as complete
-                status.setComplete();
-                final StorageObject object = new StorageObject(containerService.getKey(file));
-                object.setETag(complete.getEtag());
-                return object;
+                if(!skip) {
+                    // Last part can be less than 5 MB. Adjust part size.
+                    final Long length = Math.min(Math.max((size / (S3DefaultMultipartService.MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
+                    // Submit to queue
+                    parts.add(this.submit(pool, file, local, throttle, listener, status, multipart, partNumber, offset, length, callback));
+                    remaining -= length;
+                    offset += length;
+                }
             }
-            finally {
-                // Cancel future tasks
-                pool.shutdown(false);
+            for(Future<MultipartPart> future : parts) {
+                try {
+                    completed.add(future.get());
+                }
+                catch(InterruptedException e) {
+                    log.error("Part upload failed with interrupt failure");
+                    status.setCanceled();
+                    throw new ConnectionCanceledException(e);
+                }
+                catch(ExecutionException e) {
+                    log.warn(String.format("Part upload failed with execution failure %s", e.getMessage()));
+                    if(e.getCause() instanceof BackgroundException) {
+                        throw (BackgroundException) e.getCause();
+                    }
+                    throw new BackgroundException(e.getCause());
+                }
             }
+            // Combining all the given parts into the final object. Processing of a Complete Multipart Upload request
+            // could take several minutes to complete. Because a request could fail after the initial 200 OK response
+            // has been sent, it is important that you check the response body to determine whether the request succeeded.
+            final MultipartCompleted complete = session.getClient().multipartCompleteUpload(multipart, completed);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Completed multipart upload for %s with %d parts and checksum %s",
+                    complete.getObjectKey(), completed.size(), complete.getEtag()));
+            }
+            if(file.getType().contains(Path.Type.encrypted)) {
+                log.warn(String.format("Skip checksum verification for %s with client side encryption enabled", file));
+            }
+            else {
+                if(S3Session.isAwsHostname(session.getHost().getHostname())) {
+                    completed.sort(new MultipartPart.PartNumberComparator());
+                    final StringBuilder concat = new StringBuilder();
+                    for(MultipartPart part : completed) {
+                        concat.append(part.getEtag());
+                    }
+                    final String expected = String.format("%s-%d",
+                        ChecksumComputeFactory.get(HashAlgorithm.md5).compute(concat.toString(), new TransferStatus()), completed.size());
+                    final String reference;
+                    if(complete.getEtag().startsWith("\"") && complete.getEtag().endsWith("\"")) {
+                        reference = complete.getEtag().substring(1, complete.getEtag().length() - 1);
+                    }
+                    else {
+                        reference = complete.getEtag();
+                    }
+                    if(!StringUtils.equalsIgnoreCase(expected, reference)) {
+                        throw new ChecksumException(MessageFormat.format(LocaleFactory.localizedString("Upload {0} failed", "Error"), file.getName()),
+                            MessageFormat.format("Mismatch between MD5 hash {0} of uploaded data and ETag {1} returned by the server",
+                                expected, reference));
+                    }
+                }
+            }
+            // Mark parent status as complete
+            status.setComplete();
+            final StorageObject object = new StorageObject(containerService.getKey(file));
+            object.setETag(complete.getEtag());
+            return object;
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+        finally {
+            // Cancel future tasks
+            pool.shutdown(false);
         }
     }
 
