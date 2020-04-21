@@ -1,12 +1,8 @@
 package ch.cyberduck.core.preferences;
 
-import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.DisabledApplicationFinder;
-import ch.cyberduck.core.local.FinderLocal;
-import ch.cyberduck.core.local.FinderSidebarService;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
-import ch.cyberduck.core.local.SidebarService;
 
 import org.junit.Test;
 
@@ -20,7 +16,6 @@ public class SharedFileListApplicationLoginRegistryTest {
         final SharedFileListApplicationLoginRegistry registry = new SharedFileListApplicationLoginRegistry(new LaunchServicesApplicationFinder());
         final Application application = new Application("ch.sudo.cyberduck");
         assertTrue(registry.register(application));
-        assertTrue(new FinderSidebarService(SidebarService.List.login).contains(new FinderLocal(NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier()))));
         assertTrue(registry.unregister(application));
     }
 
