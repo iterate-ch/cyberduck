@@ -1141,6 +1141,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 LocaleFactory.localizedString("ONEZONE_IA", "S3")));
             storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
                 LocaleFactory.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3")));
+            storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_GLACIER,
+                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_GLACIER, "S3")));
+            storageClasses.Add(new KeyValuePair<string, string>("DEEP_ARCHIVE",
+                LocaleFactory.localizedString("DEEP_ARCHIVE", "S3")));
             View.PopulateDefaultStorageClasses(storageClasses);
         }
 

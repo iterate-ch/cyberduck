@@ -2139,6 +2139,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopup.lastItem().setRepresentedObject("ONEZONE_IA");
         this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"));
         this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
+        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(S3Object.STORAGE_CLASS_GLACIER, "S3"));
+        this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_GLACIER);
+        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString("DEEP_ARCHIVE", "S3"));
+        this.defaultStorageClassPopup.lastItem().setRepresentedObject("DEEP_ARCHIVE");
         this.defaultStorageClassPopup.setTarget(this.id());
         this.defaultStorageClassPopup.setAction(Foundation.selector("defaultStorageClassPopupClicked:"));
         this.defaultStorageClassPopup.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("s3.storage.class"), "S3"));
