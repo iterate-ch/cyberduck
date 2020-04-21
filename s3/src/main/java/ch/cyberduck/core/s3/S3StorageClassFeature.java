@@ -55,6 +55,7 @@ public class S3StorageClassFeature implements Redundancy {
     public List<String> getClasses() {
         return Arrays.asList(
             S3Object.STORAGE_CLASS_STANDARD,
+            "INTELLIGENT_TIERING",
             S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, // This storage class (IA, for infrequent access) is optimized for long-lived and less frequently accessed data
             "ONEZONE_IA",
             S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
