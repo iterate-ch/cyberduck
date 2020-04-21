@@ -47,12 +47,14 @@ LSSharedFileListItemRef findItem(CFStringRef reference, CFStringRef sharedListNa
             CFRelease(propertyRef);
         }
         // For login item lists it looks like the custom property is not returned.
-        CFURLRef urlRef = (CFURLRef) ((NSURL *)LSSharedFileListItemCopyResolvedURL(itemRef, kLSSharedFileListNoUserInteraction | kLSSharedFileListDoNotMountVolumes, NULL)).URLByStandardizingPath;
+        CFURLRef urlRef = LSSharedFileListItemCopyResolvedURL(itemRef, kLSSharedFileListNoUserInteraction | kLSSharedFileListDoNotMountVolumes, NULL);
         if (urlRef) {
-            if(CFEqual(urlRef, (CFURLRef)[NSURL fileURLWithPath:(NSString *)reference].URLByStandardizingPath)) {
+            if(CFEqual((CFURLRef) ((NSURL *)urlRef).URLByStandardizingPath, (CFURLRef)[NSURL fileURLWithPath:(NSString *)reference].URLByStandardizingPath)) {
+                CFRelease(urlRef);
                 found = YES;
                 break;
             }
+            CFRelease(urlRef);
         }
     }
     if (found) {
