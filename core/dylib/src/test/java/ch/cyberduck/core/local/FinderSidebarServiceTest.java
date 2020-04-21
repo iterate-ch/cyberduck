@@ -48,6 +48,17 @@ public class FinderSidebarServiceTest {
         f.remove(file);
     }
 
+    @Test
+    public void testRemoveWithFileNotFound() throws Exception {
+        FinderSidebarService f = new FinderSidebarService(SidebarService.List.volume);
+        Local file = new FinderLocal(System.getProperty("java.io.tmpdir"), new AlphanumericRandomStringService().random());
+        new DefaultLocalDirectoryFeature().mkdir(file);
+        f.add(file);
+        assertTrue(f.contains(file));
+        file.delete();
+        f.remove(file);
+    }
+
     @Ignore
     @Test
     public void testAddDirectoryServer() throws Exception {

@@ -32,8 +32,6 @@ public interface SidebarService {
 
     void remove(Local file) throws LocalAccessDeniedException;
 
-    void removeAll() throws LocalAccessDeniedException;
-
     enum List {
         volume,
         server,
