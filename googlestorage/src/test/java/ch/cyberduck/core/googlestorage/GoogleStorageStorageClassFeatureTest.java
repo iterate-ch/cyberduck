@@ -39,6 +39,7 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
     @Test
     public void testGetClasses() {
         assertEquals(Arrays.asList(
+            "STANDARD",
             "MULTI_REGIONAL",
             "REGIONAL",
             "NEARLINE",
