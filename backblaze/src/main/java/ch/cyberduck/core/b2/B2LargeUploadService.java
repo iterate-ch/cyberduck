@@ -185,9 +185,6 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
                 }
                 throw new DefaultExceptionMappingService().map(e.getCause());
             }
-            finally {
-                pool.shutdown(false);
-            }
             completed.sort(new Comparator<B2UploadPartResponse>() {
                 @Override
                 public int compare(final B2UploadPartResponse o1, final B2UploadPartResponse o2) {
@@ -211,6 +208,9 @@ public class B2LargeUploadService extends HttpUploadFeature<BaseB2Response, Mess
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map("Upload {0} failed", e, file);
+        }
+        finally {
+            pool.shutdown(false);
         }
     }
 

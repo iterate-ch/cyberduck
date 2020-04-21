@@ -127,9 +127,6 @@ public class B2LargeCopyFeature implements Copy {
                 }
                 throw new DefaultExceptionMappingService().map(e.getCause());
             }
-            finally {
-                pool.shutdown(false);
-            }
             completed.sort(new Comparator<B2UploadPartResponse>() {
                 @Override
                 public int compare(final B2UploadPartResponse o1, final B2UploadPartResponse o2) {
@@ -151,6 +148,9 @@ public class B2LargeCopyFeature implements Copy {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e);
+        }
+        finally {
+            pool.shutdown(false);
         }
     }
 
