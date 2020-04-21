@@ -123,7 +123,7 @@ public class B2Session extends HttpSession<B2ApiClient> {
             return (T) new B2DeleteFeature(this, fileid);
         }
         if(type == Copy.class) {
-            return (T) new B2CopyFeature(this, fileid);
+            return (T) new B2ThresholdCopyFeature(this, fileid);
         }
         if(type == Move.class) {
             return (T) new B2MoveFeature(this, fileid);
