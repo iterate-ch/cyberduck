@@ -1,4 +1,4 @@
-Summary: Cyberduck
+Summary: Cyberduck CLI
 Name: duck
 Version: ${VERSION}.${REVISION}
 Release: 1
@@ -19,7 +19,7 @@ Autoreq: 0
 %define __jar_repack %{nil}
 
 %description
-Cyberduck
+Cyberduck CLI
 
 %prep
 
