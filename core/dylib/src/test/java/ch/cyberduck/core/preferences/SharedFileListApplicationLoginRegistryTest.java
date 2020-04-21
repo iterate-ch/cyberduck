@@ -4,7 +4,6 @@ import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.DisabledApplicationFinder;
 import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -13,13 +12,16 @@ import static org.junit.Assert.assertTrue;
 public class SharedFileListApplicationLoginRegistryTest {
 
     @Test
-    @Ignore
     public void testRegister() {
-        assertTrue(new SharedFileListApplicationLoginRegistry(new LaunchServicesApplicationFinder()).register(new Application("ch.sudo.cyberduck")));
+        final SharedFileListApplicationLoginRegistry registry = new SharedFileListApplicationLoginRegistry(new LaunchServicesApplicationFinder());
+        final Application application = new Application("ch.sudo.cyberduck");
+        assertTrue(registry.register(application));
+        assertTrue(registry.unregister(application));
     }
 
     @Test
-    public void testRegisterInvalidBundle() {
-        assertFalse(new SharedFileListApplicationLoginRegistry(new DisabledApplicationFinder()).register(new Application("ch.sudo.cyberduck")));
+    public void testRegisterNotInstalled() {
+        final SharedFileListApplicationLoginRegistry registry = new SharedFileListApplicationLoginRegistry(new DisabledApplicationFinder());
+        assertFalse(registry.register(new Application("ch.sudo.cyberduck")));
     }
 }
