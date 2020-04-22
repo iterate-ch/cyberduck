@@ -27,7 +27,7 @@ using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core.Sparkle
 {
-    public class WinSparklePeriodicUpdateChecker : AbstractPeriodicUpdateChecker
+    public class WinSparklePeriodicUpdateChecker : AbstractPeriodicUpdateChecker, IDisposable
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WinSparklePeriodicUpdateChecker).Name);
         private readonly ch.cyberduck.core.preferences.Preferences _preferences = PreferencesFactory.get();
@@ -39,12 +39,14 @@ namespace Ch.Cyberduck.Core.Sparkle
         public WinSparklePeriodicUpdateChecker(Controller controller)
             : base(controller)
         {
-        }
-
-        public override void unregister()
-        {
-            base.unregister();
-            WinSparkle.Cleanup();
+            // set app details
+            WinSparkle.SetAppDetails(
+                companyName: string.Empty, // auto read from assembly
+                appName: _preferences.getProperty("application.name"),
+                appVersion: _preferences.getProperty("application.version"));
+            WinSparkle.SetAppBuildVersion(_preferences.getProperty("application.revision"));
+            WinSparkle.SetAutomaticCheckForUpdates(false);
+            WinSparkle.Initialize();
         }
 
         public static void SetCanShutdownCallback(WinSparkle.win_sparkle_can_shutdown_callback_t callback)
@@ -55,13 +57,6 @@ namespace Ch.Cyberduck.Core.Sparkle
         public static void SetShutdownRequestCallback(WinSparkle.win_sparkle_shutdown_request_callback_t callback)
         {
             WinSparkle.SetShutdownRequestCallback(callback);
-        }
-
-        public override Duration register()
-        {
-            WinSparkle.SetAutomaticCheckForUpdates(false);
-            WinSparkle.Initialize();
-            return base.register();
         }
 
         public override void check(bool background)
@@ -187,5 +182,30 @@ namespace Ch.Cyberduck.Core.Sparkle
             TokenElevationTypeFull,
             TokenElevationTypeLimited
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                WinSparkle.Cleanup();
+
+                disposedValue = true;
+            }
+        }
+
+        ~WinSparklePeriodicUpdateChecker()
+        {
+            Dispose(false);
+        }
+
+        void IDisposable.Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
