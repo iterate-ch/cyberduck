@@ -8,6 +8,7 @@ https://cyberduck.io/
 - [Feature] Support for Glacier Deep Archive storage class (S3) (#10681)
 - [Feature] Allow selection of Glacier storage class as default for uploads (S3) (#10681)
 - [Feature] Support for shared files (OneDrive)
+- [Feature] Support for af-south-1 (Cape Town) region (S3)
 - [Bugfix] Missing URLs to copy of CDN distributions (S3, Rackspace)
 - [Bugfix] Reduced memory usage (macOS)
 - [Bugfix] Failure uploading files to vault in version 7 format (Cryptomator) (#11020)
