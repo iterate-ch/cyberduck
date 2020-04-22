@@ -145,9 +145,10 @@ public class S3ObjectListService extends S3AbstractListService implements ListSe
                 if(S3Session.isAwsHostname(session.getHost().getHostname())) {
                     throw new NotfoundException(directory.getAbsolute());
                 }
+                // Handle missing prefix for directory placeholders in Minio
                 final StorageObjectsChunk chunk = session.getClient().listObjectsChunked(
                     PathNormalizer.name(URIEncoder.encode(bucket.getName())), String.format("%s%s", this.createPrefix(directory.getParent()), directory.getName()), delimiter, 1, null);
-                if(!Arrays.asList(chunk.getCommonPrefixes()).contains(this.createPrefix(directory))) {
+                if(Arrays.stream(chunk.getCommonPrefixes()).map(URIEncoder::decode).noneMatch(common -> common.equals(prefix))) {
                     throw new NotfoundException(directory.getAbsolute());
                 }
             }
