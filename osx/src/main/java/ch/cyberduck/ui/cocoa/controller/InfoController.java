@@ -1628,8 +1628,8 @@ public class InfoController extends ToolbarWindowController {
     }
 
     /**
-     * Updates the size field by iterating over all files and
-     * reading the cached size value in the attributes of the path
+     * Updates the size field by iterating over all files and reading the cached size value in the attributes of the
+     * path
      */
     private void initSize() {
         if(this.toggleSizeSettings(false)) {
@@ -1862,13 +1862,16 @@ public class InfoController extends ToolbarWindowController {
                         }
                     }
                     for(String storageClass : selectedStorageClasses) {
-                        storageClassPopup.selectItemAtIndex(storageClassPopup.indexOfItemWithRepresentedObject(storageClass));
+                        if(-1 != storageClassPopup.indexOfItemWithRepresentedObject(storageClass).intValue()) {
+                            storageClassPopup.selectItemAtIndex(storageClassPopup.indexOfItemWithRepresentedObject(storageClass));
+                        }
                     }
                     for(String storageClass : selectedStorageClasses) {
-                        storageClassPopup.itemAtIndex(storageClassPopup.indexOfItemWithRepresentedObject(storageClass))
-                            .setState(selectedStorageClasses.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
+                        if(-1 != storageClassPopup.indexOfItemWithRepresentedObject(storageClass).intValue()) {
+                            storageClassPopup.itemAtIndex(storageClassPopup.indexOfItemWithRepresentedObject(storageClass))
+                                .setState(selectedStorageClasses.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
+                        }
                     }
-
                     if(null != credentials) {
                         bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                             session.getFeature(AnalyticsProvider.class).getSetup(session.getHost().getProtocol().getDefaultHostname(),
