@@ -154,11 +154,8 @@
         <xmltask source="${www.update}/changelog.rss" destbuffer="minversion">
             <remove path="//*[local-name()='minimumSystemVersion']"/>
         </xmltask>
-        <xmltask sourcebuffer="minversion" destbuffer="installerArgs">
+        <xmltask sourcebuffer="minversion">
             <attr path="//item/enclosure" attr="sparkle:installerArguments" value="/passive Autostart=1"/>
-        </xmltask>
-        <xmltask sourcebuffer="installerArgs" dest="${build}/update/changelog.rss">
-            <attr path="//item/enclosure" attr="sparkle:version" value="${FULLVERSION}"/>
         </xmltask>
         <copy todir="${build}/update" overwrite="true">
             <fileset dir="${www.update}">
@@ -171,7 +168,6 @@
             <replacefilter token="${ARCHIVE}"
                            value="https://update.cyberduck.io/${sparkle.feed}/${app.name}-Installer-${normalized.version}.${revision}.exe"/>
             <replacefilter token="${CHANGELOG}" value="https://version.cyberduck.io/windows/${sparkle.feed}/changelog.html"/>
-            <replacefilter token="${FULLVERSION}" value="${normalized.version}.${revision}"/>
             <replacefilter token="${REVISION}" value="${revision}"/>
             <replacefilter token="${VERSION}" value="${version}"/>
             <replacefilter token="${DSASIGNATURE}" value="${signature.dsa}"/>
