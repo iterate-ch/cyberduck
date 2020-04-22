@@ -151,10 +151,10 @@
         <echo message="DSASIGNATURE=${signature.dsa}"/>
 
         <!-- prepare WinSparkle stuff -->
-        <xmltask source="${www.update}/changelog.rss" destbuffer="minversion">
+        <xmltask source="${www.update}/changelog.rss" destbuffer="xmltaskbuffer">
             <remove path="//*[local-name()='minimumSystemVersion']"/>
         </xmltask>
-        <xmltask sourcebuffer="minversion">
+        <xmltask sourcebuffer="xmltaskbuffer">
             <attr path="//item/enclosure" attr="sparkle:installerArguments" value="/passive Autostart=1"/>
         </xmltask>
         <copy todir="${build}/update" overwrite="true">
