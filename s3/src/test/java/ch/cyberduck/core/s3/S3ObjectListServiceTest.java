@@ -31,7 +31,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.Jets3tProperties;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -80,7 +79,6 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
     }
 
     @Test(expected = NotfoundException.class)
-    @Ignore
     public void testListNotFoundFolderMinio() throws Exception {
         final Host host = new Host(new S3Protocol(), "play.minio.io", 9000, new Credentials(
             "Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG"
@@ -89,13 +87,13 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final LoginConnectionService login = new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
             new DisabledPasswordStore(), new DisabledProgressListener());
         login.check(session, PathCache.empty(), new DisabledCancelCallback());
-        final Path bucket = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(new S3HomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         try {
-            new S3ObjectListService(session).list(new Path(bucket, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
+            new S3ObjectListService(session).list(new Path(directory, "notfound", EnumSet.of(Path.Type.directory)), new DisabledListProgressListener());
         }
         finally {
-            new S3DefaultDeleteFeature(session).delete(Collections.singletonList(bucket), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
         }
     }
 

@@ -23,18 +23,22 @@ import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.log4j.Logger;
+import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.utils.ServiceUtils;
 
 public class S3BucketCreateService {
+    private static final Logger log = Logger.getLogger(S3BucketCreateService.class);
 
     private final S3Session session;
 
     private final PathContainerService containerService
-            = new S3PathContainerService();
+        = new S3PathContainerService();
 
     public S3BucketCreateService(final S3Session session) {
         this.session = session;
@@ -53,14 +57,26 @@ public class S3BucketCreateService {
         else {
             acl = AccessControlList.REST_CANNED_PRIVATE;
         }
+        final String region;
+        if("us-east-1".equals(location)) {
+            region = "US";
+        }
+        else {
+            region = location;
+        }
         try {
-            final String region;
-            if("us-east-1".equals(location)) {
-                region = "US";
-            }
-            else {
-                region = location;
-            }
+            this.create(bucket, acl, region);
+        }
+        catch(ResolveFailedException e) {
+            log.warn(String.format("Failure %s resolving bucket name. Disable use of DNS bucket names", e));
+            final Jets3tProperties configuration = session.getClient().getJetS3tProperties();
+            configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+            this.create(bucket, acl, region);
+        }
+    }
+
+    protected void create(final Path bucket, final AccessControlList acl, final String region) throws BackgroundException {
+        try {
             // Create bucket
             session.getClient().createBucket(URIEncoder.encode(containerService.getContainer(bucket).getName()), region, acl);
         }
