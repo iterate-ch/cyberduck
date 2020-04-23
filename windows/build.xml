@@ -154,7 +154,7 @@
         <xmltask source="${www.update}/changelog.rss" destbuffer="xmltaskbuffer">
             <remove path="//*[local-name()='minimumSystemVersion']"/>
         </xmltask>
-        <xmltask sourcebuffer="xmltaskbuffer">
+        <xmltask sourcebuffer="xmltaskbuffer" dest="${build}/update/changelog.rss">
             <attr path="//item/enclosure" attr="sparkle:installerArguments" value="/passive Autostart=1"/>
         </xmltask>
         <copy todir="${build}/update" overwrite="true">
