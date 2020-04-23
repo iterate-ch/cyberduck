@@ -25,8 +25,9 @@ public class GraphFileIdProviderTest extends AbstractOneDriveTest {
 
     @Test
     public void testFileIdCollision() throws Exception {
-        final Path path2R = new Path("/2R", EnumSet.of(Path.Type.directory));
-        final Path path33 = new Path("/33", EnumSet.of(Path.Type.directory));
+        final Path home = new OneDriveHomeFinderService(session).find();
+        final Path path2R = new Path(home, "/2R", EnumSet.of(Path.Type.directory));
+        final Path path33 = new Path(home, "/33", EnumSet.of(Path.Type.directory));
 
         final Directory directoryFeature = new GraphDirectoryFeature(session);
         final Path path2RWithId = directoryFeature.mkdir(path2R, null, new TransferStatus());

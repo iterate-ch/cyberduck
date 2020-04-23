@@ -27,7 +27,6 @@ import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphSearchFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.ui.browser.SearchFilter;
@@ -49,7 +48,7 @@ public class GraphSearchFeatureTest extends AbstractOneDriveTest {
     @Ignore
     public void testSearch() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
-        final Path drive = new DefaultHomeFinderService(session).find();
+        final Path drive = new OneDriveHomeFinderService(session).find();
         final Path directory = new GraphDirectoryFeature(session).mkdir(new Path(drive, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path file = new GraphTouchFeature(session).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final GraphSearchFeature feature = new GraphSearchFeature(session);

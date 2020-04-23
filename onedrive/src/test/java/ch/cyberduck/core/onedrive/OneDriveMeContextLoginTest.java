@@ -30,7 +30,6 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DefaultX509TrustManager;
 import ch.cyberduck.test.IntegrationTest;
@@ -92,7 +91,7 @@ public class OneDriveMeContextLoginTest {
 
     @Test
     public void testLogin() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new OneDriveHomeFinderService(session).find();
         assertTrue(home.isRoot());
     }
 }

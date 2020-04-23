@@ -1,12 +1,12 @@
 package ch.cyberduck.core.onedrive;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -20,38 +20,37 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
-import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.webloc.UrlFileWriter;
-import ch.cyberduck.core.webloc.UrlFileWriterFactory;
 
-import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveFolder;
 import org.nuxeo.onedrive.client.OneDriveItem;
+import org.nuxeo.onedrive.client.OneDriveItemIterator;
+import org.nuxeo.onedrive.client.URLTemplate;
 
 import java.util.Iterator;
 
-public class GraphItemListService extends AbstractItemListService {
-    private static final Logger log = Logger.getLogger(GraphItemListService.class);
+public class OneDriveSharedWithMeListService extends AbstractItemListService {
+    private static final URLTemplate SHAREDWITHME_LIST_URL = new URLTemplate("/drive/sharedWithMe");
 
     private final GraphSession session;
-    private final GraphAttributesFinderFeature attributes;
-    private final UrlFileWriter urlFileWriter = UrlFileWriterFactory.get();
 
-    public GraphItemListService(final GraphSession session) {
+    public OneDriveSharedWithMeListService(final GraphSession session) {
         super(new GraphAttributesFinderFeature(session));
         this.session = session;
-        this.attributes = new GraphAttributesFinderFeature(session);
     }
 
     @Override
     protected Iterator<OneDriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
-        final OneDriveFolder folder = session.toFolder(directory);
-        return folder.iterator(PreferencesFactory.get().getInteger("onedrive.listing.chunksize"));
+        return new OneDriveItemIterator(session.getClient(), SHAREDWITHME_LIST_URL.build(session.getClient().getBaseURL()));
+    }
+
+    @Override
+    protected Path toPath(final OneDriveItem.Metadata metadata, final Path directory) {
+        final Path path = super.toPath(metadata, directory);
+        path.getType().add(Path.Type.shared);
+        return super.toPath(metadata, directory);
     }
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
-        attributes.withCache(cache);
         return this;
     }
 }

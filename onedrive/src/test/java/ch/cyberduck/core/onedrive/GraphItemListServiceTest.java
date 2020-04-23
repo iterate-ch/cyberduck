@@ -26,7 +26,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.onedrive.features.GraphDeleteFeature;
 import ch.cyberduck.core.onedrive.features.GraphDirectoryFeature;
 import ch.cyberduck.core.onedrive.features.GraphTouchFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -43,7 +42,7 @@ public class GraphItemListServiceTest extends AbstractOneDriveTest {
 
     @Test
     public void testListLexicographically() throws Exception {
-        final Path directory = new GraphDirectoryFeature(session).mkdir(new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path directory = new GraphDirectoryFeature(session).mkdir(new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path f2 = new GraphTouchFeature(session).touch(new Path(directory, "aa", EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path f1 = new GraphTouchFeature(session).touch(new Path(directory, "a", EnumSet.of(Path.Type.file)), new TransferStatus());
         final AttributedList<Path> list = new GraphItemListService(session).list(directory, new DisabledListProgressListener());
@@ -55,7 +54,7 @@ public class GraphItemListServiceTest extends AbstractOneDriveTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-        final Path directory = new Path(new DefaultHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path directory = new Path(new OneDriveHomeFinderService(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new GraphItemListService(session).list(directory, new DisabledListProgressListener());
     }
 }

@@ -15,17 +15,18 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
 
 import org.nuxeo.onedrive.client.GroupDrivesIterator;
+import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.resources.GroupItem;
+
+import java.util.Iterator;
 
 public class SharepointGroupDrivesListService extends AbstractDriveListService {
 
@@ -38,10 +39,9 @@ public class SharepointGroupDrivesListService extends AbstractDriveListService {
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
+    protected Iterator<OneDriveDrive.Metadata> getIterator(final Path directory) throws BackgroundException {
         final GroupItem group = new GroupItem(session.getClient(), idProvider.getFileid(directory, new DisabledListProgressListener()));
-        final GroupDrivesIterator iterator = new GroupDrivesIterator(session.getClient(), group);
-        return this.iterate(iterator, directory, listener);
+        return new GroupDrivesIterator(session.getClient(), group);
     }
 
     @Override

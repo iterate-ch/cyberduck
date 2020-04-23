@@ -15,51 +15,27 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.ListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.OneDriveRuntimeException;
 
 import java.util.EnumSet;
-import java.util.Iterator;
 
-public abstract class AbstractDriveListService implements ListService {
+public abstract class AbstractDriveListService extends AbstractListService<OneDriveDrive.Metadata> {
     private static final Logger log = Logger.getLogger(AbstractDriveListService.class);
 
-    protected final AttributedList<Path> iterate(final Iterator<OneDriveDrive.Metadata> iterator, final Path directory, final ListProgressListener listener) throws BackgroundException {
-        final AttributedList<Path> children = new AttributedList<>();
-        while(iterator.hasNext()) {
-            final OneDriveDrive.Metadata metadata;
-            try {
-                metadata = iterator.next();
-            }
-            catch(OneDriveRuntimeException e) {
-                log.warn(e.getMessage());
-                continue;
-            }
-            final PathAttributes attributes = new PathAttributes();
-            attributes.setVersionId(metadata.getId());
-            attributes.setSize(metadata.getTotal());
-            String name = metadata.getName();
-            if(StringUtils.isBlank(metadata.getName())) {
-                name = metadata.getId();
-            }
-            children.add(new Path(directory, name, EnumSet.of(Path.Type.directory, Path.Type.volume), attributes));
-            listener.chunk(directory, children);
-        }
-        return children;
-    }
-
     @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
+    protected Path toPath(final OneDriveDrive.Metadata metadata, final Path directory) {
+        final PathAttributes attributes = new PathAttributes();
+        attributes.setVersionId(metadata.getId());
+        attributes.setSize(metadata.getTotal());
+        String name = metadata.getName();
+        if(StringUtils.isBlank(metadata.getName())) {
+            name = metadata.getId();
+        }
+        return new Path(directory, name, EnumSet.of(Path.Type.directory, Path.Type.volume), attributes);
     }
 }
