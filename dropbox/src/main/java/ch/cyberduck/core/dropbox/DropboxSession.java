@@ -51,14 +51,12 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxHost;
 import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.http.HttpRequestor;
+import com.dropbox.core.v2.CustomDbxRawClientV2;
 import com.dropbox.core.v2.DbxRawClientV2;
-import com.dropbox.core.v2.common.PathRoot;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
@@ -86,29 +84,6 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
             .withAutoRetryDisabled()
             .withHttpRequestor(new DropboxCommonsHttpRequestExecutor(client)).build(),
             DbxHost.DEFAULT, null, null);
-    }
-
-    private final class CustomDbxRawClientV2 extends DbxRawClientV2 {
-        /**
-         * @param requestConfig Configuration controlling How requests should be issued to Dropbox
-         *                      servers.
-         * @param host          Dropbox server hostnames (primarily for internal use)
-         * @param userId        The user ID of the current Dropbox account. Used for multi-Dropbox account use-case.
-         * @param pathRoot      We will send this value in Dropbox-API-Path-Root header if it presents.
-         */
-        protected CustomDbxRawClientV2(final DbxRequestConfig requestConfig, final DbxHost host, final String userId, final PathRoot pathRoot) {
-            super(requestConfig, host, userId, pathRoot);
-        }
-
-        @Override
-        protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
-            // OAuth Bearer added in interceptor
-        }
-
-        @Override
-        protected DbxRawClientV2 withPathRoot(final PathRoot pathRoot) {
-            return null;
-        }
     }
 
     @Override
