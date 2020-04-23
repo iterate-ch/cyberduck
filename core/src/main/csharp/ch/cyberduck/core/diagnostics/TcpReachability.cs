@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2019 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2020 Yves Langisch. All rights reserved.
 // https://cyberduck.io/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -12,6 +12,12 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 // 
+// Bug fixes, suggestions and comments should be sent to:
+// feedback@cyberduck.io
+
+// Bug fixes, suggestions and comments should be sent to:
+// feedback@cyberduck.io
+
 // Bug fixes, suggestions and comments should be sent to:
 // feedback@cyberduck.io
 
@@ -30,6 +36,12 @@ namespace Ch.Cyberduck.Core.Diagnostics
     public class TcpReachability : Reachability
     {
         private static readonly Logger Log = Logger.getLogger(typeof(TcpReachability).FullName);
+
+        static TcpReachability()
+        {
+            ServicePointManager.SecurityProtocol =
+                SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+        }
 
         public bool isReachable(Host h)
         {
