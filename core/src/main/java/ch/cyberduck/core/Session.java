@@ -321,7 +321,7 @@ public abstract class Session<C> implements TranscriptListener {
             return (T) new DefaultUrlProvider(host);
         }
         if(type == PromptUrlProvider.class) {
-            return (T) new DefaulPrompttUrlProvider(this.getFeature(UrlProvider.class));
+            return (T) new DefaulPromptUrlProvider(this.getFeature(UrlProvider.class));
         }
         if(type == Find.class) {
             return (T) new DefaultFindFeature(this);

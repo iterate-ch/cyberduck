@@ -19,11 +19,11 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
-public class DefaulPrompttUrlProvider implements PromptUrlProvider {
+public class DefaulPromptUrlProvider implements PromptUrlProvider {
 
     private final UrlProvider proxy;
 
-    public DefaulPrompttUrlProvider(final UrlProvider proxy) {
+    public DefaulPromptUrlProvider(final UrlProvider proxy) {
         this.proxy = proxy;
     }
 
