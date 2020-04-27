@@ -55,6 +55,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(StoregateMultipartWriteFeature.class);
@@ -112,6 +113,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
         private final Path file;
         private final TransferStatus overall;
         private final AtomicBoolean close = new AtomicBoolean();
+        private final AtomicReference<BackgroundException> canceled = new AtomicReference<>();
 
         private Long offset = 0L;
         private final Long length;
@@ -131,6 +133,9 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
             try {
+                if(null != canceled.get()) {
+                    throw canceled.get();
+                }
                 final byte[] content = Arrays.copyOfRange(b, off, len);
                 new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Void>() {
                     @Override
@@ -170,6 +175,7 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
                             }
                             catch(BackgroundException e) {
                                 new StoregateWriteFeature(session, fileid).cancel(file, location);
+                                canceled.set(e);
                                 throw e;
                             }
                             finally {
@@ -193,6 +199,9 @@ public class StoregateMultipartWriteFeature implements MultipartWrite<VersionId>
             try {
                 if(close.get()) {
                     log.warn(String.format("Skip double close of stream %s", this));
+                    return;
+                }
+                if(null != canceled.get()) {
                     return;
                 }
                 if(overall.getLength() <= 0) {
