@@ -100,9 +100,7 @@ public abstract class AbstractDriveListService implements ListService {
                         continue;
                     }
                     // Use placeholder type to mark Google Apps document to download as web link file
-                    final EnumSet<Path.Type> type = DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
-                        StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)
-                            ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+                    final EnumSet<Path.Type> type = this.toType(f);
 
                     final Path child = new Path(directory, filename, type, properties);
                     if(children.find(new DriveFileidProvider.IgnoreTrashedPathPredicate(child)) != null) {
@@ -122,6 +120,14 @@ public abstract class AbstractDriveListService implements ListService {
         catch(IOException e) {
             throw new DriveExceptionMappingService().map("Listing directory failed", e, directory);
         }
+    }
+
+    protected EnumSet<Path.Type> toType(final File f) {
+        final EnumSet<Path.Type> type;
+        type = DRIVE_FOLDER.equals(f.getMimeType()) ? EnumSet.of(Path.Type.directory) :
+            StringUtils.startsWith(f.getMimeType(), GOOGLE_APPS_PREFIX)
+                ? EnumSet.of(Path.Type.file, Path.Type.placeholder) : EnumSet.of(Path.Type.file);
+        return type;
     }
 
     protected abstract String query(final Path directory, final ListProgressListener listener) throws BackgroundException;

@@ -69,6 +69,11 @@ public class DriveDeleteFeature implements Delete {
     }
 
     @Override
+    public boolean isSupported(final Path file) {
+        return !file.getType().contains(Path.Type.shared);
+    }
+
+    @Override
     public boolean isRecursive() {
         return true;
     }

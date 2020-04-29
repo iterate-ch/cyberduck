@@ -15,8 +15,13 @@ package ch.cyberduck.core.googledrive;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+
+import java.util.EnumSet;
+
+import com.google.api.services.drive.model.File;
 
 public class DriveSharedFolderListService extends AbstractDriveListService {
 
@@ -31,5 +36,12 @@ public class DriveSharedFolderListService extends AbstractDriveListService {
     @Override
     protected String query(final Path directory, final ListProgressListener listener) {
         return "sharedWithMe";
+    }
+
+    @Override
+    protected EnumSet<Path.Type> toType(final File f) {
+        final EnumSet<AbstractPath.Type> type = super.toType(f);
+        type.add(Path.Type.shared);
+        return type;
     }
 }
