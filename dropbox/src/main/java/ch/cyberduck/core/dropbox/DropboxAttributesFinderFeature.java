@@ -23,6 +23,7 @@ import ch.cyberduck.core.features.AttributesFinder;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.Metadata;
 
 public class DropboxAttributesFinderFeature implements AttributesFinder {
@@ -47,9 +48,14 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
     protected PathAttributes toAttributes(final Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         if(metadata instanceof FileMetadata) {
-            final FileMetadata fm = (FileMetadata) metadata;
-            attributes.setSize(fm.getSize());
-            attributes.setModificationDate(fm.getClientModified().getTime());
+            final FileMetadata file = (FileMetadata) metadata;
+            attributes.setSize(file.getSize());
+            attributes.setModificationDate(file.getClientModified().getTime());
+        }
+        if(metadata instanceof FolderMetadata) {
+            final FolderMetadata folder = (FolderMetadata) metadata;
+            // Shared folder id is used as root namespace in list service
+            attributes.setVersionId(folder.getSharedFolderId());
         }
         return attributes;
     }

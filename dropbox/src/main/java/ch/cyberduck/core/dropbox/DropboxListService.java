@@ -16,10 +16,10 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -30,6 +30,8 @@ import org.apache.log4j.Logger;
 import java.util.EnumSet;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.DbxRawClientV2;
+import com.dropbox.core.v2.common.PathRoot;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
@@ -41,6 +43,7 @@ public class DropboxListService implements ListService {
 
     private final DropboxSession session;
     private final DropboxAttributesFinderFeature attributes;
+    private final PathContainerService containerService = new PathContainerService();
 
     public DropboxListService(final DropboxSession session) {
         this.session = session;
@@ -51,13 +54,29 @@ public class DropboxListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
-            final String path = directory.isRoot() ? StringUtils.EMPTY : directory.getAbsolute();
             ListFolderResult result;
-            this.parse(directory, listener, children, result = new DbxUserFilesRequests(session.getClient()).listFolder(path));
+            final Path container = containerService.getContainer(directory);
+            final String path;
+            final DbxRawClientV2 client;
+            if(StringUtils.isNotBlank(container.attributes().getVersionId())) {
+                // List relative to the namespace id
+                final PathRoot root = PathRoot.namespaceId(container.attributes().getVersionId());
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Set path root to %s", root));
+                }
+                client = session.getClient().withPathRoot(root);
+                path = directory.isRoot() ? StringUtils.EMPTY : containerService.isContainer(directory)
+                    ? StringUtils.EMPTY : Path.DELIMITER + containerService.getKey(directory);
+            }
+            else {
+                // Generic account type with home folder only used as root
+                client = session.getClient();
+                path = directory.isRoot() ? StringUtils.EMPTY : directory.getAbsolute();
+            }
+            this.parse(directory, listener, children, result = new DbxUserFilesRequests(client).listFolder(path));
             // If true, then there are more entries available. Pass the cursor to list_folder/continue to retrieve the rest.
             while(result.getHasMore()) {
-                this.parse(directory, listener, children, result = new DbxUserFilesRequests(session.getClient())
-                        .listFolderContinue(result.getCursor()));
+                this.parse(directory, listener, children, result = new DbxUserFilesRequests(client).listFolderContinue(result.getCursor()));
             }
             return children;
         }
@@ -67,7 +86,7 @@ public class DropboxListService implements ListService {
     }
 
     private void parse(final Path directory, final ListProgressListener listener, final AttributedList<Path> children, final ListFolderResult result)
-            throws ConnectionCanceledException {
+        throws ConnectionCanceledException {
         for(Metadata md : result.getEntries()) {
             final Path child = this.parse(directory, md);
             if(child == null) {

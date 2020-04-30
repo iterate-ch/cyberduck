@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Home;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.features.Quota;
@@ -56,11 +57,10 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxHost;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.CustomDbxRawClientV2;
-import com.dropbox.core.v2.DbxRawClientV2;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
-public class DropboxSession extends HttpSession<DbxRawClientV2> {
+public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private final UseragentProvider useragent
@@ -73,7 +73,7 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     }
 
     @Override
-    protected DbxRawClientV2 connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) {
+    protected CustomDbxRawClientV2 connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
             .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
@@ -115,8 +115,11 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(Class<T> type) {
+        if(type == Home.class) {
+            return (T) new DropboxHomeFinderFeature(this);
+        }
         if(type == ListService.class) {
-            return (T) new DropboxListService(this);
+            return (T) new DropboxRootListService(this);
         }
         if(type == Read.class) {
             return (T) new DropboxReadFeature(this);
