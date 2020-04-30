@@ -55,6 +55,6 @@ public class OneDriveListService implements ListService {
 
     @Override
     public ListService withCache(final Cache<Path> cache) {
-        return null;
+        return this;
     }
 }
