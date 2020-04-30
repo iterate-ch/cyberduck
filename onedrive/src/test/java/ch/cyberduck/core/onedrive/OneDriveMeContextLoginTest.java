@@ -42,7 +42,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 @Category(IntegrationTest.class)
@@ -92,6 +92,6 @@ public class OneDriveMeContextLoginTest {
     @Test
     public void testLogin() throws Exception {
         final Path home = new OneDriveHomeFinderService(session).find();
-        assertTrue(home.isRoot());
+        assertEquals("My Files", home.getName());
     }
 }
