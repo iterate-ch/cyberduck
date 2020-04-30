@@ -44,9 +44,4 @@ public class GraphDrivesListService extends AbstractDriveListService {
         // this API returns the collection of document libraries created in the site.
         return new OneDriveDrivesIterator(session.getClient());
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

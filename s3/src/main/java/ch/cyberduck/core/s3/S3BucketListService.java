@@ -140,11 +140,6 @@ public class S3BucketListService implements RootListService {
         }
     }
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
-
     /**
      * @return Null if no container component in hostname prepended
      */

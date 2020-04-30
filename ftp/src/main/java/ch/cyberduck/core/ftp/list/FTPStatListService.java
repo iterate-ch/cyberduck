@@ -82,9 +82,4 @@ public class FTPStatListService implements ListService {
         }
         return result;
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

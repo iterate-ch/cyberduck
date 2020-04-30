@@ -115,11 +115,6 @@ public class FTPListServiceTest extends AbstractFTPTest {
                 set.set(true);
                 throw new ConnectionTimeoutException("t", new SocketTimeoutException());
             }
-
-            @Override
-            public ListService withCache(final Cache<Path> cache) {
-                return this;
-            }
         });
         final Path directory = new FTPWorkdirService(session).find();
         final AttributedList<Path> list = service.list(directory, new DisabledListProgressListener());

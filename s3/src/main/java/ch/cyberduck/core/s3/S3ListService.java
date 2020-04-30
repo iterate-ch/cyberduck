@@ -101,9 +101,4 @@ public class S3ListService implements ListService {
         }
         return objects;
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

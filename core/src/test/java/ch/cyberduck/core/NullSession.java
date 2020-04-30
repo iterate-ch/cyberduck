@@ -40,11 +40,6 @@ public class NullSession extends Session<Void> implements ListService {
     }
 
     @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(Class<T> type) {
         if(type == ListService.class) {

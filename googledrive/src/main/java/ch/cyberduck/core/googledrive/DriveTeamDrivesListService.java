@@ -74,9 +74,4 @@ public class DriveTeamDrivesListService implements ListService {
             throw new DriveExceptionMappingService().map("Listing directory failed", e, directory);
         }
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

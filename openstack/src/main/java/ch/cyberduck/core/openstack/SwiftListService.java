@@ -42,9 +42,4 @@ public class SwiftListService implements ListService {
             return new SwiftObjectListService(session, regionService).list(directory, listener);
         }
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

@@ -48,9 +48,4 @@ public class OneDriveSharedWithMeListService extends AbstractItemListService {
         path.getType().add(Path.Type.shared);
         return super.toPath(metadata, directory);
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

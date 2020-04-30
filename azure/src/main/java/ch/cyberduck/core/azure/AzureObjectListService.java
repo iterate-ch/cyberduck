@@ -120,9 +120,4 @@ public class AzureObjectListService implements ListService {
             throw new NotfoundException(e.getMessage(), e);
         }
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

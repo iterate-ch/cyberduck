@@ -47,9 +47,4 @@ public class SharepointGroupListService extends AbstractListService<GroupItem.Me
         attributes.setVersionId(metadata.getId());
         return new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.directory, Path.Type.volume), attributes);
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

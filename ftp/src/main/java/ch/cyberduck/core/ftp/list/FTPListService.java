@@ -169,11 +169,6 @@ public class FTPListService implements ListService {
         }
     }
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
-
     /**
      * Handle all symbolic link targets
      */

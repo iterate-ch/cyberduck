@@ -37,9 +37,4 @@ public class GoogleStorageListService implements ListService {
         }
         return new GoogleStorageObjectListService(session).list(directory, listener);
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

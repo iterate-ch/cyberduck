@@ -98,9 +98,4 @@ public class SwiftContainerListService implements RootListService {
             throw new DefaultIOExceptionMappingService().map(e);
         }
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

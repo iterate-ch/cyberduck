@@ -72,9 +72,4 @@ public class MantaListService implements ListService {
         }
         return children;
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

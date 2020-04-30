@@ -66,11 +66,6 @@ public class DropboxListService implements ListService {
         }
     }
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
-
     private void parse(final Path directory, final ListProgressListener listener, final AttributedList<Path> children, final ListFolderResult result)
             throws ConnectionCanceledException {
         for(Metadata md : result.getEntries()) {

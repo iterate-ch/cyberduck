@@ -52,9 +52,4 @@ public class OneDriveListService implements ListService {
             return new GraphItemListService(session).list(directory, listener);
         }
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

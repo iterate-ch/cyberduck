@@ -82,9 +82,4 @@ public class AzureContainerListService implements RootListService {
             throw new AzureExceptionMappingService().map("Listing directory {0} failed", e, directory);
         }
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

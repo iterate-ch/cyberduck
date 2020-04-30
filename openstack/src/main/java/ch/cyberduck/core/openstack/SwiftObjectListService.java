@@ -107,9 +107,4 @@ public class SwiftObjectListService implements ListService {
             throw new DefaultIOExceptionMappingService().map(e, directory);
         }
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

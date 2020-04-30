@@ -43,9 +43,4 @@ public class AzureListService implements ListService {
             return new AzureObjectListService(session, context).list(directory, listener);
         }
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

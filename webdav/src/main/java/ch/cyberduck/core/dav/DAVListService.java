@@ -92,9 +92,4 @@ public class DAVListService implements ListService {
                 DAVTimestampFeature.LAST_MODIFIED_SERVER_CUSTOM_NAMESPACE).
                 collect(Collectors.toSet()));
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
 }

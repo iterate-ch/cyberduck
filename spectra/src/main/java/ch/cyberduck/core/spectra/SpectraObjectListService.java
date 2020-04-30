@@ -169,9 +169,4 @@ public class SpectraObjectListService extends S3AbstractListService {
         attr.setDuplicate(object.getSize() == 0L || !latest);
         return attr;
     }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return null;
-    }
 }

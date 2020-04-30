@@ -243,11 +243,6 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         });
     }
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        return this;
-    }
-
     private static final class LatestVersionPathPredicate extends SimplePathPredicate {
         public LatestVersionPathPredicate(final Path f) {
             super(f);
