@@ -56,7 +56,12 @@ public final class CustomDbxRawClientV2 extends DbxRawClientV2 {
     }
 
     @Override
-    protected DbxRawClientV2 withPathRoot(final PathRoot pathRoot) {
-        return null;
+    public DbxRawClientV2 withPathRoot(final PathRoot pathRoot) {
+        return new CustomDbxRawClientV2(
+            this.getRequestConfig(),
+            this.getHost(),
+            this.getUserId(),
+            pathRoot
+        );
     }
 }
