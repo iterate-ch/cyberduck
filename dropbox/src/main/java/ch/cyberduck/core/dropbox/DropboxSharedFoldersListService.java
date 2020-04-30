@@ -24,7 +24,6 @@ import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
@@ -47,7 +46,6 @@ public class DropboxSharedFoldersListService implements ListService {
     public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         try {
             final AttributedList<Path> children = new AttributedList<>();
-            final String path = directory.isRoot() ? StringUtils.EMPTY : directory.getAbsolute();
             ListFoldersResult listFoldersResult;
             this.parse(directory, listener, children, listFoldersResult = new DbxUserSharingRequests(session.getClient()).listFolders());
             while(listFoldersResult.getCursor() != null) {
