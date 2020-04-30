@@ -17,6 +17,7 @@ package ch.cyberduck.core.openstack;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
@@ -32,7 +33,6 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -40,25 +40,19 @@ import static org.junit.Assert.*;
 public class SwiftObjectListServiceTest extends AbstractSwiftTest {
 
     @Test
-    public void testList() throws Exception {
+    public void testListDirectory() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
-        for(Path p : list) {
-            assertEquals(container, p.getParent());
-            if(p.isFile()) {
-                assertNotEquals(-1L, p.attributes().getModificationDate());
-                assertNotEquals(-1L, p.attributes().getSize());
-                assertNotNull(p.attributes().getChecksum().hash);
-                assertNull(p.attributes().getETag());
-            }
-            else if(p.isDirectory()) {
-                assertFalse(p.isPlaceholder());
-            }
-            else {
-                fail();
-            }
-        }
+        final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path f1 = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
+            new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final Path f2 = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
+            new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
+        final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener());
+        assertEquals(2, list.size());
+        assertTrue(list.contains(f1));
+        assertTrue(list.contains(f2));
+        new SwiftDeleteFeature(session).delete(Arrays.asList(f1, f2, placeholder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test(expected = NotfoundException.class)
@@ -78,9 +72,9 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
     public void testListPlaceholder() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path placeholder = new SwiftDirectoryFeature(session).mkdir(new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new SwiftObjectListService(session).list(placeholder, new DisabledListProgressListener()).isEmpty());
-        final Path placeholder2 = new SwiftDirectoryFeature(session).mkdir(new Path(placeholder, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path placeholder2 = new SwiftDirectoryFeature(session).mkdir(new Path(placeholder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new SwiftObjectListService(session).list(placeholder2, new DisabledListProgressListener()).isEmpty());
         new SwiftDeleteFeature(session).delete(Arrays.asList(placeholder, placeholder2), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
@@ -89,7 +83,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
     public void testListPlaceholderParent() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final String name = UUID.randomUUID().toString();
+        final String name = new AlphanumericRandomStringService().random();
         final Path placeholder = new Path(container, name, EnumSet.of(Path.Type.directory));
         new SwiftDirectoryFeature(session).mkdir(placeholder, null, new TransferStatus());
         final AttributedList<Path> list = new SwiftObjectListService(session).list(placeholder.getParent(), new DisabledListProgressListener());
@@ -104,9 +98,9 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
         final Path base = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
-            new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path child = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
-            new Path(base, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)), new TransferStatus());
+            new Path(base, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
             assertTrue(list.contains(base));
