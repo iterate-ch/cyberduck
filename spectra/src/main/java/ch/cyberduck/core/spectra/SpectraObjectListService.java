@@ -139,7 +139,7 @@ public class SpectraObjectListService extends S3AbstractListService {
                     }
                     objects.add(new Path(directory, PathNormalizer.name(key), EnumSet.of(Path.Type.directory, Path.Type.placeholder), new PathAttributes()));
                 }
-                marker = response.getListBucketResult().getMarker();
+                marker = response.getListBucketResult().getNextMarker();
                 listener.chunk(directory, objects);
             }
             while(marker != null);
