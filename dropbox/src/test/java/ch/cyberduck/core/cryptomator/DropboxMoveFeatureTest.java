@@ -28,6 +28,7 @@ import ch.cyberduck.core.dropbox.DropboxAttributesFinderFeature;
 import ch.cyberduck.core.dropbox.DropboxDeleteFeature;
 import ch.cyberduck.core.dropbox.DropboxDirectoryFeature;
 import ch.cyberduck.core.dropbox.DropboxFindFeature;
+import ch.cyberduck.core.dropbox.DropboxHomeFinderFeature;
 import ch.cyberduck.core.dropbox.DropboxMoveFeature;
 import ch.cyberduck.core.dropbox.DropboxUploadFeature;
 import ch.cyberduck.core.dropbox.DropboxWriteFeature;
@@ -35,7 +36,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -59,7 +59,7 @@ public class DropboxMoveFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testMove() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DropboxHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));

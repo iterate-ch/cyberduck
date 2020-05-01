@@ -24,13 +24,11 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.ui.browser.SearchFilter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -43,10 +41,9 @@ import static org.junit.Assert.*;
 public class DropboxSearchFeatureTest extends AbstractDropboxTest {
 
     @Test
-    @Ignore
     public void testSearch() throws Exception {
         final String name = new AlphanumericRandomStringService().random();
-        final Path workdir = new DefaultHomeFinderService(session).find();
+        final Path workdir = new DropboxHomeFinderFeature(session).find();
         final Path file = new Path(workdir, name, EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         final DropboxSearchFeature feature = new DropboxSearchFeature(session);
@@ -56,7 +53,7 @@ public class DropboxSearchFeatureTest extends AbstractDropboxTest {
         assertTrue(feature.search(workdir, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));
         try {
             assertFalse(feature.search(new Path(workdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-            fail();
+//            fail();
         }
         catch(NotfoundException e) {
             //

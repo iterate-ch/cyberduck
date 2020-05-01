@@ -33,6 +33,7 @@ import ch.cyberduck.core.dropbox.DropboxAttributesFinderFeature;
 import ch.cyberduck.core.dropbox.DropboxDeleteFeature;
 import ch.cyberduck.core.dropbox.DropboxDirectoryFeature;
 import ch.cyberduck.core.dropbox.DropboxFindFeature;
+import ch.cyberduck.core.dropbox.DropboxHomeFinderFeature;
 import ch.cyberduck.core.dropbox.DropboxReadFeature;
 import ch.cyberduck.core.dropbox.DropboxTouchFeature;
 import ch.cyberduck.core.dropbox.DropboxWriteFeature;
@@ -40,7 +41,6 @@ import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.pool.SessionPool;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.shared.DisabledBulkFeature;
@@ -76,7 +76,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
 
     @Test
     public void testCopyFile() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DropboxHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path target = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -102,7 +102,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
 
     @Test
     public void testCopyToDifferentFolderCryptomator() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DropboxHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
@@ -126,7 +126,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
     @Test
     public void testCopyToDifferentFolderLongFilenameCryptomator() throws Exception {
         assumeTrue(vaultVersion == CryptoVault.VAULT_VERSION_DEPRECATED);
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DropboxHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path source = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.file));
         final Path targetFolder = new Path(vault, new RandomStringGenerator.Builder().build().generate(130), EnumSet.of(Path.Type.directory));
@@ -149,7 +149,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
 
     @Test
     public void testCopyFolder() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DropboxHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path folder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path file = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -180,7 +180,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
 
     @Test
     public void testCopyFileIntoVault() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DropboxHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(cleartextFile, new TransferStatus());
@@ -204,7 +204,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
 
     @Test
     public void testCopyDirectoryIntoVault() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DropboxHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path cleartextFile = new Path(cleartextFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
@@ -231,7 +231,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
 
     @Test
     public void testCopyFileOutsideVault() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DropboxHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path clearFolder = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DropboxDirectoryFeature(session).mkdir(clearFolder, null, new TransferStatus());
@@ -258,7 +258,7 @@ public class CopyWorkerTest extends AbstractDropboxTest {
 
     @Test
     public void testCopyDirectoryOutsideVault() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DropboxHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFolder = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path encryptedFile = new Path(encryptedFolder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
