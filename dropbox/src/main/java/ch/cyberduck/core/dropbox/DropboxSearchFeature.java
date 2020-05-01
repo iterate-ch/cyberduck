@@ -22,6 +22,7 @@ import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConnectionCanceledException;
 import ch.cyberduck.core.features.Search;
 
 import org.apache.log4j.Logger;
@@ -34,9 +35,9 @@ import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.Metadata;
-import com.dropbox.core.v2.files.SearchMatch;
-import com.dropbox.core.v2.files.SearchMode;
-import com.dropbox.core.v2.files.SearchResult;
+import com.dropbox.core.v2.files.SearchMatchV2;
+import com.dropbox.core.v2.files.SearchOptions;
+import com.dropbox.core.v2.files.SearchV2Result;
 
 public class DropboxSearchFeature implements Search {
     private static final Logger log = Logger.getLogger(DropboxSearchFeature.class);
@@ -57,35 +58,41 @@ public class DropboxSearchFeature implements Search {
         try {
             final AttributedList<Path> list = new AttributedList<>();
             long start = 0;
-            SearchResult result;
-            do {
-                result = new DbxUserFilesRequests(session.getClient(workdir)).searchBuilder(containerService.getKey(workdir), regex.toPattern().pattern())
-                    .withMode(SearchMode.FILENAME).withStart(start).start();
-                final List<SearchMatch> matches = result.getMatches();
-                for(SearchMatch match : matches) {
-                    final Metadata metadata = match.getMetadata();
-                    final EnumSet<Path.Type> type;
-                    if(metadata instanceof FileMetadata) {
-                        type = EnumSet.of(Path.Type.file);
-                    }
-                    else if(metadata instanceof FolderMetadata) {
-                        type = EnumSet.of(Path.Type.directory);
-                    }
-                    else {
-                        log.warn(String.format("Skip file %s", metadata));
-                        return null;
-                    }
-                    list.add(new Path(metadata.getPathDisplay(), type, attributes.toAttributes(metadata)));
-                    listener.chunk(workdir, list);
+            SearchV2Result result = new DbxUserFilesRequests(session.getClient(workdir)).searchV2Builder(regex.toPattern().pattern())
+                .withOptions(SearchOptions.newBuilder().withPath(containerService.getKey(workdir)).build()).start();
+            this.parse(workdir, listener, list, result);
+            while(result.getHasMore()) {
+                this.parse(workdir, listener, list, result = new DbxUserFilesRequests(session.getClient(workdir)).searchContinueV2(result.getCursor()));
+                if(this.parse(workdir, listener, list, result)) {
+                    return null;
                 }
-                start = result.getStart();
             }
-            while(result.getMore());
             return list;
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map("Failure to read attributes of {0}", e, workdir);
         }
+    }
+
+    protected boolean parse(final Path workdir, final ListProgressListener listener, final AttributedList<Path> list, final SearchV2Result result) throws ConnectionCanceledException {
+        final List<SearchMatchV2> matches = result.getMatches();
+        for(SearchMatchV2 match : matches) {
+            final Metadata metadata = match.getMetadata().getMetadataValue();
+            final EnumSet<Path.Type> type;
+            if(metadata instanceof FileMetadata) {
+                type = EnumSet.of(Path.Type.file);
+            }
+            else if(metadata instanceof FolderMetadata) {
+                type = EnumSet.of(Path.Type.directory);
+            }
+            else {
+                log.warn(String.format("Skip file %s", metadata));
+                return true;
+            }
+            list.add(new Path(metadata.getPathDisplay(), type, attributes.toAttributes(metadata)));
+            listener.chunk(workdir, list);
+        }
+        return false;
     }
 
     @Override
