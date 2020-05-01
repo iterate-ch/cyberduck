@@ -38,7 +38,7 @@ public class GraphExceptionMappingService extends AbstractExceptionMappingServic
             buffer.append(failure.getErrorMessage());
             return new DefaultHttpResponseExceptionMappingService().map(new HttpResponseException(failure.getResponseCode(), buffer.toString()));
         }
-        if(ExceptionUtils.getRootCause(failure) instanceof IOException) {
+        if(ExceptionUtils.getRootCause(failure) != failure && ExceptionUtils.getRootCause(failure) instanceof IOException) {
             return new DefaultIOExceptionMappingService().map((IOException) ExceptionUtils.getRootCause(failure));
         }
         return new InteroperabilityException(failure.getMessage(), failure);
