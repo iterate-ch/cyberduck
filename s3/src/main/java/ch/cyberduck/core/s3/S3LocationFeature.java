@@ -67,18 +67,25 @@ public class S3LocationFeature implements Location {
 
     @Override
     public Name getLocation(final Path file) throws BackgroundException {
-        final Path container = containerService.getContainer(file);
-        if(container.isRoot()) {
+        final Path bucket = containerService.getContainer(file);
+        if(bucket.isRoot()) {
             return unknown;
         }
-        if(cache.containsRegionForBucketName(container.getName())) {
-            return new S3Region(cache.getRegionForBucketName(container.getName()));
-        }
+        return this.getLocation(bucket.getName());
+    }
+
+    protected Name getLocation(final String bucketname) throws BackgroundException {
         try {
-            final String location = session.getClient().getBucketLocation(container.getName());
+            if(cache.containsRegionForBucketName(bucketname)) {
+                return new S3Region(cache.getRegionForBucketName(bucketname));
+            }
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Query location for bucket %s", bucketname));
+            }
+            final String location = session.getClient().getBucketLocation(bucketname);
             final S3Region region;
             if(StringUtils.isBlank(location)) {
-                log.warn(String.format("No region known for bucket %s", container.getName()));
+                log.warn(String.format("No region known for bucket %s", bucketname));
                 region = new S3Region("us-east-1");
             }
             else {
@@ -94,7 +101,7 @@ public class S3LocationFeature implements Location {
                         break;
                 }
             }
-            cache.putRegionForBucketName(container.getName(), region.getIdentifier());
+            cache.putRegionForBucketName(bucketname, region.getIdentifier());
             return region;
         }
         catch(ServiceException e) {
@@ -102,11 +109,11 @@ public class S3LocationFeature implements Location {
                 throw new S3ExceptionMappingService().map("Cannot read bucket location", e);
             }
             catch(AccessDeniedException l) {
-                log.warn(String.format("Missing permission to read location for %s %s", container, e.getMessage()));
+                log.warn(String.format("Missing permission to read location for %s %s", bucketname, e.getMessage()));
                 return unknown;
             }
             catch(InteroperabilityException i) {
-                log.warn(String.format("Not supported to read location for %s %s", container, e.getMessage()));
+                log.warn(String.format("Not supported to read location for %s %s", bucketname, e.getMessage()));
                 return unknown;
             }
         }
