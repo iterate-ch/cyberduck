@@ -36,14 +36,14 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
     private static final Logger log = Logger.getLogger(ExtendedHttpRequestRetryHandler.class);
 
     private static final List<Class<? extends IOException>> exceptions = Arrays.asList(
-            UnrecoverableIOException.class,
-            InterruptedIOException.class,
-            UnknownHostException.class,
-            ConnectException.class,
+        UnrecoverableIOException.class,
+        InterruptedIOException.class,
+        UnknownHostException.class,
+        ConnectException.class,
 //            ExceptionUDT.class,
-            // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
-            // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
-            SSLHandshakeException.class);
+        // Not providing SSLException.class, because broken pipe failures are wrapped in SSL Exceptions.
+        // "Broken pipe".equals(ExceptionUtils.getRootCause(failure).getMessage())
+        SSLHandshakeException.class);
 
     public ExtendedHttpRequestRetryHandler(final int retryCount) {
         super(retryCount, false, exceptions);
@@ -52,11 +52,9 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
     @Override
     public boolean retryRequest(final IOException exception, final int executionCount, final HttpContext context) {
         final Throwable cause = ExceptionUtils.getRootCause(exception);
-        if(cause != null) {
-            if(cause instanceof RuntimeException) {
-                log.error(String.format("Cancel retry request with execution count %d for failure %s", executionCount, cause));
-                return false;
-            }
+        if(cause instanceof RuntimeException) {
+            log.error(String.format("Cancel retry request with execution count %d for failure %s", executionCount, cause));
+            return false;
         }
         final boolean retry = super.retryRequest(exception, executionCount, context);
         if(retry) {
