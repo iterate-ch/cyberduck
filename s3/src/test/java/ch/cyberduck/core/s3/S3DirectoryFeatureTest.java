@@ -33,6 +33,7 @@ import ch.cyberduck.core.PathCache;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
@@ -45,8 +46,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
 public class S3DirectoryFeatureTest extends AbstractS3Test {
@@ -54,13 +54,22 @@ public class S3DirectoryFeatureTest extends AbstractS3Test {
     @Test
     public void testCreateBucket() throws Exception {
         final S3DirectoryFeature feature = new S3DirectoryFeature(session, new S3WriteFeature(session));
-        final Path test = new Path(new S3HomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
-        assertTrue(feature.isSupported(test.getParent(), test.getName()));
-        final S3LocationFeature.S3Region region = new S3LocationFeature.S3Region("eu-west-2");
-        test.attributes().setRegion(region.getIdentifier());
-        feature.mkdir(test, region.getIdentifier(), new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(test));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        for(Location.Name region : session.getHost().getProtocol().getRegions()) {
+            switch(region.getIdentifier()) {
+                case "me-south-1":
+                case "ap-east-1":
+                    // Not enabled for account
+                    break;
+                default:
+                    final Path test = new Path(new S3HomeFinderService(session).find(), new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume));
+                    assertTrue(feature.isSupported(test.getParent(), test.getName()));
+                    test.attributes().setRegion(region.getIdentifier());
+                    feature.mkdir(test, region.getIdentifier(), new TransferStatus());
+                    assertTrue(new S3FindFeature(session).find(test));
+                    assertEquals(region.getIdentifier(), new S3LocationFeature(session).getLocation(test).getIdentifier());
+                    new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
+            }
+        }
     }
 
     @Test(expected = InteroperabilityException.class)
