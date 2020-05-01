@@ -55,6 +55,9 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
             final FileMetadata file = (FileMetadata) metadata;
             attributes.setSize(file.getSize());
             attributes.setModificationDate(file.getClientModified().getTime());
+            if(file.getFileLockInfo() != null) {
+                attributes.setLockId(String.valueOf(file.getFileLockInfo().getIsLockholder()));
+            }
         }
         if(metadata instanceof FolderMetadata) {
             final FolderMetadata folder = (FolderMetadata) metadata;

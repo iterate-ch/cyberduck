@@ -27,20 +27,7 @@ import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Home;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.PromptUrlProvider;
-import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -74,6 +61,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
         = new DropboxPathContainerService();
 
     private OAuth2RequestInterceptor authorizationService;
+    private Lock<String> locking = null;
 
     public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
@@ -103,6 +91,10 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
                 log.debug(String.format("Authenticated as user %s", account));
             }
             credentials.setUsername(account.getEmail());
+            switch(account.getAccountType()) {
+                case BUSINESS:
+                    locking = new DropboxLockFeature(this);
+            }
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);
@@ -169,6 +161,9 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
         }
         if(type == Search.class) {
             return (T) new DropboxSearchFeature(this);
+        }
+        if(type == Lock.class) {
+            return (T) new DropboxLockFeature(this);
         }
         return super._getFeature(type);
     }
