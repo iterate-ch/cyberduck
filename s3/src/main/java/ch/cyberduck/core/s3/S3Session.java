@@ -259,7 +259,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         // Matches s3.cn-north-1.amazonaws.com.cn
         // Matches s3.cn-northwest-1.amazonaws.com.cn
         // Matches s3-us-gov-west-1.amazonaws.com
-        return StringUtils.contains(hostname, "amazonaws.com");
+        return hostname.matches("s3(\\..*)?\\.amazonaws\\.com(\\.cn)?");
     }
 
     @Override
