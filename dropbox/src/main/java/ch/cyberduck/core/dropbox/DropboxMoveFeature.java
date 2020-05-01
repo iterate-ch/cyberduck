@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Move;
@@ -31,20 +32,21 @@ import com.dropbox.core.v2.files.RelocationResult;
 public class DropboxMoveFeature implements Move {
 
     private final DropboxSession session;
-    private Delete delete;
+
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
 
     public DropboxMoveFeature(final DropboxSession session) {
         this.session = session;
-        this.delete = new DropboxDeleteFeature(session);
     }
 
     @Override
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             if(status.isExists()) {
-                delete.delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
+                new DropboxDeleteFeature(session).delete(Collections.singletonMap(renamed, status), connectionCallback, callback);
             }
-            final RelocationResult result = new DbxUserFilesRequests(session.getClient()).moveV2(file.getAbsolute(), renamed.getAbsolute());
+            final RelocationResult result = new DbxUserFilesRequests(session.getClient(file)).moveV2(containerService.getKey(file), containerService.getKey(renamed));
             // Copy original file attributes
             return new Path(renamed.getParent(), renamed.getName(), renamed.getType(),
                 new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));

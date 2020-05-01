@@ -19,6 +19,7 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
@@ -54,6 +55,9 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     private final AttributesFinder attributes;
     private final Long chunksize;
 
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
+
     public DropboxWriteFeature(final DropboxSession session) {
         this(session, PreferencesFactory.get().getLong("dropbox.upload.chunksize"));
     }
@@ -82,7 +86,7 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
     @Override
     public HttpResponseOutputStream<String> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final DbxUserFilesRequests files = new DbxUserFilesRequests(session.getClient());
+            final DbxUserFilesRequests files = new DbxUserFilesRequests(session.getClient(file));
             final UploadSessionStartUploader start = files.uploadSessionStart();
             new DefaultStreamCloser().close(start.getOutputStream());
             final String sessionId = start.finish().getSessionId();
@@ -172,7 +176,8 @@ public class DropboxWriteFeature extends AbstractHttpWriteFeature<String> {
         public void close() throws IOException {
             try {
                 DropboxWriteFeature.this.close(uploader);
-                final UploadSessionFinishUploader finish = client.uploadSessionFinish(new UploadSessionCursor(sessionId, written), CommitInfo.newBuilder(file.getAbsolute())
+                final UploadSessionFinishUploader finish = client.uploadSessionFinish(new UploadSessionCursor(sessionId, written),
+                    CommitInfo.newBuilder(containerService.getKey(file))
                         .withClientModified(status.getTimestamp() != null ? new Date(status.getTimestamp()) : null)
                         .withMode(WriteMode.OVERWRITE)
                         .build()

@@ -25,18 +25,21 @@ import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.QuotaException;
 import ch.cyberduck.core.exception.RetriableAccessDeniedException;
+import ch.cyberduck.core.exception.UnsupportedException;
 
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.StringReader;
 import java.time.Duration;
 
+import com.dropbox.core.AccessErrorException;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.InvalidAccessTokenException;
 import com.dropbox.core.NetworkIOException;
 import com.dropbox.core.ProtocolException;
 import com.dropbox.core.RetryException;
 import com.dropbox.core.ServerException;
+import com.dropbox.core.v2.auth.AccessError;
 import com.dropbox.core.v2.files.*;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -227,6 +230,12 @@ public class DropboxExceptionMappingService extends AbstractExceptionMappingServ
                 case OTHER:
                     return new InteroperabilityException(buffer.toString(), failure);
             }
+        }
+        if(failure instanceof AccessErrorException) {
+            final AccessError error = ((AccessErrorException) failure).getAccessError();
+            this.parse(buffer, error.toString());
+            // File locking is not supported for user
+            return new UnsupportedException(buffer.toString(), failure);
         }
         return new InteroperabilityException(buffer.toString(), failure);
     }

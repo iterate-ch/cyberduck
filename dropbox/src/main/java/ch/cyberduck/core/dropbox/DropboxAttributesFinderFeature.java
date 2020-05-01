@@ -17,17 +17,22 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.Metadata;
 
 public class DropboxAttributesFinderFeature implements AttributesFinder {
 
     private final DropboxSession session;
+
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
 
     public DropboxAttributesFinderFeature(final DropboxSession session) {
         this.session = session;
@@ -36,7 +41,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            final Metadata metadata = new DbxUserFilesRequests(session.getClient()).getMetadata(file.getAbsolute());
+            final Metadata metadata = new DbxUserFilesRequests(session.getClient(file)).getMetadata(containerService.getKey(file));
             return this.toAttributes(metadata);
         }
         catch(DbxException e) {
@@ -47,9 +52,17 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
     protected PathAttributes toAttributes(final Metadata metadata) {
         final PathAttributes attributes = new PathAttributes();
         if(metadata instanceof FileMetadata) {
-            final FileMetadata fm = (FileMetadata) metadata;
-            attributes.setSize(fm.getSize());
-            attributes.setModificationDate(fm.getClientModified().getTime());
+            final FileMetadata file = (FileMetadata) metadata;
+            attributes.setSize(file.getSize());
+            attributes.setModificationDate(file.getClientModified().getTime());
+            if(file.getFileLockInfo() != null) {
+                attributes.setLockId(String.valueOf(file.getFileLockInfo().getIsLockholder()));
+            }
+        }
+        if(metadata instanceof FolderMetadata) {
+            final FolderMetadata folder = (FolderMetadata) metadata;
+            // All shared folders have a shared_folder_id. This value is identical to the namespace ID for that shared folder
+            attributes.setVersionId(folder.getSharedFolderId());
         }
         return attributes;
     }

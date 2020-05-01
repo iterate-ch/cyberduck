@@ -19,6 +19,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
@@ -39,6 +40,9 @@ public class DropboxPublicShareUrlProvider implements PromptUrlProvider<Void, Vo
 
     private final DropboxSession session;
 
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
+
     public DropboxPublicShareUrlProvider(final DropboxSession session) {
         this.session = session;
     }
@@ -46,7 +50,7 @@ public class DropboxPublicShareUrlProvider implements PromptUrlProvider<Void, Vo
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
-            final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient()).createSharedLinkWithSettings(file.getAbsolute(),
+            final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient(file)).createSharedLinkWithSettings(containerService.getKey(file),
                 SharedLinkSettings.newBuilder().withRequestedVisibility(RequestedVisibility.PUBLIC).build());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Created shared link %s", share));

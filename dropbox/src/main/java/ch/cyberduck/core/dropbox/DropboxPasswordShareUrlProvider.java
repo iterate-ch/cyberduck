@@ -20,6 +20,7 @@ import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
@@ -40,6 +41,9 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
 
     private final DropboxSession session;
 
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
+
     public DropboxPasswordShareUrlProvider(final DropboxSession session) {
         this.session = session;
     }
@@ -47,7 +51,7 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
-            final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient()).createSharedLinkWithSettings(file.getAbsolute(),
+            final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient(file)).createSharedLinkWithSettings(containerService.getKey(file),
                 SharedLinkSettings.newBuilder().withRequestedVisibility(RequestedVisibility.PASSWORD).withLinkPassword(callback.prompt(
                     session.getHost(), LocaleFactory.localizedString("Passphrase", "Cryptomator"),
                     LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions().icon(session.getHost().getProtocol().disk())

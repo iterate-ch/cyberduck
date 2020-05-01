@@ -19,6 +19,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.PromptUrlProvider;
@@ -39,6 +40,9 @@ public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void
 
     private final DropboxSession session;
 
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
+
     public DropboxTemporaryUrlProvider(final DropboxSession session) {
         this.session = session;
     }
@@ -50,7 +54,7 @@ public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void
                 log.debug(String.format("Create temporary link for %s", file));
             }
             // This link will expire in four hours and afterwards you will get 410 Gone.
-            final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryLink(file.getAbsolute()).getLink();
+            final String link = new DbxUserFilesRequests(session.getClient(file)).getTemporaryLink(containerService.getKey(file)).getLink();
             // Determine expiry time for URL
             final Calendar expiry = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             expiry.add(Calendar.HOUR, 4);
@@ -71,7 +75,7 @@ public class DropboxTemporaryUrlProvider implements PromptUrlProvider<Void, Void
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create temporary upload link for %s", file));
             }
-            final String link = new DbxUserFilesRequests(session.getClient()).getTemporaryUploadLink(new CommitInfo(file.getAbsolute())).getLink();
+            final String link = new DbxUserFilesRequests(session.getClient(file)).getTemporaryUploadLink(new CommitInfo(containerService.getKey(file))).getLink();
             return new DescriptiveUrl(URI.create(link), DescriptiveUrl.Type.signed, MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Temporary", "S3")));
         }
         catch(DbxException e) {

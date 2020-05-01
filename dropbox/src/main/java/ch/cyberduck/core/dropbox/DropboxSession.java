@@ -21,23 +21,13 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.features.AttributesFinder;
-import ch.cyberduck.core.features.Copy;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.features.Directory;
-import ch.cyberduck.core.features.Find;
-import ch.cyberduck.core.features.Move;
-import ch.cyberduck.core.features.PromptUrlProvider;
-import ch.cyberduck.core.features.Quota;
-import ch.cyberduck.core.features.Read;
-import ch.cyberduck.core.features.Search;
-import ch.cyberduck.core.features.Touch;
-import ch.cyberduck.core.features.Upload;
-import ch.cyberduck.core.features.Write;
+import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
@@ -46,36 +36,39 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.List;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxHost;
 import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.http.HttpRequestor;
-import com.dropbox.core.v2.DbxRawClientV2;
+import com.dropbox.core.v2.CustomDbxRawClientV2;
 import com.dropbox.core.v2.common.PathRoot;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
-public class DropboxSession extends HttpSession<DbxRawClientV2> {
+public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     private static final Logger log = Logger.getLogger(DropboxSession.class);
 
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();
 
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
+
     private OAuth2RequestInterceptor authorizationService;
+    private Lock<String> locking = null;
 
     public DropboxSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
 
     @Override
-    protected DbxRawClientV2 connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) {
+    protected CustomDbxRawClientV2 connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
         authorizationService = new OAuth2RequestInterceptor(configuration.build(), host.getProtocol())
             .withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
@@ -88,29 +81,6 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
             DbxHost.DEFAULT, null, null);
     }
 
-    private final class CustomDbxRawClientV2 extends DbxRawClientV2 {
-        /**
-         * @param requestConfig Configuration controlling How requests should be issued to Dropbox
-         *                      servers.
-         * @param host          Dropbox server hostnames (primarily for internal use)
-         * @param userId        The user ID of the current Dropbox account. Used for multi-Dropbox account use-case.
-         * @param pathRoot      We will send this value in Dropbox-API-Path-Root header if it presents.
-         */
-        protected CustomDbxRawClientV2(final DbxRequestConfig requestConfig, final DbxHost host, final String userId, final PathRoot pathRoot) {
-            super(requestConfig, host, userId, pathRoot);
-        }
-
-        @Override
-        protected void addAuthHeaders(final List<HttpRequestor.Header> headers) {
-            // OAuth Bearer added in interceptor
-        }
-
-        @Override
-        protected DbxRawClientV2 withPathRoot(final PathRoot pathRoot) {
-            return null;
-        }
-    }
-
     @Override
     public void login(final Proxy proxy, final LoginCallback prompt, final CancelCallback cancel) throws BackgroundException {
         authorizationService.setTokens(authorizationService.authorize(host, prompt, cancel));
@@ -121,6 +91,10 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
                 log.debug(String.format("Authenticated as user %s", account));
             }
             credentials.setUsername(account.getEmail());
+            switch(account.getAccountType()) {
+                case BUSINESS:
+                    locking = new DropboxLockFeature(this);
+            }
         }
         catch(DbxException e) {
             throw new DropboxExceptionMappingService().map(e);
@@ -140,8 +114,11 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(Class<T> type) {
+        if(type == Home.class) {
+            return (T) new DropboxHomeFinderFeature(this);
+        }
         if(type == ListService.class) {
-            return (T) new DropboxListService(this);
+            return (T) new DropboxRootListService(this);
         }
         if(type == Read.class) {
             return (T) new DropboxReadFeature(this);
@@ -185,6 +162,30 @@ public class DropboxSession extends HttpSession<DbxRawClientV2> {
         if(type == Search.class) {
             return (T) new DropboxSearchFeature(this);
         }
+        if(type == Lock.class) {
+            return (T) new DropboxLockFeature(this);
+        }
         return super._getFeature(type);
+    }
+
+    @Override
+    public CustomDbxRawClientV2 getClient() {
+        log.warn(String.format("Dropbox-API-Path-Root not set for client %s", client));
+        return super.getClient();
+    }
+
+    public CustomDbxRawClientV2 getClient(final Path file) {
+        final Path container = containerService.getContainer(file);
+        if(StringUtils.isNotBlank(container.attributes().getVersionId())) {
+            // List relative to the namespace id
+            final PathRoot root = PathRoot.namespaceId(container.attributes().getVersionId());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Set path root to %s", root));
+            }
+            // Syntax of using a namespace ID in the path parameter is only supported for namespaces that are mounted
+            // under the root. That means it can't be used to access the team space itself. Must still set Dropbox-API-Path-Root header
+            return client.withPathRoot(root);
+        }
+        return client;
     }
 }

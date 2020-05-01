@@ -16,31 +16,27 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractDropboxTest;
-import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.DisabledPasswordCallback;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class DropboxTemporaryUrlProviderTest extends AbstractDropboxTest {
+public class DropboxSharedFoldersListServiceTest extends AbstractDropboxTest {
 
     @Test
-    public void testToUrl() throws Exception {
-        final DropboxTemporaryUrlProvider provider = new DropboxTemporaryUrlProvider(session);
-        final Path file = new Path(new DropboxHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DropboxTouchFeature(session).touch(file, new TransferStatus());
-        assertNotNull(provider.toDownloadUrl(file, null, new DisabledPasswordCallback()).getUrl());
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    public void testList() throws Exception {
+        final AttributedList<Path> list = new DropboxSharedFoldersListService(session).list(
+            new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        assertNotNull(list);
+        assertTrue(list.isEmpty());
     }
 }

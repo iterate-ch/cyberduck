@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Write;
@@ -29,6 +30,9 @@ public class DropboxDirectoryFeature implements Directory<String> {
 
     private final DropboxSession session;
 
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
+
     public DropboxDirectoryFeature(final DropboxSession session) {
         this.session = session;
     }
@@ -36,7 +40,7 @@ public class DropboxDirectoryFeature implements Directory<String> {
     @Override
     public Path mkdir(final Path folder, final String region, final TransferStatus status) throws BackgroundException {
         try {
-            final CreateFolderResult result = new DbxUserFilesRequests(session.getClient()).createFolderV2(folder.getAbsolute(), false);
+            final CreateFolderResult result = new DbxUserFilesRequests(session.getClient(folder)).createFolderV2(containerService.getKey(folder), false);
             return new Path(folder.getParent(), folder.getName(), folder.getType(),
                 new DropboxAttributesFinderFeature(session).toAttributes(result.getMetadata()));
         }

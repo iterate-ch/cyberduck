@@ -26,11 +26,11 @@ import ch.cyberduck.core.cryptomator.features.CryptoListService;
 import ch.cyberduck.core.cryptomator.features.CryptoTouchFeature;
 import ch.cyberduck.core.dropbox.DropboxAttributesFinderFeature;
 import ch.cyberduck.core.dropbox.DropboxDeleteFeature;
+import ch.cyberduck.core.dropbox.DropboxHomeFinderFeature;
 import ch.cyberduck.core.dropbox.DropboxListService;
 import ch.cyberduck.core.dropbox.DropboxUploadFeature;
 import ch.cyberduck.core.dropbox.DropboxWriteFeature;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.shared.DefaultHomeFinderService;
 import ch.cyberduck.core.shared.DefaultTouchFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.vault.DefaultVaultRegistry;
@@ -54,7 +54,7 @@ public class DropboxListServiceTest extends AbstractDropboxTest {
 
     @Test
     public void testListCryptomator() throws Exception {
-        final Path home = new DefaultHomeFinderService(session).find();
+        final Path home = new DropboxHomeFinderFeature(session).find();
         final Path vault = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         final Path test = new Path(vault, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final CryptoVault cryptomator = new CryptoVault(vault);
