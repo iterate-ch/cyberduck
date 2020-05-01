@@ -31,7 +31,6 @@ import java.util.EnumSet;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxRawClientV2;
-import com.dropbox.core.v2.common.PathRoot;
 import com.dropbox.core.v2.files.DbxUserFilesRequests;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
@@ -43,7 +42,9 @@ public class DropboxListService implements ListService {
 
     private final DropboxSession session;
     private final DropboxAttributesFinderFeature attributes;
-    private final PathContainerService containerService = new PathContainerService();
+
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
 
     public DropboxListService(final DropboxSession session) {
         this.session = session;
@@ -55,28 +56,11 @@ public class DropboxListService implements ListService {
         try {
             final AttributedList<Path> children = new AttributedList<>();
             ListFolderResult result;
-            final Path container = containerService.getContainer(directory);
-            final String path;
             final DbxRawClientV2 client;
-            if(StringUtils.isNotBlank(container.attributes().getVersionId())) {
-                // List relative to the namespace id
-                final PathRoot root = PathRoot.namespaceId(container.attributes().getVersionId());
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Set path root to %s", root));
-                }
-                client = session.getClient().withPathRoot(root);
-                path = directory.isRoot() ? StringUtils.EMPTY : containerService.isContainer(directory)
-                    ? StringUtils.EMPTY : Path.DELIMITER + containerService.getKey(directory);
-            }
-            else {
-                // Generic account type with home folder only used as root
-                client = session.getClient();
-                path = directory.isRoot() ? StringUtils.EMPTY : directory.getAbsolute();
-            }
-            this.parse(directory, listener, children, result = new DbxUserFilesRequests(client).listFolder(path));
+            this.parse(directory, listener, children, result = new DbxUserFilesRequests(session.getClient(directory)).listFolder(containerService.getKey(directory)));
             // If true, then there are more entries available. Pass the cursor to list_folder/continue to retrieve the rest.
             while(result.getHasMore()) {
-                this.parse(directory, listener, children, result = new DbxUserFilesRequests(client).listFolderContinue(result.getCursor()));
+                this.parse(directory, listener, children, result = new DbxUserFilesRequests(session.getClient(directory)).listFolderContinue(result.getCursor()));
             }
             return children;
         }

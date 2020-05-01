@@ -21,6 +21,7 @@ import ch.cyberduck.core.http.HttpUploadFeature;
 import java.security.MessageDigest;
 
 public class DropboxUploadFeature extends HttpUploadFeature<String, MessageDigest> {
+
     public DropboxUploadFeature(final DropboxWriteFeature writer) {
         super(writer);
     }

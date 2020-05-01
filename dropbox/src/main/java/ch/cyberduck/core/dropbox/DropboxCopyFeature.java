@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
 import ch.cyberduck.core.features.Delete;
@@ -31,6 +32,9 @@ public class DropboxCopyFeature implements Copy {
 
     private final DropboxSession session;
 
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
+
     public DropboxCopyFeature(DropboxSession session) {
         this.session = session;
     }
@@ -42,7 +46,7 @@ public class DropboxCopyFeature implements Copy {
                 new DropboxDeleteFeature(session).delete(Collections.singletonMap(target, status), callback, new Delete.DisabledCallback());
             }
             // If the source path is a folder all its contents will be copied.
-            new DbxUserFilesRequests(session.getClient()).copyV2(source.getAbsolute(), target.getAbsolute());
+            new DbxUserFilesRequests(session.getClient(source)).copyV2(containerService.getKey(source), containerService.getKey(target));
             return target;
         }
         catch(DbxException e) {

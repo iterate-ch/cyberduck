@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.AttributesFinder;
 
@@ -30,6 +31,9 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
 
     private final DropboxSession session;
 
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
+
     public DropboxAttributesFinderFeature(final DropboxSession session) {
         this.session = session;
     }
@@ -37,7 +41,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
         try {
-            final Metadata metadata = new DbxUserFilesRequests(session.getClient()).getMetadata(file.getAbsolute());
+            final Metadata metadata = new DbxUserFilesRequests(session.getClient(file)).getMetadata(containerService.getKey(file));
             return this.toAttributes(metadata);
         }
         catch(DbxException e) {
@@ -54,7 +58,7 @@ public class DropboxAttributesFinderFeature implements AttributesFinder {
         }
         if(metadata instanceof FolderMetadata) {
             final FolderMetadata folder = (FolderMetadata) metadata;
-            // Shared folder id is used as root namespace in list service
+            // All shared folders have a shared_folder_id. This value is identical to the namespace ID for that shared folder
             attributes.setVersionId(folder.getSharedFolderId());
         }
         return attributes;

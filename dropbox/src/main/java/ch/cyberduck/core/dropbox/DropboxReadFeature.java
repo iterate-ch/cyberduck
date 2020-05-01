@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.ConnectionCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Read;
 import ch.cyberduck.core.http.HttpRange;
@@ -34,6 +35,9 @@ public class DropboxReadFeature implements Read {
 
     private final DropboxSession session;
 
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
+
     public DropboxReadFeature(final DropboxSession session) {
         this.session = session;
     }
@@ -41,7 +45,7 @@ public class DropboxReadFeature implements Read {
     @Override
     public InputStream read(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
-            final DownloadBuilder builder = new DbxUserFilesRequests(session.getClient()).downloadBuilder(file.getAbsolute());
+            final DownloadBuilder builder = new DbxUserFilesRequests(session.getClient(file)).downloadBuilder(containerService.getKey(file));
             if(status.isAppend()) {
                 final HttpRange range = HttpRange.withStatus(status);
                 builder.range(range.getStart());

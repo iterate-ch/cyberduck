@@ -21,6 +21,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
@@ -47,6 +49,7 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
@@ -57,6 +60,7 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxHost;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.CustomDbxRawClientV2;
+import com.dropbox.core.v2.common.PathRoot;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
@@ -65,6 +69,9 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
 
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();
+
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
 
     private OAuth2RequestInterceptor authorizationService;
 
@@ -164,5 +171,26 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             return (T) new DropboxSearchFeature(this);
         }
         return super._getFeature(type);
+    }
+
+    @Override
+    public CustomDbxRawClientV2 getClient() {
+        log.warn(String.format("Dropbox-API-Path-Root not set for client %s", client));
+        return super.getClient();
+    }
+
+    public CustomDbxRawClientV2 getClient(final Path file) {
+        final Path container = containerService.getContainer(file);
+        if(StringUtils.isNotBlank(container.attributes().getVersionId())) {
+            // List relative to the namespace id
+            final PathRoot root = PathRoot.namespaceId(container.attributes().getVersionId());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Set path root to %s", root));
+            }
+            // Syntax of using a namespace ID in the path parameter is only supported for namespaces that are mounted
+            // under the root. That means it can't be used to access the team space itself. Must still set Dropbox-API-Path-Root header
+            return client.withPathRoot(root);
+        }
+        return client;
     }
 }

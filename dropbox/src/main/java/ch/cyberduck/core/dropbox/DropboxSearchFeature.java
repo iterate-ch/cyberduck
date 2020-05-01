@@ -20,10 +20,10 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.EnumSet;
@@ -44,6 +44,9 @@ public class DropboxSearchFeature implements Search {
     private final DropboxSession session;
     private final DropboxAttributesFinderFeature attributes;
 
+    private final PathContainerService containerService
+        = new DropboxPathContainerService();
+
     public DropboxSearchFeature(final DropboxSession session) {
         this.session = session;
         this.attributes = new DropboxAttributesFinderFeature(session);
@@ -56,8 +59,8 @@ public class DropboxSearchFeature implements Search {
             long start = 0;
             SearchResult result;
             do {
-                result = new DbxUserFilesRequests(session.getClient()).searchBuilder(workdir.isRoot() ? StringUtils.EMPTY : workdir.getAbsolute(), regex.toPattern().pattern())
-                        .withMode(SearchMode.FILENAME).withStart(start).start();
+                result = new DbxUserFilesRequests(session.getClient(workdir)).searchBuilder(containerService.getKey(workdir), regex.toPattern().pattern())
+                    .withMode(SearchMode.FILENAME).withStart(start).start();
                 final List<SearchMatch> matches = result.getMatches();
                 for(SearchMatch match : matches) {
                     final Metadata metadata = match.getMetadata();
