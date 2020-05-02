@@ -28,7 +28,6 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
@@ -65,10 +64,8 @@ import ch.cyberduck.core.sts.STSCredentialsConfigurator;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
-import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.security.AWSCredentials;
@@ -110,7 +107,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
-        return new XmlResponsesSaxParser(client.getJetS3tProperties(), false);
+        return new XmlResponsesSaxParser(client.getConfiguration(), false);
     }
 
     /**
@@ -142,56 +139,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         return "x-amz-meta-";
     }
 
-    protected Jets3tProperties configure() {
-        final Jets3tProperties configuration = new Jets3tProperties();
-        if(log.isDebugEnabled()) {
-            log.debug(String.format("Configure for endpoint %s", host));
-        }
-        if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
-            // Only for AWS
-            configuration.setProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default"));
-            configuration.setProperty("s3service.disable-dns-buckets",
-                String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
-        }
-        else {
-            configuration.setProperty("s3service.s3-endpoint", host.getHostname());
-            if(InetAddressUtils.isIPv4Address(host.getHostname()) || InetAddressUtils.isIPv6Address(host.getHostname())) {
-                configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
-            }
-            else {
-                configuration.setProperty("s3service.disable-dns-buckets",
-                    String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
-            }
-        }
-        configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
-        if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
-            if(!Scheme.isURL(host.getProtocol().getContext())) {
-                configuration.setProperty("s3service.s3-endpoint-virtual-path",
-                    PathNormalizer.normalize(host.getProtocol().getContext()));
-            }
-        }
-        configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
-        if(host.getProtocol().isSecure()) {
-            configuration.setProperty("s3service.s3-endpoint-https-port", String.valueOf(host.getPort()));
-        }
-        else {
-            configuration.setProperty("s3service.s3-endpoint-http-port", String.valueOf(host.getPort()));
-        }
-        // The maximum number of retries that will be attempted when an S3 connection fails
-        // with an InternalServer error. To disable retries of InternalError failures, set this to 0.
-        configuration.setProperty("s3service.internal-error-retry-max", String.valueOf(0));
-        // The maximum number of concurrent communication threads that will be started by
-        // the multi-threaded service for upload and download operations.
-        configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
-        configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
-        configuration.setProperty("httpclient.retry-max", String.valueOf(0));
-        configuration.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
-        configuration.setProperty("storage-service.request-signature-version", authenticationHeaderSignatureVersion.toString());
-        configuration.setProperty("storage-service.disable-live-md5", String.valueOf(true));
-        configuration.setProperty("storage-service.default-region", host.getRegion());
-        return configuration;
-    }
-
     @Override
     public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
@@ -200,7 +147,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             configuration.setServiceUnavailableRetryStrategy(new S3TokenExpiredResponseInterceptor(this,
                 new ThreadLocalHostnameDelegatingTrustManager(trust, host.getHostname()), key, prompt));
         }
-        return new RequestEntityRestStorageService(this, this.configure(), configuration);
+        return new RequestEntityRestStorageService(this, configuration);
     }
 
     @Override
@@ -259,7 +206,7 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         // Matches s3.cn-north-1.amazonaws.com.cn
         // Matches s3.cn-northwest-1.amazonaws.com.cn
         // Matches s3-us-gov-west-1.amazonaws.com
-        return hostname.matches("s3(\\..*)?\\.amazonaws\\.com(\\.cn)?");
+        return hostname.matches("s3(\\.[a-z0-9\\-]+)?\\.amazonaws\\.com(\\.cn)?");
     }
 
     @Override
@@ -368,14 +315,14 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             return (T) new S3HomeFinderService(this);
         }
         if(type == TransferAcceleration.class) {
-            // Only for AWS
+            // Only for AWS. Disable transfer acceleration for AWS GovCloud
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 return (T) new S3TransferAccelerationService(this);
             }
             return null;
         }
         if(type == Bulk.class) {
-            // Only for AWS
+            // Only for AWS. Disable transfer acceleration for AWS GovCloud
             if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
                 return (T) new S3BulkTransferAccelerationFeature(this, new S3TransferAccelerationService(this));
             }

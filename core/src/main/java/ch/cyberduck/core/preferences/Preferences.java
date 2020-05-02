@@ -664,7 +664,9 @@ public abstract class Preferences implements Locales {
         this.setDefault("s3.bucket.virtualhost.disable", String.valueOf(false));
         this.setDefault("s3.bucket.requesterpays", String.valueOf(true));
         this.setDefault("s3.domain", "amazonaws.com");
-        this.setDefault("s3.hostname.default", "s3.amazonaws.com");
+        this.setDefault("s3.endpoint.dualstack.enable", String.valueOf(true));
+        this.setDefault("s3.endpoint.format.ipv4", "s3.%s.amazonaws.com");
+        this.setDefault("s3.endpoint.format.ipv6", "s3.dualstack.%s.amazonaws.com");
 
         //this.setDefault("s3.bucket.acl.default", "public-read");
         this.setDefault("s3.bucket.acl.default", "private");

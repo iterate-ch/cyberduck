@@ -18,7 +18,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -30,7 +29,6 @@ import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.jets3t.service.Jets3tProperties;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -218,7 +216,7 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
         final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
     }
 
-    @Test(expected = BackgroundException.class)
+    @Test
     public void testAccessPathStyleBucketEuCentral() throws Exception {
         final S3Session session = new S3Session(
             new Host(new S3Protocol(), new S3Protocol().getDefaultHostname(),
@@ -231,23 +229,16 @@ public class S3ObjectListServiceTest extends AbstractS3Test {
             }
 
             @Override
-            protected Jets3tProperties configure() {
-                final Jets3tProperties properties = super.configure();
-                properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
-                return properties;
+            public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) {
+                final RequestEntityRestStorageService client = super.connect(proxy, hostkey, prompt);
+                client.getConfiguration().setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+                return client;
             }
         };
         session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
         session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
         final Path container = new Path("test-eu-central-1-cyberduck", EnumSet.of(Path.Type.volume));
-        try {
-            final AttributedList<Path> list = new S3ObjectListService(session).list(container, new DisabledListProgressListener());
-        }
-        catch(BackgroundException e) {
-            assertEquals("Listing directory test-eu-central-1-cyberduck failed.", e.getMessage());
-            assertEquals("Received redirect response HTTP/1.1 301 Moved Permanently but no location header.", e.getDetail());
-            throw e;
-        }
+        new S3ObjectListService(session).list(container, new DisabledListProgressListener());
     }
 
     @Test

@@ -16,7 +16,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -30,7 +29,6 @@ import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.features.Versioning;
 
 import org.apache.log4j.Logger;
-import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.model.MultipartUpload;
 
 import java.util.EnumSet;
@@ -64,8 +62,7 @@ public class S3ListService implements ListService {
         }
         catch(ResolveFailedException e) {
             log.warn(String.format("Failure %s resolving bucket name. Disable use of DNS bucket names", e));
-            final Jets3tProperties configuration = session.getClient().getJetS3tProperties();
-            configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+            session.getClient().getConfiguration().setProperty("s3service.disable-dns-buckets", String.valueOf(true));
             return this.listObjects(directory, listener);
         }
     }

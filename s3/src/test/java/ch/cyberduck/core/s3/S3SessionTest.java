@@ -227,13 +227,15 @@ public class S3SessionTest extends AbstractS3Test {
     @Test
     public void testBucketVirtualHostStyleCustomHost() {
         final Host host = new Host(new S3Protocol(), "test-us-east-1-cyberduck");
-        assertFalse(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", true));
+        assertFalse(new S3Session(host).connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback())
+            .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", true));
     }
 
     @Test
     public void testBucketVirtualHostStyleAmazon() {
         final Host host = new Host(new S3Protocol(), new S3Protocol().getDefaultHostname());
-        assertFalse(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", true));
+        assertFalse(new S3Session(host).connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback())
+            .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", true));
     }
 
     @Test
@@ -242,7 +244,8 @@ public class S3SessionTest extends AbstractS3Test {
         final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, profile.getDefaultHostname());
-        assertFalse(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
+        assertFalse(new S3Session(host).connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback())
+            .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false));
     }
 
     @Test
@@ -251,7 +254,8 @@ public class S3SessionTest extends AbstractS3Test {
         final Profile profile = new ProfilePlistReader(factory).read(
             new Local("../profiles/Eucalyptus Walrus S3.cyberduckprofile"));
         final Host host = new Host(profile, "ec.cyberduck.io");
-        assertFalse(new S3Session(host).configure().getBoolProperty("s3service.disable-dns-buckets", false));
+        assertFalse(new S3Session(host).connect(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback())
+            .getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false));
     }
 
     @Test(expected = LoginFailureException.class)
