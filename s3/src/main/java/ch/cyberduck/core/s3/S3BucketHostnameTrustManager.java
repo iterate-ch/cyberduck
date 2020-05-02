@@ -15,34 +15,40 @@ package ch.cyberduck.core.s3;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.preferences.Preferences;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.ssl.ThreadLocalHostnameDelegatingTrustManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-public class LaxHostnameDelegatingTrustManager extends ThreadLocalHostnameDelegatingTrustManager {
-    private static final Logger log = Logger.getLogger(LaxHostnameDelegatingTrustManager.class);
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-    public LaxHostnameDelegatingTrustManager(final X509TrustManager delegate, final String hostname) {
+public class S3BucketHostnameTrustManager extends ThreadLocalHostnameDelegatingTrustManager {
+    private static final Logger log = Logger.getLogger(S3BucketHostnameTrustManager.class);
+
+    /**
+     * Test for pattern of bucket name containing dot
+     */
+    private final Pattern pattern = Pattern.compile("([a-z0-9.-]+\\.)([a-z0-9.-]+\\.s3(\\.dualstack)?(\\.[a-z0-9-]+).amazonaws.com)");
+
+    private final Preferences preferences
+        = PreferencesFactory.get();
+
+    public S3BucketHostnameTrustManager(final X509TrustManager delegate, final String hostname) {
         super(delegate, hostname);
     }
 
     @Override
     public String getTarget() {
         final String hostname = super.getTarget();
-        final String simple;
-        final String[] parts = StringUtils.split(hostname, '.');
-        if(parts.length > 4) {
-            ArrayUtils.reverse(parts);
-            // Rewrite c.cyberduck.s3.amazonaws.com which does not match wildcard certificate *.s3.amazonaws.com
-            simple = StringUtils.join(parts[3], ".", parts[2], ".", parts[1], ".", parts[0]);
+        final Matcher matcher = pattern.matcher(hostname);
+        if(matcher.matches()) {
+            final String simple = matcher.group(2);
             log.warn(String.format("Rewrite hostname target to %s", simple));
+            return simple;
         }
-        else {
-            simple = hostname;
-        }
-        return simple;
+        return hostname;
     }
 }

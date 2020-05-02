@@ -89,11 +89,11 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         = S3Protocol.AuthenticationHeaderSignatureVersion.getDefault(host.getProtocol());
 
     public S3Session(final Host host) {
-        super(host, new LaxHostnameDelegatingTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
+        super(host, new S3BucketHostnameTrustManager(new DisabledX509TrustManager(), host.getHostname()), new DefaultX509KeyManager());
     }
 
     public S3Session(final Host host, final X509TrustManager trust, final X509KeyManager key) {
-        super(host, new LaxHostnameDelegatingTrustManager(trust, host.getHostname()), key);
+        super(host, new S3BucketHostnameTrustManager(trust, host.getHostname()), key);
     }
 
     @Override
