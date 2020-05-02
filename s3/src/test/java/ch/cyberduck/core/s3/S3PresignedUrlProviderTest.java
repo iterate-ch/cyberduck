@@ -20,7 +20,6 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.jets3t.service.utils.SignatureUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -36,15 +35,6 @@ import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
 public class S3PresignedUrlProviderTest {
-
-    @Test
-    public void testHostnameForRegion() throws Exception {
-        final URI uri = SignatureUtils.awsV4CorrectHostnameForRegion(new URI("https://s3.amazonaws.com/bucket/?max-keys=1000&prefix=%26%2F&delimiter=%2F"), "eu-central-1");
-        assertNotNull(uri);
-        assertEquals("max-keys=1000&prefix=&/&delimiter=/", uri.getQuery());
-        assertEquals("max-keys=1000&prefix=%26%2F&delimiter=%2F", uri.getRawQuery());
-        assertEquals("https://s3-eu-central-1.amazonaws.com/bucket/?max-keys=1000&prefix=%26%2F&delimiter=%2F", uri.toString());
-    }
 
     @Test
     public void testCreateEuWest() throws Exception {
