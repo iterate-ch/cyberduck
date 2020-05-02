@@ -84,17 +84,6 @@ public class S3DefaultDeleteFeatureTest extends AbstractS3Test {
     }
 
     @Ignore
-    @Test
-    public void testDeleteContainer() throws Exception {
-        final Path container = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory));
-        container.attributes().setRegion("US");
-        new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(container, null, new TransferStatus());
-        assertTrue(new S3FindFeature(session).find(container));
-        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(container), new DisabledLoginCallback(), new Delete.DisabledCallback());
-        assertFalse(new S3FindFeature(session).find(container));
-    }
-
-    @Ignore
     @Test(expected = NotfoundException.class)
     public void testDeleteNotFoundKey() throws Exception {
         final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));

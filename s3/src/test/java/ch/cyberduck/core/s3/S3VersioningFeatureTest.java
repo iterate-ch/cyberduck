@@ -26,7 +26,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -56,7 +55,6 @@ public class S3VersioningFeatureTest extends AbstractS3Test {
         assertTrue(configuration.isEnabled());
     }
 
-    @Ignore
     @Test
     public void testSetConfiguration() throws Exception {
         final Path container = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory, Path.Type.volume));
