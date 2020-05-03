@@ -3,7 +3,6 @@ package ch.cyberduck.core.openstack;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Cname;
@@ -11,7 +10,6 @@ import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -41,8 +39,6 @@ public class SwiftDistributionConfigurationTest extends AbstractSwiftTest {
         assertNotNull(configuration.getFeature(Purge.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(Index.class, Distribution.DOWNLOAD));
         assertNotNull(configuration.getFeature(DistributionLogging.class, Distribution.DOWNLOAD));
-        assertNotNull(configuration.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD));
-        assertNotNull(configuration.getFeature(AnalyticsProvider.class, Distribution.DOWNLOAD));
         assertNull(configuration.getFeature(Cname.class, Distribution.DOWNLOAD));
     }
 

@@ -18,14 +18,12 @@ package ch.cyberduck.core.googlestorage;
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.features.Delete;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -76,13 +74,9 @@ public class GoogleStorageWebsiteDistributionConfigurationTest extends AbstractG
 
     @Test
     public void testFeatures() {
-        final DistributionConfiguration d = new GoogleStorageWebsiteDistributionConfiguration(
-                session
-        );
+        final DistributionConfiguration d = new GoogleStorageWebsiteDistributionConfiguration(session);
         assertNotNull(d.getFeature(Index.class, Distribution.WEBSITE));
-        assertNotNull(d.getFeature(AnalyticsProvider.class, Distribution.WEBSITE));
         assertNotNull(d.getFeature(DistributionLogging.class, Distribution.WEBSITE));
-        assertNotNull(d.getFeature(IdentityConfiguration.class, Distribution.WEBSITE));
         assertNull(d.getFeature(Cname.class, Distribution.WEBSITE));
     }
 }

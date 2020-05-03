@@ -26,8 +26,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.analytics.AnalyticsProvider;
-import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
@@ -167,9 +165,6 @@ public class SwiftSession extends HttpSession<Client> {
         }
         if(type == Location.class) {
             return (T) new SwiftLocationFeature(this);
-        }
-        if(type == AnalyticsProvider.class) {
-            return (T) new QloudstatAnalyticsProvider();
         }
         if(type == DistributionConfiguration.class) {
             for(Region region : accounts.keySet()) {

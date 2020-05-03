@@ -35,7 +35,6 @@ import ch.cyberduck.core.features.Lifecycle;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Metadata;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
@@ -149,7 +148,6 @@ public class GoogleStorageSessionTest extends AbstractGoogleStorageTest {
         assertNotNull(session.getFeature(AclPermission.class));
         assertNotNull(session.getFeature(Lifecycle.class));
         assertNotNull(session.getFeature(DistributionConfiguration.class));
-        assertNotNull(session.getFeature(IdentityConfiguration.class));
         assertNotNull(session.getFeature(Logging.class));
         assertNotNull(session.getFeature(Metadata.class));
         assertNotNull(session.getFeature(Headers.class));

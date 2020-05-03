@@ -31,8 +31,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.analytics.AnalyticsProvider;
-import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.auth.AWSSessionCredentialsRetriever;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
@@ -48,8 +46,6 @@ import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.exception.ResolveFailedException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.kms.KMSEncryptionFeature;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -319,13 +315,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
             }
             return (T) new S3LocationFeature(this);
         }
-        if(type == AnalyticsProvider.class) {
-            // Only for AWS
-            if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new QloudstatAnalyticsProvider();
-            }
-            return null;
-        }
         if(type == Versioning.class) {
             return (T) versioning;
         }
@@ -344,13 +333,6 @@ public class S3Session extends HttpSession<RequestEntityRestStorageService> {
         }
         if(type == Redundancy.class) {
             return (T) new S3StorageClassFeature(this);
-        }
-        if(type == IdentityConfiguration.class) {
-            // Only for AWS
-            if(S3Session.isAwsHostname(host.getHostname())) {
-                return (T) new AmazonIdentityConfiguration(host, trust, key);
-            }
-            return null;
         }
         if(type == DistributionConfiguration.class) {
             return (T) new WebsiteCloudFrontDistributionConfiguration(this, trust, key, distributions);
