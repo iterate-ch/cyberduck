@@ -19,6 +19,14 @@ package ch.cyberduck.core;
 
 public class PathContainerService {
 
+    public Path getRoot(final Path file) {
+        Path parent = file;
+        while(!parent.isRoot()) {
+            parent = parent.getParent();
+        }
+        return parent;
+    }
+
     public boolean isContainer(final Path file) {
         if(file.isRoot()) {
             return false;
