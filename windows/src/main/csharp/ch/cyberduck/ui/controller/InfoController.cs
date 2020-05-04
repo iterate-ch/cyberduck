@@ -24,12 +24,10 @@ using System.Linq;
 using System.Media;
 using System.Windows.Forms;
 using ch.cyberduck.core;
-using ch.cyberduck.core.analytics;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.cdn.features;
 using ch.cyberduck.core.features;
 using ch.cyberduck.core.formatter;
-using ch.cyberduck.core.identity;
 using ch.cyberduck.core.lifecycle;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.logging;
@@ -647,33 +645,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionDefaultRootEnabled = stop && enable &&
                                                   cdn.getFeature(typeof(Index), View.DistributionDeliveryMethod) !=
                                                   null;
-            if (enable)
-            {
-                AnalyticsProvider analyticsFeature = (AnalyticsProvider) session.getFeature(typeof(AnalyticsProvider));
-                IdentityConfiguration identityFeature =
-                    (IdentityConfiguration) session.getFeature(typeof(IdentityConfiguration));
-
-                if (null == analyticsFeature || null == identityFeature)
-                {
-                    View.DistributionAnalyticsCheckboxEnabled = false;
-                }
-                else
-                {
-                    if (ObjectUtils.equals(identityFeature.getCredentials(analyticsFeature.getName()), credentials))
-                    {
-                        // No need to create new IAM credentials when same as session credentials
-                        View.DistributionAnalyticsCheckboxEnabled = false;
-                    }
-                    else
-                    {
-                        View.DistributionAnalyticsCheckboxEnabled = stop;
-                    }
-                }
-            }
-            else
-            {
-                View.DistributionAnalyticsCheckboxEnabled = false;
-            }
             if (stop)
             {
                 View.DistributionAnimationActive = false;
@@ -719,7 +690,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionLoggingPopupChanged += DistributionLoggingPopupChanged;
             View.DistributionDefaultRootChanged += DistributionApply;
             View.DistributionInvalidateObjects += DistributionInvalidateObjects;
-            View.DistributionAnalyticsCheckboxChanged += DistributionAnalyticsCheckboxChanged;
         }
 
         private void DistributionLoggingPopupChanged()
@@ -755,7 +725,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.StorageClassChanged += StorageClassChanged;
             View.BucketVersioningChanged += BucketVersioningChanged;
             View.BucketMfaChanged += BucketMfaChanged;
-            View.BucketAnalyticsCheckboxChanged += BucketAnalyticsCheckboxChanged;
             View.LifecycleTransitionCheckboxChanged += LifecycleChanged;
             View.LifecycleTransitionPopupChanged += LifecycleChanged;
             View.LifecycleDeleteCheckboxChanged += LifecycleChanged;
@@ -769,15 +738,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 _controller.background(new SetTransferAccelerationBackgroundAction(_controller, this));
             }
         }
-
-        private void BucketAnalyticsCheckboxChanged()
-        {
-            if (ToggleS3Settings(false))
-            {
-                _controller.background(new SetBucketAnalyticsUrlBackgroundAction(_controller, this));
-            }
-        }
-
         private void BucketLoggingPopupChanged()
         {
             if (View.BucketLoggingCheckbox)
@@ -821,7 +781,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.StorageClassChanged -= StorageClassChanged;
             View.BucketVersioningChanged -= BucketVersioningChanged;
             View.BucketMfaChanged -= BucketMfaChanged;
-            View.BucketAnalyticsCheckboxChanged -= BucketAnalyticsCheckboxChanged;
             View.LifecycleTransitionCheckboxChanged -= LifecycleChanged;
             View.LifecycleTransitionPopupChanged -= LifecycleChanged;
             View.LifecycleDeleteCheckboxChanged -= LifecycleChanged;
@@ -856,17 +815,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionLoggingPopupChanged -= DistributionLoggingPopupChanged;
             View.DistributionDefaultRootChanged -= DistributionApply;
             View.DistributionInvalidateObjects -= DistributionInvalidateObjects;
-            View.DistributionAnalyticsCheckboxChanged -= DistributionAnalyticsCheckboxChanged;
         }
-
-        private void DistributionAnalyticsCheckboxChanged()
-        {
-            if (ToggleDistributionSettings(false))
-            {
-                _controller.background(new SetDistributionAnalyticsUrlBackgroundAction(_controller, this));
-            }
-        }
-
         private void OtherExecuteChanged()
         {
             DetachPermissionHandlers();
@@ -1059,9 +1008,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BucketLocation = LocaleFactory.localizedString("Unknown");
             View.BucketLoggingTooltip = LocaleFactory.localizedString("Unknown");
 
-            View.BucketAnalyticsSetupUrl = LocaleFactory.localizedString("None");
-            View.BucketAnalyticsSetupUrlEnabled = false;
-
             IList<string> none = new List<string> {LocaleFactory.localizedString("None")};
             View.PopulateBucketLogging(none);
 
@@ -1113,7 +1059,6 @@ namespace Ch.Cyberduck.Ui.Controller
             if (enable)
             {
                 logging = session.getFeature(typeof(Logging)) != null;
-                analytics = session.getFeature(typeof(AnalyticsProvider)) != null;
                 versioning = session.getFeature(typeof(Versioning)) != null;
                 lifecycle = session.getFeature(typeof(Lifecycle)) != null;
                 encryption = session.getFeature(typeof(Encryption)) != null;
@@ -1128,19 +1073,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.StorageClassEnabled = stop && enable && storageclass;
             View.EncryptionEnabled = stop && enable && encryption;
 
-            IdentityConfiguration identityFeature =
-                (IdentityConfiguration) _controller.Session.getFeature(typeof(IdentityConfiguration));
-            AnalyticsProvider analyticsFeature =
-                (AnalyticsProvider) _controller.Session.getFeature(typeof(AnalyticsProvider));
-            if (analytics && ObjectUtils.equals(identityFeature.getCredentials(analyticsFeature.getName()), credentials))
-            {
-                // No need to create new IAM credentials when same as session credentials
-                View.BucketAnalyticsCheckboxEnabled = false;
-            }
-            else
-            {
-                View.BucketAnalyticsCheckboxEnabled = stop && enable && analytics;
-            }
             View.LifecycleDeleteCheckboxEnabled = stop && enable && lifecycle;
             View.LifecycleDeletePopupEnabled = stop && enable && lifecycle;
             View.LifecycleTransitionCheckboxEnabled = stop && enable && lifecycle;
@@ -1567,13 +1499,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     _lifecycle = ((Lifecycle) session.getFeature(typeof(Lifecycle))).getConfiguration(_container);
                 }
-                if (session.getFeature(typeof(AnalyticsProvider)) != null &&
-                    session.getFeature(typeof(IdentityConfiguration)) != null)
-                {
-                    _credentials =
-                        ((IdentityConfiguration) session.getFeature(typeof(IdentityConfiguration))).getCredentials(
-                            ((AnalyticsProvider) session.getFeature(typeof(AnalyticsProvider))).getName());
-                }
                 Redundancy redundancyFeature = (Redundancy) session.getFeature(typeof(Redundancy));
                 if (redundancyFeature != null)
                 {
@@ -1679,16 +1604,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         _view.PopulateStorageClass(_storageClasses.ToList());
                         _view.StorageClass = _storageClass;
                     }
-                    if (_credentials != null)
-                    {
-                        SessionPool s = BrowserController.Session;
-                        _view.BucketAnalyticsSetupUrl =
-                            ((AnalyticsProvider) s.getFeature(typeof(AnalyticsProvider))).getSetup(
-                                s.getHost().getProtocol().getDefaultHostname(), s.getHost().getProtocol().getScheme(),
-                                _container, _credentials).getUrl();
-                    }
-                    _view.BucketAnalyticsCheckbox = null != _credentials;
-
                     if (_lifecycle != null)
                     {
                         _view.LifecycleDeleteCheckbox = null != _lifecycle.getExpiration();
@@ -1906,23 +1821,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (null == view.DistributionLoggingPopup)
                         {
                             view.DistributionLoggingPopup = LocaleFactory.localizedString("None");
-                        }
-                        AnalyticsProvider analyticsFeature =
-                            (AnalyticsProvider)
-                            cdn.getFeature(typeof(AnalyticsProvider), view.DistributionDeliveryMethod);
-                        IdentityConfiguration identityFeature =
-                            (IdentityConfiguration)
-                            cdn.getFeature(typeof(IdentityConfiguration), view.DistributionDeliveryMethod);
-                        if (analyticsFeature != null && identityFeature != null)
-                        {
-                            Credentials credentials = identityFeature.getCredentials(analyticsFeature.getName());
-                            view.DistributionAnalyticsCheckbox = credentials != null;
-                            if (credentials != null)
-                            {
-                                view.DistributionAnalyticsSetupUrl =
-                                    analyticsFeature.getSetup(cdn.getHostname(), distribution.getMethod().getScheme(),
-                                        container, credentials).getUrl();
-                            }
                         }
                         DescriptiveUrl origin = cdn.toUrl(_infoController.SelectedPath).find(DescriptiveUrl.Type.origin);
                         if (!origin.equals(DescriptiveUrl.EMPTY))
@@ -2146,37 +2044,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
         }
-
-        private class SetBucketAnalyticsUrlBackgroundAction : WorkerBackgroundAction
-        {
-            public SetBucketAnalyticsUrlBackgroundAction(BrowserController browserController,
-                InfoController infoController)
-                : base(
-                    browserController, browserController.Session,
-                    new InnerWriteIdentityWorker(infoController, infoController._prompt,
-                        Boolean.valueOf(infoController.View.BucketAnalyticsCheckbox),
-                        PreferencesFactory.get().getProperty("analytics.provider.qloudstat.iam.policy")))
-            {
-            }
-
-            private class InnerWriteIdentityWorker : WriteIdentityWorker
-            {
-                private readonly InfoController _infoController;
-
-                public InnerWriteIdentityWorker(InfoController infoController, LoginCallback prompt, Boolean enabled,
-                    string policy) : base(prompt, enabled, policy)
-                {
-                    _infoController = infoController;
-                }
-
-                public override void cleanup(object result)
-                {
-                    _infoController.ToggleS3Settings(true);
-                    _infoController.InitS3();
-                }
-            }
-        }
-
         private class SetBucketLoggingBackgroundAction : WorkerBackgroundAction
         {
             public SetBucketLoggingBackgroundAction(BrowserController browserController, InfoController infoController)
@@ -2236,37 +2103,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
         }
-
-        private class SetDistributionAnalyticsUrlBackgroundAction : WorkerBackgroundAction
-        {
-            public SetDistributionAnalyticsUrlBackgroundAction(BrowserController browserController,
-                InfoController infoController)
-                : base(
-                    browserController, browserController.Session,
-                    new InnerWriteIdentityWorker(infoController, infoController._prompt,
-                        Boolean.valueOf(infoController.View.DistributionAnalyticsCheckbox),
-                        PreferencesFactory.get().getProperty("analytics.provider.qloudstat.iam.policy")))
-            {
-            }
-
-            private class InnerWriteIdentityWorker : WriteIdentityWorker
-            {
-                private readonly InfoController _infoController;
-
-                public InnerWriteIdentityWorker(InfoController infoController, LoginCallback prompt, Boolean enabled,
-                    string policy) : base(prompt, enabled, policy)
-                {
-                    _infoController = infoController;
-                }
-
-                public override void cleanup(object result)
-                {
-                    _infoController.ToggleDistributionSettings(true);
-                    _infoController.InitDistribution();
-                }
-            }
-        }
-
         private class SetEncryptionBackgroundAction : WorkerBackgroundAction
         {
             public SetEncryptionBackgroundAction(BrowserController controller, InfoController infoController,
