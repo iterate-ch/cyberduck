@@ -178,14 +178,21 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
         final Path container = containerService.getContainer(file);
         if(StringUtils.isNotBlank(container.attributes().getVersionId())) {
             // List relative to the namespace id
-            final PathRoot root = PathRoot.namespaceId(container.attributes().getVersionId());
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Set path root to %s", root));
-            }
-            // Syntax of using a namespace ID in the path parameter is only supported for namespaces that are mounted
-            // under the root. That means it can't be used to access the team space itself. Must still set Dropbox-API-Path-Root header
-            return client.withPathRoot(root);
+            return this.getClient(PathRoot.namespaceId(container.attributes().getVersionId()));
+        }
+        final Path root = containerService.getRoot(file);
+        if(StringUtils.isNotBlank(root.attributes().getVersionId())) {
+            return this.getClient(PathRoot.namespaceId(root.attributes().getVersionId()));
         }
         return client;
+    }
+
+    protected CustomDbxRawClientV2 getClient(final PathRoot root) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set path root to %s", root));
+        }
+        // Syntax of using a namespace ID in the path parameter is only supported for namespaces that are mounted
+        // under the root. That means it can't be used to access the team space itself. Must still set Dropbox-API-Path-Root header
+        return client.withPathRoot(root);
     }
 }
