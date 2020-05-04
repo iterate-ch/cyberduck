@@ -31,7 +31,6 @@ import ch.cyberduck.binding.foundation.NSNotificationCenter;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.features.Cname;
@@ -52,7 +51,6 @@ import ch.cyberduck.core.features.TransferAcceleration;
 import ch.cyberduck.core.features.UnixPermission;
 import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.lifecycle.LifecycleConfiguration;
 import ch.cyberduck.core.local.BrowserLauncherFactory;
@@ -90,7 +88,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -198,10 +195,6 @@ public class InfoController extends ToolbarWindowController {
     @Outlet
     private NSPopUpButton bucketLoggingPopup;
     @Outlet
-    private NSButton bucketAnalyticsButton;
-    @Outlet
-    private NSTextField bucketAnalyticsSetupUrlField;
-    @Outlet
     private NSButton bucketTransferAccelerationButton;
     @Outlet
     private NSButton bucketVersioningButton;
@@ -279,10 +272,6 @@ public class InfoController extends ToolbarWindowController {
     private NSView panelAcl;
     @Outlet
     private NSView panelGeneral;
-    @Outlet
-    private NSButton distributionAnalyticsButton;
-    @Outlet
-    private NSTextField distributionAnalyticsSetupUrlField;
 
     public InfoController(final Controller controller, final SessionPool session, final List<Path> files) {
         this.controller = controller;
@@ -703,32 +692,6 @@ public class InfoController extends ToolbarWindowController {
             // Only write change if logging is already enabled
             this.bucketLoggingButtonClicked(sender);
         }
-    }
-
-    public void setBucketAnalyticsButton(NSButton b) {
-        this.bucketAnalyticsButton = b;
-        this.bucketAnalyticsButton.setAction(Foundation.selector("bucketAnalyticsButtonClicked:"));
-    }
-
-    @Action
-    public void bucketAnalyticsButtonClicked(final NSButton sender) {
-        if(this.toggleS3Settings(false)) {
-            final boolean enabled = bucketAnalyticsButton.state() == NSCell.NSOnState;
-            final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, new WriteIdentityWorker(prompt, enabled, document) {
-                @Override
-                public void cleanup(final Boolean done) {
-                    toggleS3Settings(true);
-                    initS3();
-                }
-            }));
-        }
-    }
-
-    public void setBucketAnalyticsSetupUrlField(NSTextField f) {
-        this.bucketAnalyticsSetupUrlField = f;
-        this.bucketAnalyticsSetupUrlField.setAllowsEditingTextAttributes(true);
-        this.bucketAnalyticsSetupUrlField.setSelectable(true);
     }
 
     public void setBucketVersioningButton(NSButton b) {
@@ -1622,8 +1585,6 @@ public class InfoController extends ToolbarWindowController {
         distributionLoggingPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
         distributionLoggingPopup.itemWithTitle(LocaleFactory.localizedString("None")).setEnabled(false);
 
-        distributionAnalyticsSetupUrlField.setStringValue(LocaleFactory.localizedString("None"));
-
         this.distributionStatusButtonClicked(null);
     }
 
@@ -1684,7 +1645,6 @@ public class InfoController extends ToolbarWindowController {
             enable = !credentials.isAnonymousLogin();
         }
         boolean logging = false;
-        boolean analytics = false;
         boolean versioning = false;
         boolean storageclass = false;
         boolean encryption = false;
@@ -1692,7 +1652,6 @@ public class InfoController extends ToolbarWindowController {
         boolean acceleration = false;
         if(enable) {
             logging = session.getFeature(Logging.class) != null;
-            analytics = session.getFeature(AnalyticsProvider.class) != null;
             versioning = session.getFeature(Versioning.class) != null;
             lifecycle = session.getFeature(Lifecycle.class) != null;
             encryption = session.getFeature(Encryption.class) != null;
@@ -1707,14 +1666,6 @@ public class InfoController extends ToolbarWindowController {
         bucketTransferAccelerationButton.setEnabled(stop && enable && acceleration);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
-        if(analytics && Objects.equals(session.getFeature(IdentityConfiguration.class).getCredentials(
-            session.getFeature(AnalyticsProvider.class).getName()), credentials)) {
-            // No need to create new IAM credentials when same as session credentials
-            bucketAnalyticsButton.setEnabled(false);
-        }
-        else {
-            bucketAnalyticsButton.setEnabled(stop && enable && analytics);
-        }
         lifecycleDeletePopup.setEnabled(stop && enable && lifecycle);
         lifecycleDeleteCheckbox.setEnabled(stop && enable && lifecycle);
         lifecycleTransitionPopup.setEnabled(stop && enable && lifecycle);
@@ -1733,7 +1684,6 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initS3() {
         bucketLocationField.setStringValue(LocaleFactory.localizedString("Unknown"));
-        bucketAnalyticsSetupUrlField.setStringValue(LocaleFactory.localizedString("None"));
 
         bucketLoggingPopup.removeAllItems();
         bucketLoggingPopup.addItemWithTitle(LocaleFactory.localizedString("None"));
@@ -1766,7 +1716,6 @@ public class InfoController extends ToolbarWindowController {
                 final Set<Encryption.Algorithm> selectedEncryptionKeys = new HashSet<Encryption.Algorithm>();
                 final Set<String> selectedStorageClasses = new HashSet<String>();
                 LifecycleConfiguration lifecycle;
-                Credentials credentials;
                 Boolean transferAcceleration;
 
                 @Override
@@ -1782,10 +1731,6 @@ public class InfoController extends ToolbarWindowController {
                     }
                     if(session.getFeature(Lifecycle.class) != null) {
                         lifecycle = session.getFeature(Lifecycle.class).getConfiguration(file);
-                    }
-                    if(session.getFeature(AnalyticsProvider.class) != null && session.getFeature(IdentityConfiguration.class) != null) {
-                        credentials = session.getFeature(IdentityConfiguration.class)
-                            .getCredentials(session.getFeature(AnalyticsProvider.class).getName());
                     }
                     if(session.getFeature(Redundancy.class) != null) {
                         for(final Path f : files) {
@@ -1872,13 +1817,6 @@ public class InfoController extends ToolbarWindowController {
                                 .setState(selectedStorageClasses.size() == 1 ? NSCell.NSOnState : NSCell.NSMixedState);
                         }
                     }
-                    if(null != credentials) {
-                        bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                            session.getFeature(AnalyticsProvider.class).getSetup(session.getHost().getProtocol().getDefaultHostname(),
-                                session.getHost().getProtocol().getScheme(), file, credentials)
-                        ));
-                    }
-                    bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
                     if(lifecycle != null) {
                         lifecycleDeleteCheckbox.setState(lifecycle.getExpiration() != null ? NSCell.NSOnState : NSCell.NSOffState);
                         if(lifecycle.getExpiration() != null) {
@@ -2197,25 +2135,6 @@ public class InfoController extends ToolbarWindowController {
         distributionEnableButton.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
         distributionLoggingButton.setEnabled(stop && enable && cdn.getFeature(DistributionLogging.class, method) != null);
-        if(enable) {
-            final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method);
-            final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method);
-            if(null == analyticsFeature || null == identityFeature) {
-                distributionAnalyticsButton.setEnabled(false);
-            }
-            else {
-                if(Objects.equals(identityFeature.getCredentials(analyticsFeature.getName()), credentials)) {
-                    // No need to create new IAM credentials when same as session credentials
-                    distributionAnalyticsButton.setEnabled(false);
-                }
-                else {
-                    distributionAnalyticsButton.setEnabled(stop);
-                }
-            }
-        }
-        else {
-            distributionAnalyticsButton.setEnabled(false);
-        }
         distributionLoggingPopup.setEnabled(stop && enable && cdn.getFeature(DistributionLogging.class, method) != null);
         distributionCnameField.setEnabled(stop && enable && cdn.getFeature(Cname.class, method) != null);
         distributionInvalidateObjectsButton.setEnabled(stop && enable && cdn.getFeature(Purge.class, method) != null);
@@ -2307,18 +2226,6 @@ public class InfoController extends ToolbarWindowController {
                     if(null == distributionLoggingPopup.selectedItem()) {
                         distributionLoggingPopup.selectItemWithTitle(LocaleFactory.localizedString("None"));
                     }
-                    final AnalyticsProvider analyticsFeature = cdn.getFeature(AnalyticsProvider.class, method);
-                    final IdentityConfiguration identityFeature = cdn.getFeature(IdentityConfiguration.class, method);
-                    if(analyticsFeature != null && identityFeature != null) {
-                        final Credentials credentials = identityFeature.getCredentials(analyticsFeature.getName());
-                        distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(credentials != null) {
-                            distributionAnalyticsSetupUrlField.setAttributedStringValue(
-                                HyperlinkAttributedStringFactory.create(analyticsFeature.getSetup(cdn.getHostname(),
-                                    distribution.getMethod().getScheme(), file, credentials))
-                            );
-                        }
-                    }
                     final DescriptiveUrl origin = cdn.toUrl(file).find(DescriptiveUrl.Type.origin);
                     if(!origin.equals(DescriptiveUrl.EMPTY)) {
                         distributionOriginField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(origin));
@@ -2386,32 +2293,6 @@ public class InfoController extends ToolbarWindowController {
                 }
             }));
         }
-    }
-
-    public void setDistributionAnalyticsButton(NSButton b) {
-        this.distributionAnalyticsButton = b;
-        this.distributionAnalyticsButton.setAction(Foundation.selector("distributionAnalyticsButtonClicked:"));
-    }
-
-    @Action
-    public void distributionAnalyticsButtonClicked(final NSButton sender) {
-        if(this.toggleDistributionSettings(false)) {
-            final boolean enabled = distributionAnalyticsButton.state() == NSCell.NSOnState;
-            final String document = preferences.getProperty("analytics.provider.qloudstat.iam.policy");
-            controller.background(new WorkerBackgroundAction<Boolean>(controller, session, new WriteIdentityWorker(prompt, enabled, document) {
-                @Override
-                public void cleanup(final Boolean result) {
-                    toggleDistributionSettings(true);
-                    initDistribution();
-                }
-            }));
-        }
-    }
-
-    public void setDistributionAnalyticsSetupUrlField(NSTextField f) {
-        this.distributionAnalyticsSetupUrlField = f;
-        this.distributionAnalyticsSetupUrlField.setAllowsEditingTextAttributes(true);
-        this.distributionAnalyticsSetupUrlField.setSelectable(true);
     }
 
     @Action

@@ -862,53 +862,6 @@ public abstract class Preferences implements Locales {
 
         this.setDefault("webdav.list.handler.sax", String.valueOf(true));
 
-        this.setDefault("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
-        this.setDefault("analytics.provider.qloudstat.iam.policy",
-            "{\n" +
-                "    \"Statement\": [\n" +
-                "        {\n" +
-                "            \"Action\": [\n" +
-                "                \"s3:GetObject\", \n" +
-                "                \"s3:ListBucket\"\n" +
-                "            ], \n" +
-                "            \"Condition\": {\n" +
-                "                \"Bool\": {\n" +
-                "                    \"aws:SecureTransport\": \"true\"\n" +
-                "                }\n" +
-                "            }, \n" +
-                "            \"Effect\": \"Allow\", \n" +
-                "            \"Resource\": \"arn:aws:s3:::%s/*\"\n" +
-                "        }, \n" +
-                "        {\n" +
-                "            \"Action\": [\n" +
-                "                \"s3:ListAllMyBuckets\", \n" +
-                "                \"s3:GetBucketLogging\", \n" +
-                "                \"s3:GetBucketLocation\"\n" +
-                "            ], \n" +
-                "            \"Effect\": \"Allow\", \n" +
-                "            \"Resource\": \"arn:aws:s3:::*\"\n" +
-                "        }, \n" +
-                "        {\n" +
-                "            \"Action\": [\n" +
-                "                \"cloudfront:GetDistribution\", \n" +
-                "                \"cloudfront:GetDistributionConfig\", \n" +
-                "                \"cloudfront:ListDistributions\", \n" +
-                "                \"cloudfront:GetStreamingDistribution\", \n" +
-                "                \"cloudfront:GetStreamingDistributionConfig\", \n" +
-                "                \"cloudfront:ListStreamingDistributions\"\n" +
-                "            ], \n" +
-                "            \"Condition\": {\n" +
-                "                \"Bool\": {\n" +
-                "                    \"aws:SecureTransport\": \"true\"\n" +
-                "                }\n" +
-                "            }, \n" +
-                "            \"Effect\": \"Allow\", \n" +
-                "            \"Resource\": \"*\"\n" +
-                "        }\n" +
-                "    ]\n" +
-                "}\n"
-        );
-
         /*
          * Session pool
          */

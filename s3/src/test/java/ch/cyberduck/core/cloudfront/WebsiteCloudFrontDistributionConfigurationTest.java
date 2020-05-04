@@ -8,7 +8,6 @@ import ch.cyberduck.core.cdn.features.Cname;
 import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.AbstractS3Test;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.s3.S3Session;
@@ -123,7 +122,6 @@ public class WebsiteCloudFrontDistributionConfigurationTest extends AbstractS3Te
         assertNotNull(d.getFeature(DistributionLogging.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Cname.class, Distribution.DOWNLOAD));
         assertNotNull(d.getFeature(Cname.class, Distribution.WEBSITE));
-        assertNotNull(d.getFeature(IdentityConfiguration.class, Distribution.DOWNLOAD));
     }
 }
 

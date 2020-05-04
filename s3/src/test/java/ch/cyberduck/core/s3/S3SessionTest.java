@@ -1,7 +1,6 @@
 package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionTimeoutException;
@@ -17,7 +16,6 @@ import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.features.Logging;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Versioning;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
@@ -199,28 +197,23 @@ public class S3SessionTest extends AbstractS3Test {
         assertNotNull(aws.getFeature(Copy.class));
         assertNotNull(aws.getFeature(AclPermission.class));
         assertNotNull(aws.getFeature(Versioning.class));
-        assertNotNull(aws.getFeature(AnalyticsProvider.class));
         assertNotNull(aws.getFeature(Lifecycle.class));
         assertNotNull(aws.getFeature(Location.class));
         assertNotNull(aws.getFeature(Encryption.class));
         assertNotNull(aws.getFeature(Redundancy.class));
         assertNotNull(aws.getFeature(Logging.class));
         assertNotNull(aws.getFeature(DistributionConfiguration.class));
-        assertNotNull(aws.getFeature(IdentityConfiguration.class));
-        assertNotNull(aws.getFeature(IdentityConfiguration.class));
         assertEquals(S3MultipleDeleteFeature.class, aws.getFeature(Delete.class).getClass());
         final S3Session o = new S3Session(new Host(new S3Protocol(), "o"));
         assertNotNull(o.getFeature(Copy.class));
         assertNotNull(o.getFeature(AclPermission.class));
         assertNotNull(o.getFeature(Versioning.class));
-        assertNull(o.getFeature(AnalyticsProvider.class));
         assertNotNull(o.getFeature(Lifecycle.class));
         assertNotNull(o.getFeature(Location.class));
         assertNull(o.getFeature(Encryption.class));
         assertNotNull(o.getFeature(Redundancy.class));
         assertNotNull(o.getFeature(Logging.class));
         assertNotNull(o.getFeature(DistributionConfiguration.class));
-        assertNull(o.getFeature(IdentityConfiguration.class));
         assertEquals(S3DefaultDeleteFeature.class, o.getFeature(Delete.class).getClass());
     }
 

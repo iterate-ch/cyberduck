@@ -26,8 +26,6 @@ import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.SimplePathPredicate;
-import ch.cyberduck.core.analytics.AnalyticsProvider;
-import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cdn.DistributionUrlProvider;
@@ -35,8 +33,6 @@ import ch.cyberduck.core.cdn.features.DistributionLogging;
 import ch.cyberduck.core.cdn.features.Index;
 import ch.cyberduck.core.cdn.features.Purge;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -173,12 +169,6 @@ public class SwiftDistributionConfiguration implements DistributionConfiguration
         }
         if(type == DistributionLogging.class) {
             return (T) this;
-        }
-        if(type == IdentityConfiguration.class) {
-            return (T) new DefaultCredentialsIdentityConfiguration(session.getHost());
-        }
-        if(type == AnalyticsProvider.class) {
-            return (T) new QloudstatAnalyticsProvider();
         }
         return null;
     }

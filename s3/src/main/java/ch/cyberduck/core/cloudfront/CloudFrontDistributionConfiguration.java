@@ -19,8 +19,6 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.analytics.AnalyticsProvider;
-import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.auth.AWSCredentialsConfigurator;
 import ch.cyberduck.core.aws.CustomClientConfiguration;
 import ch.cyberduck.core.cdn.Distribution;
@@ -35,9 +33,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Location;
-import ch.cyberduck.core.iam.AmazonIdentityConfiguration;
 import ch.cyberduck.core.iam.AmazonServiceExceptionMappingService;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.s3.S3BucketListService;
@@ -296,18 +292,8 @@ public class CloudFrontDistributionConfiguration implements DistributionConfigur
                 return (T) this;
             }
         }
-        if(type == AnalyticsProvider.class) {
-            if(method.equals(Distribution.DOWNLOAD)
-                || method.equals(Distribution.STREAMING)
-                || method.equals(Distribution.CUSTOM)) {
-                return (T) new QloudstatAnalyticsProvider();
-            }
-        }
         if(type == Cname.class) {
             return (T) this;
-        }
-        if(type == IdentityConfiguration.class) {
-            return (T) new AmazonIdentityConfiguration(bookmark, trust, key);
         }
         return null;
     }

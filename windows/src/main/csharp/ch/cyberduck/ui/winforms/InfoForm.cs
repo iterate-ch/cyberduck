@@ -855,28 +855,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             set { bucketLoggingCheckBox.Enabled = value; }
         }
-
-        public bool BucketAnalyticsCheckbox
-        {
-            get { return bucketAnalyticsCheckBox.Checked; }
-            set { bucketAnalyticsCheckBox.Checked = value; }
-        }
-
-        public bool BucketAnalyticsCheckboxEnabled
-        {
-            set { bucketAnalyticsCheckBox.Enabled = value; }
-        }
-
-        public string BucketAnalyticsSetupUrl
-        {
-            set { bucketAnalyticsSetupUrlLinkLabel.Text = value; }
-        }
-
-        public bool BucketAnalyticsSetupUrlEnabled
-        {
-            set { bucketAnalyticsSetupUrlLinkLabel.Enabled = value; }
-        }
-
         public bool BucketVersioning
         {
             get { return bucketVersioningCheckBox.Checked; }

@@ -151,10 +151,6 @@ namespace Ch.Cyberduck.Ui.Controller
         bool BucketLoggingCheckbox { set; get; }
         bool BucketLoggingCheckboxEnabled { set; }
         string BucketLoggingTooltip { set; }
-        bool BucketAnalyticsCheckbox { set; get; }
-        bool BucketAnalyticsCheckboxEnabled { set; }
-        string BucketAnalyticsSetupUrl { set; }
-        bool BucketAnalyticsSetupUrlEnabled { set; }
         bool BucketVersioning { get; set; }
         bool BucketVersioningEnabled { set; }
         bool BucketMfa { set; get; }
@@ -199,7 +195,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DistributionEnabledChanged;
         event VoidHandler DistributionLoggingCheckboxChanged;
         event VoidHandler DistributionLoggingPopupChanged;
-        event VoidHandler DistributionAnalyticsCheckboxChanged;
         event VoidHandler DistributionCnameChanged;
         event VoidHandler DistributionDefaultRootChanged;
         event VoidHandler DistributionInvalidateObjects;
@@ -209,7 +204,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         event VoidHandler TransferAccelerationCheckboxChanged;
         event VoidHandler BucketLoggingCheckboxChanged;
-        event VoidHandler BucketAnalyticsCheckboxChanged;
         event VoidHandler BucketLoggingPopupChanged;
         event VoidHandler EncryptionChanged;
         event VoidHandler StorageClassChanged;

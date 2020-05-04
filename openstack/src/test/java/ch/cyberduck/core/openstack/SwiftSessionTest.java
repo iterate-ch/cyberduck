@@ -12,7 +12,6 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.exception.LoginFailureException;
 import ch.cyberduck.core.features.Copy;
@@ -43,7 +42,6 @@ public class SwiftSessionTest extends AbstractSwiftTest {
     @Test
     public void testFeatures() {
         assertNull(session.getFeature(Versioning.class));
-        assertNotNull(session.getFeature(AnalyticsProvider.class));
         assertNull(session.getFeature(Lifecycle.class));
         assertNotNull(session.getFeature(Copy.class));
         assertNotNull(session.getFeature(Location.class));

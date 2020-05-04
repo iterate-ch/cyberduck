@@ -28,8 +28,6 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
-import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
-import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.proxy.Proxy;
@@ -133,9 +131,6 @@ public class GoogleStorageSession extends HttpSession<Storage> {
         }
         if(type == DistributionConfiguration.class) {
             return (T) new GoogleStorageWebsiteDistributionConfiguration(this);
-        }
-        if(type == IdentityConfiguration.class) {
-            return (T) new DefaultCredentialsIdentityConfiguration(host);
         }
         if(type == Logging.class) {
             return (T) new GoogleStorageLoggingFeature(this);
