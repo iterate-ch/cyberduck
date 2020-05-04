@@ -24,10 +24,11 @@ import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.ResolveFailedException;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.utils.ServiceUtils;
@@ -40,12 +41,15 @@ public class S3BucketCreateService {
     private final PathContainerService containerService
         = new S3PathContainerService();
 
+    private final Preferences preferences
+        = PreferencesFactory.get();
+
     public S3BucketCreateService(final S3Session session) {
         this.session = session;
     }
 
-    public void create(final Path bucket, final String location) throws BackgroundException {
-        if(!session.configure().getBoolProperty("s3service.disable-dns-buckets", false)) {
+    public void create(final Path bucket, final String region) throws BackgroundException {
+        if(!session.getClient().getConfiguration().getBoolProperty("s3service.disable-dns-buckets", false)) {
             if(!ServiceUtils.isBucketNameValidDNSName(bucket.getName())) {
                 throw new InteroperabilityException(LocaleFactory.localizedString("Bucket name is not DNS compatible", "S3"));
             }
@@ -57,28 +61,26 @@ public class S3BucketCreateService {
         else {
             acl = AccessControlList.REST_CANNED_PRIVATE;
         }
-        final String region;
-        if("us-east-1".equals(location)) {
-            region = "US";
-        }
-        else {
-            region = location;
-        }
         try {
             this.create(bucket, acl, region);
         }
         catch(ResolveFailedException e) {
             log.warn(String.format("Failure %s resolving bucket name. Disable use of DNS bucket names", e));
-            final Jets3tProperties configuration = session.getClient().getJetS3tProperties();
-            configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+            session.getClient().getConfiguration().setProperty("s3service.disable-dns-buckets", String.valueOf(true));
             this.create(bucket, acl, region);
         }
     }
 
     protected void create(final Path bucket, final AccessControlList acl, final String region) throws BackgroundException {
         try {
+            if(StringUtils.isNotBlank(region)) {
+                if(S3Session.isAwsHostname(session.getHost().getHostname())) {
+                    session.getClient().getConfiguration().setProperty("s3service.s3-endpoint", String.format("s3.dualstack.%s.amazonaws.com", region));
+                }
+            }
             // Create bucket
-            session.getClient().createBucket(URIEncoder.encode(containerService.getContainer(bucket).getName()), region, acl);
+            session.getClient().createBucket(URIEncoder.encode(containerService.getContainer(bucket).getName()),
+                "us-east-1".equals(region) ? "US" : region, acl);
         }
         catch(ServiceException e) {
             throw new S3ExceptionMappingService().map("Cannot create folder {0}", e, bucket);

@@ -18,14 +18,12 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
-import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.jets3t.service.model.MultipartUpload;
 import org.jets3t.service.model.S3Object;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -81,18 +79,5 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
         final Path test = new Path(container, "t f", EnumSet.of(Path.Type.file));
         final List<MultipartUpload> list = new S3DefaultMultipartService(session).find(test);
         assertTrue(list.isEmpty());
-    }
-
-    @Test
-    @Ignore
-    public void testDeleteAllContainers() throws Exception {
-        for(Path container : new S3BucketListService(session).list(new Path(String.valueOf(Path.DELIMITER), EnumSet.of(Path.Type.volume, Path.Type.directory)),
-            new DisabledListProgressListener())) {
-            final Path key = new Path(container, "/", EnumSet.of(Path.Type.file));
-            final S3DefaultMultipartService service = new S3DefaultMultipartService(session);
-            for(MultipartUpload part : service.find(key)) {
-                service.delete(part);
-            }
-        }
     }
 }

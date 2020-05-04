@@ -98,7 +98,7 @@ public class S3TransferAccelerationService implements TransferAcceleration {
 
     @Override
     public void configure(final boolean enable, final Path file) {
-        final Jets3tProperties options = session.getClient().getJetS3tProperties();
+        final Jets3tProperties options = session.getClient().getConfiguration();
         if(enable) {
             // Set accelerated endpoint
             options.setProperty("s3service.s3-endpoint", hostname);
@@ -107,7 +107,7 @@ public class S3TransferAccelerationService implements TransferAcceleration {
         }
         else {
             // Revert default configuration
-            options.loadAndReplaceProperties(session.configure(), this.toString());
+            options.loadAndReplaceProperties(session.getClient().getConfiguration(), this.toString());
         }
     }
 

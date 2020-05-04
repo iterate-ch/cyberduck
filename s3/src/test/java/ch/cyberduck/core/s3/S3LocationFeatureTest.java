@@ -24,6 +24,8 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.DisabledPasswordStore;
 import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyCallback;
+import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.LoginConnectionService;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Path;
@@ -32,7 +34,6 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.test.IntegrationTest;
 
-import org.jets3t.service.Jets3tProperties;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -101,10 +102,10 @@ public class S3LocationFeatureTest extends AbstractS3Test {
             }
 
             @Override
-            protected Jets3tProperties configure() {
-                final Jets3tProperties properties = super.configure();
-                properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
-                return properties;
+            public RequestEntityRestStorageService connect(final Proxy proxy, final HostKeyCallback hostkey, final LoginCallback prompt) {
+                final RequestEntityRestStorageService client = super.connect(proxy, hostkey, prompt);
+                client.getConfiguration().setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+                return client;
             }
         };
         assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));

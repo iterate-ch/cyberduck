@@ -17,7 +17,12 @@ package ch.cyberduck.core.s3;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Location;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
@@ -27,6 +32,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolException;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.util.InetAddressUtils;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
@@ -58,15 +64,63 @@ public class RequestEntityRestStorageService extends RestS3Service {
     private static final Logger log = Logger.getLogger(RequestEntityRestStorageService.class);
 
     private final S3Session session;
+    private final Jets3tProperties properties;
 
     private final Preferences preferences
         = PreferencesFactory.get();
 
-    public RequestEntityRestStorageService(final S3Session session,
-                                           final Jets3tProperties properties,
-                                           final HttpClientBuilder configuration) {
-        super(null, new PreferencesUseragentProvider().get(), null, properties);
+    public RequestEntityRestStorageService(final S3Session session, final HttpClientBuilder configuration) {
+        super(null, new PreferencesUseragentProvider().get(), null, new Jets3tProperties());
         this.session = session;
+        this.properties = this.getJetS3tProperties();
+        final Host host = session.getHost();
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Configure for endpoint %s", host));
+        }
+        // Use default endpoint for region lookup
+        if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            // Only for AWS
+            properties.setProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default"));
+            properties.setProperty("s3service.disable-dns-buckets",
+                String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
+        }
+        else {
+            properties.setProperty("s3service.s3-endpoint", host.getHostname());
+            if(InetAddressUtils.isIPv4Address(host.getHostname()) || InetAddressUtils.isIPv6Address(host.getHostname())) {
+                properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+            }
+            else {
+                properties.setProperty("s3service.disable-dns-buckets",
+                    String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
+            }
+        }
+        properties.setProperty("s3service.enable-storage-classes", String.valueOf(true));
+        if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
+            if(!Scheme.isURL(host.getProtocol().getContext())) {
+                properties.setProperty("s3service.s3-endpoint-virtual-path",
+                    PathNormalizer.normalize(host.getProtocol().getContext()));
+            }
+        }
+        properties.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
+        if(host.getProtocol().isSecure()) {
+            properties.setProperty("s3service.s3-endpoint-https-port", String.valueOf(host.getPort()));
+        }
+        else {
+            properties.setProperty("s3service.s3-endpoint-http-port", String.valueOf(host.getPort()));
+        }
+        // The maximum number of retries that will be attempted when an S3 connection fails
+        // with an InternalServer error. To disable retries of InternalError failures, set this to 0.
+        properties.setProperty("s3service.internal-error-retry-max", String.valueOf(0));
+        // The maximum number of concurrent communication threads that will be started by
+        // the multi-threaded service for upload and download operations.
+        properties.setProperty("s3service.max-thread-count", String.valueOf(1));
+        properties.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
+        properties.setProperty("httpclient.retry-max", String.valueOf(0));
+        properties.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
+        properties.setProperty("storage-service.request-signature-version", session.getSignatureVersion().toString());
+        properties.setProperty("storage-service.disable-live-md5", String.valueOf(true));
+        properties.setProperty("storage-service.default-region", host.getRegion());
+        // Client configuration
         configuration.disableContentCompression();
         configuration.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("http.connections.retry")));
         configuration.setRedirectStrategy(new DefaultRedirectStrategy() {
@@ -84,6 +138,10 @@ public class RequestEntityRestStorageService extends RestS3Service {
             }
         });
         this.setHttpClient(configuration.build());
+    }
+
+    public Jets3tProperties getConfiguration() {
+        return properties;
     }
 
     @Override
@@ -104,13 +162,48 @@ public class RequestEntityRestStorageService extends RestS3Service {
 
     @Override
     protected HttpUriRequest setupConnection(final HTTP_METHOD method, final String bucketName,
-                                             final String objectKey, final Map<String, String> requestParameters)
-        throws S3ServiceException {
+                                             final String objectKey, final Map<String, String> requestParameters) throws S3ServiceException {
+        final Host host = session.getHost();
+        // Apply default configuration
+        if(S3Session.isAwsHostname(host.getHostname())) {
+            // Check if not already set to accelerated endpoint
+            if(properties.getStringProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default")).matches("s3-accelerate(\\.dualstack)?\\.amazonaws\\.com")) {
+                log.debug("Skip adjusting endpoint with transfer acceleration");
+            }
+            else {
+                // Only for AWS set endpoint to region specific
+                if(requestParameters == null || !requestParameters.containsKey("location")) {
+                    try {
+                        // Determine region for bucket using cache
+                        final Location.Name region = new S3LocationFeature(session, regionEndpointCache).getLocation(bucketName);
+                        if(Location.unknown == region) {
+                            log.warn(String.format("Failure determining bucket location for %s", bucketName));
+                        }
+                        else {
+                            final String endpoint;
+                            if(preferences.getBoolean("s3.endpoint.dualstack.enable")) {
+                                endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv6"), region.getIdentifier());
+                            }
+                            else {
+                                endpoint = String.format(preferences.getProperty("s3.endpoint.format.ipv4"), region.getIdentifier());
+                            }
+                            if(log.isDebugEnabled()) {
+                                log.debug(String.format("Set endpoint to %s", endpoint));
+                            }
+                            properties.setProperty("s3service.s3-endpoint", endpoint);
+                        }
+                    }
+                    catch(BackgroundException e) {
+                        // Ignore failure reading location for bucket
+                        log.error(String.format("Failure %s determining bucket location for %s", e, bucketName));
+                    }
+                }
+            }
+        }
         final HttpUriRequest request = super.setupConnection(method, bucketName, objectKey, requestParameters);
         if(preferences.getBoolean("s3.upload.expect-continue")) {
             if("PUT".equals(request.getMethod())) {
                 // #7621
-                final Jets3tProperties properties = getJetS3tProperties();
                 if(!properties.getBoolProperty("s3service.disable-expect-continue", false)) {
                     request.addHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
                 }
@@ -118,10 +211,9 @@ public class RequestEntityRestStorageService extends RestS3Service {
         }
         if(preferences.getBoolean("s3.bucket.requesterpays")) {
             // Only for AWS
-            if(S3Session.isAwsHostname(session.getHost().getHostname())) {
+            if(S3Session.isAwsHostname(host.getHostname())) {
                 // Downloading Objects in Requester Pays Buckets
                 if("GET".equals(request.getMethod()) || "POST".equals(request.getMethod())) {
-                    final Jets3tProperties properties = getJetS3tProperties();
                     if(!properties.getBoolProperty("s3service.disable-request-payer", false)) {
                         // For GET and POST requests, include x-amz-request-payer : requester in the header
                         request.addHeader("x-amz-request-payer", "requester");
