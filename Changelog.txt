@@ -1,6 +1,15 @@
 Cyberduck
 https://cyberduck.io/
 
+7.4.0
+- [Feature] Support to access team folders (Dropbox Business)
+- [Feature] Support for eu-south-1 (Milan) region (S3)
+- [Feature] Support for af-south-1 (Cape Town) region (S3)
+- [Feature] Support for ap-east-1 (Hong Kong) region (S3)
+- [Feature] Support for me-south-1 (Bahrain) region (S3)
+- [Feature] Support for me-south-1 (Bahrain) region (S3)
+- [Feature] Making requests to dual-stack endpoints (IPv6) (S3)
+
 7.3.1
 - [Feature] Edit ACLs for files (Google Storage) (#11008)
 - [Feature] Support to set storage class (Google Storage)
@@ -8,7 +17,6 @@ https://cyberduck.io/
 - [Feature] Support for Glacier Deep Archive storage class (S3) (#10681)
 - [Feature] Allow selection of Glacier storage class as default for uploads (S3) (#10681)
 - [Feature] Support for shared files (OneDrive)
-- [Feature] Support for af-south-1 (Cape Town) region (S3)
 - [Feature] Support to access shared files (OneDrive)
 - [Bugfix] Missing URLs to copy of CDN distributions (S3, Rackspace)
 - [Bugfix] Reduced memory usage (macOS)
@@ -20,7 +28,6 @@ https://cyberduck.io/
 - [Feature] Labels for bookmarks (macOS) (#9719)
 - [Feature] Group bookmarks by labels in menu (macOS)
 - [Feature] Support TLS 1.3 (#10962)
-- [Feature] Support for ap-east-1 (Hong Kong) region (S3)
 - [Bugfix] Download fails for files with whitespace in name (Google Storage) (#10931)
 - [Bugfix] Unable to access documents in Shared with me (Google Drive)
 - [Bugfix] Read timeout after copying large file (OpenStack Swift)
@@ -79,7 +86,6 @@ https://cyberduck.io/
 - [Feature] Support for storage classes (Google Storage)
 - [Feature] Support to select region (eu, us, asia) for new buckets (Google Storage)
 - [Feature] Support to set lifecycle configuration on bucket (Google Storage)
-- [Feature] Support for me-south-1 (Bahrain) region (S3)
 - [Bugfix] Number of buckets displayed in browser limited to 1000 (Google Storage)
 - [Bugfix] Fails to authenticate where keyboard-interactive mechanism is not supported (SFTP) (#10714)
 - [Bugfix] Errors accessing Cryptomator vault (Google Drive, OneDrive)
