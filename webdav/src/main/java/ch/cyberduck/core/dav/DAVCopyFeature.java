@@ -22,6 +22,7 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Copy;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -45,7 +46,7 @@ public class DAVCopyFeature implements Copy {
     public Path copy(final Path source, final Path copy, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
         try {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(copy).find(DescriptiveUrl.Type.provider).getUrl();
-            if(status.getLockId() != null) {
+            if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
                 // Indicate that the client has knowledge of that state token
                 session.getClient().copy(new DAVPathEncoder().encode(source), target, true,
                     Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));

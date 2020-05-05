@@ -22,6 +22,7 @@ import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -60,7 +61,7 @@ public class DAVDeleteFeature implements Delete {
             deleted.add(file.getKey());
             callback.delete(file.getKey());
             try {
-                if(file.getValue().getLockId() != null) {
+                if(session.getFeature(Lock.class) != null && file.getValue().getLockId() != null) {
                     // Indicate that the client has knowledge of that state token
                     session.getClient().delete(new DAVPathEncoder().encode(file.getKey()),
                         Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", file.getValue().getLockId())));
