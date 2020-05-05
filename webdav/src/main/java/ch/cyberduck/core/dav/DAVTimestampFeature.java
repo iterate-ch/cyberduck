@@ -19,6 +19,7 @@ import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Timestamp;
 import ch.cyberduck.core.shared.DefaultTimestampFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -97,7 +98,7 @@ public class DAVTimestampFeature extends DefaultTimestampFeature implements Time
 
     protected Map<String, String> getCustomHeaders(final Path file, final TransferStatus status) {
         final Map<String, String> headers = new HashMap<>();
-        if(status.getLockId() != null) {
+        if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
             headers.put(HttpHeaders.IF, String.format("(<%s>)", status.getLockId()));
         }
         return headers;

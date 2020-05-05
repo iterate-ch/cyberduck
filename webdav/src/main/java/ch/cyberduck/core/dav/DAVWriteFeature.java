@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.AbstractHttpWriteFeature;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -101,7 +102,7 @@ public class DAVWriteFeature extends AbstractHttpWriteFeature<String> implements
                 headers.add(new BasicHeader(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE));
             }
         }
-        if(status.getLockId() != null) {
+        if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
             // Indicate that the client has knowledge of that state token
             headers.add(new BasicHeader(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
         }

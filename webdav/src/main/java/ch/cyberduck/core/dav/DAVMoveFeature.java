@@ -24,6 +24,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.features.Move;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.shared.DefaultUrlProvider;
@@ -48,7 +49,7 @@ public class DAVMoveFeature implements Move {
     public Path move(final Path file, final Path renamed, final TransferStatus status, final Delete.Callback callback, final ConnectionCallback connectionCallback) throws BackgroundException {
         try {
             final String target = new DefaultUrlProvider(session.getHost()).toUrl(renamed).find(DescriptiveUrl.Type.provider).getUrl();
-            if(status.getLockId() != null) {
+            if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
                 // Indicate that the client has knowledge of that state token
                 session.getClient().move(new DAVPathEncoder().encode(file), file.isDirectory() ? String.format("%s/", target) : target, true,
                     Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));

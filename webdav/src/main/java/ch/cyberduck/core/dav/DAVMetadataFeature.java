@@ -23,6 +23,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Headers;
+import ch.cyberduck.core.features.Lock;
 import ch.cyberduck.core.http.HttpExceptionMappingService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -95,7 +96,7 @@ public class DAVMetadataFeature implements Headers {
                 element.setTextContent(entry.getValue());
                 props.add(element);
             }
-            if(status.getLockId() != null) {
+            if(session.getFeature(Lock.class) != null && status.getLockId() != null) {
                 session.getClient().patch(new DAVPathEncoder().encode(file), props, Collections.emptyList(),
                     Collections.singletonMap(HttpHeaders.IF, String.format("(<%s>)", status.getLockId())));
             }
