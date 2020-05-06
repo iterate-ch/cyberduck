@@ -7,7 +7,6 @@ https://cyberduck.io/
 - [Feature] Support for af-south-1 (Cape Town) region (S3)
 - [Feature] Support for ap-east-1 (Hong Kong) region (S3)
 - [Feature] Support for me-south-1 (Bahrain) region (S3)
-- [Feature] Support for me-south-1 (Bahrain) region (S3)
 - [Feature] Making requests to dual-stack endpoints (IPv6) (S3)
 
 7.3.1
