@@ -58,11 +58,15 @@ public class ProtocolFactoryTest {
         factory.register(v2);
         final Profile v3 = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Openstack Swift (Keystone 3).cyberduckprofile"));
         factory.register(v3);
+        final Profile rackspace = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile"));
+        factory.register(rackspace);
         // Lookup using hash code
         assertSame(v3, factory.forName(String.valueOf(v3.hashCode())));
         assertSame(v2, factory.forName(String.valueOf(v2.hashCode())));
+        assertSame(rackspace, factory.forName(String.valueOf(rackspace.hashCode())));
         // Lookup by name
         assertSame(v3, factory.forName(v3.getIdentifier(), v3.getProvider()));
         assertSame(v2, factory.forName(v2.getIdentifier(), v2.getProvider()));
+        assertSame(rackspace, factory.forName(rackspace.getIdentifier(), rackspace.getProvider()));
     }
 }
