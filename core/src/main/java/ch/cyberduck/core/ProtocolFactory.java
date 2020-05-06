@@ -168,10 +168,10 @@ public final class ProtocolFactory {
      */
     public Protocol forName(final List<Protocol> enabled, final String identifier, final String provider) {
         final Protocol match =
-            // Matching hash code backward compatibility
+            // Exact match with hash code
             enabled.stream().filter(protocol -> String.valueOf(protocol.hashCode()).equals(identifier)).findFirst().orElse(
                 // Matching vendor string for third party profiles
-                enabled.stream().filter(protocol -> new ProfileProtocolPredicate().test(protocol) && StringUtils.equals(protocol.getProvider(), provider)).findFirst().orElse(
+                enabled.stream().filter(protocol -> StringUtils.equals(protocol.getIdentifier(), identifier) && StringUtils.equals(protocol.getProvider(), provider)).findFirst().orElse(
                     // Matching vendor string usage in CLI
                     enabled.stream().filter(protocol -> StringUtils.equals(protocol.getProvider(), identifier)).findFirst().orElse(
                         // Fallback for bug in 6.1
