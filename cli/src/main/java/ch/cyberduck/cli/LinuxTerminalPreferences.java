@@ -16,6 +16,7 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.UnsecureHostPasswordStore;
+import ch.cyberduck.core.editor.DefaultEditorFactory;
 import ch.cyberduck.core.i18n.RegexLocale;
 import ch.cyberduck.core.local.DefaultSymlinkFeature;
 import ch.cyberduck.core.local.DesktopBrowserLauncher;
@@ -73,6 +74,7 @@ public class LinuxTerminalPreferences extends TerminalPreferences {
         this.setDefault("factory.applicationresourcesfinder.class", StaticApplicationResourcesFinder.class.getName());
         this.setDefault("factory.locale.class", RegexLocale.class.getName());
         this.setDefault("factory.applicationlauncher.class", ExecApplicationLauncher.class.getName());
+        this.setDefault("factory.editorfactory.class", DefaultEditorFactory.class.getName());
         this.setDefault("factory.proxy.class", EnvironmentVariableProxyFinder.class.getName());
         this.setDefault("factory.symlink.class", DefaultSymlinkFeature.class.getName());
         this.setDefault("factory.passwordstore.class", UnsecureHostPasswordStore.class.getName());

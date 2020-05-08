@@ -18,6 +18,7 @@ import ch.cyberduck.cli.TerminalPreferences;
 import ch.cyberduck.core.IOKitSleepPreventer;
 import ch.cyberduck.core.KeychainPasswordStore;
 import ch.cyberduck.core.diagnostics.SystemConfigurationReachability;
+import ch.cyberduck.core.editor.FSEventWatchEditorFactory;
 import ch.cyberduck.core.i18n.BundleRegexLocale;
 import ch.cyberduck.core.local.DisabledFilesystemBookmarkResolver;
 import ch.cyberduck.core.local.FileManagerWorkingDirectoryFinder;
@@ -47,6 +48,7 @@ public class ApplicationTerminalPreferences extends TerminalPreferences {
         this.setDefault("factory.applicationresourcesfinder.class", BundleApplicationResourcesFinder.class.getName());
         this.setDefault("factory.applicationloginregistry.class", SharedFileListApplicationLoginRegistry.class.getName());
         this.setDefault("factory.locale.class", BundleRegexLocale.class.getName());
+        this.setDefault("factory.editorfactory.class", FSEventWatchEditorFactory.class.getName());
         this.setDefault("factory.applicationlauncher.class", WorkspaceApplicationLauncher.class.getName());
         this.setDefault("factory.applicationfinder.class", LaunchServicesApplicationFinder.class.getName());
         this.setDefault("factory.local.class", FinderLocal.class.getName());
