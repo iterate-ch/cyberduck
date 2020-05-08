@@ -95,13 +95,13 @@ public class NIOEventWatchServiceTest {
             }
         };
         LocalTouchFactory.get().touch(file);
-        watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS);
+        assertTrue(watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS));
         final ProcessBuilder sh = new ProcessBuilder("cmd", "/c", String.format("echo 'Test' >> %s", file.getAbsolute()));
         final Process cat = sh.start();
-        assertEquals(0, cat.waitFor());
-        update.await();
+        assertTrue(cat.waitFor(5L, TimeUnit.SECONDS));
+        assertTrue(update.await(5L, TimeUnit.SECONDS));
         file.delete();
-        delete.await();
+        assertTrue(delete.await(5L, TimeUnit.SECONDS));
         watcher.close();
     }
 
@@ -136,13 +136,13 @@ public class NIOEventWatchServiceTest {
             }
         };
         LocalTouchFactory.get().touch(file);
-        watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS);
+        assertTrue(watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS));
         final ProcessBuilder sh = new ProcessBuilder("sh", "-c", String.format("echo 'Test' >> %s", file.getAbsolute()));
         final Process cat = sh.start();
-        assertEquals(0, cat.waitFor());
-        update.await();
+        assertTrue(cat.waitFor(5L, TimeUnit.SECONDS));
+        assertTrue(update.await(5L, TimeUnit.SECONDS));
         file.delete();
-        delete.await();
+        assertTrue(delete.await(5L, TimeUnit.SECONDS));
         watcher.close();
     }
 }
