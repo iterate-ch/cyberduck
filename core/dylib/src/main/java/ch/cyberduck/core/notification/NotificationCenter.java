@@ -68,6 +68,7 @@ public class NotificationCenter extends ProxyController implements NotificationS
     @Override
     public void notify(final String group, final String identifier, final String title, final String description) {
         if (filter.shouldSuppress()) {
+            log.debug(String.format("Suppressing notification for %s, %s, %s, %s", group, identifier, title, description));
             return;
         }
         final NSUserNotification notification = NSUserNotification.notification();
@@ -88,6 +89,7 @@ public class NotificationCenter extends ProxyController implements NotificationS
     @Override
     public void notify(final String group, final String identifier, final String title, final String description, final String action) {
         if (filter.shouldSuppress()) {
+            log.debug(String.format("Suppressing notification for %s, %s, %s, %s", group, identifier, title, description));
             return;
         }
         final NSUserNotification notification = NSUserNotification.notification();
