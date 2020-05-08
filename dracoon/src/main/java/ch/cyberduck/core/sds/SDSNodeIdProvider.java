@@ -65,6 +65,10 @@ public class SDSNodeIdProvider implements IdProvider {
 
     @Override
     public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return this.getFileid(file, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+    }
+
+    protected String getFileid(final Path file, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Return cached node %s for file %s", file.attributes().getVersionId(), file));
@@ -94,7 +98,6 @@ public class SDSNodeIdProvider implements IdProvider {
             // Top-level nodes only
 
             int offset = 0;
-            final int chunksize = PreferencesFactory.get().getInteger("sds.listing.chunksize");
             NodeList nodes;
             do {
                 nodes = new NodesApi(session.getClient()).searchFsNodes(URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
