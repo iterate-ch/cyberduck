@@ -107,7 +107,7 @@ public class NIOEventWatchServiceTest {
 
     @Test
     public void testListenerEventWatchServiceLinux() throws Exception {
-        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.linux) || Factory.Platform.getDefault().equals(Factory.Platform.Name.mac));
+        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.linux));
         final FileWatcher watcher = new FileWatcher(new NIOEventWatchService());
         final Local file = LocalFactory.get(LocalFactory.get(System.getProperty("java.io.tmpdir")), String.format("é%s", new AlphanumericRandomStringService().random()));
         final CountDownLatch update = new CountDownLatch(1);
