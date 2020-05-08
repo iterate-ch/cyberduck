@@ -1,12 +1,8 @@
-﻿using ch.cyberduck.core;
-using ch.cyberduck.core.notification;
-using ch.cyberduck.core.pool;
+﻿using ch.cyberduck.core.notification;
 using Microsoft.Toolkit.Uwp.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 
@@ -14,9 +10,16 @@ namespace Ch.Cyberduck.Core.Notifications
 {
     public abstract class AbstractDesktopNotificationService : NotificationService
     {
+        private readonly NotificationFilterService notificationFilter;
+
         private ToastNotificationHistory history;
 
         private Action<string> listeners;
+
+        public AbstractDesktopNotificationService()
+        {
+            notificationFilter = NotificationFilterService.Factory.get();
+        }
 
         protected abstract string AumID { get; }
 
@@ -117,7 +120,13 @@ namespace Ch.Cyberduck.Core.Notifications
             {
                 toasts = history.GetHistory(AumID);
             }
-            return toasts.Any(GetToastComparer(toast));
+
+            if (toasts.Any(GetToastComparer(toast)))
+            {
+                return true;
+            }
+
+            return notificationFilter.shouldSuppress();
         }
 
         private void Toast(ToastContent toastContent, string identifier, bool handleActivated)

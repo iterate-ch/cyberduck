@@ -43,6 +43,9 @@ public class NotificationCenter extends ProxyController implements NotificationS
     private final Set<NotificationService.Listener> listeners =
         Collections.synchronizedSet(new HashSet<NotificationService.Listener>());
 
+    private final NotificationFilterService filter
+        = NotificationFilterService.Factory.get();
+
     @Override
     public NotificationService setup() {
         center.setDelegate(this.id());
@@ -64,6 +67,9 @@ public class NotificationCenter extends ProxyController implements NotificationS
 
     @Override
     public void notify(final String group, final String identifier, final String title, final String description) {
+        if (filter.shouldSuppress()) {
+            return;
+        }
         final NSUserNotification notification = NSUserNotification.notification();
         if(StringUtils.isNotBlank(identifier)) {
             if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
@@ -81,6 +87,9 @@ public class NotificationCenter extends ProxyController implements NotificationS
 
     @Override
     public void notify(final String group, final String identifier, final String title, final String description, final String action) {
+        if (filter.shouldSuppress()) {
+            return;
+        }
         final NSUserNotification notification = NSUserNotification.notification();
         if(StringUtils.isNotBlank(identifier)) {
             if(notification.respondsToSelector(Foundation.selector("setIdentifier:"))) {
