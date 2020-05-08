@@ -15,35 +15,58 @@ package ch.cyberduck.core;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.ftp.FTPProtocol;
 import ch.cyberduck.core.ftp.FTPTLSProtocol;
+import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.s3.S3Protocol;
 import ch.cyberduck.core.serializer.impl.dd.ProfilePlistReader;
 
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 public class ProtocolFactoryTest {
 
     @Test
     public void testParse() throws Exception {
-        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPTLSProtocol(), new S3Protocol())));
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Arrays.asList(new FTPProtocol(), new FTPTLSProtocol(), new S3Protocol())));
         final Profile ftp = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTP.cyberduckprofile"));
         factory.register(ftp);
         final Profile ftps = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/FTPS.cyberduckprofile"));
         factory.register(ftps);
         final Profile s3 = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/S3 (HTTPS).cyberduckprofile"));
         factory.register(s3);
-        assertEquals(ftp, factory.forName("ftp"));
-        assertEquals(ftp, factory.forName("ftp", "iterate GmbH"));
-        assertEquals(ftps, factory.forName("ftps"));
-        assertEquals(ftps, factory.forName("ftps", "iterate GmbH"));
-        assertEquals(s3, factory.forName("s3"));
-        assertEquals(s3, factory.forName("s3", "iterate GmbH"));
-        assertEquals(s3, factory.forName("https"));
-        assertEquals(s3, factory.forName("https", "iterate GmbH"));
+        assertSame(ftp, factory.forName(ftp.getIdentifier()));
+        assertSame(ftp, factory.forName(ftp.getIdentifier(), ftp.getProvider()));
+        assertSame(ftps, factory.forName(ftps.getIdentifier()));
+        assertSame(ftps, factory.forName(ftps.getIdentifier(), ftps.getProvider()));
+        assertSame(s3, factory.forName(s3.getIdentifier()));
+        assertSame(s3, factory.forName(s3.getIdentifier(), s3.getProvider()));
+        assertSame(s3, factory.forName("https"));
+        assertSame(s3, factory.forName("https", "iterate GmbH"));
+    }
+
+
+    @Test
+    public void testParseOpenStackContext() throws Exception {
+        final ProtocolFactory factory = new ProtocolFactory(new HashSet<>(Collections.singletonList(new SwiftProtocol())));
+        final Profile v2 = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Openstack Swift (Keystone 2).cyberduckprofile"));
+        factory.register(v2);
+        final Profile v3 = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Openstack Swift (Keystone 3).cyberduckprofile"));
+        factory.register(v3);
+        final Profile rackspace = new ProfilePlistReader(factory).read(this.getClass().getResourceAsStream("/Rackspace US.cyberduckprofile"));
+        factory.register(rackspace);
+        // Lookup using hash code
+        assertSame(v3, factory.forName(String.valueOf(v3.hashCode())));
+        assertSame(v2, factory.forName(String.valueOf(v2.hashCode())));
+        assertSame(rackspace, factory.forName(String.valueOf(rackspace.hashCode())));
+        // Lookup by name
+        assertSame(v3, factory.forName(v3.getIdentifier(), v3.getProvider()));
+        assertSame(v2, factory.forName(v2.getIdentifier(), v2.getProvider()));
+        assertSame(rackspace, factory.forName(rackspace.getIdentifier(), rackspace.getProvider()));
     }
 }
