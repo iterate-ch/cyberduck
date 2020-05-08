@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Search;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.Node;
@@ -45,28 +46,38 @@ public class SDSSearchFeature implements Search {
 
     @Override
     public AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener) throws BackgroundException {
+        return this.search(workdir, regex, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+    }
+
+    protected AttributedList<Path> search(final Path workdir, final Filter<Path> regex, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         try {
             final AttributedList<Path> result = new AttributedList<>();
-            final NodeList list = new NodesApi(session.getClient()).searchFsNodes(
-                String.format("*%s*", new NFCNormalizer().normalize(regex.toPattern().pattern())), StringUtils.EMPTY, null,
-                -1, null, null, null, Long.valueOf(nodeid.getFileid(workdir, listener)), null);
-            final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
-            for(Node node : list.getItems()) {
-                final PathAttributes attributes = feature.toAttributes(node);
-                final EnumSet<Path.Type> type;
-                switch(node.getType()) {
-                    case ROOM:
-                        type = EnumSet.of(Path.Type.directory, Path.Type.volume);
-                        break;
-                    case FOLDER:
-                        type = EnumSet.of(Path.Type.directory);
-                        break;
-                    default:
-                        type = EnumSet.of(Path.Type.file);
-                        break;
+            int offset = 0;
+            NodeList nodes;
+            do {
+                nodes = new NodesApi(session.getClient()).searchFsNodes(
+                    String.format("*%s*", new NFCNormalizer().normalize(regex.toPattern().pattern())), StringUtils.EMPTY, null,
+                    -1, null, chunksize, offset, Long.valueOf(nodeid.getFileid(workdir, listener)), null);
+                final SDSAttributesFinderFeature feature = new SDSAttributesFinderFeature(session, nodeid);
+                for(Node node : nodes.getItems()) {
+                    final PathAttributes attributes = feature.toAttributes(node);
+                    final EnumSet<Path.Type> type;
+                    switch(node.getType()) {
+                        case ROOM:
+                            type = EnumSet.of(Path.Type.directory, Path.Type.volume);
+                            break;
+                        case FOLDER:
+                            type = EnumSet.of(Path.Type.directory);
+                            break;
+                        default:
+                            type = EnumSet.of(Path.Type.file);
+                            break;
+                    }
+                    result.add(new Path(String.format("%s%s", node.getParentPath(), node.getName()), type, attributes));
                 }
-                result.add(new Path(String.format("%s%s", node.getParentPath(), node.getName()), type, attributes));
+                offset += chunksize;
             }
+            while(nodes.getItems().size() == chunksize);
             return result;
         }
         catch(ApiException e) {
