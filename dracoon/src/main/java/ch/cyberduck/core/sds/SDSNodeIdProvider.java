@@ -96,7 +96,7 @@ public class SDSNodeIdProvider implements IdProvider {
                 String.format("type:eq:%s|parentPath:eq:%s/", type, file.getParent().isRoot() ? StringUtils.EMPTY : file.getParent().getAbsolute()),
                 null, null, null, null);
             for(Node node : nodes.getItems()) {
-                if(node.getName().equals(normalizer.normalize(file.getName()))) {
+                if(node.getName().equals(normalizer.normalize(file.getName()).toString())) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Return node %s for file %s", node.getId(), file));
                     }
