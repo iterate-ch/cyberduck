@@ -28,6 +28,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Encryption;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
 import ch.cyberduck.core.sds.io.swagger.client.model.FileKey;
@@ -64,6 +65,10 @@ public class SDSNodeIdProvider implements IdProvider {
 
     @Override
     public String getFileid(final Path file, final ListProgressListener listener) throws BackgroundException {
+        return this.getFileid(file, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+    }
+
+    protected String getFileid(final Path file, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         if(StringUtils.isNotBlank(file.attributes().getVersionId())) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Return cached node %s for file %s", file.attributes().getVersionId(), file));
@@ -91,18 +96,25 @@ public class SDSNodeIdProvider implements IdProvider {
                 type = "file";
             }
             // Top-level nodes only
-            final NodeList nodes = new NodesApi(session.getClient()).searchFsNodes(URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
-                StringUtils.EMPTY, null, -1,
-                String.format("type:eq:%s|parentPath:eq:%s/", type, file.getParent().isRoot() ? StringUtils.EMPTY : file.getParent().getAbsolute()),
-                null, null, null, null);
-            for(Node node : nodes.getItems()) {
-                if(node.getName().equals(normalizer.normalize(file.getName()).toString())) {
-                    if(log.isInfoEnabled()) {
-                        log.info(String.format("Return node %s for file %s", node.getId(), file));
+
+            int offset = 0;
+            NodeList nodes;
+            do {
+                nodes = new NodesApi(session.getClient()).searchFsNodes(URIEncoder.encode(normalizer.normalize(file.getName()).toString()),
+                    StringUtils.EMPTY, null, -1,
+                    String.format("type:eq:%s|parentPath:eq:%s/", type, file.getParent().isRoot() ? StringUtils.EMPTY : file.getParent().getAbsolute()),
+                    chunksize, offset, null, null);
+                for(Node node : nodes.getItems()) {
+                    if(node.getName().equals(normalizer.normalize(file.getName()).toString())) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Return node %s for file %s", node.getId(), file));
+                        }
+                        return this.set(file, node.getId().toString());
                     }
-                    return this.set(file, node.getId().toString());
                 }
+                offset += chunksize;
             }
+            while(nodes.getItems().size() == chunksize);
             throw new NotfoundException(file.getAbsolute());
         }
         catch(ApiException e) {

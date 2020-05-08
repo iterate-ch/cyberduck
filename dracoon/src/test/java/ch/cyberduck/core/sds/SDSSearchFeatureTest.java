@@ -49,22 +49,22 @@ public class SDSSearchFeatureTest extends AbstractSDSTest {
         final Path directory = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final Path file = new SDSTouchFeature(session, nodeid).touch(new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         final SDSSearchFeature feature = new SDSSearchFeature(session, nodeid);
-        assertTrue(feature.search(room, new SearchFilter(name), new DisabledListProgressListener()).contains(file));
-        assertTrue(feature.search(room, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener()).contains(file));
-        assertTrue(feature.search(room, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));
-        assertTrue(feature.search(directory, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener()).contains(file));
+        assertTrue(feature.search(room, new SearchFilter(name), new DisabledListProgressListener(), 1).contains(file));
+        assertTrue(feature.search(room, new SearchFilter(StringUtils.substring(name, 2)), new DisabledListProgressListener(), 1).contains(file));
+        assertTrue(feature.search(room, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener(), 1).contains(file));
+        assertTrue(feature.search(directory, new SearchFilter(StringUtils.substring(name, 0, name.length() - 2)), new DisabledListProgressListener(), 1).contains(file));
         try {
-            assertFalse(feature.search(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new SearchFilter(name), new DisabledListProgressListener()).contains(file));
+            assertFalse(feature.search(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), new SearchFilter(name), new DisabledListProgressListener(), 1).contains(file));
             fail();
         }
         catch(NotfoundException e) {
             //
         }
         final Path subdir = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener()).find(new SimplePathPredicate(file)));
+        assertNull(feature.search(subdir, new SearchFilter(name), new DisabledListProgressListener(), 1).find(new SimplePathPredicate(file)));
         final Path filesubdir = new SDSTouchFeature(session, nodeid).touch(new Path(subdir, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
-            final AttributedList<Path> result = feature.search(directory, new SearchFilter(filesubdir.getName()), new DisabledListProgressListener());
+            final AttributedList<Path> result = feature.search(directory, new SearchFilter(filesubdir.getName()), new DisabledListProgressListener(), 1);
             assertNotNull(result.find(new SimplePathPredicate(filesubdir)));
             assertEquals(subdir, result.find(new SimplePathPredicate(filesubdir)).getParent());
         }

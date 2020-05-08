@@ -62,7 +62,7 @@ public class SDSListService implements ListService {
         return this.list(directory, listener, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
     }
 
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
+    protected AttributedList<Path> list(final Path directory, final ListProgressListener listener, final int chunksize) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<Path>();
         try {
             int offset = 0;
@@ -78,7 +78,7 @@ public class SDSListService implements ListService {
                     final Path file = new Path(directory, node.getName(), type, attributes);
                     if(references && node.getCntDeletedVersions() != null && node.getCntDeletedVersions() > 0) {
                         try {
-                            final AttributedList<Path> versions = feature.versions(file);
+                            final AttributedList<Path> versions = feature.versions(file, chunksize);
                             children.addAll(versions);
                             attributes.setVersions(versions);
                         }

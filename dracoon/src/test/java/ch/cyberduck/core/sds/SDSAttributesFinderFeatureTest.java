@@ -119,7 +119,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
             new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
         final Path folder = new SDSDirectoryFeature(session, nodeid).mkdir(new Path(room, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final SDSAttributesFinderFeature f = new SDSAttributesFinderFeature(session, nodeid);
-        final PathAttributes previous = f.find(folder);
+        final PathAttributes previous = f.find(folder, 1);
         assertNotEquals(-1L, previous.getRevision().longValue());
         final Path test = new SDSTouchFeature(session, nodeid).touch(new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertEquals(test.getParent(), folder);
@@ -135,11 +135,11 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         assertNotNull(version);
         assertNotEquals(version.id, test.attributes().getVersionId());
         final PathAttributes updated = new SDSAttributesFinderFeature(session, nodeid, true).find(
-            new Path(test.getParent(), test.getName(), test.getType(), new PathAttributes().withVersionId(version.id)));
+            new Path(test.getParent(), test.getName(), test.getType(), new PathAttributes().withVersionId(version.id)), 1);
         assertFalse(updated.getVersions().isEmpty());
-        assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder).getModificationDate());
+        assertEquals(previous.getModificationDate(), new SDSAttributesFinderFeature(session, nodeid).find(folder, 1).getModificationDate());
         // Branch version is changing with background task only
-        // assertNotEquals(previous.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(folder).getRevision());
+        // assertNotEquals(previous.getRevision(), new SDSAttributesFinderFeature(session, nodeid).find(folder, 1).getRevision());
         new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

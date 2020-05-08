@@ -70,6 +70,10 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
 
     @Override
     public PathAttributes find(final Path file) throws BackgroundException {
+        return this.find(file, PreferencesFactory.get().getInteger("sds.listing.chunksize"));
+    }
+
+    protected PathAttributes find(final Path file, final int chunksize) throws BackgroundException {
         if(file.isRoot()) {
             // {"code":400,"message":"Bad Request","debugInfo":"Node ID must be positive.","errorCode":-80001}
             return PathAttributes.EMPTY;
@@ -86,7 +90,7 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
                 final PathAttributes attr = this.toAttributes(node);
                 if(references) {
                     try {
-                        attr.setVersions(this.versions(file));
+                        attr.setVersions(this.versions(file, chunksize));
                     }
                     catch(AccessDeniedException e) {
                         log.warn(String.format("Ignore failure %s fetching versions for %s", e, file));
@@ -100,9 +104,8 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         }
     }
 
-    protected AttributedList<Path> versions(final Path file) throws BackgroundException {
+    protected AttributedList<Path> versions(final Path file, final int chunksize) throws BackgroundException {
         try {
-            final int chunksize = PreferencesFactory.get().getInteger("sds.listing.chunksize");
             int offset = 0;
             DeletedNodeVersionsList nodes;
             final AttributedList<Path> versions = new AttributedList<>();
