@@ -26,8 +26,8 @@ public abstract class NSUserNotificationCenter extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSUserNotificationCenter", _Class.class);
 
     /**
-     * Get a singleton user notification center that posts notifications for this process.<br>
-     * Original signature : <code>+(NSUserNotificationCenter*)defaultUserNotificationCenter</code><br>
+     * Get a singleton user notification center that posts notifications for this process.<br> Original signature :
+     * <code>+(NSUserNotificationCenter*)defaultUserNotificationCenter</code><br>
      * <i>native declaration : line 8</i>
      */
     public static NSUserNotificationCenter defaultUserNotificationCenter() {
@@ -36,8 +36,8 @@ public abstract class NSUserNotificationCenter extends NSObject {
 
     public interface _Class extends ObjCClass {
         /**
-         * Get a singleton user notification center that posts notifications for this process.<br>
-         * Original signature : <code>+(NSUserNotificationCenter*)defaultUserNotificationCenter</code><br>
+         * Get a singleton user notification center that posts notifications for this process.<br> Original signature :
+         * <code>+(NSUserNotificationCenter*)defaultUserNotificationCenter</code><br>
          * <i>native declaration : line 8</i>
          */
         NSUserNotificationCenter defaultUserNotificationCenter();
@@ -56,5 +56,7 @@ public abstract class NSUserNotificationCenter extends NSObject {
 
     public interface Delegate {
         void userNotificationCenter_didActivateNotification(NSUserNotificationCenter center, NSUserNotification notification);
+
+        boolean userNotificationCenter_shouldPresentNotification(NSUserNotificationCenter center, NSUserNotification notification);
     }
 }

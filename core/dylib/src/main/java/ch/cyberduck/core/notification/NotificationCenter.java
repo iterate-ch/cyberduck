@@ -37,6 +37,10 @@ import java.util.Set;
 public class NotificationCenter extends ProxyController implements NotificationService, NSUserNotificationCenter.Delegate {
     private static final Logger log = Logger.getLogger(NotificationCenter.class);
 
+    /**
+     * Methods involve talking to a server process, so calling them repeatedly can have a negative effect on
+     * performance.
+     */
     private final NSUserNotificationCenter center
         = NSUserNotificationCenter.defaultUserNotificationCenter();
 
@@ -116,5 +120,11 @@ public class NotificationCenter extends ProxyController implements NotificationS
         for(Listener listener : listeners) {
             listener.callback(notification.identifier());
         }
+    }
+
+    @Override
+    public boolean userNotificationCenter_shouldPresentNotification(final NSUserNotificationCenter center, final NSUserNotification notification) {
+        log.warn(String.format("Discarded notification %s without presenting", notification));
+        return false;
     }
 }
