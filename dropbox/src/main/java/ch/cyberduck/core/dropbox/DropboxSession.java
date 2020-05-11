@@ -163,7 +163,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             return (T) new DropboxSearchFeature(this);
         }
         if(type == Lock.class) {
-            return (T) new DropboxLockFeature(this);
+            return (T) locking;
         }
         return super._getFeature(type);
     }
