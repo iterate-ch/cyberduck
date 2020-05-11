@@ -39,6 +39,7 @@ import ch.cyberduck.core.local.DisabledQuarantineService;
 import ch.cyberduck.core.local.NativeLocalTrashFeature;
 import ch.cyberduck.core.local.NullFileDescriptor;
 import ch.cyberduck.core.local.NullLocalSymlinkFeature;
+import ch.cyberduck.core.notification.DisabledNotificationFilterService;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.DisabledProxyFinder;
 import ch.cyberduck.core.random.DefaultSecureRandomProvider;
@@ -1279,6 +1280,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("factory.iconservice.class", DisabledIconService.class.getName());
         this.setDefault("factory.iconcache.class", DisabledIconCache.class.getName());
         this.setDefault("factory.notification.class", DisabledNotificationService.class.getName());
+        this.setDefault("factory.notification.filter.class", DisabledNotificationFilterService.class.getName());
         this.setDefault("factory.sleeppreventer.class", DisabledSleepPreventer.class.getName());
         this.setDefault("factory.quarantine.class", DisabledQuarantineService.class.getName());
         for(Transfer.Type t : Transfer.Type.values()) {
