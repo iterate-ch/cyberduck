@@ -16,7 +16,8 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
@@ -27,6 +28,11 @@ import ch.cyberduck.test.IntegrationTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.EnumSet;
+
+import com.dropbox.core.v2.common.PathRoot;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 @Category(IntegrationTest.class)
@@ -34,10 +40,23 @@ public class DropboxSessionTest {
 
     @Test
     public void testFeatures() {
-        final Host host = new Host(new DropboxProtocol(), "test.cyberduck.ch");
-        final Session session = new DropboxSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final Host host = new Host(new DropboxProtocol());
+        final DropboxSession session = new DropboxSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.getFeature(Directory.class));
         assertNotNull(session.getFeature(Delete.class));
         assertNotNull(session.getFeature(Touch.class));
+    }
+
+    @Test
+    public void testRoot() {
+        final Host host = new Host(new DropboxProtocol());
+        final DropboxSession session = new DropboxSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        assertEquals(PathRoot.namespaceId("r"), session.getRoot(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r"))));
+        assertEquals(PathRoot.namespaceId("r"), session.getRoot(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")), "f", EnumSet.of(Path.Type.file))));
+        assertEquals(PathRoot.namespaceId("r"), session.getRoot(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
+            "Business", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertEquals(PathRoot.namespaceId("r"), session.getRoot(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
+            "Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a"))));
+        assertEquals(PathRoot.namespaceId("a"), session.getRoot(new Path(new Path("/Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a")), "d", EnumSet.of(Path.Type.directory))));
     }
 }
