@@ -40,7 +40,10 @@ public class GraphPromptUrlProvider implements PromptUrlProvider {
 
     @Override
     public boolean isSupported(Path file, Type type) {
-        return type == Type.download;
+        if (Type.download != type) {
+            return false;
+        }
+        return session.isAccessible(file, true);
     }
 
     @Override
