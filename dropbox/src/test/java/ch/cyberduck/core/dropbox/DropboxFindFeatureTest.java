@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractDropboxTest;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -27,7 +28,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -37,21 +37,25 @@ public class DropboxFindFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testFindNotFound() throws Exception {
-        assertFalse(new DropboxFindFeature(session).find(new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file))));
+        assertFalse(new DropboxFindFeature(session).find(new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file))));
+    }
+
+    @Test
+    public void testFindHome() throws Exception {
+        assertTrue(new DropboxFindFeature(session).find(new DropboxHomeFinderFeature(session).find()));
     }
 
     @Test
     public void testFindDirectory() throws Exception {
-        assertTrue(new DropboxFindFeature(session).find(new DropboxHomeFinderFeature(session).find()));
-        final Path folder = new Path(new DropboxHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory));
-        new DropboxDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
+        final Path folder = new DropboxDirectoryFeature(session).mkdir(
+            new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(folder));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(folder), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
     public void testFindFile() throws Exception {
-        final Path file = new Path(new DropboxHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());

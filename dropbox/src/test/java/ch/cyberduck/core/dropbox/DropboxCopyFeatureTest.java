@@ -52,10 +52,10 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testCopyToExistingFile() throws Exception {
-        final Path folder = new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
-        new DropboxDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
-        final Path test = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new DropboxTouchFeature(session).touch(test, new TransferStatus());
+        final Path folder = new DropboxDirectoryFeature(session).mkdir(
+            new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path test = new DropboxTouchFeature(session).touch(
+            new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final Path copy = new Path(folder, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(copy, new TransferStatus());
         new DropboxCopyFeature(session).copy(test, copy, new TransferStatus().exists(true), new DisabledConnectionCallback());
@@ -67,11 +67,11 @@ public class DropboxCopyFeatureTest extends AbstractDropboxTest {
 
     @Test
     public void testCopyDirectory() throws Exception {
-        final Path directory = new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final Path directory = new DropboxDirectoryFeature(session).mkdir(
+            new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final String name = new AlphanumericRandomStringService().random();
-        final Path file = new Path(directory, name, EnumSet.of(Path.Type.file));
-        new DropboxDirectoryFeature(session).mkdir(directory, null, new TransferStatus());
-        new DropboxTouchFeature(session).touch(file, new TransferStatus());
+        final Path file = new DropboxTouchFeature(session).touch(
+            new Path(directory, name, EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DropboxFindFeature(session).find(file));
         final Path copy = new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
         new DropboxCopyFeature(session).copy(directory, copy, new TransferStatus(), new DisabledConnectionCallback());

@@ -38,7 +38,6 @@ public class DropboxListServiceTest extends AbstractDropboxTest {
 
     @Test
     public void testList() throws Exception {
-
         final AttributedList<Path> list = new DropboxListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
         assertNotNull(list);
         assertFalse(list.isEmpty());
@@ -46,12 +45,12 @@ public class DropboxListServiceTest extends AbstractDropboxTest {
 
     @Test
     public void testFilenameColon() throws Exception {
-
-        final Path file = new Path(new DropboxHomeFinderFeature(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
-        final Path folder = new Path(new DropboxHomeFinderFeature(session).find(), String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
+        final Path home = new DropboxHomeFinderFeature(session).find();
+        final Path file = new Path(home, String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
+        final Path folder = new Path(home, String.format("%s:name", UUID.randomUUID().toString()), EnumSet.of(Path.Type.directory));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
         new DropboxDirectoryFeature(session).mkdir(folder, null, new TransferStatus());
-        final AttributedList<Path> list = new DropboxListService(session).list(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)), new DisabledListProgressListener());
+        final AttributedList<Path> list = new DropboxListService(session).list(home, new DisabledListProgressListener());
         assertNotNull(list);
         assertFalse(list.isEmpty());
         assertTrue(list.contains(file));

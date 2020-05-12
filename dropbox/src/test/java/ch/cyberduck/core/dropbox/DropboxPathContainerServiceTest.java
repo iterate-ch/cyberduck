@@ -29,18 +29,24 @@ public class DropboxPathContainerServiceTest {
     @Test
     public void testGetKeyWithNamespace() {
         final DropboxPathContainerService s = new DropboxPathContainerService().withNamespace(true);
-        assertEquals("", s.getKey(new Path("/", EnumSet.of(Path.Type.directory))));
-        assertEquals("/Business", s.getKey(new Path("/Business", EnumSet.of(Path.Type.directory))));
-        assertEquals("ns:a", s.getKey(new Path("/Business", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().withVersionId("a"))));
-        assertEquals("ns:a/d", s.getKey(new Path(new Path("/Business", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().withVersionId("a")), "d", EnumSet.of(Path.Type.directory))));
+        assertEquals("ns:r", s.getKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r"))));
+        assertEquals("ns:r/f", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")), "f", EnumSet.of(Path.Type.file))));
+        assertEquals("ns:r/Business", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
+            "Business", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertEquals("ns:r/Business", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
+            "Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a"))));
+        assertEquals("ns:a/d", s.getKey(new Path(new Path("/Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a")), "d", EnumSet.of(Path.Type.directory))));
     }
 
     @Test
     public void testGetKey() {
         final DropboxPathContainerService s = new DropboxPathContainerService();
-        assertEquals("", s.getKey(new Path("/", EnumSet.of(Path.Type.directory))));
-        assertEquals("/Business", s.getKey(new Path("/Business", EnumSet.of(Path.Type.directory))));
-        assertEquals("", s.getKey(new Path("/Business", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().withVersionId("a"))));
-        assertEquals("/d", s.getKey(new Path(new Path("/Business", EnumSet.of(Path.Type.directory)).withAttributes(new PathAttributes().withVersionId("a")), "d", EnumSet.of(Path.Type.directory))));
+        assertEquals("", s.getKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r"))));
+        assertEquals("/f", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")), "f", EnumSet.of(Path.Type.file))));
+        assertEquals("/Business", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
+            "Business", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertEquals("/Business", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
+            "Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a"))));
+        assertEquals("/d", s.getKey(new Path(new Path("/Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a")), "d", EnumSet.of(Path.Type.directory))));
     }
 }
