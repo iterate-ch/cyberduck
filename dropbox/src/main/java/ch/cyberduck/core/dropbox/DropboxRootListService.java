@@ -74,8 +74,10 @@ public class DropboxRootListService implements ListService {
         @Override
         public void visit(final AttributedList<Path> list, final int index, final Path file) {
             if(StringUtils.isBlank(file.attributes().getVersionId())) {
-                // User home folder does not have a id set
-                file.attributes().setVersionId(account.getRootInfo().getHomeNamespaceId());
+                if(file.isVolume()) {
+                    // User home folder does not have a id set
+                    file.attributes().setVersionId(account.getRootInfo().getHomeNamespaceId());
+                }
             }
         }
 
