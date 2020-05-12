@@ -175,18 +175,26 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     }
 
     public CustomDbxRawClientV2 getClient(final Path file) {
+        return this.getClient(this.getRoot(file));
+    }
+
+    protected PathRoot getRoot(final Path file) {
         final Path container = containerService.getContainer(file);
         if(StringUtils.isNotBlank(container.attributes().getVersionId())) {
             // List relative to the namespace id
-            return this.getClient(PathRoot.namespaceId(container.attributes().getVersionId()));
+            return PathRoot.namespaceId(container.attributes().getVersionId());
         }
         final Path root = containerService.getRoot(file);
         if(StringUtils.isNotBlank(root.attributes().getVersionId())) {
-            return this.getClient(PathRoot.namespaceId(root.attributes().getVersionId()));
+            return PathRoot.namespaceId(root.attributes().getVersionId());
         }
-        return client;
+        return PathRoot.HOME;
     }
 
+    /**
+     * @param root The Dropbox-API-Path-Root header can be used to perform actions relative to a namespace without
+     *             including the namespace as part of the path variable for every request.
+     */
     protected CustomDbxRawClientV2 getClient(final PathRoot root) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set path root to %s", root));

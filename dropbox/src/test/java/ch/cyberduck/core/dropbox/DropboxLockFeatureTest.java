@@ -55,7 +55,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
     @Test
     public void testLock() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
-        final Path file = touch.touch(new Path(new Path(new DropboxHomeFinderFeature(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.shared)).withAttributes(new PathAttributes().withVersionId("7581509952")),
+        final Path file = touch.touch(new Path(new Path(new DropboxHomeFinderFeature(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().withVersionId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         final DropboxLockFeature f = new DropboxLockFeature(session);
         final String lock = f.lock(file);
@@ -67,7 +67,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
 
     @Test(expected = NotfoundException.class)
     public void testLockNoSuchFile() throws Exception {
-        final Path file = new Path(new Path(new DropboxHomeFinderFeature(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.shared)).withAttributes(new PathAttributes().withVersionId("7581509952")),
+        final Path file = new Path(new Path(new DropboxHomeFinderFeature(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().withVersionId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final DropboxLockFeature f = new DropboxLockFeature(session);
         f.lock(file);

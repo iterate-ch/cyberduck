@@ -1,7 +1,7 @@
 package ch.cyberduck.core.dropbox;
 
 /*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,9 +16,9 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractDropboxTest;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -29,27 +29,19 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Category(IntegrationTest.class)
-public class DropboxTouchFeatureTest extends AbstractDropboxTest {
-
-    @Test(expected = AccessDeniedException.class)
-    public void testDisallowedName() throws Exception {
-        final DropboxTouchFeature touch = new DropboxTouchFeature(session);
-        final Path file = new Path(new DropboxHomeFinderFeature(session).find(), String.format("~%s.tmp", UUID.randomUUID().toString()), EnumSet.of(Path.Type.file));
-        assertFalse(touch.isSupported(new DropboxHomeFinderFeature(session).find(), file.getName()));
-        touch.touch(file, new TransferStatus());
-    }
+public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
 
     @Test
-    public void testFindFile() throws Exception {
-        final Path file = new Path(new DropboxHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        new DropboxTouchFeature(session).touch(file, new TransferStatus());
+    public void testMkdir() throws Exception {
+        final Path target = new DropboxDirectoryFeature(session).mkdir(new Path(new DropboxHomeFinderFeature(session).find(),
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
+        assertTrue(new DefaultFindFeature(session).find(target));
+        final Path file = new DropboxTouchFeature(session).touch(new Path(target, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         assertTrue(new DefaultFindFeature(session).find(file));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

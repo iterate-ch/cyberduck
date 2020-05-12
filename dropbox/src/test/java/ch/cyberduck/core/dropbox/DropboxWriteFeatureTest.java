@@ -16,6 +16,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.AbstractDropboxTest;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledConnectionCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
@@ -39,7 +40,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -52,7 +52,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(66800);
         status.setLength(content.length);
-        final Path test = new Path(new DropboxHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
@@ -84,7 +84,7 @@ public class DropboxWriteFeatureTest extends AbstractDropboxTest {
         final TransferStatus status = new TransferStatus();
         final byte[] content = RandomUtils.nextBytes(290000);
         status.setLength(content.length);
-        final Path test = new Path(new DropboxHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path test = new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final OutputStream out = write.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);

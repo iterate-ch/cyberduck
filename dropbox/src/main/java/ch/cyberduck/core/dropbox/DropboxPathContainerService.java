@@ -25,6 +25,10 @@ public class DropboxPathContainerService extends PathContainerService {
     private boolean useNamespace = false;
 
     /**
+     * Note that this syntax of using a namespace ID in the path parameter is only supported for namespaces that are
+     * mounted under the root. That means it can't be used to access the the team space itself, for members on teams
+     * using team space and member folders.
+     *
      * @param useNamespace Include namespace id in path
      */
     public DropboxPathContainerService withNamespace(final boolean useNamespace) {
@@ -33,13 +37,33 @@ public class DropboxPathContainerService extends PathContainerService {
     }
 
     @Override
+    public boolean isContainer(final Path file) {
+        if(file.isRoot()) {
+            return true;
+        }
+        if(super.isContainer(file)) {
+            return file.getType().contains(Path.Type.volume);
+        }
+        return false;
+    }
+
+    @Override
+    public Path getContainer(final Path file) {
+        if(this.isContainer(file)) {
+            // Reference container using parent namespace
+            return super.getContainer(file.getParent());
+        }
+        return super.getContainer(file);
+    }
+
+    @Override
     public String getKey(final Path file) {
         final Path container = this.getContainer(file);
         final String namespace = container.attributes().getVersionId();
         if(StringUtils.isNotBlank(namespace)) {
             // Return path relative to the namespace root
-            final String key = super.getKey(file);
-            if(StringUtils.isBlank(key)) {
+            final String key = this.isContainer(file) ? file.getName() : super.getKey(file);
+            if(file.isRoot()) {
                 // Root
                 if(useNamespace) {
                     return String.format("ns:%s", namespace);
