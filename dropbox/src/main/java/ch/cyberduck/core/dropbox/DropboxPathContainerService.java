@@ -20,6 +20,8 @@ import ch.cyberduck.core.PathContainerService;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.dropbox.core.v2.common.PathRoot;
+
 public class DropboxPathContainerService extends PathContainerService {
 
     private boolean useNamespace = false;
@@ -48,21 +50,10 @@ public class DropboxPathContainerService extends PathContainerService {
     }
 
     @Override
-    public Path getContainer(final Path file) {
-        if(this.isContainer(file)) {
-            // Reference container using parent namespace
-            return super.getContainer(file.getParent());
-        }
-        return super.getContainer(file);
-    }
-
-    @Override
     public String getKey(final Path file) {
         final Path container = this.getContainer(file);
         final String namespace = container.attributes().getVersionId();
         if(StringUtils.isNotBlank(namespace)) {
-            // Return path relative to the namespace root
-            final String key = this.isContainer(file) ? file.getName() : super.getKey(file);
             if(file.isRoot()) {
                 // Root
                 if(useNamespace) {
@@ -70,11 +61,22 @@ public class DropboxPathContainerService extends PathContainerService {
                 }
                 return StringUtils.EMPTY;
             }
+            // Return path relative to the namespace root
+            final String key = this.isContainer(file) ? StringUtils.EMPTY : Path.DELIMITER + super.getKey(file);
             if(useNamespace) {
-                return String.format("ns:%s/%s", namespace, key);
+                return String.format("ns:%s%s", namespace, key);
             }
-            return Path.DELIMITER + key;
+            return key;
         }
         return file.isRoot() ? StringUtils.EMPTY : file.getAbsolute();
+    }
+
+    protected PathRoot getNamespace(final Path file) {
+        final Path container = this.getContainer(file);
+        if(StringUtils.isNotBlank(container.attributes().getVersionId())) {
+            // List relative to the namespace id
+            return PathRoot.namespaceId(container.attributes().getVersionId());
+        }
+        return PathRoot.HOME;
     }
 }

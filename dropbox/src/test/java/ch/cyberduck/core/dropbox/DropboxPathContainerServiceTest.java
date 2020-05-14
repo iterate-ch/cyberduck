@@ -15,12 +15,15 @@ package ch.cyberduck.core.dropbox;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 
 import org.junit.Test;
 
 import java.util.EnumSet;
+
+import com.dropbox.core.v2.common.PathRoot;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,9 +34,7 @@ public class DropboxPathContainerServiceTest {
         final DropboxPathContainerService s = new DropboxPathContainerService().withNamespace(true);
         assertEquals("ns:r", s.getKey(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r"))));
         assertEquals("ns:r/f", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")), "f", EnumSet.of(Path.Type.file))));
-        assertEquals("ns:r/Business", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
-            "Business", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertEquals("ns:r/Business", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
+        assertEquals("ns:a", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
             "Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a"))));
         assertEquals("ns:a/d", s.getKey(new Path(new Path("/Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a")), "d", EnumSet.of(Path.Type.directory))));
     }
@@ -45,8 +46,21 @@ public class DropboxPathContainerServiceTest {
         assertEquals("/f", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")), "f", EnumSet.of(Path.Type.file))));
         assertEquals("/Business", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
             "Business", EnumSet.of(Path.Type.directory, Path.Type.volume))));
-        assertEquals("/Business", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
+        assertEquals("", s.getKey(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
             "Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a"))));
         assertEquals("/d", s.getKey(new Path(new Path("/Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a")), "d", EnumSet.of(Path.Type.directory))));
+    }
+
+    @Test
+    public void testNamespace() {
+        final DropboxPathContainerService s = new DropboxPathContainerService();
+        final Host host = new Host(new DropboxProtocol());
+        assertEquals(PathRoot.namespaceId("r"), s.getNamespace(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r"))));
+        assertEquals(PathRoot.namespaceId("r"), s.getNamespace(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")), "f", EnumSet.of(Path.Type.file))));
+        assertEquals(PathRoot.HOME, s.getNamespace(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
+            "Business", EnumSet.of(Path.Type.directory, Path.Type.volume))));
+        assertEquals(PathRoot.namespaceId("a"), s.getNamespace(new Path(new Path("/", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("r")),
+            "Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a"))));
+        assertEquals(PathRoot.namespaceId("a"), s.getNamespace(new Path(new Path("/Business", EnumSet.of(Path.Type.directory, Path.Type.volume)).withAttributes(new PathAttributes().withVersionId("a")), "d", EnumSet.of(Path.Type.directory))));
     }
 }
