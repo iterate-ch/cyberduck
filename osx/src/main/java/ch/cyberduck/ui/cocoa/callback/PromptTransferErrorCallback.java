@@ -36,7 +36,7 @@ public class PromptTransferErrorCallback implements TransferErrorCallback {
     }
 
     @Override
-    public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure) {
+    public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) throws BackgroundException {
         if(suppressed) {
             return !option;
         }

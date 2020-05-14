@@ -320,12 +320,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             // Retry immediately
                             return call();
                         }
-                        if(table.size() == 0) {
-                            // Fail fast when first item in queue fails preparing
-                            throw e;
-                        }
                         // Prompt to continue or abort for application errors
-                        else if(error.prompt(new TransferItem(file, local), parent, e)) {
+                        else if(error.prompt(new TransferItem(file, local), parent, e, table.size())) {
                             // Continue
                             log.warn(String.format("Ignore transfer failure %s", e));
                             return null;
@@ -460,12 +456,8 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 log.debug(String.format("Cancel retry for %s", item));
                             }
                             segment.setFailure();
-                            if(table.size() == 1) {
-                                // Fail fast when transferring single file
-                                throw e;
-                            }
                             // Prompt to continue or abort for application errors
-                            else if(error.prompt(item, segment, e)) {
+                            if(error.prompt(item, segment, e, table.size())) {
                                 // Continue
                                 log.warn(String.format("Ignore transfer failure %s", e));
                             }
