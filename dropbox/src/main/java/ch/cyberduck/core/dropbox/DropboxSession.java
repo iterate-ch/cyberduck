@@ -22,7 +22,6 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
@@ -36,7 +35,6 @@ import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
@@ -57,7 +55,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();
 
-    private final PathContainerService containerService
+    private final DropboxPathContainerService containerService
         = new DropboxPathContainerService();
 
     private OAuth2RequestInterceptor authorizationService;
@@ -175,20 +173,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     }
 
     public CustomDbxRawClientV2 getClient(final Path file) {
-        return this.getClient(this.getRoot(file));
-    }
-
-    protected PathRoot getRoot(final Path file) {
-        final Path container = containerService.getContainer(file);
-        if(StringUtils.isNotBlank(container.attributes().getVersionId())) {
-            // List relative to the namespace id
-            return PathRoot.namespaceId(container.attributes().getVersionId());
-        }
-        final Path root = containerService.getRoot(file);
-        if(StringUtils.isNotBlank(root.attributes().getVersionId())) {
-            return PathRoot.namespaceId(root.attributes().getVersionId());
-        }
-        return PathRoot.HOME;
+        return this.getClient(containerService.getNamespace(file));
     }
 
     /**
