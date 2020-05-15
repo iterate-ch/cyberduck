@@ -30,6 +30,14 @@ public interface CryptoFilename {
     boolean isDeflated(String filename);
 
     /**
+     * Check if a filename can be encrypted
+     *
+     * @param filename Encrypted filename
+     * @return true if filenamed can be encrypted, false otherwise
+     */
+    boolean isValid(String filename);
+
+    /**
      * Inflate a deflated filename
      *
      * @param session   Connection

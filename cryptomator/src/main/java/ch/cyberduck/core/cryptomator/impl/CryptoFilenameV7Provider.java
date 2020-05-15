@@ -31,13 +31,18 @@ public class CryptoFilenameV7Provider implements CryptoFilename {
     }
 
     @Override
+    public boolean isValid(final String filename) {
+        return this.isBelowThreshold(filename);
+    }
+
+    @Override
     public String inflate(final Session<?> session, final String shortName) throws BackgroundException {
         return shortName;
     }
 
     @Override
     public String deflate(final Session<?> session, final String filename) throws BackgroundException {
-        if(filename.length() <= NAME_SHORTENING_THRESHOLD) {
+        if(this.isBelowThreshold(filename)) {
             return filename;
         }
         throw new CryptoInvalidFilenameException(String.format("Filename length %d exceeds maximum length %d", filename.length(), NAME_SHORTENING_THRESHOLD));
@@ -56,5 +61,9 @@ public class CryptoFilenameV7Provider implements CryptoFilename {
     @Override
     public void destroy() {
         //
+    }
+
+    private boolean isBelowThreshold(final String filename) {
+        return filename.length() <= NAME_SHORTENING_THRESHOLD;
     }
 }
