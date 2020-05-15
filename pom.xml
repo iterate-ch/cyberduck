@@ -455,6 +455,7 @@
                             <jna.library.path>${project.build.directory}</jna.library.path>
                         </systemPropertyVariables>
                         <excludedGroups>ch.cyberduck.test.IntegrationTest</excludedGroups>
+                        <trimStackTrace>false</trimStackTrace>
                     </configuration>
                 </plugin>
                 <plugin>
