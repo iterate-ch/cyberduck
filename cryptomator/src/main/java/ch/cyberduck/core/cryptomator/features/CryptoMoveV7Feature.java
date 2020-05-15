@@ -65,7 +65,7 @@ public class CryptoMoveV7Feature implements Move {
 
     @Override
     public boolean isSupported(final Path source, final Path target) {
-        return proxy.isSupported(source, target);
+        return proxy.isSupported(source, target) && vault.getFilenameProvider().isValid(target.getName());
     }
 
     @Override
