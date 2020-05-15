@@ -30,6 +30,7 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
@@ -116,7 +117,8 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             return (T) new DropboxHomeFinderFeature(this);
         }
         if(type == ListService.class) {
-            return (T) new DropboxRootListService(this);
+            return PreferencesFactory.get().getBoolean("dropbox.business.enable") ?
+                (T) new DropboxRootListService(this) : (T) new DropboxListService(this);
         }
         if(type == Read.class) {
             return (T) new DropboxReadFeature(this);
