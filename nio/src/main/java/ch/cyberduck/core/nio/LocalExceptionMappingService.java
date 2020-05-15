@@ -16,8 +16,8 @@ package ch.cyberduck.core.nio;
  */
 
 import ch.cyberduck.core.AbstractExceptionMappingService;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class LocalExceptionMappingService extends AbstractExceptionMappingServic
             return new NotfoundException(buffer.toString(), e);
         }
         if(e instanceof FileSystemException) {
-            return new LocalAccessDeniedException(buffer.toString(), e);
+            return new AccessDeniedException(buffer.toString(), e);
         }
         return this.wrap(e, buffer);
     }
