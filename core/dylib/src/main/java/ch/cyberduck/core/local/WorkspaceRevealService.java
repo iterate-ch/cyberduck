@@ -22,6 +22,8 @@ import ch.cyberduck.binding.application.NSWorkspace;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.unicode.NFDNormalizer;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class WorkspaceRevealService implements RevealService {
 
     @Override
@@ -30,7 +32,7 @@ public class WorkspaceRevealService implements RevealService {
             // If a second path argument is specified, a new file viewer is opened. If you specify an
             // empty string (@"") for this parameter, the file is selected in the main viewer.
             return NSWorkspace.sharedWorkspace().selectFile(new NFDNormalizer().normalize(file.getAbsolute()).toString(),
-                new NFDNormalizer().normalize(file.getParent().getAbsolute()).toString());
+                StringUtils.EMPTY);
         }
     }
 }
