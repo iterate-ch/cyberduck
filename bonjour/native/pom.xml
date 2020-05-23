@@ -74,10 +74,10 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <property name="home" value="${main.basedir}" />
                                         <ant antfile="${project.basedir}/build.xml" target="restore" dir="." />
-                                    </tasks>
+                                    </target>
                                 </configuration>
                             </execution>
                             <execution>
@@ -87,12 +87,12 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <property name="home" value="${main.basedir}" />
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
                                         <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
-                                    </tasks>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>

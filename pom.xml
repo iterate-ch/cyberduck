@@ -423,14 +423,14 @@
                                 <goal>run</goal>
                             </goals>
                             <configuration>
-                                <tasks>
+                                <target>
                                     <property name="home" value="${main.basedir}" />
                                     <property name="version" value="${project.version}" />
                                     <property name="revision" value="${git.commitsCount}" />
                                     <property name="git.revision" value="${git.revision}" />
                                     <property name="sparkle.feed" value="${sparkle.feed}" />
                                     <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
-                                </tasks>
+                                </target>
                             </configuration>
                         </execution>
                     </executions>
