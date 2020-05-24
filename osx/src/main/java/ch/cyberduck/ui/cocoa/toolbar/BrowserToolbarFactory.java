@@ -551,7 +551,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
                     return item;
                 }
                 case terminal: {
-                    final Application application = applicationFinder.getDescription(preferences.getProperty("terminal.bundle.identifier"));
+                    final Application application = applicationFinder.find(".command");
                     item.setLabel(application.getName());
                     item.setPaletteLabel(application.getName());
                     item.setTarget(controller.id());
