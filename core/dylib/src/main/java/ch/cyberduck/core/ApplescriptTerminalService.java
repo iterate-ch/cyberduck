@@ -38,7 +38,7 @@ public class ApplescriptTerminalService implements TerminalService {
             host.getHostname(),
             String.valueOf(host.getPort()), this.escape(workdir.getAbsolute()));
         if(log.isInfoEnabled()) {
-            log.info(String.format("Excecute SSH command %s", ssh));
+            log.info(String.format("Execute SSH command %s", ssh));
         }
         // Escape
         ssh = StringUtils.replace(ssh, "\\", "\\\\");
@@ -47,12 +47,22 @@ public class ApplescriptTerminalService implements TerminalService {
         if(log.isInfoEnabled()) {
             log.info("Escaped SSH Command for Applescript:" + ssh);
         }
-        String command
+        // Applescript
+        final String applescript;
+        switch(application.getIdentifier()) {
+            case "com.googlecode.iterm2":
+                applescript = MessageFormat.format(preferences.getProperty("terminal.command.iterm2"), ssh);
+                break;
+            default:
+                applescript = MessageFormat.format(preferences.getProperty("terminal.command.default"), ssh);
+                break;
+        }
+        final String command
             = "tell application \"" + application.getName() + "\""
             + "\n"
             + "activate"
             + "\n"
-            + MessageFormat.format(preferences.getProperty("terminal.command"), ssh)
+            + applescript
             + "\n"
             + "end tell";
         if(log.isInfoEnabled()) {
