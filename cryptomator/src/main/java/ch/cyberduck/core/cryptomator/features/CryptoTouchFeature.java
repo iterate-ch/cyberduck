@@ -53,7 +53,7 @@ public class CryptoTouchFeature<Reply> implements Touch<Reply> {
 
     @Override
     public boolean isSupported(final Path workdir, final String filename) {
-        return proxy.isSupported(workdir, StringUtils.EMPTY);
+        return proxy.isSupported(workdir, StringUtils.EMPTY) && vault.getFilenameProvider().isValid(filename);
     }
 
     @Override

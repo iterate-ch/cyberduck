@@ -283,13 +283,13 @@
                             <dependency>
                                 <groupId>org.codehaus.groovy</groupId>
                                 <artifactId>groovy-all</artifactId>
-                                <version>3.0.3</version>
+                                <version>3.0.4</version>
                                 <type>pom</type>
                             </dependency>
                             <dependency>
                                 <groupId>org.codehaus.groovy</groupId>
                                 <artifactId>groovy-dateutil</artifactId>
-                                <version>3.0.3</version>
+                                <version>3.0.4</version>
                             </dependency>
                         </dependencies>
                     </plugin>

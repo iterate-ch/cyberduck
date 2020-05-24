@@ -60,6 +60,11 @@ public class CryptoFilenameV6Provider implements CryptoFilename {
     }
 
     @Override
+    public boolean isValid(final String filename) {
+        return true;
+    }
+
+    @Override
     public String inflate(final Session<?> session, final String shortName) throws BackgroundException {
         return new ContentReader(session).read(this.resolve(shortName));
     }

@@ -22,7 +22,6 @@ import ch.cyberduck.core.HostKeyCallback;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.LoginCallback;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.PreferencesUseragentProvider;
 import ch.cyberduck.core.UrlProvider;
 import ch.cyberduck.core.UseragentProvider;
@@ -31,12 +30,12 @@ import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
@@ -57,7 +56,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     private final UseragentProvider useragent
         = new PreferencesUseragentProvider();
 
-    private final PathContainerService containerService
+    private final DropboxPathContainerService containerService
         = new DropboxPathContainerService();
 
     private OAuth2RequestInterceptor authorizationService;
@@ -118,7 +117,8 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             return (T) new DropboxHomeFinderFeature(this);
         }
         if(type == ListService.class) {
-            return (T) new DropboxRootListService(this);
+            return PreferencesFactory.get().getBoolean("dropbox.business.enable") ?
+                (T) new DropboxRootListService(this) : (T) new DropboxListService(this);
         }
         if(type == Read.class) {
             return (T) new DropboxReadFeature(this);
@@ -175,18 +175,13 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
     }
 
     public CustomDbxRawClientV2 getClient(final Path file) {
-        final Path container = containerService.getContainer(file);
-        if(StringUtils.isNotBlank(container.attributes().getVersionId())) {
-            // List relative to the namespace id
-            return this.getClient(PathRoot.namespaceId(container.attributes().getVersionId()));
-        }
-        final Path root = containerService.getRoot(file);
-        if(StringUtils.isNotBlank(root.attributes().getVersionId())) {
-            return this.getClient(PathRoot.namespaceId(root.attributes().getVersionId()));
-        }
-        return client;
+        return this.getClient(containerService.getNamespace(file));
     }
 
+    /**
+     * @param root The Dropbox-API-Path-Root header can be used to perform actions relative to a namespace without
+     *             including the namespace as part of the path variable for every request.
+     */
     protected CustomDbxRawClientV2 getClient(final PathRoot root) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set path root to %s", root));

@@ -20,11 +20,17 @@ import ch.cyberduck.core.PathContainerService;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.dropbox.core.v2.common.PathRoot;
+
 public class DropboxPathContainerService extends PathContainerService {
 
     private boolean useNamespace = false;
 
     /**
+     * Note that this syntax of using a namespace ID in the path parameter is only supported for namespaces that are
+     * mounted under the root. That means it can't be used to access the the team space itself, for members on teams
+     * using team space and member folders.
+     *
      * @param useNamespace Include namespace id in path
      */
     public DropboxPathContainerService withNamespace(final boolean useNamespace) {
@@ -33,24 +39,44 @@ public class DropboxPathContainerService extends PathContainerService {
     }
 
     @Override
+    public boolean isContainer(final Path file) {
+        if(file.isRoot()) {
+            return true;
+        }
+        if(super.isContainer(file)) {
+            return file.getType().contains(Path.Type.volume);
+        }
+        return false;
+    }
+
+    @Override
     public String getKey(final Path file) {
         final Path container = this.getContainer(file);
         final String namespace = container.attributes().getVersionId();
         if(StringUtils.isNotBlank(namespace)) {
-            // Return path relative to the namespace root
-            final String key = super.getKey(file);
-            if(StringUtils.isBlank(key)) {
+            if(file.isRoot()) {
                 // Root
                 if(useNamespace) {
                     return String.format("ns:%s", namespace);
                 }
                 return StringUtils.EMPTY;
             }
+            // Return path relative to the namespace root
+            final String key = this.isContainer(file) ? StringUtils.EMPTY : Path.DELIMITER + super.getKey(file);
             if(useNamespace) {
-                return String.format("ns:%s/%s", namespace, key);
+                return String.format("ns:%s%s", namespace, key);
             }
-            return Path.DELIMITER + key;
+            return key;
         }
         return file.isRoot() ? StringUtils.EMPTY : file.getAbsolute();
+    }
+
+    protected PathRoot getNamespace(final Path file) {
+        final Path container = this.getContainer(file);
+        if(StringUtils.isNotBlank(container.attributes().getVersionId())) {
+            // List relative to the namespace id
+            return PathRoot.namespaceId(container.attributes().getVersionId());
+        }
+        return PathRoot.HOME;
     }
 }

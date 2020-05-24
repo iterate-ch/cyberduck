@@ -165,7 +165,7 @@ public class FTPSession extends SSLSession<FTPClient> {
     public FTPClient connect(final Proxy proxy, final HostKeyCallback callback, final LoginCallback prompt) throws BackgroundException {
         try {
             final CustomTrustSSLProtocolSocketFactory f
-                = new CustomTrustSSLProtocolSocketFactory(trust, key);
+                = new CustomTrustSSLProtocolSocketFactory(trust, key, preferences.getProperty("connection.ssl.protocols.ftp").split(","));
 
             final LoggingProtocolCommandListener listener = new LoggingProtocolCommandListener(this);
             final FTPClient client = new FTPClient(host.getProtocol(), f, f.getSSLContext()) {

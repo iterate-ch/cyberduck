@@ -149,7 +149,7 @@ public class Profile implements Protocol, Serializable {
         if(StringUtils.isBlank(v)) {
             return parent.isBundled();
         }
-        return Boolean.valueOf(v);
+        return Boolean.parseBoolean(v);
     }
 
     @Override
@@ -177,7 +177,7 @@ public class Profile implements Protocol, Serializable {
             return parent.getDefaultPort();
         }
         try {
-            return Integer.valueOf(v);
+            return Integer.parseInt(v);
         }
         catch(NumberFormatException e) {
             log.warn(String.format("Port %s is not a number", e.getMessage()));
@@ -333,7 +333,7 @@ public class Profile implements Protocol, Serializable {
         if(regions.isEmpty()) {
             return parent.getRegions();
         }
-        final Set<Location.Name> set = new HashSet<Location.Name>();
+        final Set<Location.Name> set = new HashSet<>();
         for(String region : regions) {
             set.add(new Location.Name(region));
         }

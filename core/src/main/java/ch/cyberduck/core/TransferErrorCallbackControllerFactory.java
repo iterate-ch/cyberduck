@@ -17,8 +17,11 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
+import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
+import ch.cyberduck.core.transfer.TransferItem;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.log4j.Logger;
@@ -54,6 +57,20 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
      * @return Login controller instance for the current platform.
      */
     public static TransferErrorCallback get(final Controller c) {
-        return new TransferErrorCallbackControllerFactory().create(c);
+        final TransferErrorCallback proxy = new TransferErrorCallbackControllerFactory().create(c);
+        return new TransferErrorCallback() {
+            @Override
+            public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) throws BackgroundException {
+                if(pending == 0) {
+                    // Fail fast when first item in queue fails preparing
+                    throw failure;
+                }
+                if(pending == 1) {
+                    // Fail fast when transferring single file
+                    throw failure;
+                }
+                return proxy.prompt(item, status, failure, pending);
+            }
+        };
     }
 }

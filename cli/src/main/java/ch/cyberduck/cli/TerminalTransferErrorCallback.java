@@ -41,7 +41,7 @@ public class TerminalTransferErrorCallback implements TransferErrorCallback {
     }
 
     @Override
-    public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure) throws BackgroundException {
+    public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) throws BackgroundException {
         final StringAppender appender = new StringAppender();
         appender.append(failure.getMessage());
         appender.append(failure.getDetail());

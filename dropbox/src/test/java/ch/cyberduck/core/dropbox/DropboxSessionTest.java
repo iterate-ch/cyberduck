@@ -16,7 +16,6 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.features.Directory;
 import ch.cyberduck.core.features.Touch;
@@ -34,8 +33,8 @@ public class DropboxSessionTest {
 
     @Test
     public void testFeatures() {
-        final Host host = new Host(new DropboxProtocol(), "test.cyberduck.ch");
-        final Session session = new DropboxSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
+        final Host host = new Host(new DropboxProtocol());
+        final DropboxSession session = new DropboxSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         assertNotNull(session.getFeature(Directory.class));
         assertNotNull(session.getFeature(Delete.class));
         assertNotNull(session.getFeature(Touch.class));

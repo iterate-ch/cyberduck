@@ -26,7 +26,9 @@ public interface TransferErrorCallback {
      * @param item    Transfer
      * @param status  Transfer Status
      * @param failure Failure transferring file
-     * @return True to continue regardless of the failure
+     * @param pending Number of pending transfers
+     * @return True to ignore failure continue regardless. False to abort file transfer silently
+     * @throws BackgroundException Abort file transfer with exception
      */
-    boolean prompt(TransferItem item, TransferStatus status, BackgroundException failure) throws BackgroundException;
+    boolean prompt(TransferItem item, TransferStatus status, BackgroundException failure, int pending) throws BackgroundException;
 }

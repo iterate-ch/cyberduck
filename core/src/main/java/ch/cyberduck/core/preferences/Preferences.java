@@ -830,6 +830,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("brick.pairing.interval.ms", String.valueOf(1000L));
 
         this.setDefault("dropbox.upload.chunksize", String.valueOf(150 * 1024L * 1024L));
+        this.setDefault("dropbox.business.enable", String.valueOf(true));
 
         /*
           NTLM Windows Domain
@@ -967,6 +968,7 @@ public abstract class Preferences implements Locales {
         }
         Security.insertProviderAt(provider, position);
         this.setDefault("connection.ssl.protocols", "TLSv1.3,TLSv1.2,TLSv1.1,TLSv1");
+        this.setDefault("connection.ssl.protocols.ftp", "TLSv1.2,TLSv1.1,TLSv1");
         this.setDefault("connection.ssl.cipher.blacklist", StringUtils.EMPTY);
 
         this.setDefault("connection.ssl.x509.revocation.online", String.valueOf(false));
@@ -1079,7 +1081,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("threading.pool.keepalive.seconds", String.valueOf(60L));
 
         this.setDefault("cryptomator.enable", String.valueOf(true));
-        this.setDefault("cryptomator.vault.version", String.valueOf(6));
+        this.setDefault("cryptomator.vault.version", String.valueOf(7));
         this.setDefault("cryptomator.vault.autodetect", String.valueOf(true));
     }
 

@@ -29,10 +29,10 @@ public class SynchronizingTransferErrorCallback implements TransferErrorCallback
     }
 
     @Override
-    public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure) throws BackgroundException {
+    public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) throws BackgroundException {
         lock.lock();
         try {
-            return proxy.prompt(item, status, failure);
+            return proxy.prompt(item, status, failure, pending);
         }
         finally {
             lock.unlock();
