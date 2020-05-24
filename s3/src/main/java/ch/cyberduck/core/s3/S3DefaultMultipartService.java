@@ -24,6 +24,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.MultipartUploadChunk;
 import org.jets3t.service.S3ServiceException;
@@ -70,8 +71,8 @@ public class S3DefaultMultipartService implements S3MultipartService {
             final MultipartUploadChunk chunk;
             try {
                 chunk = session.getClient().multipartListUploadsChunked(
-                    containerService.getContainer(directory).getName(), containerService.getKey(directory),
-                    null, nextKeyMarker, nextUploadIdMarker, null, true);
+                    containerService.getContainer(directory).getName(), containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory),
+                    String.valueOf(Path.DELIMITER), nextKeyMarker, nextUploadIdMarker, null, false);
             }
             catch(S3ServiceException e) {
                 final BackgroundException failure = new S3ExceptionMappingService().map("Upload {0} failed", e, directory);
