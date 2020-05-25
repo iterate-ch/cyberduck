@@ -25,6 +25,7 @@ import ch.cyberduck.core.local.FileWatcher;
 import ch.cyberduck.core.local.FileWatcherListener;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -63,7 +64,8 @@ public class FSEventWatchServiceTest {
     }
 
     @Test
-    public void testListenerEventWatchService() throws Exception {
+    @Ignore
+    public void testListener() throws Exception {
         final FileWatcher watcher = new FileWatcher(new FSEventWatchService());
         final Local file = LocalFactory.get(LocalFactory.get(System.getProperty("java.io.tmpdir")), String.format("é%s", new AlphanumericRandomStringService().random()));
         final CountDownLatch update = new CountDownLatch(1);
@@ -92,6 +94,7 @@ public class FSEventWatchServiceTest {
             }
         };
         LocalTouchFactory.get().touch(file);
+        assertTrue(file.exists());
         assertTrue(watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS));
         final ProcessBuilder sh = new ProcessBuilder("sh", "-c", String.format("echo 'Test' >> %s", file.getAbsolute()));
         final Process cat = sh.start();
