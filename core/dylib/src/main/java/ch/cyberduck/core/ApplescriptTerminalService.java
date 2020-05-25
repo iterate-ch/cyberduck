@@ -20,27 +20,25 @@ public class ApplescriptTerminalService implements TerminalService {
     private static final Logger log = Logger.getLogger(ApplescriptTerminalService.class);
 
     private final ApplicationFinder finder
-            = ApplicationFinderFactory.get();
+        = ApplicationFinderFactory.get();
 
     private final Preferences preferences
-            = PreferencesFactory.get();
+        = PreferencesFactory.get();
 
     @Override
     public void open(final Host host, final Path workdir) throws AccessDeniedException {
         final boolean identity = host.getCredentials().isPublicKeyAuthentication();
-        final Application application
-                = finder.getDescription(preferences.getProperty("terminal.bundle.identifier"));
+        final Application application = finder.find(".command");
         if(!finder.isInstalled(application)) {
-            log.error(String.format("Application with bundle identifier %s is not installed",
-                    preferences.getProperty("terminal.bundle.identifier")));
+            throw new LocalAccessDeniedException("Unable to determine default Terminal application");
         }
         String ssh = MessageFormat.format(preferences.getProperty("terminal.command.ssh"),
-                identity ? String.format("-i \"%s\"", host.getCredentials().getIdentity().getAbsolute()) : StringUtils.EMPTY,
-                host.getCredentials().getUsername(),
-                host.getHostname(),
-                String.valueOf(host.getPort()), this.escape(workdir.getAbsolute()));
+            identity ? String.format("-i \"%s\"", host.getCredentials().getIdentity().getAbsolute()) : StringUtils.EMPTY,
+            host.getCredentials().getUsername(),
+            host.getHostname(),
+            String.valueOf(host.getPort()), this.escape(workdir.getAbsolute()));
         if(log.isInfoEnabled()) {
-            log.info(String.format("Excecute SSH command %s", ssh));
+            log.info(String.format("Execute SSH command %s", ssh));
         }
         // Escape
         ssh = StringUtils.replace(ssh, "\\", "\\\\");
@@ -49,14 +47,24 @@ public class ApplescriptTerminalService implements TerminalService {
         if(log.isInfoEnabled()) {
             log.info("Escaped SSH Command for Applescript:" + ssh);
         }
-        String command
-                = "tell application \"" + application.getName() + "\""
-                + "\n"
-                + "activate"
-                + "\n"
-                + MessageFormat.format(preferences.getProperty("terminal.command"), ssh)
-                + "\n"
-                + "end tell";
+        // Applescript
+        final String applescript;
+        switch(application.getIdentifier()) {
+            case "com.googlecode.iterm2":
+                applescript = MessageFormat.format(preferences.getProperty("terminal.command.iterm2"), ssh);
+                break;
+            default:
+                applescript = MessageFormat.format(preferences.getProperty("terminal.command.default"), ssh);
+                break;
+        }
+        final String command
+            = "tell application \"" + application.getName() + "\""
+            + "\n"
+            + "activate"
+            + "\n"
+            + applescript
+            + "\n"
+            + "end tell";
         if(log.isInfoEnabled()) {
             log.info(String.format("Execute AppleScript %s", command));
         }
@@ -65,7 +73,7 @@ public class ApplescriptTerminalService implements TerminalService {
         if(null == as.executeAndReturnError(error)) {
             final NSDictionary d = error.getValueAs(NSDictionary.class);
             throw new LocalAccessDeniedException(String.format("Failure running script in %s. %s",
-                    application.getName(), d.objectForKey("NSAppleScriptErrorBriefMessage")));
+                application.getName(), d.objectForKey("NSAppleScriptErrorBriefMessage")));
         }
     }
 
