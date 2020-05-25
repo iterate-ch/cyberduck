@@ -217,7 +217,7 @@ public abstract class Preferences implements Locales {
             try (final InputStream in = defaults.getInputStream()) {
                 props.load(in);
             }
-            catch(AccessDeniedException | IOException e) {
+            catch(IllegalArgumentException | AccessDeniedException | IOException e) {
                 // Ignore failure loading configuration
             }
             for(Map.Entry<Object, Object> entry : props.entrySet()) {
