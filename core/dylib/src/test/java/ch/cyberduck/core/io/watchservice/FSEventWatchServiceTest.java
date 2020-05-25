@@ -92,6 +92,7 @@ public class FSEventWatchServiceTest {
             }
         };
         LocalTouchFactory.get().touch(file);
+        assertTrue(file.exists());
         assertTrue(watcher.register(file.getParent(), new FileWatcher.DefaultFileFilter(file), listener).await(1, TimeUnit.SECONDS));
         final ProcessBuilder sh = new ProcessBuilder("sh", "-c", String.format("echo 'Test' >> %s", file.getAbsolute()));
         final Process cat = sh.start();
