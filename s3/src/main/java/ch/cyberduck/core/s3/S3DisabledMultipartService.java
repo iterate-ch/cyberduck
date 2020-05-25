@@ -33,7 +33,7 @@ public class S3DisabledMultipartService implements S3MultipartService {
     }
 
     @Override
-    public List<MultipartPart> list(final MultipartUpload multipart) {
+    public List<MultipartPart> list(final MultipartUpload upload) {
         return Collections.emptyList();
     }
 

@@ -21,6 +21,7 @@ import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.PathNormalizer;
 import ch.cyberduck.core.VersioningConfiguration;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
@@ -90,7 +91,7 @@ public class S3ListService implements ListService {
                 attributes.setDuplicate(true);
                 attributes.setVersionId(upload.getUploadId());
                 attributes.setModificationDate(upload.getInitiatedDate().getTime());
-                objects.add(new Path(directory, upload.getObjectKey(), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
+                objects.add(new Path(directory, PathNormalizer.name(upload.getObjectKey()), EnumSet.of(Path.Type.file, Path.Type.upload), attributes));
             }
         }
         catch(AccessDeniedException | InteroperabilityException e) {
