@@ -37,6 +37,7 @@ import ch.cyberduck.core.features.Download;
 import ch.cyberduck.core.filter.DownloadDuplicateFilter;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.DelegateStreamListener;
 import ch.cyberduck.core.io.StreamListener;
 import ch.cyberduck.core.local.DefaultLocalDirectoryFeature;
 import ch.cyberduck.core.local.LocalSymlinkFactory;
@@ -77,7 +78,7 @@ public class DownloadTransfer extends Transfer {
 
     private final DownloadSymlinkResolver symlinkResolver;
 
-    private DownloadFilterOptions options;
+    private DownloadFilterOptions options = new DownloadFilterOptions();
 
     public DownloadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
@@ -153,30 +154,29 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public AbstractDownloadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
-        final DownloadFilterOptions o = (null == options ? new DownloadFilterOptions() : options);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Filter transfer with action %s and options %s", action, o));
+            log.debug(String.format("Filter transfer with action %s and options %s", action, options));
         }
         final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, source, o).withCache(cache);
+            return new ResumeFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, source, o).withCache(cache);
+            return new RenameFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, source, o).withCache(cache);
+            return new RenameExistingFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, source, o).withCache(cache);
+            return new SkipFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.trash)) {
-            return new TrashFilter(resolver, source, o).withCache(cache);
+            return new TrashFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, source, o, listener).withCache(cache);
+            return new CompareFilter(resolver, source, options, listener).withCache(cache);
         }
-        return new OverwriteFilter(resolver, source, o).withCache(cache);
+        return new OverwriteFilter(resolver, source, options).withCache(cache);
     }
 
     @Override
@@ -277,13 +277,15 @@ public class DownloadTransfer extends Transfer {
             }
             // Transfer
             final Download download = source.getFeature(Download.class);
-            download.download(file, local, bandwidth, new IconUpdateSreamListener(streamListener, status, local) {
+            final DelegateStreamListener recvListener = new DelegateStreamListener(streamListener) {
                 @Override
                 public void recv(final long bytes) {
                     addTransferred(bytes);
                     super.recv(bytes);
                 }
-            }, status, connectionCallback);
+            };
+            download.download(file, local, bandwidth, this.options.icon ?
+                new IconUpdateSreamListener(recvListener, status, local) : recvListener, status, connectionCallback);
         }
         else if(file.isDirectory()) {
             if(!status.isExists()) {

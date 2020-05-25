@@ -72,7 +72,7 @@ public class UploadTransfer extends Transfer {
     private Cache<Path> cache
             = new PathCache(PreferencesFactory.get().getInteger("transfer.cache.size"));
 
-    private UploadFilterOptions options;
+    private UploadFilterOptions options = new UploadFilterOptions();
 
     public UploadTransfer(final Host host, final Path root, final Local local) {
         this(host, Collections.singletonList(new TransferItem(root, local)),
@@ -141,31 +141,30 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public AbstractUploadFilter filter(final Session<?> source, final Session<?> destination, final TransferAction action, final ProgressListener listener) {
-        final UploadFilterOptions o = (null == options ? new UploadFilterOptions() : options);
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Filter transfer with action %s and options %s", action, o));
+            log.debug(String.format("Filter transfer with action %s and options %s", action, options));
         }
         final Symlink symlink = source.getFeature(Symlink.class);
         final UploadSymlinkResolver resolver = new UploadSymlinkResolver(symlink, roots);
-        if(o.temporary) {
-            o.withTemporary(source.getFeature(Write.class).temporary());
+        if(options.temporary) {
+            options.withTemporary(source.getFeature(Write.class).temporary());
         }
         if(action.equals(TransferAction.resume)) {
-            return new ResumeFilter(resolver, source, o).withCache(cache);
+            return new ResumeFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.rename)) {
-            return new RenameFilter(resolver, source, o).withCache(cache);
+            return new RenameFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.renameexisting)) {
-            return new RenameExistingFilter(resolver, source, o).withCache(cache);
+            return new RenameExistingFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.skip)) {
-            return new SkipFilter(resolver, source, o).withCache(cache);
+            return new SkipFilter(resolver, source, options).withCache(cache);
         }
         if(action.equals(TransferAction.comparison)) {
-            return new CompareFilter(resolver, source, o, listener).withCache(cache);
+            return new CompareFilter(resolver, source, options, listener).withCache(cache);
         }
-        return new OverwriteFilter(resolver, source, o).withCache(cache);
+        return new OverwriteFilter(resolver, source, options).withCache(cache);
     }
 
     @Override
@@ -251,16 +250,17 @@ public class UploadTransfer extends Transfer {
         }
         if(file.isFile()) {
             listener.message(MessageFormat.format(LocaleFactory.localizedString("Uploading {0}", "Status"),
-                    file.getName()));
+                file.getName()));
             // Transfer
             final Upload upload = source.getFeature(Upload.class);
-            final Object reply = upload.upload(file, local, bandwidth, new DelegateStreamListener(streamListener) {
+            final DelegateStreamListener sentListener = new DelegateStreamListener(streamListener) {
                 @Override
                 public void sent(final long bytes) {
                     addTransferred(bytes);
                     super.sent(bytes);
                 }
-            }, status, connectionCallback);
+            };
+            final Object reply = upload.upload(file, local, bandwidth, sentListener, status, connectionCallback);
         }
         else if(file.isDirectory()) {
             if(!status.isExists()) {
