@@ -19,6 +19,7 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
@@ -59,7 +60,8 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
 
     @Test
     public void testFind() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path container = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
+            new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
         final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
             new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final S3DefaultMultipartService service = new S3DefaultMultipartService(session);

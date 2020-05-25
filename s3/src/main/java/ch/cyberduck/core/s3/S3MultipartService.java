@@ -24,9 +24,30 @@ import org.jets3t.service.model.MultipartUpload;
 import java.util.List;
 
 public interface S3MultipartService {
+
+    /**
+     * Find pending multipart uploads for file or in directory
+     *
+     * @param file File or directory
+     * @return Pending multipart upload matching prefix of directory
+     * @throws BackgroundException Network or API failure
+     */
     List<MultipartUpload> find(Path file) throws BackgroundException;
 
-    List<MultipartPart> list(MultipartUpload multipart) throws BackgroundException;
+    /**
+     * List completed parts
+     *
+     * @param upload Pending multipart upload
+     * @return Completed parts for multipart upload
+     * @throws BackgroundException Network or API failure
+     */
+    List<MultipartPart> list(MultipartUpload upload) throws BackgroundException;
 
+    /**
+     * Delete multipart upload
+     *
+     * @param upload Pending multipart upload
+     * @throws BackgroundException Network or API failure
+     */
     void delete(MultipartUpload upload) throws BackgroundException;
 }

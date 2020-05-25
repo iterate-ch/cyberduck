@@ -57,25 +57,26 @@ public class S3DefaultMultipartService implements S3MultipartService {
     }
 
     @Override
-    public List<MultipartUpload> find(final Path directory) throws BackgroundException {
+    public List<MultipartUpload> find(final Path file) throws BackgroundException {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Finding multipart uploads for %s", directory));
+            log.debug(String.format("Finding multipart uploads for %s", file));
         }
-        final List<MultipartUpload> uploads = new ArrayList<MultipartUpload>();
+        final List<MultipartUpload> uploads = new ArrayList<>();
         // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
         // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
         // not yet been completed or aborted.
         String nextUploadIdMarker = null;
         String nextKeyMarker = null;
         do {
+            final String prefix = containerService.isContainer(file) ? StringUtils.EMPTY : containerService.getKey(file);
             final MultipartUploadChunk chunk;
             try {
                 chunk = session.getClient().multipartListUploadsChunked(
-                    containerService.getContainer(directory).getName(), containerService.isContainer(directory) ? StringUtils.EMPTY : containerService.getKey(directory),
+                    containerService.getContainer(file).getName(), prefix,
                     String.valueOf(Path.DELIMITER), nextKeyMarker, nextUploadIdMarker, null, false);
             }
             catch(S3ServiceException e) {
-                final BackgroundException failure = new S3ExceptionMappingService().map("Upload {0} failed", e, directory);
+                final BackgroundException failure = new S3ExceptionMappingService().map("Upload {0} failed", e, file);
                 if(failure instanceof NotfoundException) {
                     return Collections.emptyList();
                 }
@@ -86,7 +87,7 @@ public class S3DefaultMultipartService implements S3MultipartService {
             }
             uploads.addAll(Arrays.asList(chunk.getUploads()));
             if(log.isInfoEnabled()) {
-                log.info(String.format("Found %d previous multipart uploads for %s", uploads.size(), directory));
+                log.info(String.format("Found %d previous multipart uploads for %s", uploads.size(), file));
             }
             // Sort with newest upload first in list
             uploads.sort(new Comparator<MultipartUpload>() {
@@ -101,23 +102,23 @@ public class S3DefaultMultipartService implements S3MultipartService {
         while(nextUploadIdMarker != null);
         if(log.isInfoEnabled()) {
             for(MultipartUpload upload : uploads) {
-                log.info(String.format("Found multipart upload %s for %s", upload, directory));
+                log.info(String.format("Found multipart upload %s for %s", upload, file));
             }
         }
         return uploads;
     }
 
     @Override
-    public List<MultipartPart> list(final MultipartUpload multipart) throws BackgroundException {
+    public List<MultipartPart> list(final MultipartUpload upload) throws BackgroundException {
         if(log.isInfoEnabled()) {
-            log.info(String.format("List completed parts of %s", multipart.getUploadId()));
+            log.info(String.format("List completed parts of %s", upload.getUploadId()));
         }
         // This operation lists the parts that have been uploaded for a specific multipart upload.
         try {
-            return session.getClient().multipartListParts(multipart);
+            return session.getClient().multipartListParts(upload);
         }
         catch(S3ServiceException e) {
-            throw new S3ExceptionMappingService().map(MessageFormat.format("Upload {0} failed", multipart.getObjectKey()), e);
+            throw new S3ExceptionMappingService().map(MessageFormat.format("Upload {0} failed", upload.getObjectKey()), e);
         }
     }
 
