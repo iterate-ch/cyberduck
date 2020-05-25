@@ -22,6 +22,7 @@ import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
+import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.LocalAccessDeniedException;
@@ -37,6 +38,7 @@ import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
 public class LocalListServiceTest {
 
@@ -79,48 +81,51 @@ public class LocalListServiceTest {
     @Test
     public void testListSymlink() throws Exception {
         final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
-        if(session.isPosixFilesystem()) {
-            assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-            assertTrue(session.isConnected());
-            assertNotNull(session.getClient());
-            session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-            final Path home = new LocalHomeFinderFeature(session).find();
-            final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-            final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
-            final Path symlinkAbsolute = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
-            new LocalTouchFeature(session).touch(file, new TransferStatus());
-            new LocalSymlinkFeature(session).symlink(symlinkRelative, file.getName());
-            new LocalSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
-            final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
-            assertTrue(list.contains(file));
-            assertTrue(list.contains(symlinkRelative));
-            assertFalse(list.get(symlinkRelative).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
-            assertTrue(list.get(symlinkRelative).getSymlinkTarget().getAbsolute().endsWith(file.getName()));
-            assertTrue(list.contains(symlinkAbsolute));
-            assertTrue(list.get(symlinkAbsolute).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
-            new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative), new DisabledLoginCallback(), new Delete.DisabledCallback());
-            session.close();
+        assumeTrue(session.isPosixFilesystem());
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path home = new LocalHomeFinderFeature(session).find();
+        final Path file = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
+        final Path symlinkRelative = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+        final Path symlinkAbsolute = new Path(home, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file, AbstractPath.Type.symboliclink));
+        new LocalTouchFeature(session).touch(file, new TransferStatus());
+        new LocalSymlinkFeature(session).symlink(symlinkRelative, file.getName());
+        new LocalSymlinkFeature(session).symlink(symlinkAbsolute, file.getAbsolute());
+        final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
+        assertTrue(list.contains(file));
+        assertTrue(list.contains(symlinkRelative));
+        assertFalse(list.get(symlinkRelative).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
+        assertTrue(list.get(symlinkRelative).getSymlinkTarget().getAbsolute().endsWith(file.getName()));
+        assertTrue(list.contains(symlinkAbsolute));
+        assertTrue(list.get(symlinkAbsolute).getSymlinkTarget().getAbsolute().endsWith(file.getAbsolute()));
+        new LocalDeleteFeature(session).delete(Arrays.asList(file, symlinkAbsolute, symlinkRelative), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        session.close();
+    }
+
+    @Test
+    public void testListJunction() throws Exception {
+        final LocalSession session = new LocalSession(new Host(new LocalProtocol(), new LocalProtocol().getDefaultHostname()));
+        assumeTrue(Factory.Platform.getDefault().equals(Factory.Platform.Name.windows));
+        assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
+        assertTrue(session.isConnected());
+        assertNotNull(session.getClient());
+        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
+        final Path home = new LocalHomeFinderFeature(session).find();
+        final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
+        assertTrue(list.contains(new Path(home, "Recent", EnumSet.of(Path.Type.directory))));
+        final Path recent = list.get(new Path(home, "Recent", EnumSet.of(Path.Type.directory)));
+        assertFalse(recent.attributes().getPermission().isReadable());
+        assertTrue(recent.attributes().getPermission().isExecutable());
+        try {
+            new LocalListService(session).list(recent, new DisabledListProgressListener());
+            fail();
         }
-        else {
-            assertNotNull(session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback()));
-            assertTrue(session.isConnected());
-            assertNotNull(session.getClient());
-            session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-            final Path home = new LocalHomeFinderFeature(session).find();
-            final AttributedList<Path> list = new LocalListService(session).list(home, new DisabledListProgressListener());
-            assertTrue(list.contains(new Path(home, "Recent", EnumSet.of(Path.Type.directory))));
-            final Path recent = list.get(new Path(home, "Recent", EnumSet.of(Path.Type.directory)));
-            assertFalse(recent.attributes().getPermission().isReadable());
-            assertTrue(recent.attributes().getPermission().isExecutable());
-            try {
-                new LocalListService(session).list(recent, new DisabledListProgressListener());
-                fail();
-            }
-            catch(LocalAccessDeniedException e) {
-                //
-            }
-            session.close();
+        catch(LocalAccessDeniedException e) {
+            //
         }
+        session.close();
     }
 
     @Test(expected = NotfoundException.class)
