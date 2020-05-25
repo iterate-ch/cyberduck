@@ -25,7 +25,7 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.exception.LocalAccessDeniedException;
+import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.proxy.Proxy;
@@ -122,7 +122,7 @@ public class LocalListServiceTest {
             new LocalListService(session).list(recent, new DisabledListProgressListener());
             fail();
         }
-        catch(LocalAccessDeniedException e) {
+        catch(AccessDeniedException e) {
             //
         }
         session.close();
