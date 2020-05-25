@@ -188,7 +188,7 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <property name="home" value="${main.basedir}" />
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
@@ -196,7 +196,7 @@
                                         <property name="sparkle.feed" value="${sparkle.feed}" />
                                         <property name="installer.certificate" value="${installer.certificate}" />
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
-                                    </tasks>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
