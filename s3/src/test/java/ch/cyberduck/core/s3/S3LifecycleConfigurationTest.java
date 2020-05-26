@@ -33,12 +33,11 @@ public class S3LifecycleConfigurationTest extends AbstractS3Test {
 
     @Test
     public void testGetConfiguration() throws Exception {
-        assertEquals(30, new S3LifecycleConfiguration(session).getConfiguration(
+        final LifecycleConfiguration configuration = new S3LifecycleConfiguration(session).getConfiguration(
             new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
-        ).getExpiration(), 0L);
-        assertEquals(1, new S3LifecycleConfiguration(session).getConfiguration(
-            new Path("test-lifecycle-us-east-1-cyberduck", EnumSet.of(Path.Type.directory))
-        ).getTransition(), 0L);
+        );
+        assertEquals(30, configuration.getExpiration(), 0L);
+        assertEquals(1, configuration.getTransition(), 0L);
     }
 
     @Test
