@@ -17,6 +17,7 @@ package ch.cyberduck.core.dropbox;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.preferences.PreferencesFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,22 +52,24 @@ public class DropboxPathContainerService extends PathContainerService {
 
     @Override
     public String getKey(final Path file) {
-        final Path container = this.getContainer(file);
-        final String namespace = container.attributes().getVersionId();
-        if(StringUtils.isNotBlank(namespace)) {
-            if(file.isRoot()) {
-                // Root
-                if(useNamespace) {
-                    return String.format("ns:%s", namespace);
+        if(PreferencesFactory.get().getBoolean("dropbox.business.enable")) {
+            final Path container = this.getContainer(file);
+            final String namespace = container.attributes().getVersionId();
+            if(StringUtils.isNotBlank(namespace)) {
+                if(file.isRoot()) {
+                    // Root
+                    if(useNamespace) {
+                        return String.format("ns:%s", namespace);
+                    }
+                    return StringUtils.EMPTY;
                 }
-                return StringUtils.EMPTY;
+                // Return path relative to the namespace root
+                final String key = this.isContainer(file) ? StringUtils.EMPTY : Path.DELIMITER + super.getKey(file);
+                if(useNamespace) {
+                    return String.format("ns:%s%s", namespace, key);
+                }
+                return key;
             }
-            // Return path relative to the namespace root
-            final String key = this.isContainer(file) ? StringUtils.EMPTY : Path.DELIMITER + super.getKey(file);
-            if(useNamespace) {
-                return String.format("ns:%s%s", namespace, key);
-            }
-            return key;
         }
         return file.isRoot() ? StringUtils.EMPTY : file.getAbsolute();
     }
