@@ -31,7 +31,7 @@ public class S3BucketHostnameTrustManager extends ThreadLocalHostnameDelegatingT
     /**
      * Test for pattern of bucket name containing dot
      */
-    private final Pattern pattern = Pattern.compile("([a-z0-9.-]+\\.)([a-z0-9.-]+\\.s3(\\.dualstack)?(\\.[a-z0-9-]+).amazonaws.com)");
+    private final Pattern pattern = Pattern.compile("([a-z0-9.-]+\\.)([a-z0-9.-]+\\.s3(\\.dualstack)?(\\.[a-z0-9-]+)?.amazonaws.com)");
 
     private final Preferences preferences
         = PreferencesFactory.get();
