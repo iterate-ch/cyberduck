@@ -49,6 +49,7 @@ public class DropboxTouchFeatureTest extends AbstractDropboxTest {
     public void testFindFile() throws Exception {
         final Path file = new Path(new DropboxHomeFinderFeature(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new DropboxTouchFeature(session).touch(file, new TransferStatus());
+        assertTrue(new DropboxFindFeature(session).find(file));
         assertTrue(new DefaultFindFeature(session).find(file));
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
