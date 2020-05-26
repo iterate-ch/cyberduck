@@ -8,6 +8,8 @@ https://cyberduck.io/
 - [Feature] Support for ap-east-1 (Hong Kong) region (S3)
 - [Feature] Support for me-south-1 (Bahrain) region (S3)
 - [Feature] Making requests to dual-stack endpoints (IPv6) (S3)
+- [Bugfix] Slow updating files after saving changes in external editor (#11004)
+- [Bugfix] Create new vaults in format 7 by default (Cryptomator) (#11040)
 
 7.3.1
 - [Feature] Edit ACLs for files (Google Storage) (#11008)
