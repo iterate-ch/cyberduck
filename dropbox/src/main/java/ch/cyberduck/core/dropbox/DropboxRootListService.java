@@ -20,6 +20,7 @@ import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
 
@@ -46,7 +47,9 @@ public class DropboxRootListService implements ListService {
                 final FullAccount account = new DbxUserUsersRequests(session.getClient()).getCurrentAccount();
                 switch(account.getAccountType()) {
                     case BUSINESS:
-                        return new DropboxListService(session).list(directory, new HomeNamespaceListProgressListener(listener, account));
+                        return new DropboxListService(session).list(
+                            directory.withAttributes(new PathAttributes().withVersionId(account.getRootInfo().getRootNamespaceId())),
+                            new HomeNamespaceListProgressListener(listener, account));
                 }
             }
             return new DropboxListService(session).list(directory, listener);
