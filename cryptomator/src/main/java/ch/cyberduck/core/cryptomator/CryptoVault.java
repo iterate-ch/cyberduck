@@ -116,7 +116,7 @@ public class CryptoVault implements Vault {
         // New vault home with vault flag set for internal use
         final EnumSet<Path.Type> type = EnumSet.copyOf(home.getType());
         type.add(Path.Type.vault);
-        vault = new Path(home.getAbsolute(), type, new PathAttributes(home.attributes()));
+        this.vault = new Path(home.getParent(), home.getName(), type, new PathAttributes(home.attributes()));
     }
 
     public synchronized Path create(final Session<?> session, final String region, final VaultCredentials credentials, final PasswordStore keychain, final int version) throws BackgroundException {
