@@ -48,6 +48,7 @@ public class OpenSSHCredentialsConfigurator implements CredentialsConfigurator {
     public Credentials configure(final Host host) {
         final Credentials credentials = new Credentials(host.getCredentials());
         if(StringUtils.isNotBlank(host.getHostname())) {
+            configuration.refresh();
             // Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
             final OpenSshConfig.Host entry = configuration.lookup(host.getHostname());
             if(StringUtils.isNotBlank(entry.getUser())) {
