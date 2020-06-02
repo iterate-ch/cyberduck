@@ -18,7 +18,7 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>7.3.2-SNAPSHOT</version>
+        <version>7.4.1-SNAPSHOT</version>
     </parent>
     <artifactId>osx</artifactId>
     <packaging>jar</packaging>
@@ -192,13 +192,13 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <property name="home" value="${main.basedir}" />
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="git.revision" value="${git.revision}" />
                                         <ant antfile="${project.basedir}/build.xml" target="build" dir="." />
-                                    </tasks>
+                                    </target>
                                 </configuration>
                             </execution>
                             <execution>
@@ -208,13 +208,13 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <property name="home" value="${main.basedir}" />
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="skipSign" value="${skipSign}" />
                                         <ant antfile="${project.basedir}/build.xml" target="sign" dir="." />
-                                    </tasks>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -269,13 +269,13 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <property name="home" value="${main.basedir}" />
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
                                         <property name="skipNotarize" value="${skipNotarize}" />
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
-                                    </tasks>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -283,7 +283,7 @@
                             <dependency>
                                 <groupId>org.codehaus.groovy</groupId>
                                 <artifactId>groovy-all</artifactId>
-                                <version>3.0.4</version>
+                                <version>3.0.3</version>
                                 <type>pom</type>
                             </dependency>
                             <dependency>

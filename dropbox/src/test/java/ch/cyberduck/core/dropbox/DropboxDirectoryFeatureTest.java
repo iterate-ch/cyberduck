@@ -21,13 +21,12 @@ import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import static org.junit.Assert.assertTrue;
@@ -36,12 +35,16 @@ import static org.junit.Assert.assertTrue;
 public class DropboxDirectoryFeatureTest extends AbstractDropboxTest {
 
     @Test
-    public void testMkdir() throws Exception {
-        final Path target = new DropboxDirectoryFeature(session).mkdir(new Path(new DropboxHomeFinderFeature(session).find(),
+    public void testDirectory() throws Exception {
+        final Path home = new DropboxHomeFinderFeature(session).find();
+        final Path level1 = new DropboxDirectoryFeature(session).mkdir(new Path(home,
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
-        assertTrue(new DefaultFindFeature(session).find(target));
-        final Path file = new DropboxTouchFeature(session).touch(new Path(target, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        assertTrue(new DefaultFindFeature(session).find(file));
-        new DropboxDeleteFeature(session).delete(Collections.singletonList(target), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        assertTrue(new DefaultFindFeature(session).find(level1));
+        assertTrue(new DropboxFindFeature(session).find(level1));
+        final Path level2 = new DropboxDirectoryFeature(session).mkdir(new Path(level1,
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, null);
+        assertTrue(new DefaultFindFeature(session).find(level2));
+        assertTrue(new DropboxFindFeature(session).find(level2));
+        new DropboxDeleteFeature(session).delete(Arrays.asList(level1), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

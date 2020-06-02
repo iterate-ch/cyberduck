@@ -37,5 +37,7 @@ public class S3BucketHostnameTrustManagerTest {
             new S3BucketHostnameTrustManager(new DisabledX509TrustManager(), "cyber.duck.s3.dualstack.eu-west-1.amazonaws.com").getTarget());
         assertEquals("duck.s3.eu-west-1.amazonaws.com",
             new S3BucketHostnameTrustManager(new DisabledX509TrustManager(), "cyber.duck.s3.eu-west-1.amazonaws.com").getTarget());
+        assertEquals("duck.s3.amazonaws.com",
+            new S3BucketHostnameTrustManager(new DisabledX509TrustManager(), "cyber.duck.s3.amazonaws.com").getTarget());
     }
 }

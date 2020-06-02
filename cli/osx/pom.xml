@@ -20,7 +20,7 @@
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>7.3.2-SNAPSHOT</version>
+        <version>7.4.1-SNAPSHOT</version>
     </parent>
     <artifactId>cli-osx</artifactId>
     <description>Cyberduck CLI Mac</description>
@@ -188,7 +188,7 @@
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <tasks>
+                                    <target>
                                         <property name="home" value="${main.basedir}" />
                                         <property name="version" value="${project.version}" />
                                         <property name="revision" value="${git.commitsCount}" />
@@ -196,7 +196,7 @@
                                         <property name="sparkle.feed" value="${sparkle.feed}" />
                                         <property name="installer.certificate" value="${installer.certificate}" />
                                         <ant antfile="${project.basedir}/build.xml" target="package" dir="." />
-                                    </tasks>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>

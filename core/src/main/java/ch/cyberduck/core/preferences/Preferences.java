@@ -217,7 +217,7 @@ public abstract class Preferences implements Locales {
             try (final InputStream in = defaults.getInputStream()) {
                 props.load(in);
             }
-            catch(AccessDeniedException | IOException e) {
+            catch(IllegalArgumentException | AccessDeniedException | IOException e) {
                 // Ignore failure loading configuration
             }
             for(Map.Entry<Object, Object> entry : props.entrySet()) {
@@ -1071,8 +1071,6 @@ public abstract class Preferences implements Locales {
         // Last update check in milliseconds
         this.setDefault("update.check.timestamp", String.valueOf(0));
 
-        this.setDefault("terminal.bundle.identifier", "com.apple.Terminal");
-        this.setDefault("terminal.command", "do script \"{0}\"");
         this.setDefault("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL --login\"");
 
         this.setDefault("network.interface.blacklist", StringUtils.EMPTY);

@@ -18,7 +18,11 @@ package ch.cyberduck.core.s3;
  * feedback@cyberduck.io
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
+import ch.cyberduck.core.AsciiRandomStringService;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -27,6 +31,7 @@ import org.jets3t.service.model.S3Object;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
@@ -55,22 +60,31 @@ public class S3DefaultMultipartServiceTest extends AbstractS3Test {
 
     @Test
     public void testFind() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path container = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
+            new Path(new AsciiRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume)), null, new TransferStatus());
+        final Path directory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(
+            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final S3DefaultMultipartService service = new S3DefaultMultipartService(session);
+        assertTrue(service.find(container).isEmpty());
+        assertTrue(service.find(directory).isEmpty());
+        final Path file = new Path(directory, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3Object object = new S3WriteFeature(session).getDetails(file, new TransferStatus());
         final MultipartUpload first = session.getClient().multipartStartUpload(container.getName(), object);
         assertNotNull(first);
+        assertEquals(first.getUploadId(), service.find(directory).iterator().next().getUploadId());
+        assertTrue(service.find(container).isEmpty());
         // Make sure timestamp is later.
         Thread.sleep(2000L);
         final MultipartUpload second = session.getClient().multipartStartUpload(container.getName(), object);
         assertNotNull(second);
-        final S3DefaultMultipartService service = new S3DefaultMultipartService(session);
+        assertTrue(service.find(container).isEmpty());
         final MultipartUpload multipart = service.find(file).iterator().next();
         assertNotNull(multipart);
         assertEquals(second.getUploadId(), multipart.getUploadId());
         assertNotNull(multipart);
         service.delete(first);
         service.delete(second);
+        new S3DefaultDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test

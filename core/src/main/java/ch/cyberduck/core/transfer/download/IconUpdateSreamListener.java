@@ -37,10 +37,7 @@ public class IconUpdateSreamListener extends DelegateStreamListener {
     private final Local file;
 
     private final IconService icon
-            = IconServiceFactory.get();
-
-    private final Preferences preferences
-            = PreferencesFactory.get();
+        = IconServiceFactory.get();
 
     // An integer between 0 and 9
     private int step = 0;
@@ -49,18 +46,17 @@ public class IconUpdateSreamListener extends DelegateStreamListener {
     // overhead when transferring a large amount of files
     private final boolean threshold;
 
-    private final boolean enabled = preferences.getBoolean("queue.download.icon.update");
-
     public IconUpdateSreamListener(final StreamListener delegate, final TransferStatus status, final Local file) {
         super(delegate);
         this.status = status;
+        final Preferences preferences = PreferencesFactory.get();
         this.threshold = status.getLength() > preferences.getLong("queue.download.icon.threshold");
         this.file = file;
     }
 
     @Override
     public void recv(final long bytes) {
-        if(enabled && threshold) {
+        if(threshold) {
             final BigDecimal fraction = new BigDecimal(status.getOffset()).divide(new BigDecimal(status.getLength()), 1, RoundingMode.DOWN);
             if(fraction.multiply(BigDecimal.TEN).intValue() > step) {
                 // Another 10 percent of the file has been transferred

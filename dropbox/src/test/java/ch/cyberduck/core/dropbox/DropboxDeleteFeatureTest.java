@@ -50,7 +50,7 @@ public class DropboxDeleteFeatureTest extends AbstractDropboxTest {
     @Test
     public void testDeleteDirectory() throws Exception {
         final Path file = new DropboxDirectoryFeature(session).mkdir(
-            new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+            new Path(new DropboxHomeFinderFeature(session).find(), new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.volume, Path.Type.directory)), null, new TransferStatus());
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

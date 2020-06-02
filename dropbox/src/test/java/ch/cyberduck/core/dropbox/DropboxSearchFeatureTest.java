@@ -29,6 +29,7 @@ import ch.cyberduck.test.IntegrationTest;
 import ch.cyberduck.ui.browser.SearchFilter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -38,6 +39,7 @@ import java.util.EnumSet;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
+@Ignore
 public class DropboxSearchFeatureTest extends AbstractDropboxTest {
 
     @Test

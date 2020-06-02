@@ -225,6 +225,16 @@ public class UserDefaultsPreferences extends DefaultPreferences {
         this.setDefault("browser.window.tabbing.identifier", "browser.window.tabbing.identifier");
         // Allow to show transfers in browser window as tab
         this.setDefault("queue.window.tabbing.identifier", "browser.window.tabbing.identifier");
+
+        this.setDefault("terminal.command.iterm2", "set t to (create window with default profile)\n" +
+            "tell t\n" +
+            "set s to (current session)\n" +
+            "tell s\n" +
+            "write text \"{0}\"\n" +
+            "end tell\n" +
+            "end tell");
+        this.setDefault("terminal.command.default", "do script \"{0}\"");
+
     }
 
     @Override
