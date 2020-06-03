@@ -15,6 +15,7 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
@@ -31,7 +32,6 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.UUID;
 
 import synapticloop.b2.response.B2StartLargeFileResponse;
 
@@ -43,7 +43,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractB2Test {
     @Test
     public void testFind() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2FileidProvider fileid = new B2FileidProvider(session).withCache(cache);
         new B2TouchFeature(session, fileid).touch(file, new TransferStatus());
         // Find without version id set in attributes
@@ -54,10 +54,10 @@ public class DefaultAttributesFinderFeatureTest extends AbstractB2Test {
     @Test
     public void testFindLargeUpload() throws Exception {
         final Path bucket = new Path("test-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
-        final Path file = new Path(bucket, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final Path file = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         final B2StartLargeFileResponse startResponse = session.getClient().startLargeFileUpload(
             new B2FileidProvider(session).withCache(cache).getFileid(bucket, new DisabledListProgressListener()),
-                file.getName(), null, Collections.emptyMap());
+            file.getName(), null, Collections.emptyMap());
         assertNotNull(new DefaultAttributesFinderFeature(session).find(file));
         session.getClient().cancelLargeFileUpload(startResponse.getFileId());
     }
