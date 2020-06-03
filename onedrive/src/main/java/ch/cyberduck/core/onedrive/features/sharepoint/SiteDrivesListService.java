@@ -1,7 +1,7 @@
-package ch.cyberduck.core.onedrive;
+package ch.cyberduck.core.onedrive.features.sharepoint;
 
 /*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -15,38 +15,33 @@ package ch.cyberduck.core.onedrive;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.DisabledListProgressListener;
-import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.onedrive.AbstractDriveListService;
+import ch.cyberduck.core.onedrive.SharepointSession;
 
-import org.nuxeo.onedrive.client.GroupDrivesIterator;
+import org.nuxeo.onedrive.client.Drives;
 import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.resources.GroupItem;
+import org.nuxeo.onedrive.client.Sites;
+import org.nuxeo.onedrive.client.resources.Site;
 
 import java.util.Iterator;
 
-public class SharepointGroupDrivesListService extends AbstractDriveListService {
-
-    private final GraphSession session;
+public class SiteDrivesListService extends AbstractDriveListService {
+    private final SharepointSession session;
     private final IdProvider idProvider;
 
-    public SharepointGroupDrivesListService(final GraphSession session, final IdProvider idProvider) {
+    public SiteDrivesListService(final SharepointSession session, final IdProvider idProvider) {
         this.session = session;
         this.idProvider = idProvider;
     }
 
     @Override
     protected Iterator<OneDriveDrive.Metadata> getIterator(final Path directory) throws BackgroundException {
-        final GroupItem group = new GroupItem(session.getClient(), idProvider.getFileid(directory, new DisabledListProgressListener()));
-        return new GroupDrivesIterator(session.getClient(), group);
-    }
-
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        idProvider.withCache(cache);
-        return this;
+        final String versionId = idProvider.getFileid(directory.getParent(), new DisabledListProgressListener());
+        final Site site = new Site(session.getClient(), versionId);
+        return Drives.getDrives(site);
     }
 }

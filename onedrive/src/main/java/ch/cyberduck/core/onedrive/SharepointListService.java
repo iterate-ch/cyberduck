@@ -23,16 +23,24 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
+import ch.cyberduck.core.onedrive.features.sharepoint.GroupListService;
+import ch.cyberduck.core.onedrive.features.sharepoint.GroupDrivesListService;
+import ch.cyberduck.core.onedrive.features.sharepoint.SiteDrivesListService;
+import ch.cyberduck.core.onedrive.features.sharepoint.SitesListService;
 
 import java.util.EnumSet;
 
 public class SharepointListService implements ListService {
 
-    private static final String DEFAULT_ID = "DEFAULT_NAME";
-    private static final String GROUPS_ID = "GROUPS_NAME";
+    public static final String DEFAULT_ID = "DEFAULT_NAME";
+    public static final String DRIVES_ID = "DRIVES_NAME";
+    public static final String GROUPS_ID = "GROUPS_NAME";
+    public static final String SITES_ID = "SITES_NAME";
 
     public static final Path DEFAULT_NAME = new Path("/Default", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DEFAULT_ID));
+    public static final Path DRIVES_NAME = new Path("/Drives", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(DRIVES_ID));
     public static final Path GROUPS_NAME = new Path("/Groups", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(GROUPS_ID));
+    public static final Path SITES_NAME = new Path("/Sites", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(SITES_ID));
 
     private final SharepointSession session;
     private final IdProvider idProvider;
@@ -48,21 +56,34 @@ public class SharepointListService implements ListService {
             final AttributedList<Path> list = new AttributedList<>();
             list.add(DEFAULT_NAME);
             list.add(GROUPS_NAME);
+            list.add(SITES_NAME);
             listener.chunk(directory, list);
             return list;
         }
-        else {
-            if(DEFAULT_NAME.equals(directory)) {
-                return new GraphDrivesListService(session).list(directory, listener);
-            }
-            else if(GROUPS_NAME.equals(directory)) {
-                return new SharepointGroupListService(session).list(directory, listener);
-            }
-            else if(GROUPS_NAME.equals(directory.getParent())) {
-                return new SharepointGroupDrivesListService(session, idProvider).list(directory, listener);
-            }
-            return new GraphItemListService(session).list(directory, listener);
+        else if(DEFAULT_ID.equals(directory.attributes().getVersionId())) {
+            // TODO: Create Symlink to /Sites/<Sitename>/<Drives>/<Drive ID>
+            return new GraphDrivesListService(session).list(directory, listener);
         }
+        else if(GROUPS_ID.equals(directory.attributes().getVersionId())) {
+            return new GroupListService(session).list(directory, listener);
+        }
+        else if(SITES_ID.equals(directory.attributes().getVersionId())) {
+            return new SitesListService(session, idProvider).list(directory, listener);
+        }
+        else if(DRIVES_ID.equals(directory.attributes().getVersionId())) {
+            return new SiteDrivesListService(session, idProvider).list(directory, listener);
+        }
+        else if(GROUPS_ID.equals(directory.getParent().attributes().getVersionId())) {
+            return new GroupDrivesListService(session, idProvider).list(directory, listener);
+        }
+        else if(SITES_ID.equals(directory.getParent().attributes().getVersionId())) {
+            final AttributedList<Path> list = new AttributedList<>();
+            list.add(new Path(directory, DRIVES_NAME.getName(), DRIVES_NAME.getType(), DRIVES_NAME.attributes()));
+            list.add(new Path(directory, SITES_NAME.getName(), SITES_NAME.getType(), SITES_NAME.attributes()));
+            listener.chunk(directory, list);
+            return list;
+        }
+        return new GraphItemListService(session).list(directory, listener);
     }
 
     @Override

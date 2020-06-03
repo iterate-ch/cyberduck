@@ -33,9 +33,9 @@ public abstract class AbstractListService<T> implements ListService {
     public final AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
         final AttributedList<Path> children = new AttributedList<>();
         final Iterator<T> iterator = getIterator(directory);
-
+        final boolean filtering = isFiltering(directory);
         try {
-            iterate(children, iterator, directory);
+            iterate(children, iterator, directory, filtering);
         }
         catch(OneDriveRuntimeException e) { // this catches iterator.hasNext in iterate()
             throw new GraphExceptionMappingService().map("Listing directory {0} failed", e.getCause(), directory);
@@ -45,7 +45,7 @@ public abstract class AbstractListService<T> implements ListService {
         return children;
     }
 
-    protected final void iterate(final AttributedList<Path> children, final Iterator<T> iterator, final Path directory) {
+    protected final void iterate(final AttributedList<Path> children, final Iterator<T> iterator, final Path directory, final boolean filtering) {
         while(iterator.hasNext()) {
             final T metadata;
             try {
@@ -55,6 +55,9 @@ public abstract class AbstractListService<T> implements ListService {
                 log.warn(e.getMessage());
                 continue;
             }
+            if (filtering && !filter(metadata)) {
+                continue;
+            }
             children.add(toPath(metadata, directory));
         }
     }
@@ -62,4 +65,12 @@ public abstract class AbstractListService<T> implements ListService {
     protected abstract Iterator<T> getIterator(final Path directory) throws BackgroundException;
 
     protected abstract Path toPath(final T metadata, final Path directory);
+
+    protected boolean isFiltering(final Path directory) {
+        return false;
+    }
+
+    protected boolean filter(final T metadata) {
+        return true;
+    }
 }
