@@ -25,9 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.VersioningConfiguration;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
@@ -35,17 +33,18 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.model.StorageObject;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
 import static org.jets3t.service.Constants.AMZ_DELETE_MARKER;
 import static org.jets3t.service.Constants.AMZ_VERSION_ID;
 
@@ -86,7 +85,28 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             return attributes;
         }
         try {
-            final PathAttributes attr = this.details(file);
+            final String container = containerService.getContainer(file).getName();
+            PathAttributes attr;
+            try {
+                attr = this.toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
+                    container, containerService.getKey(file)));
+            }
+            catch(ServiceException e) {
+                if(null != e.getResponseHeaders()) {
+                    if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
+                        // Attempting to retrieve object with delete marker and no version id in request
+                        attr = new PathAttributes().withVersionId(e.getResponseHeaders().get(AMZ_VERSION_ID));
+                        attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                        attr.setDuplicate(true);
+                    }
+                    else {
+                        throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                    }
+                }
+                else {
+                    throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                }
+            }
             if(references) {
                 if(StringUtils.isNotBlank(attr.getVersionId())) {
                     final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
@@ -97,7 +117,33 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                         final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
                         final Path versioned = list.find(new DefaultPathPredicate(file));
                         if(null != versioned) {
+                            attr.setDuplicate(versioned.attributes().isDuplicate());
                             attr.setVersions(versioned.attributes().getVersions());
+                        }
+                    }
+                }
+            }
+            else {
+                if(!attr.isDuplicate() && StringUtils.isNotBlank(attr.getVersionId())) {
+                    // Determine if latest version
+                    final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                        containerService.getContainer(file)
+                    ) : VersioningConfiguration.empty();
+                    if(versioning.isEnabled()) {
+                        // Duplicate if not latest version
+                        try {
+                            attr.setDuplicate(!this.toAttributes(session.getClient().getObjectDetails(container, containerService.getKey(file))).equals(attr));
+                        }
+                        catch(ServiceException e) {
+                            final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+                            if(failure instanceof NotfoundException) {
+                                // The latest version is a delete marker
+                                attr.setCustom(Collections.singletonMap(KEY_DELETE_MARKER, Boolean.TRUE.toString()));
+                                attr.setDuplicate(true);
+                            }
+                            else {
+                                throw failure;
+                            }
                         }
                     }
                 }
@@ -117,22 +163,6 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                 return PathAttributes.EMPTY;
             }
             throw e;
-        }
-    }
-
-    protected PathAttributes details(final Path file) throws BackgroundException {
-        final String container = containerService.getContainer(file).getName();
-        try {
-            return this.toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
-                container, containerService.getKey(file)));
-        }
-        catch(ServiceException e) {
-            if(null != e.getResponseHeaders()) {
-                if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
-                    return new PathAttributes().withVersionId(e.getResponseHeaders().get(AMZ_VERSION_ID));
-                }
-            }
-            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
