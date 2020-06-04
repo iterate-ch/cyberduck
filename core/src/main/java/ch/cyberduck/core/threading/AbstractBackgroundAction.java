@@ -24,17 +24,17 @@ import ch.cyberduck.core.exception.BackgroundException;
 
 import org.apache.log4j.Logger;
 
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T> {
     private static final Logger log = Logger.getLogger(AbstractBackgroundAction.class);
 
     private State state;
 
-    protected final Set<BackgroundActionListener> listeners
-            = new HashSet<BackgroundActionListener>();
+    protected final Set<BackgroundActionListener> listeners = new CopyOnWriteArraySet<>();
 
     @Override
     public void init() {
@@ -52,17 +52,16 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cancel background task %s", this));
         }
-        final BackgroundActionListener[] l = listeners.toArray(
-                new BackgroundActionListener[listeners.size()]);
-        for(BackgroundActionListener listener : l) {
+        final Iterator<BackgroundActionListener> iter = listeners.iterator();
+        for(BackgroundActionListener listener : listeners) {
             listener.cancel(this);
         }
         state = State.canceled;
     }
 
     /**
-     * To be overridden by a concrete subclass. Returns false by default for actions
-     * not connected to a graphical user interface
+     * To be overridden by a concrete subclass. Returns false by default for actions not connected to a graphical user
+     * interface
      *
      * @return True if the user canceled this action
      */
@@ -81,9 +80,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         if(log.isDebugEnabled()) {
             log.debug(String.format("Prepare background task %s", this));
         }
-        final BackgroundActionListener[] l = listeners.toArray(
-                new BackgroundActionListener[listeners.size()]);
-        for(BackgroundActionListener listener : l) {
+        for(BackgroundActionListener listener : listeners) {
             listener.start(this);
         }
         state = State.running;
@@ -94,9 +91,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         if(log.isDebugEnabled()) {
             log.debug(String.format("Finish background task %s", this));
         }
-        final BackgroundActionListener[] l = listeners.toArray(
-                new BackgroundActionListener[listeners.size()]);
-        for(BackgroundActionListener listener : l) {
+        for(BackgroundActionListener listener : listeners) {
             listener.stop(this);
         }
         state = State.stopped;

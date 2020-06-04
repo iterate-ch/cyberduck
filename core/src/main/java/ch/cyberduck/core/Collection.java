@@ -23,11 +23,11 @@ import ch.cyberduck.core.exception.AccessDeniedException;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
@@ -38,8 +38,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     private final ReentrantLock locked = new ReentrantLock();
     private final AtomicBoolean loaded = new AtomicBoolean();
 
-    private final Set<CollectionListener<E>> listeners
-        = Collections.synchronizedSet(new HashSet<>());
+    private final Set<CollectionListener<E>> listeners = new CopyOnWriteArraySet<>();
 
     public Collection() {
         super();
@@ -201,7 +200,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+        for(CollectionListener<E> listener : listeners) {
             listener.collectionLoaded();
         }
     }
@@ -212,7 +211,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+        for(CollectionListener<E> listener : listeners) {
             listener.collectionItemAdded(item);
         }
     }
@@ -223,7 +222,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+        for(CollectionListener<E> listener : listeners) {
             listener.collectionItemRemoved(item);
         }
     }
@@ -234,7 +233,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+        for(CollectionListener<E> listener : listeners) {
             listener.collectionItemChanged(item);
         }
     }
