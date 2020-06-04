@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.CaseInsensitivePathPredicate;
 import ch.cyberduck.core.DefaultPathPredicate;
+import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -49,7 +50,7 @@ public abstract class ListFilteringFeature {
         if(!cache.isCached(file.getParent())) {
             try {
                 // Do not decrypt filenames to match with input
-                list = session._getFeature(ListService.class).list(file.getParent(), new IndexedListProgressListener() {
+                list = session._getFeature(ListService.class).list(file.getParent(), PathCache.empty() == cache ? new IndexedListProgressListener() {
                     @Override
                     public void message(final String message) {
                         //
@@ -61,7 +62,7 @@ public abstract class ListFilteringFeature {
                             throw new FilterFoundException(list, f);
                         }
                     }
-                });
+                } : new DisabledListProgressListener());
                 // No match but cache directory listing
                 cache.put(file.getParent(), list);
             }
