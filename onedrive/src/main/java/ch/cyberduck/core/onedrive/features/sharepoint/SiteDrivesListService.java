@@ -24,7 +24,6 @@ import ch.cyberduck.core.onedrive.SharepointSession;
 
 import org.nuxeo.onedrive.client.Drives;
 import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.Sites;
 import org.nuxeo.onedrive.client.resources.Site;
 
 import java.util.Iterator;

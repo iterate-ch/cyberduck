@@ -17,7 +17,6 @@ package ch.cyberduck.core.onedrive.features.sharepoint;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.onedrive.AbstractListService;
 import ch.cyberduck.core.onedrive.SharepointSession;
 
