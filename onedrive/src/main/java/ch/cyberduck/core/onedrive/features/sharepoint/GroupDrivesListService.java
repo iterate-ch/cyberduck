@@ -24,7 +24,7 @@ import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.AbstractDriveListService;
 import ch.cyberduck.core.onedrive.GraphSession;
 
-import org.nuxeo.onedrive.client.GroupDrivesIterator;
+import org.nuxeo.onedrive.client.Drives;
 import org.nuxeo.onedrive.client.OneDriveDrive;
 import org.nuxeo.onedrive.client.resources.GroupItem;
 
@@ -43,7 +43,7 @@ public class GroupDrivesListService extends AbstractDriveListService {
     @Override
     protected Iterator<OneDriveDrive.Metadata> getIterator(final Path directory) throws BackgroundException {
         final GroupItem group = new GroupItem(session.getClient(), idProvider.getFileid(directory, new DisabledListProgressListener()));
-        return new GroupDrivesIterator(session.getClient(), group);
+        return Drives.getDrives(group);
     }
 
     @Override
