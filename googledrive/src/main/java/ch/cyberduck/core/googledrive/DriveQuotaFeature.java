@@ -34,6 +34,11 @@ public class DriveQuotaFeature implements Quota {
 
     @Override
     public Space get() throws BackgroundException {
+        // Team Drives should not have any Quota applied.
+        if (new DriveHomeFinderService(session).find().isChild(DriveHomeFinderService.TEAM_DRIVES_NAME)) {
+            return new Space(0L, Long.MAX_VALUE);
+        }
+
         try {
             final About about = session.getClient().about().get().setFields("user, storageQuota").execute();
             final Long used = null == about.getStorageQuota().getUsageInDrive() ? 0L
