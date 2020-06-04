@@ -132,14 +132,7 @@ public class S3AttributesFinderFeature implements AttributesFinder {
                     return new PathAttributes().withVersionId(e.getResponseHeaders().get(AMZ_VERSION_ID));
                 }
             }
-            final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            if(failure instanceof AccessDeniedException) {
-                log.warn(String.format("Missing permission to read object details for %s %s", file, e.getMessage()));
-                final StorageObject object = new StorageObject(containerService.getKey(file));
-                object.setBucketName(container);
-                return this.toAttributes(object);
-            }
-            throw failure;
+            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
