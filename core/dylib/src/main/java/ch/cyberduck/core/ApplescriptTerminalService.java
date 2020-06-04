@@ -35,7 +35,7 @@ public class ApplescriptTerminalService implements TerminalService {
                 application = finder.find(".command");
                 break;
             default:
-                log.warn(String.format("Unsupported application %sassigned ", finder.find(".command")));
+                log.warn(String.format("Unsupported application %s assigned", finder.find(".command")));
                 application = finder.getDescription(preferences.getProperty("com.apple.Terminal"));
         }
         if(!finder.isInstalled(application)) {
