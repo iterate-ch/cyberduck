@@ -1,4 +1,4 @@
-package ch.cyberduck.core.onedrive;
+package ch.cyberduck.core.onedrive.features.onedrive;
 
 /*
  * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
@@ -19,27 +19,27 @@ import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.onedrive.AbstractItemListService;
+import ch.cyberduck.core.onedrive.GraphSession;
 import ch.cyberduck.core.onedrive.features.GraphAttributesFinderFeature;
 
+import org.nuxeo.onedrive.client.Files;
 import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDriveItemIterator;
-import org.nuxeo.onedrive.client.URLTemplate;
+import org.nuxeo.onedrive.client.resources.User;
 
 import java.util.Iterator;
 
-public class OneDriveSharedWithMeListService extends AbstractItemListService {
-    private static final URLTemplate SHAREDWITHME_LIST_URL = new URLTemplate("/drive/sharedWithMe");
-
+public class SharedWithMeListService extends AbstractItemListService {
     private final GraphSession session;
 
-    public OneDriveSharedWithMeListService(final GraphSession session) {
+    public SharedWithMeListService(final GraphSession session) {
         super(new GraphAttributesFinderFeature(session));
         this.session = session;
     }
 
     @Override
     protected Iterator<OneDriveItem.Metadata> getIterator(final Path directory) throws BackgroundException {
-        return new OneDriveItemIterator(session.getClient(), SHAREDWITHME_LIST_URL.build(session.getClient().getBaseURL()));
+        return Files.getSharedWithMe(User.getCurrent(session.getClient()));
     }
 
     @Override
