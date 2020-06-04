@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static ch.cyberduck.core.s3.S3VersionedObjectListService.KEY_DELETE_MARKER;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
@@ -92,13 +93,52 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
     public void testVersioningReadAttributesDeleteMarker() throws Exception {
         final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
-        new S3TouchFeature(session).touch(test, new TransferStatus());
-        final String versionId = new S3AttributesFinderFeature(session).find(test).getVersionId();
+        final Path testWithVersionId = new S3TouchFeature(session).touch(test, new TransferStatus());
+        final PathAttributes attr = new S3AttributesFinderFeature(session).find(testWithVersionId);
+        final String versionId = attr.getVersionId();
         assertNotNull(versionId);
+        assertFalse(attr.isDuplicate());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        final String deleteMarker = new S3AttributesFinderFeature(session).find(test).getVersionId();
-        assertNotNull(deleteMarker);
-        assertNotEquals(versionId, deleteMarker);
+        {
+            final PathAttributes marker = new S3AttributesFinderFeature(session).find(testWithVersionId);
+            for(Path version : marker.getVersions()) {
+                assertTrue(version.attributes().isDuplicate());
+            }
+            assertTrue(marker.isDuplicate());
+            assertFalse(marker.getCustom().containsKey(KEY_DELETE_MARKER));
+            assertNotNull(marker.getVersionId());
+            assertEquals(versionId, marker.getVersionId());
+        }
+        {
+            final PathAttributes marker = new S3AttributesFinderFeature(session).find(test);
+            for(Path version : marker.getVersions()) {
+                assertTrue(version.attributes().isDuplicate());
+            }
+            assertTrue(marker.isDuplicate());
+            assertTrue(marker.getCustom().containsKey(KEY_DELETE_MARKER));
+            assertNotNull(marker.getVersionId());
+            assertNotEquals(versionId, marker.getVersionId());
+        }
+        {
+            final PathAttributes marker = new S3AttributesFinderFeature(session, true).find(testWithVersionId);
+            for(Path version : marker.getVersions()) {
+                assertTrue(version.attributes().isDuplicate());
+            }
+            assertTrue(marker.isDuplicate());
+            assertFalse(marker.getCustom().containsKey(KEY_DELETE_MARKER));
+            assertNotNull(marker.getVersionId());
+            assertEquals(versionId, marker.getVersionId());
+        }
+        {
+            final PathAttributes marker = new S3AttributesFinderFeature(session, true).find(test);
+            for(Path version : marker.getVersions()) {
+                assertTrue(version.attributes().isDuplicate());
+            }
+            assertTrue(marker.isDuplicate());
+            assertTrue(marker.getCustom().containsKey(KEY_DELETE_MARKER));
+            assertNotNull(marker.getVersionId());
+            assertNotEquals(versionId, marker.getVersionId());
+        }
     }
 
     @Test
@@ -117,9 +157,14 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         assertTrue(new S3AttributesFinderFeature(session, true).find(test).getVersions().isEmpty());
         final Path update = new Path(bucket, test.getName(), test.getType(),
             new PathAttributes().withVersionId(out.getStatus().getServiceMetadata("version-id").toString()));
-        final AttributedList<Path> versions = new S3AttributesFinderFeature(session, true).find(update).getVersions();
+        final PathAttributes attributes = new S3AttributesFinderFeature(session, true).find(update);
+        final AttributedList<Path> versions = attributes.getVersions();
         assertFalse(versions.isEmpty());
         assertEquals(test, versions.get(0));
+        for(Path version : versions) {
+            assertTrue(version.attributes().isDuplicate());
+        }
+        assertFalse(attributes.isDuplicate());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
     }
 

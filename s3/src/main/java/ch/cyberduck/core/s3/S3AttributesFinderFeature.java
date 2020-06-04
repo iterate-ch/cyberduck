@@ -24,10 +24,9 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.PathContainerService;
+import ch.cyberduck.core.SimplePathPredicate;
 import ch.cyberduck.core.VersioningConfiguration;
-import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Encryption;
@@ -35,7 +34,6 @@ import ch.cyberduck.core.features.Versioning;
 import ch.cyberduck.core.io.Checksum;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
@@ -45,9 +43,6 @@ import org.jets3t.service.model.StorageObject;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.jets3t.service.Constants.AMZ_DELETE_MARKER;
-import static org.jets3t.service.Constants.AMZ_VERSION_ID;
 
 public class S3AttributesFinderFeature implements AttributesFinder {
     private static final Logger log = Logger.getLogger(S3AttributesFinderFeature.class);
@@ -85,79 +80,33 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());
             return attributes;
         }
-        try {
-            final PathAttributes attr = this.details(file);
-            if(references) {
-                if(StringUtils.isNotBlank(attr.getVersionId())) {
-                    final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-                        containerService.getContainer(file)
-                    ) : VersioningConfiguration.empty();
-                    if(versioning.isEnabled()) {
-                        // Add references to previous versions
-                        final AttributedList<Path> list = new S3VersionedObjectListService(session, true).list(file, new DisabledListProgressListener());
-                        final Path versioned = list.find(new DefaultPathPredicate(file));
-                        if(null != versioned) {
-                            attr.setVersions(versioned.attributes().getVersions());
-                        }
-                    }
-                }
+        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+            containerService.getContainer(file)
+        ) : VersioningConfiguration.empty();
+        if(versioning.isEnabled()) {
+            final AttributedList<Path> list = new S3VersionedObjectListService(session, references).list(file, new DisabledListProgressListener());
+            final Path versioned = list.find(new DefaultPathPredicate(file));
+            if(null != versioned) {
+                // Search with version id exact match
+                return versioned.attributes();
             }
-            return attr;
-        }
-        catch(NotfoundException e) {
-            if(file.isPlaceholder()) {
-                // File may be marked as placeholder but not placeholder file exists. Check for common prefix returned.
-                try {
-                    new S3ObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file), 1);
-                }
-                catch(NotfoundException n) {
-                    throw e;
-                }
-                // Common prefix only
-                return PathAttributes.EMPTY;
+            // Search for latest version
+            final Path latest = list.find(new S3VersionedObjectListService.LatestVersionPathPredicate(file));
+            if(null != latest) {
+                return latest.attributes();
             }
-            throw e;
+            // Search for delete marker
+            final Path marker = list.find(new SimplePathPredicate(file));
+            if(null != marker) {
+                return marker.attributes();
+            }
+            throw new NotfoundException(file.getAbsolute());
         }
-    }
-
-    protected PathAttributes details(final Path file) throws BackgroundException {
-        final String container = containerService.getContainer(file).getName();
         try {
-            return this.toAttributes(session.getClient().getVersionedObjectDetails(file.attributes().getVersionId(),
-                container, containerService.getKey(file)));
+            return this.toAttributes(session.getClient().getObjectDetails(containerService.getContainer(file).getName(), containerService.getKey(file)));
         }
         catch(ServiceException e) {
-            if(null != e.getResponseHeaders()) {
-                if(e.getResponseHeaders().containsKey(AMZ_DELETE_MARKER)) {
-                    return new PathAttributes().withVersionId(e.getResponseHeaders().get(AMZ_VERSION_ID));
-                }
-            }
-            final BackgroundException failure = new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
-            switch(session.getSignatureVersion()) {
-                case AWS4HMACSHA256:
-                    if(failure instanceof InteroperabilityException) {
-                        log.warn("Workaround HEAD failure using GET because the expected AWS region cannot be determined " +
-                            "from the HEAD error message if using AWS4-HMAC-SHA256 with the wrong region specifier " +
-                            "in the authentication header.");
-                        // Fallback to GET if HEAD fails with 400 response
-                        try {
-                            final S3Object object = session.getClient().getVersionedObject(file.attributes().getVersionId(),
-                                containerService.getContainer(file).getName(), containerService.getKey(file));
-                            IOUtils.closeQuietly(object.getDataInputStream());
-                            return this.toAttributes(object);
-                        }
-                        catch(ServiceException f) {
-                            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", f, file);
-                        }
-                    }
-            }
-            if(failure instanceof AccessDeniedException) {
-                log.warn(String.format("Missing permission to read object details for %s %s", file, e.getMessage()));
-                final StorageObject object = new StorageObject(containerService.getKey(file));
-                object.setBucketName(container);
-                return this.toAttributes(object);
-            }
-            throw failure;
+            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
         }
     }
 
