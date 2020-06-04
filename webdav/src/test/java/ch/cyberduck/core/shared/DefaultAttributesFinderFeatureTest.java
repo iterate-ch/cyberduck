@@ -15,6 +15,7 @@ package ch.cyberduck.core.shared;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Attributes;
 import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledHostKeyCallback;
@@ -49,7 +50,6 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
 
     @Test(expected = NotfoundException.class)
     public void testNotFound() throws Exception {
-
         new DefaultAttributesFinderFeature(session).find(new Path(new DefaultHomeFinderService(session).find(), UUID.randomUUID().toString(), EnumSet.of(Path.Type.file)));
     }
 
@@ -57,14 +57,14 @@ public class DefaultAttributesFinderFeatureTest extends AbstractDAVTest {
     public void testAttributes() throws Exception {
         final PathCache cache = new PathCache(1);
         final DefaultAttributesFinderFeature f = new DefaultAttributesFinderFeature(session).withCache(cache);
-        final String name = UUID.randomUUID().toString();
+        final String name = new AlphanumericRandomStringService().random();
         final Path file = new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file));
         session.getFeature(Touch.class).touch(file, new TransferStatus());
         final Attributes attributes = f.find(file);
         assertEquals(0L, attributes.getSize());
         // Test cache
         assertEquals(0L, f.find(file).getSize());
-        assertTrue(cache.containsKey(file.getParent()));
+        assertFalse(cache.containsKey(file.getParent()));
         // Test wrong type
         try {
             f.find(new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.directory)));
