@@ -41,6 +41,7 @@ public abstract class AbstractListService<T> implements ListService {
             throw new GraphExceptionMappingService().map("Listing directory {0} failed", e.getCause(), directory);
         }
 
+        postList(children);
         listener.chunk(directory, children);
         return children;
     }
@@ -51,7 +52,7 @@ public abstract class AbstractListService<T> implements ListService {
             try {
                 metadata = iterator.next();
             }
-            catch(OneDriveRuntimeException e) {
+            catch(Exception e) {
                 log.warn(e.getMessage());
                 continue;
             }
@@ -72,5 +73,8 @@ public abstract class AbstractListService<T> implements ListService {
 
     protected boolean filter(final T metadata) {
         return true;
+    }
+
+    protected void postList(final AttributedList<Path> list) {
     }
 }
