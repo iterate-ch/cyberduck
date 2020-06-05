@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="16097" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="15705" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="15705"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="CDMainController">
@@ -175,12 +175,6 @@
                             <menuItem title="Uredi pomoću" id="258">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Uredi pomoću" id="259"/>
-                            </menuItem>
-                            <menuItem title="Lock Encrypted Vault" id="npp-uo-uz6">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="lockUnlockEncryptedVaultButtonClicked:" target="-1" id="ewoY3ohz"/>
-                                </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="262"/>
                             <menuItem title="Preuzmi" keyEquivalent="" id="263">

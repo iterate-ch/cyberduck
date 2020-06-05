@@ -190,7 +190,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Cryptomator" identifier="cryptomator" id="prD-Uh-R1Z" userLabel="Cryptomator">
+                            <tabViewItem label="Kriptētājs" identifier="cryptomator" id="prD-Uh-R1Z" userLabel="Cryptomator">
                                 <view key="view" id="58Y-QD-ThV">
                                     <rect key="frame" x="0.0" y="0.0" width="507" height="518"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -705,7 +705,7 @@
                                     <button id="U8B-Wt-dfT">
                                         <rect key="frame" x="10" y="203" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Segmented downloads with multiple connections per file" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
+                                        <buttonCell key="cell" type="check" title="Segmentētas lejupielādes ar vairākiem savienojumiem vienam failam" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Dvz-7i-NUp">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1079,7 +1079,7 @@
                                     <button id="Buu-j0-hMk">
                                         <rect key="frame" x="10" y="243" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
+                                        <buttonCell key="cell" type="check" title="Pārbaudīt kontrolsummu" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="JQr-Vn-9Xj">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1087,7 +1087,7 @@
                                     <button id="jvf-VY-vT3">
                                         <rect key="frame" x="10" y="300" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Verify checksum" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
+                                        <buttonCell key="cell" type="check" title="Pārbaudīt kontrolsummu" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="ksK-EV-u9o">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1351,7 +1351,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="287">
                                     <font key="font" metaFont="smallSystem"/>
-                                    <string key="title">Ir atzīmēts sākuma iesstatījuma rakstu kodējums, lai mainītu simbolus datnes nosaukumos pārlūkā. Tam ir jāsakrīt ar rakstu kodējumu serverī.</string>
+                                    <string key="title">Atlasīto noklusējuma teksta kodējumu izmanto, lai konvertētu rakstzīmes pārlūkā redzamos failu nosaukumos. Tam ir jāatbilst serverī lietotajam teksta kodējumam.</string>
                                     <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
@@ -1796,7 +1796,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="103"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Cryptomator" id="Xoe-j6-yKO">
+                <box title="Kriptētājs" id="Xoe-j6-yKO">
                     <rect key="frame" x="17" y="16" width="473" height="67"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="RhT-uu-LrO">
