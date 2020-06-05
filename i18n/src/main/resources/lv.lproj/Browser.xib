@@ -167,7 +167,7 @@
                                     </subviews>
                                 </view>
                             </tabViewItem>
-                            <tabViewItem label="Uzmetums" identifier="1" id="37">
+                            <tabViewItem label="Struktūra" identifier="1" id="37">
                                 <view key="view" id="38">
                                     <rect key="frame" x="0.0" y="0.0" width="601" height="397"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -345,7 +345,7 @@
                         <action selector="infoButtonClicked:" target="-1" id="163"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Ātrais skatījums" image="NSQuickLookTemplate" id="69">
+                <menuItem title="Ātrais skats" image="NSQuickLookTemplate" id="69">
                     <attributedString key="attributedTitle"/>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -434,7 +434,7 @@ CA
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Atvērt interneta adresi" id="95"/>
                 </menuItem>
-                <menuItem title="Share…" id="NBw-Mh-zlT">
+                <menuItem title="Kopīgot..." id="NBw-Mh-zlT">
                     <connections>
                         <action selector="shareFileButtonClicked:" target="-1" id="iI0-ew-cyt"/>
                     </connections>
