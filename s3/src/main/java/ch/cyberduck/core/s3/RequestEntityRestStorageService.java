@@ -80,12 +80,10 @@ public class RequestEntityRestStorageService extends RestS3Service {
         // Use default endpoint for region lookup
         if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
             // Only for AWS
-            properties.setProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default"));
             properties.setProperty("s3service.disable-dns-buckets",
                 String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
         }
         else {
-            properties.setProperty("s3service.s3-endpoint", host.getHostname());
             if(InetAddressUtils.isIPv4Address(host.getHostname()) || InetAddressUtils.isIPv6Address(host.getHostname())) {
                 properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
             }
@@ -97,16 +95,8 @@ public class RequestEntityRestStorageService extends RestS3Service {
         properties.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
             if(!Scheme.isURL(host.getProtocol().getContext())) {
-                properties.setProperty("s3service.s3-endpoint-virtual-path",
-                    PathNormalizer.normalize(host.getProtocol().getContext()));
+                properties.setProperty("s3service.s3-endpoint-virtual-path", PathNormalizer.normalize(host.getProtocol().getContext()));
             }
-        }
-        properties.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
-        if(host.getProtocol().isSecure()) {
-            properties.setProperty("s3service.s3-endpoint-https-port", String.valueOf(host.getPort()));
-        }
-        else {
-            properties.setProperty("s3service.s3-endpoint-http-port", String.valueOf(host.getPort()));
         }
         // The maximum number of retries that will be attempted when an S3 connection fails
         // with an InternalServer error. To disable retries of InternalError failures, set this to 0.
@@ -138,6 +128,30 @@ public class RequestEntityRestStorageService extends RestS3Service {
             }
         });
         this.setHttpClient(configuration.build());
+    }
+
+    @Override
+    public String getEndpoint() {
+        if(session.getHost().getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+            // Only for AWS
+            return preferences.getProperty("s3.hostname.default");
+        }
+        return session.getHost().getHostname();
+    }
+
+    @Override
+    protected int getHttpPort() {
+        return session.getHost().getPort();
+    }
+
+    @Override
+    protected int getHttpsPort() {
+        return session.getHost().getPort();
+    }
+
+    @Override
+    protected boolean getHttpsOnly() {
+        return session.getHost().getProtocol().isSecure();
     }
 
     public Jets3tProperties getConfiguration() {
