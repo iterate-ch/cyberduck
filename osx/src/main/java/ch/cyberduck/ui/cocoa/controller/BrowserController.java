@@ -2080,7 +2080,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         // Browser view
                         if(isMounted()) {
                             statusLabel.setAttributedStringValue(
-                                NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
+                                NSAttributedString.attributedStringWithAttributes(MessageFormat.format(LocaleFactory.localizedString("{0} Items"),
                                     String.valueOf(getSelectedBrowserView().numberOfRows())),
                                     TRUNCATE_MIDDLE_ATTRIBUTES
                                 )
@@ -3262,7 +3262,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                 }
                                 else {
                                     item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                                        MessageFormat.format(LocaleFactory.localizedString("{0} Files"),
+                                        MessageFormat.format(LocaleFactory.localizedString("{0} Items"),
                                             String.valueOf(elements.count().intValue()))
                                     ).trim());
                                 }
@@ -3277,7 +3277,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     }
                     else {
                         item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                            MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(pasteboard.size()))).trim());
+                            MessageFormat.format(LocaleFactory.localizedString("{0} Items"), String.valueOf(pasteboard.size()))).trim());
                     }
                 }
             }
@@ -3301,7 +3301,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 else {
                     item.setTitle(MessageFormat.format(LocaleFactory.localizedString(title),
-                        MessageFormat.format(LocaleFactory.localizedString("{0} Files"), String.valueOf(this.getSelectionCount()))).trim());
+                        MessageFormat.format(LocaleFactory.localizedString("{0} Items"), String.valueOf(this.getSelectionCount()))).trim());
                 }
             }
             else {

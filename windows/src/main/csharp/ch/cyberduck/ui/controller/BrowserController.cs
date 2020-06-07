@@ -441,7 +441,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (IsConnected())
                     {
-                        label = String.Format(LocaleFactory.localizedString("{0} Files"), View.NumberOfFiles);
+                        label = String.Format(LocaleFactory.localizedString("{0} Items"), View.NumberOfFiles);
                     }
                     else
                     {
