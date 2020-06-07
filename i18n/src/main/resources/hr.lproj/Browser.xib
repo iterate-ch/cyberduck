@@ -491,9 +491,9 @@ DQ
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="106"/>
-                <menuItem title="Razvrstaj po" id="107">
+                <menuItem title="Redoslijed" id="107">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Razvrstaj po" id="108">
+                    <menu key="submenu" title="Redoslijed" id="108">
                         <items>
                             <menuItem title="Nadimak" keyEquivalent="1" id="109">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
