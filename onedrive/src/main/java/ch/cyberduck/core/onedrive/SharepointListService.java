@@ -30,7 +30,7 @@ import ch.cyberduck.core.onedrive.features.sharepoint.SitesListService;
 
 import java.util.EnumSet;
 
-public class SharepointListService implements ListService {
+public class SharepointListService extends AbstractSharepointListService {
 
     public static final String DEFAULT_ID = "DEFAULT_NAME";
     public static final String DRIVES_ID = "DRIVES_NAME";
@@ -43,52 +43,30 @@ public class SharepointListService implements ListService {
     public static final Path SITES_NAME = new Path("/Sites", EnumSet.of(Path.Type.volume, Path.Type.placeholder, Path.Type.directory), new PathAttributes().withVersionId(SITES_ID));
 
     private final SharepointSession session;
-    private final IdProvider idProvider;
 
     public SharepointListService(final SharepointSession session, final IdProvider idProvider) {
+        super(session, idProvider);
         this.session = session;
-        this.idProvider = idProvider;
     }
 
     @Override
-    public AttributedList<Path> list(final Path directory, final ListProgressListener listener) throws BackgroundException {
-        if(directory.isRoot()) {
-            final AttributedList<Path> list = new AttributedList<>();
-            list.add(DEFAULT_NAME);
-            list.add(GROUPS_NAME);
-            list.add(SITES_NAME);
-            listener.chunk(directory, list);
-            return list;
-        }
-        else if(DEFAULT_ID.equals(directory.attributes().getVersionId())) {
+    AttributedList<Path> getRoot(final Path directory, final ListProgressListener listener) throws BackgroundException {
+        return addDefaultItems(directory, listener);
+    }
+
+    @Override
+    boolean processList(final Path directory, final ListProgressListener listener, final ProcessListResult result) throws BackgroundException {
+        if(DEFAULT_ID.equals(directory.attributes().getVersionId())) {
             // TODO: Create Symlink to /Sites/<Sitename>/<Drives>/<Drive ID>
-            return new GraphDrivesListService(session).list(directory, listener);
+            return result.withChildren(new GraphDrivesListService(session).list(directory, listener)).success();
         }
         else if(GROUPS_ID.equals(directory.attributes().getVersionId())) {
-            return new GroupListService(session).list(directory, listener);
-        }
-        else if(SITES_ID.equals(directory.attributes().getVersionId())) {
-            return new SitesListService(session, idProvider).list(directory, listener);
-        }
-        else if(DRIVES_ID.equals(directory.attributes().getVersionId())) {
-            return new SiteDrivesListService(session, idProvider).list(directory, listener);
+            return result.withChildren(new GroupListService(session).list(directory, listener)).success();
         }
         else if(GROUPS_ID.equals(directory.getParent().attributes().getVersionId())) {
-            return new GroupDrivesListService(session, idProvider).list(directory, listener);
+            return result.withChildren(new GroupDrivesListService(session).list(directory, listener)).success();
         }
-        else if(SITES_ID.equals(directory.getParent().attributes().getVersionId())) {
-            final AttributedList<Path> list = new AttributedList<>();
-            list.add(new Path(directory, DRIVES_NAME.getName(), DRIVES_NAME.getType(), DRIVES_NAME.attributes()));
-            list.add(new Path(directory, SITES_NAME.getName(), SITES_NAME.getType(), SITES_NAME.attributes()));
-            listener.chunk(directory, list);
-            return list;
-        }
-        return new GraphItemListService(session).list(directory, listener);
-    }
 
-    @Override
-    public ListService withCache(final Cache<Path> cache) {
-        idProvider.withCache(cache);
-        return this;
+        return false;
     }
 }
