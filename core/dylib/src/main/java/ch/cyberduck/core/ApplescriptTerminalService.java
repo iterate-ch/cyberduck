@@ -29,14 +29,14 @@ public class ApplescriptTerminalService implements TerminalService {
     public void open(final Host host, final Path workdir) throws AccessDeniedException {
         final boolean identity = host.getCredentials().isPublicKeyAuthentication();
         final Application application;
-        switch(finder.find(".command").getIdentifier()) {
+        switch(StringUtils.lowerCase(finder.find(".command").getIdentifier())) {
             case "com.googlecode.iterm2":
             case "com.apple.terminal":
                 application = finder.find(".command");
                 break;
             default:
                 log.warn(String.format("Unsupported application %s assigned", finder.find(".command")));
-                application = finder.getDescription("com.apple.terminal");
+                application = finder.getDescription(preferences.getProperty("terminal.bundle.identifier"));
         }
         if(!finder.isInstalled(application)) {
             throw new LocalAccessDeniedException("Unable to determine default Terminal application");
