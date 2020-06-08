@@ -423,9 +423,9 @@ CA
                                     <action selector="bookmarkSwitchMenuClicked:" target="-1" id="417"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Razvrstaj po" id="325">
+                            <menuItem title="Redoslijed" id="325">
                                 <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Razvrstaj po" id="326">
+                                <menu key="submenu" title="Redoslijed" id="326">
                                     <items>
                                         <menuItem title="Nadimak" keyEquivalent="1" id="327">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>

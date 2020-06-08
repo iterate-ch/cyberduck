@@ -399,7 +399,7 @@
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="72">
                                 <rect key="frame" x="10" y="50" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Koristi alternativnu pozadinu redaka" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
+                                <buttonCell key="cell" type="check" title="Koristi pozadinu redaka izmjenično" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -407,7 +407,7 @@
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="74">
                                 <rect key="frame" x="10" y="30" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Vodoravne crte" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="75">
+                                <buttonCell key="cell" type="check" title="Vodoravni redci" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="75">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -415,7 +415,7 @@
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="76">
                                 <rect key="frame" x="10" y="10" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Okomite crte" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="77">
+                                <buttonCell key="cell" type="check" title="Okomiti redci" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="77">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -441,7 +441,7 @@
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="81">
                                 <rect key="frame" x="10" y="120" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Dvostrukim pritiskom se datoteka otvara s vanjskim programom" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
+                                <buttonCell key="cell" type="check" title="Dvostrukim pritiskom otvori datoteku u vanjskom programu" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="82">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -507,7 +507,7 @@
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="97">
                                 <rect key="frame" x="10" y="100" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Tipkom Return omogućuje se preimenovanje mape ili datoteke" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
+                                <buttonCell key="cell" type="check" title="Koristi tipku Return za preimenovanje mape ili datoteke" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="98">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -745,7 +745,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="156">
                                         <rect key="frame" x="303" y="96" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="157">
+                                        <buttonCell key="cell" type="check" title="Izvršavanje" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="157">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -779,7 +779,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="164">
                                         <rect key="frame" x="303" y="60" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="165">
+                                        <buttonCell key="cell" type="check" title="Izvršavanje" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="165">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -787,7 +787,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="166">
                                         <rect key="frame" x="303" y="78" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="167">
+                                        <buttonCell key="cell" type="check" title="Izvršavanje" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="167">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -844,7 +844,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="180">
                                         <rect key="frame" x="303" y="202" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="181">
+                                        <buttonCell key="cell" type="check" title="Izvršavanje" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="181">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -861,7 +861,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="184">
                                         <rect key="frame" x="303" y="220" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="185">
+                                        <buttonCell key="cell" type="check" title="Izvršavanje" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="185">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -885,7 +885,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="190">
                                         <rect key="frame" x="303" y="238" width="80" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Izvrši" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="191">
+                                        <buttonCell key="cell" type="check" title="Izvršavanje" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="191">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -935,7 +935,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="202">
                                         <rect key="frame" x="48" y="134" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="radio" title="na dozvole lokalne datoteke ili mape" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="203">
+                                        <buttonCell key="cell" type="radio" title="u dozvole lokalne datoteke ili mape" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="203">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -943,7 +943,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="204">
                                         <rect key="frame" x="48" y="117" width="137" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="radio" title="na ove dozvole:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="205">
+                                        <buttonCell key="cell" type="radio" title="u ove dozvole:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="205">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -951,7 +951,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="206">
                                         <rect key="frame" x="48" y="276" width="402" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="radio" title="na dozvole udaljene datoteke ili mape" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="207">
+                                        <buttonCell key="cell" type="radio" title="u dozvole udaljene datoteke ili mape" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="207">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -959,7 +959,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="208">
                                         <rect key="frame" x="48" y="259" width="137" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="radio" title="na ove dozvole:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="209">
+                                        <buttonCell key="cell" type="radio" title="u ove dozvole:" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="209">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="smallSystem"/>
                                         </buttonCell>
@@ -1489,7 +1489,7 @@
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="317">
                                 <rect key="frame" x="10" y="84" width="241" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Automatski traži nove verzije u" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
+                                <buttonCell key="cell" type="check" title="Automatski traži nove verzije za" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="318">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1497,7 +1497,7 @@
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="319">
                                 <rect key="frame" x="142" y="38" width="182" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES"/>
-                                <buttonCell key="cell" type="push" title="Sada traži nove verzije" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
+                                <buttonCell key="cell" type="push" title="Potraži nove verzije" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="320">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1807,7 +1807,7 @@
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="Tzo-pv-NCb">
                                 <rect key="frame" x="10" y="21" width="253" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Prepoznaj i otvori trezor automatski u pregledniku" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
+                                <buttonCell key="cell" type="check" title="Automatski prepoznaj i otvori trezor u pregledniku" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="lsw-7x-O1N">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
