@@ -145,7 +145,7 @@ public class DropboxSession extends HttpSession<CustomDbxRawClientV2> {
             return (T) new DropboxUrlProvider(this);
         }
         if(type == PromptUrlProvider.class) {
-            return (T) new DropboxTemporaryUrlProvider(this);
+            return (T) new DropboxPasswordShareUrlProvider(this);
         }
         if(type == Find.class) {
             return (T) new DropboxFindFeature(this);

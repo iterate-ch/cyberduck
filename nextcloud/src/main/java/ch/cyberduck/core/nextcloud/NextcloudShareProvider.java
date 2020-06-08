@@ -17,10 +17,14 @@ package ch.cyberduck.core.nextcloud;
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 
@@ -33,6 +37,7 @@ import org.apache.http.impl.client.AbstractResponseHandler;
 
 import java.io.IOException;
 import java.net.URI;
+import java.text.MessageFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -59,11 +64,22 @@ public class NextcloudShareProvider implements PromptUrlProvider {
      */
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
-        final HttpPost resource = new HttpPost(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d",
-            session.getHost().getHostname(),
-            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), session.getHost().getDefaultPath())),
+        final Host bookmark = session.getHost();
+        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d",
+            bookmark.getHostname(),
+            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), bookmark.getDefaultPath())),
             3 // Public link
         ));
+        try {
+            request.append(String.format("&password=%s", callback.prompt(bookmark,
+                LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword()));
+        }
+        catch(LoginCanceledException e) {
+            // Ignore no password set
+        }
+        final HttpPost resource = new HttpPost(request.toString());
         resource.setHeader("OCS-APIRequest", "true");
         resource.setHeader(HttpHeaders.ACCEPT, "application/xml");
         try {
@@ -87,11 +103,22 @@ public class NextcloudShareProvider implements PromptUrlProvider {
 
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Object options, final PasswordCallback callback) throws BackgroundException {
-        final HttpPost resource = new HttpPost(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&publicUpload=true",
-            session.getHost().getHostname(),
-            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), session.getHost().getDefaultPath())),
+        final Host bookmark = session.getHost();
+        final StringBuilder request = new StringBuilder(String.format("https://%s/ocs/v2.php/apps/files_sharing/api/v1/shares?path=%s&shareType=%d&publicUpload=true",
+            bookmark.getHostname(),
+            URIEncoder.encode(StringUtils.substringAfter(file.getAbsolute(), bookmark.getDefaultPath())),
             3 // Public link
         ));
+        try {
+            request.append(String.format("&password=%s", callback.prompt(bookmark,
+                LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword()));
+        }
+        catch(LoginCanceledException e) {
+            // Ignore no password set
+        }
+        final HttpPost resource = new HttpPost(request.toString());
         resource.setHeader("OCS-APIRequest", "true");
         resource.setHeader(HttpHeaders.ACCEPT, "application/xml");
         try {

@@ -17,15 +17,20 @@ package ch.cyberduck.core.storegate;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 import ch.cyberduck.core.storegate.io.swagger.client.ApiException;
 import ch.cyberduck.core.storegate.io.swagger.client.api.FileSharesApi;
 import ch.cyberduck.core.storegate.io.swagger.client.model.CreateFileShareRequest;
 
 import java.net.URI;
+import java.text.MessageFormat;
 
 public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
 
@@ -49,9 +54,20 @@ public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
+            final Host bookmark = session.getHost();
+            final CreateFileShareRequest request = new CreateFileShareRequest()
+                .fileId(fileid.getFileid(file, new DisabledListProgressListener()));
+            try {
+                request.setPassword(callback.prompt(bookmark,
+                    LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                    MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                    new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword());
+            }
+            catch(LoginCanceledException e) {
+                // Ignore no password set
+            }
             return new DescriptiveUrl(URI.create(
-                new FileSharesApi(session.getClient()).fileSharesPost(new CreateFileShareRequest()
-                    .fileId(fileid.getFileid(file, new DisabledListProgressListener()))).getUrl()), DescriptiveUrl.Type.signed);
+                new FileSharesApi(session.getClient()).fileSharesPost(request).getUrl()), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);
@@ -61,10 +77,21 @@ public class StoregateShareFeature implements PromptUrlProvider<Void, Void> {
     @Override
     public DescriptiveUrl toUploadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
+            final Host bookmark = session.getHost();
+            final CreateFileShareRequest request = new CreateFileShareRequest()
+                .fileId(fileid.getFileid(file, new DisabledListProgressListener()))
+                .allowUpload(true);
+            try {
+                request.setPassword(callback.prompt(bookmark,
+                    LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                    MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                    new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword());
+            }
+            catch(LoginCanceledException e) {
+                // Ignore no password set
+            }
             return new DescriptiveUrl(URI.create(
-                new FileSharesApi(session.getClient()).fileSharesPost(new CreateFileShareRequest()
-                    .fileId(fileid.getFileid(file, new DisabledListProgressListener()))
-                    .allowUpload(true)).getUrl()), DescriptiveUrl.Type.signed);
+                new FileSharesApi(session.getClient()).fileSharesPost(request).getUrl()), DescriptiveUrl.Type.signed);
         }
         catch(ApiException e) {
             throw new StoregateExceptionMappingService().map(e);

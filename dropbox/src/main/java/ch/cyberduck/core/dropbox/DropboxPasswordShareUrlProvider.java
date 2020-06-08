@@ -16,12 +16,14 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathContainerService;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.PromptUrlProvider;
 
@@ -51,11 +53,22 @@ public class DropboxPasswordShareUrlProvider implements PromptUrlProvider<Void, 
     @Override
     public DescriptiveUrl toDownloadUrl(final Path file, final Void options, final PasswordCallback callback) throws BackgroundException {
         try {
-            final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient(file)).createSharedLinkWithSettings(containerService.getKey(file),
-                SharedLinkSettings.newBuilder().withRequestedVisibility(RequestedVisibility.PASSWORD).withLinkPassword(callback.prompt(
-                    session.getHost(), LocaleFactory.localizedString("Passphrase", "Cryptomator"),
-                    LocaleFactory.localizedString("Provide additional login credentials", "Credentials"), new LoginOptions().icon(session.getHost().getProtocol().disk())
-                ).getPassword()).build());
+            final Host bookmark = session.getHost();
+            final SharedLinkSettings.Builder settings = SharedLinkSettings.newBuilder();
+            try {
+                settings.withLinkPassword(callback.prompt(bookmark,
+                    LocaleFactory.localizedString("Passphrase", "Cryptomator"),
+                    MessageFormat.format(LocaleFactory.localizedString("Create a passphrase required to access {0}", "Credentials"), file.getName()),
+                    new LoginOptions().keychain(false).icon(bookmark.getProtocol().disk())).getPassword());
+                settings.withRequestedVisibility(RequestedVisibility.PASSWORD);
+            }
+            catch(LoginCanceledException e) {
+                // Ignore no password set
+                settings.withRequestedVisibility(RequestedVisibility.PUBLIC);
+            }
+            final SharedLinkMetadata share = new DbxUserSharingRequests(session.getClient(file))
+                .createSharedLinkWithSettings(containerService.getKey(file),
+                    settings.build());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Created shared link %s", share));
             }
