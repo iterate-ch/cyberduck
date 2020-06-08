@@ -38,6 +38,7 @@ import ch.cyberduck.core.nextcloud.NextcloudProtocol;
 import ch.cyberduck.core.nio.LocalProtocol;
 import ch.cyberduck.core.onedrive.OneDriveProtocol;
 import ch.cyberduck.core.onedrive.SharepointProtocol;
+import ch.cyberduck.core.onedrive.SharepointSiteProtocol;
 import ch.cyberduck.core.openstack.SwiftProtocol;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -96,6 +97,7 @@ public final class MainApplication {
                 new HubicProtocol(),
                 new OneDriveProtocol(),
                 new SharepointProtocol(),
+                new SharepointSiteProtocol(),
                 new LocalProtocol(),
                 new MantaProtocol(),
                 new SDSProtocol(),
