@@ -1,6 +1,10 @@
 Cyberduck
 https://cyberduck.io/
 
+7.4.1
+- [Localize] Croatian Localization
+- [Bugfix] Failure opening Terminal.app (SFTP)
+
 7.4.0
 - [Feature] Support to access team folders (Dropbox Business)
 - [Feature] Support for eu-south-1 (Milan) region (S3)

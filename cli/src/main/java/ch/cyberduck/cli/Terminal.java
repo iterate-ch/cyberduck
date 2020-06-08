@@ -415,7 +415,7 @@ public class Terminal {
 
     protected Exit list(final SessionPool session, final Path remote, final boolean verbose) {
         final SessionListWorker worker = new SessionListWorker(cache, remote,
-            new TerminalListProgressListener(reader, verbose));
+            new TerminalListProgressListener(verbose, new TerminalProgressListener()));
         final SessionBackgroundAction<AttributedList<Path>> action = new TerminalBackgroundAction<AttributedList<Path>>(
             controller,
             session, worker);

@@ -17,6 +17,7 @@ package ch.cyberduck.core.vault;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
+import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -29,15 +30,12 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
 
     private final Session<?> session;
     private final VaultLookupListener listener;
+    private final ListProgressListener progress;
 
-    public VaultFinderListProgressListener(final Session<?> session, final VaultLookupListener listener) {
+    public VaultFinderListProgressListener(final Session<?> session, final VaultLookupListener listener, final ListProgressListener progress) {
         this.session = session;
         this.listener = listener;
-    }
-
-    @Override
-    public void message(final String message) {
-        //
+        this.progress = progress;
     }
 
     @Override
@@ -58,5 +56,10 @@ public class VaultFinderListProgressListener extends IndexedListProgressListener
                 // Continue
             }
         }
+    }
+
+    @Override
+    public void message(final String message) {
+        progress.message(message);
     }
 }

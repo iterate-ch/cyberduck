@@ -16,7 +16,6 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
@@ -243,7 +242,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         });
     }
 
-    private static final class LatestVersionPathPredicate extends SimplePathPredicate {
+    public static final class LatestVersionPathPredicate extends SimplePathPredicate {
         public LatestVersionPathPredicate(final Path f) {
             super(f);
         }

@@ -52,6 +52,9 @@ public class GoogleStorageWriteFeatureTest extends AbstractGoogleStorageTest {
             final TransferStatus status = new TransferStatus();
             final byte[] content = RandomUtils.nextBytes(2048);
             status.setLength(content.length);
+            status.setMime("application/octet-stream");
+            status.setStorageClass("multi_regional");
+            status.setMetadata(Collections.singletonMap("c", "d"));
             final HttpResponseOutputStream<VersionId> out = new GoogleStorageWriteFeature(session).write(test, status, new DisabledConnectionCallback());
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();

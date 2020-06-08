@@ -19,8 +19,10 @@ package ch.cyberduck.cli;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.DisabledProgressListener;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.UserDateFormatterFactory;
 import ch.cyberduck.core.date.AbstractUserDateFormatter;
 
@@ -34,35 +36,28 @@ public class TerminalListProgressListener extends IndexedListProgressListener {
     private final AbstractUserDateFormatter formatter
         = UserDateFormatterFactory.get();
 
-    private int size = 0;
-
-    private boolean l;
-
-    private TerminalPromptReader prompt;
+    private final boolean verbose;
+    private final ProgressListener listener;
 
     public TerminalListProgressListener() {
-        this.prompt = new InteractiveTerminalPromptReader();
+        this(false);
     }
 
     /**
-     * @param l Long format
+     * @param verbose Long format
      */
-    public TerminalListProgressListener(final boolean l) {
-        this.l = l;
+    public TerminalListProgressListener(final boolean verbose) {
+        this(verbose, new DisabledProgressListener());
     }
 
-    public TerminalListProgressListener(final TerminalPromptReader prompt) {
-        this.prompt = prompt;
-    }
-
-    public TerminalListProgressListener(final TerminalPromptReader prompt, final boolean l) {
-        this.l = l;
-        this.prompt = prompt;
+    public TerminalListProgressListener(final boolean verbose, final ProgressListener listener) {
+        this.verbose = verbose;
+        this.listener = listener;
     }
 
     @Override
     public void visit(final AttributedList<Path> list, final int index, final Path file) {
-        if(l) {
+        if(verbose) {
             if(file.isSymbolicLink()) {
                 console.printf("%n%sl%s\t%s\t%s -> %s%s",
                     Ansi.ansi().bold(),
@@ -92,6 +87,6 @@ public class TerminalListProgressListener extends IndexedListProgressListener {
 
     @Override
     public void message(final String message) {
-        //
+        listener.message(message);
     }
 }
