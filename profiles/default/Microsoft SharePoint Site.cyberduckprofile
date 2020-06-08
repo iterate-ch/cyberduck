@@ -18,23 +18,23 @@
 <plist version="1.0">
     <dict>
         <key>Protocol</key>
-        <string>onedrive</string>
+        <string>sharepoint-site</string>
         <key>Vendor</key>
-        <string>cyberduck</string>
+        <string>iterate GmbH</string>
+        <key>Bundled</key>
+        <true/>
         <key>Description</key>
-        <string>Microsoft SharePoint Document Library</string>
+        <string>Microsoft SharePoint Site</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
         <string>graph.microsoft.com</string>
         <key>Hostname Configurable</key>
-        <false/>
+        <true/>
         <key>Default Port</key>
         <string>443</string>
         <key>Port Configurable</key>
         <false/>
-        <key>Context</key>
-        <string>/v1.0</string>
         <key>OAuth Authorization Url</key>
         <string>https://login.microsoftonline.com/common/oauth2/v2.0/authorize</string>
         <key>OAuth Token Url</key>
