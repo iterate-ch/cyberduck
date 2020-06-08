@@ -399,7 +399,7 @@
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="72">
                                 <rect key="frame" x="10" y="50" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Koristi pozadinu redaka izmjenično" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
+                                <buttonCell key="cell" type="check" title="Koristi alternirajuću pozadinu redaka" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="73">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -407,7 +407,7 @@
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="74">
                                 <rect key="frame" x="10" y="30" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Vodoravni redci" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="75">
+                                <buttonCell key="cell" type="check" title="Vodoravne crte" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="75">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -415,7 +415,7 @@
                             <button translatesAutoresizingMaskIntoConstraints="NO" id="76">
                                 <rect key="frame" x="10" y="10" width="444" height="18"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <buttonCell key="cell" type="check" title="Okomiti redci" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="77">
+                                <buttonCell key="cell" type="check" title="Okomite crte" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="77">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -534,7 +534,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="105">
                                         <rect key="frame" x="10" y="248" width="441" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Ukloni nakon završenog prijenosa" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
+                                        <buttonCell key="cell" type="check" title="Ukloni kad prijenos završi" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="106">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -668,7 +668,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="131">
                                         <rect key="frame" x="166" y="108" width="286" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Uvijek prepiši, kad se ponovo učitava" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
+                                        <buttonCell key="cell" type="check" title="Uvijek prepiši kad se ponovo učitava" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="132">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -676,7 +676,7 @@
                                     <button translatesAutoresizingMaskIntoConstraints="NO" id="133">
                                         <rect key="frame" x="166" y="16" width="286" height="18"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <buttonCell key="cell" type="check" title="Uvijek prepiši, kad se ponovo učitava" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
+                                        <buttonCell key="cell" type="check" title="Uvijek prepiši kad se ponovo učitava" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="134">
                                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                             <font key="font" metaFont="system"/>
                                         </buttonCell>
@@ -1250,7 +1250,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Standardno protokoliranje" translatesAutoresizingMaskIntoConstraints="NO" id="265">
+                <box title="Standardni program za protokol" translatesAutoresizingMaskIntoConstraints="NO" id="265">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="XGo-5u-0m0">
@@ -1288,7 +1288,7 @@
             <rect key="frame" x="0.0" y="0.0" width="507" height="133"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <box title="Standardno protokoliranje" translatesAutoresizingMaskIntoConstraints="NO" id="273">
+                <box title="Standardni program za protokol" translatesAutoresizingMaskIntoConstraints="NO" id="273">
                     <rect key="frame" x="17" y="16" width="473" height="97"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <view key="contentView" id="QDL-re-aeA">
