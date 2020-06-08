@@ -80,6 +80,8 @@ import java.io.IOException;
 import java.util.Set;
 
 public abstract class GraphSession extends HttpSession<OneDriveAPI> {
+    final static String apiVersion = "v1.0";
+
     private static final Logger log = Logger.getLogger(GraphSession.class);
 
     private OAuth2RequestInterceptor authorizationService;
@@ -161,10 +163,11 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
             @Override
             public boolean isGraphConnection() {
-                if(StringUtils.equals("graph.microsoft.com", host.getHostname())) {
+                final String hostname = host.getProtocol().getDefaultHostname();
+                if(StringUtils.equals("graph.microsoft.com", hostname)) {
                     return true;
                 }
-                else if(StringUtils.equals("graph.microsoft.de", host.getHostname())) {
+                else if(StringUtils.equals("graph.microsoft.de", hostname)) {
                     return true;
                 }
                 return false;
@@ -172,12 +175,12 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
 
             @Override
             public String getBaseURL() {
-                return String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), host.getProtocol().getContext());
+                return String.format("%s://%s/%s", host.getProtocol().getScheme(), host.getProtocol().getDefaultHostname(), apiVersion);
             }
 
             @Override
             public String getEmailURL() {
-                return String.format("%s://%s%s", host.getProtocol().getScheme(), host.getHostname(), "/v1.0/me");
+                return String.format("%s%s", getBaseURL(), "/me");
             }
         };
     }

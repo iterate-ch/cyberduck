@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.onedrive.AbstractDriveListService;
+import ch.cyberduck.core.onedrive.AbstractSharepointSession;
 import ch.cyberduck.core.onedrive.SharepointSession;
 
 import org.nuxeo.onedrive.client.Drives;
@@ -29,18 +30,14 @@ import org.nuxeo.onedrive.client.resources.Site;
 import java.util.Iterator;
 
 public class SiteDrivesListService extends AbstractDriveListService {
-    private final SharepointSession session;
-    private final IdProvider idProvider;
+    private final AbstractSharepointSession session;
 
-    public SiteDrivesListService(final SharepointSession session, final IdProvider idProvider) {
+    public SiteDrivesListService(final AbstractSharepointSession session) {
         this.session = session;
-        this.idProvider = idProvider;
     }
 
     @Override
     protected Iterator<OneDriveDrive.Metadata> getIterator(final Path directory) throws BackgroundException {
-        final String versionId = idProvider.getFileid(directory.getParent(), new DisabledListProgressListener());
-        final Site site = new Site(session.getClient(), versionId);
-        return Drives.getDrives(site);
+        return Drives.getDrives(session.getSite(directory));
     }
 }
