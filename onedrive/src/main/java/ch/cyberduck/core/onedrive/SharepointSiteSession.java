@@ -1,7 +1,7 @@
 package ch.cyberduck.core.onedrive;
 
 /*
- * Copyright (c) 2002-2018 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,50 +19,46 @@ import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.ListService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.editor.EditSaveWorker;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.NotfoundException;
 import ch.cyberduck.core.features.IdProvider;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.nuxeo.onedrive.client.OneDriveDrive;
-import org.nuxeo.onedrive.client.OneDriveFile;
-import org.nuxeo.onedrive.client.OneDriveFolder;
-import org.nuxeo.onedrive.client.OneDriveItem;
-import org.nuxeo.onedrive.client.OneDrivePackageItem;
 import org.nuxeo.onedrive.client.resources.GroupItem;
 import org.nuxeo.onedrive.client.resources.Site;
 
-public class SharepointSession extends AbstractSharepointSession {
-
-    public SharepointSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
+public class SharepointSiteSession extends AbstractSharepointSession {
+    public SharepointSiteSession(final Host host, final X509TrustManager trust, final X509KeyManager key) {
         super(host, trust, key);
     }
 
     @Override
     public boolean isSingleSite() {
-        return false;
+        return true;
     }
 
     @Override
     public Site getSite(final Path file) throws BackgroundException {
+        if (file.isRoot()) {
+            String path = host.getDefaultPath();
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
+            return new Site(getClient(), host.getHostname(), path);
+        }
         return new Site(getClient(), fileIdProvider.getFileid(file.getParent(), new DisabledListProgressListener()));
     }
 
     @Override
     public GroupItem getGroup(final Path file) throws BackgroundException {
-        return new GroupItem(getClient(), fileIdProvider.getFileid(file.getParent(), new DisabledListProgressListener()));
+        return null;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> T _getFeature(final Class<T> type) {
         if(type == ListService.class) {
-            return (T) new SharepointListService(this, this.getFeature(IdProvider.class));
+            return (T) new SharepointSiteListService(this, this.getFeature(IdProvider.class));
         }
         return super._getFeature(type);
     }
