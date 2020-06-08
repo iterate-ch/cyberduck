@@ -835,7 +835,7 @@
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="203">
                     <rect key="frame" x="57" y="52" width="120" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES"/>
-                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Suma de verificación" id="204">
+                    <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" alignment="left" title="Suma de chequeo" id="204">
                         <font key="font" metaFont="smallSystemBold"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
