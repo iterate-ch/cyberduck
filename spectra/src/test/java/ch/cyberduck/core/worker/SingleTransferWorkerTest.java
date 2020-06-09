@@ -37,8 +37,8 @@ import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.notification.DisabledNotificationService;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DefaultDeleteFeature;
+import ch.cyberduck.core.spectra.SpectraAttributesFinderFeature;
 import ch.cyberduck.core.spectra.SpectraBulkService;
 import ch.cyberduck.core.spectra.SpectraProtocol;
 import ch.cyberduck.core.spectra.SpectraSession;
@@ -163,7 +163,7 @@ public class SingleTransferWorkerTest {
         local.delete();
         assertEquals(content.length, counter.getSent(), 0L);
         assertTrue(failed.get());
-        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new SpectraAttributesFinderFeature(session).find(test).getSize());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
