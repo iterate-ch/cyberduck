@@ -80,33 +80,51 @@ public class S3AttributesFinderFeature implements AttributesFinder {
             attributes.setRegion(new S3LocationFeature(session, session.getClient().getRegionEndpointCache()).getLocation(file).getIdentifier());
             return attributes;
         }
-        final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
-            containerService.getContainer(file)
-        ) : VersioningConfiguration.empty();
-        if(versioning.isEnabled()) {
-            final AttributedList<Path> list = new S3VersionedObjectListService(session, references).list(file, new DisabledListProgressListener());
-            final Path versioned = list.find(new DefaultPathPredicate(file));
-            if(null != versioned) {
-                // Search with version id exact match
-                return versioned.attributes();
+        if(file.isFile()) {
+            final VersioningConfiguration versioning = null != session.getFeature(Versioning.class) ? session.getFeature(Versioning.class).getConfiguration(
+                containerService.getContainer(file)
+            ) : VersioningConfiguration.empty();
+            if(versioning.isEnabled()) {
+                final AttributedList<Path> list = new S3VersionedObjectListService(session, references).list(file, new DisabledListProgressListener());
+                final Path versioned = list.find(new DefaultPathPredicate(file));
+                if(null != versioned) {
+                    // Search with version id exact match
+                    return versioned.attributes();
+                }
+                // Search for latest version
+                final Path latest = list.find(new S3VersionedObjectListService.LatestVersionPathPredicate(file));
+                if(null != latest) {
+                    return latest.attributes();
+                }
+                // Search for delete marker
+                final Path marker = list.find(new SimplePathPredicate(file));
+                if(null != marker) {
+                    return marker.attributes();
+                }
+                throw new NotfoundException(file.getAbsolute());
             }
-            // Search for latest version
-            final Path latest = list.find(new S3VersionedObjectListService.LatestVersionPathPredicate(file));
-            if(null != latest) {
-                return latest.attributes();
-            }
-            // Search for delete marker
-            final Path marker = list.find(new SimplePathPredicate(file));
-            if(null != marker) {
-                return marker.attributes();
-            }
-            throw new NotfoundException(file.getAbsolute());
         }
         try {
-            return this.toAttributes(session.getClient().getObjectDetails(containerService.getContainer(file).getName(), containerService.getKey(file)));
+            try {
+                return this.toAttributes(session.getClient().getObjectDetails(containerService.getContainer(file).getName(), containerService.getKey(file)));
+            }
+            catch(ServiceException e) {
+                throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+            }
         }
-        catch(ServiceException e) {
-            throw new S3ExceptionMappingService().map("Failure to read attributes of {0}", e, file);
+        catch(NotfoundException e) {
+            if(file.isPlaceholder()) {
+                // File may be marked as placeholder but not placeholder file exists. Check for common prefix returned.
+                try {
+                    new S3ObjectListService(session).list(file, new DisabledListProgressListener(), containerService.getKey(file), 1);
+                }
+                catch(NotfoundException n) {
+                    throw e;
+                }
+                // Common prefix only
+                return PathAttributes.EMPTY;
+            }
+            throw e;
         }
     }
 
