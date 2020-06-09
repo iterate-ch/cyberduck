@@ -47,7 +47,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSFTPTest {
         assertEquals(new Permission("-rw-rw-rw-"), attributes.getPermission());
         // Test cache
         assertEquals(0L, f.find(file).getSize());
-        assertFalse(cache.containsKey(file.getParent()));
+        assertTrue(cache.containsKey(file.getParent()));
         // Test wrong type
         try {
             f.find(new Path(workdir, file.getName(), EnumSet.of(Path.Type.directory)));
