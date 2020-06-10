@@ -65,7 +65,7 @@ public class S3ThresholdUploadService implements Upload<StorageObject> {
     @Override
     public StorageObject upload(final Path file, Local local, final BandwidthThrottle throttle, final StreamListener listener,
                                 final TransferStatus status, final ConnectionCallback prompt) throws BackgroundException {
-        if(status.getLength() > threshold) {
+        if(status.getLength() >= threshold) {
             if(!preferences.getBoolean("s3.upload.multipart")) {
                 log.warn("Multipart upload is disabled with property s3.upload.multipart");
                 // Disabled by user
