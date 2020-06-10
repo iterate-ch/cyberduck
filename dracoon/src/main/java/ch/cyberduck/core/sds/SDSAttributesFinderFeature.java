@@ -141,10 +141,10 @@ public class SDSAttributesFinderFeature implements AttributesFinder {
         attributes.setAcl(this.toAcl(node));
         final Map<String, String> custom = new HashMap<>();
         if(null != node.getCntDownloadShares()) {
-            custom.put(SDSAttributesFinderFeature.KEY_CNT_DOWNLOADSHARES, String.valueOf(node.getCntDownloadShares()));
+            custom.put(KEY_CNT_DOWNLOADSHARES, String.valueOf(node.getCntDownloadShares()));
         }
         if(null != node.getCntUploadShares()) {
-            custom.put(SDSAttributesFinderFeature.KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
+            custom.put(KEY_CNT_UPLOADSHARES, String.valueOf(node.getCntUploadShares()));
         }
         attributes.setCustom(custom);
         return attributes;
