@@ -219,7 +219,7 @@ public class SDSDelegatingMoveFeatureTest extends AbstractSDSTest {
         IOUtils.readFully(stream, compare);
         stream.close();
         assertArrayEquals(content, compare);
-        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room2), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        new SDSDeleteFeature(session, nodeid).delete(Arrays.asList(room2, target), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
     @Test
