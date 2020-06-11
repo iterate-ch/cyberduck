@@ -19,7 +19,6 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.CredentialsConfigurator;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.log4j.Logger;
 
@@ -42,24 +41,21 @@ public class AWSCredentialsConfigurator implements CredentialsConfigurator {
     @Override
     public Credentials configure(final Host host) {
         final Credentials credentials = new Credentials(host.getCredentials());
-        // Only for AWS
-        if(S3Session.isAwsHostname(host.getHostname())) {
-            if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
-                // Lookup from default profile if no access key is set in bookmark
-                for(AWSCredentialsProvider provider : providers) {
-                    try {
-                        final AWSCredentials c = provider.getCredentials();
-                        credentials.setUsername(c.getAWSAccessKeyId());
-                        credentials.setPassword(c.getAWSSecretKey());
-                        if(c instanceof AWSSessionCredentials) {
-                            credentials.setToken(((AWSSessionCredentials) c).getSessionToken());
-                        }
-                        break;
+        if(!credentials.validate(host.getProtocol(), new LoginOptions(host.getProtocol()).password(false))) {
+            // Lookup from default profile if no access key is set in bookmark
+            for(AWSCredentialsProvider provider : providers) {
+                try {
+                    final AWSCredentials c = provider.getCredentials();
+                    credentials.setUsername(c.getAWSAccessKeyId());
+                    credentials.setPassword(c.getAWSSecretKey());
+                    if(c instanceof AWSSessionCredentials) {
+                        credentials.setToken(((AWSSessionCredentials) c).getSessionToken());
                     }
-                    catch(SdkClientException e) {
-                        log.debug(String.format("Ignore failure loading credentials from provider %s", provider));
-                        // Continue searching with next provider
-                    }
+                    break;
+                }
+                catch(SdkClientException e) {
+                    log.debug(String.format("Ignore failure loading credentials from provider %s", provider));
+                    // Continue searching with next provider
                 }
             }
         }
