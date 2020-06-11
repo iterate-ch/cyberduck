@@ -20,7 +20,7 @@ import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
-import ch.cyberduck.core.exception.NotfoundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.UnsupportedException;
 import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.transfer.TransferStatus;
@@ -52,7 +52,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test
+    @Test(expected = InteroperabilityException.class)
     public void testLock() throws Exception {
         final DropboxTouchFeature touch = new DropboxTouchFeature(session);
         final Path file = touch.touch(new Path(new Path(new DropboxHomeFinderFeature(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().withVersionId("7581509952")),
@@ -65,7 +65,7 @@ public class DropboxLockFeatureTest extends AbstractDropboxTest {
         new DropboxDeleteFeature(session).delete(Collections.singletonList(file), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 
-    @Test(expected = NotfoundException.class)
+    @Test(expected = InteroperabilityException.class)
     public void testLockNoSuchFile() throws Exception {
         final Path file = new Path(new Path(new DropboxHomeFinderFeature(session).find(), "Projects", EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.shared)).withAttributes(new PathAttributes().withVersionId("7581509952")),
             new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
