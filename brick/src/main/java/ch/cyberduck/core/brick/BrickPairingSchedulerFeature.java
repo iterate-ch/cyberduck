@@ -60,7 +60,7 @@ public class BrickPairingSchedulerFeature {
     private final CancelCallback cancel;
     private final ScheduledThreadPool scheduler = new ScheduledThreadPool();
 
-    private Preferences preferences = PreferencesFactory.get();
+    private final Preferences preferences = PreferencesFactory.get();
 
     public BrickPairingSchedulerFeature(final BrickSession session, final String token, final Host host, final CancelCallback cancel) {
         this.session = session;
