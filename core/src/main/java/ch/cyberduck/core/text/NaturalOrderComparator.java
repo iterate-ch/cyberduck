@@ -22,6 +22,9 @@ package ch.cyberduck.core.text;
 import java.text.Collator;
 import java.util.Comparator;
 
+/**
+ * Match the collation rules used by macOS
+ */
 public class NaturalOrderComparator implements Comparator<String>, java.io.Serializable {
     private static final long serialVersionUID = -5851677380348435176L;
 

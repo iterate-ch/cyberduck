@@ -18,7 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.text.NaturalOrderComparator;
+import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +57,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         this.sort(new Comparator<Host>() {
             @Override
             public int compare(final Host o1, final Host o2) {
-                return new NaturalOrderComparator().compare(BookmarkNameProvider.toString(o1),
+                return new DefaultLexicographicOrderComparator().compare(BookmarkNameProvider.toString(o1),
                     BookmarkNameProvider.toString(o2));
             }
         });

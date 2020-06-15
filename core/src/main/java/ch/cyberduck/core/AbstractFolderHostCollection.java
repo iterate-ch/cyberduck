@@ -27,7 +27,7 @@ import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.Writer;
-import ch.cyberduck.core.text.NaturalOrderComparator;
+import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import org.apache.log4j.Logger;
 
@@ -40,7 +40,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     public static final Comparator<Host> SORT_BY_NICKNAME = new Comparator<Host>() {
         @Override
         public int compare(Host o1, Host o2) {
-            return new NaturalOrderComparator().compare(
+            return new DefaultLexicographicOrderComparator().compare(
                 BookmarkNameProvider.toString(o1), BookmarkNameProvider.toString(o2)
             );
         }
@@ -49,14 +49,14 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     public static final Comparator<Host> SORT_BY_HOSTNAME = new Comparator<Host>() {
         @Override
         public int compare(Host o1, Host o2) {
-            return new NaturalOrderComparator().compare(o1.getHostname(), o2.getHostname());
+            return new DefaultLexicographicOrderComparator().compare(o1.getHostname(), o2.getHostname());
         }
     };
 
     public static final Comparator<Host> SORT_BY_PROTOCOL = new Comparator<Host>() {
         @Override
         public int compare(Host o1, Host o2) {
-            return new NaturalOrderComparator().compare(o1.getProtocol().getIdentifier(), o2.getProtocol().getIdentifier());
+            return new DefaultLexicographicOrderComparator().compare(o1.getProtocol().getIdentifier(), o2.getProtocol().getIdentifier());
         }
     };
 
