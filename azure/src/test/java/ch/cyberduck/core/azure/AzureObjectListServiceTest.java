@@ -112,7 +112,7 @@ public class AzureObjectListServiceTest {
         for(String f : files) {
             new AzureTouchFeature(session, null).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
         }
-        files.sort(String::compareTo);
+        files.sort(session.getHost().getProtocol().getListComparator());
         final AttributedList<Path> list = new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener());
         for(int i = 0; i < list.size(); i++) {
             assertEquals(files.get(i), list.get(i).getName());

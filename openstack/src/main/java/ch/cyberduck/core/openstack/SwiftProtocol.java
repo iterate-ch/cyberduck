@@ -22,6 +22,9 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.preferences.PreferencesFactory;
+import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
+
+import java.util.Comparator;
 
 public class SwiftProtocol extends AbstractProtocol {
     @Override
@@ -57,5 +60,10 @@ public class SwiftProtocol extends AbstractProtocol {
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.explicit;
+    }
+
+    @Override
+    public Comparator<String> getListComparator() {
+        return new DefaultLexicographicOrderComparator();
     }
 }

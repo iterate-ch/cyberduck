@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -87,6 +88,11 @@ public class Profile implements Protocol, Serializable {
     @Override
     public Statefulness getStatefulness() {
         return parent.getStatefulness();
+    }
+
+    @Override
+    public Comparator<String> getListComparator() {
+        return parent.getListComparator();
     }
 
     @Override

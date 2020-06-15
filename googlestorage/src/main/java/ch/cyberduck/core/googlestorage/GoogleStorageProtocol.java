@@ -21,8 +21,10 @@ import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.features.Location;
+import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -104,5 +106,10 @@ public final class GoogleStorageProtocol extends AbstractProtocol {
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.explicit;
+    }
+
+    @Override
+    public Comparator<String> getListComparator() {
+        return new DefaultLexicographicOrderComparator();
     }
 }
