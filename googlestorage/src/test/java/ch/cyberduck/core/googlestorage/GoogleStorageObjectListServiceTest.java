@@ -15,15 +15,22 @@ package ch.cyberduck.core.googlestorage;
  * GNU General Public License for more details.
  */
 
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.DisabledListProgressListener;
+import ch.cyberduck.core.DisabledLoginCallback;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.features.Delete;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -32,7 +39,7 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
 
     @Test
     public void testListObjects() throws Exception {
-        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory));
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         final AttributedList<Path> list = new GoogleStorageObjectListService(session).list(container, new DisabledListProgressListener());
         for(Path p : list) {
             assertEquals(container, p.getParent());
@@ -44,5 +51,26 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
                 assertFalse(p.attributes().isDuplicate());
             }
         }
+    }
+
+    @Test
+    public void testListLexicographicSortOrderAssumption() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        final Path directory = new GoogleStorageDirectoryFeature(session).mkdir(
+            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(new GoogleStorageObjectListService(session).list(directory, new DisabledListProgressListener()).isEmpty());
+        final List<String> files = Arrays.asList(
+            "aa", "0a", "a", "AAA", "B", "~$a", ".c"
+        );
+        for(String f : files) {
+            new GoogleStorageTouchFeature(session).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
+        }
+        files.sort(String::compareTo);
+        final AttributedList<Path> list = new GoogleStorageObjectListService(session).list(directory, new DisabledListProgressListener());
+        for(int i = 0; i < list.size(); i++) {
+            assertEquals(files.get(i), list.get(i).getName());
+            new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(list.get(i)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+        new GoogleStorageDeleteFeature(session).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
