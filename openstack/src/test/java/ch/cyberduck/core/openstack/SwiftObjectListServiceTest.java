@@ -138,7 +138,7 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
         for(String f : files) {
             new SwiftTouchFeature(session, regionService).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
         }
-        files.sort(String::compareTo);
+        files.sort(session.getHost().getProtocol().getListComparator());
         final AttributedList<Path> list = new SwiftObjectListService(session, regionService).list(directory, new DisabledListProgressListener());
         for(int i = 0; i < list.size(); i++) {
             assertEquals(files.get(i), list.get(i).getName());

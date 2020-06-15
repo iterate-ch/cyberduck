@@ -245,7 +245,7 @@ public class B2ObjectListServiceTest extends AbstractB2Test {
         for(String f : files) {
             new B2TouchFeature(session, fileid).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
         }
-        files.sort(String::compareTo);
+        files.sort(session.getHost().getProtocol().getListComparator());
         final AttributedList<Path> list = new B2ObjectListService(session, fileid).list(directory, new DisabledListProgressListener());
         for(int i = 0; i < list.size(); i++) {
             assertEquals(files.get(i), list.get(i).getName());

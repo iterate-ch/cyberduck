@@ -17,6 +17,9 @@ package ch.cyberduck.core.b2;
 
 import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
+
+import java.util.Comparator;
 
 public class B2Protocol extends AbstractProtocol {
 
@@ -63,5 +66,10 @@ public class B2Protocol extends AbstractProtocol {
     @Override
     public String disk() {
         return String.format("%s.tiff", "ftp");
+    }
+
+    @Override
+    public Comparator<String> getListComparator() {
+        return new DefaultLexicographicOrderComparator();
     }
 }

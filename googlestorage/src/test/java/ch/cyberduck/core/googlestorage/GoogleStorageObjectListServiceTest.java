@@ -65,7 +65,7 @@ public class GoogleStorageObjectListServiceTest extends AbstractGoogleStorageTes
         for(String f : files) {
             new GoogleStorageTouchFeature(session).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
         }
-        files.sort(String::compareTo);
+        files.sort(session.getHost().getProtocol().getListComparator());
         final AttributedList<Path> list = new GoogleStorageObjectListService(session).list(directory, new DisabledListProgressListener());
         for(int i = 0; i < list.size(); i++) {
             assertEquals(files.get(i), list.get(i).getName());
