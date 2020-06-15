@@ -44,8 +44,11 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import com.google.api.client.http.HttpBackOffUnsuccessfulResponseHandler;
+import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.apache.v2.ApacheHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.About;
 
@@ -76,6 +79,22 @@ public class DriveSession extends HttpSession<Drive> {
         return new Drive.Builder(transport, new JacksonFactory(), new UserAgentHttpRequestInitializer(ua))
             .setApplicationName(ua.get())
             .build();
+    }
+
+    /**
+     * Retry with backoff for any server error reply
+     */
+    private static final class GoogleDriveHttpRequestInitializer extends UserAgentHttpRequestInitializer {
+        public GoogleDriveHttpRequestInitializer(final UseragentProvider provider) {
+            super(provider);
+        }
+
+        @Override
+        public void initialize(final HttpRequest request) {
+            super.initialize(request);
+            request.setUnsuccessfulResponseHandler(new HttpBackOffUnsuccessfulResponseHandler(new ExponentialBackOff())
+                .setBackOffRequired(HttpBackOffUnsuccessfulResponseHandler.BackOffRequired.ALWAYS));
+        }
     }
 
     @Override
