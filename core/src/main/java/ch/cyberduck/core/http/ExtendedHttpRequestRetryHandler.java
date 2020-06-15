@@ -46,7 +46,7 @@ public class ExtendedHttpRequestRetryHandler extends DefaultHttpRequestRetryHand
         SSLHandshakeException.class);
 
     public ExtendedHttpRequestRetryHandler(final int retryCount) {
-        super(retryCount, false, exceptions);
+        super(retryCount, true, exceptions);
     }
 
     @Override
