@@ -45,7 +45,7 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSetEncryptionAES256() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);
@@ -58,7 +58,7 @@ public class S3EncryptionFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSetEncryptionAES256Placeholder() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new S3DirectoryFeature(session, new S3WriteFeature(session, new S3DisabledMultipartService())).mkdir(
             new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
         final S3EncryptionFeature feature = new S3EncryptionFeature(session);

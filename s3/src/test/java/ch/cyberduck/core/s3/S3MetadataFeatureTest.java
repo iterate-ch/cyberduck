@@ -48,7 +48,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
 
     @Test
     public void testGetMetadataFile() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus().withMime("text/plain"));
         final Map<String, String> metadata = new S3MetadataFeature(session, new S3AccessControlListFeature(session)).getMetadata(test);
@@ -90,7 +90,7 @@ public class S3MetadataFeatureTest extends AbstractS3Test {
 
     @Test
     public void testSetDuplicateHeaderDifferentCapitalization() throws Exception {
-        final Path container = new Path("test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
+        final Path container = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.volume));
         final Path test = new Path(container, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         new S3TouchFeature(session).touch(test, new TransferStatus());
         final S3MetadataFeature feature = new S3MetadataFeature(session, new S3AccessControlListFeature(session));
