@@ -23,7 +23,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -90,5 +92,32 @@ public class AzureObjectListServiceTest {
         assertTrue(list.contains(file));
         assertEquals(HashAlgorithm.md5, list.get(0).attributes().getChecksum().algorithm);
         new AzureDeleteFeature(session, null).delete(Arrays.<Path>asList(file, directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListLexicographicSortOrderAssumption() throws Exception {
+        final Host host = new Host(new AzureProtocol(), "kahy9boj3eib.blob.core.windows.net", new Credentials(
+            System.getProperties().getProperty("azure.account"), System.getProperties().getProperty("azure.key")
+        ));
+        final AzureSession session = new AzureSession(host);
+        new LoginConnectionService(new DisabledLoginCallback(), new DisabledHostKeyCallback(),
+            new DisabledPasswordStore(), new DisabledProgressListener()).connect(session, PathCache.empty(), new DisabledCancelCallback());
+        final Path container = new Path("cyberduck", EnumSet.of(Path.Type.volume, Path.Type.directory));
+        final Path directory = new AzureDirectoryFeature(session, null).mkdir(
+            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener()).isEmpty());
+        final List<String> files = Arrays.asList(
+            "aa", "0a", "a", "AAA", "B", "~$a", ".c"
+        );
+        for(String f : files) {
+            new AzureTouchFeature(session, null).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
+        }
+        files.sort(String::compareTo);
+        final AttributedList<Path> list = new AzureObjectListService(session, null).list(directory, new DisabledListProgressListener());
+        for(int i = 0; i < list.size(); i++) {
+            assertEquals(files.get(i), list.get(i).getName());
+            new AzureDeleteFeature(session, null).delete(Collections.singletonList(list.get(i)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+        new AzureDeleteFeature(session, null).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }
