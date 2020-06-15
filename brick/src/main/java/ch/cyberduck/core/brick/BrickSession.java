@@ -105,7 +105,9 @@ public class BrickSession extends DAVSession {
                 prompt.warn(bookmark, title, message, defaultButton, cancelButton, preference);
                 try {
                     if(!BrowserLauncherFactory.get().open(
-                        String.format("https://app.files.com/login_from_desktop?pairing_key=%s&platform=%s&computer=%s", token,
+                        String.format("%s/login_from_desktop?pairing_key=%s&platform=%s&computer=%s",
+                            new HostUrlProvider().withUsername(false).withPath(false).get(host),
+                            token,
                             URIEncoder.encode(new PreferencesUseragentProvider().get()), URIEncoder.encode(InetAddress.getLocalHost().getHostName()))
                     )) {
                         throw new LoginCanceledException();

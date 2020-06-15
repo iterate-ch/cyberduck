@@ -16,6 +16,7 @@ package ch.cyberduck.core.brick;
  */
 
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Pairing;
 import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
@@ -43,7 +44,8 @@ public class BrickPairingFeature implements Pairing {
     @Override
     public void delete(final String token) throws BackgroundException {
         try {
-            final HttpRequestBase resource = new HttpDelete("https://app.files.com/api/rest/v1/api_key");
+            final HttpRequestBase resource = new HttpDelete(
+                String.format("%s/api/rest/v1/api_key", new HostUrlProvider().withUsername(false).withPath(false).get(session.getHost())));
             resource.setHeader("X-FilesAPI-Auth", token);
             resource.setHeader(HttpHeaders.ACCEPT, "application/json");
             resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
