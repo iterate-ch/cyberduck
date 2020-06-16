@@ -92,7 +92,7 @@ public class DAVSessionTest extends AbstractDAVTest {
 
     @Test(expected = InteroperabilityException.class)
     public void testHtmlResponse() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "media.cyberduck.ch");
+        final Host host = new Host(new DAVProtocol(), "cyberduck.ch");
         final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager());
         try {
             session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
