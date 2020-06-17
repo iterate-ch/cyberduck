@@ -87,7 +87,7 @@
                             <menuItem isSeparatorItem="YES" id="241">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Sulge Cyperduck" keyEquivalent="q" id="242">
+                            <menuItem title="Sulge Cyberduck" keyEquivalent="q" id="242">
                                 <connections>
                                     <action selector="terminate:" target="224" id="373"/>
                                 </connections>
