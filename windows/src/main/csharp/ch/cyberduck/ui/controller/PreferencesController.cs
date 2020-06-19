@@ -1133,18 +1133,13 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultStorageClasses()
         {
             IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
-            storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_STANDARD,
-                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3")));
-            storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_INFREQUENT_ACCESS,
-                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, "S3")));
-            storageClasses.Add(new KeyValuePair<string, string>("ONEZONE_IA",
-                LocaleFactory.localizedString("ONEZONE_IA", "S3")));
-            storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
-                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3")));
-            storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_GLACIER,
-                LocaleFactory.localizedString(S3Object.STORAGE_CLASS_GLACIER, "S3")));
-            storageClasses.Add(new KeyValuePair<string, string>("DEEP_ARCHIVE",
-                LocaleFactory.localizedString("DEEP_ARCHIVE", "S3")));
+            Iterator iter = S3StorageClassFeature.STORAGE_CLASS_LIST.iterator();
+            while (iter.hasNext())
+            {
+                string s = (string) iter.next();
+                storageClasses.Add(new KeyValuePair<string, string>(s,
+                    LocaleFactory.localizedString(s, "S3")));
+            }
             View.PopulateDefaultStorageClasses(storageClasses);
         }
 

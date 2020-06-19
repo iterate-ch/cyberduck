@@ -25,7 +25,8 @@ import org.jets3t.service.model.S3Object;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.google.api.services.storage.model.Bucket;
 import com.google.api.services.storage.model.StorageObject;
@@ -47,13 +48,13 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
     }
 
     @Override
-    public List<String> getClasses() {
-        return Arrays.asList(
+    public Set<String> getClasses() {
+        return new LinkedHashSet<>(Arrays.asList(
             S3Object.STORAGE_CLASS_STANDARD,
             "MULTI_REGIONAL",
             "REGIONAL",
             "NEARLINE",
-            "COLDLINE");
+            "COLDLINE"));
     }
 
     @Override
