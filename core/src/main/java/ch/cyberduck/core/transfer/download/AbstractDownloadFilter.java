@@ -157,8 +157,8 @@ public abstract class AbstractDownloadFilter implements TransferPathFilter {
                         int no = 0;
                         while(status.getDisplayname().local.exists()) {
                             String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), ++no);
-                            if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                                proposal += String.format(".%s", FilenameUtils.getExtension(filename));
+                            if(StringUtils.isNotBlank(Path.getExtension(filename))) {
+                                proposal += String.format(".%s", Path.getExtension(filename));
                             }
                             status.withDisplayname(LocalFactory.get(local.getParent(), proposal));
                         }

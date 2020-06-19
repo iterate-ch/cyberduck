@@ -23,6 +23,7 @@ import ch.cyberduck.binding.foundation.NSBundle;
 import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cache.LRUCache;
 import ch.cyberduck.core.library.Native;
 
@@ -93,7 +94,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
 
     @Override
     public List<Application> findAll(final String filename) {
-        final String extension = FilenameUtils.getExtension(filename);
+        final String extension = Path.getExtension(filename);
         if(StringUtils.isEmpty(extension)) {
             return Collections.emptyList();
         }
@@ -125,7 +126,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      */
     @Override
     public Application find(final String filename) {
-        final String extension = FilenameUtils.getExtension(filename);
+        final String extension = Path.getExtension(filename);
         if(!defaultApplicationCache.contains(extension)) {
             if(StringUtils.isEmpty(extension)) {
                 return Application.notfound;

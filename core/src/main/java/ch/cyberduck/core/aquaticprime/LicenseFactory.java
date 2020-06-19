@@ -24,12 +24,12 @@ import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -192,7 +192,7 @@ public abstract class LicenseFactory extends Factory<License> {
     protected static final class LicenseFilter implements Filter<Local> {
         @Override
         public boolean accept(final Local file) {
-            return "cyberducklicense".equalsIgnoreCase(FilenameUtils.getExtension(file.getName()));
+            return "cyberducklicense".equalsIgnoreCase(Path.getExtension(file.getName()));
         }
 
         @Override

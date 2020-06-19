@@ -49,8 +49,8 @@ public class RenameFilter extends AbstractUploadFilter {
             int no = 0;
             do {
                 String proposal = String.format("%s-%d", FilenameUtils.getBaseName(filename), ++no);
-                if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                    proposal += String.format(".%s", FilenameUtils.getExtension(filename));
+                if(StringUtils.isNotBlank(Path.getExtension(filename))) {
+                    proposal += String.format(".%s", Path.getExtension(filename));
                 }
                 if(parent.getRename().remote != null) {
                     status.rename(new Path(parent.getRename().remote, proposal, file.getType()));

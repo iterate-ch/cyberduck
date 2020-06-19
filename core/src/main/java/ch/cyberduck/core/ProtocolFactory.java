@@ -20,7 +20,6 @@ import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -229,7 +228,7 @@ public final class ProtocolFactory {
     private static final class ProfileFilter implements Filter<Local> {
         @Override
         public boolean accept(final Local file) {
-            return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
+            return "cyberduckprofile".equals(Path.getExtension(file.getName()));
         }
 
         @Override

@@ -20,11 +20,11 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Filter;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.preferences.ApplicationResourcesFinderFactory;
 import ch.cyberduck.core.preferences.SupportDirectoryFinderFactory;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -55,7 +55,7 @@ public class DonationKeyFactory extends LicenseFactory {
             for(Local file : SupportDirectoryFinderFactory.get().find().list().filter(new Filter<Local>() {
                 @Override
                 public boolean accept(final Local file) {
-                    return "cyberduckreceipt".equals(FilenameUtils.getExtension(file.getName()));
+                    return "cyberduckreceipt".equals(Path.getExtension(file.getName()));
                 }
 
                 @Override
