@@ -230,7 +230,7 @@ public class NSImageIconCacheTest {
         assertNotEquals(icon.TIFFRepresentation().base64Encoding(),
             cache.fileIcon(new FinderLocal("../../img/notfound.tiff"), 16).TIFFRepresentation().base64Encoding());
         assertTrue(icon.isValid());
-        assertTrue(icon.isTemplate());
+        assertFalse(icon.isTemplate());
     }
 
     @Test
