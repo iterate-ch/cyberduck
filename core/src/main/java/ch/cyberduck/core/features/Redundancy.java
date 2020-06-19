@@ -18,7 +18,7 @@ package ch.cyberduck.core.features;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Storage class for files
@@ -33,7 +33,7 @@ public interface Redundancy {
     /**
      * @return List of supported redundancy settings
      */
-    List<String> getClasses();
+    Set<String> getClasses();
 
     /**
      * @param file       File
