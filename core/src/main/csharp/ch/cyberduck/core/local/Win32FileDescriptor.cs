@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Core.Local
     {
         public override string getKind(string filename)
         {
-            String extension = FilenameUtils.getExtension(filename);
+            String extension = Path.getExtension(filename);
             String kind = null;
             if (Utils.IsBlank(extension))
             {
@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Core.Local
                 }
                 return kind;
             }
-            kind = this.kind(FilenameUtils.getExtension(filename));
+            kind = this.kind(Path.getExtension(filename));
             if (Utils.IsBlank(kind))
             {
                 return LocaleFactory.localizedString("Unknown");

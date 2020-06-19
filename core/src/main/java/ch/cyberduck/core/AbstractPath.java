@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.EnumSet;
 
@@ -135,6 +136,22 @@ public abstract class AbstractPath {
      * @return the extension if any or null otherwise
      */
     public String getExtension() {
-        return FilenameUtils.getExtension(this.getName());
+        return getExtension(this.getName());
+    }
+
+    public static String getExtension(final String filename) {
+        if(StringUtils.isBlank(filename)) {
+            return StringUtils.EMPTY;
+        }
+        final int extensionPos = filename.lastIndexOf('.');
+        if(-1 == extensionPos) {
+            return StringUtils.EMPTY;
+        }
+        final int lastSeparator = FilenameUtils.indexOfLastSeparator(filename);
+        if(lastSeparator > extensionPos) {
+            return StringUtils.EMPTY;
+        }
+        return filename.substring(extensionPos + 1);
+
     }
 }

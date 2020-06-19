@@ -272,7 +272,7 @@ public class NSImageIconCache implements IconCache<NSImage> {
         if(null == image) {
             return null;
         }
-        if(StringUtils.endsWith(name, "pdf")) {
+        if(StringUtils.equals(Path.getExtension(name), "pdf")) {
             image.setTemplate(true);
             // Images requested using this method and whose name ends in the word “Template”
             // are automatically marked as template images
