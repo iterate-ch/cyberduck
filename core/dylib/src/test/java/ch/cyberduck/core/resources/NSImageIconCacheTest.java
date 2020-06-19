@@ -19,13 +19,16 @@ package ch.cyberduck.core.resources;
  */
 
 import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.core.AlphanumericRandomStringService;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LocalTouchFactory;
 
 import org.junit.Test;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -205,7 +208,7 @@ public class NSImageIconCacheTest {
     }
 
     @Test
-    public void testIconForPath() throws Exception {
+    public void testIconForFileTxtType() throws Exception {
         final Local f = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString() + ".txt");
         final NSImageIconCache cache = new NSImageIconCache();
         NSImage icon = cache.fileIcon(f, 16);
@@ -216,6 +219,28 @@ public class NSImageIconCacheTest {
         assertTrue(icon.isValid());
         assertFalse(icon.isTemplate());
         f.delete();
+    }
+
+    @Test
+    public void testIconForPathPdfType() throws Exception {
+        final Path f = new Path("/f.pdf", EnumSet.of(Path.Type.file));
+        final NSImageIconCache cache = new NSImageIconCache();
+        NSImage icon = cache.fileIcon(f, 16);
+        assertNotNull(icon);
+        assertNotEquals(icon.TIFFRepresentation().base64Encoding(),
+            cache.fileIcon(new FinderLocal("../../img/notfound.tiff"), 16).TIFFRepresentation().base64Encoding());
+        assertTrue(icon.isValid());
+        assertTrue(icon.isTemplate());
+    }
+
+    @Test
+    public void testIconForPathFolder() throws Exception {
+        final Path f = new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory));
+        final NSImageIconCache cache = new NSImageIconCache();
+        NSImage icon = cache.fileIcon(f, 16);
+        assertNotNull(icon);
+        assertTrue(icon.isValid());
+        assertFalse(icon.isTemplate());
     }
 
     @Test
