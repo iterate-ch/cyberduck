@@ -117,15 +117,12 @@ public final class BackgroundActionRegistry extends Collection<BackgroundAction>
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        if(!super.equals(o)) {
-            return false;
-        }
         final BackgroundActionRegistry that = (BackgroundActionRegistry) o;
         return Objects.equals(identity, that.identity);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), identity);
+        return Objects.hash(identity);
     }
 }
