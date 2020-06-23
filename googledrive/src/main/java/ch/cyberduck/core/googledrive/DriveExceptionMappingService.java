@@ -38,13 +38,18 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
         if(failure instanceof GoogleJsonResponseException) {
             final GoogleJsonResponseException error = (GoogleJsonResponseException) failure;
             this.append(buffer, error.getDetails().getMessage());
+            final List<GoogleJsonError.ErrorInfo> errors = error.getDetails().getErrors();
+            boolean isUsageLimit = false;
+            for(GoogleJsonError.ErrorInfo info : error.getDetails().getErrors()) {
+                buffer.append(String.format("\n  domain: %s, reason %s, message: %s", info.getDomain(), info.getReason(), info.getMessage()));
+                if("usageLimits".equals(info.getDomain())) {
+                    isUsageLimit = true;
+                }
+            }
             switch(error.getDetails().getCode()) {
                 case HttpStatus.SC_FORBIDDEN:
-                    final List<GoogleJsonError.ErrorInfo> errors = error.getDetails().getErrors();
-                    for(GoogleJsonError.ErrorInfo info : errors) {
-                        if("usageLimits".equals(info.getDomain())) {
-                            return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(5), failure);
-                        }
+                    if(isUsageLimit) {
+                        return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(5), failure);
                     }
                     break;
             }
@@ -53,7 +58,7 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
             final HttpResponseException response = (HttpResponseException) failure;
             this.append(buffer, response.getStatusMessage());
             return new DefaultHttpResponseExceptionMappingService().map(new org.apache.http.client
-                    .HttpResponseException(response.getStatusCode(), buffer.toString()));
+                .HttpResponseException(response.getStatusCode(), buffer.toString()));
         }
         return super.map(failure);
     }
