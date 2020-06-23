@@ -90,7 +90,7 @@ public class STSCredentialsConfigurator {
             allProfileProperties = new ProfilesConfigFileLoaderHelper()
                 .parseProfileProperties(new Scanner(file.getInputStream(), StandardCharsets.UTF_8.name()));
         }
-        catch(AccessDeniedException e) {
+        catch(AccessDeniedException | IllegalArgumentException e) {
             log.warn(String.format("Failure reading %s", file), e);
             return credentials;
         }
