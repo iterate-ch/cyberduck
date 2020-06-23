@@ -39,19 +39,11 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
             final GoogleJsonResponseException error = (GoogleJsonResponseException) failure;
             this.append(buffer, error.getDetails().getMessage());
             final List<GoogleJsonError.ErrorInfo> errors = error.getDetails().getErrors();
-            boolean isUsageLimit = false;
             for(GoogleJsonError.ErrorInfo info : error.getDetails().getErrors()) {
-                buffer.append(String.format("\n  domain: %s, reason %s, message: %s", info.getDomain(), info.getReason(), info.getMessage()));
-                if("usageLimits".equals(info.getDomain())) {
-                    isUsageLimit = true;
+                this.append(buffer, String.format("domain: %s, reason %s, message: %s", info.getDomain(), info.getReason(), info.getMessage()));
+                if("usageLimits".equals(info.getDomain()) && error.getDetails().getCode() == HttpStatus.SC_FORBIDDEN) {
+                    return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(5), failure);
                 }
-            }
-            switch(error.getDetails().getCode()) {
-                case HttpStatus.SC_FORBIDDEN:
-                    if(isUsageLimit) {
-                        return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(5), failure);
-                    }
-                    break;
             }
         }
         if(failure instanceof HttpResponseException) {
