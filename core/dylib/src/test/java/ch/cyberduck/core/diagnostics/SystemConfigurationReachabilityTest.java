@@ -1,6 +1,8 @@
 package ch.cyberduck.core.diagnostics;
 
+import ch.cyberduck.core.AbstractProtocol;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Scheme;
 import ch.cyberduck.core.TestProtocol;
 
 import org.junit.Ignore;
@@ -52,7 +54,7 @@ public class SystemConfigurationReachabilityTest {
     public void testNotReachableWrongHostname() {
         final Reachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(), "cyberduck.ch.f", 80)
+            new Host(new TestProtocol(), "cyberduck.ch.f", 80)
         ));
     }
 
@@ -60,7 +62,31 @@ public class SystemConfigurationReachabilityTest {
     public void testNotReachableWrongPort() {
         final Reachability r = new SystemConfigurationReachability();
         assertFalse(r.isReachable(
-                new Host(new TestProtocol(), "cyberduck.ch", 23)
+            new Host(new TestProtocol(), "cyberduck.ch", 23)
+        ));
+    }
+
+    @Test
+    public void testReachabilityLocalDisk() {
+        final Reachability r = new SystemConfigurationReachability();
+        assertTrue(r.isReachable(
+            new Host(new AbstractProtocol() {
+
+                @Override
+                public String getIdentifier() {
+                    return Scheme.file.name();
+                }
+
+                @Override
+                public String getDescription() {
+                    return Scheme.file.toString();
+                }
+
+                @Override
+                public Scheme getScheme() {
+                    return Scheme.file;
+                }
+            }, "cyberduck.ch", 23)
         ));
     }
 }
