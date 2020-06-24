@@ -39,8 +39,14 @@ namespace Ch.Cyberduck.Core.Diagnostics
 
         public bool isReachable(Host h)
         {
-            if (h.getProtocol().getScheme().name().Equals("http") ||
-                h.getProtocol().getScheme().name().Equals("https"))
+            var scheme = h.getProtocol().getScheme().name();
+            if (scheme.Equals("file"))
+            {
+                return true;
+            }
+
+            if (scheme.Equals("http") ||
+                scheme.Equals("https"))
             {
                 try
                 {
