@@ -77,13 +77,9 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
         final List<KeyValueEntry> configuration = session.configuration();
         switch(type) {
             case download: {
-                for(KeyValueEntry entry : configuration) {
-                    if("manageDownloadShare".equals(entry.getKey())) {
-                        if("false".equalsIgnoreCase(entry.getValue())) {
-                            log.warn(String.format("Not supported for file %s with manageDownloadShare=false", file));
-                            return false;
-                        }
-                    }
+                if(configuration.stream().anyMatch(entry -> "manageDownloadShare".equals(entry.getKey()) && "false".equalsIgnoreCase(entry.getValue()))) {
+                    log.warn(String.format("Not supported for file %s with manageDownloadShare=false", file));
+                    return false;
                 }
                 if(file.isDirectory()) {
                     if(nodeid.isEncrypted(containerService.getContainer(file))) {
@@ -105,13 +101,9 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                     log.warn(String.format("Not supported for file %s", file));
                     return false;
                 }
-                for(KeyValueEntry entry : configuration) {
-                    if("manageUploadShare".equals(entry.getKey())) {
-                        if("false".equalsIgnoreCase(entry.getValue())) {
-                            log.warn(String.format("Not supported for file %s with manageUploadShare=false", file));
-                            return false;
-                        }
-                    }
+                if(configuration.stream().anyMatch(entry -> "manageUploadShare".equals(entry.getKey()) && "false".equalsIgnoreCase(entry.getValue()))) {
+                    log.warn(String.format("Not supported for file %s with manageUploadShare=false", file));
+                    return false;
                 }
                 final Acl.Role role = SDSPermissionsFeature.UPLOAD_SHARE_ROLE;
                 final boolean found = new SDSPermissionsFeature(session, nodeid).containsRole(file, role);
