@@ -32,9 +32,9 @@ public final class PreferencesFactory {
         preferences.load();
         preferences.setFactories();
         preferences.setDefaults();
-        preferences.setLogging();
         // Apply global configuration
         preferences.setDefaults(LocalFactory.get(SupportDirectoryFinderFactory.get().find(), "default.properties"));
+        preferences.setLogging();
     }
 
     public static synchronized Preferences get() {
