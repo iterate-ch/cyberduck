@@ -17,45 +17,23 @@ package ch.cyberduck.core.sds;
 
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.ConnectionCallback;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
-import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
 import ch.cyberduck.core.features.Write;
-import ch.cyberduck.core.http.HttpRange;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sds.io.swagger.client.ApiException;
+import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
-import ch.cyberduck.core.threading.BackgroundExceptionCallable;
-import ch.cyberduck.core.threading.DefaultRetryCallable;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.entity.EntityBuilder;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
@@ -78,8 +56,18 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
 
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final String uploadToken = new SDSWriteFeature(session, nodeid).start(file, status);
-        final MultipartOutputStream proxy = new MultipartOutputStream(uploadToken, file, status);
+        final CreateFileUploadResponse response = new SDSWriteFeature(session, nodeid).start(file, status);
+        if(session.configuration().stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey()))) {
+            final PresignedMultipartOutputStream proxy = new PresignedMultipartOutputStream(session, nodeid, response, file, status);
+            return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
+                PreferencesFactory.get().getInteger("s3.upload.multipart.size"))) {
+                @Override
+                public VersionId getStatus() {
+                    return proxy.getVersionId();
+                }
+            };
+        }
+        final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, nodeid, response.getToken(), file, status);
         return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
             PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
             @Override
@@ -87,132 +75,6 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
                 return proxy.getVersionId();
             }
         };
-    }
-
-    private final class MultipartOutputStream extends OutputStream {
-        private final String uploadToken;
-        private final Path file;
-        private final TransferStatus overall;
-        private final AtomicBoolean close = new AtomicBoolean();
-        private final AtomicReference<BackgroundException> canceled = new AtomicReference<>();
-
-        private Long offset = 0L;
-        private final Long length;
-
-        public MultipartOutputStream(final String uploadToken, final Path file, final TransferStatus status) {
-            this.uploadToken = uploadToken;
-            this.file = file;
-            this.overall = status;
-            this.length = status.getOffset() + status.getLength();
-        }
-
-        @Override
-        public void write(final int value) throws IOException {
-            throw new IOException(new UnsupportedOperationException());
-        }
-
-        @Override
-        public void write(final byte[] b, final int off, final int len) throws IOException {
-            try {
-                if(null != canceled.get()) {
-                    throw canceled.get();
-                }
-                final byte[] content = Arrays.copyOfRange(b, off, len);
-                final HttpEntity entity = EntityBuilder.create().setBinary(content).build();
-                new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<Void>() {
-                    @Override
-                    public Void call() throws BackgroundException {
-                        final SDSApiClient client = session.getClient();
-                        try {
-                            final HttpPost request = new HttpPost(String.format("%s/v4/uploads/%s", client.getBasePath(), uploadToken));
-                            request.setEntity(entity);
-                            request.setHeader(HttpHeaders.CONTENT_TYPE, MimeTypeService.DEFAULT_CONTENT_TYPE);
-                            request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
-                            if(0L != overall.getLength() && 0 != content.length) {
-                                final HttpRange range = HttpRange.byLength(offset, content.length);
-                                final String header;
-                                if(overall.getLength() == -1L) {
-                                    header = String.format("%d-%d/*", range.getStart(), range.getEnd());
-                                }
-                                else {
-                                    header = String.format("%d-%d/%d", range.getStart(), range.getEnd(), length);
-                                }
-                                request.addHeader(HttpHeaders.CONTENT_RANGE, String.format("bytes %s", header));
-                            }
-                            final HttpResponse response = client.getClient().execute(request);
-                            try {
-                                // Validate response
-                                switch(response.getStatusLine().getStatusCode()) {
-                                    case HttpStatus.SC_CREATED:
-                                        // Upload complete
-                                        offset += content.length;
-                                        break;
-                                    default:
-                                        EntityUtils.updateEntity(response, new BufferedHttpEntity(response.getEntity()));
-                                        throw new SDSExceptionMappingService().map(
-                                            new ApiException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(), Collections.emptyMap(),
-                                                EntityUtils.toString(response.getEntity())));
-                                }
-                            }
-                            catch(BackgroundException e) {
-                                // Cancel upload on error reply
-                                new SDSWriteFeature(session, nodeid).cancel(file, uploadToken);
-                                canceled.set(e);
-                                throw e;
-                            }
-                            finally {
-                                EntityUtils.consume(response.getEntity());
-                            }
-                        }
-                        catch(IOException e) {
-                            throw new DefaultIOExceptionMappingService().map(e);
-                        }
-                        return null; //Void
-                    }
-                }, overall).call();
-            }
-            catch(BackgroundException e) {
-                throw new IOException(e.getMessage(), e);
-            }
-        }
-
-        @Override
-        public void close() throws IOException {
-            try {
-                if(close.get()) {
-                    log.warn(String.format("Skip double close of stream %s", this));
-                    return;
-                }
-                if(null != canceled.get()) {
-                    return;
-                }
-                try {
-                    overall.setVersion(new SDSWriteFeature(session, nodeid).complete(file, uploadToken, overall));
-                }
-                catch(ConflictException e) {
-                    overall.setVersion(new SDSWriteFeature(session, nodeid).complete(file, uploadToken, new TransferStatus(overall).exists(true)));
-                }
-            }
-            catch(BackgroundException e) {
-                throw new IOException(e);
-            }
-            finally {
-                close.set(true);
-            }
-        }
-
-        @Override
-        public String toString() {
-            final StringBuilder sb = new StringBuilder("MultipartOutputStream{");
-            sb.append("id='").append(uploadToken).append('\'');
-            sb.append(", file=").append(file);
-            sb.append('}');
-            return sb.toString();
-        }
-
-        public VersionId getVersionId() {
-            return overall.getVersion();
-        }
     }
 
     @Override

@@ -104,7 +104,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.encryption.keys.ttl"));
 
     private final ExpiringObjectHolder<SoftwareVersionData> softwareVersion
-        = new ExpiringObjectHolder<SoftwareVersionData>(PreferencesFactory.get().getLong("sds.useracount.ttl"));
+        = new ExpiringObjectHolder<>(PreferencesFactory.get().getLong("sds.useracount.ttl"));
 
     private final List<KeyValueEntry> configuration = new ArrayList<>();
     private final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(this);
@@ -349,10 +349,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         if(type == Read.class) {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
         }
-        if(type == Write.class) {
-            return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
-        }
-        if(type == MultipartWrite.class) {
+        if(type == Write.class || type == MultipartWrite.class) {
             return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
         }
         if(type == Directory.class) {

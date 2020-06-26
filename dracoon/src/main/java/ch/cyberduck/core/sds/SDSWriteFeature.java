@@ -99,13 +99,13 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
 
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final String uploadToken = this.start(file, status);
+        final CreateFileUploadResponse createFileUploadResponse = this.start(file, status);
         final DelayedHttpEntityCallable<VersionId> command = new DelayedHttpEntityCallable<VersionId>() {
             @Override
             public VersionId call(final AbstractHttpEntity entity) throws BackgroundException {
                 try {
                     final SDSApiClient client = session.getClient();
-                    final HttpPost request = new HttpPost(String.format("%s/v4/uploads/%s", client.getBasePath(), uploadToken));
+                    final HttpPost request = new HttpPost(String.format("%s/v4/uploads/%s", client.getBasePath(), createFileUploadResponse.getToken()));
                     request.setEntity(entity);
                     request.setHeader(HttpHeaders.CONTENT_TYPE, MimeTypeService.DEFAULT_CONTENT_TYPE);
                     request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
@@ -125,7 +125,7 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                     }
                     catch(BackgroundException e) {
                         // Cancel upload on error reply
-                        cancel(file, uploadToken);
+                        cancel(file, createFileUploadResponse.getToken());
                         throw e;
                     }
                     finally {
@@ -134,23 +134,23 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
                     if(status.isComplete()) {
                         VersionId version;
                         try {
-                            version = complete(file, uploadToken, status);
+                            version = complete(file, createFileUploadResponse.getToken(), status);
                         }
                         catch(ConflictException e) {
-                            version = complete(file, uploadToken, new TransferStatus(status).exists(true));
+                            version = complete(file, createFileUploadResponse.getToken(), new TransferStatus(status).exists(true));
                         }
                         status.setVersion(version);
                         return version;
                     }
                     else {
                         // Cancel upload with missing parts
-                        cancel(file, uploadToken);
+                        cancel(file, createFileUploadResponse.getToken());
                     }
                     return new VersionId(null);
                 }
                 catch(IOException e) {
                     // Cancel upload on I/O failure
-                    cancel(file, uploadToken);
+                    cancel(file, createFileUploadResponse.getToken());
                     throw new HttpExceptionMappingService().map("Upload {0} failed", e, file);
                 }
             }
@@ -163,14 +163,14 @@ public class SDSWriteFeature extends AbstractHttpWriteFeature<VersionId> {
         return this.write(file, status, command);
     }
 
-    protected String start(final Path file, final TransferStatus status) throws BackgroundException {
+    protected CreateFileUploadResponse start(final Path file, final TransferStatus status) throws BackgroundException {
         try {
             final CreateFileUploadRequest body = new CreateFileUploadRequest()
+                .directS3Upload(session.configuration().stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey())))
                 .size(-1 == status.getLength() ? null : status.getLength())
                 .parentId(Long.parseLong(nodeid.getFileid(file.getParent(), new DisabledListProgressListener())))
                 .name(file.getName());
-            final CreateFileUploadResponse response = new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
-            return response.getToken();
+            return new NodesApi(session.getClient()).createFileUpload(body, StringUtils.EMPTY);
         }
         catch(ApiException e) {
             throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
