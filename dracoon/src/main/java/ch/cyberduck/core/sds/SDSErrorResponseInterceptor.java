@@ -26,6 +26,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -94,7 +95,9 @@ public class SDSErrorResponseInterceptor extends DisabledServiceUnavailableRetry
     public void process(final HttpRequest request, final HttpContext context) {
         if(StringUtils.isNotBlank(token)) {
             request.removeHeaders(SDSSession.SDS_AUTH_TOKEN_HEADER);
-            request.addHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, token);
+            if(StringUtils.equals(((HttpRequestWrapper) request).getTarget().getHostName(), session.getHost().getHostname())) {
+                request.addHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, token);
+            }
         }
     }
 }
