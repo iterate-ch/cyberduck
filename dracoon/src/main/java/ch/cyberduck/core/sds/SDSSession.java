@@ -53,6 +53,7 @@ import ch.cyberduck.core.sds.io.swagger.client.model.UserKeyPairContainer;
 import ch.cyberduck.core.sds.provider.HttpComponentsProvider;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptExceptionMappingService;
 import ch.cyberduck.core.sds.triplecrypt.TripleCryptKeyPair;
+import ch.cyberduck.core.shared.DefaultUploadFeature;
 import ch.cyberduck.core.ssl.X509KeyManager;
 import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
@@ -348,6 +349,12 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         }
         if(type == Read.class) {
             return (T) new SDSDelegatingReadFeature(this, nodeid, new SDSReadFeature(this, nodeid));
+        }
+        if(type == Upload.class) {
+            if(configuration.stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey()))) {
+                return (T) new SDSDirectS3UploadFeature(this, nodeid, new SDSDelegatingWriteFeature(this, nodeid, new SDSDirectS3WriteFeature(this)));
+            }
+            return (T) new DefaultUploadFeature(new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid)));
         }
         if(type == Write.class || type == MultipartWrite.class) {
             return (T) new SDSDelegatingWriteFeature(this, nodeid, new SDSMultipartWriteFeature(this, nodeid));
