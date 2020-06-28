@@ -1,12 +1,12 @@
 package ch.cyberduck.core.sds;
 
 /*
- * Copyright (c) 2002-2017 iterate GmbH. All rights reserved.
+ * Copyright (c) 2002-2020 iterate GmbH. All rights reserved.
  * https://cyberduck.io/
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -35,6 +35,7 @@ import ch.cyberduck.core.unicode.NFDNormalizer;
 import ch.cyberduck.test.IntegrationTest;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -48,7 +49,32 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 @Category(IntegrationTest.class)
-public class SDSWriteFeatureTest extends AbstractSDSTest {
+public class SDSDirectS3WriteFeatureTest extends AbstractSDSTest {
+
+    @Test
+    public void testWriteUnknownContentLength() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final byte[] content = RandomUtils.nextBytes(32769);
+        final TransferStatus status = new TransferStatus();
+        status.setLength(-1L);
+        status.setMime("text/plain");
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final SDSDirectS3WriteFeature writer = new SDSDirectS3WriteFeature(session);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        final VersionId version = out.getStatus();
+        assertNotNull(version);
+        assertTrue(new DefaultFindFeature(session).find(test));
+        final byte[] compare = new byte[content.length];
+        final InputStream stream = new SDSReadFeature(session, nodeid).read(test, new TransferStatus().length(content.length), new DisabledConnectionCallback());
+        IOUtils.readFully(stream, compare);
+        stream.close();
+        assertArrayEquals(content, compare);
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
 
     @Test
     public void testReadWrite() throws Exception {
@@ -59,7 +85,7 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
         final Path test = new Path(room, new NFDNormalizer().normalize(String.format("ä%s", new AlphanumericRandomStringService().random())).toString(), EnumSet.of(Path.Type.file));
         final VersionId version;
         {
-            final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
+            final SDSDirectS3WriteFeature writer = new SDSDirectS3WriteFeature(session);
             final TransferStatus status = new TransferStatus();
             status.setLength(content.length);
             status.setChecksum(new MD5ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
@@ -83,7 +109,7 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
             final byte[] change = RandomUtils.nextBytes(256);
             final TransferStatus status = new TransferStatus();
             status.setLength(change.length);
-            final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
+            final SDSDirectS3WriteFeature writer = new SDSDirectS3WriteFeature(session);
             final HttpResponseOutputStream<VersionId> out = writer.write(test, status.exists(true), new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(status, status).transfer(new ByteArrayInputStream(change), out);
@@ -118,7 +144,7 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
             }
         };
         status.setLength(content.length);
-        final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
+        final SDSDirectS3WriteFeature writer = new SDSDirectS3WriteFeature(session);
         final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
@@ -131,7 +157,7 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
         final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
         final Path test = new Path(UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
         final TransferStatus status = new TransferStatus();
-        final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
+        final SDSDirectS3WriteFeature writer = new SDSDirectS3WriteFeature(session);
         final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
     }
 
@@ -143,10 +169,27 @@ public class SDSWriteFeatureTest extends AbstractSDSTest {
         final byte[] content = RandomUtils.nextBytes(2);
         final TransferStatus status = new TransferStatus().length(content.length);
         final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
+        final SDSDirectS3WriteFeature writer = new SDSDirectS3WriteFeature(session);
         final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
+        final VersionId version = out.getStatus();
+        assertNotNull(version);
+        assertTrue(new DefaultFindFeature(session).find(test));
+        new SDSDeleteFeature(session, nodeid).delete(Collections.singletonList(room), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testWriteZeroLength() throws Exception {
+        final SDSNodeIdProvider nodeid = new SDSNodeIdProvider(session).withCache(cache);
+        final Path room = new SDSDirectoryFeature(session, nodeid).mkdir(
+            new Path(new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
+        final TransferStatus status = new TransferStatus();
+        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
+        final SDSDirectS3WriteFeature writer = new SDSDirectS3WriteFeature(session);
+        final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
+        assertNotNull(out);
+        new StreamCopier(status, status).transfer(new NullInputStream(0L), out);
         final VersionId version = out.getStatus();
         assertNotNull(version);
         assertTrue(new DefaultFindFeature(session).find(test));

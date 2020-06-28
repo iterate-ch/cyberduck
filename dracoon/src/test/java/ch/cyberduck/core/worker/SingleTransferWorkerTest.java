@@ -31,10 +31,10 @@ import ch.cyberduck.core.sds.AbstractSDSTest;
 import ch.cyberduck.core.sds.SDSAttributesFinderFeature;
 import ch.cyberduck.core.sds.SDSDeleteFeature;
 import ch.cyberduck.core.sds.SDSDirectoryFeature;
+import ch.cyberduck.core.sds.SDSMultipartWriteFeature;
 import ch.cyberduck.core.sds.SDSNodeIdProvider;
 import ch.cyberduck.core.sds.SDSProtocol;
 import ch.cyberduck.core.sds.SDSSession;
-import ch.cyberduck.core.sds.SDSWriteFeature;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -82,14 +82,14 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         {
             final byte[] content = RandomUtils.nextBytes(39864);
             final TransferStatus writeStatus = new TransferStatus().length(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-            final StatusOutputStream<VersionId> out = new SDSWriteFeature(session, fileid).write(test, writeStatus, new DisabledConnectionCallback());
+            final StatusOutputStream<VersionId> out = new SDSMultipartWriteFeature(session, fileid).write(test, writeStatus, new DisabledConnectionCallback());
             assertNotNull(out);
             new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
         final byte[] content = RandomUtils.nextBytes(39864);
         final TransferStatus writeStatus = new TransferStatus().exists(true).length(content.length).withChecksum(new SHA256ChecksumCompute().compute(new ByteArrayInputStream(content), new TransferStatus()));
-        final StatusOutputStream<VersionId> out = new SDSWriteFeature(session, fileid).write(test, writeStatus, new DisabledConnectionCallback());
+        final StatusOutputStream<VersionId> out = new SDSMultipartWriteFeature(session, fileid).write(test, writeStatus, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(writeStatus, writeStatus).withLimit((long) content.length).transfer(new ByteArrayInputStream(content), out);
         out.close();
@@ -128,7 +128,7 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
         final SDSSession conn = new SDSSession(session.getHost().withCredentials(
             new Credentials(System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key"))
         ), new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
-            final SDSWriteFeature write = new SDSWriteFeature(this, fileid) {
+            final SDSMultipartWriteFeature write = new SDSMultipartWriteFeature(this, fileid) {
                 @Override
                 public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                     final HttpResponseOutputStream<VersionId> proxy = super.write(file, status, callback);
@@ -189,63 +189,6 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
     }
 
     @Test
-    public void testTransferredSizeRepeatFailureOnComplete() throws Exception {
-        final SDSNodeIdProvider fileid = new SDSNodeIdProvider(session);
-        final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
-        final byte[] content = new byte[98305];  // chunk size 32768
-        new Random().nextBytes(content);
-        final OutputStream out = local.getOutputStream(false);
-        IOUtils.write(content, out);
-        out.close();
-        final AtomicBoolean failed = new AtomicBoolean();
-        final Host host = new Host(new SDSProtocol(), "duck.dracoon.com", new Credentials(
-            System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
-        ));
-        final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
-            final SDSWriteFeature write = new SDSWriteFeature(this, fileid) {
-                @Override
-                protected VersionId complete(final Path file, final String uploadToken, final TransferStatus status) throws BackgroundException {
-                    if(!failed.get()) {
-                        failed.set(true);
-                        throw new DefaultIOExceptionMappingService().map(new SocketTimeoutException());
-                    }
-                    return super.complete(file, uploadToken, status);
-                }
-            };
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public <T> T _getFeature(final Class<T> type) {
-                if(type == Write.class) {
-                    return (T) write;
-                }
-                return super._getFeature(type);
-            }
-        };
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final Path room = new SDSDirectoryFeature(session, fileid).mkdir(new Path(
-            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory, Path.Type.volume, Path.Type.triplecrypt)), null, new TransferStatus());
-        final Path test = new Path(room, UUID.randomUUID().toString(), EnumSet.of(Path.Type.file));
-        final Transfer t = new UploadTransfer(new Host(new TestProtocol()), test, local);
-        final BytecountStreamListener counter = new BytecountStreamListener(new DisabledStreamListener());
-        assertTrue(new SingleTransferWorker(session, session, t, new TransferOptions(), new TransferSpeedometer(t), new DisabledTransferPrompt() {
-            @Override
-            public TransferAction prompt(final TransferItem file) {
-                return TransferAction.overwrite;
-            }
-        }, new DisabledTransferErrorCallback(),
-            new DisabledProgressListener(), counter, new DisabledLoginCallback(), new DisabledNotificationService()) {
-
-        }.run(session));
-        local.delete();
-        assertEquals(98305L, counter.getSent(), 0L);
-        assertTrue(failed.get());
-        assertEquals(98305L, new SDSAttributesFinderFeature(session, fileid).find(test).getSize());
-        new SDSDeleteFeature(session, fileid).delete(Arrays.asList(test, room), new DisabledLoginCallback(), new Delete.DisabledCallback());
-    }
-
-    @Test
     public void testTransferredSizeRepeatFailureOnClose() throws Exception {
         final SDSNodeIdProvider fileid = new SDSNodeIdProvider(session);
         final Local local = new Local(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
@@ -259,7 +202,7 @@ public class SingleTransferWorkerTest extends AbstractSDSTest {
             System.getProperties().getProperty("sds.user"), System.getProperties().getProperty("sds.key")
         ));
         final SDSSession session = new SDSSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager()) {
-            final SDSWriteFeature write = new SDSWriteFeature(this, fileid) {
+            final SDSMultipartWriteFeature write = new SDSMultipartWriteFeature(this, fileid) {
                 @Override
                 public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
                     final HttpResponseOutputStream<VersionId> proxy = super.write(file, status, callback);
