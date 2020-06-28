@@ -816,6 +816,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
         this.setDefault("sds.upload.sharelinks.keep", String.valueOf(true));
         this.setDefault("sds.versioning.references.enable", String.valueOf(false));
+        this.setDefault("sds.upload.s3.status.period", String.valueOf(5000)); // 5 seconds
 
         this.setDefault("spectra.retry.delay", String.valueOf(60)); // 1 minute
 
