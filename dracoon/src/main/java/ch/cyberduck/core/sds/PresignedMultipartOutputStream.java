@@ -20,6 +20,8 @@ import ch.cyberduck.core.MimeTypeService;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.InteroperabilityException;
+import ch.cyberduck.core.http.DefaultHttpResponseExceptionMappingService;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.sds.io.swagger.client.ApiException;
 import ch.cyberduck.core.sds.io.swagger.client.api.NodesApi;
@@ -42,6 +44,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.BufferedHttpEntity;
@@ -84,7 +87,9 @@ public class PresignedMultipartOutputStream extends OutputStream {
     private int partNumber;
     private final Map<Integer, String> etags = new HashMap<>();
 
-    public PresignedMultipartOutputStream(final SDSSession session, final SDSNodeIdProvider nodeid, final CreateFileUploadResponse createFileUploadResponse, final Path file, final TransferStatus status) {
+    public PresignedMultipartOutputStream(final SDSSession session, final SDSNodeIdProvider nodeid,
+                                          final CreateFileUploadResponse createFileUploadResponse,
+                                          final Path file, final TransferStatus status) {
         this.session = session;
         this.nodeid = nodeid;
         this.createFileUploadResponse = createFileUploadResponse;
@@ -116,8 +121,8 @@ public class PresignedMultipartOutputStream extends OutputStream {
                         for(PresignedUrl url : target) {
                             final HttpPut request = new HttpPut(url.getUrl());
                             request.setEntity(entity);
+                            request.setHeader(HttpHeaders.CONTENT_LENGTH, String.valueOf(entity.getContentLength()));
                             request.setHeader(HttpHeaders.CONTENT_TYPE, MimeTypeService.DEFAULT_CONTENT_TYPE);
-                            request.setHeader(SDSSession.SDS_AUTH_TOKEN_HEADER, StringUtils.EMPTY);
                             final HttpResponse response = client.getClient().execute(request);
                             try {
                                 // Validate response
@@ -152,6 +157,9 @@ public class PresignedMultipartOutputStream extends OutputStream {
                     catch(ApiException e) {
                         throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
                     }
+                    catch(HttpResponseException e) {
+                        throw new DefaultHttpResponseExceptionMappingService().map(e);
+                    }
                     catch(IOException e) {
                         throw new DefaultIOExceptionMappingService().map(e);
                     }
@@ -179,7 +187,7 @@ public class PresignedMultipartOutputStream extends OutputStream {
             }
             else {
                 try {
-                    final CompleteS3FileUploadRequest body = new CompleteS3FileUploadRequest()
+                    final CompleteS3FileUploadRequest completeS3FileUploadRequest = new CompleteS3FileUploadRequest()
                         .keepShareLinks(overall.isExists() ? PreferencesFactory.get().getBoolean("sds.upload.sharelinks.keep") : false)
                         .resolutionStrategy(overall.isExists() ? CompleteS3FileUploadRequest.ResolutionStrategyEnum.OVERWRITE : CompleteS3FileUploadRequest.ResolutionStrategyEnum.FAIL);
                     if(overall.getFilekey() != null) {
@@ -189,14 +197,15 @@ public class PresignedMultipartOutputStream extends OutputStream {
                             TripleCryptConverter.toCryptoPlainFileKey(fileKey),
                             TripleCryptConverter.toCryptoUserPublicKey(session.keyPair().getPublicKeyContainer())
                         );
-                        body.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
+                        completeS3FileUploadRequest.setFileKey(TripleCryptConverter.toSwaggerFileKey(encryptFileKey));
                     }
-                    etags.forEach((key, value) -> body.addPartsItem(
+                    etags.forEach((key, value) -> completeS3FileUploadRequest.addPartsItem(
                         new S3FileUploadPart().partEtag(StringUtils.remove(value, '"')).partNumber(key)));
-                    new NodesApi(session.getClient()).completeS3FileUpload(body, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
+                    new NodesApi(session.getClient()).completeS3FileUpload(completeS3FileUploadRequest, createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
                     // Polling
                     final ScheduledThreadPool polling = new ScheduledThreadPool();
                     final CountDownLatch done = new CountDownLatch(1);
+                    final AtomicReference<BackgroundException> failure = new AtomicReference<>();
                     final ScheduledFuture f = polling.repeat(new Runnable() {
                         @Override
                         public void run() {
@@ -204,10 +213,14 @@ public class PresignedMultipartOutputStream extends OutputStream {
                                 final S3FileUploadStatus uploadStatus = new NodesApi(session.getClient())
                                     .getUploadStatus(createFileUploadResponse.getUploadId(), StringUtils.EMPTY);
                                 switch(uploadStatus.getStatus()) {
-                                    case "transfer":
                                     case "finishing":
+                                        // Expected
                                         break;
+                                    case "transfer":
+                                        failure.set(new InteroperabilityException(uploadStatus.getStatus()));
+                                        done.countDown();
                                     case "error":
+                                        failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
                                         done.countDown();
                                     case "done":
                                         overall.setVersion(new VersionId(String.valueOf(uploadStatus.getNode().getId())));
@@ -217,14 +230,14 @@ public class PresignedMultipartOutputStream extends OutputStream {
                             }
                             catch(ApiException e) {
                                 done.countDown();
-                                // throw new SDSExceptionMappingService().map("Upload {0} failed", e, file);
+                                failure.set(new SDSExceptionMappingService().map("Upload {0} failed", e, file));
                             }
                         }
                     }, PreferencesFactory.get().getLong("sds.upload.s3.status.period"), TimeUnit.MILLISECONDS);
                     Uninterruptibles.awaitUninterruptibly(done);
                     polling.shutdown();
-                    if(null == overall.getVersion()) {
-                        // throw new InteroperabilityException(uploadStatus.getErrorDetails().getMessage());
+                    if(null != failure.get()) {
+                        throw failure.get();
                     }
                 }
                 catch(CryptoSystemException | InvalidFileKeyException | InvalidKeyPairException e) {
@@ -246,8 +259,11 @@ public class PresignedMultipartOutputStream extends OutputStream {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("PresignedMultipartOutputStream{");
-        sb.append("id='").append(createFileUploadResponse).append('\'');
+        sb.append("nodeid=").append(nodeid);
+        sb.append(", createFileUploadResponse=").append(createFileUploadResponse);
         sb.append(", file=").append(file);
+        sb.append(", overall=").append(overall);
+        sb.append(", offset=").append(offset);
         sb.append('}');
         return sb.toString();
     }
