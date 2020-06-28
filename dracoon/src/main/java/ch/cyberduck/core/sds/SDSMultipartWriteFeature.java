@@ -21,6 +21,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.VersionId;
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.exception.ConflictException;
 import ch.cyberduck.core.features.AttributesFinder;
 import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.MultipartWrite;
@@ -28,12 +29,14 @@ import ch.cyberduck.core.features.Write;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.io.MemorySegementingOutputStream;
 import ch.cyberduck.core.preferences.PreferencesFactory;
-import ch.cyberduck.core.sds.io.swagger.client.model.CreateFileUploadResponse;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultFindFeature;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     private static final Logger log = Logger.getLogger(SDSMultipartWriteFeature.class);
@@ -42,6 +45,7 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
     private final SDSNodeIdProvider nodeid;
     private final Find finder;
     private final AttributesFinder attributes;
+    private final SDSUploadService upload;
 
     public SDSMultipartWriteFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this(session, nodeid, new DefaultFindFeature(session), new DefaultAttributesFinderFeature(session));
@@ -52,27 +56,55 @@ public class SDSMultipartWriteFeature implements MultipartWrite<VersionId> {
         this.nodeid = nodeid;
         this.finder = finder;
         this.attributes = attributes;
+        this.upload = new SDSUploadService(session, nodeid);
     }
 
     @Override
     public HttpResponseOutputStream<VersionId> write(final Path file, final TransferStatus status, final ConnectionCallback callback) throws BackgroundException {
-        final CreateFileUploadResponse response = new SDSWriteFeature(session, nodeid).start(file, status);
-        if(session.configuration().stream().anyMatch(entry -> "use_s3_storage".equals(entry.getKey()))) {
-            final PresignedMultipartOutputStream proxy = new PresignedMultipartOutputStream(session, nodeid, response, file, status);
-            return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
-                PreferencesFactory.get().getInteger("s3.upload.multipart.size"))) {
-                @Override
-                public VersionId getStatus() {
-                    return proxy.getVersionId();
-                }
-            };
-        }
-        final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, nodeid, response.getToken(), file, status);
-        return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy,
-            PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
+        final String uploadToken = upload.start(file, status);
+        final MultipartUploadTokenOutputStream proxy = new MultipartUploadTokenOutputStream(session, nodeid, file, status, uploadToken);
+        return new HttpResponseOutputStream<VersionId>(new MemorySegementingOutputStream(proxy, PreferencesFactory.get().getInteger("sds.upload.multipart.chunksize"))) {
+            private final AtomicBoolean close = new AtomicBoolean();
+
             @Override
             public VersionId getStatus() {
                 return proxy.getVersionId();
+            }
+
+            @Override
+            public void close() throws IOException {
+                try {
+                    if(close.get()) {
+                        log.warn(String.format("Skip double close of stream %s", this));
+                        return;
+                    }
+                    super.close();
+                    try {
+                        status.setVersion(upload.complete(file, uploadToken, status));
+                    }
+                    catch(ConflictException e) {
+                        status.setVersion(upload.complete(file, uploadToken, new TransferStatus(status).exists(true)));
+                    }
+                }
+                catch(BackgroundException e) {
+                    throw new IOException(e);
+                }
+                finally {
+                    close.set(true);
+                }
+            }
+
+
+            @Override
+            protected void handleIOException(final IOException e) throws IOException {
+                // Cancel upload on error reply
+                try {
+                    upload.cancel(file, uploadToken);
+                }
+                catch(BackgroundException f) {
+                    log.warn(String.format("Failure %s cancelling upload for file %s with upload token %s after failure %s", f, file, uploadToken, e));
+                }
+                throw e;
             }
         };
     }
