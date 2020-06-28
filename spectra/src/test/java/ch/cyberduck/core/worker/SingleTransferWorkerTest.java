@@ -127,6 +127,7 @@ public class SingleTransferWorkerTest {
 
                         @Override
                         public void close() throws IOException {
+                            super.close();
                             proxy.close();
                         }
                     };
