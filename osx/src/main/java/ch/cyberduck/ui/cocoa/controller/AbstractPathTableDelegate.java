@@ -30,6 +30,7 @@ import ch.cyberduck.ui.comparator.OwnerComparator;
 import ch.cyberduck.ui.comparator.PermissionsComparator;
 import ch.cyberduck.ui.comparator.RegionComparator;
 import ch.cyberduck.ui.comparator.SizeComparator;
+import ch.cyberduck.ui.comparator.StorageClassComparator;
 import ch.cyberduck.ui.comparator.TimestampComparator;
 import ch.cyberduck.ui.comparator.VersionComparator;
 
@@ -83,6 +84,8 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
                 return new RegionComparator(ascending);
             case version:
                 return new VersionComparator(ascending);
+            case storageclass:
+                return new StorageClassComparator(ascending);
             default:
                 log.error(String.format("Unknown column identifier %s", identifier));
                 return new NullComparator<Path>();

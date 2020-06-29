@@ -1033,8 +1033,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * QuickLook support for 10.6+
-     * The receiver should setup the preview panel (data source, delegate, binding, etc.) here.
+     * QuickLook support for 10.6+ The receiver should setup the preview panel (data source, delegate, binding, etc.)
+     * here.
      *
      * @param panel The Preview Panel the receiver will control.
      * @ Sent to the object taking control of the Preview Panel.
@@ -1044,8 +1044,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * QuickLook support for 10.6+
-     * The receiver should unsetup the preview panel (data source, delegate, binding, etc.) here.
+     * QuickLook support for 10.6+ The receiver should unsetup the preview panel (data source, delegate, binding, etc.)
+     * here.
      *
      * @param panel The Preview Panel that the receiver will stop controlling.
      * @ Sent to the object in control of the Preview Panel just before stopping its control.
@@ -1422,6 +1422,18 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setMinWidth(50);
             c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
                 BrowserColumn.version.name())));
+            c.setMaxWidth(500);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            c.setDataCell(textCellPrototype);
+            table.addTableColumn(c);
+        }
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserColumn.storageclass.name()));
+        if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.storageclass.name()))) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserColumn.storageclass.name());
+            c.headerCell().setStringValue(BrowserColumn.storageclass.toString());
+            c.setMinWidth(50);
+            c.setWidth(preferences.getFloat(String.format("browser.column.%s.width",
+                BrowserColumn.storageclass.name())));
             c.setMaxWidth(500);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
             c.setDataCell(textCellPrototype);
@@ -2147,8 +2159,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * Marks all expanded directories as invalid and tells the
-     * browser table to reload its data
+     * Marks all expanded directories as invalid and tells the browser table to reload its data
      *
      * @param sender Toolbar button
      */
@@ -2264,8 +2275,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     @Override
                     public void run() {
                         background(new WorkerBackgroundAction<Map<Path, Path>>(BrowserController.this, pool,
-                            new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool, cache,
-                                BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
+                                new CopyWorker(selected, pool.getHost().getProtocol().getStatefulness() == Protocol.Statefulness.stateful ? SessionPoolFactory.create(BrowserController.this, cache, pool.getHost()) : pool, cache,
+                                    BrowserController.this, LoginCallbackFactory.get(BrowserController.this)) {
                                     @Override
                                     public void cleanup(final Map<Path, Path> result) {
                                         final List<Path> changed = new ArrayList<>();
@@ -2794,14 +2805,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * <p>
      * Indicates whether the receiver can send and receive the specified pasteboard types.
      * <p>
-     * Either sendType or returnType—but not both—may be empty. If sendType is empty,
-     * the service doesn’t require input from the application requesting the service.
-     * If returnType is empty, the service doesn’t return data.
+     * Either sendType or returnType—but not both—may be empty. If sendType is empty, the service doesn’t require input
+     * from the application requesting the service. If returnType is empty, the service doesn’t return data.
      *
      * @param sendType   The pasteboard type the application needs to send.
      * @param returnType The pasteboard type the application needs to receive.
-     * @return The object that can send and receive the specified types or nil
-     * if the receiver knows of no object that can send and receive data of that type.
+     * @return The object that can send and receive the specified types or nil if the receiver knows of no object that
+     * can send and receive data of that type.
      */
     public ID validRequestorForSendType_returnType(String sendType, String returnType) {
         log.debug("validRequestorForSendType_returnType:" + sendType + "," + returnType);
@@ -2896,6 +2906,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.version.name()))) {
                 copy.append(",").append(next.attributes().getVersionId());
+            }
+            if(preferences.getBoolean(String.format("browser.column.%s", BrowserColumn.storageclass.name()))) {
+                copy.append(",").append(next.attributes().getStorageClass());
             }
             if(i.hasNext()) {
                 copy.append("\n");
@@ -3035,7 +3048,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * Sets the current working directory. This will update the path selection menu and also add this path to the browsing history.
+     * Sets the current working directory. This will update the path selection menu and also add this path to the
+     * browsing history.
      *
      * @param directory The new working directory to display or null to detach any working directory from the browser
      * @param selected  Selected files in browser
@@ -3129,8 +3143,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     /**
      * @param disconnected Callback after the session has been disconnected
-     * @return True if the unmount process has finished, false if the user has to agree first
-     * to close the connection
+     * @return True if the unmount process has finished, false if the user has to agree first to close the connection
      */
     public boolean unmount(final Runnable disconnected) {
         return this.unmount(new DisabledSheetCallback() {

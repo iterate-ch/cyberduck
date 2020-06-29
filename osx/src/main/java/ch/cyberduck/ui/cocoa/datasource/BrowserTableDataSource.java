@@ -307,6 +307,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     LocaleFactory.localizedString("None"),
                 TableCellAttributes.browserFontLeftAlignment());
         }
+        else if(identifier.equals(BrowserColumn.storageclass.name())) {
+            value = NSAttributedString.attributedStringWithAttributes(
+                StringUtils.isNotBlank(item.attributes().getStorageClass()) ?
+                    LocaleFactory.localizedString(item.attributes().getStorageClass(), "S3") :
+                    LocaleFactory.localizedString("None"),
+                TableCellAttributes.browserFontLeftAlignment());
+        }
         else {
             throw new IllegalArgumentException(String.format("Unknown identifier %s", identifier));
         }
@@ -328,12 +335,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     /**
-     * @param local indicates that the candidate destination object (the window or view over which the dragged
-     *              image is currently poised) is in the same application as the source, while a NO value indicates that
-     *              the destination object is in a different application
+     * @param local indicates that the candidate destination object (the window or view over which the dragged image is
+     *              currently poised) is in the same application as the source, while a NO value indicates that the
+     *              destination object is in a different application
      * @return A mask, created by combining the dragging operations listed in the NSDragOperation section of
-     * NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
-     * any dragging operations, it should return NSDragOperationNone.
+     * NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit any dragging
+     * operations, it should return NSDragOperationNone.
      * @see NSDraggingSource
      */
     @Override
@@ -623,11 +630,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     /**
-     * @return the names (not full paths) of the files that the receiver promises to create at dropDestination.
-     * This method is invoked when the drop has been accepted by the destination and the destination, in the case of another
-     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long operations,
-     * you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
-     * blocking the destination application.
+     * @return the names (not full paths) of the files that the receiver promises to create at dropDestination. This
+     * method is invoked when the drop has been accepted by the destination and the destination, in the case of another
+     * Cocoa application, invokes the NSDraggingInfo method namesOfPromisedFilesDroppedAtDestination. For long
+     * operations, you can cache dropDestination and defer the creation of the files until the finishedDraggingImage
+     * method to avoid blocking the destination application.
      */
     @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL url) {

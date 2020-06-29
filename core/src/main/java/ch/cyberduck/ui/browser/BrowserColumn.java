@@ -87,5 +87,11 @@ public enum BrowserColumn {
         public String toString() {
             return LocaleFactory.localizedString("Version");
         }
+    },
+    storageclass {
+        @Override
+        public String toString() {
+            return LocaleFactory.localizedString("Storage Class", "Info");
+        }
     }
 }
