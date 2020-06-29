@@ -72,7 +72,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <argLine />
-        <jna-version>5.3.1</jna-version>
+        <jna-version>5.5.0</jna-version>
         <jersey-version>2.31</jersey-version>
         <jackson-version>2.10.4</jackson-version>
         <slf4j-version>1.7.30</slf4j-version>
