@@ -118,28 +118,33 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
             final Map<Integer, String> etags = new HashMap<>();
             // Full size of file
             final long size = status.getLength() + status.getOffset();
-            final GeneratePresignedUrlsRequest presignedUrlsRequest = new GeneratePresignedUrlsRequest()
-                .firstPartNumber(1)
-                // Part size
-                .size(Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), size));
+            final GeneratePresignedUrlsRequest presignedUrlsRequest = new GeneratePresignedUrlsRequest().firstPartNumber(1);
+            final List<PresignedUrl> presignedUrls = new ArrayList<>();
             {
                 long remaining = status.getLength();
                 // Determine number of parts
                 for(int partNumber = 1; remaining > 0; partNumber++) {
                     final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
-                    presignedUrlsRequest.lastPartNumber(partNumber);
+                    if(partNumber > 1 && length < Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize)) {
+                        // Separate last part with non default part size
+                        presignedUrls.addAll(new NodesApi(session.getClient()).generatePresignedUrlsFiles(
+                            new GeneratePresignedUrlsRequest().firstPartNumber(partNumber).lastPartNumber(partNumber).size(length),
+                            createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
+                    }
+                    else {
+                        presignedUrlsRequest.lastPartNumber(partNumber).size(length);
+                    }
                     remaining -= length;
                 }
             }
-            final List<PresignedUrl> presignedUrls = new NodesApi(session.getClient()).generatePresignedUrlsFiles(presignedUrlsRequest,
-                createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls();
+            presignedUrls.addAll(0, new NodesApi(session.getClient()).generatePresignedUrlsFiles(presignedUrlsRequest,
+                createFileUploadResponse.getUploadId(), StringUtils.EMPTY).getUrls());
             final List<Future<TransferStatus>> parts = new ArrayList<>();
             {
                 long offset = 0;
                 long remaining = status.getLength();
                 for(int partNumber = 1; remaining > 0; partNumber++) {
                     final long length = Math.min(Math.max((size / (MAXIMUM_UPLOAD_PARTS - 1)), partsize), remaining);
-                    presignedUrlsRequest.lastPartNumber(partNumber);
                     final PresignedUrl presignedUrl = presignedUrls.get(partNumber - 1);
                     parts.add(this.submit(pool, file, local, throttle, listener, status,
                         presignedUrl.getUrl(), presignedUrl.getPartNumber(), offset, length, callback));
