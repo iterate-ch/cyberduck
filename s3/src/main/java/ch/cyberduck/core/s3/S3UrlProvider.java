@@ -164,7 +164,7 @@ public class S3UrlProvider implements UrlProvider {
             session.getHost(),
             session.getHost().getCredentials().getUsername(), secret,
             containerService.getContainer(file).getName(), region, containerService.getKey(file),
-            expiry.getTimeInMillis())), DescriptiveUrl.Type.signed,
+            "GET", expiry.getTimeInMillis())), DescriptiveUrl.Type.signed,
             MessageFormat.format(LocaleFactory.localizedString("{0} URL"), LocaleFactory.localizedString("Pre-Signed", "S3"))
                 + " (" + MessageFormat.format(LocaleFactory.localizedString("Expires {0}", "S3") + ")",
                 UserDateFormatterFactory.get().getMediumFormat(expiry.getTimeInMillis()))
