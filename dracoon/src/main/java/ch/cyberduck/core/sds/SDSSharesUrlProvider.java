@@ -77,7 +77,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
         final List<KeyValueEntry> configuration = session.configuration();
         switch(type) {
             case download: {
-                if(configuration.stream().anyMatch(entry -> "manageDownloadShare".equals(entry.getKey()) && "false".equalsIgnoreCase(entry.getValue()))) {
+                if(configuration.stream().anyMatch(entry -> "manageDownloadShare".equals(entry.getKey()) && String.valueOf(false).equals(entry.getValue()))) {
                     log.warn(String.format("Not supported for file %s with manageDownloadShare=false", file));
                     return false;
                 }
@@ -101,7 +101,7 @@ public class SDSSharesUrlProvider implements PromptUrlProvider<CreateDownloadSha
                     log.warn(String.format("Not supported for file %s", file));
                     return false;
                 }
-                if(configuration.stream().anyMatch(entry -> "manageUploadShare".equals(entry.getKey()) && "false".equalsIgnoreCase(entry.getValue()))) {
+                if(configuration.stream().anyMatch(entry -> "manageUploadShare".equals(entry.getKey()) && String.valueOf(false).equals(entry.getValue()))) {
                     log.warn(String.format("Not supported for file %s with manageUploadShare=false", file));
                     return false;
                 }
