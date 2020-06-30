@@ -705,6 +705,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             set { new TypedColumn<Path>(treeColumnRegion) {AspectGetter = value}; }
         }
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelStorageClassGetter
+        {
+            set { new TypedColumn<Path>(treeColumnStorageClass) {AspectGetter = value}; }
+        }
 
         public TypedColumn<Path>.TypedAspectGetterDelegate ModelVersionGetter
         {

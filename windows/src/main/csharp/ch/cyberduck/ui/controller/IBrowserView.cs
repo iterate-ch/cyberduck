@@ -81,6 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
         TypedColumn<Path>.TypedAspectGetterDelegate ModelExtensionGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelRegionGetter { set; }
         TypedColumn<Path>.TypedAspectGetterDelegate ModelVersionGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelStorageClassGetter { set; }
         MulticolorTreeListView.ActiveGetterPathDelegate ModelActiveGetter { set; }
         event EventHandler<ChangeBrowserViewArgs> ChangeBrowserView;
         // mainly used to detect a change of displayed items to update the status label
