@@ -325,6 +325,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnKind = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
             this.treeColumnExtension = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
             this.treeColumnRegion = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
+            this.treeColumnStorageClass = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
             this.treeColumnVersion = ((Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn)(new Ch.Cyberduck.Ui.Winforms.Controls.SortComparatorOLVColumn()));
             this.transcriptBox = new System.Windows.Forms.RichTextBox();
             this.managedBookmarkPanel2 = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
@@ -2474,6 +2475,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.AllColumns.Add(this.treeColumnKind);
             this.browser.AllColumns.Add(this.treeColumnExtension);
             this.browser.AllColumns.Add(this.treeColumnRegion);
+            this.browser.AllColumns.Add(this.treeColumnStorageClass);
             this.browser.AllColumns.Add(this.treeColumnVersion);
             this.browser.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.browser.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
@@ -2572,6 +2574,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnRegion.IsEditable = false;
             this.treeColumnRegion.IsVisible = false;
             this.treeColumnRegion.Text = "Region";
+            // 
+            // treeColumnStorageClass
+            // 
+            this.treeColumnRegion.CellPadding = null;
+            this.treeColumnRegion.DisplayIndex = 10;
+            this.treeColumnRegion.IsEditable = false;
+            this.treeColumnRegion.IsVisible = false;
+            this.treeColumnRegion.Text = "Storage Class";
             // 
             // treeColumnVersion
             // 
@@ -3405,6 +3415,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private SortComparatorOLVColumn treeColumnKind;
         private SortComparatorOLVColumn treeColumnExtension;
         private SortComparatorOLVColumn treeColumnRegion;
+        private SortComparatorOLVColumn treeColumnStorageClass;
         private SortComparatorOLVColumn treeColumnVersion;
         private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem activitiyToolStripMenuItem;

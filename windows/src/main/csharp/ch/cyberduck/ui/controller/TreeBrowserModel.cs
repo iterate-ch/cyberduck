@@ -156,6 +156,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 ? path.attributes().getRegion()
                 : LocaleFactory.localizedString("Unknown");
         }
+        public object GetStorageClass(Path path)
+        {
+            return Utils.IsNotBlank(path.attributes().getStorageClass())
+                ? LocaleFactory.localizedString(path.attributes().getStorageClass(), "S3")
+                : LocaleFactory.localizedString("None");
+        }
 
         public object GetVersion(Path path)
         {
