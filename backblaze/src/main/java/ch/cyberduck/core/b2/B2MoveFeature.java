@@ -32,15 +32,17 @@ public class B2MoveFeature implements Move {
 
     private final B2Session session;
     private final B2FileidProvider fileid;
+    private final B2ThresholdCopyFeature proxy;
 
     public B2MoveFeature(final B2Session session, final B2FileidProvider fileid) {
         this.session = session;
         this.fileid = fileid;
+        this.proxy = new B2ThresholdCopyFeature(session, fileid);
     }
 
     @Override
     public Path move(final Path source, final Path target, final TransferStatus status, final Delete.Callback delete, final ConnectionCallback callback) throws BackgroundException {
-        final Path copy = new B2CopyFeature(session, fileid).copy(source, target, status.length(source.attributes().getSize()), callback);
+        final Path copy = proxy.copy(source, target, status.length(source.attributes().getSize()), callback);
         new B2DeleteFeature(session, fileid).delete(Collections.singletonList(new Path(source)), callback, delete);
         return copy;
     }
@@ -48,14 +50,14 @@ public class B2MoveFeature implements Move {
     @Override
     public boolean isSupported(final Path source, final Path target) {
         if(!containerService.isContainer(source)) {
-            return new B2CopyFeature(session, fileid).isSupported(source, target);
+            return proxy.isSupported(source, target);
         }
         return false;
     }
 
     @Override
     public boolean isRecursive(final Path source, final Path target) {
-        return new B2CopyFeature(session, fileid).isRecursive(source, target);
+        return proxy.isRecursive(source, target);
     }
 
 }
