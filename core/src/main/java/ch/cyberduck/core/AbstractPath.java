@@ -140,18 +140,25 @@ public abstract class AbstractPath {
     }
 
     public static String getExtension(final String filename) {
-        if(StringUtils.isBlank(filename)) {
-            return StringUtils.EMPTY;
-        }
-        final int extensionPos = filename.lastIndexOf('.');
+        final int extensionPos = indexOfExtension(filename);
         if(-1 == extensionPos) {
             return StringUtils.EMPTY;
         }
+        return filename.substring(extensionPos + 1);
+    }
+
+    public static int indexOfExtension(final String filename) {
+        if(StringUtils.isBlank(filename)) {
+            return -1;
+        }
+        final int extensionPos = filename.lastIndexOf('.');
+        if(-1 == extensionPos) {
+            return -1;
+        }
         final int lastSeparator = FilenameUtils.indexOfLastSeparator(filename);
         if(lastSeparator > extensionPos) {
-            return StringUtils.EMPTY;
+            return -1;
         }
-        return filename.substring(extensionPos + 1);
-
+        return extensionPos;
     }
 }
