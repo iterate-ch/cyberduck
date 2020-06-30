@@ -19,7 +19,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>ch.cyberduck</groupId>
-        <version>7.4.3</version>
+        <version>7.4.4-SNAPSHOT</version>
     </parent>
     <artifactId>manta</artifactId>
     <properties>
