@@ -23,7 +23,6 @@ using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui.comparator;
-using org.apache.commons.io;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -115,8 +114,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             {
                 //Only select filename part w/o extension (Explorer like behavior)
                 TextBox tb = e.Control as TextBox;
-                int extensionIndex = FilenameUtils.indexOfExtension((string) e.Value);
-                if (extensionIndex > -1)
+                int extensionIndex = Path.indexOfExtension((string) e.Value);
+                if (extensionIndex > 0)
                 {
                     tb.Select(0, extensionIndex);
                 }
