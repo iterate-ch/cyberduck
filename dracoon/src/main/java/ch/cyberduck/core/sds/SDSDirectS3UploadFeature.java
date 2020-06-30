@@ -202,9 +202,11 @@ public class SDSDirectS3UploadFeature extends HttpUploadFeature<VersionId, Messa
                             case "transfer":
                                 failure.set(new InteroperabilityException(uploadStatus.getStatus()));
                                 done.countDown();
+                                break;
                             case "error":
                                 failure.set(new InteroperabilityException(uploadStatus.getErrorDetails().getMessage()));
                                 done.countDown();
+                                break;
                             case "done":
                                 // Set node id in transfer status
                                 status.setVersion(new VersionId(String.valueOf(uploadStatus.getNode().getId())));
