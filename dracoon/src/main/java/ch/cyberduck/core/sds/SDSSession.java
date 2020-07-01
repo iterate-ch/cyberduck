@@ -59,6 +59,7 @@ import ch.cyberduck.core.ssl.X509TrustManager;
 import ch.cyberduck.core.threading.CancelCallback;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
@@ -73,6 +74,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.message.internal.InputStreamProvider;
 
 import javax.ws.rs.client.ClientBuilder;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -128,7 +130,14 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                                 String.format("Basic %s", Base64.encodeToString(String.format("%s:%s", host.getProtocol().getOAuthClientId(), host.getProtocol().getOAuthClientSecret()).getBytes(StandardCharsets.UTF_8), false)));
                         }
                     }
-                }).build(), host)
+                }).build(), host) {
+                    @Override
+                    public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                        if(StringUtils.equals(((HttpRequestWrapper) request).getTarget().getHostName(), host.getHostname())) {
+                            super.process(request, context);
+                        }
+                    }
+                }
                     .withRedirectUri(CYBERDUCK_REDIRECT_URI.equals(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() :
                         Scheme.isURL(host.getProtocol().getOAuthRedirectUrl()) ? host.getProtocol().getOAuthRedirectUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
                             host.getProtocol().getScheme(), host.getPort(), null, host.getHostname(), host.getProtocol().getOAuthRedirectUrl())
