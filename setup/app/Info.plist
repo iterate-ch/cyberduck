@@ -426,5 +426,7 @@
         <string>Allow to execute command in Terminal</string>
         <key>NSDownloadsFolderUsageDescription</key>
         <string>Allow to download files</string>
+        <key>ITSAppUsesNonExemptEncryption</key>
+        <false/>
     </dict>
 </plist>
