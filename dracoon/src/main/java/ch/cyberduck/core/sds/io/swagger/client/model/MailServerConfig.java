@@ -23,204 +23,210 @@ import io.swagger.annotations.ApiModelProperty;
  */
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:25:40.305+02:00")
 public class MailServerConfig {
-  @JsonProperty("host")
-  private String host = null;
+    @JsonProperty("host")
+    private String host = null;
 
-  @JsonProperty("port")
-  private Integer port = null;
+    @JsonProperty("port")
+    private Integer port = null;
 
-  @JsonProperty("username")
-  private String username = null;
+    @JsonProperty("username")
+    private String username = null;
 
-  @JsonProperty("passwordDefined")
-  private Boolean passwordDefined = null;
+    @JsonProperty("passwordDefined")
+    private Boolean passwordDefined = null;
 
-  @JsonProperty("authenticationEnabled")
-  private Boolean authenticationEnabled = null;
+    @JsonProperty("authenticationEnabled")
+    private Boolean authenticationEnabled = null;
 
-  @JsonProperty("sslEnabled")
-  private Boolean sslEnabled = null;
+    @JsonProperty("sslEnabled")
+    private Boolean sslEnabled = null;
 
-  @JsonProperty("starttlsEnabled")
-  private Boolean starttlsEnabled = null;
+    @JsonProperty("starttlsEnabled")
+    private Boolean starttlsEnabled = null;
 
-  public MailServerConfig host(String host) {
-    this.host = host;
-    return this;
-  }
-
-   /**
-   * Email server host
-   * @return host
-  **/
-  @ApiModelProperty(value = "Email server host")
-  public String getHost() {
-    return host;
-  }
-
-  public void setHost(String host) {
-    this.host = host;
-  }
-
-  public MailServerConfig port(Integer port) {
-    this.port = port;
-    return this;
-  }
-
-   /**
-   * Email server port
-   * @return port
-  **/
-  @ApiModelProperty(value = "Email server port")
-  public Integer getPort() {
-    return port;
-  }
-
-  public void setPort(Integer port) {
-    this.port = port;
-  }
-
-  public MailServerConfig username(String username) {
-    this.username = username;
-    return this;
-  }
-
-   /**
-   * User name for email server
-   * @return username
-  **/
-  @ApiModelProperty(value = "User name for email server")
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public MailServerConfig passwordDefined(Boolean passwordDefined) {
-    this.passwordDefined = passwordDefined;
-    return this;
-  }
-
-   /**
-   * Is password defined for email server?
-   * @return passwordDefined
-  **/
-   @ApiModelProperty(example = "false", value = "Is password defined for email server?")
-   public Boolean isPasswordDefined() {
-    return passwordDefined;
-  }
-
-  public void setPasswordDefined(Boolean passwordDefined) {
-    this.passwordDefined = passwordDefined;
-  }
-
-  public MailServerConfig authenticationEnabled(Boolean authenticationEnabled) {
-    this.authenticationEnabled = authenticationEnabled;
-    return this;
-  }
-
-   /**
-    * Set &#x60;true&#x60; if the email server requires authentication.
-   * @return authenticationEnabled
-  **/
-   @ApiModelProperty(example = "false", value = "Set `true` if the email server requires authentication.")
-   public Boolean isAuthenticationEnabled() {
-    return authenticationEnabled;
-  }
-
-  public void setAuthenticationEnabled(Boolean authenticationEnabled) {
-    this.authenticationEnabled = authenticationEnabled;
-  }
-
-  public MailServerConfig sslEnabled(Boolean sslEnabled) {
-    this.sslEnabled = sslEnabled;
-    return this;
-  }
-
-   /**
-    * Email server requires SSL connection? Requires &#x60;starttlsEnabled&#x60; to be &#x60;false&#x60;
-   * @return sslEnabled
-  **/
-   @ApiModelProperty(example = "false", value = "Email server requires SSL connection? Requires `starttlsEnabled` to be `false`")
-   public Boolean isSslEnabled() {
-    return sslEnabled;
-  }
-
-  public void setSslEnabled(Boolean sslEnabled) {
-    this.sslEnabled = sslEnabled;
-  }
-
-  public MailServerConfig starttlsEnabled(Boolean starttlsEnabled) {
-    this.starttlsEnabled = starttlsEnabled;
-    return this;
-  }
-
-   /**
-    * Email server requires StartTLS connection? Requires &#x60;sslEnabled&#x60; to be &#x60;false&#x60;
-   * @return starttlsEnabled
-  **/
-   @ApiModelProperty(example = "false", value = "Email server requires StartTLS connection? Requires `sslEnabled` to be `false`")
-   public Boolean isStarttlsEnabled() {
-    return starttlsEnabled;
-  }
-
-  public void setStarttlsEnabled(Boolean starttlsEnabled) {
-    this.starttlsEnabled = starttlsEnabled;
-  }
-
-
-  @Override
-  public boolean equals(java.lang.Object o) {
-    if (this == o) {
-      return true;
+    public MailServerConfig host(String host) {
+        this.host = host;
+        return this;
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
+
+    /**
+     * Email server host
+     *
+     * @return host
+     **/
+    @ApiModelProperty(value = "Email server host")
+    public String getHost() {
+        return host;
     }
-    MailServerConfig mailServerConfig = (MailServerConfig) o;
-    return Objects.equals(this.host, mailServerConfig.host) &&
-        Objects.equals(this.port, mailServerConfig.port) &&
-        Objects.equals(this.username, mailServerConfig.username) &&
-        Objects.equals(this.passwordDefined, mailServerConfig.passwordDefined) &&
-        Objects.equals(this.authenticationEnabled, mailServerConfig.authenticationEnabled) &&
-        Objects.equals(this.sslEnabled, mailServerConfig.sslEnabled) &&
-        Objects.equals(this.starttlsEnabled, mailServerConfig.starttlsEnabled);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(host, port, username, passwordDefined, authenticationEnabled, sslEnabled, starttlsEnabled);
-  }
-
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("class MailServerConfig {\n");
-
-      sb.append("    host: ").append(toIndentedString(host)).append("\n");
-    sb.append("    port: ").append(toIndentedString(port)).append("\n");
-    sb.append("    username: ").append(toIndentedString(username)).append("\n");
-    sb.append("    passwordDefined: ").append(toIndentedString(passwordDefined)).append("\n");
-    sb.append("    authenticationEnabled: ").append(toIndentedString(authenticationEnabled)).append("\n");
-    sb.append("    sslEnabled: ").append(toIndentedString(sslEnabled)).append("\n");
-    sb.append("    starttlsEnabled: ").append(toIndentedString(starttlsEnabled)).append("\n");
-    sb.append("}");
-    return sb.toString();
-  }
-
-  /**
-   * Convert the given object to string with each line indented by 4 spaces
-   * (except the first line).
-   */
-  private String toIndentedString(java.lang.Object o) {
-    if (o == null) {
-      return "null";
+    public void setHost(String host) {
+        this.host = host;
     }
-    return o.toString().replace("\n", "\n    ");
-  }
+
+    public MailServerConfig port(Integer port) {
+        this.port = port;
+        return this;
+    }
+
+    /**
+     * Email server port
+     *
+     * @return port
+     **/
+    @ApiModelProperty(value = "Email server port")
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public MailServerConfig username(String username) {
+        this.username = username;
+        return this;
+    }
+
+    /**
+     * User name for email server
+     *
+     * @return username
+     **/
+    @ApiModelProperty(value = "User name for email server")
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public MailServerConfig passwordDefined(Boolean passwordDefined) {
+        this.passwordDefined = passwordDefined;
+        return this;
+    }
+
+    /**
+     * Is password defined for email server?
+     *
+     * @return passwordDefined
+     **/
+    @ApiModelProperty(example = "false", value = "Is password defined for email server?")
+    public Boolean isPasswordDefined() {
+        return passwordDefined;
+    }
+
+    public void setPasswordDefined(Boolean passwordDefined) {
+        this.passwordDefined = passwordDefined;
+    }
+
+    public MailServerConfig authenticationEnabled(Boolean authenticationEnabled) {
+        this.authenticationEnabled = authenticationEnabled;
+        return this;
+    }
+
+    /**
+     * Set &#x60;true&#x60; if the email server requires authentication.
+     *
+     * @return authenticationEnabled
+     **/
+    @ApiModelProperty(example = "false", value = "Set `true` if the email server requires authentication.")
+    public Boolean isAuthenticationEnabled() {
+        return authenticationEnabled;
+    }
+
+    public void setAuthenticationEnabled(Boolean authenticationEnabled) {
+        this.authenticationEnabled = authenticationEnabled;
+    }
+
+    public MailServerConfig sslEnabled(Boolean sslEnabled) {
+        this.sslEnabled = sslEnabled;
+        return this;
+    }
+
+    /**
+     * Email server requires SSL connection? Requires &#x60;starttlsEnabled&#x60; to be &#x60;false&#x60;
+     *
+     * @return sslEnabled
+     **/
+    @ApiModelProperty(example = "false", value = "Email server requires SSL connection? Requires `starttlsEnabled` to be `false`")
+    public Boolean isSslEnabled() {
+        return sslEnabled;
+    }
+
+    public void setSslEnabled(Boolean sslEnabled) {
+        this.sslEnabled = sslEnabled;
+    }
+
+    public MailServerConfig starttlsEnabled(Boolean starttlsEnabled) {
+        this.starttlsEnabled = starttlsEnabled;
+        return this;
+    }
+
+    /**
+     * Email server requires StartTLS connection? Requires &#x60;sslEnabled&#x60; to be &#x60;false&#x60;
+     *
+     * @return starttlsEnabled
+     **/
+    @ApiModelProperty(example = "false", value = "Email server requires StartTLS connection? Requires `sslEnabled` to be `false`")
+    public Boolean isStarttlsEnabled() {
+        return starttlsEnabled;
+    }
+
+    public void setStarttlsEnabled(Boolean starttlsEnabled) {
+        this.starttlsEnabled = starttlsEnabled;
+    }
+
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        MailServerConfig mailServerConfig = (MailServerConfig) o;
+        return Objects.equals(this.host, mailServerConfig.host) &&
+            Objects.equals(this.port, mailServerConfig.port) &&
+            Objects.equals(this.username, mailServerConfig.username) &&
+            Objects.equals(this.passwordDefined, mailServerConfig.passwordDefined) &&
+            Objects.equals(this.authenticationEnabled, mailServerConfig.authenticationEnabled) &&
+            Objects.equals(this.sslEnabled, mailServerConfig.sslEnabled) &&
+            Objects.equals(this.starttlsEnabled, mailServerConfig.starttlsEnabled);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(host, port, username, passwordDefined, authenticationEnabled, sslEnabled, starttlsEnabled);
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class MailServerConfig {\n");
+
+        sb.append("    host: ").append(toIndentedString(host)).append("\n");
+        sb.append("    port: ").append(toIndentedString(port)).append("\n");
+        sb.append("    username: ").append(toIndentedString(username)).append("\n");
+        sb.append("    passwordDefined: ").append(toIndentedString(passwordDefined)).append("\n");
+        sb.append("    authenticationEnabled: ").append(toIndentedString(authenticationEnabled)).append("\n");
+        sb.append("    sslEnabled: ").append(toIndentedString(sslEnabled)).append("\n");
+        sb.append("    starttlsEnabled: ").append(toIndentedString(starttlsEnabled)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    /**
+     * Convert the given object to string with each line indented by 4 spaces (except the first line).
+     */
+    private String toIndentedString(java.lang.Object o) {
+        if(o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
 
 }
 

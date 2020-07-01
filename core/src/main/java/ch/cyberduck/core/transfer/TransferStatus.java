@@ -161,6 +161,11 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
     private Integer part;
 
     /**
+     * Part URL
+     */
+    private String url;
+
+    /**
      * Encrypted file header
      */
     private ByteBuffer header;
@@ -212,6 +217,7 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
         this.metadata = copy.metadata;
         this.segment = copy.segment;
         this.part = copy.part;
+        this.url = copy.url;
         this.header = copy.header;
         this.filekey = copy.filekey;
         this.nonces = copy.nonces;
@@ -544,6 +550,14 @@ public class TransferStatus implements StreamCancelation, StreamProgress {
 
     public void setPart(final Integer part) {
         this.part = part;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(final String url) {
+        this.url = url;
     }
 
     public List<TransferStatus> getSegments() {
