@@ -25,6 +25,7 @@ import org.apache.http.HttpStatus;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -37,12 +38,17 @@ public class GoogleStorageExceptionMappingService extends DefaultIOExceptionMapp
         final StringBuilder buffer = new StringBuilder();
         if(failure instanceof GoogleJsonResponseException) {
             final GoogleJsonResponseException error = (GoogleJsonResponseException) failure;
-            this.append(buffer, error.getDetails().getMessage());
-            for(GoogleJsonError.ErrorInfo info : error.getDetails().getErrors()) {
-                this.append(buffer, "domain: " + info.getDomain());
-                this.append(buffer, "reason: " + info.getReason());
-                if("usageLimits".equals(info.getDomain()) && error.getDetails().getCode() == HttpStatus.SC_FORBIDDEN) {
-                    return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(5), failure);
+            final GoogleJsonError details = error.getDetails();
+            if (details != null) {
+                this.append(buffer, error.getDetails().getMessage());
+                final Optional<GoogleJsonError.ErrorInfo> optionalInfo = error.getDetails().getErrors().stream().findFirst();
+                if (optionalInfo.isPresent()) {
+                    final GoogleJsonError.ErrorInfo info = optionalInfo.get();
+                    this.append(buffer, "domain: " + info.getDomain());
+                    this.append(buffer, "reason: " + info.getReason());
+                    if("usageLimits".equals(info.getDomain()) && error.getDetails().getCode() == HttpStatus.SC_FORBIDDEN) {
+                        return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(5), failure);
+                    }
                 }
             }
         }
