@@ -41,12 +41,12 @@ public class GoogleStorageExceptionMappingService extends DefaultIOExceptionMapp
             final GoogleJsonError details = error.getDetails();
             if (details != null) {
                 this.append(buffer, error.getDetails().getMessage());
-                final Optional<GoogleJsonError.ErrorInfo> optionalInfo = error.getDetails().getErrors().stream().findFirst();
+                final Optional<GoogleJsonError.ErrorInfo> optionalInfo = details.getErrors().stream().findFirst();
                 if (optionalInfo.isPresent()) {
                     final GoogleJsonError.ErrorInfo info = optionalInfo.get();
                     this.append(buffer, "domain: " + info.getDomain());
                     this.append(buffer, "reason: " + info.getReason());
-                    if("usageLimits".equals(info.getDomain()) && error.getDetails().getCode() == HttpStatus.SC_FORBIDDEN) {
+                    if("usageLimits".equals(info.getDomain()) && details.getCode() == HttpStatus.SC_FORBIDDEN) {
                         return new RetriableAccessDeniedException(buffer.toString(), Duration.ofSeconds(5), failure);
                     }
                 }
