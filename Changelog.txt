@@ -3,7 +3,9 @@ https://cyberduck.io/
 
 7.4.1
 - [Localize] Croatian Localization
-- [Bugfix] Failure opening Terminal.app (SFTP)
+- [Bugfix] Unable to use S3 HTTP connection profile (S3) (#11061)
+- [Bugfix] Failure uploading files with exactly 100MB file length (S3) (#11038)
+- [Bugfix] Failure opening Terminal.app when default application for .command files is not properly set (SFTP)
 
 7.4.0
 - [Feature] Support to access team folders (Dropbox Business)

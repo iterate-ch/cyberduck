@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 @Category(IntegrationTest.class)
@@ -38,13 +39,13 @@ public class GoogleStorageStorageClassFeatureTest extends AbstractGoogleStorageT
 
     @Test
     public void testGetClasses() {
-        assertEquals(Arrays.asList(
+        assertArrayEquals(Arrays.asList(
             "STANDARD",
             "MULTI_REGIONAL",
             "REGIONAL",
             "NEARLINE",
-            "COLDLINE"),
-            new GoogleStorageStorageClassFeature(session).getClasses());
+            "COLDLINE").toArray(),
+            new GoogleStorageStorageClassFeature(session).getClasses().toArray());
     }
 
     @Test(expected = NotfoundException.class)

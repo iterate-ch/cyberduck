@@ -31,7 +31,6 @@ import ch.cyberduck.core.features.Delete;
 import ch.cyberduck.core.io.CRC32ChecksumCompute;
 import ch.cyberduck.core.io.StreamCopier;
 import ch.cyberduck.core.proxy.Proxy;
-import ch.cyberduck.core.s3.S3AttributesFinderFeature;
 import ch.cyberduck.core.s3.S3DirectoryFeature;
 import ch.cyberduck.core.ssl.DefaultX509KeyManager;
 import ch.cyberduck.core.ssl.DisabledX509TrustManager;
@@ -205,7 +204,7 @@ public class SpectraObjectListServiceTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new SpectraAttributesFinderFeature(session).find(test).getSize());
         // Overwrite
         bulk.pre(Transfer.Type.upload, Collections.singletonMap(new TransferItem(test), status.exists(true)), new DisabledConnectionCallback());
         {
@@ -213,7 +212,7 @@ public class SpectraObjectListServiceTest {
             new StreamCopier(new TransferStatus(), new TransferStatus()).transfer(new ByteArrayInputStream(content), out);
             out.close();
         }
-        assertEquals(content.length, new S3AttributesFinderFeature(session).find(test).getSize());
+        assertEquals(content.length, new SpectraAttributesFinderFeature(session).find(test).getSize());
         final AttributedList<Path> list = new SpectraObjectListService(session).list(folder, new DisabledListProgressListener());
         assertEquals(2, list.size());
         for(Path f : list) {

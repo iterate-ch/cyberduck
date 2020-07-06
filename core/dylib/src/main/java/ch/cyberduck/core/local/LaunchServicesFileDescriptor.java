@@ -19,9 +19,9 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.LocaleFactory;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.library.Native;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public final class LaunchServicesFileDescriptor extends AbstractFileDescriptor {
@@ -32,14 +32,14 @@ public final class LaunchServicesFileDescriptor extends AbstractFileDescriptor {
 
     @Override
     public String getKind(final String filename) {
-        if(StringUtils.isBlank(FilenameUtils.getExtension(filename))) {
+        if(StringUtils.isBlank(Path.getExtension(filename))) {
             final String kind = this.kind(filename);
             if(StringUtils.isBlank(kind)) {
                 return LocaleFactory.localizedString("Unknown");
             }
             return kind;
         }
-        final String kind = this.kind(FilenameUtils.getExtension(filename));
+        final String kind = this.kind(Path.getExtension(filename));
         if(StringUtils.isBlank(kind)) {
             return LocaleFactory.localizedString("Unknown");
         }

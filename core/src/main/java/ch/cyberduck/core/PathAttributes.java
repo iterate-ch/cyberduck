@@ -395,6 +395,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.versions = versions;
     }
 
+    public PathAttributes withVersions(final AttributedList<Path> versions) {
+        this.setVersions(versions);
+        return this;
+    }
+
     public String getLockId() {
         return lockId;
     }

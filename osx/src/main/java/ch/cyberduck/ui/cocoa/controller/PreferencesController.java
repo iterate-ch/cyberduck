@@ -43,6 +43,7 @@ import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.s3.S3EncryptionFeature;
 import ch.cyberduck.core.s3.S3Protocol;
+import ch.cyberduck.core.s3.S3StorageClassFeature;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
@@ -50,7 +51,6 @@ import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.model.S3Object;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -2131,18 +2131,10 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopup = b;
         this.defaultStorageClassPopup.setAutoenablesItems(false);
         this.defaultStorageClassPopup.removeAllItems();
-        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(S3Object.STORAGE_CLASS_STANDARD, "S3"));
-        this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_STANDARD);
-        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(S3Object.STORAGE_CLASS_INFREQUENT_ACCESS, "S3"));
-        this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_INFREQUENT_ACCESS);
-        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString("ONEZONE_IA", "S3"));
-        this.defaultStorageClassPopup.lastItem().setRepresentedObject("ONEZONE_IA");
-        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"));
-        this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
-        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(S3Object.STORAGE_CLASS_GLACIER, "S3"));
-        this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_GLACIER);
-        this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString("DEEP_ARCHIVE", "S3"));
-        this.defaultStorageClassPopup.lastItem().setRepresentedObject("DEEP_ARCHIVE");
+        for(String s : S3StorageClassFeature.STORAGE_CLASS_LIST) {
+            this.defaultStorageClassPopup.addItemWithTitle(LocaleFactory.localizedString(s, "S3"));
+            this.defaultStorageClassPopup.lastItem().setRepresentedObject(s);
+        }
         this.defaultStorageClassPopup.setTarget(this.id());
         this.defaultStorageClassPopup.setAction(Foundation.selector("defaultStorageClassPopupClicked:"));
         this.defaultStorageClassPopup.selectItemWithTitle(LocaleFactory.localizedString(preferences.getProperty("s3.storage.class"), "S3"));

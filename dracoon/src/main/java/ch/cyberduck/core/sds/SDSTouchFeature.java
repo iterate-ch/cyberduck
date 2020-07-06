@@ -41,7 +41,7 @@ public class SDSTouchFeature implements Touch<VersionId> {
     public SDSTouchFeature(final SDSSession session, final SDSNodeIdProvider nodeid) {
         this.session = session;
         this.nodeid = nodeid;
-        this.writer = new SDSDelegatingWriteFeature(session, nodeid, new SDSWriteFeature(session, nodeid));
+        this.writer = new SDSDelegatingWriteFeature(session, nodeid, new SDSMultipartWriteFeature(session, nodeid));
     }
 
     @Override

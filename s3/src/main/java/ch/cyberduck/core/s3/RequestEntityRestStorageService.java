@@ -65,28 +65,24 @@ public class RequestEntityRestStorageService extends RestS3Service {
 
     private final S3Session session;
     private final Jets3tProperties properties;
+    private final Preferences preferences = PreferencesFactory.get();
 
-    private final Preferences preferences
-        = PreferencesFactory.get();
-
-    public RequestEntityRestStorageService(final S3Session session, final HttpClientBuilder configuration) {
-        super(null, new PreferencesUseragentProvider().get(), null, new Jets3tProperties());
-        this.session = session;
-        this.properties = this.getJetS3tProperties();
-        final Host host = session.getHost();
+    private static Jets3tProperties toProperties(final Host bookmark, final S3Protocol.AuthenticationHeaderSignatureVersion signatureVersion) {
+        final Jets3tProperties properties = new Jets3tProperties();
+        final Preferences preferences = PreferencesFactory.get();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Configure for endpoint %s", host));
+            log.debug(String.format("Configure for endpoint %s", bookmark));
         }
         // Use default endpoint for region lookup
-        if(host.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
+        if(bookmark.getHostname().endsWith(preferences.getProperty("s3.hostname.default"))) {
             // Only for AWS
             properties.setProperty("s3service.s3-endpoint", preferences.getProperty("s3.hostname.default"));
             properties.setProperty("s3service.disable-dns-buckets",
                 String.valueOf(preferences.getBoolean("s3.bucket.virtualhost.disable")));
         }
         else {
-            properties.setProperty("s3service.s3-endpoint", host.getHostname());
-            if(InetAddressUtils.isIPv4Address(host.getHostname()) || InetAddressUtils.isIPv6Address(host.getHostname())) {
+            properties.setProperty("s3service.s3-endpoint", bookmark.getHostname());
+            if(InetAddressUtils.isIPv4Address(bookmark.getHostname()) || InetAddressUtils.isIPv6Address(bookmark.getHostname())) {
                 properties.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
             }
             else {
@@ -95,18 +91,18 @@ public class RequestEntityRestStorageService extends RestS3Service {
             }
         }
         properties.setProperty("s3service.enable-storage-classes", String.valueOf(true));
-        if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
-            if(!Scheme.isURL(host.getProtocol().getContext())) {
+        if(StringUtils.isNotBlank(bookmark.getProtocol().getContext())) {
+            if(!Scheme.isURL(bookmark.getProtocol().getContext())) {
                 properties.setProperty("s3service.s3-endpoint-virtual-path",
-                    PathNormalizer.normalize(host.getProtocol().getContext()));
+                    PathNormalizer.normalize(bookmark.getProtocol().getContext()));
             }
         }
-        properties.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
-        if(host.getProtocol().isSecure()) {
-            properties.setProperty("s3service.s3-endpoint-https-port", String.valueOf(host.getPort()));
+        properties.setProperty("s3service.https-only", String.valueOf(bookmark.getProtocol().isSecure()));
+        if(bookmark.getProtocol().isSecure()) {
+            properties.setProperty("s3service.s3-endpoint-https-port", String.valueOf(bookmark.getPort()));
         }
         else {
-            properties.setProperty("s3service.s3-endpoint-http-port", String.valueOf(host.getPort()));
+            properties.setProperty("s3service.s3-endpoint-http-port", String.valueOf(bookmark.getPort()));
         }
         // The maximum number of retries that will be attempted when an S3 connection fails
         // with an InternalServer error. To disable retries of InternalError failures, set this to 0.
@@ -117,9 +113,16 @@ public class RequestEntityRestStorageService extends RestS3Service {
         properties.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
         properties.setProperty("httpclient.retry-max", String.valueOf(0));
         properties.setProperty("storage-service.internal-error-retry-max", String.valueOf(0));
-        properties.setProperty("storage-service.request-signature-version", session.getSignatureVersion().toString());
+        properties.setProperty("storage-service.request-signature-version", signatureVersion.toString());
         properties.setProperty("storage-service.disable-live-md5", String.valueOf(true));
-        properties.setProperty("storage-service.default-region", host.getRegion());
+        properties.setProperty("storage-service.default-region", bookmark.getRegion());
+        return properties;
+    }
+
+    public RequestEntityRestStorageService(final S3Session session, final HttpClientBuilder configuration) {
+        super(null, new PreferencesUseragentProvider().get(), null, toProperties(session.getHost(), session.getSignatureVersion()));
+        this.session = session;
+        this.properties = this.getJetS3tProperties();
         // Client configuration
         configuration.disableContentCompression();
         configuration.setRetryHandler(new S3HttpRequestRetryHandler(this, preferences.getInteger("http.connections.retry")));

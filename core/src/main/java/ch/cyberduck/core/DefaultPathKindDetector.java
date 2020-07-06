@@ -17,7 +17,6 @@ package ch.cyberduck.core;
  * Bug fixes, suggestions and comments should be sent to feedback@cyberduck.ch
  */
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class DefaultPathKindDetector implements PathKindDetector {
@@ -30,7 +29,7 @@ public class DefaultPathKindDetector implements PathKindDetector {
         if(path.endsWith(String.valueOf(Path.DELIMITER))) {
             return Path.Type.directory;
         }
-        if(StringUtils.isBlank(FilenameUtils.getExtension(path))) {
+        if(StringUtils.isBlank(Path.getExtension(path))) {
             return Path.Type.directory;
         }
         return Path.Type.file;

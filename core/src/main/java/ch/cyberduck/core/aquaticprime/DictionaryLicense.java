@@ -17,7 +17,7 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.exception.AccessDeniedException;
-import ch.cyberduck.core.text.NaturalOrderComparator;
+import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -88,7 +88,7 @@ public abstract class DictionaryLicense extends AbstractLicense {
         StringBuilder values = new StringBuilder();
         final ArrayList<String> keys = new ArrayList<>(dictionary.keySet());
         // Sort lexicographically by key
-        keys.sort(new NaturalOrderComparator());
+        keys.sort(new DefaultLexicographicOrderComparator());
         for(String key : keys) {
             if("Signature".equals(key)) {
                 continue;

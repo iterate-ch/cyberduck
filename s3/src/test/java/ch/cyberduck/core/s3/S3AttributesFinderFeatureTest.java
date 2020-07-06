@@ -97,6 +97,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
         final PathAttributes attr = new S3AttributesFinderFeature(session).find(testWithVersionId);
         final String versionId = attr.getVersionId();
         assertNotNull(versionId);
+        assertEquals(testWithVersionId.attributes().getVersionId(), versionId);
         assertFalse(attr.isDuplicate());
         new S3DefaultDeleteFeature(session).delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
         {
@@ -105,7 +106,7 @@ public class S3AttributesFinderFeatureTest extends AbstractS3Test {
                 assertTrue(version.attributes().isDuplicate());
             }
             assertTrue(marker.isDuplicate());
-            assertFalse(marker.getCustom().containsKey(KEY_DELETE_MARKER));
+            assertTrue(marker.getCustom().containsKey(KEY_DELETE_MARKER));
             assertNotNull(marker.getVersionId());
             assertEquals(versionId, marker.getVersionId());
         }

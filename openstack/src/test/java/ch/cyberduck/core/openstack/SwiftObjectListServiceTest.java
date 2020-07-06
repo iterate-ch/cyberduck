@@ -33,6 +33,7 @@ import org.junit.experimental.categories.Category;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -97,9 +98,10 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
     public void testPlaceholderAndObjectSameName() throws Exception {
         final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
         container.attributes().setRegion("IAD");
-        final Path base = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final Path base = new SwiftTouchFeature(session, regionService).touch(
             new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
-        final Path child = new SwiftTouchFeature(session, new SwiftRegionService(session)).touch(
+        final Path child = new SwiftTouchFeature(session, regionService).touch(
             new Path(base, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.file)), new TransferStatus());
         {
             final AttributedList<Path> list = new SwiftObjectListService(session).list(container, new DisabledListProgressListener());
@@ -120,5 +122,28 @@ public class SwiftObjectListServiceTest extends AbstractSwiftTest {
             assertEquals(EnumSet.of(Path.Type.file), list.get(child).getType());
         }
         new SwiftDeleteFeature(session).delete(Arrays.asList(base, child), new DisabledLoginCallback(), new Delete.DisabledCallback());
+    }
+
+    @Test
+    public void testListLexicographicSortOrderAssumption() throws Exception {
+        final Path container = new Path("test.cyberduck.ch", EnumSet.of(Path.Type.directory, Path.Type.volume));
+        container.attributes().setRegion("IAD");
+        final SwiftRegionService regionService = new SwiftRegionService(session);
+        final Path directory = new SwiftDirectoryFeature(session, regionService).mkdir(
+            new Path(container, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        assertTrue(new SwiftObjectListService(session, regionService).list(directory, new DisabledListProgressListener()).isEmpty());
+        final List<String> files = Arrays.asList(
+            "aa", "0a", "a", "AAA", "B", "~$a", ".c"
+        );
+        for(String f : files) {
+            new SwiftTouchFeature(session, regionService).touch(new Path(directory, f, EnumSet.of(Path.Type.file)), new TransferStatus());
+        }
+        files.sort(session.getHost().getProtocol().getListComparator());
+        final AttributedList<Path> list = new SwiftObjectListService(session, regionService).list(directory, new DisabledListProgressListener());
+        for(int i = 0; i < list.size(); i++) {
+            assertEquals(files.get(i), list.get(i).getName());
+            new SwiftDeleteFeature(session, regionService).delete(Collections.singletonList(list.get(i)), new DisabledLoginCallback(), new Delete.DisabledCallback());
+        }
+        new SwiftDeleteFeature(session, regionService).delete(Collections.singletonList(directory), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

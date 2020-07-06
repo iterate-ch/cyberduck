@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.features.Location;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -49,6 +50,11 @@ public interface Protocol extends Comparable<Protocol> {
      * @return By default a protocol is considered stateless
      */
     Statefulness getStatefulness();
+
+    /**
+     * @return Comparator that matches natural sorting of results returned by list service
+     */
+    Comparator<String> getListComparator();
 
     /**
      * @return True if anonymous login is possible.

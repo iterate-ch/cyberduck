@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.exception.BackgroundException;
+import ch.cyberduck.core.threading.DefaultFailureDiagnostics;
 import ch.cyberduck.core.transfer.DisabledTransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferErrorCallback;
 import ch.cyberduck.core.transfer.TransferItem;
@@ -61,6 +62,11 @@ public class TransferErrorCallbackControllerFactory extends Factory<TransferErro
         return new TransferErrorCallback() {
             @Override
             public boolean prompt(final TransferItem item, final TransferStatus status, final BackgroundException failure, final int pending) throws BackgroundException {
+                switch(new DefaultFailureDiagnostics().determine(failure)) {
+                    case cancel:
+                        // Interrupt transfer
+                        return false;
+                }
                 if(pending == 0) {
                     // Fail fast when first item in queue fails preparing
                     throw failure;

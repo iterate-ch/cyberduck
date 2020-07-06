@@ -1503,10 +1503,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 Redundancy redundancyFeature = (Redundancy)session.getFeature(typeof(Redundancy));
                 if (redundancyFeature != null)
                 {
-                    List list = redundancyFeature.getClasses();
-                    for (int i = 0; i < list.size(); i++)
+                    Iterator iter = redundancyFeature.getClasses().iterator();
+                    while (iter.hasNext())
                     {
-                        string redundancy = (string)list.get(i);
+                        string redundancy = (string) iter.next();
                         _storageClasses.Add(
                             new KeyValuePair<string, string>(LocaleFactory.localizedString(redundancy, "S3"), redundancy));
                     }

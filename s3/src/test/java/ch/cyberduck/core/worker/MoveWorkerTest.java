@@ -91,21 +91,20 @@ public class MoveWorkerTest extends AbstractS3Test {
     public void testMoveVersionedDirectory() throws Exception {
         final Path bucket = new Path("versioning-test-us-east-1-cyberduck", EnumSet.of(Path.Type.directory, Path.Type.volume));
 
-        final Path sourceDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
-        final Path targetDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket, new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path sourceDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket,
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
+        final Path targetDirectory = new S3DirectoryFeature(session, new S3WriteFeature(session)).mkdir(new Path(bucket,
+            new AlphanumericRandomStringService().random(), EnumSet.of(Path.Type.directory)), null, new TransferStatus());
 
         Path test = new Path(sourceDirectory, new AsciiRandomStringService().random(), EnumSet.of(Path.Type.file));
         final S3TouchFeature touch = new S3TouchFeature(session);
-        final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
         touch.touch(test, new TransferStatus());
-        Thread.sleep(1000); // timestamp has second precision only - versions are sorted by timestamp
         assertTrue(new S3FindFeature(session).find(test));
+        final S3DefaultDeleteFeature delete = new S3DefaultDeleteFeature(session);
         delete.delete(Collections.singletonList(test), new DisabledPasswordCallback(), new Delete.DisabledCallback());
-        Thread.sleep(1000);
         test.attributes().setVersionId(null);
         assertTrue(new S3FindFeature(session).find(test));
         test = touch.touch(test, new TransferStatus());
-        Thread.sleep(1000);
         assertTrue(new S3FindFeature(session).find(test));
 
         final S3VersionedObjectListService list = new S3VersionedObjectListService(session);

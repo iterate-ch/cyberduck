@@ -127,7 +127,7 @@ public class SDSAttributesFinderFeatureTest extends AbstractSDSTest {
         final byte[] content = RandomUtils.nextBytes(32769);
         final TransferStatus status = new TransferStatus();
         status.setLength(content.length);
-        final SDSWriteFeature writer = new SDSWriteFeature(session, nodeid);
+        final SDSMultipartWriteFeature writer = new SDSMultipartWriteFeature(session, nodeid);
         final HttpResponseOutputStream<VersionId> out = writer.write(test, status, new DisabledConnectionCallback());
         assertNotNull(out);
         new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);

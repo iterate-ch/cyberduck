@@ -165,7 +165,7 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
                     if(new Path(bucket, key, EnumSet.of(Path.Type.directory)).equals(directory)) {
                         continue;
                     }
-                    folders.add(this.submit(pool, bucket, URIEncoder.decode(common)));
+                    folders.add(this.submit(pool, bucket, directory, URIEncoder.decode(common)));
                 }
                 priorLastKey = null != chunk.getNextKeyMarker() ? URIEncoder.decode(chunk.getNextKeyMarker()) : null;
                 priorLastVersionId = chunk.getNextVersionIdMarker();
@@ -203,13 +203,13 @@ public class S3VersionedObjectListService extends S3AbstractListService implemen
         }
     }
 
-    private Future<Path> submit(final ThreadPool pool, final Path bucket, final String common) {
+    private Future<Path> submit(final ThreadPool pool, final Path bucket, final Path directory, final String common) {
         return pool.execute(new BackgroundExceptionCallable<Path>() {
             @Override
             public Path call() throws BackgroundException {
                 final PathAttributes attributes = new PathAttributes();
                 attributes.setRegion(bucket.attributes().getRegion());
-                final Path prefix = new Path(String.format("%s/%s", bucket.getAbsolute(), common),
+                final Path prefix = new Path(directory, PathNormalizer.name(common),
                     EnumSet.of(Path.Type.directory, Path.Type.placeholder), attributes);
                 try {
                     final VersionOrDeleteMarkersChunk versions = session.getClient().listVersionedObjectsChunked(

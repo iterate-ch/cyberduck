@@ -85,7 +85,7 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             }
             final ListService list = session.getFeature(ListService.class);
             // sort ascending by timestamp to move older versions first
-            final Map<Path, Path> sorted = new TreeMap<>(new TimestampComparator(true));
+            final Map<Path, Path> sorted = new TreeMap<>(new VersionsComparator(true));
             sorted.putAll(files);
             final Map<Path, Path> result = new HashMap<>();
             for(Map.Entry<Path, Path> entry : sorted.entrySet()) {
@@ -144,8 +144,8 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
         if(source.isDirectory()) {
             if(!move.isRecursive(source, target)) {
                 // sort ascending by timestamp to move older versions first
-                final AttributedList<Path> children = list.list(source, new WorkerListProgressListener(this, listener)).
-                    filter(new TimestampComparator(true));
+                final AttributedList<Path> children = list.list(source, new WorkerListProgressListener(this, listener))
+                    .filter(new VersionsComparator(true));
                 for(Path child : children) {
                     if(this.isCanceled()) {
                         throw new ConnectionCanceledException();
@@ -155,6 +155,22 @@ public class MoveWorker extends Worker<Map<Path, Path>> {
             }
         }
         return recursive;
+    }
+
+    private static final class VersionsComparator extends TimestampComparator {
+        public VersionsComparator(final boolean ascending) {
+            super(ascending);
+        }
+
+        @Override
+        protected int compareFirst(final Path p1, final Path p2) {
+            final int result = super.compareFirst(p1, p2);
+            if(0 == result) {
+                // Version with no duplicate flag first
+                return Boolean.compare(!p1.attributes().isDuplicate(), !p2.attributes().isDuplicate());
+            }
+            return result;
+        }
     }
 
     @Override

@@ -33,6 +33,7 @@ using Microsoft.Win32;
 using org.apache.commons.io;
 using org.apache.log4j;
 using Collection = java.util.Collection;
+using Path = ch.cyberduck.core.Path;
 
 namespace Ch.Cyberduck.Core
 {
@@ -135,7 +136,7 @@ namespace Ch.Cyberduck.Core
             if (IsNotBlank(filename))
             {
                 //see http://windevblog.blogspot.com/2008/09/get-default-application-in-windows-xp.html
-                string extension = FilenameUtils.getExtension(filename);
+                string extension = Path.getExtension(filename);
                 if (IsBlank(extension))
                 {
                     return String.Empty;

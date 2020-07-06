@@ -18,6 +18,7 @@ package ch.cyberduck.core.brick;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.DefaultIOExceptionMappingService;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostUrlProvider;
 import ch.cyberduck.core.PasswordCallback;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -60,7 +61,7 @@ public class BrickPairingSchedulerFeature {
     private final CancelCallback cancel;
     private final ScheduledThreadPool scheduler = new ScheduledThreadPool();
 
-    private Preferences preferences = PreferencesFactory.get();
+    private final Preferences preferences = PreferencesFactory.get();
 
     public BrickPairingSchedulerFeature(final BrickSession session, final String token, final Host host, final CancelCallback cancel) {
         this.session = session;
@@ -99,7 +100,8 @@ public class BrickPairingSchedulerFeature {
      */
     private Credentials operate(final PasswordCallback callback) throws BackgroundException {
         try {
-            final HttpPost resource = new HttpPost(String.format("https://app.files.com/api/rest/v1/sessions/pairing_key/%s", token));
+            final HttpPost resource = new HttpPost(String.format("%s/api/rest/v1/sessions/pairing_key/%s",
+                new HostUrlProvider().withUsername(false).withPath(false).get(session.getHost()), token));
             resource.setHeader(HttpHeaders.ACCEPT, "application/json");
             resource.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
             if(log.isInfoEnabled()) {

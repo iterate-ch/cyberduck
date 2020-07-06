@@ -26,12 +26,12 @@
                 <outlet property="menu" destination="225" id="365"/>
             </connections>
         </customObject>
-        <menu title="Pamata izvēlne" systemMenu="main" id="225">
+        <menu title="Pamatizvēlne" systemMenu="main" id="225">
             <items>
-                <menuItem title="Kiber Pīle" id="226">
-                    <menu key="submenu" title="Kiber Pīle" systemMenu="apple" id="227">
+                <menuItem title="KiberPīle" id="226">
+                    <menu key="submenu" title="KiberPīle" systemMenu="apple" id="227">
                         <items>
-                            <menuItem title="Par Kiber Pīli" id="228">
+                            <menuItem title="Par KiberPīli" id="228">
                                 <attributedString key="attributedTitle"/>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -87,7 +87,7 @@
                             <menuItem isSeparatorItem="YES" id="241">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Beigt darbu ar Kiber Pīli" keyEquivalent="q" id="242">
+                            <menuItem title="Izslēgt KiberPīli" keyEquivalent="q" id="242">
                                 <connections>
                                     <action selector="terminate:" target="224" id="373"/>
                                 </connections>
@@ -95,7 +95,7 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="File" id="243">
+                <menuItem title="Datne" id="243">
                     <attributedString key="attributedTitle">
                         <fragment content="File">
                             <attributes>
@@ -130,7 +130,7 @@
                                     <action selector="createFolderButtonClicked:" target="-1" id="377"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Encrypted Vault…" keyEquivalent="N" id="XIo-o9-At2">
+                            <menuItem title="Jauna šifrēta glabātuve ..." keyEquivalent="N" id="XIo-o9-At2">
                                 <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                 <connections>
                                     <action selector="createEncryptedVaultButtonClicked:" target="-1" id="Vwb-mT-rux"/>
@@ -141,7 +141,7 @@
                                     <action selector="createFileButtonClicked:" target="-1" id="378"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="New Simbolisko saiti…" id="252">
+                            <menuItem title="Jauna simboliskā saite…" id="252">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="createSymlinkButtonClicked:" target="-1" id="379"/>
@@ -262,7 +262,7 @@ CA
                                     <action selector="undo:" target="-1" id="394"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Pārtaisīt" keyEquivalent="Z" id="282">
+                            <menuItem title="Atgriezt" keyEquivalent="Z" id="282">
                                 <connections>
                                     <action selector="redo:" target="-1" id="395"/>
                                 </connections>

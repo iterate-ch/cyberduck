@@ -312,9 +312,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                             return status;
                         }
                     }
-                    catch(ConnectionCanceledException e) {
-                        throw e;
-                    }
                     catch(BackgroundException e) {
                         if(this.retry(e, progress, new TransferBackgroundActionState(parent))) {
                             // Retry immediately
@@ -418,11 +415,6 @@ public abstract class AbstractTransferWorker extends TransferWorker<Boolean> {
                                 segment.getRename().remote != null ? segment.getRename().remote : item.remote,
                                 segment.getRename().local != null ? segment.getRename().local : item.local,
                                 options, segment, connect, progress, stream);
-                        }
-                        catch(ConnectionCanceledException e) {
-                            log.warn(String.format("Canceled transfer of %s", item));
-                            segment.setFailure();
-                            throw e;
                         }
                         catch(BackgroundException e) {
                             release(s, Connection.source, e);

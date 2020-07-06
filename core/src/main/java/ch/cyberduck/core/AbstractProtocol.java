@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -342,6 +343,11 @@ public abstract class AbstractProtocol implements Protocol {
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.implicit;
+    }
+
+    @Override
+    public Comparator<String> getListComparator() {
+        return new NullComparator<>();
     }
 
     @Override

@@ -19,6 +19,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.IndexedListProgressListener;
 import ch.cyberduck.core.ListProgressListener;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathAttributes;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.ConnectionCanceledException;
@@ -44,7 +45,16 @@ public class DecryptingListProgressListener extends IndexedListProgressListener 
     public void visit(final AttributedList<Path> list, final int index, final Path f) {
         try {
             f.getType().add(Path.Type.encrypted);
-            list.set(index, vault.decrypt(session, f));
+            if(f.attributes().getVersions().isEmpty()) {
+                list.set(index, vault.decrypt(session, f));
+            }
+            else {
+                final AttributedList<Path> versions = new AttributedList<>();
+                for(Path version : f.attributes().getVersions()) {
+                    versions.add(vault.decrypt(session, version));
+                }
+                list.set(index, vault.decrypt(session, f).withAttributes(new PathAttributes(f.attributes()).withVersions(versions)));
+            }
         }
         catch(BackgroundException e) {
             log.error(String.format("Failure decrypting %s. %s", f, e));

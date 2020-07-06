@@ -18,11 +18,11 @@
     <parent>
         <groupId>ch.cyberduck</groupId>
         <artifactId>parent</artifactId>
-        <version>7.4.1-SNAPSHOT</version>
+        <version>7.4.4-SNAPSHOT</version>
     </parent>
     <artifactId>azure</artifactId>
     <properties>
-        <azure-storage-version>8.6.4</azure-storage-version>
+        <azure-storage-version>8.6.5</azure-storage-version>
     </properties>
 
     <dependencies>

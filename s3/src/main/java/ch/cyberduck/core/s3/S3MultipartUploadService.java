@@ -76,7 +76,6 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
      * A split smaller than 5M is not allowed
      */
     private final Long partsize;
-
     private final Integer concurrency;
 
     public S3MultipartUploadService(final S3Session session, final Write<StorageObject> writer) {
@@ -110,7 +109,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             catch(AccessDeniedException | InteroperabilityException e) {
                 log.warn(String.format("Ignore failure listing incomplete multipart uploads. %s", e));
             }
-            final List<MultipartPart> completed = new ArrayList<MultipartPart>();
+            final List<MultipartPart> completed = new ArrayList<>();
             // Not found or new upload
             if(null == multipart) {
                 if(log.isInfoEnabled()) {
@@ -132,7 +131,7 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
             }
             // Full size of file
             final long size = status.getLength() + status.getOffset();
-            final List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
+            final List<Future<MultipartPart>> parts = new ArrayList<>();
             long remaining = status.getLength();
             long offset = 0;
             for(int partNumber = 1; remaining > 0; partNumber++) {
@@ -234,17 +233,18 @@ public class S3MultipartUploadService extends HttpUploadFeature<StorageObject, M
         if(log.isInfoEnabled()) {
             log.info(String.format("Submit part %d of %s to queue with offset %d and length %d", partNumber, file, offset, length));
         }
-        return pool.execute(new DefaultRetryCallable<MultipartPart>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
+        return pool.execute(new DefaultRetryCallable<>(session.getHost(), new BackgroundExceptionCallable<MultipartPart>() {
             @Override
             public MultipartPart call() throws BackgroundException {
                 overall.validate();
-                final Map<String, String> requestParameters = new HashMap<String, String>();
+                final Map<String, String> requestParameters = new HashMap<>();
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
                 final TransferStatus status = new TransferStatus()
                     .length(length)
                     .skip(offset)
                     .withParameters(requestParameters);
+                status.setPart(partNumber);
                 status.setHeader(overall.getHeader());
                 status.setNonces(overall.getNonces());
                 switch(session.getSignatureVersion()) {

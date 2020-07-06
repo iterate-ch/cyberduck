@@ -1,12 +1,8 @@
 package ch.cyberduck.core.dav;
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DisabledCancelCallback;
 import ch.cyberduck.core.DisabledConnectionCallback;
-import ch.cyberduck.core.DisabledHostKeyCallback;
 import ch.cyberduck.core.DisabledListProgressListener;
 import ch.cyberduck.core.DisabledLoginCallback;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathCache;
@@ -16,15 +12,11 @@ import ch.cyberduck.core.features.Find;
 import ch.cyberduck.core.features.Touch;
 import ch.cyberduck.core.http.HttpResponseOutputStream;
 import ch.cyberduck.core.http.HttpUploadFeature;
-import ch.cyberduck.core.http.RedirectCallback;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.DisabledStreamListener;
 import ch.cyberduck.core.io.StreamCopier;
-import ch.cyberduck.core.proxy.Proxy;
 import ch.cyberduck.core.shared.DefaultAttributesFinderFeature;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
-import ch.cyberduck.core.ssl.DefaultX509KeyManager;
-import ch.cyberduck.core.ssl.DisabledX509TrustManager;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.test.IntegrationTest;
 
@@ -43,7 +35,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.*;
 
@@ -244,43 +235,5 @@ public class DAVWriteFeatureTest extends AbstractDAVTest {
         session.getFeature(Touch.class).touch(test, new TransferStatus());
         assertTrue(feature.append(test, 0L, PathCache.empty()).append);
         new DAVDeleteFeature(session).delete(Collections.singletonList(test), new DisabledLoginCallback(), new Delete.DisabledCallback());
-    }
-
-    @Test
-    public void testUploadRedirect() throws Exception {
-        final Host host = new Host(new DAVProtocol(), "test.cyberduck.ch", new Credentials(
-            System.getProperties().getProperty("webdav.user"), System.getProperties().getProperty("webdav.password")
-        ));
-        host.setDefaultPath("/dav/basic");
-        final AtomicBoolean redirected = new AtomicBoolean();
-        final DAVSession session = new DAVSession(host, new DisabledX509TrustManager(), new DefaultX509KeyManager(), new RedirectCallback() {
-            @Override
-            public boolean redirect(String method) {
-                if("PUT".equals(method)) {
-                    redirected.set(true);
-                }
-                return true;
-            }
-        });
-        session.open(Proxy.DIRECT, new DisabledHostKeyCallback(), new DisabledLoginCallback());
-        session.login(Proxy.DIRECT, new DisabledLoginCallback(), new DisabledCancelCallback());
-        final DAVWriteFeature feature = new DAVWriteFeature(session);
-        final String name = UUID.randomUUID().toString();
-        final Path test = new Path(String.format("/redir-tmp/%s", name), EnumSet.of(Path.Type.file));
-        final TransferStatus status = new TransferStatus();
-        final byte[] content = RandomUtils.nextBytes(1024);
-        status.setLength(content.length);
-        final HttpResponseOutputStream<String> out = feature.write(test, status, new DisabledConnectionCallback());
-        assertNotNull(out);
-        new StreamCopier(status, status).transfer(new ByteArrayInputStream(content), out);
-        out.close();
-        assertEquals(content.length, status.getOffset());
-        assertTrue(status.isComplete());
-        assertEquals(content.length, new DefaultAttributesFinderFeature(session).find(test).getSize());
-        assertEquals(content.length, new DAVAttributesFinderFeature(session).find(test).getSize());
-        assertTrue(redirected.get());
-        new DAVDeleteFeature(session).delete(Collections.singletonList(
-            new Path(new DefaultHomeFinderService(session).find(), name, EnumSet.of(Path.Type.file))
-        ), new DisabledLoginCallback(), new Delete.DisabledCallback());
     }
 }

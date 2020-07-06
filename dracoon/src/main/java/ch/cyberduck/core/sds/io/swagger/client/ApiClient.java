@@ -1,20 +1,5 @@
 package ch.cyberduck.core.sds.io.swagger.client;
 
-import ch.cyberduck.core.sds.io.swagger.client.auth.ApiKeyAuth;
-import ch.cyberduck.core.sds.io.swagger.client.auth.Authentication;
-import ch.cyberduck.core.sds.io.swagger.client.auth.HttpBasicAuth;
-import ch.cyberduck.core.sds.io.swagger.client.auth.OAuth;
-
-import org.glassfish.jersey.client.ClientConfig;
-import org.glassfish.jersey.client.ClientProperties;
-import org.glassfish.jersey.client.HttpUrlConnectorProvider;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.logging.LoggingFeature;
-import org.glassfish.jersey.media.multipart.FormDataBodyPart;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
-import org.glassfish.jersey.media.multipart.MultiPart;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -25,40 +10,61 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.io.File;
+
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.MultiPart;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.text.DateFormat;
-import java.util.ArrayList;
+import org.glassfish.jersey.logging.LoggingFeature;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
+
+import java.net.URLEncoder;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+
+import java.text.DateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2019-09-13T14:08:20.178+02:00")
+import ch.cyberduck.core.sds.io.swagger.client.auth.Authentication;
+import ch.cyberduck.core.sds.io.swagger.client.auth.HttpBasicAuth;
+import ch.cyberduck.core.sds.io.swagger.client.auth.ApiKeyAuth;
+import ch.cyberduck.core.sds.io.swagger.client.auth.OAuth;
+
+@javax.annotation.Generated(value = "io.swagger.codegen.languages.JavaClientCodegen", date = "2020-04-08T17:57:49.759+02:00")
 public class ApiClient {
-    protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
-    protected String basePath = "https://duck.dracoon.com/api";
-    protected boolean debugging = false;
-    protected int connectionTimeout = 0;
-    private int readTimeout = 0;
+  protected Map<String, String> defaultHeaderMap = new HashMap<String, String>();
+  protected String basePath = "https://duck.dracoon.com/api";
+  protected boolean debugging = false;
+  protected int connectionTimeout = 0;
+  private int readTimeout = 0;
 
-    protected Client httpClient;
-    protected JSON json;
-    protected String tempFolderPath = null;
+  protected Client httpClient;
+  protected JSON json;
+  protected String tempFolderPath = null;
 
-    protected Map<String, Authentication> authentications;
+  protected Map<String, Authentication> authentications;
 
-    protected DateFormat dateFormat;
+  protected DateFormat dateFormat;
 
   public ApiClient() {
     json = new JSON();
@@ -275,28 +281,26 @@ public class ApiClient {
     return this;
   }
 
-    /**
-     * read timeout (in milliseconds).
-     *
-     * @return Read timeout
-     */
-    public int getReadTimeout() {
-        return readTimeout;
-    }
-
-    /**
-     * Set the read timeout (in milliseconds).
-     * A value of 0 means no timeout, otherwise values must be between 1 and
-     * {@link Integer#MAX_VALUE}.
-     *
-     * @param readTimeout Read timeout in milliseconds
-     * @return API client
-     */
-    public ApiClient setReadTimeout(int readTimeout) {
-        this.readTimeout = readTimeout;
-        httpClient.property(ClientProperties.READ_TIMEOUT, readTimeout);
-        return this;
-    }
+  /**
+   * read timeout (in milliseconds).
+   * @return Read timeout
+   */
+  public int getReadTimeout() {
+    return readTimeout;
+  }
+  
+  /**
+   * Set the read timeout (in milliseconds).
+   * A value of 0 means no timeout, otherwise values must be between 1 and
+   * {@link Integer#MAX_VALUE}.
+   * @param readTimeout Read timeout in milliseconds
+   * @return API client
+   */
+  public ApiClient setReadTimeout(int readTimeout) {
+    this.readTimeout = readTimeout;
+    httpClient.property(ClientProperties.READ_TIMEOUT, readTimeout);
+    return this;
+  }
 
   /**
    * Get the date format used to parse/format date parameters.
@@ -437,7 +441,7 @@ public class ApiClient {
    */
   public boolean isJsonMime(String mime) {
     String jsonMime = "(?i)^(application/json|[^;/ \t]+/[^;/ \t]+[+]json)[ \t]*(;.*)?$";
-      return mime != null && (mime.matches(jsonMime) || mime.equals("*/*"));
+    return mime != null && (mime.matches(jsonMime) || mime.equals("*/*"));
   }
 
   /**
@@ -679,28 +683,24 @@ public class ApiClient {
         response = invocationBuilder.put(entity);
       } else if ("DELETE".equals(method)) {
         response = invocationBuilder.delete();
-      }
-      else if("PATCH".equals(method)) {
-          response = invocationBuilder.method("PATCH", entity);
-      }
-      else if("HEAD".equals(method)) {
-          response = invocationBuilder.head();
+      } else if ("PATCH".equals(method)) {
+        response = invocationBuilder.method("PATCH", entity);
+      } else if ("HEAD".equals(method)) {
+        response = invocationBuilder.head();
       } else {
         throw new ApiException(500, "unknown method type " + method);
       }
 
-        int statusCode = response.getStatusInfo().getStatusCode();
-        Map<String, List<String>> responseHeaders = buildResponseHeaders(response);
+      int statusCode = response.getStatusInfo().getStatusCode();
+      Map<String, List<String>> responseHeaders = buildResponseHeaders(response);
 
       if (response.getStatus() == Status.NO_CONTENT.getStatusCode()) {
-          return new ApiResponse<>(statusCode, responseHeaders);
+        return new ApiResponse<>(statusCode, responseHeaders);
       } else if (response.getStatusInfo().getFamily() == Status.Family.SUCCESSFUL) {
-          if(returnType == null) {
-              return new ApiResponse<>(statusCode, responseHeaders);
-          }
-          else {
-              return new ApiResponse<>(statusCode, responseHeaders, deserialize(response, returnType));
-          }
+        if (returnType == null)
+          return new ApiResponse<>(statusCode, responseHeaders);
+        else
+          return new ApiResponse<>(statusCode, responseHeaders, deserialize(response, returnType));
       } else {
         String message = "error";
         String respBody = null;
@@ -737,22 +737,22 @@ public class ApiClient {
     clientConfig.register(MultiPartFeature.class);
     clientConfig.register(json);
     clientConfig.register(JacksonFeature.class);
-      clientConfig.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
-      if(debugging) {
-          clientConfig.register(new LoggingFeature(java.util.logging.Logger.getLogger(LoggingFeature.DEFAULT_LOGGER_NAME), java.util.logging.Level.INFO, LoggingFeature.Verbosity.PAYLOAD_ANY, 1024 * 50 /* Log payloads up to 50K */));
-          clientConfig.property(LoggingFeature.LOGGING_FEATURE_VERBOSITY, LoggingFeature.Verbosity.PAYLOAD_ANY);
-          // Set logger to ALL
-          java.util.logging.Logger.getLogger(LoggingFeature.DEFAULT_LOGGER_NAME).setLevel(java.util.logging.Level.ALL);
-      }
-      performAdditionalClientConfiguration(clientConfig);
+    clientConfig.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
+    if (debugging) {
+      clientConfig.register(new LoggingFeature(java.util.logging.Logger.getLogger(LoggingFeature.DEFAULT_LOGGER_NAME), java.util.logging.Level.INFO, LoggingFeature.Verbosity.PAYLOAD_ANY, 1024*50 /* Log payloads up to 50K */));
+      clientConfig.property(LoggingFeature.LOGGING_FEATURE_VERBOSITY, LoggingFeature.Verbosity.PAYLOAD_ANY);
+      // Set logger to ALL
+      java.util.logging.Logger.getLogger(LoggingFeature.DEFAULT_LOGGER_NAME).setLevel(java.util.logging.Level.ALL);
+    }
+    performAdditionalClientConfiguration(clientConfig);
     return ClientBuilder.newClient(clientConfig);
   }
 
-    protected void performAdditionalClientConfiguration(ClientConfig clientConfig) {
-        // No-op extension point
-    }
+  protected void performAdditionalClientConfiguration(ClientConfig clientConfig) {
+    // No-op extension point
+  }
 
-    protected Map<String, List<String>> buildResponseHeaders(Response response) {
+  protected Map<String, List<String>> buildResponseHeaders(Response response) {
     Map<String, List<String>> responseHeaders = new HashMap<String, List<String>>();
     for (Entry<String, List<Object>> entry: response.getHeaders().entrySet()) {
       List<Object> values = entry.getValue();

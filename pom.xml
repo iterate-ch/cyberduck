@@ -6,11 +6,7 @@
     <artifactId>parent</artifactId>
     <name>Cyberduck</name>
     <packaging>pom</packaging>
-    <version>7.4.1-SNAPSHOT</version>
-
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
+    <version>7.4.4-SNAPSHOT</version>
 
     <modules>
         <!-- Core components -->
@@ -76,13 +72,13 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <argLine />
-        <jna-version>5.3.1</jna-version>
+        <jna-version>5.5.0</jna-version>
         <jersey-version>2.31</jersey-version>
         <jackson-version>2.10.4</jackson-version>
         <slf4j-version>1.7.30</slf4j-version>
         <bouncycastle-version>1.65</bouncycastle-version>
         <httpclient-version>4.5.12</httpclient-version>
-        <google-http-client.version>1.35.0</google-http-client.version>
+        <google-http-client.version>1.36.0</google-http-client.version>
     </properties>
 
     <dependencyManagement>
@@ -295,7 +291,7 @@
             <dependency>
                 <groupId>com.google.oauth-client</groupId>
                 <artifactId>google-oauth-client</artifactId>
-                <version>1.30.6</version>
+                <version>1.31.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.api-client</groupId>
@@ -396,7 +392,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -549,7 +545,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.9.0</version>
+                    <version>3.9.1</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.apache.maven.doxia</groupId>

@@ -816,6 +816,7 @@ public abstract class Preferences implements Locales {
         this.setDefault("sds.delete.dataroom.enable", String.valueOf(true));
         this.setDefault("sds.upload.sharelinks.keep", String.valueOf(true));
         this.setDefault("sds.versioning.references.enable", String.valueOf(false));
+        this.setDefault("sds.upload.s3.status.period", String.valueOf(5000)); // 5 seconds
 
         this.setDefault("spectra.retry.delay", String.valueOf(60)); // 1 minute
 
@@ -1071,7 +1072,8 @@ public abstract class Preferences implements Locales {
         // Last update check in milliseconds
         this.setDefault("update.check.timestamp", String.valueOf(0));
 
-        this.setDefault("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL --login\"");
+        this.setDefault("terminal.bundle.identifier", "com.apple.Terminal");
+        this.setDefault("terminal.command.ssh", "ssh -t {0} {1}@{2} -p {3} \"cd {4} && exec \\$SHELL -l\"");
 
         this.setDefault("network.interface.blacklist", StringUtils.EMPTY);
 

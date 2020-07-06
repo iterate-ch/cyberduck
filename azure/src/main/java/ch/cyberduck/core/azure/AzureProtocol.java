@@ -23,6 +23,9 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.LocaleFactory;
 import ch.cyberduck.core.LoginOptions;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.text.DefaultLexicographicOrderComparator;
+
+import java.util.Comparator;
 
 import com.microsoft.azure.storage.core.Base64;
 
@@ -82,5 +85,10 @@ public class AzureProtocol extends AbstractProtocol {
     @Override
     public DirectoryTimestamp getDirectoryTimestamp() {
         return DirectoryTimestamp.explicit;
+    }
+
+    @Override
+    public Comparator<String> getListComparator() {
+        return new DefaultLexicographicOrderComparator();
     }
 }

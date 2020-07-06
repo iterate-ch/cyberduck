@@ -21,7 +21,7 @@ import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Redundancy;
 import ch.cyberduck.core.features.Vault;
 
-import java.util.List;
+import java.util.Set;
 
 public class CryptoRedundancyFeature implements Redundancy {
 
@@ -41,7 +41,7 @@ public class CryptoRedundancyFeature implements Redundancy {
     }
 
     @Override
-    public List<String> getClasses() {
+    public Set<String> getClasses() {
         return delegate.getClasses();
     }
 

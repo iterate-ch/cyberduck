@@ -59,7 +59,7 @@ public class DefaultAttributesFinderFeatureTest extends AbstractSDSTest {
         assertEquals(0L, attributes.getSize());
         // Test cache
         assertEquals(0L, f.find(file).getSize());
-        assertFalse(cache.containsKey(file.getParent()));
+        assertTrue(cache.containsKey(file.getParent()));
         // Test wrong type
         try {
             f.find(new Path(room, "test", EnumSet.of(Path.Type.directory)));

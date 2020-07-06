@@ -86,7 +86,7 @@ public class S3MoveFeatureTest extends AbstractS3Test {
         }
         final Path renamed = new Path(container, String.format("%s-renamed", test.getName()), EnumSet.of(Path.Type.file));
         new S3MoveFeature(session).move(test, renamed, new TransferStatus(), new Delete.DisabledCallback(), new DisabledConnectionCallback());
-        assertFalse(new S3FindFeature(session).find(test));
+        assertTrue(new S3FindFeature(session).find(test));
         assertTrue(new S3FindFeature(session).find(renamed));
         // Ensure that the latest version of the source file is a delete marker
         for(Path path : new S3ListService(session).list(container, new DisabledListProgressListener())) {

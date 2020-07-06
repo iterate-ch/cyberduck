@@ -103,7 +103,7 @@ public class CommandController extends SheetController implements TranscriptList
 
     public void setImage(NSImageView image) {
         this.image = image;
-        this.image.setImage(IconCacheFactory.<NSImage>get().applicationIcon(new Application("com.apple.Terminal"), 128));
+        this.image.setImage(IconCacheFactory.<NSImage>get().applicationIcon(new Application("com.apple.terminal"), 128));
     }
 
     @Override
