@@ -136,7 +136,8 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
                     super.process(request, context);
                 }
             }
-        }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl());
+        }.withRedirectUri(host.getProtocol().getOAuthRedirectUrl())
+        .withParameter("prompt", "select_account");
         configuration.addInterceptorLast(authorizationService);
         configuration.setServiceUnavailableRetryStrategy(new OAuth2ErrorResponseInterceptor(host, authorizationService, prompt));
         final RequestExecutor executor = new GraphCommonsHttpRequestExecutor(configuration.build()) {
