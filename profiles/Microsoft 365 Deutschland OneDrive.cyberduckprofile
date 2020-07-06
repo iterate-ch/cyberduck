@@ -20,9 +20,9 @@
         <key>Protocol</key>
         <string>onedrive</string>
         <key>Vendor</key>
-        <string>office365-de-sharepoint</string>
+        <string>microsoft365-de-onedrive</string>
         <key>Description</key>
-        <string>Microsoft Office 365 Deutschland Sharepoint</string>
+        <string>Microsoft 365 Deutschland OneDrive</string>
         <key>Scheme</key>
         <string>https</string>
         <key>Default Hostname</key>
