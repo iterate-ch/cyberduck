@@ -41,7 +41,7 @@ public class GroupListService extends AbstractListService<GroupItem.Metadata> {
 
     @Override
     protected Iterator<GroupItem.Metadata> getIterator(final Path directory) {
-        return new GroupsIterator(Groups.getMemberOfGroups(User.getCurrent(session.getClient())));
+        return Groups.getMemberOfGroups(User.getCurrent(session.getClient()));
     }
 
     @Override
@@ -50,28 +50,5 @@ public class GroupListService extends AbstractListService<GroupItem.Metadata> {
         attributes.setVersionId(metadata.getId());
         return new Path(directory, metadata.getDisplayName(), EnumSet.of(Path.Type.directory, Path.Type.volume),
                 attributes);
-    }
-
-    private final static class GroupsIterator implements Iterator<GroupItem.Metadata> {
-        private final Iterator<Metadata> iterator;
-
-        public GroupsIterator(final Iterator<DirectoryObject.Metadata> iterator) {
-            this.iterator = iterator;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return iterator.hasNext();
-        }
-
-        @Override
-        public GroupItem.Metadata next() {
-            final DirectoryObject.Metadata next = iterator.next();
-            if (next instanceof GroupItem.Metadata) {
-                return (GroupItem.Metadata)next;
-            }
-            // this is catched in AbstractListService.iterate, dumped to the log and silently continues.
-            throw new RuntimeException(String.format("Object of type %s unknown.", next.getClass().getName()));
-        }
     }
 }
