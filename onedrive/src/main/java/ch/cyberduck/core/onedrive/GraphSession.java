@@ -161,14 +161,18 @@ public abstract class GraphSession extends HttpSession<OneDriveAPI> {
                 return false;
             }
 
+            final static String GlobalEndpoint = "graph.microsoft.com";
+            final static String DeutschlandEndpoint = "graph.microsoft.de";
+            final static String ChinaEndpoint = "microsoftgraph.chinacloudapi.cn";
+
             @Override
             public boolean isGraphConnection() {
                 final String hostname = host.getProtocol().getDefaultHostname();
-                if(StringUtils.equals("graph.microsoft.com", hostname)) {
-                    return true;
-                }
-                else if(StringUtils.equals("graph.microsoft.de", hostname)) {
-                    return true;
+                switch(hostname.toLowerCase()) {
+                    case GlobalEndpoint:
+                    case DeutschlandEndpoint:
+                    case ChinaEndpoint:
+                        return true;
                 }
                 return false;
             }
