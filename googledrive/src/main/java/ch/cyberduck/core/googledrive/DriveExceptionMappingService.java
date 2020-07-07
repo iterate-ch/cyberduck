@@ -24,7 +24,6 @@ import org.apache.http.HttpStatus;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.List;
 import java.util.Optional;
 
 import com.google.api.client.googleapis.json.GoogleJsonError;
@@ -39,10 +38,10 @@ public class DriveExceptionMappingService extends DefaultIOExceptionMappingServi
         if(failure instanceof GoogleJsonResponseException) {
             final GoogleJsonResponseException error = (GoogleJsonResponseException) failure;
             final GoogleJsonError details = error.getDetails();
-            if (details != null) {
+            if(details != null) {
                 this.append(buffer, error.getDetails().getMessage());
                 final Optional<GoogleJsonError.ErrorInfo> optionalInfo = details.getErrors().stream().findFirst();
-                if (optionalInfo.isPresent()) {
+                if(optionalInfo.isPresent()) {
                     final GoogleJsonError.ErrorInfo info = optionalInfo.get();
                     this.append(buffer, "domain: " + info.getDomain());
                     this.append(buffer, "reason: " + info.getReason());
