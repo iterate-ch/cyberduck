@@ -27,22 +27,18 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantine
 {
 JNF_COCOA_ENTER(env);
 	NSURL* url = [NSURL fileURLWithPath:JNFJavaToNSString(env, path)];
-	FSRef ref;
-	if(CFURLGetFSRef((CFURLRef) url, &ref)) {
-        NSMutableDictionary* attrs = [[NSMutableDictionary alloc] init];
-        // Write quarantine attributes
-        [attrs setValue:(NSString*)kLSQuarantineTypeOtherDownload forKey:(NSString*)kLSQuarantineTypeKey];
-        [attrs setValue:JNFJavaToNSString(env, originUrl) forKey:(NSString*)kLSQuarantineOriginURLKey];
-        [attrs setValue:JNFJavaToNSString(env, dataUrl) forKey:(NSString*)kLSQuarantineDataURLKey];
+    NSMutableDictionary* attrs = [[NSMutableDictionary alloc] init];
+    // Write quarantine attributes
+    [attrs setValue:(NSString*)kLSQuarantineTypeOtherDownload forKey:(NSString*)kLSQuarantineTypeKey];
+    [attrs setValue:JNFJavaToNSString(env, originUrl) forKey:(NSString*)kLSQuarantineOriginURLKey];
+    [attrs setValue:JNFJavaToNSString(env, dataUrl) forKey:(NSString*)kLSQuarantineDataURLKey];
 
-        if(LSSetItemAttribute(&ref, kLSRolesAll, kLSItemQuarantineProperties, (CFDictionaryRef*) attrs) != noErr) {
-            NSLog(@"Error writing quarantine attribute");
-    		return FALSE;
-        }
-        [attrs release];
-        return TRUE;
-	}
-    return FALSE;
+    if(!CFURLSetResourcePropertyForKey((CFURLRef) url, kCFURLQuarantinePropertiesKey, (CFDictionaryRef*) attrs, NULL)) {
+        NSLog(@"Error writing quarantine attribute");
+        return FALSE;
+    }
+    [attrs release];
+    return TRUE;
 JNF_COCOA_EXIT(env);
 }
 
