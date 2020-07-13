@@ -20,6 +20,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.features.Quota;
 import ch.cyberduck.core.shared.DefaultHomeFinderService;
+import ch.cyberduck.core.worker.DefaultExceptionMappingService;
 
 import java.io.IOException;
 
@@ -49,6 +50,9 @@ public class DAVQuotaFeature implements Quota {
         }
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, home);
+        }
+        catch(Exception e) {
+            throw new DefaultExceptionMappingService().map(e);
         }
     }
 }
