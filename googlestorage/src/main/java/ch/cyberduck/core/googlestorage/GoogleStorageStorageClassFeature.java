@@ -54,7 +54,8 @@ public class GoogleStorageStorageClassFeature implements Redundancy {
             "MULTI_REGIONAL",
             "REGIONAL",
             "NEARLINE",
-            "COLDLINE"));
+            "COLDLINE")
+        );
     }
 
     @Override
