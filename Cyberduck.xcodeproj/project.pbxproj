@@ -35,10 +35,14 @@
 		4705E00E1C037AB5002466FA /* SystemConfigurationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705DFF41C037AB5002466FA /* SystemConfigurationProxy.m */; };
 		470912ED0C36FCE00049FBCE /* Prompt.xib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.xib */; };
 		4716C5F50872BA9900938886 /* Command.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.xib */; };
-		471D10DE24B3CFA8002ABA71 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47FB0FD424B3C7D000C6764E /* JavaNativeFoundation.framework */; };
 		471D10E424B50BF4002ABA71 /* QuickLookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47FB0FDA24B3C84A00C6764E /* QuickLookUI.framework */; };
 		471DF150167F2A7B00EAFE71 /* cyberduck-document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 471DF14F167F2A7B00EAFE71 /* cyberduck-document.icns */; };
 		471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
+		4723D1D724C24FDF0006CDE3 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */; };
+		4723D1D924C24FE30006CDE3 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */; };
+		4723D1DA24C24FE30006CDE3 /* JavaNativeFoundation.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4723D1DB24C24FE80006CDE3 /* JavaNativeFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */; };
+		4723D1DC24C24FE80006CDE3 /* JavaNativeFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		4732BDA813182C7F00CBC46B /* Download.strings in Resources */ = {isa = PBXBuildFile; fileRef = 4732BD8613182C7F00CBC46B /* Download.strings */; };
 		473BF0871892968E0068B4C1 /* azure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 473BF0851892968E0068B4C1 /* azure.tiff */; };
 		474163C106C4F64100AC0BD2 /* Info.xib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.xib */; };
@@ -278,12 +282,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4723D1DD24C24FE80006CDE3 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				4723D1DC24C24FE80006CDE3 /* JavaNativeFoundation.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		47C253691BF0D92800863EAF /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				4723D1DA24C24FE30006CDE3 /* JavaNativeFoundation.framework in CopyFiles */,
 				4791D0541C282B1100CC7DAB /* Sparkle.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -518,6 +534,7 @@
 		471F5C2912AD1B6B0005D323 /* ru */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ru; path = i18n/src/main/resources/ru.lproj/Alert.strings; sourceTree = "<group>"; };
 		471F5C2C12AD1B6B0005D323 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sl; path = i18n/src/main/resources/sl.lproj/Alert.strings; sourceTree = "<group>"; };
 		471F5C2D12AD1B6B0005D323 /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = i18n/src/main/resources/sk.lproj/Alert.strings; sourceTree = "<group>"; };
+		4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaNativeFoundation.framework; path = core/dylib/target/JavaNativeFoundation.framework; sourceTree = "<group>"; };
 		4725396B10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sr; path = i18n/src/main/resources/sr.lproj/Bookmark.xib; sourceTree = "<group>"; };
 		4725396E10F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sr; path = i18n/src/main/resources/sr.lproj/Browser.xib; sourceTree = "<group>"; };
 		4725397110F4D10B00DF0F02 /* sr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xib; name = sr; path = i18n/src/main/resources/sr.lproj/Command.xib; sourceTree = "<group>"; };
@@ -1663,7 +1680,6 @@
 		47F85C2E1C0F103E00FDA856 /* SNDisclosableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SNDisclosableView.h; path = osx/src/main/objc/SNDisclosableView.h; sourceTree = "<group>"; };
 		47F85C2F1C0F103E00FDA856 /* SNDisclosableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SNDisclosableView.m; path = osx/src/main/objc/SNDisclosableView.m; sourceTree = "<group>"; };
 		47F9380E1D7F63CE00108AB5 /* dropbox.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = dropbox.tiff; sourceTree = "<group>"; };
-		47FB0FD424B3C7D000C6764E /* JavaNativeFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaNativeFoundation.framework; path = ../MacOSX.sdk/System/Library/Frameworks/JavaNativeFoundation.framework; sourceTree = SDKROOT; };
 		47FB0FD624B3C7FA00C6764E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = ../MacOSX.sdk/System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		47FB0FDA24B3C84A00C6764E /* QuickLookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickLookUI.framework; path = ../MacOSX.sdk/System/Library/Frameworks/Quartz.framework/Versions/A/Frameworks/QuickLookUI.framework; sourceTree = SDKROOT; };
 		47FB0FDD24B3C88A00C6764E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = ../MacOSX.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1716,13 +1732,13 @@
 			files = (
 				47C9427E2175D461008871C8 /* AppKit.framework in Frameworks */,
 				4705DFDC1C037A6D002466FA /* SystemConfiguration.framework in Frameworks */,
+				4723D1D724C24FDF0006CDE3 /* JavaNativeFoundation.framework in Frameworks */,
 				4705DFDA1C037A5E002466FA /* IOKit.framework in Frameworks */,
 				4705DFD91C037A52002466FA /* ApplicationServices.framework in Frameworks */,
 				471D10E424B50BF4002ABA71 /* QuickLookUI.framework in Frameworks */,
 				475D461D0D9953CD009450C4 /* SecurityInterface.framework in Frameworks */,
 				47FB0FD724B3C7FB00C6764E /* Security.framework in Frameworks */,
 				47022C231018663600488C19 /* CoreServices.framework in Frameworks */,
-				471D10DE24B3CFA8002ABA71 /* JavaNativeFoundation.framework in Frameworks */,
 				47FB0FDE24B3C88A00C6764E /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1732,6 +1748,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				47827C9724BFA67C006942C3 /* AppKit.framework in Frameworks */,
+				4723D1D924C24FE30006CDE3 /* JavaNativeFoundation.framework in Frameworks */,
 				47827C9924BFA800006942C3 /* Quartz.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1740,6 +1757,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4723D1DB24C24FE80006CDE3 /* JavaNativeFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1774,13 +1792,13 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4723D1D524C24FDF0006CDE3 /* JavaNativeFoundation.framework */,
 				47C9427C2175D451008871C8 /* AppKit.framework */,
 				47827C9824BFA800006942C3 /* Quartz.framework */,
 				47FB0FDA24B3C84A00C6764E /* QuickLookUI.framework */,
 				4791D0521C2829F300CC7DAB /* Sparkle.framework */,
 				4705DFDB1C037A6D002466FA /* SystemConfiguration.framework */,
 				479BF77D1725A68C006854BF /* IOKit.framework */,
-				47FB0FD424B3C7D000C6764E /* JavaNativeFoundation.framework */,
 				474522C51076B68E00823467 /* ApplicationServices.framework */,
 				47022C221018663600488C19 /* CoreServices.framework */,
 				47FB0FD624B3C7FA00C6764E /* Security.framework */,
@@ -2134,6 +2152,7 @@
 				47C2AD7D1A268C880047B67A /* Frameworks */,
 				47C2AD7E1A268C880047B67A /* Resources */,
 				47D93A041A27607A0006D4AE /* CopyFiles */,
+				4723D1DD24C24FE80006CDE3 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -4062,6 +4081,8 @@
 					"$(inherited)",
 					"$(SDKROOT)/../MacOSX.sdk/System/Library/Frameworks/Quartz.framework/Frameworks",
 					"$(SDKROOT)/../MacOSX.sdk/System/Library/Frameworks/JavaVM.framework/Frameworks",
+					"$(PROJECT_DIR)/osx/target",
+					"$(PROJECT_DIR)/core/dylib/target",
 				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libcore;
@@ -4071,6 +4092,10 @@
 		47C2AD841A268C880047B67A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/core/dylib/target",
+				);
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = "$(PROJECT_DIR)/setup/pkg/Info.plist";
 				INFOPLIST_PREPROCESS = YES;
@@ -4091,12 +4116,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/osx/target",
+					"$(PROJECT_DIR)/core/dylib/target",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = "$(PROJECT_DIR)/setup/app/Info.plist";
 				INFOPLIST_PREPROCESS = YES;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @executable_path/../Frameworks";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Sparkle,
@@ -4217,12 +4243,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/osx/target",
+					"$(PROJECT_DIR)/core/dylib/target",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = "$(PROJECT_DIR)/setup/app/Info.plist";
 				INFOPLIST_PREPROCESS = YES;
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = ch.sudo.cyberduck;
 				PRODUCT_NAME = Cyberduck;
 				WRAPPER_EXTENSION = app;
@@ -4238,6 +4265,8 @@
 					"$(inherited)",
 					"$(SDKROOT)/../MacOSX.sdk/System/Library/Frameworks/Quartz.framework/Frameworks",
 					"$(SDKROOT)/../MacOSX.sdk/System/Library/Frameworks/JavaVM.framework/Frameworks",
+					"$(PROJECT_DIR)/osx/target",
+					"$(PROJECT_DIR)/core/dylib/target",
 				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libcore;
@@ -4247,6 +4276,10 @@
 		47EFE4E01BECFE81009AC47B /* Mac App Store */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/core/dylib/target",
+				);
 				INFOPLIST_EXPAND_BUILD_SETTINGS = YES;
 				INFOPLIST_FILE = "$(PROJECT_DIR)/setup/pkg/Info.plist";
 				INFOPLIST_PREPROCESS = YES;
