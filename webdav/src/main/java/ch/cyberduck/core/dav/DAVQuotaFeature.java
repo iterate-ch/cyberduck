@@ -51,7 +51,7 @@ public class DAVQuotaFeature implements Quota {
         catch(IOException e) {
             throw new DefaultIOExceptionMappingService().map(e, home);
         }
-        catch(Exception e) {
+        catch(NumberFormatException e) {
             throw new DefaultExceptionMappingService().map(e);
         }
     }
