@@ -450,6 +450,9 @@
                             <jdk.tls.useExtendedMasterSecret>false</jdk.tls.useExtendedMasterSecret>
                             <jna.library.path>${project.build.directory}</jna.library.path>
                         </systemPropertyVariables>
+                        <environmentVariables>
+                            <DYLD_FALLBACK_FRAMEWORK_PATH>${project.build.directory}</DYLD_FALLBACK_FRAMEWORK_PATH>
+                        </environmentVariables>
                         <excludedGroups>ch.cyberduck.test.IntegrationTest</excludedGroups>
                         <trimStackTrace>false</trimStackTrace>
                     </configuration>
