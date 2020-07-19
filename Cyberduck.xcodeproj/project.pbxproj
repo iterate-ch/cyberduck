@@ -4084,6 +4084,7 @@
 					"$(PROJECT_DIR)/osx/target",
 					"$(PROJECT_DIR)/core/dylib/target",
 				);
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libcore;
 			};
@@ -4268,6 +4269,7 @@
 					"$(PROJECT_DIR)/osx/target",
 					"$(PROJECT_DIR)/core/dylib/target",
 				);
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libcore;
 			};
