@@ -26,6 +26,8 @@ import org.apache.log4j.Logger;
 public final class KeychainPasswordStore extends DefaultHostPasswordStore implements PasswordStore {
     private static final Logger log = Logger.getLogger(KeychainPasswordStore.class);
 
+    private static final Object lock = new Object();
+
     static {
         Native.load("core");
     }
@@ -37,21 +39,21 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
      * @param user        Username
      * @return Password or null
      */
-    public synchronized native String getInternetPasswordFromKeychain(String protocol, int port, String serviceName, String user);
+    public native String getInternetPasswordFromKeychain(String protocol, int port, String serviceName, String user);
 
     /**
      * @param serviceName Hostname
      * @param user        Username
      * @return Password or null
      */
-    public synchronized native String getPasswordFromKeychain(String serviceName, String user);
+    public native String getPasswordFromKeychain(String serviceName, String user);
 
     /**
      * @param serviceName Hostname
      * @param user        Username
      * @param password    Secret
      */
-    public synchronized native boolean addPasswordToKeychain(String serviceName, String user, String password);
+    public native boolean addPasswordToKeychain(String serviceName, String user, String password);
 
     /**
      * @param protocol    Protocol identifier
@@ -60,29 +62,37 @@ public final class KeychainPasswordStore extends DefaultHostPasswordStore implem
      * @param user        Username
      * @param password    Secret
      */
-    public synchronized native boolean addInternetPasswordToKeychain(String protocol, int port, String serviceName, String user, String password);
+    public native boolean addInternetPasswordToKeychain(String protocol, int port, String serviceName, String user, String password);
 
     @Override
     public String getPassword(final Scheme scheme, final int port, final String hostname, final String user) {
-        return this.getInternetPasswordFromKeychain(scheme.name(), port, hostname, user);
+        synchronized(lock) {
+            return this.getInternetPasswordFromKeychain(scheme.name(), port, hostname, user);
+        }
     }
 
     @Override
     public void addPassword(final Scheme scheme, final int port, final String hostname, final String user, final String password) throws LocalAccessDeniedException {
-        if(!this.addInternetPasswordToKeychain(scheme.name(), port, hostname, user, password)) {
-            throw new LocalAccessDeniedException(String.format("Failure saving credentials for %s in Keychain", user));
+        synchronized(lock) {
+            if(!this.addInternetPasswordToKeychain(scheme.name(), port, hostname, user, password)) {
+                throw new LocalAccessDeniedException(String.format("Failure saving credentials for %s in Keychain", user));
+            }
         }
     }
 
     @Override
     public String getPassword(final String serviceName, final String accountName) {
-        return this.getPasswordFromKeychain(serviceName, accountName);
+        synchronized(lock) {
+            return this.getPasswordFromKeychain(serviceName, accountName);
+        }
     }
 
     @Override
     public void addPassword(final String serviceName, final String accountName, final String password) throws LocalAccessDeniedException {
-        if(!this.addPasswordToKeychain(serviceName, accountName, password)) {
-            throw new LocalAccessDeniedException(String.format("Failure saving credentials for %s in Keychain", accountName));
+        synchronized(lock) {
+            if(!this.addPasswordToKeychain(serviceName, accountName, password)) {
+                throw new LocalAccessDeniedException(String.format("Failure saving credentials for %s in Keychain", accountName));
+            }
         }
     }
 }
