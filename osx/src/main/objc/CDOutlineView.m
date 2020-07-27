@@ -72,7 +72,7 @@ static NSTableColumn *localSelectionColumn;
 - (void)_scheduleAutoExpandTimerForItemDelayed:(NSTimer *)sender
 {
 	if(NSLeftMouseDragged == [[[NSApplication sharedApplication] currentEvent] type]) {
-		int previousRow = [self rowAtPoint:[[sender userInfo] pointValue]];
+        NSInteger previousRow = [self rowAtPoint:[[sender userInfo] pointValue]];
 		if(previousRow == [self rowAtPoint:[self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil]]) {
 			// Still dragging onto the same row; finally expand the item
 			if([super respondsToSelector:@selector(_scheduleAutoExpandTimerForItem:)]) {
@@ -89,8 +89,8 @@ static NSTableColumn *localSelectionColumn;
 - (void)handleBrowserClick:(id)sender 
 {
 	NSPoint where = [self convertPoint:[[NSApp currentEvent] locationInWindow] fromView:nil];
-	int row = [self rowAtPoint:where];
-	int col = [self columnAtPoint:where];
+	NSInteger row = [self rowAtPoint:where];
+    NSInteger col = [self columnAtPoint:where];
 	if(row >= 0 && col >= 0) {
 		NSTableColumn *column = [[self tableColumns] objectAtIndex:col];
 		if([[self delegate] respondsToSelector:@selector(isColumnEditable:)]) {
@@ -181,7 +181,7 @@ static NSTableColumn *localSelectionColumn;
 {
 	NSRect frame = NSMakeRect(0, 0, 0, 0);
 	NSRange visibleRows = [self rowsInRect:[self bounds]];
-	int row, endRow;
+    NSInteger row, endRow;
 	for(row = visibleRows.location, endRow = row + visibleRows.length; row <= endRow; ++row) {
 		id item = [self itemAtRow:row];
 		if(nil == item) {
@@ -196,7 +196,7 @@ static NSTableColumn *localSelectionColumn;
 		if([[path string] isEqualToString:[url lastPathComponent]]) {
 			frame           = [self rectOfRow:row];
 			frame.origin    = [self convertPoint:frame.origin toView:nil];
-			frame.origin    = [[self window] convertBaseToScreen:frame.origin];
+			frame.origin    = [[self window] convertPointToScreen:frame.origin];
 			frame.origin.y -= frame.size.height;
 			break;
 		}

@@ -101,7 +101,7 @@
 	}
 
     BOOL highlighted = [self isHighlighted] && ![[self highlightColorWithFrame:cellFrame inView:controlView] isEqualTo:[NSColor secondarySelectedControlColor]];
-    int size = [[NSUserDefaults standardUserDefaults] integerForKey:@"bookmark.icon.size"];
+    NSInteger size = [[NSUserDefaults standardUserDefaults] integerForKey:@"bookmark.icon.size"];
 	
     NSDictionary *nicknameFont;
     if(LARGE_BOOKMARK_SIZE == size) {

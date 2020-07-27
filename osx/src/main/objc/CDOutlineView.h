@@ -23,8 +23,8 @@
 
 @private
 	BOOL mBrowserWasDoubleClicked;
-	int mBrowserEditingColumn;
-	int mBrowserEditingRow;
+    NSInteger mBrowserEditingColumn;
+    NSInteger mBrowserEditingRow;
 
 	NSTimer *autoexpand_timer;
 }
