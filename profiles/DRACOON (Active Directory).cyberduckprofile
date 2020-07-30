@@ -28,6 +28,8 @@
         <false/>
         <key>Authorization</key>
         <string>active_directory</string>
+        <key>Deprecated</key>
+        <true/>
         <key>Disk</key>
         <string>
 TU0AKgAAORqAACBQOCQWDQeEQmFQuGQ2HQ+IRGJROKRWLReMRmNRuOR2PR+QSGRSOSSWTS

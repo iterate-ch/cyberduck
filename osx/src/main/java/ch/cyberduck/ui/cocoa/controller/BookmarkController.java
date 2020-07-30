@@ -175,6 +175,9 @@ public class BookmarkController extends SheetController implements CollectionLis
         this.protocolPopup.addItemWithTitle(title);
         this.protocolPopup.lastItem().setRepresentedObject(String.valueOf(protocol.hashCode()));
         this.protocolPopup.lastItem().setImage(IconCacheFactory.<NSImage>get().iconNamed(protocol.icon(), 16));
+        if(protocol.isDeprecated()) {
+            this.protocolPopup.lastItem().setEnabled(false);
+        }
     }
 
     @Action

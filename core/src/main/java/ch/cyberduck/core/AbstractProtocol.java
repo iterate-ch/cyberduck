@@ -62,6 +62,11 @@ public abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
+    public boolean isDeprecated() {
+        return false;
+    }
+
+    @Override
     public Statefulness getStatefulness() {
         return Statefulness.stateless;
     }
