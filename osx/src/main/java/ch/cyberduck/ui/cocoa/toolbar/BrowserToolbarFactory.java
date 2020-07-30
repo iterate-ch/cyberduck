@@ -282,7 +282,7 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
         addbookmark {
             @Override
             public String label() {
-                return LocaleFactory.localizedString("New Bookmark");
+                return LocaleFactory.localizedString("New Bookmark", "Browser");
             }
 
             @Override
