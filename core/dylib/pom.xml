@@ -117,6 +117,7 @@
         <dependency>
             <groupId>org.rococoa</groupId>
             <artifactId>librococoa</artifactId>
+            <classifier>universal</classifier>
             <version>0.8.2</version>
             <type>dylib</type>
             <scope>runtime</scope>
