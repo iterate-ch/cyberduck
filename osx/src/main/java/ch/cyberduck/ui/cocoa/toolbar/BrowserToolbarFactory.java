@@ -183,11 +183,6 @@ public class BrowserToolbarFactory extends AbstractToolbarFactory implements Too
         },
         synchronize {
             @Override
-            public String label() {
-                return this.tooltip();
-            }
-
-            @Override
             public String tooltip() {
                 return LocaleFactory.localizedString("Synchronize files");
             }
