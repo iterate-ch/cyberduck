@@ -157,7 +157,7 @@ public class FTPClient extends FTPSClient {
     protected void sslNegotiation() throws IOException {
         if(protocol.isSecure()) {
             final SSLSocket socket = (SSLSocket) sslSocketFactory.createSocket(_socket_,
-                    _socket_.getInetAddress().getHostAddress(), _socket_.getPort(), false);
+                    _socket_.getInetAddress().getHostName(), _socket_.getPort(), false);
             socket.setEnableSessionCreation(true);
             socket.setUseClientMode(true);
             socket.startHandshake();
