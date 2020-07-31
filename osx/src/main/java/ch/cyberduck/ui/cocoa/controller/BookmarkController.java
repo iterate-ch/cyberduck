@@ -136,6 +136,7 @@ public class BookmarkController extends SheetController implements CollectionLis
     public void setProtocolPopup(final NSPopUpButton button) {
         this.protocolPopup = button;
         this.protocolPopup.setEnabled(true);
+        this.protocolPopup.setAutoenablesItems(false);
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
         this.protocolPopup.removeAllItems();
