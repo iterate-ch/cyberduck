@@ -15,26 +15,14 @@ package ch.cyberduck.core.sds;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.DefaultIOExceptionMappingService;
-import ch.cyberduck.core.ExpiringObjectHolder;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyCallback;
-import ch.cyberduck.core.HostUrlProvider;
-import ch.cyberduck.core.ListService;
-import ch.cyberduck.core.LocaleFactory;
-import ch.cyberduck.core.LoginCallback;
-import ch.cyberduck.core.LoginOptions;
-import ch.cyberduck.core.PreferencesUseragentProvider;
-import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.UrlProvider;
-import ch.cyberduck.core.Version;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.BackgroundException;
 import ch.cyberduck.core.exception.InteroperabilityException;
 import ch.cyberduck.core.exception.LoginCanceledException;
 import ch.cyberduck.core.exception.PartialLoginFailureException;
 import ch.cyberduck.core.features.*;
 import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.http.UserAgentHttpRequestInitializer;
 import ch.cyberduck.core.oauth.OAuth2ErrorResponseInterceptor;
 import ch.cyberduck.core.oauth.OAuth2RequestInterceptor;
 import ch.cyberduck.core.preferences.PreferencesFactory;
@@ -86,6 +74,12 @@ import java.util.regex.Pattern;
 import com.dracoon.sdk.crypto.CryptoException;
 import com.dracoon.sdk.crypto.model.UserKeyPair;
 import com.dracoon.sdk.crypto.model.UserPrivateKey;
+import com.google.api.client.auth.oauth2.PasswordTokenRequest;
+import com.google.api.client.auth.oauth2.TokenResponse;
+import com.google.api.client.http.BasicAuthentication;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.apache.v2.ApacheHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.migcomponents.migbase64.Base64;
 
 import static ch.cyberduck.core.oauth.OAuth2AuthorizationService.CYBERDUCK_REDIRECT_URI;
@@ -120,6 +114,43 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     @Override
     protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
+        switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
+            case sql:
+            case radius:
+            case active_directory:
+                final Credentials credentials = host.getCredentials();
+                if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
+                    log.warn(String.format("Skip migration with missing credentials for %s", host));
+                }
+                else {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Attempt migration to OAuth flow for %s", host));
+                    }
+                    try {
+                        // Search for installed connection profile using OAuth authorization method
+                        for(Protocol oauth : ProtocolFactory.get().find(protocol -> StringUtils.equals(host.getProtocol().getIdentifier(), protocol.getIdentifier()) && SDSProtocol.Authorization.oauth == SDSProtocol.Authorization.valueOf(protocol.getAuthorization()))) {
+                            // Run password flow to attempt to migrate to OAuth
+                            final TokenResponse response = new PasswordTokenRequest(new ApacheHttpTransport(builder.build(proxy, this, prompt).build()),
+                                new JacksonFactory(), new GenericUrl(Scheme.isURL(oauth.getOAuthTokenUrl()) ? oauth.getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
+                                oauth.getScheme(), host.getPort(), null, host.getHostname(), oauth.getOAuthTokenUrl())),
+                                host.getCredentials().getUsername(), host.getCredentials().getPassword()
+                            )
+                                .setClientAuthentication(new BasicAuthentication(credentials.getUsername(), credentials.getPassword()))
+                                .setScopes(oauth.getOAuthScopes())
+                                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
+                                .execute();
+                            final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
+                            credentials.setOauth(new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds));
+                            log.warn(String.format("Switch bookmark to protocol %s", oauth));
+                            host.setProtocol(oauth);
+                            break;
+                        }
+                    }
+                    catch(IOException e) {
+                        log.warn(String.format("Failure %s running password flow to migrate to OAuth", e));
+                    }
+                }
+        }
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
                 authorizationService = new OAuth2RequestInterceptor(builder.build(proxy, this, prompt).addInterceptorLast(new HttpRequestInterceptor() {
