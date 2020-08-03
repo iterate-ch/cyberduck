@@ -196,6 +196,28 @@ public abstract class NSWindow extends NSResponder {
         int NSWindowDocumentIconButton = 4;
     }
 
+    /// enum values
+    public interface NSWindowToolbarStyle {
+        // The default value. The style will be determined by the window's given configuration
+        int NSWindowToolbarStyleAutomatic = 0;
+        // The toolbar will appear below the window title
+        int NSWindowToolbarStyleExpanded = 1;
+        // The toolbar will appear below the window title and the items in the toolbar will attempt to have equal widths when possible
+        int NSWindowToolbarStylePreference = 2;
+        // The window title will appear inline with the toolbar when visible
+        int NSWindowToolbarStyleUnified = 3;
+        // Same as NSWindowToolbarStyleUnified, but with reduced margins in the toolbar allowing more focus to be on the contents of the window
+        int NSWindowToolbarStyleUnifiedCompact = 4;
+    }
+
+    /// enum values
+    public interface NSTitlebarSeparatorStyle {
+        int NSTitlebarSeparatorStyleAutomatic = 0;
+        int NSTitlebarSeparatorStyleNone = 1;
+        int NSTitlebarSeparatorStyleLine = 2;
+        int NSTitlebarSeparatorStyleShadow = 3;
+    }
+
     public interface _Class extends ObjCClass {
         /**
          * <i>native declaration : :217</i><br>
@@ -239,8 +261,15 @@ public abstract class NSWindow extends NSResponder {
          */
         NSButton standardWindowButton_forStyleMask(int b, int styleMask);
 
-        boolean setAllowsAutomaticWindowTabbing(boolean automatic);
+        /**
+         * @param automatic A Boolean value that indicates whether the app can automatically organize windows into
+         *                  tabs.
+         */
+        void setAllowsAutomaticWindowTabbing(boolean automatic);
 
+        /**
+         * @return A Boolean value that indicates whether the app can automatically organize windows into tabs.
+         */
         boolean allowsAutomaticWindowTabbing();
     }
 
@@ -348,6 +377,26 @@ public abstract class NSWindow extends NSResponder {
      * <i>native declaration : :231</i>
      */
     public abstract void setTitle(String aString);
+
+    /**
+     * @return A secondary line of text that appears in the title bar of the window.
+     */
+    public abstract String subtitle();
+
+    /**
+     * When this property is the empty string, the system removes the subtitle from the window layout.
+     *
+     * @param aString A secondary line of text that appears in the title bar of the window.
+     */
+    public abstract void setSubtitle(String aString);
+
+    /**
+     * The default value is NSTitlebarSeparatorStyleAutomatic. Changing this value overrides any preference by
+     * NSSplitViewItem.
+     *
+     * @param style The type of separator that the UI displays between the window’s titlebar and its content.
+     */
+    public abstract void setTitlebarSeparatorStyle(int style);
 
     /**
      * setRepresentedURL:<br> If url is not nil and its path is not empty, the window will show a document icon in the
@@ -1572,6 +1621,13 @@ public abstract class NSWindow extends NSResponder {
     public abstract void setToolbar(NSToolbar toolbar);
 
     /**
+     * The style of the titlebar area when the window displays a toolbar.
+     *
+     * @param toolbarStyle {@link NSWindowToolbarStyle}
+     */
+    public abstract void setToolbarStyle(int toolbarStyle);
+
+    /**
      * Original signature : <code>NSToolbar* toolbar()</code><br>
      * <i>from NSToolbarSupport native declaration : :559</i>
      */
@@ -1637,8 +1693,18 @@ public abstract class NSWindow extends NSResponder {
 
     public abstract void addTitlebarAccessoryViewController(NSTitlebarAccessoryViewController controller);
 
+    /**
+     * @return A value that allows a group of related windows.
+     */
     public abstract String tabbingIdentifier();
 
+    /**
+     * By default, a window generates a tabbing identifier from inherent window properties, such as the window class
+     * name, the delegate class name, the window controller class name, and some additional state. Group windows
+     * together by using the same tabbing identifier.
+     *
+     * @param identifier A value that allows a group of related windows.
+     */
     public abstract void setTabbingIdentifier(String identifier);
 
     /**
