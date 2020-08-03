@@ -175,12 +175,10 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     /**
-     * Keep reference to weak toolbar items. A toolbar may ask again for a kind of toolbar
-     * item already supplied to it, in which case this method may return the same toolbar
-     * item it returned before
+     * Keep reference to weak toolbar items. A toolbar may ask again for a kind of toolbar item already supplied to it,
+     * in which case this method may return the same toolbar item it returned before
      */
-    private final Map<String, NSToolbarItem> cache
-        = new HashMap<String, NSToolbarItem>();
+    private final Map<String, NSToolbarItem> cache = new HashMap<>();
 
     @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(final NSToolbar toolbar,
@@ -274,7 +272,13 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     protected void setTitle(final String title) {
-        window.setTitle(String.format("%s – %s", this.title, title));
+        if(window.respondsToSelector(Foundation.selector("setSubtitle:"))) {
+            window.setTitle(this.title);
+            window.setSubtitle(title);
+        }
+        else {
+            window.setTitle(String.format("%s – %s", this.title, title));
+        }
     }
 
     protected double getMinWindowHeight() {
