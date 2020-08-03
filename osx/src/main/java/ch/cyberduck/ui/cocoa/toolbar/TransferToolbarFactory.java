@@ -21,6 +21,7 @@ import ch.cyberduck.binding.application.NSImage;
 import ch.cyberduck.binding.application.NSMenu;
 import ch.cyberduck.binding.application.NSMenuItem;
 import ch.cyberduck.binding.application.NSPopUpButton;
+import ch.cyberduck.binding.application.NSSearchToolbarItem;
 import ch.cyberduck.binding.application.NSToolbarItem;
 import ch.cyberduck.binding.foundation.NSArray;
 import ch.cyberduck.core.LocaleFactory;
@@ -58,7 +59,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
      * Keep reference to weak toolbar items
      */
     private final Map<String, NSToolbarItem> toolbarItems
-            = new HashMap<String, NSToolbarItem>();
+        = new HashMap<>();
 
     public enum TransferToolbarItem {
         resume {
@@ -216,7 +217,13 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
     @Override
     public NSToolbarItem create(final String identifier) {
         if(!toolbarItems.containsKey(identifier)) {
-            toolbarItems.put(identifier, CDToolbarItem.itemWithIdentifier(identifier));
+            switch(TransferToolbarFactory.TransferToolbarItem.valueOf(identifier)) {
+                default:
+                    toolbarItems.put(identifier, CDToolbarItem.itemWithIdentifier(identifier));
+                    break;
+                case search:
+                    toolbarItems.put(identifier, NSSearchToolbarItem.itemWithIdentifier(identifier));
+            }
         }
         final NSToolbarItem item = toolbarItems.get(identifier);
         try {
@@ -238,7 +245,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     bandwidthMenu.setAutoenablesItems(true);
                     bandwidthMenu.setDelegate(controller.getBandwidthMenuDelegate().id());
                     final NSMenuItem unlimited = bandwidthMenu.addItemWithTitle_action_keyEquivalent(LocaleFactory.localizedString("Unlimited Bandwidth", "Transfer"),
-                            bandwidth.action(), StringUtils.EMPTY);
+                        bandwidth.action(), StringUtils.EMPTY);
                     unlimited.setImage(bandwidth.image());
                     unlimited.setRepresentedObject(String.valueOf(BandwidthThrottle.UNLIMITED));
                     bandwidthMenu.addItem(NSMenuItem.separatorItem());
@@ -246,7 +253,7 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     while(options.hasMoreTokens()) {
                         final String bytes = options.nextToken();
                         final NSMenuItem m = bandwidthMenu.addItemWithTitle_action_keyEquivalent(SizeFormatterFactory.get().format(Integer.parseInt(bytes)) + "/s",
-                                bandwidth.action(), StringUtils.EMPTY);
+                            bandwidth.action(), StringUtils.EMPTY);
                         // Mark as throttled
                         final NSImage image = IconCacheFactory.<NSImage>get().iconNamed("turtle.tiff", 16);
                         image.setTemplate(true);
@@ -276,8 +283,8 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
                     while(options.hasMoreTokens()) {
                         final String n = options.nextToken();
                         final NSMenuItem m = connectionsMenu.addItemWithTitle_action_keyEquivalent(
-                                MessageFormat.format(LocaleFactory.localizedString("{0} Connections", "Transfer"), n),
-                                TransferToolbarItem.connections.action(), StringUtils.EMPTY);
+                            MessageFormat.format(LocaleFactory.localizedString("{0} Connections", "Transfer"), n),
+                            TransferToolbarItem.connections.action(), StringUtils.EMPTY);
                         m.setImage(connections.image());
                         m.setRepresentedObject(n);
                     }
@@ -320,36 +327,36 @@ public class TransferToolbarFactory extends AbstractToolbarFactory implements To
     @Override
     public NSArray getDefault() {
         return NSArray.arrayWithObjects(
-                TransferToolbarItem.resume.name(),
-                TransferToolbarItem.stop.name(),
-                TransferToolbarItem.reload.name(),
-                TransferToolbarItem.remove.name(),
-                TransferToolbarItem.reveal.name(),
-                NSToolbarItem.NSToolbarFlexibleItemIdentifier,
-                TransferToolbarItem.bandwidth.name(),
-                TransferToolbarItem.connections.name(),
-                TransferToolbarItem.search.name()
+            TransferToolbarItem.resume.name(),
+            TransferToolbarItem.stop.name(),
+            TransferToolbarItem.reload.name(),
+            TransferToolbarItem.remove.name(),
+            TransferToolbarItem.reveal.name(),
+            NSToolbarItem.NSToolbarFlexibleItemIdentifier,
+            TransferToolbarItem.bandwidth.name(),
+            TransferToolbarItem.connections.name(),
+            TransferToolbarItem.search.name()
         );
     }
 
     @Override
     public NSArray getAllowed() {
         return NSArray.arrayWithObjects(
-                TransferToolbarItem.resume.name(),
-                TransferToolbarItem.reload.name(),
-                TransferToolbarItem.stop.name(),
-                TransferToolbarItem.remove.name(),
-                TransferToolbarItem.cleanup.name(),
-                TransferToolbarItem.reveal.name(),
-                TransferToolbarItem.open.name(),
-                TransferToolbarItem.trash.name(),
-                TransferToolbarItem.search.name(),
-                TransferToolbarItem.bandwidth.name(),
-                TransferToolbarItem.connections.name(),
-                NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
-                NSToolbarItem.NSToolbarSpaceItemIdentifier,
-                NSToolbarItem.NSToolbarSeparatorItemIdentifier,
-                NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier
+            TransferToolbarItem.resume.name(),
+            TransferToolbarItem.reload.name(),
+            TransferToolbarItem.stop.name(),
+            TransferToolbarItem.remove.name(),
+            TransferToolbarItem.cleanup.name(),
+            TransferToolbarItem.reveal.name(),
+            TransferToolbarItem.open.name(),
+            TransferToolbarItem.trash.name(),
+            TransferToolbarItem.search.name(),
+            TransferToolbarItem.bandwidth.name(),
+            TransferToolbarItem.connections.name(),
+            NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
+            NSToolbarItem.NSToolbarSpaceItemIdentifier,
+            NSToolbarItem.NSToolbarSeparatorItemIdentifier,
+            NSToolbarItem.NSToolbarFlexibleSpaceItemIdentifier
         );
     }
 }
