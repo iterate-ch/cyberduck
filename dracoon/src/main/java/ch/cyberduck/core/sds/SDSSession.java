@@ -68,6 +68,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -111,6 +112,20 @@ public class SDSSession extends HttpSession<SDSApiClient> {
         super(host, trust, key);
     }
 
+    private static final class OAuthFinderPredicate implements Predicate<Protocol> {
+        private final String identifier;
+
+        public OAuthFinderPredicate(final String identifier) {
+            this.identifier = identifier;
+        }
+
+        @Override
+        public boolean test(final Protocol protocol) {
+            return StringUtils.equals(identifier, protocol.getIdentifier())
+                && SDSProtocol.Authorization.oauth == SDSProtocol.Authorization.valueOf(protocol.getAuthorization());
+        }
+    }
+
     @Override
     protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
@@ -128,7 +143,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                     }
                     try {
                         // Search for installed connection profile using OAuth authorization method
-                        for(Protocol oauth : ProtocolFactory.get().find(protocol -> StringUtils.equals(host.getProtocol().getIdentifier(), protocol.getIdentifier()) && SDSProtocol.Authorization.oauth == SDSProtocol.Authorization.valueOf(protocol.getAuthorization()))) {
+                        for(Protocol oauth : ProtocolFactory.get().find(new OAuthFinderPredicate(host.getProtocol().getIdentifier()))) {
                             // Run password flow to attempt to migrate to OAuth
                             final TokenResponse response = new PasswordTokenRequest(new ApacheHttpTransport(builder.build(proxy, this, prompt).build()),
                                 new JacksonFactory(), new GenericUrl(Scheme.isURL(oauth.getOAuthTokenUrl()) ? oauth.getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
