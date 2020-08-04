@@ -129,42 +129,44 @@ public class SDSSession extends HttpSession<SDSApiClient> {
     @Override
     protected SDSApiClient connect(final Proxy proxy, final HostKeyCallback key, final LoginCallback prompt) throws BackgroundException {
         final HttpClientBuilder configuration = builder.build(proxy, this, prompt);
-        switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
-            case sql:
-            case radius:
-            case active_directory:
-                final Credentials credentials = host.getCredentials();
-                if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
-                    log.warn(String.format("Skip migration with missing credentials for %s", host));
-                }
-                else {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Attempt migration to OAuth flow for %s", host));
+        if(PreferencesFactory.get().getBoolean("sds.oauth.migrate.enable")) {
+            switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
+                case sql:
+                case radius:
+                case active_directory:
+                    final Credentials credentials = host.getCredentials();
+                    if(!host.getCredentials().validate(host.getProtocol(), new LoginOptions(host.getProtocol()))) {
+                        log.warn(String.format("Skip migration with missing credentials for %s", host));
                     }
-                    try {
-                        // Search for installed connection profile using OAuth authorization method
-                        for(Protocol oauth : ProtocolFactory.get().find(new OAuthFinderPredicate(host.getProtocol().getIdentifier()))) {
-                            // Run password flow to attempt to migrate to OAuth
-                            final TokenResponse response = new PasswordTokenRequest(new ApacheHttpTransport(builder.build(proxy, this, prompt).build()),
-                                new JacksonFactory(), new GenericUrl(Scheme.isURL(oauth.getOAuthTokenUrl()) ? oauth.getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
-                                oauth.getScheme(), host.getPort(), null, host.getHostname(), oauth.getOAuthTokenUrl())),
-                                host.getCredentials().getUsername(), host.getCredentials().getPassword()
-                            )
-                                .setClientAuthentication(new BasicAuthentication(oauth.getOAuthClientId(), oauth.getOAuthClientSecret()))
-                                .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
-                                .execute();
-                            final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
-                            credentials.setOauth(new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds));
-                            credentials.setSaved(true);
-                            log.warn(String.format("Switch bookmark to protocol %s", oauth));
-                            host.setProtocol(oauth);
-                            break;
+                    else {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Attempt migration to OAuth flow for %s", host));
+                        }
+                        try {
+                            // Search for installed connection profile using OAuth authorization method
+                            for(Protocol oauth : ProtocolFactory.get().find(new OAuthFinderPredicate(host.getProtocol().getIdentifier()))) {
+                                // Run password flow to attempt to migrate to OAuth
+                                final TokenResponse response = new PasswordTokenRequest(new ApacheHttpTransport(builder.build(proxy, this, prompt).build()),
+                                    new JacksonFactory(), new GenericUrl(Scheme.isURL(oauth.getOAuthTokenUrl()) ? oauth.getOAuthTokenUrl() : new HostUrlProvider().withUsername(false).withPath(true).get(
+                                    oauth.getScheme(), host.getPort(), null, host.getHostname(), oauth.getOAuthTokenUrl())),
+                                    host.getCredentials().getUsername(), host.getCredentials().getPassword()
+                                )
+                                    .setClientAuthentication(new BasicAuthentication(oauth.getOAuthClientId(), oauth.getOAuthClientSecret()))
+                                    .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
+                                    .execute();
+                                final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
+                                credentials.setOauth(new OAuthTokens(response.getAccessToken(), response.getRefreshToken(), expiryInMilliseconds));
+                                credentials.setSaved(true);
+                                log.warn(String.format("Switch bookmark to protocol %s", oauth));
+                                host.setProtocol(oauth);
+                                break;
+                            }
+                        }
+                        catch(IOException e) {
+                            log.warn(String.format("Failure %s running password flow to migrate to OAuth", e));
                         }
                     }
-                    catch(IOException e) {
-                        log.warn(String.format("Failure %s running password flow to migrate to OAuth", e));
-                    }
-                }
+            }
         }
         switch(SDSProtocol.Authorization.valueOf(host.getProtocol().getAuthorization())) {
             case oauth:
