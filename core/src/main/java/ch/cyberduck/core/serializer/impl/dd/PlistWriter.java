@@ -20,7 +20,6 @@ package ch.cyberduck.core.serializer.impl.dd;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.SerializerFactory;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.serializer.Writer;
 
@@ -41,7 +40,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
         final NSArray list = new NSArray(collection.size());
         int i = 0;
         for(S bookmark : collection) {
-            list.setValue(i, bookmark.<NSDictionary>serialize(SerializerFactory.get()));
+            list.setValue(i, bookmark.<NSDictionary>serialize(new PlistSerializer()));
             i++;
         }
         final String content = list.toXMLPropertyList();
@@ -55,7 +54,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
 
     @Override
     public void write(final S item, final Local file) throws AccessDeniedException {
-        final String content = item.<NSDictionary>serialize(SerializerFactory.get()).toXMLPropertyList();
+        final String content = item.<NSDictionary>serialize(new PlistSerializer()).toXMLPropertyList();
         try (final OutputStream out = file.getOutputStream(false)) {
             IOUtils.write(content, out, StandardCharsets.UTF_8);
         }
