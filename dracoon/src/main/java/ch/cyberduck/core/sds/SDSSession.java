@@ -136,7 +136,6 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                                 host.getCredentials().getUsername(), host.getCredentials().getPassword()
                             )
                                 .setClientAuthentication(new BasicAuthentication(oauth.getOAuthClientId(), oauth.getOAuthClientSecret()))
-                                .setScopes(oauth.getOAuthScopes())
                                 .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
                                 .execute();
                             final long expiryInMilliseconds = System.currentTimeMillis() + response.getExpiresInSeconds() * 1000;
