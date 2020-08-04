@@ -135,7 +135,7 @@ public class SDSSession extends HttpSession<SDSApiClient> {
                                 oauth.getScheme(), host.getPort(), null, host.getHostname(), oauth.getOAuthTokenUrl())),
                                 host.getCredentials().getUsername(), host.getCredentials().getPassword()
                             )
-                                .setClientAuthentication(new BasicAuthentication(credentials.getUsername(), credentials.getPassword()))
+                                .setClientAuthentication(new BasicAuthentication(oauth.getOAuthClientId(), oauth.getOAuthClientSecret()))
                                 .setScopes(oauth.getOAuthScopes())
                                 .setRequestInitializer(new UserAgentHttpRequestInitializer(new PreferencesUseragentProvider()))
                                 .execute();
