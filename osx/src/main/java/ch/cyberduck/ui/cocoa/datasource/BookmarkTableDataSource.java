@@ -15,29 +15,35 @@ package ch.cyberduck.ui.cocoa.datasource;
  * GNU General Public License for more details.
  */
 
-import ch.cyberduck.binding.ListDataSource;
+import ch.cyberduck.binding.OutlineDataSource;
 import ch.cyberduck.binding.application.NSApplication;
 import ch.cyberduck.binding.application.NSDraggingInfo;
 import ch.cyberduck.binding.application.NSDraggingSource;
 import ch.cyberduck.binding.application.NSEvent;
 import ch.cyberduck.binding.application.NSImage;
+import ch.cyberduck.binding.application.NSOutlineView;
 import ch.cyberduck.binding.application.NSPasteboard;
 import ch.cyberduck.binding.application.NSTableColumn;
 import ch.cyberduck.binding.application.NSTableView;
 import ch.cyberduck.binding.foundation.NSArray;
+import ch.cyberduck.binding.foundation.NSDictionary;
 import ch.cyberduck.binding.foundation.NSIndexSet;
 import ch.cyberduck.binding.foundation.NSMutableArray;
 import ch.cyberduck.binding.foundation.NSMutableDictionary;
 import ch.cyberduck.binding.foundation.NSObject;
+import ch.cyberduck.binding.foundation.NSString;
 import ch.cyberduck.binding.foundation.NSURL;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.exception.AccessDeniedException;
 import ch.cyberduck.core.exception.HostParserException;
 import ch.cyberduck.core.pasteboard.HostPasteboard;
 import ch.cyberduck.core.pool.SessionPool;
+import ch.cyberduck.core.preferences.Preferences;
 import ch.cyberduck.core.preferences.PreferencesFactory;
 import ch.cyberduck.core.resources.IconCacheFactory;
 import ch.cyberduck.core.serializer.HostDictionary;
+import ch.cyberduck.core.serializer.impl.jna.PlistDeserializer;
+import ch.cyberduck.core.serializer.impl.jna.PlistSerializer;
 import ch.cyberduck.core.threading.ScheduledThreadPool;
 import ch.cyberduck.core.threading.WindowMainAction;
 import ch.cyberduck.core.transfer.Transfer;
@@ -59,91 +65,35 @@ import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class BookmarkTableDataSource extends ListDataSource {
+public class BookmarkTableDataSource extends OutlineDataSource {
     private static final Logger log = LogManager.getLogger(BookmarkTableDataSource.class);
 
-    protected final BrowserController controller;
+    private final Preferences preferences = PreferencesFactory.get();
+    private final HostPasteboard pasteboard = HostPasteboard.getPasteboard();
 
-    private HostFilter filter;
-
-    private AbstractHostCollection source = AbstractHostCollection.empty();
-
-    /**
-     * Subset of the original source
-     */
-    private AbstractHostCollection filtered;
-
-    private CollectionListener<Host> listener;
-
+    private final BrowserController controller;
+    private final CollectionListener<Host> listener = new BookmarkReloadListener();
     private final ScheduledThreadPool timerPool = new ScheduledThreadPool();
 
-    private final HostPasteboard pasteboard
-        = HostPasteboard.getPasteboard();
+    private AbstractHostCollection source = AbstractHostCollection.empty();
+    private Map<String, List<Host>> groups = Collections.emptyMap();
 
     public BookmarkTableDataSource(final BrowserController controller) {
         this.controller = controller;
     }
 
     public void setSource(final AbstractHostCollection source) {
-        this.source.removeListener(listener); //Remove previous listener
+        this.source.removeListener(listener);
         this.source = source;
-        this.source.addListener(listener = new CollectionListener<Host>() {
-            private ScheduledFuture<?> delayed = null;
-
-            @Override
-            public void collectionLoaded() {
-                controller.invoke(new WindowMainAction(controller) {
-                    @Override
-                    public void run() {
-                        controller.reloadBookmarks();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemAdded(final Host item) {
-                controller.invoke(new WindowMainAction(controller) {
-                    @Override
-                    public void run() {
-                        controller.reloadBookmarks();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemRemoved(final Host item) {
-                controller.invoke(new WindowMainAction(controller) {
-                    @Override
-                    public void run() {
-                        controller.reloadBookmarks();
-                    }
-                });
-            }
-
-            @Override
-            public void collectionItemChanged(final Host item) {
-                if(null != delayed) {
-                    delayed.cancel(false);
-                }
-                // Delay to 1 second. When typing changes we don't have to save every iteration.
-                delayed = timerPool.schedule(new Runnable() {
-                    public void run() {
-                        controller.invoke(new WindowMainAction(controller) {
-                            @Override
-                            public void run() {
-                                controller.reloadBookmarks();
-                            }
-                        });
-                    }
-                }, 1L, TimeUnit.SECONDS);
-            }
-        });
-        this.setFilter(null);
+        this.source.addListener(listener);
+        this.groups = source.groups(HostFilter.NONE);
     }
 
     @Override
@@ -158,9 +108,8 @@ public class BookmarkTableDataSource extends ListDataSource {
      *
      * @param filter Filter for bookmarks
      */
-    public void setFilter(HostFilter filter) {
-        this.filter = filter;
-        this.filtered = null;
+    public void setFilter(final HostFilter filter) {
+        this.groups = source.groups(filter);
     }
 
     /**
@@ -169,44 +118,55 @@ public class BookmarkTableDataSource extends ListDataSource {
      * @see HostFilter
      */
     public AbstractHostCollection getSource() {
-        if(null == filter) {
-            return source;
-        }
-        if(null == filtered) {
-            filtered = new FilterHostCollection(source, filter);
-        }
-        return filtered;
+        return source;
     }
 
     @Override
-    public NSInteger numberOfRowsInTableView(NSTableView view) {
-        return new NSInteger(this.getSource().size());
+    public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
+        return item.isKindOfClass(NSString.CLASS);
     }
 
     @Override
-    public NSObject tableView_objectValueForTableColumn_row(final NSTableView view, final NSTableColumn tableColumn,
-                                                            final NSInteger row) {
-        if(row.intValue() >= this.numberOfRowsInTableView(view).intValue()) {
+    public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, final NSObject item) {
+        if(null == item) {
+            return new NSInteger(groups.size());
+        }
+        return new NSInteger(groups.get(item.toString()).size());
+    }
+
+    @Override
+    public NSObject outlineView_child_ofItem(final NSOutlineView outlineView, final NSInteger index, final NSObject item) {
+        if(null == item) {
+            final String label = new ArrayList<>(groups.keySet()).get(index.intValue());
+            return NSString.stringWithString(label);
+        }
+        return groups.get(item.toString()).get(index.intValue()).serialize(new PlistSerializer());
+    }
+
+    @Override
+    public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn column, final NSObject item) {
+        if(null == item) {
             return null;
         }
-        final String identifier = tableColumn.identifier();
-        final Host host = this.getSource().get(row.intValue());
+        if(null == column) {
+            // Group row)
+            if(StringUtils.isBlank(item.toString())) {
+                // Default group of bookmarks with no label assigned
+                return NSString.stringWithString(LocaleFactory.localizedString("Default"));
+            }
+            return item;
+        }
+        final NSMutableDictionary dict = Rococoa.cast(item, NSMutableDictionary.class);
+        final Host host = new HostDictionary(new DeserializerFactory(PlistDeserializer.class)).deserialize(dict);
+        final String identifier = column.identifier();
         if(identifier.equals(BookmarkColumn.icon.name())) {
-            return IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(),
-                PreferencesFactory.get().getInteger("bookmark.icon.size"));
+            return IconCacheFactory.<NSImage>get().iconNamed(host.getProtocol().disk(), preferences.getInteger("bookmark.icon.size"));
         }
         if(identifier.equals(BookmarkColumn.bookmark.name())) {
-            final NSMutableDictionary dict = NSMutableDictionary.dictionary();
-            dict.setObjectForKey(BookmarkNameProvider.toString(host), "Nickname");
-            dict.setObjectForKey(host.getHostname(), "Hostname");
-            if(StringUtils.isNotBlank(host.getCredentials().getUsername())) {
-                dict.setObjectForKey(host.getCredentials().getUsername(), "Username");
+            if(null == dict.objectForKey("Nickname")) {
+                dict.setObjectForKey(BookmarkNameProvider.toString(host), "Nickname");
             }
-            final String comment = this.getSource().getComment(host);
-            if(StringUtils.isNotBlank(comment)) {
-                dict.setObjectForKey(comment, "Comment");
-            }
-            return dict;
+            return item;
         }
         if(identifier.equals(BookmarkColumn.status.name())) {
             final SessionPool session = controller.getSession();
@@ -238,10 +198,9 @@ public class BookmarkTableDataSource extends ListDataSource {
     }
 
     @Override
-    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(final NSTableView view, final NSDraggingInfo info,
-                                                                               final NSInteger row, final NSUInteger operation) {
+    public NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView view, final NSDraggingInfo info, final NSObject destination, final NSInteger row) {
         NSPasteboard draggingPasteboard = info.draggingPasteboard();
-        if(!this.getSource().allowsEdit()) {
+        if(!source.allowsEdit()) {
             // Do not allow drags for non writable collections
             return NSDraggingInfo.NSDragOperationNone;
         }
@@ -304,22 +263,13 @@ public class BookmarkTableDataSource extends ListDataSource {
         return NSDraggingInfo.NSDragOperationNone;
     }
 
-    /**
-     * @param info contains details on this dragging operation.
-     * @param row  The proposed location is row and action is operation. The data source should incorporate the data
-     *             from the dragging pasteboard at this time.
-     * @see NSTableView.DataSource Invoked by view when the mouse button is released over a table view that previously
-     * decided to allow a drop.
-     */
     @Override
-    public boolean tableView_acceptDrop_row_dropOperation(final NSTableView view, final NSDraggingInfo info,
-                                                          final NSInteger row, final NSUInteger operation) {
-        NSPasteboard draggingPasteboard = info.draggingPasteboard();
+    public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView view, final NSDraggingInfo info, final NSObject item, final NSInteger row) {
+        final NSPasteboard draggingPasteboard = info.draggingPasteboard();
         if(log.isDebugEnabled()) {
             log.debug(String.format("Accept drop at row %s", row));
         }
         view.deselectAll(null);
-        final AbstractHostCollection source = this.getSource();
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
             String o = draggingPasteboard.stringForType(NSPasteboard.StringPboardType);
             if(null == o) {
@@ -344,7 +294,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                 if(object.isKindOfClass(NSArray.CLASS)) {
                     final NSArray elements = Rococoa.cast(object, NSArray.class);
                     // If regular files are dropped, these will be uploaded to the dropped bookmark location
-                    final List<TransferItem> uploads = new ArrayList<TransferItem>();
+                    final List<TransferItem> uploads = new ArrayList<>();
                     Host host = null;
                     for(int i = 0; i < elements.count().intValue(); i++) {
                         final String filename = elements.objectAtIndex(new NSUInteger(i)).toString();
@@ -411,7 +361,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         }
         else if(!pasteboard.isEmpty()) {
             if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
-                List<Host> duplicates = new ArrayList<Host>();
+                List<Host> duplicates = new ArrayList<>();
                 for(Host bookmark : pasteboard) {
                     final Host duplicate = new HostDictionary<>().deserialize(bookmark.serialize(SerializerFactory.get()));
                     // Make sure a new UUID is assigned for duplicate
@@ -486,19 +436,13 @@ public class BookmarkTableDataSource extends ListDataSource {
         return new NSUInteger(NSDraggingInfo.NSDragOperationCopy.intValue() | NSDraggingInfo.NSDragOperationDelete.intValue());
     }
 
-    /**
-     * @param rowIndexes is the list of row numbers that will be participating in the drag.
-     * @return To refuse the drag, return false. To start a drag, return true and place the drag data onto pboard (data,
-     * owner, and so on).
-     * @see NSTableView.DataSource Invoked by view after it has been determined that a drag should begin, but before the
-     * drag has been started. The drag image and other drag-related information will be set up and provided by the table
-     * view once this call returns with true.
-     */
     @Override
-    public boolean tableView_writeRowsWithIndexes_toPasteboard(final NSTableView view, final NSIndexSet rowIndexes,
-                                                               final NSPasteboard pboard) {
-        for(NSUInteger index = rowIndexes.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = rowIndexes.indexGreaterThanIndex(index)) {
-            pasteboard.add(this.getSource().get(index.intValue()));
+    public boolean outlineView_writeItems_toPasteboard(final NSOutlineView view, final NSArray items, final NSPasteboard pboard) {
+        for(int i = 0; i < items.count().intValue(); i++) {
+            if(items.objectAtIndex(new NSUInteger(i)).isKindOfClass(NSDictionary.CLASS)) {
+                final NSDictionary dict = Rococoa.cast(items.objectAtIndex(new NSUInteger(i)), NSDictionary.class);
+                pasteboard.add(new HostDictionary(new DeserializerFactory(PlistDeserializer.class)).deserialize(dict));
+            }
         }
         NSEvent event = NSApplication.sharedApplication().currentEvent();
         if(event != null) {
@@ -546,4 +490,55 @@ public class BookmarkTableDataSource extends ListDataSource {
         return promisedDragNames;
     }
 
+    private final class BookmarkReloadListener implements CollectionListener<Host> {
+        private ScheduledFuture<?> delayed = null;
+
+        @Override
+        public void collectionLoaded() {
+            controller.invoke(new WindowMainAction(controller) {
+                @Override
+                public void run() {
+                    controller.reloadBookmarks();
+                }
+            });
+        }
+
+        @Override
+        public void collectionItemAdded(final Host item) {
+            controller.invoke(new WindowMainAction(controller) {
+                @Override
+                public void run() {
+                    controller.reloadBookmarks();
+                }
+            });
+        }
+
+        @Override
+        public void collectionItemRemoved(final Host item) {
+            controller.invoke(new WindowMainAction(controller) {
+                @Override
+                public void run() {
+                    controller.reloadBookmarks();
+                }
+            });
+        }
+
+        @Override
+        public void collectionItemChanged(final Host item) {
+            if(null != delayed) {
+                delayed.cancel(false);
+            }
+            // Delay to 1 second. When typing changes we don't have to save every iteration.
+            delayed = timerPool.schedule(new Runnable() {
+                public void run() {
+                    controller.invoke(new WindowMainAction(controller) {
+                        @Override
+                        public void run() {
+                            controller.reloadBookmarks();
+                        }
+                    });
+                }
+            }, 1L, TimeUnit.SECONDS);
+        }
+    }
 }
